@@ -31,9 +31,10 @@ namespace Odyssey::Framework
 		glfwSetFramebufferSizeCallback(glfwHandle, Window::WindowResize);
 	}
 
-	void Window::Update()
+	bool Window::Update()
 	{
 		glfwPollEvents();
+		return ShouldClose();
 	}
 
 	bool Window::ShouldClose()

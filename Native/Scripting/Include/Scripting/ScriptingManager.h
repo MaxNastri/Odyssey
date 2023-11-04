@@ -1,4 +1,7 @@
 #pragma once
+#include <filesystem>
+#include <functional>
+
 #include "HostInstance.hpp"
 #include "ManagedObject.hpp"
 #include "Assembly.hpp"
@@ -14,8 +17,7 @@ namespace Odyssey::Scripting
 	public:
 		void Initialize(std::filesystem::path exeDir);
 		Coral::ManagedAssembly& LoadAssembly(std::string_view path);
-		void Run();
-		void Stop();
+		void UpdateScripts();
 
 	private:
 		Coral::HostInstance hostInstance;

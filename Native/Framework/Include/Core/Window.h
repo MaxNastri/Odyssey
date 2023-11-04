@@ -9,7 +9,7 @@ namespace Odyssey::Framework
 	{
 	public:
 		Window();
-		void Update();
+		bool Update();
 		bool ShouldClose();
 		~Window();
 

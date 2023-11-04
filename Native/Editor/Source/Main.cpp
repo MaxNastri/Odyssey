@@ -7,7 +7,7 @@
 #include <ranges>
 
 #include <ScriptingManager.h>
-#include <Window.h>
+#include "Application.h"
 
 void ExceptionCallback(std::string_view InMessage)
 {
@@ -53,12 +53,8 @@ int main(int argc, char** argv)
 {
 	auto exeDir = std::filesystem::path(argv[0]).parent_path();
 	
-	// TODO: This should always come first so we get breakpoints
-	Odyssey::Scripting::ScriptingManager manager;
-	manager.Initialize(exeDir);
-
-	Odyssey::Framework::Window editorWindow;
-	manager.Run();
+	Odyssey::Editor::Application editor(exeDir);
+	editor.Run();
 }
 
 void RunDemo(Coral::ManagedAssembly& assembly)

@@ -38,26 +38,8 @@ namespace Odyssey::Scripting
 		return loadContext.LoadAssembly(path);
 	}
 
-	void ScriptingManager::Run()
+	void ScriptingManager::UpdateScripts()
 	{
-		running = true;
-		stopwatch.Start();
-
-		while (running)
-		{
-			float delta = stopwatch.Elapsed();
-			if (delta > MaxFPS)
-			{
-				stopwatch.Restart();
-
-				// DO update
-				exampleInstance.InvokeMethod("Void Update()");
-			}
-		}
-	}
-
-	void ScriptingManager::Stop()
-	{
-		running = false;
+		exampleInstance.InvokeMethod("Void Update()");
 	}
 }
