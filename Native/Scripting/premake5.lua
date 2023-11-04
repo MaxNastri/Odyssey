@@ -1,6 +1,6 @@
 local CoralDotNetPath = os.getenv("CORAL_DOTNET_PATH")
 
-project "Odyssey.Native.Core"
+project "Odyssey.Native.Scripting"
     language "C++"
     cppdialect "C++20"
     kind "StaticLib"

@@ -25,8 +25,8 @@ project "Odyssey.Native.Editor"
     }
 
     externalincludedirs {
-        "%{wks.location}/Native/Core/Include",
-        "%{wks.location}/Native/Core/Include/**",
+        "%{wks.location}/Native/Scripting/Include",
+        "%{wks.location}/Native/Scripting/Include/**",
         "%{wks.location}/Vendor/NetCore/7.0.7/"
     }
     
@@ -51,7 +51,7 @@ project "Odyssey.Native.Editor"
     }
 
     links {
-        "Odyssey.Native.Core.lib",
+        "Odyssey.Native.Scripting.lib",
         "nethost.lib"
     }
 

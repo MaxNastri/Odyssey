@@ -66,7 +66,6 @@ int main(int argc, char** argv)
 	
 	auto loadContext = hostInstance.CreateAssemblyLoadContext("ExampleContext");
 	
-	//auto assemblyPath = exeDir / "Example.Managed.dll";
 	auto assemblyPath = exeDir / "Odyssey.Managed.Example.dll";
 	auto& assembly = loadContext.LoadAssembly(assemblyPath.string());
 	

@@ -13,4 +13,4 @@ workspace "Odyssey-Native"
 	}
 
 include "Native/Editor"
-include "Native/Core"
+include "Native/Scripting"
