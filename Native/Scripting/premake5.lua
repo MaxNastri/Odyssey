@@ -38,7 +38,28 @@ project "Odyssey.Native.Scripting"
     }
 
     externalincludedirs {
+        "%{wks.location}/Vendor/NetCore/7.0.7/",
+        "%{wks.location}/Native/Framework/Include/",
+        "%{wks.location}/Native/Framework/Include/**",
+    }
+    
+    filter { "system:windows" }
+
+		postbuildcommands {
+			'{ECHO} Copying "%{wks.location}/Vendor/NetCore/7.0.7/nethost.dll" to "%{cfg.targetdir}"',
+			'{COPYFILE} "%{wks.location}/Vendor/NetCore/7.0.7/nethost.dll" "%{cfg.targetdir}"',
+            '{COPYFILE} "%{wks.location}/Managed/Core/Odyssey.Managed.Core.runtimeconfig.json" "%{cfg.targetdir}"',
+		}
+	filter {}
+
+    libdirs {
+        "%{cfg.targetdir}",
         "%{wks.location}/Vendor/NetCore/7.0.7/"
+    }
+
+    links {
+        "nethost.lib",
+        "Odyssey.Native.Framework.lib",
     }
 
     filter { "configurations:Debug" }

@@ -1,6 +1,6 @@
 local CoralDotNetPath = os.getenv("CORAL_DOTNET_PATH")
 
-project "Odyssey.Native.Scripting"
+project "Odyssey.Native.Framework"
     language "C++"
     cppdialect "C++20"
     kind "StaticLib"
@@ -35,10 +35,6 @@ project "Odyssey.Native.Scripting"
         "Include/**",
         "Source",
         "Source/**",
-    }
-
-    externalincludedirs {
-        "%{wks.location}/Vendor/NetCore/7.0.7/"
     }
 
     filter { "configurations:Debug" }
