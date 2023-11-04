@@ -36,6 +36,25 @@ project "Odyssey.Native.Framework"
         "Source",
         "Source/**",
     }
+    
+    externalincludedirs {
+        "%{wks.location}/Vendor/glfw3/",
+    }
+    
+    libdirs {
+        "%{cfg.targetdir}",
+    }
+
+    links {
+        "glfw3.lib",
+    }
+
+    filter { "system:windows" }
+        prebuildcommands {
+			'{ECHO} Copying "%{wks.location}/Vendor/glfw3/lib/glfw3.lib" to "%{cfg.targetdir}"',
+			'{COPYFILE} "%{wks.location}/Vendor/glfw3/lib/glfw3.lib" "%{cfg.targetdir}"',
+        }
+	filter {}
 
     filter { "configurations:Debug" }
         runtime "Debug"

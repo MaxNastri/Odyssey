@@ -6,11 +6,8 @@
 #include <functional>
 #include <ranges>
 
-#include <nethost.h>
-#include "HostInstance.hpp"
-#include "GC.hpp"
-#include "NativeArray.hpp"
-#include "Attribute.hpp"
+#include <ScriptingManager.h>
+#include <Window.h>
 
 void ExceptionCallback(std::string_view InMessage)
 {
@@ -55,21 +52,18 @@ Coral::NativeArray<float> ArrayReturnIcall()
 int main(int argc, char** argv)
 {
 	auto exeDir = std::filesystem::path(argv[0]).parent_path();
-	auto coralDir = exeDir.string();
-	Coral::HostSettings settings =
-	{
-		.CoralDirectory = coralDir,
-		.ExceptionCallback = ExceptionCallback
-	};
-	Coral::HostInstance hostInstance;
-	hostInstance.Initialize(settings);
 	
-	auto loadContext = hostInstance.CreateAssemblyLoadContext("ExampleContext");
-	
-	auto assemblyPath = exeDir / "Odyssey.Managed.Example.dll";
-	auto& assembly = loadContext.LoadAssembly(assemblyPath.string());
-	
-	assembly.AddInternalCall("Example.Managed.ExampleClass", "VectorAddIcall",   reinterpret_cast<void*>(&VectorAddIcall));
+	// TODO: This should always come first so we get breakpoints
+	Odyssey::Scripting::ScriptingManager manager;
+	manager.Initialize(exeDir);
+
+	Odyssey::Framework::Window editorWindow;
+	manager.Run();
+}
+
+void RunDemo(Coral::ManagedAssembly& assembly)
+{
+	assembly.AddInternalCall("Example.Managed.ExampleClass", "VectorAddIcall", reinterpret_cast<void*>(&VectorAddIcall));
 	assembly.AddInternalCall("Example.Managed.ExampleClass", "PrintStringIcall", reinterpret_cast<void*>(&PrintStringIcall));
 	assembly.AddInternalCall("Example.Managed.ExampleClass", "NativeArrayIcall", reinterpret_cast<void*>(&NativeArrayIcall));
 	assembly.AddInternalCall("Example.Managed.ExampleClass", "ArrayReturnIcall", reinterpret_cast<void*>(&ArrayReturnIcall));
@@ -99,7 +93,7 @@ int main(int argc, char** argv)
 	auto exampleInstance = exampleType.CreateInstance(50);
 
 	// Invoke the method named "MemberMethod" with a MyVec3 argument (doesn't return anything)
-	exampleInstance.InvokeMethod("Void MemberMethod(MyVec3)", MyVec3 { 10.0f, 10.0f, 10.0f });
+	exampleInstance.InvokeMethod("Void MemberMethod(MyVec3)", MyVec3{ 10.0f, 10.0f, 10.0f });
 
 	// Invokes the setter on PublicProp with the value 10 (will be multiplied by 2 in C#)
 	exampleInstance.SetPropertyValue("PublicProp", 10);
@@ -120,6 +114,4 @@ int main(int argc, char** argv)
 	// and also invoke ArrayReturnIcall
 	Coral::NativeArray<float> arr = { 5.0f, 0.0f, 10.0f, -50.0f };
 	exampleInstance.InvokeMethod("ArrayDemo", arr);
-
-	return 0;
 }

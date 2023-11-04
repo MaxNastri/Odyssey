@@ -10,6 +10,14 @@ namespace Example.Managed {
 		public float Value;
 	}
 
+	public class ExampleScript
+	{
+		public void Update()
+		{
+			Console.Write("1");
+		}
+	}
+
 	[Custom(Value = -2500.0f)]
 	public class ExampleClass
 	{
