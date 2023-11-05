@@ -6,7 +6,6 @@ namespace Odyssey::Entities
 	CLASS_DEFINITION(Odyssey.Entities, Transform);
 
 	void Transform::Awake()
-
 	{
 		Framework::Log::Info("Transform Logging from Awake: " + position.ToString());
 	}
@@ -26,7 +25,7 @@ namespace Odyssey::Entities
 	{
 		json componentJson;
 		to_json(componentJson, *this);
-		jsonObject += { "Component", componentJson};
+		jsonObject += { "Component." + Transform::ClassName, componentJson};
 	}
 
 	void Transform::Deserialize(const json& jsonObject)
