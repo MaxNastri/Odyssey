@@ -22,7 +22,7 @@ namespace Odyssey::Entities
 
 	protected:
 		friend class ComponentManager;
-		std::array<Component*, MAX_GAME_OBJECTS> componentData;
+		std::array<std::unique_ptr<Component>, MAX_GAME_OBJECTS> componentData;
 	};
 
 	template<typename T>
@@ -37,7 +37,7 @@ namespace Odyssey::Entities
 				// Assign the index to the lookup and create the component
 				unsigned int newIndex = size;
 				gameObjectToIndexMap[gameObject] = newIndex;
-				componentData[newIndex] = new T(params...);
+				componentData[newIndex] = std::make_unique<T>(params...);
 				++size;
 				return newIndex;
 			}
@@ -53,7 +53,7 @@ namespace Odyssey::Entities
 			if (gameObjectToIndexMap.find(gameObject) != gameObjectToIndexMap.end())
 			{
 				unsigned int index = gameObjectToIndexMap[gameObject];
-				return reinterpret_cast<T*>(componentData[index]);
+				return static_cast<T*>(componentData[index].get());
 			}
 
 			Framework::Log::Error("Cannot Get Component Data for GameObject: " + std::to_string(gameObject));
@@ -65,7 +65,7 @@ namespace Odyssey::Entities
 			if (gameObjectToIndexMap.find(gameObject) != gameObjectToIndexMap.end())
 			{
 				unsigned int index = gameObjectToIndexMap[gameObject];
-				return componentData[index];
+				return componentData[index].get();
 			}
 
 			Framework::Log::Error("Cannot Get Component for GameObject: " + std::to_string(gameObject));
@@ -92,19 +92,15 @@ namespace Odyssey::Entities
 			unsigned int removalIndex = gameObjectToIndexMap[gameObject];
 			unsigned int lastIndex = size - 1;
 			
-			// Get both components from the array
-			Component* removalComponent = componentData[removalIndex];
-			Component* lastComponent = componentData[lastIndex];
-
-			// Swap the last element into the removal index and move the removal to the end
-			componentData[removalIndex] = lastComponent;
-			componentData[lastIndex] = removalComponent;
+			// Call on destroy for the removed component
+			componentData[removalIndex]->OnDestroy();
+			
+			// Replace the removed component with the last element and reset the last index ptr
+			componentData[removalIndex] = std::move(componentData[lastIndex]);
+			componentData[lastIndex].reset();
 
 			// Remove the gameObject from the index lookup
 			gameObjectToIndexMap.erase(gameObject);
-
-			// Destroy the removed component
-			removalComponent->OnDestroy();
 
 			// The last index is now the next viable slot
 			size = lastIndex;

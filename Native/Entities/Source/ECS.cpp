@@ -22,6 +22,15 @@ namespace Odyssey::Entities
 			scene.DestroyGameObject(go);
 		}
 
+		for (int i = 0; i < 750; ++i)
+		{
+			GameObject go = scene.CreateGameObject();
+			Transform* transform = ComponentManager::AddComponent<Transform>(go);
+			transform->position = Vector4(3,2,1,0);
+
+			MeshRenderer* mr = ComponentManager::AddComponent<MeshRenderer>(go);
+		}
+
 		scene.Awake();
 	}
 

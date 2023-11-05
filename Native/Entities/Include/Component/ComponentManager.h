@@ -78,13 +78,13 @@ namespace Odyssey::Entities
 			std::type_index typeIndex = typeid(T);
 			if (componentArrays.find(typeIndex) == componentArrays.end())
 			{
-				componentArrays[typeIndex] = new ComponentArray<T>();
+				componentArrays[typeIndex] = std::make_unique<ComponentArray<T>>();
 			}
-			return reinterpret_cast<ComponentArray<T>*>(componentArrays[typeIndex]);
+			return static_cast<ComponentArray<T>*>(componentArrays[typeIndex].get());
 		}
 
 	private:
-		static std::unordered_map<std::type_index, IComponentArray*> componentArrays;
+		static std::unordered_map<std::type_index, std::unique_ptr<IComponentArray>> componentArrays;
 		static std::unordered_map<unsigned int, std::vector<std::pair<std::type_index, unsigned int>>> gameObjectToComponentArrayIndex;
 	};
 }

@@ -2,7 +2,7 @@
 
 namespace Odyssey::Entities
 {
-	std::unordered_map<std::type_index, IComponentArray*> ComponentManager::componentArrays;
+	std::unordered_map<std::type_index, std::unique_ptr<IComponentArray>> ComponentManager::componentArrays;
 	std::unordered_map<unsigned int, std::vector<std::pair<std::type_index, unsigned int>>> ComponentManager::gameObjectToComponentArrayIndex;
 
 	void ComponentManager::Awake(const std::vector<GameObject>& gameObjects)
@@ -14,8 +14,7 @@ namespace Odyssey::Entities
 			for (const auto& pair : gameObjectToComponentArrayIndex[gameObject.id])
 			{
 				// Get the component array and run the component for this game object's Awake
-				IComponentArray* componentArray = componentArrays[pair.first];
-				componentArray->componentData[pair.second]->Awake();
+				componentArrays[pair.first]->componentData[pair.second]->Awake();
 			}
 		}
 	}
@@ -29,8 +28,7 @@ namespace Odyssey::Entities
 			for (const auto& pair : gameObjectToComponentArrayIndex[gameObject.id])
 			{
 				// Get the component array and run the component for this game object's Update
-				IComponentArray* componentArray = componentArrays[pair.first];
-				componentArray->componentData[pair.second]->Update();
+				componentArrays[pair.first]->componentData[pair.second]->Update();
 			}
 		}
 	}
@@ -44,8 +42,7 @@ namespace Odyssey::Entities
 			for (const auto& pair : gameObjectToComponentArrayIndex[gameObject.id])
 			{
 				// Get the component array and run the component for this game object's OnDestroy
-				IComponentArray* componentArray = componentArrays[pair.first];
-				componentArray->componentData[pair.second]->OnDestroy();
+				componentArrays[pair.first]->componentData[pair.second]->OnDestroy();
 			}
 		}
 	}
@@ -57,8 +54,7 @@ namespace Odyssey::Entities
 			for (const auto& pair : gameObjectToComponentArrayIndex[gameObject.id])
 			{
 				// Remove the game object from each component array
-				IComponentArray* componentArray = componentArrays[pair.first];
-				componentArray->RemoveGameObject(gameObject.id);
+				componentArrays[pair.first]->RemoveGameObject(gameObject.id);
 			}
 
 			gameObjectToComponentArrayIndex.erase(gameObject.id);
