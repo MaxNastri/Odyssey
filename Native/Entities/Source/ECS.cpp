@@ -7,23 +7,26 @@
 
 namespace Odyssey::Entities
 {
+	Scene ECS::scene;
+
 	void ECS::Create()
 	{
-		GameObject go;
-		go.active = true;
-		go.id = 118;
+		for (int i = 0; i < 1000; ++i)
+		{
+			GameObject go = scene.CreateGameObject();
+			Transform* transform = ComponentManager::AddComponent<Transform>(go);
+			transform->position = Vector4(0, 1, 2, 3);
 
-		Transform* transform = ComponentManager::AddComponent<Transform>(go);
-		transform->position = Vector4(0, 1, 2, 3);
-		Framework::Log::Info("Transform: "+ transform->position.ToString());
+			MeshRenderer* mr = ComponentManager::AddComponent<MeshRenderer>(go);
 
-		Transform* againTransform = ComponentManager::GetComponent<Transform>(go);
-		Framework::Log::Info("againTransform: " + transform->position.ToString());
+			scene.DestroyGameObject(go);
+		}
 
-		ComponentManager::RemoveComponent<Transform>(go);
+		scene.Awake();
+	}
 
-		Transform* lastTransform = ComponentManager::GetComponent<Transform>(go);
-		std::string msg = lastTransform == nullptr ? "true" : "false";
-		Framework::Log::Info("Null check: " + msg);
+	void ECS::Update()
+	{
+		scene.Update();
 	}
 }

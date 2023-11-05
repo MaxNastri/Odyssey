@@ -1,4 +1,5 @@
 #pragma once
+#include "Scene.h"
 
 namespace Odyssey::Entities
 {
@@ -6,8 +7,10 @@ namespace Odyssey::Entities
 	{
 	public:
 		static void Create();
+		static void Update();
 
 	private:
+		static Scene scene;
 
 	};
 }

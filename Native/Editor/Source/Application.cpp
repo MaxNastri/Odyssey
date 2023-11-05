@@ -38,6 +38,7 @@ namespace Odyssey::Editor
 					scriptingManager.Recompile();
 				}
 				scriptingManager.UpdateScripts();
+				Entities::ECS::Update();
 			}
 		}
 	}

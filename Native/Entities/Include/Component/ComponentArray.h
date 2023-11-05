@@ -13,11 +13,16 @@ namespace Odyssey::Entities
 {
 	// FWD Declarations
 	class Component;
+	class ComponentManager;
 
 	class IComponentArray
 	{
 		virtual Component* GetComponent(unsigned int gameObject) = 0;
 		virtual void RemoveGameObject(unsigned int gameObject) = 0;
+
+	protected:
+		friend class ComponentManager;
+		std::array<Component*, MAX_GAME_OBJECTS> componentData;
 	};
 
 	template<typename T>
@@ -25,19 +30,21 @@ namespace Odyssey::Entities
 	{
 	public:
 		template<typename... Args>
-		void InsertData(unsigned int gameObject, Args&&... params)
+		unsigned int InsertData(unsigned int gameObject, Args&&... params)
 		{
 			if (gameObjectToIndexMap.find(gameObject) == gameObjectToIndexMap.end())
 			{
 				// Assign the index to the lookup and create the component
 				unsigned int newIndex = size;
 				gameObjectToIndexMap[gameObject] = newIndex;
-				componentArray[newIndex] = new T(params...);
+				componentData[newIndex] = new T(params...);
 				++size;
+				return newIndex;
 			}
 			else
 			{
 				Framework::Log::Error("Cannot insert data for game object: " + std::to_string(gameObject));
+				return -1;
 			}
 		}
 
@@ -46,7 +53,7 @@ namespace Odyssey::Entities
 			if (gameObjectToIndexMap.find(gameObject) != gameObjectToIndexMap.end())
 			{
 				unsigned int index = gameObjectToIndexMap[gameObject];
-				return reinterpret_cast<T*>(componentArray[index]);
+				return reinterpret_cast<T*>(componentData[index]);
 			}
 
 			Framework::Log::Error("Cannot Get Component Data for GameObject: " + std::to_string(gameObject));
@@ -58,7 +65,7 @@ namespace Odyssey::Entities
 			if (gameObjectToIndexMap.find(gameObject) != gameObjectToIndexMap.end())
 			{
 				unsigned int index = gameObjectToIndexMap[gameObject];
-				return componentArray[index];
+				return componentData[index];
 			}
 
 			Framework::Log::Error("Cannot Get Component for GameObject: " + std::to_string(gameObject));
@@ -86,12 +93,12 @@ namespace Odyssey::Entities
 			unsigned int lastIndex = size - 1;
 			
 			// Get both components from the array
-			Component* removalComponent = componentArray[removalIndex];
-			Component* lastComponent = componentArray[lastIndex];
+			Component* removalComponent = componentData[removalIndex];
+			Component* lastComponent = componentData[lastIndex];
 
 			// Swap the last element into the removal index and move the removal to the end
-			componentArray[removalIndex] = lastComponent;
-			componentArray[lastIndex] = removalComponent;
+			componentData[removalIndex] = lastComponent;
+			componentData[lastIndex] = removalComponent;
 
 			// Remove the gameObject from the index lookup
 			gameObjectToIndexMap.erase(gameObject);
@@ -104,7 +111,6 @@ namespace Odyssey::Entities
 		}
 
 	private:
-		std::array<Component*, MAX_GAME_OBJECTS> componentArray;
 		std::unordered_map<unsigned int, unsigned int> gameObjectToIndexMap;
 		unsigned int size;
 	};
