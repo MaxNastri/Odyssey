@@ -25,6 +25,8 @@ project "Odyssey.Native.Editor"
     }
 
     externalincludedirs {
+        "%{wks.location}/Native/Entities/Include",
+        "%{wks.location}/Native/Entities/Include/**",
         "%{wks.location}/Native/Framework/Include",
         "%{wks.location}/Native/Framework/Include/**",
         "%{wks.location}/Native/Scripting/Include",
@@ -41,6 +43,7 @@ project "Odyssey.Native.Editor"
     }
 
     links {
+        "Odyssey.Native.Entities.lib",
         "Odyssey.Native.Framework.lib",
         "Odyssey.Native.Scripting.lib",
     }

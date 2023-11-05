@@ -1,6 +1,7 @@
 #include "Application.h"
 #include <Input.h>
 #include <Log.h>
+#include <ECS.h>
 
 namespace Odyssey::Editor
 {
@@ -15,6 +16,7 @@ namespace Odyssey::Editor
 		running = true;
 		stopwatch.Start();
 
+		Entities::ECS::Create();
 		while (running)
 		{
 			float elapsed = stopwatch.Elapsed();

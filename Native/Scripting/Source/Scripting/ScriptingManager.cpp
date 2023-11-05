@@ -63,6 +63,7 @@ namespace Odyssey::Scripting
 		// Reload the assembly context
 		hostInstance.UnloadAssemblyLoadContext(loadContext);
 
+		// Recompile and build
 		ScriptCompiler::CompileAssembly();
 
 		loadContext = hostInstance.CreateAssemblyLoadContext("ExampleContext");
