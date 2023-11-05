@@ -1,5 +1,7 @@
 #pragma once
 #include "GameObject.h"
+#include "ComponentMacros.h"
+#include <Serialization.h>
 
 namespace Odyssey::Entities
 {
@@ -12,9 +14,12 @@ namespace Odyssey::Entities
 		virtual void Awake() { }
 		virtual void Update() { }
 		virtual void OnDestroy() { }
+		virtual void Serialize(json& jsonObject) { to_json(jsonObject, *this); }
+		virtual void Deserialize(const json& jsonObject) { from_json(jsonObject, *this); }
 
 	public:
 		bool active;
 		GameObject gameObject;
+		ODYSSEY_SERIALIZE(Component, active);
 	};
 }

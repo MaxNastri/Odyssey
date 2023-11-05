@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <unordered_map>
 #include <typeindex>
 #include <queue>
@@ -14,9 +15,32 @@ namespace Odyssey::Entities
 		static void Awake(const std::vector<GameObject>& gameObjects);
 		static void Update(const std::vector<GameObject>& gameObjects);
 		static void OnDestroy(const std::vector<GameObject>& gameObjects);
-
+		static void ExecuteOnGameObjectComponents(const GameObject& gameObject, std::function<void(Component*)> func);
 	public:
 		static void RemoveGameObject(const GameObject& gameObject);
+
+	public:
+		template<typename T>
+		static void RegisterType(const std::string& classNamespace, const std::string& className)
+		{
+			std::type_index typeID = typeid(T);
+			if (typeToClassName.find(typeID) == typeToClassName.end())
+			{
+				std::string fullyQualified = classNamespace + "." + className;
+				typeToClassName[typeID] = fullyQualified;
+			}
+		}
+
+		template<typename T>
+		static std::string_view GetClassName()
+		{
+			std::type_index typeID = typeid(T);
+			if (typeToClassName.find(typeID) != typeToClassName.end())
+			{
+				return typeToClassName[typeID];
+			}
+			return std::string_view("");
+		}
 
 	public:
 		template<typename T, typename... Args>
@@ -86,5 +110,6 @@ namespace Odyssey::Entities
 	private:
 		static std::unordered_map<std::type_index, std::unique_ptr<IComponentArray>> componentArrays;
 		static std::unordered_map<unsigned int, std::vector<std::pair<std::type_index, unsigned int>>> gameObjectToComponentArrayIndex;
+		static std::unordered_map<std::type_index, std::string> typeToClassName;
 	};
 }

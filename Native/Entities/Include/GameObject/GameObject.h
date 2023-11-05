@@ -1,25 +1,22 @@
 #pragma once
+#include <Serialization.h>
 
 namespace Odyssey::Entities
 {
 	class GameObject
 	{
 	public:
-		GameObject()
-		{
-			id = -1;
-			active = false;
-		}
+		GameObject();
+		GameObject(unsigned int ID);
+		void Serialize(json& jsonObject);
+		void Deserialize(const json& jsonObject);
 
-		GameObject(unsigned int ID)
-		{
-			id = ID;
-			active = true;
-		}
-
+	public:
 		bool operator==(const GameObject& other) { return id == other.id; }
+
 	public:
 		bool active;
 		unsigned int id;
+		ODYSSEY_SERIALIZE(GameObject, active, id)
 	};
 }

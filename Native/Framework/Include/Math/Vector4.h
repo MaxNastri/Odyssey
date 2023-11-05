@@ -3,11 +3,15 @@
 #include "Vector3.h"
 #include "Vector2.h"
 #include <sstream>
+#include <Serialization.h>
 
 namespace Odyssey
 {
     class Vector4 : public glm::vec4
     {
+    public:
+        ODYSSEY_SERIALIZE(Vector4, x, y, z, w)
+
     public:
         Vector4() = default;
         Vector4(float x, float y, float z, float w)
@@ -152,11 +156,5 @@ namespace Odyssey
         }
 
         std::string ToString() const;
-
-        template <class Archive>
-        void serialize(Archive& archive)
-        {
-            archive(x, y, z, w);
-        }
     };
 }

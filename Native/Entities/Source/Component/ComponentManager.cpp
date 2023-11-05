@@ -46,6 +46,18 @@ namespace Odyssey::Entities
 			}
 		}
 	}
+
+	void ComponentManager::ExecuteOnGameObjectComponents(const GameObject& gameObject, std::function<void(Component*)> func)
+	{
+		// For each game object
+			// For each component assigned to the game object
+		for (const auto& pair : gameObjectToComponentArrayIndex[gameObject.id])
+		{
+			// Get the component array and run the component for this game object's Awake
+			func(componentArrays[pair.first]->componentData[pair.second].get());
+		}
+	}
+
 	void ComponentManager::RemoveGameObject(const GameObject& gameObject)
 	{
 		// For each component assigned to the game object

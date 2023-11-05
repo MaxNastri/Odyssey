@@ -4,6 +4,7 @@
 #include "ComponentManager.h"
 #include <Log.h>
 #include <string>
+#include <fstream>
 
 namespace Odyssey::Entities
 {
@@ -11,7 +12,18 @@ namespace Odyssey::Entities
 
 	void ECS::Create()
 	{
-		for (int i = 0; i < 1000; ++i)
+		GameObject go = scene.CreateGameObject();
+		Transform* transform = ComponentManager::AddComponent<Transform>(go);
+		transform->position = Vector4(0, 1, 2, 3);
+
+		json jsonObject;
+		go.Serialize(jsonObject);
+
+		std::fstream file("scene.json", std::ios_base::out);
+		file << std::setw(4) << jsonObject << std::endl;
+		file.close();
+
+		/*for (int i = 0; i < 1000; ++i)
 		{
 			GameObject go = scene.CreateGameObject();
 			Transform* transform = ComponentManager::AddComponent<Transform>(go);
@@ -29,7 +41,7 @@ namespace Odyssey::Entities
 			transform->position = Vector4(3,2,1,0);
 
 			MeshRenderer* mr = ComponentManager::AddComponent<MeshRenderer>(go);
-		}
+		}*/
 
 		scene.Awake();
 	}
