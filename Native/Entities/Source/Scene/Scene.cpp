@@ -1,8 +1,17 @@
 #include "Scene.h"
 #include "ComponentManager.h"
+#include <fstream>
 
 namespace Odyssey::Entities
 {
+	Scene::Scene()
+	{
+		awakeFunc = [](Component* component) { component->Awake(); };
+		updateFunc = [](Component* component) { component->Update(); };
+		onDestroyFunc = [](Component* component) { component->OnDestroy(); };
+		name = "Scene";
+	}
+
 	GameObject Scene::CreateGameObject()
 	{
 		GameObject gameObject = GameObject(nextGameObjectID++);
@@ -18,16 +27,61 @@ namespace Odyssey::Entities
 
 	void Scene::Awake()
 	{
-		ComponentManager::Awake(gameObjects);
+		for (const GameObject& gameObject : gameObjects)
+		{
+			ComponentManager::ExecuteOnGameObjectComponents(gameObject, awakeFunc);
+		}
 	}
 
 	void Scene::Update()
 	{
-		ComponentManager::Update(gameObjects);
+		for (const GameObject& gameObject : gameObjects)
+		{
+			ComponentManager::ExecuteOnGameObjectComponents(gameObject, updateFunc);
+		}
 	}
 
 	void Scene::OnDestroy()
 	{
-		ComponentManager::OnDestroy(gameObjects);
+		for (const GameObject& gameObject : gameObjects)
+		{
+			ComponentManager::ExecuteOnGameObjectComponents(gameObject, onDestroyFunc);
+		}
+	}
+
+	void Scene::Serialize(const std::string& filename)
+	{
+		json jsonObject
+		{
+			{ "name", name }
+		};
+
+		for (GameObject& gameObject : gameObjects)
+		{
+			gameObject.Serialize(jsonObject);
+		}
+
+		std::fstream file(filename, std::ios_base::out);
+		file << std::setw(4) << jsonObject << std::endl;
+		file.close();
+	}
+
+	void Scene::Deserialize(const std::string& filename)
+	{
+		std::fstream file(filename, std::ios_base::in);
+		json jsonObject;
+		file >> jsonObject;
+
+		name = jsonObject.at("name");
+
+		for (auto& element : jsonObject)
+		{
+			if (element.is_object() && element.at("Type") == GameObject::Type)
+			{
+				GameObject go = CreateGameObject();
+				go.Deserialize(element);
+				Framework::Log::Info(std::to_string(go.id));
+			}
+		}
 	}
 }

@@ -16,7 +16,7 @@ namespace Odyssey::Editor
 		running = true;
 		stopwatch.Start();
 
-		Entities::ECS::Create();
+		Entities::ECS::Load();
 		while (running)
 		{
 			float elapsed = stopwatch.Elapsed();

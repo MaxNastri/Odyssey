@@ -13,37 +13,20 @@ namespace Odyssey::Entities
 	void ECS::Create()
 	{
 		GameObject go = scene.CreateGameObject();
-		Transform* transform = ComponentManager::AddComponent<Transform>(go);
+		GameObject go2 = scene.CreateGameObject();
+		//Transform* transform = ComponentManager::AddComponent<Transform>(go);
+		ComponentManager::AddComponentByName(go, "Odyssey.Entities.Transform");
+		Transform* transform = ComponentManager::GetComponent<Transform>(go);
 		transform->position = Vector4(0, 1, 2, 3);
 
-		json jsonObject;
-		go.Serialize(jsonObject);
-
-		std::fstream file("scene.json", std::ios_base::out);
-		file << std::setw(4) << jsonObject << std::endl;
-		file.close();
-
-		/*for (int i = 0; i < 1000; ++i)
-		{
-			GameObject go = scene.CreateGameObject();
-			Transform* transform = ComponentManager::AddComponent<Transform>(go);
-			transform->position = Vector4(0, 1, 2, 3);
-
-			MeshRenderer* mr = ComponentManager::AddComponent<MeshRenderer>(go);
-
-			scene.DestroyGameObject(go);
-		}
-
-		for (int i = 0; i < 750; ++i)
-		{
-			GameObject go = scene.CreateGameObject();
-			Transform* transform = ComponentManager::AddComponent<Transform>(go);
-			transform->position = Vector4(3,2,1,0);
-
-			MeshRenderer* mr = ComponentManager::AddComponent<MeshRenderer>(go);
-		}*/
+		scene.Serialize("scene.json");
 
 		scene.Awake();
+	}
+
+	void ECS::Load()
+	{
+		scene.Deserialize("scene.json");
 	}
 
 	void ECS::Update()

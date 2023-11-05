@@ -7,6 +7,7 @@ namespace Odyssey::Entities
 	{
 	public:
 		static void Create();
+		static void Load();
 		static void Update();
 
 	private:

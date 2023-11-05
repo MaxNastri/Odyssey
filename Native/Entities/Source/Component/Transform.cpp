@@ -26,6 +26,11 @@ namespace Odyssey::Entities
 	{
 		json componentJson;
 		to_json(componentJson, *this);
-		jsonObject += { ClassNamespace + "." + ClassName, componentJson};
+		jsonObject += { "Component", componentJson};
+	}
+
+	void Transform::Deserialize(const json& jsonObject)
+	{
+		from_json(jsonObject, *this);
 	}
 }

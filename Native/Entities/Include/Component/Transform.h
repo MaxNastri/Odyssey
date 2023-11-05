@@ -12,9 +12,11 @@ namespace Odyssey::Entities
 		virtual void Update() override;
 		virtual void OnDestroy() override;
 		virtual void Serialize(json& jsonObject) override;
+		virtual void Deserialize(const json& jsonObject) override;
+
 	public:
 		Vector4 position;
-		ODYSSEY_SERIALIZE(Transform, position);
 		CLASS_DECLARATION(Transform);
+		ODYSSEY_SERIALIZE(Transform, Type, position);
 	};
 }

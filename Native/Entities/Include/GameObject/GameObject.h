@@ -1,5 +1,7 @@
 #pragma once
+#include "Globals.h"
 #include <Serialization.h>
+#include <string>
 
 namespace Odyssey::Entities
 {
@@ -17,6 +19,8 @@ namespace Odyssey::Entities
 	public:
 		bool active;
 		unsigned int id;
-		ODYSSEY_SERIALIZE(GameObject, active, id)
+		std::string name;
+		CLASS_DECLARATION(GameObject);
+		ODYSSEY_SERIALIZE(GameObject, Type, active, id, name);
 	};
 }

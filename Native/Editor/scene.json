@@ -1,12 +1,24 @@
 {
-    "Odyssey.Entities.Transform": {
-        "position": {
-            "w": 3.0,
-            "x": 0.0,
-            "y": 1.0,
-            "z": 2.0
-        }
+    "GameObject.0": {
+        "Component": {
+            "Type": "Odyssey.Entities.Transform",
+            "position": {
+                "w": 4444.0,
+                "x": 44.0,
+                "y": 444.0,
+                "z": 4.0
+            }
+        },
+        "Type": "Odyssey.Entities.GameObject",
+        "active": true,
+        "id": 117,
+        "name": "GameObject"
     },
-    "active": true,
-    "id": 0
+    "GameObject.1": {
+        "Type": "Odyssey.Entities.GameObject",
+        "active": true,
+        "id": 111,
+        "name": "GameObject"
+    },
+    "name": "Scene"
 }
