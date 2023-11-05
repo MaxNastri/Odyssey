@@ -18,11 +18,11 @@ namespace Odyssey::Scripting
 		void Initialize(std::filesystem::path exeDir);
 		Coral::ManagedAssembly& LoadAssembly(std::string_view path);
 		void UpdateScripts();
+		void Recompile();
 
 	private:
 		Coral::HostInstance hostInstance;
 		Coral::AssemblyLoadContext loadContext;
-		std::vector<Coral::ManagedAssembly> loadedAssemblies;
 
 		Odyssey::Framework::Stopwatch stopwatch;
 		bool running;

@@ -1,4 +1,5 @@
 #include "ScriptingManager.h"
+#include "ScriptCompiler.h"
 #include <Log.h>
 
 namespace Odyssey::Scripting
@@ -41,5 +42,42 @@ namespace Odyssey::Scripting
 	void ScriptingManager::UpdateScripts()
 	{
 		exampleInstance.InvokeMethod("Void Update()");
+	}
+
+	void ScriptingManager::Recompile()
+	{
+
+		// Get the assemblies of this context
+		Coral::StableVector<Coral::ManagedAssembly> assemblies = loadContext.GetLoadedAssemblies();
+
+		// Cache the paths of all assemblies
+		std::vector<std::string_view> assemblyPaths;
+		for (int i = 0; i < assemblies.GetElementCount(); ++i)
+		{
+			assemblyPaths.push_back(assemblies[i].GetPath());
+		}
+
+		// Destroy the object associated with the assembly
+		exampleInstance.Destroy();
+
+		// Reload the assembly context
+		hostInstance.UnloadAssemblyLoadContext(loadContext);
+
+		ScriptCompiler::CompileAssembly();
+
+		loadContext = hostInstance.CreateAssemblyLoadContext("ExampleContext");
+
+		Coral::ManagedAssembly assembly;
+		// Load the assemblies inside the context
+		for (int i = 0; i < assemblyPaths.size(); ++i)
+		{
+			assembly = loadContext.LoadAssembly(assemblyPaths[i]);
+		}
+
+		// Get the type
+		Coral::Type& exampleType = assembly.GetType("Example.Managed.ExampleScript");
+
+		// Remake the object
+		exampleInstance = exampleType.CreateInstance();
 	}
 }

@@ -18,6 +18,7 @@ namespace Odyssey::Editor
 
 	private:
 		bool running;
+		bool allowRecompile = true;
 		ScriptingManager scriptingManager;
 		Window window;
 		Stopwatch stopwatch;

@@ -29,9 +29,11 @@ namespace Odyssey::Editor
 					Exit();
 					return;
 				}
-				if (Odyssey::Framework::Input::GetKeyPress(Odyssey::KeyCode::Space))
+				if (allowRecompile && Odyssey::Framework::Input::GetKeyPress(Odyssey::KeyCode::Space))
 				{
-					Odyssey::Framework::Log::Info("Space bar pressed");
+					Odyssey::Framework::Log::Info("Recompiling...");
+					allowRecompile = false;
+					scriptingManager.Recompile();
 				}
 				scriptingManager.UpdateScripts();
 			}

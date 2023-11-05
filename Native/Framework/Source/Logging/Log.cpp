@@ -15,4 +15,8 @@ namespace Odyssey::Framework
 	{
 		spdlog::error(message);
 	}
+	void Log::Error(std::string_view message)
+	{
+		spdlog::error(message);
+	}
 }

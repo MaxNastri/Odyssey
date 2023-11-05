@@ -53,6 +53,7 @@ namespace Coral {
 		if (result.m_LoadStatus == AssemblyLoadStatus::Success)
 		{
 			result.m_Name = s_ManagedFunctions.GetAssemblyNameFptr(result.m_AssemblyID);
+			result.m_Path = InFilePath;
 
 			int32_t typeCount = 0;
 			s_ManagedFunctions.GetAssemblyTypes(result.m_AssemblyID, nullptr, &typeCount);
