@@ -25,6 +25,17 @@ namespace Odyssey::Entities
 		ComponentManager::RemoveGameObject(gameObject);
 		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObject));
 	}
+	void Scene::Clear()
+	{
+		for (GameObject& gameObject : gameObjects)
+		{
+			DestroyGameObject(gameObject);
+		}
+
+		gameObjects.clear();
+		gameObjectsByID.clear();
+		nextGameObjectID = 0;
+	}
 
 	void Scene::Awake()
 	{

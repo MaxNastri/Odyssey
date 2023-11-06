@@ -1,0 +1,30 @@
+{
+    "GameObject.0": {
+        "Component.Transform": {
+            "Type": "Odyssey.Entities.Transform",
+            "position": {
+                "w": 0.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "Component.UserScript": {
+            "IAmAlive": {
+                "ManagedType": 11,
+                "Value": false
+            },
+            "ManagedType": "Example.Managed.ExampleScript",
+            "Type": "Odyssey.Entities.UserScript",
+            "speed": {
+                "ManagedType": 9,
+                "Value": 3282.0
+            }
+        },
+        "Type": "Odyssey.Entities.GameObject",
+        "active": true,
+        "id": 0,
+        "name": "GameObject"
+    },
+    "name": "Scene"
+}

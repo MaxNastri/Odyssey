@@ -1,21 +1,27 @@
 #pragma once
+#ifndef PATHS_H
+#define PATHS_H
 #include <filesystem>
 #include <Windows.h>
 
 namespace Odyssey::Scripting::Paths
 {
-	namespace Absolute
+	class Absolute
 	{
-		std::filesystem::path GetApplicationPath()
+	public:
+		static std::filesystem::path GetApplicationPath()
 		{
 			wchar_t buffer[MAX_PATH];
 			GetModuleFileName(NULL, buffer, sizeof(buffer));
 			std::filesystem::path outPath = std::filesystem::path(buffer).parent_path();
 			return outPath;
 		}
-	}
-	namespace Relative
+	};
+
+	class Relative
 	{
-		const char* ExampleManagedProject = "..\\..\\Managed\\Example\\Odyssey.Managed.Example.csproj";
-	}
+	public:
+		inline static const char* ExampleManagedProject = "..\\..\\Managed\\Example\\Odyssey.Managed.Example.csproj";
+	};
 }
+#endif

@@ -1,34 +1,30 @@
 #pragma once
-#include <filesystem>
-#include <functional>
-
 #include "HostInstance.hpp"
 #include "ManagedObject.hpp"
-#include "Assembly.hpp"
-#include "GC.hpp"
-#include "NativeArray.hpp"
-#include "Attribute.hpp"
-#include <Stopwatch.h>
+#include "ScriptCompiler.h"
 
 namespace Odyssey::Scripting
 {
 	class ScriptingManager
 	{
 	public:
-		static void Initialize(std::filesystem::path exeDir);
-		static Coral::ManagedAssembly& LoadAssembly(std::string_view path);
-		static void Recompile();
+		static void Initialize();
+		static void LoadUserAssemblies();
+		static void UnloadUserAssemblies();
+		static bool RecompileUserAssemblies();
+		static void ReloadUserAssemblies();
 
+	public:
 		static Coral::ManagedObject CreateManagedObject(const std::string& fqManagedClassName);
 
 	private:
 		static Coral::HostInstance hostInstance;
-		static Coral::AssemblyLoadContext loadContext;
+		static Coral::HostSettings hostSettings;
+		static Coral::AssemblyLoadContext userAssemblyContext;
 		static Coral::ManagedAssembly userAssembly;
-
-		static Odyssey::Framework::Stopwatch stopwatch;
-		static bool running;
-
-		const float MaxFPS = 1.0f / 144.0f;
+		static ScriptCompiler scriptCompiler;
+		static std::vector<Coral::ManagedObject> managedObjects;
+	private:
+		inline static const std::string UserAssemblyFilename = "Odyssey.Managed.Example.dll";
 	};
 }

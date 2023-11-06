@@ -10,9 +10,9 @@
 
 namespace Odyssey::Editor
 {
-	Application::Application(std::filesystem::path path)
+	Application::Application()
 	{
-		ScriptingManager::Initialize(path);
+		ScriptingManager::Initialize();
 		running = true;
 	}
 
@@ -23,17 +23,7 @@ namespace Odyssey::Editor
 
 		// Create the scene
 		Entities::Scene scene;
-		//Entities::GameObject go = scene.CreateGameObject();
-		//Entities::Transform* transform = Entities::ComponentManager::AddComponent<Entities::Transform>(go);
-		//Entities::UserScript* userScript = Entities::ComponentManager::AddComponent<Entities::UserScript>(go);
-		//Coral::ManagedObject managedUserScript = Scripting::ScriptingManager::CreateManagedObject("Example.Managed.ExampleScript");
-		//userScript->SetManagedInstance(managedUserScript);
-		//
-		//scene.Serialize("scene.json");
 		scene.Deserialize("scene.json");
-
-		Entities::GameObject go2 = scene.CreateGameObject();
-		Entities::ComponentManager::AddComponent<Entities::UserScript>(go2, "Example.Managed.ExampleScript");
 
 		while (running)
 		{
@@ -49,11 +39,23 @@ namespace Odyssey::Editor
 					Exit();
 					return;
 				}
+
 				if (allowRecompile && Odyssey::Framework::Input::GetKeyPress(Odyssey::KeyCode::Space))
 				{
 					Odyssey::Framework::Log::Info("Recompiling...");
-					ScriptingManager::Recompile();
 					allowRecompile = false;
+					if (Scripting::ScriptingManager::RecompileUserAssemblies())
+					{
+						// Scene manager.tempsave
+						scene.Serialize("tmpSave.json");
+						scene.Clear();
+
+						// Reload assemblies
+						Scripting::ScriptingManager::ReloadUserAssemblies();
+
+						// Load temp scene back into memory
+						scene.Deserialize("tmpSave.json");
+					}
 				}
 				scene.Update();
 			}

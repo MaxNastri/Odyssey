@@ -12,7 +12,7 @@ namespace Odyssey::Editor
 	class Application
 	{
 	public:
-		Application(std::filesystem::path path);
+		Application();
 		void Run();
 		void Exit();
 

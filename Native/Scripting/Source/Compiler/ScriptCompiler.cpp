@@ -1,18 +1,21 @@
 #include "ScriptCompiler.h"
-#include <Windows.h>
 #include "Paths.h"
 #include <Log.h>
+#include <Windows.h>
 
 namespace Odyssey::Scripting
 {
-	bool ScriptCompiler::buildInProgress = false;
+	ScriptCompiler::ScriptCompiler()
+	{
+		buildInProgress = false;
+	}
 
-	void ScriptCompiler::CompileAssembly()
+	bool ScriptCompiler::CompileUserAssembly()
 	{
 		if (buildInProgress)
 		{
 			Odyssey::Framework::Log::Error("Cannot compile while a build is in progress.");
-			return;
+			return false;
 		}
 
 		const char* projectPath = Paths::Relative::ExampleManagedProject;
@@ -22,10 +25,10 @@ namespace Odyssey::Scripting
 			L"\" -c Debug --no-self-contained " +
 			L"-o \"./tmp_build/\" -r \"win-x64\"";
 
-		StartBuild(buildCommand);
+		return StartBuild(buildCommand);
 	}
 
-	void ScriptCompiler::StartBuild(std::wstring buildCommand)
+	bool ScriptCompiler::StartBuild(std::wstring buildCommand)
 	{
 		buildInProgress = true;
 
@@ -52,13 +55,14 @@ namespace Odyssey::Scripting
 
 			CloseHandle(pi.hProcess);
 			CloseHandle(pi.hThread);
-			return;
+			buildInProgress = false;
+			return false;
 		}
 
-		WaitForBuildComplete(pi);
+		return WaitForBuildComplete(pi);
 	}
 
-	void ScriptCompiler::WaitForBuildComplete(PROCESS_INFORMATION pi)
+	bool ScriptCompiler::WaitForBuildComplete(PROCESS_INFORMATION pi)
 	{
 		// Wait for process to end
 		DWORD exitCode{};
@@ -72,11 +76,17 @@ namespace Odyssey::Scripting
 				std::ostringstream oss;
 				oss << "Failed to query process. Error code: "<< std::hex << err;
 				Odyssey::Framework::Log::Error(oss.view());
-				return;
+				buildInProgress = false;
+				return false;
 			}
 			if (exitCode != STILL_ACTIVE)
 				break;
 		}
+
+		// Clean up
+		CloseHandle(pi.hProcess);
+		CloseHandle(pi.hThread);
+		buildInProgress = false;
 
 		// Successful build
 		if (exitCode == 0)
@@ -85,16 +95,13 @@ namespace Odyssey::Scripting
 			std::filesystem::path targetPath = Paths::Absolute::GetApplicationPath() / "Odyssey.Managed.Example.dll";
 			std::filesystem::copy("./tmp_build/Odyssey.Managed.Example.dll", targetPath,
 				std::filesystem::copy_options::overwrite_existing);
+			return true;
 		}
 		// Failed build
 		else
 		{
 			Odyssey::Framework::Log::Error("Failed to build managed scripts!");
+			return false;
 		}
-
-		// Clean up and let new builds start
-		CloseHandle(pi.hProcess);
-		CloseHandle(pi.hThread);
-		buildInProgress = false;
 	}
 }
