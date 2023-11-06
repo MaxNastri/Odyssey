@@ -30,6 +30,8 @@ project "Odyssey.Native.Entities"
     externalincludedirs {
         "%{wks.location}/Native/Framework/Include/",
         "%{wks.location}/Native/Framework/Include/**",
+        "%{wks.location}/Native/Scripting/Include/",
+        "%{wks.location}/Native/Scripting/Include/**",
     }
     
     libdirs {
@@ -37,7 +39,7 @@ project "Odyssey.Native.Entities"
     }
 
     links {
-        "Odyssey.Native.Framework.lib",
+        "Odyssey.Native.Scripting.lib",
     }
 
     filter { "configurations:Debug" }

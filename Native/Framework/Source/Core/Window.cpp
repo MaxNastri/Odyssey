@@ -4,9 +4,9 @@
 // GLFW3 Includes
 #ifndef GLFW_EXPOSE_NATIVE_WIN32
 #define GLFW_EXPOSE_NATIVE_WIN32
-#endif
 #include <glfw3.h>
 #include <glfw3native.h>
+#endif
 
 namespace Odyssey::Framework
 {

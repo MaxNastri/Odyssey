@@ -10,6 +10,7 @@ namespace Odyssey::Entities
 		updateFunc = [](Component* component) { component->Update(); };
 		onDestroyFunc = [](Component* component) { component->OnDestroy(); };
 		name = "Scene";
+		nextGameObjectID = 0;
 	}
 
 	GameObject Scene::CreateGameObject()

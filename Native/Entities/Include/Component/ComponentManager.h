@@ -8,6 +8,7 @@
 #include "GameObject.h"
 
 #include "Transform.h"
+#include "UserScript.h"
 
 namespace Odyssey::Entities
 {
@@ -24,6 +25,10 @@ namespace Odyssey::Entities
 			if (fqName == Transform::Type)
 			{
 				return AddComponent<Transform>(gameObject, params...);
+			}
+			else if (fqName == UserScript::Type)
+			{
+				return AddComponent<UserScript>(gameObject, params...);;
 			}
 			return nullptr;
 		}

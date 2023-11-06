@@ -12,9 +12,13 @@ namespace Example.Managed {
 
 	public class ExampleScript
 	{
+		public bool IAmAlive = true;
+		public string MyName = "Max";
+		public float speed = 10.0f;
+
 		public void Update()
 		{
-			Console.Write("1");
+			Console.WriteLine($"{MyName}: {IAmAlive} - {speed}");
 		}
 	}
 

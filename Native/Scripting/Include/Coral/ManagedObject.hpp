@@ -62,6 +62,8 @@ namespace Coral {
 		TReturn GetFieldValue(std::string_view InFieldName)
 		{
 			TReturn result;
+			int size = sizeof(TReturn);
+
 			GetFieldValueRaw(InFieldName, &result);
 			return result;
 		}

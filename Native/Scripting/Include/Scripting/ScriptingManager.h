@@ -15,21 +15,20 @@ namespace Odyssey::Scripting
 	class ScriptingManager
 	{
 	public:
-		void Initialize(std::filesystem::path exeDir);
-		Coral::ManagedAssembly& LoadAssembly(std::string_view path);
-		void UpdateScripts();
-		void Recompile();
+		static void Initialize(std::filesystem::path exeDir);
+		static Coral::ManagedAssembly& LoadAssembly(std::string_view path);
+		static void Recompile();
+
+		static Coral::ManagedObject CreateManagedObject(const std::string& fqManagedClassName);
 
 	private:
-		Coral::HostInstance hostInstance;
-		Coral::AssemblyLoadContext loadContext;
+		static Coral::HostInstance hostInstance;
+		static Coral::AssemblyLoadContext loadContext;
+		static Coral::ManagedAssembly userAssembly;
 
-		Odyssey::Framework::Stopwatch stopwatch;
-		bool running;
+		static Odyssey::Framework::Stopwatch stopwatch;
+		static bool running;
 
 		const float MaxFPS = 1.0f / 144.0f;
-
-		// Testing
-		Coral::ManagedObject exampleInstance;
 	};
 }

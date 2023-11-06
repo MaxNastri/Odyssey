@@ -7,18 +7,15 @@ namespace Odyssey::Entities
 
 	void Transform::Awake()
 	{
-		Framework::Log::Info("Transform Logging from Awake: " + position.ToString());
 	}
 
 	void Transform::Update()
 	{
-		position.x += 1;
-		Framework::Log::Info("Transform Logging from Update: " + position.ToString());
 	}
 
 	void Transform::OnDestroy()
 	{
-		Framework::Log::Info("Transform Logging from OnDestroy: " + position.ToString());
+		
 	}
 
 	void Transform::Serialize(json& jsonObject)
