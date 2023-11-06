@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <Windows.h>
 
-namespace Odyssey::Scripting::Paths
+namespace Odyssey::Paths
 {
 	class Absolute
 	{
@@ -22,6 +22,7 @@ namespace Odyssey::Scripting::Paths
 	{
 	public:
 		inline static const char* ExampleManagedProject = "..\\..\\Managed\\Example\\Odyssey.Managed.Example.csproj";
+		inline static const char* ManagedProjectSource = "..\\..\\Managed\\Example\\Source";
 	};
 }
 #endif

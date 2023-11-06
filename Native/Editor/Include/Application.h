@@ -3,6 +3,7 @@
 #include <ScriptingManager.h>
 #include <Stopwatch.h>
 #include <Window.h>
+#include <FileWatcher.h>
 
 using namespace Odyssey::Scripting;
 using namespace Odyssey::Framework;

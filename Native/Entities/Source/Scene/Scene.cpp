@@ -92,7 +92,6 @@ namespace Odyssey::Entities
 			{
 				GameObject go = CreateGameObject();
 				go.Deserialize(element);
-				Framework::Log::Info(std::to_string(go.id));
 			}
 		}
 	}

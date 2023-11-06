@@ -19,10 +19,9 @@ namespace Example.Managed
 
 		public override void Update() 
 		{
-			speed += 1.0f;
-			Console.WriteLine($"{MyName}: {IAmAlive} - {speed} HW");
 		}
 	}
+
 
 	[Custom(Value = -2500.0f)]
 	public class ExampleClass

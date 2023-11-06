@@ -1,18 +1,17 @@
 #include "Application.h"
 #include <Input.h>
 #include <Log.h>
-#include <ECS.h>
 #include <Scene.h>
-#include <GameObject.h>
-#include <Transform.h>
-#include <UserScript.h>
-#include <ComponentManager.h>
+#include <FileManager.h>
+#include <Paths.h>
 
 namespace Odyssey::Editor
 {
 	Application::Application()
 	{
 		ScriptingManager::Initialize();
+		FileManager::Initialize();
+		FileManager::TrackFolder(Paths::Relative::ManagedProjectSource);
 		running = true;
 	}
 
@@ -42,8 +41,8 @@ namespace Odyssey::Editor
 
 				if (allowRecompile && Odyssey::Framework::Input::GetKeyPress(Odyssey::KeyCode::Space))
 				{
-					Odyssey::Framework::Log::Info("Recompiling...");
 					allowRecompile = false;
+
 					if (Scripting::ScriptingManager::RecompileUserAssemblies())
 					{
 						// Scene manager.tempsave
