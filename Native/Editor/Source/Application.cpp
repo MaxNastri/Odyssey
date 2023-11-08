@@ -4,6 +4,7 @@
 #include <Scene.h>
 #include <FileManager.h>
 #include <Paths.h>
+#include <Graphics.h>
 
 namespace Odyssey::Editor
 {
@@ -24,41 +25,43 @@ namespace Odyssey::Editor
 		Entities::Scene scene;
 		scene.Deserialize("scene.json");
 
-		while (running)
-		{
-			float elapsed = stopwatch.Elapsed();
+		Graphics::Graphics::Run();
 
-			if (elapsed > MaxFPS)
-			{
-				stopwatch.Restart();
+		//while (running)
+		//{
+		//	float elapsed = stopwatch.Elapsed();
 
-				// Do update
-				if (window.Update())
-				{
-					Exit();
-					return;
-				}
+		//	if (elapsed > MaxFPS)
+		//	{
+		//		stopwatch.Restart();
 
-				if (allowRecompile && Odyssey::Framework::Input::GetKeyPress(Odyssey::KeyCode::Space))
-				{
-					allowRecompile = false;
+		//		// Do update
+		//		//if (window.Update())
+		//		//{
+		//		//	Exit();
+		//		//	return;
+		//		//}
 
-					if (Scripting::ScriptingManager::RecompileUserAssemblies())
-					{
-						// Scene manager.tempsave
-						scene.Serialize("tmpSave.json");
-						scene.Clear();
+		//		if (allowRecompile && Odyssey::Framework::Input::GetKeyPress(Odyssey::KeyCode::Space))
+		//		{
+		//			allowRecompile = false;
 
-						// Reload assemblies
-						Scripting::ScriptingManager::ReloadUserAssemblies();
+		//			if (Scripting::ScriptingManager::RecompileUserAssemblies())
+		//			{
+		//				// Scene manager.tempsave
+		//				scene.Serialize("tmpSave.json");
+		//				scene.Clear();
 
-						// Load temp scene back into memory
-						scene.Deserialize("tmpSave.json");
-					}
-				}
-				scene.Update();
-			}
-		}
+		//				// Reload assemblies
+		//				Scripting::ScriptingManager::ReloadUserAssemblies();
+
+		//				// Load temp scene back into memory
+		//				scene.Deserialize("tmpSave.json");
+		//			}
+		//		}
+		//		scene.Update();
+		//	}
+		//}
 	}
 
 	void Application::Exit()

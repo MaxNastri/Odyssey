@@ -2,7 +2,6 @@
 #include <filesystem>
 #include <ScriptingManager.h>
 #include <Stopwatch.h>
-#include <Window.h>
 #include <FileWatcher.h>
 
 using namespace Odyssey::Scripting;
@@ -20,7 +19,6 @@ namespace Odyssey::Editor
 	private:
 		bool running;
 		bool allowRecompile = true;
-		Window window;
 		Stopwatch stopwatch;
 
 		const float MaxFPS = 1.0f / 144.0f;

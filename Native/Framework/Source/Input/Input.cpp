@@ -1,6 +1,4 @@
 #include "Input.h"
-#include <glfw3.h>
-#include <glfw3native.h>
 
 namespace Odyssey::Framework
 {
@@ -10,8 +8,6 @@ namespace Odyssey::Framework
 
     void Input::Initialize()
     {
-        glfwInit();
-
         keyInput[KeyState::Up].reset();
         keyInput[KeyState::Press].reset();
     }

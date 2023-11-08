@@ -29,6 +29,8 @@ project "Odyssey.Native.Editor"
         "%{wks.location}/Native/Entities/Include/**",
         "%{wks.location}/Native/Framework/Include",
         "%{wks.location}/Native/Framework/Include/**",
+        "%{wks.location}/Native/Graphics/Include",
+        "%{wks.location}/Native/Graphics/Include/**",
         "%{wks.location}/Native/Scripting/Include",
         "%{wks.location}/Native/Scripting/Include/**",
     }
@@ -45,6 +47,7 @@ project "Odyssey.Native.Editor"
     links {
         "Odyssey.Native.Entities.lib",
         "Odyssey.Native.Framework.lib",
+        "Odyssey.Native.Graphics.lib",
         "Odyssey.Native.Scripting.lib",
     }
 

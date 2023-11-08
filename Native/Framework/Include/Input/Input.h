@@ -13,14 +13,13 @@ namespace Odyssey::Framework
 	{
 	public:
 		static void Initialize();
-		static void Poll();
 
 	public:
 		static bool GetKeyPress(KeyCode keyCode);
 		static bool GetKeyDown(KeyCode keyCode);
 		static bool GetKeyUp(KeyCode keyCode);
 
-	private:
+	public:
 		static void RegisterKeyPress(int key, int scanCode);
 		static void RegisterKeyDown(int key, int scanCode);
 		static void RegisterKeyUp(int key, int scanCode);
@@ -28,8 +27,6 @@ namespace Odyssey::Framework
 		static void RegisterMousePosition(double x, double y, bool entered);
 
 	private:
-		friend class Window;
-
 		enum KeyState
 		{
 			Press = 0,

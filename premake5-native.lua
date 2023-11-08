@@ -13,6 +13,7 @@ workspace "Odyssey-Native"
 	}
 
 include "Native/Editor"
-include "Native/Framework"
-include "Native/Scripting"
 include "Native/Entities"
+include "Native/Framework"
+include "Native/Graphics"
+include "Native/Scripting"

@@ -15,11 +15,7 @@
                 "Value": false
             },
             "ManagedType": "Example.Managed.ExampleScript",
-            "Type": "Odyssey.Entities.UserScript",
-            "speed": {
-                "ManagedType": 9,
-                "Value": 0.0
-            }
+            "Type": "Odyssey.Entities.UserScript"
         },
         "Type": "Odyssey.Entities.GameObject",
         "active": true,
