@@ -62,7 +62,15 @@ namespace Odyssey::Entities
 			if (val.is_object())
 			{
 				Coral::ManagedType managedType = val.at("ManagedType");
-				DeserializeNativeType(managedType, key, val);
+
+				std::vector<Coral::FieldInfo> fields = managedInstance.GetType().GetFields();
+				for (int i = 0; i < fields.size(); ++i)
+				{
+					if (fields[i].GetName() == key)
+					{
+						DeserializeNativeType(managedType, key, val);
+					}
+				}
 			}
 		}
 	}
