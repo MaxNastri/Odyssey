@@ -33,6 +33,7 @@ project "Odyssey.Native.Editor"
         "%{wks.location}/Native/Graphics/Include/**",
         "%{wks.location}/Native/Scripting/Include",
         "%{wks.location}/Native/Scripting/Include/**",
+        "%{wks.location}/Vendor/Vulkan/Include/",
     }
     
     includedirs {

@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "Input.h"
+#include <Log.h>
 
 // GLFW3 Includes
 #ifndef GLFW_EXPOSE_NATIVE_WIN32
@@ -48,6 +49,11 @@ namespace Odyssey::Graphics
 		{
 			glfwDestroyWindow(glfwHandle);
 		}
+	}
+
+	void Window::ErrorCallback(int error, const char* description)
+	{
+		Framework::Log::Error(std::format("GLFW Error %d: %s\n", error, description));
 	}
 
 	void Window::KeyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods)

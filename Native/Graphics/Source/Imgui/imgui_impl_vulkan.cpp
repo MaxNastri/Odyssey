@@ -1393,6 +1393,7 @@ void ImGui_ImplVulkanH_CreateWindowSwapChain(VkPhysicalDevice physical_device, V
         for (uint32_t i = 0; i < wd->ImageCount; i++)
             wd->Frames[i].Backbuffer = backbuffers[i];
     }
+
     if (old_swapchain)
         vkDestroySwapchainKHR(device, old_swapchain, allocator);
 

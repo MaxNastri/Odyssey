@@ -5,6 +5,7 @@
 #include <FileManager.h>
 #include <Paths.h>
 #include <Graphics.h>
+#include <VulkanRenderer.h>
 
 namespace Odyssey::Editor
 {
@@ -25,43 +26,37 @@ namespace Odyssey::Editor
 		Entities::Scene scene;
 		scene.Deserialize("scene.json");
 
-		Graphics::Graphics::Run();
+		//Graphics::Graphics::Run();
 
-		//while (running)
-		//{
-		//	float elapsed = stopwatch.Elapsed();
+		while (running)
+		{
+			float elapsed = stopwatch.Elapsed();
 
-		//	if (elapsed > MaxFPS)
-		//	{
-		//		stopwatch.Restart();
+			if (elapsed > MaxFPS)
+			{
+				stopwatch.Restart();
 
-		//		// Do update
-		//		//if (window.Update())
-		//		//{
-		//		//	Exit();
-		//		//	return;
-		//		//}
+				if (allowRecompile && Odyssey::Framework::Input::GetKeyPress(Odyssey::KeyCode::Space))
+				{
+					allowRecompile = false;
 
-		//		if (allowRecompile && Odyssey::Framework::Input::GetKeyPress(Odyssey::KeyCode::Space))
-		//		{
-		//			allowRecompile = false;
+					if (Scripting::ScriptingManager::RecompileUserAssemblies())
+					{
+						// Scene manager.tempsave
+						scene.Serialize("tmpSave.json");
+						scene.Clear();
 
-		//			if (Scripting::ScriptingManager::RecompileUserAssemblies())
-		//			{
-		//				// Scene manager.tempsave
-		//				scene.Serialize("tmpSave.json");
-		//				scene.Clear();
+						// Reload assemblies
+						Scripting::ScriptingManager::ReloadUserAssemblies();
 
-		//				// Reload assemblies
-		//				Scripting::ScriptingManager::ReloadUserAssemblies();
-
-		//				// Load temp scene back into memory
-		//				scene.Deserialize("tmpSave.json");
-		//			}
-		//		}
-		//		scene.Update();
-		//	}
-		//}
+						// Load temp scene back into memory
+						scene.Deserialize("tmpSave.json");
+					}
+				}
+				scene.Update();
+				r.Update();
+			}
+		}
 	}
 
 	void Application::Exit()

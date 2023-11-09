@@ -14,7 +14,11 @@ namespace Odyssey::Graphics
 		bool ShouldClose();
 		~Window();
 
+	public:
+		GLFWwindow* GetWindowHandle() { return glfwHandle; }
+
 	private:
+		static void ErrorCallback(int error, const char* description);
 		static void KeyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods);
 		static void MouseMoveCallback(GLFWwindow* window, double x, double y);
 		static void MouseEnteredCallback(GLFWwindow* window, int entered);
