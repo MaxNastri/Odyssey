@@ -35,7 +35,7 @@ namespace Odyssey::Graphics
 	bool Window::Update()
 	{
 		glfwPollEvents();
-		return ShouldClose();
+		return !ShouldClose();
 	}
 
 	bool Window::ShouldClose()

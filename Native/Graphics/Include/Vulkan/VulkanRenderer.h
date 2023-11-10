@@ -10,6 +10,7 @@
 #include "VulkanSwapchain.h"
 #include "VulkanRenderPass.h"
 #include "VulkanFrame.h"
+#include "VulkanImgui.h"
 
 namespace Odyssey::Graphics
 {
@@ -19,12 +20,19 @@ namespace Odyssey::Graphics
 		VulkanRenderer();
 
 	public:
-		void Update();
+		bool Update();
+		bool Render();
+
+	private:
+		void RenderFrame();
 		void Present();
+		void SetupFrameData();
+		void RebuildSwapchain();
 
 	private:
 		void GatherExtensions();
 		void CreateInstance();
+		VulkanImgui::InitInfo CreateImguiInitInfo();
 
 		bool IsExtensionAvailable(std::vector<VkExtensionProperties>& properties, const char* extension);
 
@@ -51,5 +59,6 @@ namespace Odyssey::Graphics
 		std::unique_ptr<VulkanSurface> surface;
 		std::unique_ptr<VulkanSwapchain> swapchain;
 		std::unique_ptr<VulkanRenderPass> renderPass;
+		std::unique_ptr<VulkanImgui> imgui;
 	};
 }

@@ -54,7 +54,13 @@ namespace Odyssey::Editor
 					}
 				}
 				scene.Update();
-				r.Update();
+
+				if (!r.Update())
+				{
+					running = false;
+				}
+
+				r.Render();
 			}
 		}
 	}

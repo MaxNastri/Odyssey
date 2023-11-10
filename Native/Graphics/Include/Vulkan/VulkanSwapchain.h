@@ -23,5 +23,6 @@ namespace Odyssey::Graphics
 	public:
 		VkSwapchainKHR swapchain;
 		uint32_t imageCount;
+		uint32_t minImageCount;
 	};
 }

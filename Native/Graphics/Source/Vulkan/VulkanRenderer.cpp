@@ -25,24 +25,34 @@ namespace Odyssey::Graphics
 		renderPass = std::make_unique<VulkanRenderPass>(vkDevice, surface->GetFormat().format);
 		swapchain = std::make_unique<VulkanSwapchain>(vkDevice, device->GetPhysicalDevice(), surface.get());
 
-		VkFormat format = surface->GetFormat().format;
-		std::vector<VkImage> backbuffers = swapchain->GetBackbuffers(vkDevice);
+		VulkanImgui::InitInfo info = CreateImguiInitInfo();
+		imgui = std::make_unique<VulkanImgui>(info);
 
-		uint32_t imageCount = swapchain->GetImageCount();
-		frames.resize(imageCount);
-
-		for (uint32_t i = 0; i < imageCount; ++i)
-		{
-			frames[i] = std::make_unique<VulkanFrame>(vkDevice, graphicsIndex);
-			frames[i]->SetBackbuffer(vkDevice, backbuffers[i], format);
-			frames[i]->CreateFramebuffer(vkDevice, renderPass->GetVK(), surface->GetWidth(), surface->GetHeight());
-		}
+		SetupFrameData();
 	}
 
-	void VulkanRenderer::Update()
+	bool VulkanRenderer::Update()
 	{
-		window->Update();
+		return window->Update();
+	}
 
+	bool VulkanRenderer::Render()
+	{
+		// if rebuild swapchain, do it
+		if (rebuildSwapchain)
+		{
+			RebuildSwapchain();
+		}
+
+		imgui->BeginFrame();
+		RenderFrame();
+		imgui->PostRender();
+		Present();
+		return true;
+	}
+
+	void VulkanRenderer::RenderFrame()
+	{
 		VkResult err;
 		VkDevice vkDevice = device->GetLogicalDevice();
 		VkClearValue ClearValue;
@@ -84,6 +94,7 @@ namespace Odyssey::Graphics
 		renderPass->Begin(frame->commandBuffer, frame->framebuffer, surface->GetWidth(), surface->GetHeight(), ClearValue);
 
 		// TODO: DRAW
+		imgui->Render(frame->commandBuffer);
 
 		// RenderPass end
 		renderPass->End(frame->commandBuffer);
@@ -103,15 +114,13 @@ namespace Odyssey::Graphics
 		check_vk_result(err);
 		err = vkQueueSubmit(graphicsQueue->queue, 1, &submitInfo, frame->fence);
 		check_vk_result(err);
-
-		Present();
 	}
 
 	void VulkanRenderer::Present()
 	{
 		if (rebuildSwapchain)
 			return;
-		
+
 		VkSemaphore render_complete_semaphore = frames[frameIndex]->GetRenderCompleteSemaphore();
 		VkPresentInfoKHR info = {};
 		info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -128,6 +137,54 @@ namespace Odyssey::Graphics
 		}
 		check_vk_result(err);
 		frameIndex = (frameIndex + 1) % swapchain->imageCount; // Now we can use the next set of semaphores
+	}
+
+	void VulkanRenderer::SetupFrameData()
+	{
+		VkDevice vkDevice = device->GetLogicalDevice();
+		uint32_t graphicsIndex = device->GetFamilyIndex(VulkanQueueType::Graphics);
+		VkFormat format = surface->GetFormat().format;
+
+		std::vector<VkImage> backbuffers = swapchain->GetBackbuffers(vkDevice);
+		uint32_t imageCount = swapchain->GetImageCount();
+		frames.resize(imageCount);
+
+		for (uint32_t i = 0; i < imageCount; ++i)
+		{
+			frames[i] = std::make_unique<VulkanFrame>(vkDevice, graphicsIndex);
+			frames[i]->SetBackbuffer(vkDevice, backbuffers[i], format);
+			frames[i]->CreateFramebuffer(vkDevice, renderPass->GetVK(), surface->GetWidth(), surface->GetHeight());
+		}
+	}
+
+	void VulkanRenderer::RebuildSwapchain()
+	{
+		VkDevice vkDevice = device->GetLogicalDevice();
+		VkResult err = vkDeviceWaitIdle(vkDevice);
+		check_vk_result(err);
+
+		for (auto& frame : frames)
+		{
+			frame->Destroy(vkDevice);
+			frame.reset();
+		}
+		frames.clear();
+
+		int width, height;
+		glfwGetFramebufferSize(window->GetWindowHandle(), &width, &height);
+		surface->SetFrameBufferSize(width, height);
+		if (width > 0 && height > 0)
+		{
+			swapchain->Destroy(device->GetLogicalDevice());
+			swapchain.reset();
+			swapchain = std::make_unique<VulkanSwapchain>(device->GetLogicalDevice(), device->GetPhysicalDevice(), surface.get());
+
+			ImGui_ImplVulkan_SetMinImageCount(swapchain->minImageCount);
+			frameIndex = 0;
+			rebuildSwapchain = false;
+
+			SetupFrameData();
+		}
 	}
 
 	void VulkanRenderer::GatherExtensions()
@@ -190,6 +247,22 @@ namespace Odyssey::Graphics
 		debug_report_ci.pUserData = nullptr;
 		err = vkCreateDebugReportCallbackEXT(instance, &debug_report_ci, allocator, &debugReport);
 		check_vk_result(err);
+	}
+
+	VulkanImgui::InitInfo VulkanRenderer::CreateImguiInitInfo()
+	{
+		VulkanImgui::InitInfo info;
+		info.window = window->GetWindowHandle();
+		info.instance = instance;
+		info.physicalDevice = device->GetPhysicalDevice();
+		info.logicalDevice = device->GetLogicalDevice();
+		info.queueIndex = device->GetFamilyIndex(VulkanQueueType::Graphics);
+		info.queue = graphicsQueue->queue;
+		info.descriptorPool = descriptorPool->descriptorPool;
+		info.renderPass = renderPass->GetVK();
+		info.minImageCount = swapchain->minImageCount;
+		info.imageCount = swapchain->imageCount;
+		return info;
 	}
 
 	bool VulkanRenderer::IsExtensionAvailable(std::vector<VkExtensionProperties>& properties, const char* extension)

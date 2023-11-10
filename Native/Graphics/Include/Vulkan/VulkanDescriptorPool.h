@@ -9,7 +9,7 @@ namespace Odyssey::Graphics
 		VulkanDescriptorPool() = default;
 		VulkanDescriptorPool(VkDevice logicalDevice);
 
-	private:
+	public:
 		VkDescriptorPool descriptorPool;
 	};
 }

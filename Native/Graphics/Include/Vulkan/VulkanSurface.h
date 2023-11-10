@@ -12,6 +12,9 @@ namespace Odyssey::Graphics
 		VulkanSurface(VkInstance instance, VkPhysicalDevice physicalDevice, uint32_t graphicsQueueIndex, GLFWwindow* window);
 
 	public:
+		void SetFrameBufferSize(int width, int height);
+
+	public:
 		VkSurfaceKHR GetVK() { return surface; }
 		VkSurfaceFormatKHR GetFormat() { return format; }
 		VkPresentModeKHR GetPresentMode() { return presentMode; }

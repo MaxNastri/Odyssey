@@ -45,6 +45,12 @@ namespace Odyssey::Graphics
 		presentMode = SelectPresentMode(physicalDevice, surface, &present_modes[0], presentModesLength);
 	}
 
+	void VulkanSurface::SetFrameBufferSize(int w, int h)
+	{
+		width = w;
+		height = h;
+	}
+
 	VkSurfaceFormatKHR VulkanSurface::SelectSurfaceFormat(VkPhysicalDevice physical_device, VkSurfaceKHR surface, const VkFormat* request_formats, int request_formats_count, VkColorSpaceKHR request_color_space)
 	{
 		assert(request_formats != nullptr);
