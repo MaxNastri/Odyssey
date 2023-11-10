@@ -6,8 +6,8 @@ project "Odyssey.Managed.Core"
     kind "SharedLib"
 	clr "Unsafe"
     
-	targetdir("%{wks.location}/Build/%{cfg.buildcfg}-%{cfg.system}")
-	objdir("%{wks.location}/Intermediates/%{cfg.buildcfg}-%{cfg.system}")
+	targetdir("%{wks.location}/Build/%{cfg.buildcfg}")
+	objdir("%{wks.location}/Intermediates/%{cfg.buildcfg}")
 
     propertytags {
         { "AppendTargetFrameworkToOutputPath", "false" },

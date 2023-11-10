@@ -1,75 +1,51 @@
-project "Odyssey.Native.Core"
-    kind "StaticLib"
+local CoralDotNetPath = os.getenv("CORAL_DOTNET_PATH")
+
+project "Odyssey.Native.Scripting"
     language "C++"
     cppdialect "C++20"
-    staticruntime "off"
+    kind "StaticLib"
+    staticruntime "Off"
     
-    targetdir ("%{wks.location}/bin/" .. outputdir)
-    objdir ("%{wks.location}/build/" .. outputdir)
+    architecture "x86_64"
+    
+    pchheader "PCH.hpp"
+    pchsource "Source/PCH.cpp"
 
-    files
-    {
-        "include/**.h",
-        "include/**.inl",
-        "include/**.cpp",
-        "include/**.hpp",
-        "include/**.hlsl",
-        "source/**.h",
-        "source/**.inl",
-        "source/**.cpp",
-        "source/**.hpp",
-        "source/**.hlsl",
+    forceincludes { "PCH.hpp" }
+
+    filter { "action:xcode4" }
+        pchheader "Source/PCH.hpp"
+    filter { }
+
+    files {
+        "Include/**.h",
+        "Include/**.inl",
+        "Include/**.cpp",
+        "Include/**.hpp",
+        "Include/**.hlsl",
+        "Source/**.h",
+        "Source/**.inl",
+        "Source/**.cpp",
+        "Source/**.hpp",
+        "Source/**.hlsl",
     }
 
-    defines
-    {
-        "_CRT_SECURE_NO_WARNINGS",
+    includedirs {
+        "Include",
+        "Include/**",
+        "Source",
+        "Source/**",
     }
 
-    includedirs
-    {
-        "include",
-        "include/**",
+    externalincludedirs {
+        "%{wks.location}/Vendor/NetCore/7.0.7/"
     }
 
-    libdirs
-    {
-    }
-
-    links
-    {
-    }
-
-    linkoptions
-    {
-        '/ignore:4006'
-    }
-
-    filter { "files:**.hlsl"}
-        flags "ExcludeFromBuild"
-        shadermodel "5.0"
-
-    filter { "files:**.pixel.hlsl"}
-        removeflags "ExcludeFromBuild"
-        shadertype "Pixel"
-
-    filter { "files:**.vertex.hlsl"}
-        removeflags "ExcludeFromBuild"
-        shadertype "Vertex"
-
-    filter "system:windows"
-        systemversion "latest"
-        defines
-        {
-            "WIN32_LEAN_AND_MEAN"
-        }
-
-    filter "configurations:Debug"
-        defines "ODYSSEY_DEBUG"
+    filter { "configurations:Debug" }
         runtime "Debug"
-        symbols "on"
+        symbols "On"
 
-    filter "configurations:Debug"
-        defines "ODYSSEY_RELEASE"
-        runtime "Debug"
-        symbols "on"
+    filter { "configurations:Release" }
+        runtime "Release"
+        symbols "Off"
+        optimize "On"

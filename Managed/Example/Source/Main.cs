@@ -1,14 +1,27 @@
-using Coral.Managed.Interop;
-
 using System;
+using Coral.Managed.Interop;
+using Odyssey.Managed.Core;
 
-namespace Example.Managed {
+namespace Example.Managed
+{
 
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class CustomAttribute : Attribute
 	{
 		public float Value;
 	}
+
+	public class ExampleScript : Component
+	{
+		public bool IAmAlive = true;
+		public string MyName = "Max";
+		public float speed = 42.0f;
+
+		public override void Update() 
+		{
+		}
+	}
+
 
 	[Custom(Value = -2500.0f)]
 	public class ExampleClass

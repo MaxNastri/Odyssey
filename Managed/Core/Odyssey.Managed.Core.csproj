@@ -13,8 +13,8 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Build\Debug-windows\</OutputPath>
-    <IntermediateOutputPath>..\..\Intermediates\Debug-windows\</IntermediateOutputPath>
+    <OutputPath>..\..\Build\Debug\</OutputPath>
+    <IntermediateOutputPath>..\..\Intermediates\Debug\Debug\Odyssey.Managed.Core\</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,8 +25,8 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Build\Release-windows\</OutputPath>
-    <IntermediateOutputPath>..\..\Intermediates\Release-windows\</IntermediateOutputPath>
+    <OutputPath>..\..\Build\Release\</OutputPath>
+    <IntermediateOutputPath>..\..\Intermediates\Release\Release\Odyssey.Managed.Core\</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\AssemblyLoader.cs" />
+    <Compile Include="Source\Component.cs" />
     <Compile Include="Source\ExtensionMethods.cs" />
     <Compile Include="Source\GarbageCollector.cs" />
     <Compile Include="Source\InternalCalls.cs" />
