@@ -86,6 +86,13 @@ namespace Odyssey::Entities
 			return componentArray->GetComponentData(gameObject.id);
 		}
 
+		template<typename T>
+		static bool HasComponent(const GameObject& gameObject)
+		{
+			ComponentArray<T>* componentArray = GetComponentArray<T>();
+			return componentArray->HasComponent(gameObject.id);
+		}
+
 	private: // Templated helpers
 		template<typename T>
 		static ComponentArray<T>* GetComponentArray()

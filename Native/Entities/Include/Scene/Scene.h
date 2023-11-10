@@ -17,6 +17,8 @@ namespace Odyssey::Entities
 		GameObject CreateGameObject();
 		void DestroyGameObject(GameObject gameObject);
 		void Clear();
+		GameObject GetGameObject(unsigned int id);
+
 	public:
 		void Awake();
 		void Update();

@@ -11,6 +11,7 @@ namespace Odyssey::Entities
 
 	void Transform::Update()
 	{
+		Framework::Log::Info("[Transform] Position: " + position.ToString());
 	}
 
 	void Transform::OnDestroy()

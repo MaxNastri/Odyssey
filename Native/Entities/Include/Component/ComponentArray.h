@@ -72,6 +72,11 @@ namespace Odyssey::Entities
 			return nullptr;
 		}
 
+		bool HasComponent(unsigned int gameObject)
+		{
+			return gameObjectToIndexMap.find(gameObject) != gameObjectToIndexMap.end();
+		}
+
 		virtual void RemoveGameObject(unsigned int gameObject) override
 		{
 			if (size == 0)

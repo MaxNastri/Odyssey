@@ -26,7 +26,8 @@ namespace Odyssey::Editor
 		Entities::Scene scene;
 		scene.Deserialize("scene.json");
 
-		//Graphics::Graphics::Run();
+		Entities::GameObject go = scene.GetGameObject(0);
+		guiElements.push_back(std::make_shared<InspectorWindow>(go));
 
 		while (running)
 		{
@@ -60,7 +61,7 @@ namespace Odyssey::Editor
 					running = false;
 				}
 
-				r.Render();
+				r.Render(guiElements);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "ComponentManager.h"
 #include <fstream>
+#include <string>
 
 namespace Odyssey::Entities
 {
@@ -17,6 +18,7 @@ namespace Odyssey::Entities
 	{
 		GameObject gameObject = GameObject(nextGameObjectID++);
 		gameObjects.push_back(gameObject);
+		gameObjectsByID[gameObject.id] = gameObject;
 		return gameObject;
 	}
 
@@ -35,6 +37,16 @@ namespace Odyssey::Entities
 		gameObjects.clear();
 		gameObjectsByID.clear();
 		nextGameObjectID = 0;
+	}
+
+	GameObject Scene::GetGameObject(unsigned int id)
+	{
+		if (gameObjectsByID.find(id) != gameObjectsByID.end())
+		{
+			return gameObjectsByID[id];
+		}
+		Framework::Log::Error("[Scene] Cannot find game object " + std::to_string(id));
+		return NULL;
 	}
 
 	void Scene::Awake()

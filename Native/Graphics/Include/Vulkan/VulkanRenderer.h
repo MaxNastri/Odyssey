@@ -14,6 +14,8 @@
 
 namespace Odyssey::Graphics
 {
+	class GUIElement;
+
 	class VulkanRenderer
 	{
 	public:
@@ -21,7 +23,7 @@ namespace Odyssey::Graphics
 
 	public:
 		bool Update();
-		bool Render();
+		bool Render(std::vector<std::shared_ptr<GUIElement>> guiElements);
 
 	private:
 		void RenderFrame();
