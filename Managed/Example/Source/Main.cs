@@ -14,8 +14,9 @@ namespace Example.Managed
 	public class ExampleScript : Component
 	{
 		public bool IAmAlive = true;
-		public string MyName = "Max";
+		public NativeString MyName = "Max";
 		public float speed = 42.0f;
+		public int movement = 10;
 
 		public override void Update() 
 		{
@@ -40,6 +41,7 @@ namespace Example.Managed
 		internal static unsafe delegate*<NativeArray<float>> ArrayReturnIcall;
 
 		private int myPrivateValue;
+		public int myPublicValue;
 
 		public ExampleClass(int someValue)
 		{

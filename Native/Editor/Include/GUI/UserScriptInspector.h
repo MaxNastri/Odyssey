@@ -1,14 +1,13 @@
 #pragma once
+#include "PropertyDrawer.h"
 #include <GUIElement.h>
 #include <GameObject.h>
-#include <string>
-#include <unordered_map>
-#include <PropertyDrawer.h>
-#include <Utility.hpp>
 #include <ManagedObject.hpp>
 
 namespace Odyssey::Editor
 {
+	class PropertyDrawer;
+
 	class UserScriptInspector : public Graphics::GUIElement
 	{
 	public:

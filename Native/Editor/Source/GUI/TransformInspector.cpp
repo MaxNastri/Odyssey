@@ -1,6 +1,7 @@
 #include "TransformInspector.h"
 #include <Transform.h>
 #include <ComponentManager.h>
+#include <imgui.h>
 
 namespace Odyssey::Editor
 {

@@ -5,6 +5,126 @@ namespace Odyssey
     Vector2   Vector2::Zero = Vector2(0.0f);
     Vector2   Vector2::One = Vector2(1.0f);
 
+    Vector2::Vector2()
+    {
+        x = y = 0.0f;
+    }
+
+    Vector2::Vector2(float x, float y)
+        : glm::vec2(x, y)
+    {
+
+    }
+
+    Vector2::Vector2(const Vector2& rhs)
+        : glm::vec2(rhs)
+    {
+
+    }
+
+    Vector2::Vector2(float val)
+        : glm::vec2(val, val)
+    {
+
+    }
+
+    Vector2::Vector2(const glm::vec2& rhs)
+        : glm::vec2(rhs.x, rhs.y)
+    {
+
+    }
+
+    Vector2& Vector2::operator*=(Vector2 const& v)
+    {
+        x *= v.x;
+        y *= v.y;
+        return *this;
+    }
+
+    Vector2& Vector2::operator/=(Vector2 const& v)
+    {
+        x /= v.x;
+        y /= v.y;
+        return *this;
+    }
+
+    Vector2& Vector2::operator+=(Vector2 const& v)
+    {
+        x += v.x;
+        y += v.y;
+        return *this;
+    }
+
+    Vector2& Vector2::operator-=(Vector2 const& v)
+    {
+        x -= v.x;
+        y -= v.y;
+        return *this;
+    }
+
+    Vector2& Vector2::operator*=(float f)
+    {
+        x *= f;
+        y *= f;
+        return *this;
+    }
+
+    Vector2& Vector2::operator/=(float f)
+    {
+        x /= f;
+        y /= f;
+        return *this;
+    }
+
+    Vector2& Vector2::operator+=(float f)
+    {
+        x += f;
+        y += f;
+        return *this;
+    }
+
+    Vector2& Vector2::operator-=(float f)
+    {
+        x -= f;
+        y -= f;
+        return *this;
+    }
+
+    bool Vector2::operator==(const Vector2& rhs) const
+    {
+        return x == rhs.x && y == rhs.y;
+    }
+
+    bool Vector2::operator!=(const Vector2& rhs) const
+    {
+        return !(x == rhs.x && y == rhs.y);
+    }
+
+    bool Vector2::operator>(const Vector2& rhs) const
+    {
+        return length() > rhs.length();
+    }
+
+    bool Vector2::operator<(const Vector2& rhs) const
+    {
+        return length() < rhs.length();
+    }
+
+    float& Vector2::operator[](unsigned int i)
+    {
+        return (&x)[i];
+    }
+
+    Vector2 Vector2::operator-() const
+    {
+        return Vector2(-1.0f * x, -1.0f * y);
+    }
+
+    std::ostream& Vector2::operator<<(std::ostream& os)
+    {
+        return os << "X:" << x << "   Y:" << y;
+    }
+
     Vector2 Vector2::Abs() const
     {
         return Vector2(glm::abs(x), glm::abs(y));
@@ -84,6 +204,11 @@ namespace Odyssey
     void Vector2::Normalize()
     {
         *this = glm::normalize(glm::vec2(*this));
+    }
+
+    float* Vector2::Get()
+    {
+        return &x;
     }
 
     std::string Vector2::ToString() const

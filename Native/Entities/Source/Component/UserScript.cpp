@@ -42,7 +42,9 @@ namespace Odyssey::Entities
 		for (auto& field : fields)
 		{
 			std::string fieldName = field.GetName();
-			Coral::ManagedType managedType = field.GetType().GetManagedType();
+
+			Coral::Type& type = field.GetType();
+			Coral::ManagedType managedType = type.GetManagedType();
 			SerializeNativeTypes(managedType, fieldName, componentJson);
 		}
 
@@ -167,6 +169,7 @@ namespace Odyssey::Entities
 	bool UserScript::DeserializeNativeType(const Coral::ManagedType& managedType, const std::string& fieldName, const json& jsonObject)
 	{
 		bool nativeTypeFound = false;
+
 
 		if (managedType == Coral::ManagedType::Byte)
 		{
