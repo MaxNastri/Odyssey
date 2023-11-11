@@ -28,10 +28,14 @@ namespace Odyssey::Editor
 		virtual void Draw() override;
 
 	private:
-		void OnPositionModified(Vector4 pos);
+		void OnPositionModified(Vector3 pos);
+		void OnRotationModified(Vector3 pos);
+		void OnScaleModified(Vector3 pos);
 
 	private:
 		Entities::GameObject gameObject;
-		Vector4Drawer positionDrawer;
+		Vector3Drawer positionDrawer;
+		Vector3Drawer rotationDrawer;
+		Vector3Drawer scaleDrawer;
 	};
 }

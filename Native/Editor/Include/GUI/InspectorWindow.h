@@ -2,6 +2,7 @@
 #include <GUIElement.h>
 #include <GameObject.h>
 #include "TransformInspector.h"
+#include "UserScriptInspector.h"
 
 namespace Odyssey::Editor
 {
@@ -16,6 +17,7 @@ namespace Odyssey::Editor
 
 	private:
 		TransformInspector transformInspector;
+		UserScriptInspector userScriptInspector;
 		bool open = true;
 	};
 }

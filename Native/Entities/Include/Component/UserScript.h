@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include <ManagedObject.hpp>
+#include <Type.hpp>
 
 namespace Odyssey::Entities
 {
@@ -17,6 +18,8 @@ namespace Odyssey::Entities
 
 	public:
 		void SetManagedInstance(Coral::ManagedObject instance);
+		Coral::Type GetType() { return managedInstance.GetType(); }
+		Coral::ManagedObject GetManagedObject() { return managedInstance; }
 
 	private:
 		bool SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, json& jsonObject);

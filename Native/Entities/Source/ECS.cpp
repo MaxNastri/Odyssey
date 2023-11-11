@@ -17,7 +17,7 @@ namespace Odyssey::Entities
 		//Transform* transform = ComponentManager::AddComponent<Transform>(go);
 		ComponentManager::AddComponentByName(go, "Odyssey.Entities.Transform");
 		Transform* transform = ComponentManager::GetComponent<Transform>(go);
-		transform->position = Vector4(0, 1, 2, 3);
+		transform->position = Vector3(0, 1, 2);
 
 		scene.Serialize("scene.json");
 

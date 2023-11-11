@@ -14,6 +14,11 @@ namespace Odyssey::Editor
 			transformInspector = TransformInspector(gameObject);
 			transformInspector.RegisterCallbacks();
 		}
+
+		if (ComponentManager::HasComponent<UserScript>(gameObject))
+		{
+			userScriptInspector = UserScriptInspector(gameObject);
+		}
 	}
 
 	void InspectorWindow::Draw()
@@ -28,7 +33,7 @@ namespace Odyssey::Editor
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
 
 		transformInspector.Draw();
-
+		userScriptInspector.Draw();
 		ImGui::PopStyleVar();
 		ImGui::End();
 	}
