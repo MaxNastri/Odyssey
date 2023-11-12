@@ -16,7 +16,7 @@ namespace Odyssey::Editor
 		ImGui::TextUnformatted(label.data());
 		ImGui::TableNextColumn();
 		ImGui::PushItemWidth(-0.01f);
-		if (ImGui::Checkbox(label.data(), &data))
+		if (ImGui::Checkbox("##label", &data))
 		{
 			valueUpdatedCallback(data);
 		}

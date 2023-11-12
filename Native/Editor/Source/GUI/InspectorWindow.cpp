@@ -14,9 +14,11 @@ namespace Odyssey::Editor
 			transformInspector = TransformInspector(gameObject);
 		}
 
-		if (ComponentManager::HasComponent<UserScript>(gameObject))
+		std::vector<std::pair<std::string, UserScript*>> userScripts = ComponentManager::GetAllUserScripts(gameObject);
+
+		for (auto& [userScriptClassName, userScript] : userScripts)
 		{
-			userScriptInspector = UserScriptInspector(gameObject);
+			userScriptInspectors.push_back(UserScriptInspector(gameObject, userScript, userScriptClassName));
 		}
 	}
 
@@ -32,13 +34,19 @@ namespace Odyssey::Editor
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
 
 		transformInspector.Draw();
-		userScriptInspector.Draw();
+		for (auto& userScriptInspector : userScriptInspectors)
+		{
+			userScriptInspector.Draw();
+		}
 		ImGui::PopStyleVar();
 		ImGui::End();
 	}
 
 	void InspectorWindow::RefreshUserScripts()
 	{
-		userScriptInspector.UpdateFields();
+		for (auto& userScriptInspector : userScriptInspectors)
+		{
+			userScriptInspector.UpdateFields();
+		}
 	}
 }

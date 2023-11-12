@@ -48,7 +48,7 @@ namespace Odyssey::Editor
 
 	void TransformInspector::Draw()
 	{
-		if (ImGui::CollapsingHeader("Transform"))
+		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			if (ImGui::BeginTable("TransformInspector", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 			{

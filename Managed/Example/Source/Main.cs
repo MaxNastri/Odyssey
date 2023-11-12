@@ -29,6 +29,14 @@ namespace Example.Managed
 		}
 	}
 
+	public class AnotherScript : Component
+	{
+		public string EnterYourName = "";
+		public int NameCount;
+		public bool FuckOff;
+	}
+
+
 
 	[Custom(Value = -2500.0f)]
 	public class ExampleClass

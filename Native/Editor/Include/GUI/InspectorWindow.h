@@ -18,7 +18,7 @@ namespace Odyssey::Editor
 
 	private:
 		TransformInspector transformInspector;
-		UserScriptInspector userScriptInspector;
+		std::vector<UserScriptInspector> userScriptInspectors;
 		bool open = true;
 	};
 }

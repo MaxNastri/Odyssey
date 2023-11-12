@@ -14,6 +14,10 @@
 #include <io.h>
 #include <cstdio>
 #include <fcntl.h>
+#include <functional>
+#include <typeindex>
+#include <queue>
+#include <memory>
 
 #ifdef _WIN32
 	#define NOMINMAX

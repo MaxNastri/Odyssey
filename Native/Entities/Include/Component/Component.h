@@ -18,6 +18,12 @@ namespace Odyssey::Entities
 		virtual void Deserialize(const json& jsonObject) { from_json(jsonObject, *this); }
 
 	public:
+		void SetGameObject(GameObject go)
+		{
+			gameObject = go;
+		}
+
+	public:
 		bool active;
 		GameObject gameObject;
 		ODYSSEY_SERIALIZE(Component, active);

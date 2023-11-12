@@ -2,8 +2,74 @@
 
 namespace Odyssey::Entities
 {
-	std::unordered_map<std::type_index, std::unique_ptr<IComponentArray>> ComponentManager::componentArrays;
-	std::unordered_map<unsigned int, std::vector<std::pair<std::type_index, unsigned int>>> ComponentManager::gameObjectToComponentArrayIndex;
+	void ComponentManager::RemoveUserScript(const GameObject& gameObject, const std::string& managedName)
+	{
+		if (ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(managedName))
+		{
+			userScriptArray->RemoveGameObject(gameObject.id);
+		}
+
+		// Iterate through this game object's user scripts
+		for (int i = 0; i < gameObjectToUserScriptIndex[gameObject.id].size(); ++i)
+		{
+			std::string& storedManagedName = gameObjectToUserScriptIndex[gameObject.id][i];
+
+			// Check if this pair matches the managed name of the script to remove
+			if (storedManagedName == managedName)
+			{
+				// Remove it from the list of user scripts
+				gameObjectToUserScriptIndex[gameObject.id].erase(gameObjectToUserScriptIndex[gameObject.id].begin() + i);
+
+				// If we have no user scripts left, remove the game object's entry entirely
+				if (gameObjectToUserScriptIndex[gameObject.id].size() == 0)
+				{
+					gameObjectToUserScriptIndex.erase(gameObject.id);
+				}
+
+				break;
+			}
+		}
+	}
+
+	UserScript* ComponentManager::GetUserScript(const GameObject& gameObject, const std::string& managedName)
+	{
+		ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(managedName);
+		return userScriptArray->GetComponentData(gameObject.id);
+	}
+
+	std::vector<std::pair<std::string, UserScript*>> ComponentManager::GetAllUserScripts(const GameObject& gameObject)
+	{
+		std::vector<std::pair<std::string, UserScript*>> userScripts;
+
+		if (gameObjectToUserScriptIndex.find(gameObject.id) != gameObjectToUserScriptIndex.end())
+		{
+			std::vector<std::string> storedUserScripts = gameObjectToUserScriptIndex[gameObject.id];
+
+			for (std::string& managedName : storedUserScripts)
+			{
+				ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(managedName);
+				userScripts.push_back(std::make_pair(managedName, userScriptArray->GetComponentData(gameObject.id)));
+			}
+		}
+
+		return userScripts;
+	}
+
+	bool ComponentManager::HasUserScript(const GameObject& gameObject, const std::string& managedName)
+	{
+		ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(managedName);
+		return userScriptArray->HasComponent(gameObject.id);
+	}
+
+	ComponentArray<UserScript>* ComponentManager::GetUserScriptArray(const std::string& managedName)
+	{
+		if (userScriptArrays.find(managedName) == userScriptArrays.end())
+		{
+			userScriptArrays[managedName] = std::make_unique<ComponentArray<UserScript>>();
+		}
+
+		return userScriptArrays[managedName].get();
+	}
 
 	void ComponentManager::ExecuteOnGameObjectComponents(const GameObject& gameObject, std::function<void(Component*)> func)
 	{

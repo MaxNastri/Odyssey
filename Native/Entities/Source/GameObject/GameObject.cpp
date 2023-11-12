@@ -42,7 +42,16 @@ namespace Odyssey::Entities
             if (element.is_object())
             {
                 std::string type = element.at("Type");
-                Component* component = ComponentManager::AddComponentByName(*this, type);
+                Component* component = nullptr;
+                if (type == UserScript::Type)
+                {
+                    std::string managedType = element.at("ManagedType");
+                    component = ComponentManager::AddUserScript(*this, managedType);
+                }
+                else
+                {
+                    component = ComponentManager::AddComponentByName(*this, type);
+                }
                 component->Deserialize(element);
             }
         }

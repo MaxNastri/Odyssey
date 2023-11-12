@@ -56,7 +56,7 @@ namespace Odyssey::Entities
 			}
 		}
 
-		jsonObject += { "Component." + UserScript::ClassName, componentJson};
+		jsonObject += { "Component." + UserScript::ClassName + "." + fqManagedName, componentJson};
 	}
 
 	void UserScript::Deserialize(const json& jsonObject)
