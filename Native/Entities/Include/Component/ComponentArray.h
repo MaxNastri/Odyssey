@@ -2,7 +2,7 @@
 #include <array>
 #include <unordered_map>
 #include "Component.h"
-#include <Log.h>
+#include <Logger.h>
 #include <string>
 
 #ifndef MAX_GAME_OBJECTS
@@ -43,7 +43,7 @@ namespace Odyssey::Entities
 			}
 			else
 			{
-				Framework::Log::Error("Cannot insert data for game object: " + std::to_string(gameObject));
+				Framework::Logger::LogError("Cannot insert data for game object: " + std::to_string(gameObject));
 				return -1;
 			}
 		}
@@ -56,7 +56,7 @@ namespace Odyssey::Entities
 				return static_cast<T*>(componentData[index].get());
 			}
 
-			Framework::Log::Error("Cannot Get Component Data for GameObject: " + std::to_string(gameObject));
+			Framework::Logger::LogError("Cannot Get Component Data for GameObject: " + std::to_string(gameObject));
 			return nullptr;
 		}
 
@@ -68,7 +68,7 @@ namespace Odyssey::Entities
 				return componentData[index].get();
 			}
 
-			Framework::Log::Error("Cannot Get Component for GameObject: " + std::to_string(gameObject));
+			Framework::Logger::LogError("Cannot Get Component for GameObject: " + std::to_string(gameObject));
 			return nullptr;
 		}
 
@@ -89,7 +89,7 @@ namespace Odyssey::Entities
 			// Make sure the game object has this component type
 			if (gameObjectToIndexMap.find(gameObject) == gameObjectToIndexMap.end())
 			{
-				Framework::Log::Error("Cannot remove component from game object: " + std::to_string(gameObject));
+				Framework::Logger::LogError("Cannot remove component from game object: " + std::to_string(gameObject));
 				return;
 			}
 

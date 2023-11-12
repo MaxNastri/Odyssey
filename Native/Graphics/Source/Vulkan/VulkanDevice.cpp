@@ -69,7 +69,7 @@ namespace Odyssey::Graphics
 		if (physicalDevice == VK_NULL_HANDLE)
 		{
 			// Coulnd't find any GPU
-			Framework::Log::Error("[VulkanDevice] Unable to find GPU device");
+			Framework::Logger::LogError("[VulkanDevice] Unable to find GPU device");
 			physicalDevice = VK_NULL_HANDLE;
 		}
 	}

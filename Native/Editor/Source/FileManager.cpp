@@ -2,7 +2,7 @@
 #include <io.h>
 #include <cstdio>
 #include <fcntl.h>
-#include <Log.h>
+#include <Logger.h>
 
 namespace Odyssey::Editor
 {
@@ -40,7 +40,7 @@ namespace Odyssey::Editor
 			std::string path = ConvertWideToUtf8(notification.first.c_str());
 			std::string action = Framework::Utils::FileNotifcationsToString(notification.second);
 
-			Framework::Log::Info("[FileManager] File changed: " + path + ", action = " + action);
+			Framework::Logger::LogInfo("[FileManager] File changed: " + path + ", action = " + action);
 		}
 	}
 

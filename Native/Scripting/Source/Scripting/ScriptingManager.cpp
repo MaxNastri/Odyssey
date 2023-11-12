@@ -1,7 +1,7 @@
 #include "ScriptingManager.h"
 #include "ScriptCompiler.h"
 #include "Paths.h"
-#include <Log.h>
+#include <Logger.h>
 
 namespace Odyssey::Scripting
 {
@@ -14,7 +14,7 @@ namespace Odyssey::Scripting
 
 	void ExceptionCallback(std::string_view exception)
 	{
-		Framework::Log::Error(exception.data());
+		Framework::Logger::LogError(exception.data());
 	}
 
 	void ScriptingManager::Initialize()

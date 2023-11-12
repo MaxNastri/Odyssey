@@ -1,5 +1,5 @@
 #include "FileWatcher.h"
-#include "Log.h"
+#include "Logger.h"
 #include "WatchInfo.h"
 
 namespace Odyssey::Framework
@@ -10,7 +10,7 @@ namespace Odyssey::Framework
 		ioCompletionPort.reset(CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, NULL, 1));
 		if (!ioCompletionPort)
 		{
-			Log::Error("Error while creating io completion port handle.");
+			Logger::LogError("Error while creating io completion port handle.");
 			return;
 		}
 
@@ -77,7 +77,7 @@ namespace Odyssey::Framework
 		else
 		{
 			const uint32_t errorCode = GetLastError();
-			Log::Error("There is something wrong with the IOCP: " + errorCode);
+			Logger::LogError("There is something wrong with the IOCP: " + errorCode);
 
 			// alert all subscribers that they will not receive events from now on:
 			std::lock_guard<std::mutex> lock(watchInfoMutex);
@@ -112,7 +112,7 @@ namespace Odyssey::Framework
 		const auto watchInfoIt = watchInfos.find(overlapped);
 		if (watchInfoIt == watchInfos.end())
 		{
-			Log::Error("WatchInfo was not found for filesystem event.");
+			Logger::LogError("WatchInfo was not found for filesystem event.");
 			return;
 		}
 
@@ -166,7 +166,7 @@ namespace Odyssey::Framework
 	{
 		if (!this->running)
 		{
-			Log::Error("Watcher thread is not running.");
+			Logger::LogError("Watcher thread is not running.");
 			return false;
 		}
 
@@ -176,7 +176,7 @@ namespace Odyssey::Framework
 
 		if (dirHandle.get() == INVALID_HANDLE_VALUE)
 		{
-			Log::Error("Cannot create directory handle: " + GetLastError());
+			Logger::LogError("Cannot create directory handle: " + GetLastError());
 			return false;
 		}
 
@@ -189,13 +189,13 @@ namespace Odyssey::Framework
 		}
 		else if (!(fileInfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 		{
-			Log::Error("Not a directory.");
+			Logger::LogError("Not a directory.");
 			return false;
 		}
 
 		if (!CreateIoCompletionPort(dirHandle.get(), ioCompletionPort.get(), NULL, 1))
 		{
-			Log::Error("Cannot create IOCP: " + GetLastError());
+			Logger::LogError("Cannot create IOCP: " + GetLastError());
 			return false;
 		}
 

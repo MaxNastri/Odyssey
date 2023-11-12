@@ -1,6 +1,6 @@
 #include "Application.h"
 #include <Input.h>
-#include <Log.h>
+#include <Logger.h>
 #include <Scene.h>
 #include <FileManager.h>
 #include <Paths.h>

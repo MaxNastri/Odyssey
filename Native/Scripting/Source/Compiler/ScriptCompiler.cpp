@@ -1,6 +1,6 @@
 #include "ScriptCompiler.h"
 #include "Paths.h"
-#include <Log.h>
+#include <Logger.h>
 #include <Windows.h>
 
 namespace Odyssey::Scripting
@@ -14,7 +14,7 @@ namespace Odyssey::Scripting
 	{
 		if (buildInProgress)
 		{
-			Odyssey::Framework::Log::Error("Cannot compile while a build is in progress.");
+			Odyssey::Framework::Logger::LogError("Cannot compile while a build is in progress.");
 			return false;
 		}
 
@@ -51,7 +51,7 @@ namespace Odyssey::Scripting
 
 			std::ostringstream oss;
 			oss << "Failed to query process. Error code: " << std::hex << err;
-			Odyssey::Framework::Log::Error(oss.view());
+			Odyssey::Framework::Logger::LogError(oss.view());
 
 			CloseHandle(pi.hProcess);
 			CloseHandle(pi.hThread);
@@ -75,7 +75,7 @@ namespace Odyssey::Scripting
 				auto err = GetLastError();
 				std::ostringstream oss;
 				oss << "Failed to query process. Error code: "<< std::hex << err;
-				Odyssey::Framework::Log::Error(oss.view());
+				Odyssey::Framework::Logger::LogError(oss.view());
 				buildInProgress = false;
 				return false;
 			}
@@ -100,7 +100,7 @@ namespace Odyssey::Scripting
 		// Failed build
 		else
 		{
-			Odyssey::Framework::Log::Error("Failed to build managed scripts!");
+			Odyssey::Framework::Logger::LogError("Failed to build managed scripts!");
 			return false;
 		}
 	}

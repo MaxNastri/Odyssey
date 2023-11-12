@@ -2,6 +2,7 @@
 #include "HostInstance.hpp"
 #include "ManagedObject.hpp"
 #include "ScriptCompiler.h"
+#include <EventSystem.h>
 
 namespace Odyssey::Scripting
 {
@@ -16,7 +17,6 @@ namespace Odyssey::Scripting
 
 	public:
 		static Coral::ManagedObject CreateManagedObject(const std::string& fqManagedClassName);
-
 	private:
 		static Coral::HostInstance hostInstance;
 		static Coral::HostSettings hostSettings;
