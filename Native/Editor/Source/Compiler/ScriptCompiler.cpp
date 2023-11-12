@@ -15,11 +15,11 @@ namespace Odyssey::Editor
 		Framework::EventSystem::Listen<OnUserFilesModified>(ScriptCompiler::UserFilesModified);
 	}
 
-	bool ScriptCompiler::CompileUserAssembly()
+	bool ScriptCompiler::BuildUserAssembly()
 	{
 		if (buildInProgress)
 		{
-			Odyssey::Framework::Logger::LogError("Cannot compile while a build is in progress.");
+			Framework::Logger::LogError("Cannot compile while a build is in progress.");
 			return false;
 		}
 
@@ -32,6 +32,11 @@ namespace Odyssey::Editor
 
 		bool success = BuildAssemblies(buildCommand);
 		Framework::EventSystem::Dispatch<OnBuildFinished>(success);
+
+		if (success)
+		{
+			Scripting::ScriptingManager::ReloadUserAssemblies();
+		}
 
 		return success;
 	}
@@ -124,10 +129,7 @@ namespace Odyssey::Editor
 				if (changedFile.second != Framework::FileNotifcations::RenamedNew &&
 					changedFile.second != Framework::FileNotifcations::RenamedOld)
 				{
-					if (CompileUserAssembly())
-					{
-						Scripting::ScriptingManager::ReloadUserAssemblies();
-					}
+					BuildUserAssembly();
 					break;
 				}
 			}

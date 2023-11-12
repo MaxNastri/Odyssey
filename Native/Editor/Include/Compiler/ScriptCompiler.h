@@ -9,8 +9,10 @@ namespace Odyssey::Editor
 	public:
 		static void ListenForEvents();
 
+	public:
+		static bool BuildUserAssembly();
+
 	private:
-		static bool CompileUserAssembly();
 		static bool BuildAssemblies(std::wstring buildCommand);
 		static bool WaitForBuildComplete(PROCESS_INFORMATION pi);
 

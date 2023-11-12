@@ -20,6 +20,9 @@ namespace Odyssey::Editor
 		ScriptCompiler::ListenForEvents();
 		GUIManager::ListenForEvents();
 		SceneManager::ListenForEvents();
+
+		ScriptCompiler::BuildUserAssembly();
+
 		running = true;
 	}
 

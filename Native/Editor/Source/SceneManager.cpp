@@ -44,16 +44,22 @@ namespace Odyssey::Editor
 
     void SceneManager::BuildFinished(OnBuildFinished* onBuildFinished)
     {
-        if (onBuildFinished->success)
+        if (activeScene < scenes.size())
         {
-            scenes[activeScene].Serialize(tempSaveFilename);
-            scenes[activeScene].Clear();
+            if (onBuildFinished->success)
+            {
+                scenes[activeScene].Serialize(tempSaveFilename);
+                scenes[activeScene].Clear();
+            }
         }
     }
 
     void SceneManager::AssembliesReloaded(Scripting::OnAssembliesReloaded* reloadedEvent)
     {
-        scenes[activeScene].Deserialize(tempSaveFilename);
-        Framework::EventSystem::Dispatch<OnSceneLoaded>(&scenes[activeScene]);
+        if (activeScene < scenes.size())
+        {
+            scenes[activeScene].Deserialize(tempSaveFilename);
+            Framework::EventSystem::Dispatch<OnSceneLoaded>(&scenes[activeScene]);
+        }
     }
 }
