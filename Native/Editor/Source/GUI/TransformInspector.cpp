@@ -13,9 +13,36 @@ namespace Odyssey::Editor
 
 		if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
 		{
-			positionDrawer = Vector3Drawer("Position", transform->position);
-			rotationDrawer = Vector3Drawer("Rotation", transform->eulerRotation);
-			scaleDrawer = Vector3Drawer("Scale", transform->scale);
+			// Callback for when the position is modified through the drawer
+			std::function<void(Vector3)> positionModified = [go](Vector3 position)
+				{
+					if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
+					{
+						transform->position = position;
+					}
+				};
+
+			// Callback for when the rotation is modified through the drawer
+			std::function<void(Vector3)> rotationModified = [this](Vector3 rotation)
+				{
+					if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject))
+					{
+						transform->eulerRotation = rotation;
+					}
+				};
+
+			// Callback for when the scale is modified through the drawer
+			std::function<void(Vector3)> scaleModified = [this](Vector3 scale)
+				{
+					if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject))
+					{
+						transform->scale = scale;
+					}
+				};
+
+			positionDrawer = Vector3Drawer("Position", transform->position, positionModified);
+			rotationDrawer = Vector3Drawer("Rotation", transform->eulerRotation, rotationModified);
+			scaleDrawer = Vector3Drawer("Scale", transform->scale, scaleModified);
 		}
 	}
 
@@ -36,56 +63,5 @@ namespace Odyssey::Editor
 		}
 
 		ImGui::Separator();
-	}
-
-	void TransformInspector::RegisterCallbacks()
-	{
-		std::function<void(Vector3)> positionModified = [this](Vector3 position)
-			{
-				OnPositionModified(position);
-			};
-		positionDrawer.SetCallback(positionModified);
-
-		std::function<void(Vector3)> rotationModified = [this](Vector3 rotation)
-			{
-				OnPositionModified(rotation);
-			};
-		rotationDrawer.SetCallback(rotationModified);
-
-		std::function<void(Vector3)> scaleModified = [this](Vector3 scale)
-			{
-				OnScaleModified(scale);
-			};
-		scaleDrawer.SetCallback(scaleModified);
-	}
-
-	void TransformInspector::OnPositionModified(Vector3 position)
-	{
-		using namespace Entities;
-
-		if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject))
-		{
-			transform->position = position;
-		}
-	}
-
-	void TransformInspector::OnRotationModified(Vector3 rotation)
-	{
-		using namespace Entities;
-
-		if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject))
-		{
-			transform->eulerRotation = rotation;
-		}
-	}
-
-	void TransformInspector::OnScaleModified(Vector3 scale)
-	{
-		using namespace Entities;
-
-		if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject))
-		{
-			transform->scale = scale;
-		}
 	}
 }

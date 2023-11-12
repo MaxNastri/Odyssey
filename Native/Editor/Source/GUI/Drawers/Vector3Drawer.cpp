@@ -3,10 +3,11 @@
 
 namespace Odyssey::Editor
 {
-	Vector3Drawer::Vector3Drawer(const std::string& propertyLabel, Vector3 vec3)
+	Vector3Drawer::Vector3Drawer(const std::string& propertyLabel, Vector3 vec3, std::function<void(Vector3)> callback)
 	{
 		label = propertyLabel;
 		data = { vec3.x, vec3.y, vec3.z };
+		onValueModified = callback;
 	}
 
 	void Vector3Drawer::Draw()
@@ -19,10 +20,5 @@ namespace Odyssey::Editor
 		{
 			onValueModified(Vector3(data[0], data[1], data[2]));
 		}
-	}
-
-	void Vector3Drawer::SetCallback(std::function<void(Vector3)> callback)
-	{
-		onValueModified = callback;
 	}
 }

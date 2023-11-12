@@ -12,7 +12,6 @@ namespace Odyssey::Editor
 		if (ComponentManager::HasComponent<Transform>(gameObject))
 		{
 			transformInspector = TransformInspector(gameObject);
-			transformInspector.RegisterCallbacks();
 		}
 
 		if (ComponentManager::HasComponent<UserScript>(gameObject))
@@ -36,5 +35,10 @@ namespace Odyssey::Editor
 		userScriptInspector.Draw();
 		ImGui::PopStyleVar();
 		ImGui::End();
+	}
+
+	void InspectorWindow::RefreshUserScripts()
+	{
+		userScriptInspector.UpdateFields();
 	}
 }

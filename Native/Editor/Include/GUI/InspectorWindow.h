@@ -14,6 +14,7 @@ namespace Odyssey::Editor
 
 	public:
 		virtual void Draw() override;
+		void RefreshUserScripts();
 
 	private:
 		TransformInspector transformInspector;

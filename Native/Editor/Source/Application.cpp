@@ -27,7 +27,8 @@ namespace Odyssey::Editor
 		scene.Deserialize("scene.json");
 
 		Entities::GameObject go = scene.GetGameObject(0);
-		guiElements.push_back(std::make_shared<InspectorWindow>(go));
+		std::shared_ptr<InspectorWindow> inspector = std::make_shared<InspectorWindow>(go);
+		guiElements.push_back(inspector);
 
 		while (running)
 		{
@@ -52,6 +53,8 @@ namespace Odyssey::Editor
 
 						// Load temp scene back into memory
 						scene.Deserialize("tmpSave.json");
+
+						inspector->RefreshUserScripts();
 					}
 				}
 				scene.Update();

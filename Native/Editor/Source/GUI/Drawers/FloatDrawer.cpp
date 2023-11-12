@@ -3,10 +3,11 @@
 
 namespace Odyssey::Editor
 {
-	FloatDrawer::FloatDrawer(const std::string& propertyLabel, float initialValue)
+	FloatDrawer::FloatDrawer(const std::string& propertyLabel, float initialValue, std::function<void(float)> callback)
 		: PropertyDrawer(propertyLabel)
 	{
 		value = initialValue;
+		valueUpdatedCallback = callback;
 	}
 
 	void FloatDrawer::Draw()
@@ -19,9 +20,5 @@ namespace Odyssey::Editor
 		{
 			valueUpdatedCallback(value);
 		}
-	}
-	void FloatDrawer::SetCallback(std::function<void(float)> callback)
-	{
-		valueUpdatedCallback = callback;
 	}
 }

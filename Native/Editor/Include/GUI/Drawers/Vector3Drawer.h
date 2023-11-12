@@ -8,11 +8,10 @@ namespace Odyssey::Editor
 	{
 	public:
 		Vector3Drawer() = default;
-		Vector3Drawer(const std::string& propertyLabel, Vector3 vec3);
+		Vector3Drawer(const std::string& propertyLabel, Vector3 vec3, std::function<void(Vector3)> callback);
 
 	public:
 		virtual void Draw() override;
-		void SetCallback(std::function<void(Vector3)> callback);
 
 	private:
 		std::function<void(Vector3)> onValueModified;

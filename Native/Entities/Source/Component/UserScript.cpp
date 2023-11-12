@@ -51,7 +51,7 @@ namespace Odyssey::Entities
 			}
 			else
 			{
-				Coral::ManagedType managedType = type.GetManagedType();
+				Coral::ManagedType managedType = fieldType.GetManagedType();
 				SerializeNativeTypes(managedType, fieldName, componentJson);
 			}
 		}
@@ -158,7 +158,7 @@ namespace Odyssey::Entities
 		}
 		else if (managedType == Coral::ManagedType::Int)
 		{
-			uint32_t val = managedInstance.GetFieldValue<uint32_t>(fieldName);
+			uint32_t val = managedInstance.GetFieldValue<int32_t>(fieldName);
 			fieldJson.push_back({ "Value", val });
 			nativeTypeFound = true;
 		}
@@ -250,8 +250,8 @@ namespace Odyssey::Entities
 		}
 		else if (managedType == Coral::ManagedType::Int)
 		{
-			uint32_t val = jsonObject.at("Value");
-			managedInstance.SetFieldValue<uint32_t>(fieldName, val);
+			int32_t val = jsonObject.at("Value");
+			managedInstance.SetFieldValue<int32_t>(fieldName, val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Long)

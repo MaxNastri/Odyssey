@@ -6,11 +6,10 @@ namespace Odyssey::Editor
 	class FloatDrawer : public PropertyDrawer
 	{
 	public:
-		FloatDrawer(const std::string& propertyLabel, float initialValue);			
+		FloatDrawer(const std::string& propertyLabel, float initialValue, std::function<void(float)> callback);
 
 	public:
 		virtual void Draw() override;
-		void SetCallback(std::function<void(float)> callback);
 
 	private:
 		std::function<void(float)> valueUpdatedCallback;

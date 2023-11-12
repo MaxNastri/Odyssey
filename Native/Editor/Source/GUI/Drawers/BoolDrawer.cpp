@@ -3,10 +3,11 @@
 
 namespace Odyssey::Editor
 {
-	BoolDrawer::BoolDrawer(const std::string& propertyLabel, bool initialValue)
+	BoolDrawer::BoolDrawer(const std::string& propertyLabel, bool initialValue, std::function<void(bool)> callback)
 		: PropertyDrawer(propertyLabel)
 	{
 		data = initialValue;
+		valueUpdatedCallback = callback;
 	}
 
 	void BoolDrawer::Draw()
@@ -19,10 +20,5 @@ namespace Odyssey::Editor
 		{
 			valueUpdatedCallback(data);
 		}
-	}
-
-	void BoolDrawer::SetCallback(std::function<void(bool)> callback)
-	{
-		valueUpdatedCallback = callback;
 	}
 }

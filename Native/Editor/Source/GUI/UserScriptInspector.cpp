@@ -8,33 +8,28 @@
 
 namespace Odyssey::Editor
 {
-	UserScriptInspector::UserScriptInspector(Entities::GameObject go)
+	template <typename FieldType>
+	void AddIntDrawer(Entities::GameObject gameObject, std::string fieldName, Coral::ManagedObject userObject, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
 	{
 		using namespace Entities;
-		gameObject = go;
 
-		if (UserScript* userScript = ComponentManager::GetComponent<UserScript>(gameObject))
-		{
-			Coral::Type type = userScript->GetType();
-			Coral::ManagedObject userObject = userScript->GetManagedObject();
-
-			std::vector<Coral::FieldInfo> fields = type.GetFields();
-
-			for (auto& field : fields)
+		FieldType fieldValue = userObject.GetFieldValue<FieldType>(fieldName);
+		std::function<void(FieldType)> callback = [gameObject, fieldName](FieldType fieldValue)
 			{
-				if (field.GetAccessibility() == Coral::TypeAccessibility::Public)
+				if (UserScript* userScript = ComponentManager::GetComponent<UserScript>(gameObject))
 				{
-					std::string fieldName = field.GetName();
-					Coral::String typeName = field.GetType().GetFullName();
-					if (typeName == "NativeString")
-					{
-						//Coral::NativeString str = userObject.GetFieldValue<Coral::NativeString>(fieldName);
-						int ebug = 0;
-					}
-					CreateDrawerFromProperty(gameObject, fieldName, field.GetType().GetManagedType(), userObject);
+					userScript->GetManagedObject().SetFieldValue<FieldType>(fieldName, fieldValue);
 				}
-			}
-		}
+			};
+
+		std::unique_ptr<IntDrawer<FieldType>> drawer = std::make_unique<IntDrawer<FieldType>>(fieldName, fieldValue, callback);
+		drawers.push_back(std::move(drawer));
+	}
+
+	UserScriptInspector::UserScriptInspector(Entities::GameObject go)
+	{
+		gameObject = go;
+		InitializeDrawers();
 	}
 
 	void UserScriptInspector::Draw()
@@ -57,6 +52,44 @@ namespace Odyssey::Editor
 		ImGui::Separator();
 	}
 
+	void UserScriptInspector::UpdateFields()
+	{
+		drawers.clear();
+		InitializeDrawers();
+	}
+
+	
+	void UserScriptInspector::InitializeDrawers()
+	{
+		using namespace Entities;
+
+		if (UserScript* userScript = ComponentManager::GetComponent<UserScript>(gameObject))
+		{
+			Coral::Type type = userScript->GetType();
+			Coral::ManagedObject userObject = userScript->GetManagedObject();
+
+			std::vector<Coral::FieldInfo> fields = type.GetFields();
+
+			for (auto& field : fields)
+			{
+				if (field.GetAccessibility() == Coral::TypeAccessibility::Public)
+				{
+					std::string fieldName = field.GetName();
+					Coral::Type fieldType = field.GetType();
+					if (fieldType.IsString())
+					{
+						//Coral::NativeString str = userObject.GetFieldValue<Coral::NativeString>(fieldName);
+						int ebug = 0;
+					}
+					else
+					{
+						CreateDrawerFromProperty(gameObject, fieldName, field.GetType().GetManagedType(), userObject);
+					}
+				}
+			}
+		}
+	}
+
 	void UserScriptInspector::CreateDrawerFromProperty(Entities::GameObject gameObject, std::string fieldName, Coral::ManagedType managedType, Coral::ManagedObject userObject)
 	{
 		using namespace Entities;
@@ -64,67 +97,71 @@ namespace Odyssey::Editor
 		switch (managedType)
 		{
 			case Coral::ManagedType::SByte:
+			{
+				AddIntDrawer<char8_t>(gameObject, fieldName, userObject, drawers);
 				break;
+			}
 			case Coral::ManagedType::Byte:
+			{
+				AddIntDrawer<uint8_t>(gameObject, fieldName, userObject, drawers);
 				break;
+			}
 			case Coral::ManagedType::Short:
+			{
+				AddIntDrawer<uint16_t>(gameObject, fieldName, userObject, drawers);
 				break;
+			}
 			case Coral::ManagedType::UShort:
+			{
+				AddIntDrawer<uint16_t>(gameObject, fieldName, userObject, drawers);
 				break;
+			}
 			case Coral::ManagedType::UInt:
+			{
+				AddIntDrawer<uint32_t>(gameObject, fieldName, userObject, drawers);
 				break;
+			}
 			case Coral::ManagedType::Long:
+			{
+				AddIntDrawer<uint64_t>(gameObject, fieldName, userObject, drawers);
 				break;
+			}
 			case Coral::ManagedType::ULong:
+			{
+				AddIntDrawer<uint64_t>(gameObject, fieldName, userObject, drawers);
 				break;
+			}
 			case Coral::ManagedType::Int:
 			{
-				//uint32_t fieldData = userObject.GetFieldValue<uint64_t>(fieldName);
-
-				//std::unique_ptr<IntDrawer> drawer = std::make_unique<IntDrawer>(fieldName, (int)fieldData);
-				//drawer->SetCallback
-				//(
-				//	[gameObject, fieldName](int fieldValue)
-				//	{
-				//		if (UserScript* userScript = ComponentManager::GetComponent<UserScript>(gameObject))
-				//		{
-				//			userScript->GetManagedObject().SetPropertyValueRaw(fieldName, &fieldValue);
-				//		}
-				//	}
-				//);
-				//drawers.push_back(std::move(drawer));
+				AddIntDrawer<int32_t>(gameObject, fieldName, userObject, drawers);
 				break;
 			}
 			case Coral::ManagedType::Bool:
 			{
-				std::unique_ptr<BoolDrawer> drawer = std::make_unique<BoolDrawer>(fieldName, userObject.GetFieldValue<uint32_t>(fieldName));
-				drawer->SetCallback
-				(
+				std::function<void(bool)> callback =
 					[gameObject, fieldName](bool fieldValue)
 					{
 						if (UserScript* userScript = ComponentManager::GetComponent<UserScript>(gameObject))
 						{
-							userScript->GetManagedObject().SetPropertyValue<uint32_t>(fieldName, fieldValue);
+							userScript->GetManagedObject().SetFieldValue<uint32_t>(fieldName, fieldValue);
 						}
-					}
-				);
+					};
+
+				std::unique_ptr<BoolDrawer> drawer = std::make_unique<BoolDrawer>(fieldName, userObject.GetFieldValue<uint32_t>(fieldName), callback);
 				drawers.push_back(std::move(drawer));
 				break;
 			}
 			case Coral::ManagedType::Double:
 			case Coral::ManagedType::Float:
 			{
-				std::unique_ptr<FloatDrawer> drawer = std::make_unique<FloatDrawer>(fieldName, userObject.GetFieldValue<float>(fieldName));
-				drawer->SetCallback
-				(
-					[gameObject, fieldName](float fieldValue)
+				std::function<void(float)> callback = [gameObject, fieldName](float fieldValue)
 					{
 						if (UserScript* userScript = ComponentManager::GetComponent<UserScript>(gameObject))
 						{
-							userScript->GetManagedObject().SetPropertyValue<float>(fieldName, fieldValue);
+							userScript->GetManagedObject().SetFieldValue<float>(fieldName, fieldValue);
 						}
-					}
-				);
+					};
+				std::unique_ptr<FloatDrawer> drawer = std::make_unique<FloatDrawer>(fieldName, userObject.GetFieldValue<float>(fieldName), callback);
 				drawers.push_back(std::move(drawer));
 				break;
 			}

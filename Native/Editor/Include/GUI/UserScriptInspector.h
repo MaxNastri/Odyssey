@@ -16,8 +16,11 @@ namespace Odyssey::Editor
 
 	public:
 		virtual void Draw() override;
+		void UpdateFields();
 
 	private:
+		void InitializeDrawers();
+
 		void CreateDrawerFromProperty(Entities::GameObject gameObject, std::string fieldName, Coral::ManagedType managedType, Coral::ManagedObject userObject);
 
 	private:
