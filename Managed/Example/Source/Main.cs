@@ -21,7 +21,6 @@ namespace Example.Managed
 		public int movement = 10;
 		public float newSpeedMulti = 0.01f;
 		public int anotherMovementThing = -1;
-		public byte myByte = 1;
 
 		public override void Update() 
 		{
@@ -33,7 +32,7 @@ namespace Example.Managed
 	{
 		public string EnterYourName = "";
 		public int NameCount;
-		public bool FuckOff;
+		public bool otherBool;
 	}
 
 

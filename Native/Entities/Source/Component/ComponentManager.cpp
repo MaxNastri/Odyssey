@@ -94,5 +94,17 @@ namespace Odyssey::Entities
 
 			gameObjectToComponentArrayIndex.erase(gameObject.id);
 		}
+
+		if (gameObjectToUserScriptIndex.find(gameObject.id) != gameObjectToUserScriptIndex.end())
+		{
+			std::vector<std::string> classNames = gameObjectToUserScriptIndex[gameObject.id];
+			for (auto& className : classNames)
+			{
+				ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(className);
+				userScriptArray->RemoveGameObject(gameObject.id);
+
+			}
+			gameObjectToUserScriptIndex.erase(gameObject.id);
+		}
 	}
 }

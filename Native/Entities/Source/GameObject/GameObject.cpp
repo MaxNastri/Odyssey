@@ -30,6 +30,14 @@ namespace Odyssey::Entities
             };
 
         ComponentManager::ExecuteOnGameObjectComponents(*this, serializeComponent);
+
+        auto userScripts = ComponentManager::GetAllUserScripts(*this);
+
+        for (auto& [scriptName, userScript] : userScripts)
+        {
+            userScript->Serialize(gameObjectJson);
+        }
+
         sceneJson += {"GameObject." + std::to_string(id), gameObjectJson};
     }
 
@@ -46,7 +54,7 @@ namespace Odyssey::Entities
                 if (type == UserScript::Type)
                 {
                     std::string managedType = element.at("ManagedType");
-                    component = ComponentManager::AddUserScript(*this, managedType);
+                    component = ComponentManager::AddUserScript(*this, managedType, managedType);
                 }
                 else
                 {
