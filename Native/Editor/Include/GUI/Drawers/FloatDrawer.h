@@ -15,6 +15,6 @@ namespace Odyssey::Editor
 		std::function<void(float)> valueUpdatedCallback;
 		float step = 0.0f;
 		float stepFast = 0.0f;
-		float value;
+		float data;
 	};
 }

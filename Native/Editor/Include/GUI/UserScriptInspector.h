@@ -22,6 +22,7 @@ namespace Odyssey::Editor
 		void InitializeDrawers();
 
 		void CreateDrawerFromProperty(Entities::GameObject gameObject, std::string fieldName, Coral::ManagedType managedType, Coral::ManagedObject userObject);
+		void CreateStringDrawer(Entities::GameObject gameObject, std::string fieldName, Coral::ManagedObject userObject);
 
 	private:
 		Entities::GameObject gameObject;

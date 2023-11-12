@@ -1,7 +1,9 @@
 #include "UserScriptInspector.h"
 #include "FloatDrawer.h"
+#include "DoubleDrawer.h"
 #include "BoolDrawer.h"
 #include "IntDrawer.h"
+#include "StringDrawer.h"
 #include <UserScript.h>
 #include <ComponentManager.h>
 #include <imgui.h>
@@ -78,8 +80,7 @@ namespace Odyssey::Editor
 					Coral::Type fieldType = field.GetType();
 					if (fieldType.IsString())
 					{
-						//Coral::NativeString str = userObject.GetFieldValue<Coral::NativeString>(fieldName);
-						int ebug = 0;
+						CreateStringDrawer(gameObject, fieldName, userObject);
 					}
 					else
 					{
@@ -152,6 +153,18 @@ namespace Odyssey::Editor
 				break;
 			}
 			case Coral::ManagedType::Double:
+			{
+				std::function<void(double)> callback = [gameObject, fieldName](double fieldValue)
+					{
+						if (UserScript* userScript = ComponentManager::GetComponent<UserScript>(gameObject))
+						{
+							userScript->GetManagedObject().SetFieldValue<double>(fieldName, fieldValue);
+						}
+					};
+				std::unique_ptr<DoubleDrawer> drawer = std::make_unique<DoubleDrawer>(fieldName, userObject.GetFieldValue<double>(fieldName), callback);
+				drawers.push_back(std::move(drawer));
+				break;
+			}
 			case Coral::ManagedType::Float:
 			{
 				std::function<void(float)> callback = [gameObject, fieldName](float fieldValue)
@@ -166,5 +179,25 @@ namespace Odyssey::Editor
 				break;
 			}
 		}
+	}
+
+	void UserScriptInspector::CreateStringDrawer(Entities::GameObject gameObject, std::string fieldName, Coral::ManagedObject userObject)
+	{
+		using namespace Entities;
+
+		std::function<void(std::string)> callback =
+			[gameObject, fieldName](std::string fieldValue)
+			{
+				if (UserScript* userScript = ComponentManager::GetComponent<UserScript>(gameObject))
+				{
+					Coral::ScopedString field = Coral::String::New(fieldValue);
+					userScript->GetManagedObject().SetFieldValue<Coral::String>(fieldName, field);
+				}
+			};
+
+		Coral::ScopedString field = userObject.GetFieldValue<Coral::String>(fieldName);
+
+		std::unique_ptr<StringDrawer> drawer = std::make_unique<StringDrawer>(fieldName, field, callback);
+		drawers.push_back(std::move(drawer));
 	}
 }

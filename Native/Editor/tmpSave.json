@@ -6,7 +6,7 @@
         "Component.UserScript": {
             "IAmAlive": {
                 "ManagedType": 11,
-                "Value": false
+                "Value": true
             },
             "ManagedType": "Example.Managed.ExampleScript",
             "MyName": {
@@ -17,6 +17,10 @@
             "anotherMovementThing": {
                 "ManagedType": 5,
                 "Value": 4294967295
+            },
+            "doublue": {
+                "ManagedType": 10,
+                "Value": 1.337
             },
             "movement": {
                 "ManagedType": 5,
