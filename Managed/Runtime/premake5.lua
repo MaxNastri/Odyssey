@@ -1,13 +1,14 @@
 include "../CSExtensions.lua"
 
-project "Odyssey.Managed.Core"
+project "Coral.Managed"
     language "C#"
     dotnetframework "net7.0"
     kind "SharedLib"
 	clr "Unsafe"
-    
-	targetdir("%{wks.location}/Build/%{cfg.buildcfg}")
-	objdir("%{wks.location}/Intermediates/%{cfg.buildcfg}")
+	targetdir("Build/%{cfg.buildcfg}")
+	objdir("Intermediates/%{cfg.buildcfg}")
+
+    -- Don't specify architecture here. (see https://github.com/premake/premake-core/issues/1758)
 
     propertytags {
         { "AppendTargetFrameworkToOutputPath", "false" },

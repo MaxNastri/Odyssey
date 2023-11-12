@@ -25,12 +25,13 @@ namespace Odyssey::Scripting
 		hostSettings =
 		{
 			.CoralDirectory = coralDir,
+			.CoralFilename = "Coral.Managed.dll",
 			.ExceptionCallback = ExceptionCallback
 		};
 		hostInstance.Initialize(hostSettings);
 
 		// Build and load the user assemblies
-		scriptCompiler.CompileUserAssembly();
+		//scriptCompiler.CompileUserAssembly();
 		LoadUserAssemblies();
 	}
 

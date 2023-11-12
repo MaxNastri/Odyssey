@@ -2,6 +2,7 @@
 #include <Type.hpp>
 #include <ScriptingManager.h>
 #include <vector>
+#include <String.hpp>
 
 namespace Odyssey::Entities
 {
@@ -42,10 +43,17 @@ namespace Odyssey::Entities
 		for (auto& field : fields)
 		{
 			std::string fieldName = field.GetName();
+			Coral::Type fieldType = field.GetType();
 
-			Coral::Type& type = field.GetType();
-			Coral::ManagedType managedType = type.GetManagedType();
-			SerializeNativeTypes(managedType, fieldName, componentJson);
+			if (fieldType.IsString())
+			{
+				SerializeNativeString(fieldName, componentJson);
+			}
+			else
+			{
+				Coral::ManagedType managedType = type.GetManagedType();
+				SerializeNativeTypes(managedType, fieldName, componentJson);
+			}
 		}
 
 		jsonObject += { "Component." + UserScript::ClassName, componentJson};
@@ -63,15 +71,36 @@ namespace Odyssey::Entities
 		{
 			if (val.is_object())
 			{
-				Coral::ManagedType managedType = val.at("ManagedType");
-
-				std::vector<Coral::FieldInfo> fields = managedInstance.GetType().GetFields();
-				for (int i = 0; i < fields.size(); ++i)
+				json managedTypeJson = val.at("ManagedType");
+				if (managedTypeJson.is_string())
 				{
-					if (fields[i].GetName() == key)
+					std::string stringType = val.at("ManagedType");
+
+					std::vector<Coral::FieldInfo> fields = managedInstance.GetType().GetFields();
+					for (int i = 0; i < fields.size(); ++i)
 					{
-						DeserializeNativeType(managedType, key, val);
+						// Make sure the field still exists and was not deleted between serialization
+						if (fields[i].GetName() == key)
+						{
+							DeserializeNativeString(key, val);
+							break;
+						}
 					}
+				}
+				else
+				{
+					Coral::ManagedType managedType = managedTypeJson;
+
+					std::vector<Coral::FieldInfo> fields = managedInstance.GetType().GetFields();
+					for (int i = 0; i < fields.size(); ++i)
+					{
+						if (fields[i].GetName() == key)
+						{
+							DeserializeNativeType(managedType, key, val);
+							break;
+						}
+					}
+
 				}
 			}
 		}
@@ -166,10 +195,22 @@ namespace Odyssey::Entities
 
 		return nativeTypeFound;
 	}
+
+	bool UserScript::SerializeNativeString(const std::string& fieldName, json& jsonObject)
+	{
+		Coral::String fieldValue = managedInstance.GetFieldValue<Coral::String>(fieldName);
+		json fieldJson
+		{
+			{ "ManagedType", "String" },
+			{ "Value", std::string(fieldValue) }
+		};
+		jsonObject += { fieldName, fieldJson };
+		return true;
+	}
+
 	bool UserScript::DeserializeNativeType(const Coral::ManagedType& managedType, const std::string& fieldName, const json& jsonObject)
 	{
 		bool nativeTypeFound = false;
-
 
 		if (managedType == Coral::ManagedType::Byte)
 		{
@@ -239,5 +280,13 @@ namespace Odyssey::Entities
 			nativeTypeFound = true;
 		}
 		return nativeTypeFound;
+	}
+
+	bool UserScript::DeserializeNativeString(const std::string& fieldName, const json& jsonObject)
+	{
+		std::string val = jsonObject.at("Value");
+		Coral::ScopedString fieldValue = Coral::String::New(val);
+		managedInstance.SetFieldValue<Coral::String>(fieldName, fieldValue);
+		return true;
 	}
 }

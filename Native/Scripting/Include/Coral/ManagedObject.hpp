@@ -2,7 +2,6 @@
 
 #include "Core.hpp"
 #include "Utility.hpp"
-#include "NativeString.hpp"
 
 namespace Coral {
 
@@ -62,8 +61,6 @@ namespace Coral {
 		TReturn GetFieldValue(std::string_view InFieldName)
 		{
 			TReturn result;
-			int size = sizeof(TReturn);
-
 			GetFieldValueRaw(InFieldName, &result);
 			return result;
 		}

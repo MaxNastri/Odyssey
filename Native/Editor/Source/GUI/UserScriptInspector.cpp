@@ -25,10 +25,10 @@ namespace Odyssey::Editor
 				if (field.GetAccessibility() == Coral::TypeAccessibility::Public)
 				{
 					std::string fieldName = field.GetName();
-					std::string_view typeName = field.GetType().GetName();
+					Coral::String typeName = field.GetType().GetFullName();
 					if (typeName == "NativeString")
 					{
-						Coral::NativeString str = userObject.GetFieldValue<Coral::NativeString>(fieldName);
+						//Coral::NativeString str = userObject.GetFieldValue<Coral::NativeString>(fieldName);
 						int ebug = 0;
 					}
 					CreateDrawerFromProperty(gameObject, fieldName, field.GetType().GetManagedType(), userObject);
@@ -79,20 +79,20 @@ namespace Odyssey::Editor
 				break;
 			case Coral::ManagedType::Int:
 			{
-				uint32_t fieldData = userObject.GetFieldValue<uint64_t>(fieldName);
+				//uint32_t fieldData = userObject.GetFieldValue<uint64_t>(fieldName);
 
-				std::unique_ptr<IntDrawer> drawer = std::make_unique<IntDrawer>(fieldName, (int)fieldData);
-				drawer->SetCallback
-				(
-					[gameObject, fieldName](int fieldValue)
-					{
-						if (UserScript* userScript = ComponentManager::GetComponent<UserScript>(gameObject))
-						{
-							userScript->GetManagedObject().SetPropertyValueRaw(fieldName, &fieldValue);
-						}
-					}
-				);
-				drawers.push_back(std::move(drawer));
+				//std::unique_ptr<IntDrawer> drawer = std::make_unique<IntDrawer>(fieldName, (int)fieldData);
+				//drawer->SetCallback
+				//(
+				//	[gameObject, fieldName](int fieldValue)
+				//	{
+				//		if (UserScript* userScript = ComponentManager::GetComponent<UserScript>(gameObject))
+				//		{
+				//			userScript->GetManagedObject().SetPropertyValueRaw(fieldName, &fieldValue);
+				//		}
+				//	}
+				//);
+				//drawers.push_back(std::move(drawer));
 				break;
 			}
 			case Coral::ManagedType::Bool:

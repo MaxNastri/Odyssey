@@ -15,4 +15,6 @@ project "Odyssey.Managed.Example"
         "Source/**.cs"
     }
     
-    links { "Odyssey.Managed.Core" }
+    links {
+        "Coral.Managed",
+    }

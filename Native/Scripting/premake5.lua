@@ -43,24 +43,24 @@ project "Odyssey.Native.Scripting"
         "%{wks.location}/Native/Framework/Include/**",
     }
     
-    filter { "system:windows" }
-
-		postbuildcommands {
-			'{ECHO} Copying "%{wks.location}/Vendor/NetCore/7.0.7/nethost.dll" to "%{cfg.targetdir}"',
-			'{COPYFILE} "%{wks.location}/Vendor/NetCore/7.0.7/nethost.dll" "%{cfg.targetdir}"',
-            '{COPYFILE} "%{wks.location}/Managed/Core/Odyssey.Managed.Core.runtimeconfig.json" "%{cfg.targetdir}"',
-		}
-	filter {}
 
     libdirs {
         "%{cfg.targetdir}",
-        "%{wks.location}/Vendor/NetCore/7.0.7/"
     }
 
     links {
-        "nethost.lib",
         "Odyssey.Native.Framework.lib",
     }
+
+    filter { "system:windows" }
+
+		postbuildcommands {
+            '{COPYFILE} "%{wks.location}Managed/Runtime/Coral.Managed.runtimeconfig.json" "%{cfg.targetdir}"',
+		}
+	filter {}
+
+	filter { "system:windows" }
+		defines { "CORAL_WINDOWS" }
 
     filter { "configurations:Debug" }
         runtime "Debug"

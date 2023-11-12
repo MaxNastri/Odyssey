@@ -23,7 +23,9 @@ namespace Odyssey::Entities
 
 	private:
 		bool SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, json& jsonObject);
+		bool SerializeNativeString(const std::string& fieldName, json& jsonObject);
 		bool DeserializeNativeType(const Coral::ManagedType& managedType, const std::string& fieldName, const json& jsonObject);
+		bool DeserializeNativeString(const std::string& fieldName, const json& jsonObject);
 	private:
 		Coral::ManagedObject managedInstance;
 		CLASS_DECLARATION(UserScript);

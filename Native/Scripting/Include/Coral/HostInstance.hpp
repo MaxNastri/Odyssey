@@ -9,7 +9,7 @@
 
 namespace Coral {
 
-	using ExceptionCallbackFn = std::function<void(std::string)>;
+	using ExceptionCallbackFn = std::function<void(std::string_view)>;
 
 	struct HostSettings
 	{
@@ -17,7 +17,8 @@ namespace Coral {
 		/// The file path to Coral.runtimeconfig.json (e.g C:\Dev\MyProject\ThirdParty\Coral)
 		/// </summary>
 		std::string CoralDirectory;
-		
+		std::string CoralFilename;
+
 		MessageCallbackFn MessageCallback = nullptr;
 		MessageLevel MessageFilter = MessageLevel::All;
 
