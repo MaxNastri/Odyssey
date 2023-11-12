@@ -12,10 +12,10 @@ namespace Odyssey::Entities
 		// Iterate through this game object's user scripts
 		for (int i = 0; i < gameObjectToUserScriptIndex[gameObject.id].size(); ++i)
 		{
-			std::string& storedManagedName = gameObjectToUserScriptIndex[gameObject.id][i];
+			auto& pair = gameObjectToUserScriptIndex[gameObject.id][i];
 
 			// Check if this pair matches the managed name of the script to remove
-			if (storedManagedName == managedName)
+			if (pair.first == managedName)
 			{
 				// Remove it from the list of user scripts
 				gameObjectToUserScriptIndex[gameObject.id].erase(gameObjectToUserScriptIndex[gameObject.id].begin() + i);
@@ -43,9 +43,9 @@ namespace Odyssey::Entities
 
 		if (gameObjectToUserScriptIndex.find(gameObject.id) != gameObjectToUserScriptIndex.end())
 		{
-			std::vector<std::string> storedUserScripts = gameObjectToUserScriptIndex[gameObject.id];
+			std::vector<std::pair<std::string, unsigned int>> storedUserScripts = gameObjectToUserScriptIndex[gameObject.id];
 
-			for (std::string& managedName : storedUserScripts)
+			for (const auto& [managedName, index] : storedUserScripts)
 			{
 				ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(managedName);
 				userScripts.push_back(std::make_pair(managedName, userScriptArray->GetComponentData(gameObject.id)));
@@ -74,10 +74,15 @@ namespace Odyssey::Entities
 	void ComponentManager::ExecuteOnGameObjectComponents(const GameObject& gameObject, std::function<void(Component*)> func)
 	{
 		// For each component assigned to the game object
-		for (const auto& pair : gameObjectToComponentArrayIndex[gameObject.id])
+		for (const auto& [componentType, componentIndex] : gameObjectToComponentArrayIndex[gameObject.id])
 		{
 			// Get the component array and run the component for this game object's Awake
-			func(componentArrays[pair.first]->componentData[pair.second].get());
+			func(componentArrays[componentType]->componentData[componentIndex].get());
+		}
+
+		for (const auto& [className, componentIndex] : gameObjectToUserScriptIndex[gameObject.id])
+		{
+			func(userScriptArrays[className]->componentData[componentIndex].get());
 		}
 	}
 
@@ -97,13 +102,12 @@ namespace Odyssey::Entities
 
 		if (gameObjectToUserScriptIndex.find(gameObject.id) != gameObjectToUserScriptIndex.end())
 		{
-			std::vector<std::string> classNames = gameObjectToUserScriptIndex[gameObject.id];
-			for (auto& className : classNames)
+			for (const auto& [className, index] : gameObjectToUserScriptIndex[gameObject.id])
 			{
 				ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(className);
 				userScriptArray->RemoveGameObject(gameObject.id);
-
 			}
+
 			gameObjectToUserScriptIndex.erase(gameObject.id);
 		}
 	}

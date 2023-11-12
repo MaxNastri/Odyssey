@@ -55,7 +55,7 @@ namespace Odyssey::Entities
 			unsigned int index = userScriptArray->InsertData(gameObject.id, params...);
 			if (index != -1)
 			{
-				gameObjectToUserScriptIndex[gameObject.id].push_back(managedName);
+				gameObjectToUserScriptIndex[gameObject.id].push_back(std::make_pair(managedName, index));
 			}
 
 			UserScript* userScript = userScriptArray->GetComponentData(gameObject.id);
@@ -139,6 +139,6 @@ namespace Odyssey::Entities
 		inline static std::unordered_map<unsigned int, std::vector<std::pair<std::type_index, unsigned int>>> gameObjectToComponentArrayIndex;
 
 		inline static std::unordered_map<std::string, std::unique_ptr<ComponentArray<UserScript>>> userScriptArrays;
-		inline static std::unordered_map<unsigned int, std::vector<std::string>> gameObjectToUserScriptIndex;
+		inline static std::unordered_map<unsigned int, std::vector<std::pair<std::string, unsigned int>>> gameObjectToUserScriptIndex;
 	};
 }

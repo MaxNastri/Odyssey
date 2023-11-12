@@ -20,10 +20,6 @@
             }
         },
         "Component.UserScript.Example.Managed.ExampleScript": {
-            "IAmAlive": {
-                "ManagedType": 11,
-                "Value": false
-            },
             "ManagedType": "Example.Managed.ExampleScript",
             "MyName": {
                 "ManagedType": "String",
@@ -37,10 +33,6 @@
             "movement": {
                 "ManagedType": 5,
                 "Value": 10
-            },
-            "myByte": {
-                "ManagedType": 2,
-                "Value": 1
             },
             "newSpeedMulti": {
                 "ManagedType": 9,

@@ -15,7 +15,6 @@ namespace Example.Managed
 
 	public class ExampleScript : Component
 	{
-		public bool IAmAlive = true;
 		public string MyName = "Max";
 		public float speed = 42.0f;
 		public int movement = 10;
@@ -31,8 +30,6 @@ namespace Example.Managed
 	public class AnotherScript : Component
 	{
 		public string EnterYourName = "";
-		public int NameCount;
-		public bool otherBool;
 	}
 
 
