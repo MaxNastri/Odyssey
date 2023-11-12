@@ -2,6 +2,8 @@
 #include "Paths.h"
 #include <Logger.h>
 #include <Windows.h>
+#include <EventSystem.h>
+#include "ScriptingEvents.h"
 
 namespace Odyssey::Scripting
 {
@@ -32,6 +34,8 @@ namespace Odyssey::Scripting
 	{
 		buildInProgress = true;
 
+		Framework::EventSystem::Dispatch<OnBuildStart>();
+
 		STARTUPINFOW startInfo;
 		PROCESS_INFORMATION pi;
 		ZeroMemory(&startInfo, sizeof(startInfo));
@@ -59,7 +63,9 @@ namespace Odyssey::Scripting
 			return false;
 		}
 
-		return WaitForBuildComplete(pi);
+		bool success = WaitForBuildComplete(pi);
+		Framework::EventSystem::Dispatch<OnBuildFinished>(success);
+		return success;
 	}
 
 	bool ScriptCompiler::WaitForBuildComplete(PROCESS_INFORMATION pi)

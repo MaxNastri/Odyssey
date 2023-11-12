@@ -15,12 +15,12 @@ namespace Odyssey::Framework
 	class EventSystem
 	{
 	public:
-		template<typename T>
-		static void Dispatch()
+		template<typename T, typename... Args>
+		static void Dispatch(Args&&... params)
 		{
 			std::type_index typeID = typeid(T);
 
-			T* currentEvent = new T();
+			T* currentEvent = new T(params...);
 
 			EventListenerArray<T>* eventListenerArray = GetEventListenerArray<T>();
 			eventListenerArray->ExecuteCallbacks(currentEvent);

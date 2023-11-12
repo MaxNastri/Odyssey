@@ -6,7 +6,7 @@
         "Component.UserScript": {
             "IAmAlive": {
                 "ManagedType": 11,
-                "Value": true
+                "Value": false
             },
             "ManagedType": "Example.Managed.ExampleScript",
             "MyName": {
