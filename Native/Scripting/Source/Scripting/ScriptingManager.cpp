@@ -1,7 +1,7 @@
 #include "ScriptingManager.h"
-#include "ScriptCompiler.h"
 #include "Paths.h"
 #include <Logger.h>
+#include "ScriptingEvents.h"
 
 namespace Odyssey::Scripting
 {
@@ -9,7 +9,6 @@ namespace Odyssey::Scripting
 	Coral::HostSettings ScriptingManager::hostSettings;
 	Coral::AssemblyLoadContext ScriptingManager::userAssemblyContext;
 	Coral::ManagedAssembly ScriptingManager::userAssembly;
-	ScriptCompiler ScriptingManager::scriptCompiler;
 	std::vector<Coral::ManagedObject> ScriptingManager::managedObjects;
 
 	void ExceptionCallback(std::string_view exception)
@@ -30,8 +29,6 @@ namespace Odyssey::Scripting
 		};
 		hostInstance.Initialize(hostSettings);
 
-		// Build and load the user assemblies
-		//scriptCompiler.CompileUserAssembly();
 		LoadUserAssemblies();
 	}
 
@@ -56,15 +53,11 @@ namespace Odyssey::Scripting
 		hostInstance.UnloadAssemblyLoadContext(userAssemblyContext);
 	}
 
-	bool ScriptingManager::RecompileUserAssemblies()
-	{
-		return scriptCompiler.CompileUserAssembly();
-	}
-
 	void ScriptingManager::ReloadUserAssemblies()
 	{
 		UnloadUserAssemblies();
 		LoadUserAssemblies();
+		Framework::EventSystem::Dispatch<OnAssembliesReloaded>();
 	}
 
 	Coral::ManagedObject ScriptingManager::CreateManagedObject(const std::string& fqManagedClassName)

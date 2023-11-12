@@ -3,13 +3,16 @@
 #include <Logger.h>
 #include <Windows.h>
 #include <EventSystem.h>
-#include "ScriptingEvents.h"
+#include "EditorEvents.h"
+#include <ScriptingManager.h>
 
-namespace Odyssey::Scripting
+namespace Odyssey::Editor
 {
-	ScriptCompiler::ScriptCompiler()
+	bool ScriptCompiler::buildInProgress = false;
+
+	void ScriptCompiler::ListenForEvents()
 	{
-		buildInProgress = false;
+		Framework::EventSystem::Listen<OnUserFilesModified>(ScriptCompiler::UserFilesModified);
 	}
 
 	bool ScriptCompiler::CompileUserAssembly()
@@ -27,10 +30,13 @@ namespace Odyssey::Scripting
 			L"\" -c Debug --no-self-contained " +
 			L"-o \"./tmp_build/\" -r \"win-x64\"";
 
-		return StartBuild(buildCommand);
+		bool success = BuildAssemblies(buildCommand);
+		Framework::EventSystem::Dispatch<OnBuildFinished>(success);
+
+		return success;
 	}
 
-	bool ScriptCompiler::StartBuild(std::wstring buildCommand)
+	bool ScriptCompiler::BuildAssemblies(std::wstring buildCommand)
 	{
 		buildInProgress = true;
 
@@ -63,9 +69,7 @@ namespace Odyssey::Scripting
 			return false;
 		}
 
-		bool success = WaitForBuildComplete(pi);
-		Framework::EventSystem::Dispatch<OnBuildFinished>(success);
-		return success;
+		return WaitForBuildComplete(pi);
 	}
 
 	bool ScriptCompiler::WaitForBuildComplete(PROCESS_INFORMATION pi)
@@ -80,7 +84,7 @@ namespace Odyssey::Scripting
 			{
 				auto err = GetLastError();
 				std::ostringstream oss;
-				oss << "Failed to query process. Error code: "<< std::hex << err;
+				oss << "Failed to query process. Error code: " << std::hex << err;
 				Odyssey::Framework::Logger::LogError(oss.view());
 				buildInProgress = false;
 				return false;
@@ -108,6 +112,25 @@ namespace Odyssey::Scripting
 		{
 			Odyssey::Framework::Logger::LogError("Failed to build managed scripts!");
 			return false;
+		}
+	}
+
+	void ScriptCompiler::UserFilesModified(Editor::OnUserFilesModified* fileSavedEvent)
+	{
+		if (!buildInProgress)
+		{
+			for (const auto& changedFile : fileSavedEvent->changedFileSet)
+			{
+				if (changedFile.second != Framework::FileNotifcations::RenamedNew &&
+					changedFile.second != Framework::FileNotifcations::RenamedOld)
+				{
+					if (CompileUserAssembly())
+					{
+						Scripting::ScriptingManager::ReloadUserAssemblies();
+					}
+					break;
+				}
+			}
 		}
 	}
 }

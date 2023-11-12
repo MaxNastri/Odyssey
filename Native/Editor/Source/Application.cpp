@@ -1,19 +1,25 @@
 #include "Application.h"
 #include <Input.h>
 #include <Logger.h>
-#include <Scene.h>
 #include <FileManager.h>
 #include <Paths.h>
 #include <Graphics.h>
 #include <VulkanRenderer.h>
+#include "ScriptCompiler.h"
+#include <ScriptingManager.h>
+#include "SceneManager.h"
+#include "GUIManager.h"
 
 namespace Odyssey::Editor
 {
 	Application::Application()
 	{
-		ScriptingManager::Initialize();
+		Scripting::ScriptingManager::Initialize();
 		FileManager::Initialize();
 		FileManager::TrackFolder(Paths::Relative::ManagedProjectSource);
+		ScriptCompiler::ListenForEvents();
+		GUIManager::ListenForEvents();
+		SceneManager::ListenForEvents();
 		running = true;
 	}
 
@@ -23,12 +29,11 @@ namespace Odyssey::Editor
 		stopwatch.Start();
 
 		// Create the scene
-		Entities::Scene scene;
-		scene.Deserialize("scene.json");
+		SceneManager::LoadScene("scene.json");
 
+		Entities::Scene scene = SceneManager::GetActiveScene();
 		Entities::GameObject go = scene.GetGameObject(0);
-		std::shared_ptr<InspectorWindow> inspector = std::make_shared<InspectorWindow>(go);
-		guiElements.push_back(inspector);
+		GUIManager::CreateInspectorWindow(go);
 
 		while (running)
 		{
@@ -38,33 +43,14 @@ namespace Odyssey::Editor
 			{
 				stopwatch.Restart();
 
-				if (allowRecompile && Odyssey::Framework::Input::GetKeyPress(Odyssey::KeyCode::Space))
-				{
-					allowRecompile = false;
-
-					if (Scripting::ScriptingManager::RecompileUserAssemblies())
-					{
-						// Scene manager.tempsave
-						scene.Serialize("tmpSave.json");
-						scene.Clear();
-
-						// Reload assemblies
-						Scripting::ScriptingManager::ReloadUserAssemblies();
-
-						// Load temp scene back into memory
-						scene.Deserialize("tmpSave.json");
-
-						inspector->RefreshUserScripts();
-					}
-				}
-				scene.Update();
+				SceneManager::Update();
 
 				if (!r.Update())
 				{
 					running = false;
 				}
 
-				r.Render(guiElements);
+				r.Render();
 			}
 		}
 	}

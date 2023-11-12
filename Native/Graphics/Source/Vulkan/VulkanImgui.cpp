@@ -4,7 +4,7 @@
 #include "imgui_impl_vulkan.h"
 #include "VulkanGlobals.h"
 #include "VulkanCommandPool.h"
-#include "GUIElement.h"
+#include "GraphicsEvents.h"
 
 namespace Odyssey::Graphics
 {
@@ -77,7 +77,7 @@ namespace Odyssey::Graphics
 			ImGui_ImplVulkan_DestroyFontUploadObjects();
 		}
 	}
-	void VulkanImgui::SubmitDraws(std::vector<std::shared_ptr<GUIElement>> elements)
+	void VulkanImgui::SubmitDraws()
 	{
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -88,11 +88,7 @@ namespace Odyssey::Graphics
 			ImGui::ShowDemoWindow(&showDemoWindow);
 		}
 
-		// Draw the gui elements
-		for (const auto& element : elements)
-		{
-			element->Draw();
-		}
+		Framework::EventSystem::Dispatch<OnGUIRenderEvent>();
 	}
 
 	void VulkanImgui::Render(VkCommandBuffer commandBuffer)

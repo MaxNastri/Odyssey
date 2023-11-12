@@ -1,8 +1,7 @@
 #include "FileManager.h"
-#include <io.h>
-#include <cstdio>
-#include <fcntl.h>
 #include <Logger.h>
+#include <EventSystem.h>
+#include "EditorEvents.h"
 
 namespace Odyssey::Editor
 {
@@ -42,6 +41,8 @@ namespace Odyssey::Editor
 
 			Framework::Logger::LogInfo("[FileManager] File changed: " + path + ", action = " + action);
 		}
+
+		Framework::EventSystem::Dispatch<OnUserFilesModified>(notificationSet);
 	}
 
 	void FileManager::FileWatcherError(int64_t id)

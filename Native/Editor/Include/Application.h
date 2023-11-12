@@ -1,12 +1,7 @@
 #pragma once
-#include <filesystem>
-#include <ScriptingManager.h>
-#include <Stopwatch.h>
-#include <FileWatcher.h>
 #include <VulkanRenderer.h>
-#include "InspectorWindow.h"
+#include <Stopwatch.h>
 
-using namespace Odyssey::Scripting;
 using namespace Odyssey::Framework;
 using namespace Odyssey::Graphics;
 
@@ -29,7 +24,6 @@ namespace Odyssey::Editor
 		bool allowRecompile = true;
 		Stopwatch stopwatch;
 		VulkanRenderer r;
-		std::vector<std::shared_ptr<GUIElement>> guiElements;
 
 		const float MaxFPS = 1.0f / 144.0f;
 	};

@@ -30,12 +30,11 @@ namespace Odyssey::Graphics
 
 	public:
 		VulkanImgui(const InitInfo& initInfo);
-		void SubmitDraws(std::vector<std::shared_ptr<GUIElement>> elements);
+		void SubmitDraws();
 		void Render(VkCommandBuffer commandBuffer);
 		void PostRender();
 
 	private:
 		bool showDemoWindow = true;
-		std::vector<std::shared_ptr<GUIElement>> elements;
 	};
 }

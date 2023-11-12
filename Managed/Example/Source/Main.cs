@@ -22,11 +22,10 @@ namespace Example.Managed
 		public float newSpeedMulti = 0.01f;
 		public int anotherMovementThing = -1;
 		public byte myByte = 1;
-		public double doublue = 1.337d;
 
 		public override void Update() 
 		{
-			Console.WriteLine($"IAmAlive: {this.IAmAlive}, MyName: {this.MyName}, Speed = {this.speed}, Movement: {this.movement}");
+			//Console.WriteLine($"IAmAlive: {this.IAmAlive}, MyName: {this.MyName}, Speed = {this.speed}, Movement: {this.movement}");
 		}
 	}
 

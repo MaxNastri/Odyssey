@@ -1,7 +1,6 @@
 #pragma once
 #include "HostInstance.hpp"
 #include "ManagedObject.hpp"
-#include "ScriptCompiler.h"
 #include <EventSystem.h>
 
 namespace Odyssey::Scripting
@@ -12,7 +11,6 @@ namespace Odyssey::Scripting
 		static void Initialize();
 		static void LoadUserAssemblies();
 		static void UnloadUserAssemblies();
-		static bool RecompileUserAssemblies();
 		static void ReloadUserAssemblies();
 
 	public:
@@ -22,7 +20,6 @@ namespace Odyssey::Scripting
 		static Coral::HostSettings hostSettings;
 		static Coral::AssemblyLoadContext userAssemblyContext;
 		static Coral::ManagedAssembly userAssembly;
-		static ScriptCompiler scriptCompiler;
 		static std::vector<Coral::ManagedObject> managedObjects;
 	private:
 		inline static const std::string UserAssemblyFilename = "Odyssey.Managed.Example.dll";

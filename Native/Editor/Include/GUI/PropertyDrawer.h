@@ -8,7 +8,6 @@ namespace Odyssey::Editor
 	{
 	public:
 		PropertyDrawer() = default;
-		~PropertyDrawer() { }
 		PropertyDrawer(const std::string& label)
 			: label(label)
 		{

@@ -23,18 +23,18 @@ namespace Odyssey::Editor
 				};
 
 			// Callback for when the rotation is modified through the drawer
-			std::function<void(Vector3)> rotationModified = [this](Vector3 rotation)
+			std::function<void(Vector3)> rotationModified = [go](Vector3 rotation)
 				{
-					if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject))
+					if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
 					{
 						transform->eulerRotation = rotation;
 					}
 				};
 
 			// Callback for when the scale is modified through the drawer
-			std::function<void(Vector3)> scaleModified = [this](Vector3 scale)
+			std::function<void(Vector3)> scaleModified = [go](Vector3 scale)
 				{
-					if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject))
+					if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
 					{
 						transform->scale = scale;
 					}

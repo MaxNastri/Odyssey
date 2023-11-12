@@ -23,7 +23,7 @@ namespace Odyssey::Graphics
 
 	public:
 		bool Update();
-		bool Render(std::vector<std::shared_ptr<GUIElement>> guiElements);
+		bool Render();
 
 	private:
 		void RenderFrame();

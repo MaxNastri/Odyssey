@@ -36,7 +36,7 @@ namespace Odyssey::Graphics
 		return window->Update();
 	}
 
-	bool VulkanRenderer::Render(std::vector<std::shared_ptr<GUIElement>> guiElements)
+	bool VulkanRenderer::Render()
 	{
 		// if rebuild swapchain, do it
 		if (rebuildSwapchain)
@@ -44,7 +44,7 @@ namespace Odyssey::Graphics
 			RebuildSwapchain();
 		}
 
-		imgui->SubmitDraws(guiElements);
+		imgui->SubmitDraws();
 		RenderFrame();
 		imgui->PostRender();
 		Present();
