@@ -2,7 +2,6 @@
 #include <GUIElement.h>
 #include "PropertyDrawer.h"
 #include <GameObject.h>
-#include <Vector3.h>
 #include <Vector3Drawer.h>
 
 namespace Odyssey

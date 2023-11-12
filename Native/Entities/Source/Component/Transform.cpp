@@ -20,7 +20,7 @@ namespace Odyssey::Entities
 		
 	}
 
-    void Transform::AddPosition(Vector3 pos)
+    void Transform::AddPosition(glm::vec3 pos)
     {
         position += pos;
         dirty = true;
@@ -34,7 +34,7 @@ namespace Odyssey::Entities
         dirty = true;
     }
 
-    void Transform::SetPosition(Vector3 pos)
+    void Transform::SetPosition(glm::vec3 pos)
     {
         position = pos;
         dirty = true;
@@ -48,37 +48,37 @@ namespace Odyssey::Entities
         dirty = true;
     }
 
-    void Transform::AddRotation(Vector3 eulerAngles)
+    void Transform::AddRotation(glm::vec3 eulerAngles)
     {
         eulerRotation += eulerAngles;
         eulerRotation.x = abs(eulerRotation.x) > 360.0f ? eulerRotation.x / 360.0f : eulerRotation.x;
         eulerRotation.y = abs(eulerRotation.y) > 360.0f ? eulerRotation.y / 360.0f : eulerRotation.y;
         eulerRotation.z = abs(eulerRotation.z) > 360.0f ? eulerRotation.z / 360.0f : eulerRotation.z;
-        rotation = Quaternion::Euler(eulerRotation);
+        rotation = glm::quat(glm::vec3(glm::radians(eulerRotation.x), glm::radians(eulerRotation.y), glm::radians(eulerRotation.z)));
         dirty = true;
     }
 
-    void Transform::AddRotation(Quaternion orientation)
+    void Transform::AddRotation(glm::quat orientation)
     {
         rotation = orientation * rotation;
         dirty = true;
     }
 
-    void Transform::SetRotation(Vector3 eulerAngles)
+    void Transform::SetRotation(glm::vec3 eulerAngles)
     {
         eulerRotation = eulerAngles;
-        rotation = Quaternion::Euler(eulerRotation);
+        rotation = glm::quat(glm::vec3(glm::radians(eulerAngles.x), glm::radians(eulerAngles.y), glm::radians(eulerAngles.z)));
         dirty = true;
     }
 
-    void Transform::SetRotation(Quaternion orientation)
+    void Transform::SetRotation(glm::quat orientation)
     {
         rotation = orientation;
         eulerRotation = glm::degrees(glm::eulerAngles(rotation));
         dirty = true;
     }
 
-    void Transform::AddScale(Vector3 scaleFactor)
+    void Transform::AddScale(glm::vec3 scaleFactor)
     {
         scale += scaleFactor;
         dirty = true;
@@ -92,7 +92,7 @@ namespace Odyssey::Entities
         dirty = true;
     }
 
-    void Transform::SetScale(Vector3 scaleFactor)
+    void Transform::SetScale(glm::vec3 scaleFactor)
     {
         scale = scaleFactor;
         dirty = true;
@@ -106,25 +106,25 @@ namespace Odyssey::Entities
         dirty = true;
     }
 
-    Vector3 Transform::Forward()
+    glm::vec3 Transform::Forward()
     {
-        Vector3 row2 = Vector3(glm::column(localMatrix, 2));
+        glm::vec3 row2 = glm::column(localMatrix, 2);
         return glm::normalize(row2);
     }
 
-    Vector3 Transform::Right()
+    glm::vec3 Transform::Right()
     {
-        Vector3 row2 = Vector3(glm::column(localMatrix, 0));
+        glm::vec3 row2 = glm::column(localMatrix, 0);
         return glm::normalize(row2);
     }
 
-    Vector3 Transform::Up()
+    glm::vec3 Transform::Up()
     {
-        Vector3 row2 = Vector3(glm::column(localMatrix, 1));
+        glm::vec3 row2 = glm::column(localMatrix, 1);
         return glm::normalize(row2);
     }
 
-    Matrix4x4 Transform::GetWorldMatrix()
+    glm::mat4x4 Transform::GetWorldMatrix()
     {
         UpdateWorldMatrix();
         return worldMatrix;
@@ -154,10 +154,10 @@ namespace Odyssey::Entities
         //}
     }
 
-    void Transform::RotateAround(Vector3 center, Vector3 axis, float degrees, bool worldSpace)
+    void Transform::RotateAround(glm::vec3 center, glm::vec3 axis, float degrees, bool worldSpace)
     {
-        Quaternion targetRotation = glm::angleAxis(glm::radians(degrees), axis);
-        Vector3 directionToTarget = position - center;
+        glm::quat targetRotation = glm::angleAxis(glm::radians(degrees), axis);
+        glm::vec3 directionToTarget = position - center;
         directionToTarget = targetRotation * directionToTarget;
         SetPosition(center + directionToTarget);
 
@@ -185,7 +185,7 @@ namespace Odyssey::Entities
             float z = std::atan2(localMatrix[1][0] / cosX, localMatrix[0][0] / cosX);
 
             // Set the calculated rotation value
-            eulerRotation = Vector3(x, y, z);
+            eulerRotation = glm::vec3(x, y, z);
         }
         else
         {
@@ -205,7 +205,7 @@ namespace Odyssey::Entities
             }
 
             // Set the calculated rotation value
-            eulerRotation = Vector3(x, y, z);
+            eulerRotation = glm::vec3(x, y, z);
         }
     }
 
@@ -213,7 +213,7 @@ namespace Odyssey::Entities
     {
         // Compose the position, rotation and scale into 3 matrices
         mat4x4 t = glm::translate(glm::identity<mat4x4>(), position);
-        mat4x4 r = glm::toMat4(Quaternion(rotation.x, rotation.y, rotation.z, rotation.w));
+        mat4x4 r = glm::toMat4(glm::quat(rotation.x, rotation.y, rotation.z, rotation.w));
         mat4x4 s = glm::scale(glm::identity<mat4x4>(), scale);
         localMatrix = t * r * s;
         worldMatrix = localMatrix;
@@ -221,14 +221,14 @@ namespace Odyssey::Entities
 
     void Transform::Reset()
     {
-        position = Vector3(0, 0, 0);
-        eulerRotation = Vector3(0, 0, 0);
-        rotation = Quaternion(0, 0, 0, 1);
-        scale = Vector3(1, 1, 1);
+        position = glm::vec3(0, 0, 0);
+        eulerRotation = glm::vec3(0, 0, 0);
+        rotation = glm::quat(0, 0, 0, 1);
+        scale = glm::vec3(1, 1, 1);
 
         //parent = nullptr;
-        localMatrix = Matrix4x4::Identity();
-        worldMatrix = Matrix4x4::Identity();
+        localMatrix = glm::identity<glm::mat4>();
+        worldMatrix = glm::identity<glm::mat4>();
         ComposeLocalMatrix();
 
         dirty = true;

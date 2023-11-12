@@ -9,15 +9,7 @@
                 "Value": ""
             },
             "ManagedType": "Example.Managed.AnotherScript",
-            "NameCount": {
-                "ManagedType": 5,
-                "Value": 0
-            },
-            "Type": "Odyssey.Entities.UserScript",
-            "otherBool": {
-                "ManagedType": 11,
-                "Value": false
-            }
+            "Type": "Odyssey.Entities.UserScript"
         },
         "Component.UserScript.Example.Managed.ExampleScript": {
             "ManagedType": "Example.Managed.ExampleScript",
@@ -36,7 +28,7 @@
             },
             "newSpeedMulti": {
                 "ManagedType": 9,
-                "Value": 0.009999999776482582
+                "Value": 1.0
             },
             "speed": {
                 "ManagedType": 9,

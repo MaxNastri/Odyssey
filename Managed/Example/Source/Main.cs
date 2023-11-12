@@ -30,6 +30,7 @@ namespace Example.Managed
 	public class AnotherScript : Component
 	{
 		public string EnterYourName = "";
+		public string EnterYourName2 = "";
 	}
 
 

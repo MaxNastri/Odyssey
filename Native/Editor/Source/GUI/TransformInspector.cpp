@@ -2,6 +2,7 @@
 #include <Transform.h>
 #include <ComponentManager.h>
 #include <imgui.h>
+#include <glm.h>
 
 namespace Odyssey::Editor
 {
@@ -14,7 +15,7 @@ namespace Odyssey::Editor
 		if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
 		{
 			// Callback for when the position is modified through the drawer
-			std::function<void(Vector3)> positionModified = [go](Vector3 position)
+			std::function<void(glm::vec3)> positionModified = [go](glm::vec3 position)
 				{
 					if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
 					{
@@ -23,7 +24,7 @@ namespace Odyssey::Editor
 				};
 
 			// Callback for when the rotation is modified through the drawer
-			std::function<void(Vector3)> rotationModified = [go](Vector3 rotation)
+			std::function<void(glm::vec3)> rotationModified = [go](glm::vec3 rotation)
 				{
 					if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
 					{
@@ -32,7 +33,7 @@ namespace Odyssey::Editor
 				};
 
 			// Callback for when the scale is modified through the drawer
-			std::function<void(Vector3)> scaleModified = [go](Vector3 scale)
+			std::function<void(glm::vec3)> scaleModified = [go](glm::vec3 scale)
 				{
 					if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
 					{
