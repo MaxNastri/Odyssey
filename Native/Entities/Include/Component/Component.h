@@ -16,6 +16,7 @@ namespace Odyssey::Entities
 		virtual void OnDestroy() { }
 		virtual void Serialize(json& jsonObject) { to_json(jsonObject, *this); }
 		virtual void Deserialize(const json& jsonObject) { from_json(jsonObject, *this); }
+		virtual void Serialize(ryml::NodeRef& node) { }
 
 	public:
 		void SetGameObject(GameObject go)

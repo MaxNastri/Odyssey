@@ -1,6 +1,7 @@
 #include "Transform.h"
 #include <Logger.h>
 #include <glm.h>
+#include <Yaml.h>
 
 namespace Odyssey::Entities
 {
@@ -245,4 +246,15 @@ namespace Odyssey::Entities
 	{
 		from_json(jsonObject, *this);
 	}
+
+    void Transform::Serialize(ryml::NodeRef& node)
+    {
+        ryml::NodeRef componentNode = node.append_child();
+        componentNode |= ryml::MAP;
+
+        componentNode["Name"] << "Component." + Transform::ClassName;
+        componentNode["Position"] << position;
+        componentNode["Rotation"] << eulerRotation;
+        componentNode["Scale"] << scale;
+    }
 }

@@ -12,6 +12,7 @@ namespace Odyssey::Entities
 		virtual void OnDestroy() override;
 		virtual void Serialize(json& jsonObject) override;
 		virtual void Deserialize(const json& jsonObject) override;
+        virtual void Serialize(ryml::NodeRef& node) override;
 
     public:
         void AddPosition(glm::vec3 pos);

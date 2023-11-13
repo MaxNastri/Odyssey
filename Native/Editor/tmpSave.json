@@ -8,6 +8,10 @@
                 "ManagedType": "String",
                 "Value": ""
             },
+            "EnterYourName2": {
+                "ManagedType": "String",
+                "Value": ""
+            },
             "ManagedType": "Example.Managed.AnotherScript",
             "Type": "Odyssey.Entities.UserScript"
         },
@@ -28,7 +32,7 @@
             },
             "newSpeedMulti": {
                 "ManagedType": 9,
-                "Value": 1.0
+                "Value": 0.009999999776482582
             },
             "speed": {
                 "ManagedType": 9,

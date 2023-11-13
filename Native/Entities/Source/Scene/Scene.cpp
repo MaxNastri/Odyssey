@@ -2,6 +2,7 @@
 #include "ComponentManager.h"
 #include <fstream>
 #include <string>
+#include <Yaml.h>
 
 namespace Odyssey::Entities
 {
@@ -88,6 +89,24 @@ namespace Odyssey::Entities
 		std::fstream file(filename, std::ios_base::out);
 		file << std::setw(4) << jsonObject << std::endl;
 		file.close();
+
+		ryml::Tree tree;
+		ryml::NodeRef root = tree.rootref();
+		root |= ryml::MAP;
+
+		root["Name"] << name;
+
+		ryml::NodeRef gameObjectsNode = root["GameObjects"];
+		gameObjectsNode |= ryml::SEQ;
+		
+		for (GameObject& gameObject : gameObjects)
+		{
+			gameObject.Serialize(gameObjectsNode);
+		}
+
+		FILE* file2 = fopen("scene.yaml", "w+");
+		size_t len = ryml::emit_yaml(tree, tree.root_id(), file2);
+		fclose(file2);
 	}
 
 	void Scene::Deserialize(const std::string& filename)

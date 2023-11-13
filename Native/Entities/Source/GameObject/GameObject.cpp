@@ -64,4 +64,33 @@ namespace Odyssey::Entities
             }
         }
     }
+
+    void GameObject::Serialize(ryml::NodeRef& node)
+    {
+        ryml::NodeRef gameObjectNode = node.append_child();
+        gameObjectNode |= ryml::MAP;
+        gameObjectNode["Name"] << name;
+        gameObjectNode["Type"] << Type;
+        gameObjectNode["Active"] << active;
+        gameObjectNode["ID"] << id;
+
+        ryml::NodeRef componentsNode = gameObjectNode["Components"];
+        componentsNode |= ryml::SEQ;
+
+        //Transform* transform = ComponentManager::GetComponent<Transform>(*this);
+        //transform->Serialize(gameObjectNode);
+        //auto serializeComponent = [&node](Component* component)
+        //    {
+        //        component->Serialize(node);
+        //    };
+        //
+        //ComponentManager::ExecuteOnGameObjectComponents(*this, serializeComponent);
+
+        auto userScripts = ComponentManager::GetAllUserScripts(*this);
+        
+        for (auto& [scriptName, userScript] : userScripts)
+        {
+            userScript->Serialize(componentsNode);
+        }
+    }
 }

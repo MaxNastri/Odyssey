@@ -1,0 +1,32 @@
+Name: Scene
+GameObjects:
+  - Name: GameObject
+    Type: Odyssey.Entities.GameObject
+    Active: 1
+    ID: 0
+    Components:
+      - Name: Example.Managed.AnotherScript
+        Fields:
+          - Name: EnterYourName
+            ManagedType: String
+            Value: ''
+          - Name: EnterYourName2
+            ManagedType: String
+            Value: ''
+      - Name: Example.Managed.ExampleScript
+        Fields:
+          - Name: MyName
+            ManagedType: String
+            Value: Max
+          - Name: speed
+            ManagedType: 9
+            Value: 0
+          - Name: movement
+            ManagedType: 5
+            Value: 10
+          - Name: newSpeedMulti
+            ManagedType: 9
+            Value: 0.01
+          - Name: anotherMovementThing
+            ManagedType: 5
+            Value: -1

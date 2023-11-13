@@ -15,6 +15,7 @@ namespace Odyssey::Entities
 		virtual void OnDestroy() override;
 		virtual void Serialize(json& jsonObject) override;
 		virtual void Deserialize(const json& jsonObject) override;
+		virtual void Serialize(ryml::NodeRef& node) override;
 
 	public:
 		void SetManagedInstance(Coral::ManagedObject instance);
@@ -23,7 +24,9 @@ namespace Odyssey::Entities
 
 	private:
 		bool SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, json& jsonObject);
+		bool SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, ryml::NodeRef& node);
 		bool SerializeNativeString(const std::string& fieldName, json& jsonObject);
+		bool SerializeNativeString(const std::string& fieldName, ryml::NodeRef& node);
 		bool DeserializeNativeType(const Coral::ManagedType& managedType, const std::string& fieldName, const json& jsonObject);
 		bool DeserializeNativeString(const std::string& fieldName, const json& jsonObject);
 	private:

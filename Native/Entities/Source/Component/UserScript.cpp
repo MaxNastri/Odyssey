@@ -106,6 +106,38 @@ namespace Odyssey::Entities
 		}
 	}
 
+	void UserScript::Serialize(ryml::NodeRef& node)
+	{
+		const Coral::Type& type = managedInstance.GetType();
+		std::string fqManagedName = type.GetFullName();
+
+		ryml::NodeRef componentNode = node.append_child();
+		componentNode |= ryml::MAP;
+
+		componentNode["Name"] << fqManagedName;
+
+		std::vector<Coral::FieldInfo> fields = type.GetFields();
+
+		ryml::NodeRef fieldsNode = componentNode["Fields"];
+		fieldsNode = ryml::SEQ;
+		for (auto& field : fields)
+		{
+			std::string fieldName = field.GetName();
+			Coral::Type fieldType = field.GetType();
+
+			if (fieldType.IsString())
+			{
+				SerializeNativeString(fieldName, fieldsNode);
+			}
+			else
+			{
+				Coral::ManagedType managedType = fieldType.GetManagedType();
+				if (managedType != Coral::ManagedType::Unknown)
+					SerializeNativeTypes(managedType, fieldName, fieldsNode);
+			}
+		}
+	}
+
 	void UserScript::SetManagedInstance(Coral::ManagedObject instance)
 	{
 		managedInstance = instance;
@@ -196,6 +228,86 @@ namespace Odyssey::Entities
 		return nativeTypeFound;
 	}
 
+	bool UserScript::SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, ryml::NodeRef& node)
+	{
+		bool nativeTypeFound = false;
+
+		ryml::NodeRef fieldNode = node.append_child();
+		fieldNode |= ryml::MAP;
+		fieldNode["Name"] << fieldName;
+		fieldNode["ManagedType"] << (unsigned int)managedType;
+
+		if (managedType == Coral::ManagedType::Byte)
+		{
+			uint8_t val = managedInstance.GetFieldValue<uint8_t>(fieldName);
+			fieldNode["Value"] << val;
+			nativeTypeFound = true;
+		}
+		else if (managedType == Coral::ManagedType::UShort)
+		{
+			uint16_t val = managedInstance.GetFieldValue<uint16_t>(fieldName);
+			fieldNode["Value"] << val;
+			nativeTypeFound = true;
+		}
+		else if (managedType == Coral::ManagedType::UInt)
+		{
+			uint32_t val = managedInstance.GetFieldValue<uint32_t>(fieldName);
+			fieldNode["Value"] << val;
+			nativeTypeFound = true;
+		}
+		else if (managedType == Coral::ManagedType::ULong)
+		{
+			uint64_t val = managedInstance.GetFieldValue<uint64_t>(fieldName);
+			fieldNode["Value"] << val;
+			nativeTypeFound = true;
+		}
+		else if (managedType == Coral::ManagedType::SByte)
+		{
+			char8_t val = managedInstance.GetFieldValue<char8_t>(fieldName);
+			fieldNode["Value"] << val;
+			nativeTypeFound = true;
+		}
+		else if (managedType == Coral::ManagedType::Short)
+		{
+			uint16_t val = managedInstance.GetFieldValue<uint16_t>(fieldName);
+			fieldNode["Value"] << val;
+			nativeTypeFound = true;
+		}
+		else if (managedType == Coral::ManagedType::Int)
+		{
+			int32_t val = managedInstance.GetFieldValue<int32_t>(fieldName);
+			fieldNode["Value"] << val;
+			nativeTypeFound = true;
+		}
+		else if (managedType == Coral::ManagedType::Long)
+		{
+			uint64_t val = managedInstance.GetFieldValue<uint64_t>(fieldName);
+			fieldNode["Value"] << val;
+			nativeTypeFound = true;
+		}
+		else if (managedType == Coral::ManagedType::Float)
+		{
+			float val = managedInstance.GetFieldValue<float>(fieldName);
+			fieldNode["Value"] << val;
+			nativeTypeFound = true;
+		}
+		else if (managedType == Coral::ManagedType::Double)
+		{
+			double val = managedInstance.GetFieldValue<double>(fieldName);
+			fieldNode["Value"] << val;
+			nativeTypeFound = true;
+		}
+		else if (managedType == Coral::ManagedType::Bool)
+		{
+			// NOTE: We case to an int32_t (4 bytes) because bools in c# are treated as 4 bytes instead of 1.
+			bool val = managedInstance.GetFieldValue<int32_t>(fieldName);
+			fieldNode["Value"] << val;
+			nativeTypeFound = true;
+		}
+
+		return nativeTypeFound;
+	}
+
 	bool UserScript::SerializeNativeString(const std::string& fieldName, json& jsonObject)
 	{
 		Coral::String fieldValue = managedInstance.GetFieldValue<Coral::String>(fieldName);
@@ -205,6 +317,18 @@ namespace Odyssey::Entities
 			{ "Value", std::string(fieldValue) }
 		};
 		jsonObject += { fieldName, fieldJson };
+		return true;
+	}
+
+	bool UserScript::SerializeNativeString(const std::string& fieldName, ryml::NodeRef& node)
+	{
+		Coral::String fieldValue = managedInstance.GetFieldValue<Coral::String>(fieldName);
+
+		ryml::NodeRef fieldNode = node.append_child();
+		fieldNode |= ryml::MAP;
+		fieldNode["Name"] << fieldName;
+		fieldNode["ManagedType"] << "String";
+		fieldNode["Value"] << std::string(fieldValue);
 		return true;
 	}
 
