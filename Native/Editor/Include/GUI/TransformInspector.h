@@ -7,10 +7,7 @@
 namespace Odyssey
 {
 	class GUIElement;
-}
 
-namespace Odyssey::Editor
-{
 	class TransformInspector : public GUIElement
 	{
 	public:

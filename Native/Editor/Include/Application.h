@@ -10,7 +10,7 @@ namespace Odyssey
 	class GUIElement;
 }
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	class Application
 	{

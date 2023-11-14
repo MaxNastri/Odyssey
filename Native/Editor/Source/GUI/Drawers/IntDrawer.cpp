@@ -1,6 +1,6 @@
 #include "IntDrawer.h"
 #include <Imgui.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 }

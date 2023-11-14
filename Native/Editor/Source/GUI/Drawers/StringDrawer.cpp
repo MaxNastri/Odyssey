@@ -2,7 +2,7 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	StringDrawer::StringDrawer(const std::string& propertyLabel, std::string initialValue, std::function<void(std::string)> callback)
 		: PropertyDrawer(propertyLabel)

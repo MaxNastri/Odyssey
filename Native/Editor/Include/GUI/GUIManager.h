@@ -7,7 +7,7 @@ namespace Odyssey
 	struct OnGUIRenderEvent;
 }
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	struct OnSceneLoaded;
 

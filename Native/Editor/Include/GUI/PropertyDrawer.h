@@ -2,7 +2,7 @@
 #include <GUIElement.h>
 #include <string>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	class PropertyDrawer : public GUIElement
 	{

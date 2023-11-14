@@ -3,7 +3,7 @@
 #include "EditorEvents.h"
 #include <GraphicsEvents.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	std::vector<InspectorWindow> GUIManager::inspectorWindows;
 

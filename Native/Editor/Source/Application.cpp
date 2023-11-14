@@ -10,7 +10,7 @@
 #include "SceneManager.h"
 #include "GUIManager.h"
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	Application::Application()
 	{

@@ -2,7 +2,7 @@
 #include "PropertyDrawer.h"
 #include <imgui.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	template <typename T>
 	class IntDrawer : public PropertyDrawer

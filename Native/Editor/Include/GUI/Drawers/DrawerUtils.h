@@ -10,7 +10,7 @@
 #include <vector>
 #include <memory>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	template <typename FieldType>
 	void AddIntDrawer(GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, FieldType initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)

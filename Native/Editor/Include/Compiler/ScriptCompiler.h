@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include "EditorEvents.h"
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	class ScriptCompiler
 	{

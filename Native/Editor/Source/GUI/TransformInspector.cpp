@@ -4,7 +4,7 @@
 #include <imgui.h>
 #include <glm.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	TransformInspector::TransformInspector(GameObject go)
 	{

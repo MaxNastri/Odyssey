@@ -9,7 +9,7 @@ namespace Odyssey
 	class UserScript;
 }
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	class PropertyDrawer;
 

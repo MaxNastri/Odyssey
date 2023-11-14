@@ -4,7 +4,7 @@
 #include "TransformInspector.h"
 #include "UserScriptInspector.h"
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	class InspectorWindow : public GUIElement
 	{

@@ -1,7 +1,7 @@
 #include "DoubleDrawer.h"
 #include <imgui.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	DoubleDrawer::DoubleDrawer(const std::string& propertyLabel, double initialValue, std::function<void(double)> callback)
 		: PropertyDrawer(propertyLabel)

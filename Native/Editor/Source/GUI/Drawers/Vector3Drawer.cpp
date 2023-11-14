@@ -1,7 +1,7 @@
 #include "Vector3Drawer.h"
 #include <imgui.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	Vector3Drawer::Vector3Drawer(const std::string& propertyLabel, glm::vec3 vec3, std::function<void(glm::vec3)> callback)
 	{

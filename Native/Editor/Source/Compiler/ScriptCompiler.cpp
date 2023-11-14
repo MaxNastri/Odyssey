@@ -6,7 +6,7 @@
 #include "EditorEvents.h"
 #include <ScriptingManager.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	bool ScriptCompiler::buildInProgress = false;
 
@@ -120,7 +120,7 @@ namespace Odyssey::Editor
 		}
 	}
 
-	void ScriptCompiler::UserFilesModified(Editor::OnUserFilesModified* fileSavedEvent)
+	void ScriptCompiler::UserFilesModified(OnUserFilesModified* fileSavedEvent)
 	{
 		if (!buildInProgress)
 		{

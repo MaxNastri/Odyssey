@@ -9,7 +9,7 @@
 #include <imgui.h>
 #include "DrawerUtils.h"
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	UserScriptInspector::UserScriptInspector(GameObject go, UserScript* userScript, std::string_view className)
 	{

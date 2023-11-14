@@ -3,7 +3,7 @@
 #include <EventSystem.h>
 #include "EditorEvents.h"
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	Framework::FileWatcher FileManager::fileWatcher;
 	std::map<int64_t, std::wstring> FileManager::folderIDs;

@@ -2,7 +2,7 @@
 #include "PropertyDrawer.h"
 #include <glm.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	class Vector3Drawer : public PropertyDrawer
 	{

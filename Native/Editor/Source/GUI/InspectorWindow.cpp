@@ -3,7 +3,7 @@
 #include <Transform.h>
 #include <imgui.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	InspectorWindow::InspectorWindow(GameObject gameObject)
 	{

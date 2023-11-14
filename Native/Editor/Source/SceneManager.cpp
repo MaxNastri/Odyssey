@@ -3,7 +3,7 @@
 #include "EditorEvents.h"
 #include <ScriptingEvents.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
     std::vector<Scene> SceneManager::scenes;
     int SceneManager::activeScene = 0;

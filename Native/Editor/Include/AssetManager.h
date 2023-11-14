@@ -1,7 +1,7 @@
 #pragma once
 #include "uuid_v4.h"
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	class AssetManager
 	{

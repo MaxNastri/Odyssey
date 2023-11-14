@@ -1,6 +1,6 @@
 #include "PropertyDrawer.h"
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 
 }

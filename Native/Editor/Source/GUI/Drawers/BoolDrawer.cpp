@@ -1,7 +1,7 @@
 #include "BoolDrawer.h"
 #include <imgui.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	BoolDrawer::BoolDrawer(const std::string& propertyLabel, bool initialValue, std::function<void(bool)> callback)
 		: PropertyDrawer(propertyLabel)

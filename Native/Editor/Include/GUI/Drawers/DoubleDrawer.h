@@ -1,7 +1,7 @@
 #pragma once
 #include "PropertyDrawer.h"
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	class DoubleDrawer : public PropertyDrawer
 	{

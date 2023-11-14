@@ -6,7 +6,7 @@ namespace Odyssey::Scripting
 	struct OnAssembliesReloaded;
 }
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	struct OnBuildFinished;
 

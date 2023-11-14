@@ -3,7 +3,7 @@
 #include <FileWatcherHandle.h>
 #include <Scene.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	struct OnUserFilesModified : public Framework::Event
 	{

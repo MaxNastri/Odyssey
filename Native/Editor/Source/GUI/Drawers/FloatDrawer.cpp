@@ -1,7 +1,7 @@
 #include "FloatDrawer.h"
 #include <imgui.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	FloatDrawer::FloatDrawer(const std::string& propertyLabel, float initialValue, std::function<void(float)> callback)
 		: PropertyDrawer(propertyLabel)

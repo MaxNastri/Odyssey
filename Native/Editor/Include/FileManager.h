@@ -3,7 +3,7 @@
 #include <unordered_set>
 #include <FileWatcher.h>
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
 	class FileManager
 	{
