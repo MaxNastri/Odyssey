@@ -13,7 +13,7 @@ namespace Odyssey::Editor
 {
 	class PropertyDrawer;
 
-	class UserScriptInspector : public Graphics::GUIElement
+	class UserScriptInspector : public GUIElement
 	{
 	public:
 		UserScriptInspector() = default;

@@ -6,7 +6,7 @@
 
 namespace Odyssey::Editor
 {
-	class InspectorWindow : public Graphics::GUIElement
+	class InspectorWindow : public GUIElement
 	{
 	public:
 		InspectorWindow() = default;

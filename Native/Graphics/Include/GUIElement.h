@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	class GUIElement
 	{

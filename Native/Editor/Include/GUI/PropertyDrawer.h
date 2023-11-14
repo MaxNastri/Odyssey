@@ -4,7 +4,7 @@
 
 namespace Odyssey::Editor
 {
-	class PropertyDrawer : public Graphics::GUIElement
+	class PropertyDrawer : public GUIElement
 	{
 	public:
 		PropertyDrawer() = default;

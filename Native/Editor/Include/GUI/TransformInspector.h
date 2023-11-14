@@ -6,15 +6,12 @@
 
 namespace Odyssey
 {
-	namespace Graphics
-	{
-		class GUIElement;
-	}
+	class GUIElement;
 }
 
 namespace Odyssey::Editor
 {
-	class TransformInspector : public Graphics::GUIElement
+	class TransformInspector : public GUIElement
 	{
 	public:
 		TransformInspector() = default;

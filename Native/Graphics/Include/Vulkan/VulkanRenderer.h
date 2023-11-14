@@ -12,7 +12,7 @@
 #include "VulkanFrame.h"
 #include "VulkanImgui.h"
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	class GUIElement;
 

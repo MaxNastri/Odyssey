@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <vector>
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	VulkanDevice::VulkanDevice(VkInstance instance)
 	{
@@ -21,14 +21,14 @@ namespace Odyssey::Graphics
 	{
 		switch (queueType)
 		{
-		case Odyssey::Graphics::Graphics:
-			return indices.graphicsFamily.value();
-		case Odyssey::Graphics::Compute:
-			break;
-		case Odyssey::Graphics::Transfer:
-			break;
-		default:
-			break;
+			case VulkanQueueType::Graphics:
+				return indices.graphicsFamily.value();
+			case VulkanQueueType::Compute:
+				break;
+			case VulkanQueueType::Transfer:
+				break;
+			default:
+				break;
 		}
 
 		return 0;

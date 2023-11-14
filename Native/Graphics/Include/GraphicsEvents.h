@@ -1,7 +1,7 @@
 #pragma once
 #include <EventSystem.h>
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	struct OnGUIRenderEvent : public Framework::Event
 	{

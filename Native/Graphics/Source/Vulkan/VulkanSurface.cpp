@@ -4,7 +4,7 @@
 #include <vector>
 #include <glfw3.h>
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	VulkanSurface::VulkanSurface(VkInstance instance, VkPhysicalDevice physicalDevice, uint32_t graphicsQueueIndex, GLFWwindow* window)
 	{
@@ -31,7 +31,7 @@ namespace Odyssey::Graphics
 		};
 
 		// Select a format
-		size_t arrayLength = (size_t)(sizeof(requestSurfaceImageFormat) / sizeof(requestSurfaceImageFormat[0]));
+		int arrayLength = (int)(sizeof(requestSurfaceImageFormat) / sizeof(requestSurfaceImageFormat[0]));
 		const VkColorSpaceKHR requestSurfaceColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
 		format = SelectSurfaceFormat(physicalDevice, surface, requestSurfaceImageFormat, arrayLength, requestSurfaceColorSpace);
 

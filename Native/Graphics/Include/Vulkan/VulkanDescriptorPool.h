@@ -1,7 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	class VulkanDescriptorPool
 	{

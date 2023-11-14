@@ -1,6 +1,6 @@
 #pragma once
 #include <optional>
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 }

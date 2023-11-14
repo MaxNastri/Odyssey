@@ -9,7 +9,7 @@
 #include <glfw3native.h>
 #endif
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	Window::Window()
 	{

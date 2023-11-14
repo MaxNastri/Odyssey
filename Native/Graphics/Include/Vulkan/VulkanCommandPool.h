@@ -2,7 +2,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	class VulkanCommandPool
 	{

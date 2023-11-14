@@ -6,7 +6,7 @@
 // FWD Declarations
 struct GLFWwindow;
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	class VulkanDevice;
 	class GUIElement;

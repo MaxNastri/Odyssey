@@ -3,7 +3,7 @@
 
 struct GLFWwindow;
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	class VulkanSurface
 	{

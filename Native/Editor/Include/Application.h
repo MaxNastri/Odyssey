@@ -3,9 +3,9 @@
 #include <Stopwatch.h>
 
 using namespace Odyssey::Framework;
-using namespace Odyssey::Graphics;
+using namespace Odyssey;
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	class GUIElement;
 }

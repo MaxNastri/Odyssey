@@ -1,7 +1,7 @@
 #include "VulkanCommandPool.h"
 #include "VulkanGlobals.h"
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
     VulkanCommandPool::VulkanCommandPool(VkDevice device, uint32_t queueIndex)
     {

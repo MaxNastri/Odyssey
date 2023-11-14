@@ -3,7 +3,7 @@
 #include <vulkan/vulkan.h>
 #include "VulkanSurface.h"
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	class VulkanSwapchain
 	{

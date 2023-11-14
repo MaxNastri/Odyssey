@@ -6,7 +6,7 @@
 #include "VulkanCommandPool.h"
 #include "GraphicsEvents.h"
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	VulkanImgui::VulkanImgui(const InitInfo& initInfo)
 	{

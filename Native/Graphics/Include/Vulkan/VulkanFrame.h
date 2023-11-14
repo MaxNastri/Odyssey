@@ -4,7 +4,7 @@
 #include "VulkanCommandPool.h"
 #include "VulkanSurface.h"
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	class VulkanFrame
 	{

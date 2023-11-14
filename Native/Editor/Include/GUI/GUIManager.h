@@ -2,7 +2,7 @@
 #include <GameObject.h>
 #include "InspectorWindow.h"
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	struct OnGUIRenderEvent;
 }
@@ -18,7 +18,7 @@ namespace Odyssey::Editor
 		static void CreateInspectorWindow(GameObject gameObject);
 
 	public:
-		static void OnRender(Graphics::OnGUIRenderEvent* guiRenderEvent);
+		static void OnRender(OnGUIRenderEvent* guiRenderEvent);
 		static void SceneLoaded(OnSceneLoaded* sceneLoadedEvent);
 
 	private:
