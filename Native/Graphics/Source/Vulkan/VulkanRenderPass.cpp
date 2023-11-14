@@ -1,9 +1,9 @@
 #include "VulkanRenderPass.h"
-#include "VulkanGlobals.h"
+#include "VulkanDevice.h"
 
 namespace Odyssey
 {
-	VulkanRenderPass::VulkanRenderPass(VkDevice device, VkFormat surfaceFormat)
+	VulkanRenderPass::VulkanRenderPass(VulkanDevice* device, VkFormat surfaceFormat)
 	{
         VkAttachmentDescription attachment = {};
         attachment.format = surfaceFormat;
@@ -40,7 +40,7 @@ namespace Odyssey
         info.pSubpasses = &subpass;
         info.dependencyCount = 1;
         info.pDependencies = &dependency;
-        VkResult err = vkCreateRenderPass(device, &info, allocator, &renderPass);
+        VkResult err = vkCreateRenderPass(device->GetLogicalDevice(), &info, allocator, &renderPass);
         check_vk_result(err);
 	}
 

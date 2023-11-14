@@ -9,6 +9,7 @@ struct GLFWwindow;
 namespace Odyssey
 {
 	class VulkanDevice;
+	class VulkanContext;
 	class GUIElement;
 
 	class VulkanImgui
@@ -29,7 +30,7 @@ namespace Odyssey
 		};
 
 	public:
-		VulkanImgui(const InitInfo& initInfo);
+		VulkanImgui(VulkanContext* context, const InitInfo& initInfo);
 		void SubmitDraws();
 		void Render(VkCommandBuffer commandBuffer);
 		void PostRender();

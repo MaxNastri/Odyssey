@@ -51,6 +51,11 @@ namespace Odyssey
 		}
 	}
 
+	void Window::GetFrameBufferSize(int& width, int& height)
+	{
+		glfwGetFramebufferSize(glfwHandle, &width, &height);
+	}
+
 	void Window::ErrorCallback(int error, const char* description)
 	{
 		Logger::LogError(std::format("GLFW Error %d: %s\n", error, description));

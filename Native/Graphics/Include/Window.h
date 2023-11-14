@@ -16,6 +16,7 @@ namespace Odyssey
 
 	public:
 		GLFWwindow* GetWindowHandle() { return glfwHandle; }
+		void GetFrameBufferSize(int& x, int& y);
 
 	private:
 		static void ErrorCallback(int error, const char* description);

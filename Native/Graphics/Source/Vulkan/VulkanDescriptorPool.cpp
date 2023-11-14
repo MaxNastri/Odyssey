@@ -1,9 +1,9 @@
 #include "VulkanDescriptorPool.h"
-#include "VulkanGlobals.h"
+#include "VulkanDevice.h"
 
 namespace Odyssey
 {
-	VulkanDescriptorPool::VulkanDescriptorPool(VkDevice logicalDevice)
+	VulkanDescriptorPool::VulkanDescriptorPool(VulkanDevice* device)
 	{
         VkDescriptorPoolSize pool_sizes[] =
         {
@@ -17,7 +17,7 @@ namespace Odyssey
         pool_info.maxSets = 1;
         pool_info.poolSizeCount = arrayLength;
         pool_info.pPoolSizes = pool_sizes;
-        VkResult err = vkCreateDescriptorPool(logicalDevice, &pool_info, allocator, &descriptorPool);
+        VkResult err = vkCreateDescriptorPool(device->GetLogicalDevice(), &pool_info, allocator, &descriptorPool);
         check_vk_result(err);
 	}
 }

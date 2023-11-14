@@ -1,38 +1,29 @@
 #pragma once
-#include <optional>
-#include <vulkan/vulkan.h>
-#include "VulkanQueue.h"
+#include "VulkanGlobals.h"
+
+VK_FWD_DECLARE(VkDevice)
 
 namespace Odyssey
 {
+	class VulkanContext;
+	class VulkanPhysicalDevice;
+
 	class VulkanDevice
 	{
 	public:
-		VulkanDevice() = default;
-		VulkanDevice(VkInstance instance);
+		VulkanDevice(VulkanPhysicalDevice* physicalDevice);
 		~VulkanDevice();
 
 	public:
+		void WaitForIdle();
+
+	public:
 		VkDevice GetLogicalDevice() { return logicalDevice; }
-		VkPhysicalDevice GetPhysicalDevice() { return physicalDevice; }
-		uint32_t GetFamilyIndex(VulkanQueueType queueType);
 
 	private:
-		void CreatePhysicalDevice(VkInstance instance);
-		void FindGraphicsQueueFamily();
-		void CreateLogicalDevice();
-
-	private:
-		struct VulkanQueueFamilies
-		{
-			std::optional<uint32_t> graphicsFamily;
-		};
+		void CreateLogicalDevice(VulkanPhysicalDevice* physicalDevice);
 
 	private:
 		VkDevice logicalDevice;
-		VkPhysicalDevice physicalDevice;
-
-	private:
-		VulkanQueueFamilies indices;
 	};
 }

@@ -1,13 +1,17 @@
 #pragma once
-#include <vulkan/vulkan.h>
+#include "VulkanGlobals.h"
+
+VK_FWD_DECLARE(VkDescriptorPool)
 
 namespace Odyssey
 {
+	class VulkanDevice;
+
 	class VulkanDescriptorPool
 	{
 	public:
 		VulkanDescriptorPool() = default;
-		VulkanDescriptorPool(VkDevice logicalDevice);
+		VulkanDescriptorPool(VulkanDevice* device);
 
 	public:
 		VkDescriptorPool descriptorPool;

@@ -5,9 +5,33 @@
 #include <Logger.h>
 #include <format>
 
+// DEFINES
+#ifndef VK_FWD_DECLARE
+#define VK_FWD_DECLARE(object) \
+struct object##_T;\
+typedef object##_T* object;
+#endif
+
 namespace Odyssey
 {
+    // TYPES
+    enum VulkanQueueType
+    {
+        Graphics = 0,
+        Compute = 1,
+        Transfer = 2,
+    };
+
+    struct VulkanQueueFamilies
+    {
+        std::optional<uint32_t> graphicsFamily;
+    };
+
+    // ALLOCATIONS
     static VkAllocationCallbacks* allocator = nullptr;
+
+
+    // DEBUGGING
     static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData)
     {
         Logger::LogError(std::format("[vulkan] Debug report from ObjectType: %i\nMessage: %s\n\n", (uint64_t)objectType, pMessage));

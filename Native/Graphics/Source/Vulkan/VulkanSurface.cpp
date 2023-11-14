@@ -1,20 +1,23 @@
 #include "VulkanSurface.h"
 #include "VulkanGlobals.h"
-#include <assert.h>
-#include <vector>
+#include "VulkanContext.h"
+#include "VulkanPhysicalDevice.h"
 #include <glfw3.h>
 
 namespace Odyssey
 {
-	VulkanSurface::VulkanSurface(VkInstance instance, VkPhysicalDevice physicalDevice, uint32_t graphicsQueueIndex, GLFWwindow* window)
+	VulkanSurface::VulkanSurface(VulkanContext* context, GLFWwindow* window)
 	{
-		VkResult err = glfwCreateWindowSurface(instance, window, allocator, &surface);
+		VulkanPhysicalDevice* physicalDevice = context->GetPhysicalDevice();
+		uint32_t graphicsIndex = physicalDevice->GetFamilyIndex(VulkanQueueType::Graphics);
+
+		VkResult err = glfwCreateWindowSurface(context->GetInstance(), window, allocator, &surface);
 		check_vk_result(err);
 
 		glfwGetFramebufferSize(window, &width, &height);
 
 		VkBool32 res;
-		vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, graphicsQueueIndex, surface, &res);
+		vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice->GetPhysicalDevice(), graphicsIndex, surface, &res);
 		if (res != VK_TRUE)
 		{
 			fprintf(stderr, "Error no WSI support on physical device 0\n");
@@ -33,7 +36,7 @@ namespace Odyssey
 		// Select a format
 		int arrayLength = (int)(sizeof(requestSurfaceImageFormat) / sizeof(requestSurfaceImageFormat[0]));
 		const VkColorSpaceKHR requestSurfaceColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
-		format = SelectSurfaceFormat(physicalDevice, surface, requestSurfaceImageFormat, arrayLength, requestSurfaceColorSpace);
+		format = SelectSurfaceFormat(physicalDevice->GetPhysicalDevice(), surface, requestSurfaceImageFormat, arrayLength, requestSurfaceColorSpace);
 
 #ifdef ALLOW_UNCAPPED_FRAMERATE
 		VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_IMMEDIATE_KHR, VK_PRESENT_MODE_FIFO_KHR };
@@ -42,7 +45,7 @@ namespace Odyssey
 #endif
 		// Select Present Mode
 		int presentModesLength = (int)(sizeof(present_modes) / sizeof(present_modes[0]));
-		presentMode = SelectPresentMode(physicalDevice, surface, &present_modes[0], presentModesLength);
+		presentMode = SelectPresentMode(physicalDevice->GetPhysicalDevice(), surface, &present_modes[0], presentModesLength);
 	}
 
 	void VulkanSurface::SetFrameBufferSize(int w, int h)

@@ -1,15 +1,21 @@
 #pragma once
 #include <vulkan/vulkan.h>
+#include "VulkanGlobals.h"
+
+
+VK_FWD_DECLARE(VkSurfaceKHR)
 
 struct GLFWwindow;
 
 namespace Odyssey
 {
+	class VulkanContext;
+
 	class VulkanSurface
 	{
 	public:
 		VulkanSurface() = default;
-		VulkanSurface(VkInstance instance, VkPhysicalDevice physicalDevice, uint32_t graphicsQueueIndex, GLFWwindow* window);
+		VulkanSurface(VulkanContext* context, GLFWwindow* window);
 
 	public:
 		void SetFrameBufferSize(int width, int height);

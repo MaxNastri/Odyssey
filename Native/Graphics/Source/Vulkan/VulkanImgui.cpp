@@ -5,10 +5,11 @@
 #include "VulkanGlobals.h"
 #include "VulkanCommandPool.h"
 #include "GraphicsEvents.h"
+#include "VulkanContext.h"
 
 namespace Odyssey
 {
-	VulkanImgui::VulkanImgui(const InitInfo& initInfo)
+	VulkanImgui::VulkanImgui(VulkanContext* context, const InitInfo& initInfo)
 	{
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
@@ -52,8 +53,8 @@ namespace Odyssey
 		// Upload Fonts
 		{
 			// Use any command queue
-			VulkanCommandPool pool(initInfo.logicalDevice, initInfo.queueIndex);
-			VkCommandBuffer commandBuffer = pool.AllocateBuffer(initInfo.logicalDevice);
+			VulkanCommandPool pool(context->GetDevice(), initInfo.queueIndex);
+			VkCommandBuffer commandBuffer = pool.AllocateBuffer(context->GetDevice());
 
 			VkCommandBufferBeginInfo begin_info = {};
 			begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;

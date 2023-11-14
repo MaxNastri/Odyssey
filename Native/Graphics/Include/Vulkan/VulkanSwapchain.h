@@ -1,19 +1,25 @@
 #pragma once
-#include <vector>
-#include <vulkan/vulkan.h>
-#include "VulkanSurface.h"
+#include "VulkanGlobals.h"
+
+VK_FWD_DECLARE(VkSwapchainKHR)
+VK_FWD_DECLARE(VkDevice)
+VK_FWD_DECLARE(VkPhysicalDevice)
 
 namespace Odyssey
 {
+	class VulkanContext;
+	class VulkanDevice;
+	class VulkanSurface;
+
 	class VulkanSwapchain
 	{
 	public:
-		VulkanSwapchain(VkDevice device, VkPhysicalDevice physicalDevice, VulkanSurface* surface);
-		void Destroy(VkDevice device);
+		VulkanSwapchain(VulkanContext* context, VulkanSurface* surface);
+		void Destroy(VulkanDevice* device);
 
 	public:
 		uint32_t GetImageCount() { return imageCount; }
-		std::vector<VkImage> GetBackbuffers(VkDevice device);
+		std::vector<VkImage> GetBackbuffers(VulkanDevice* device);
 		VkSwapchainKHR GetVK() { return swapchain; }
 
 	private:

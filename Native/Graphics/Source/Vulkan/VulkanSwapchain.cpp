@@ -1,29 +1,28 @@
 #include "VulkanSwapchain.h"
-#include "VulkanGlobals.h"
-#include <assert.h>
+#include "VulkanContext.h"
+#include "VulkanDevice.h"
+#include "VulkanPhysicalDevice.h"
+#include "VulkanSurface.h"
 
 namespace Odyssey
 {
-	VulkanSwapchain::VulkanSwapchain(VkDevice device, VkPhysicalDevice physicalDevice, VulkanSurface* surface)
-	{
-        CreateSwapchain(device, physicalDevice, surface);
-	}
+    VulkanSwapchain::VulkanSwapchain(VulkanContext* context, VulkanSurface* surface)
+    {
+        CreateSwapchain(context->GetDevice()->GetLogicalDevice(), context->GetPhysicalDevice()->GetPhysicalDevice(), surface);
+    }
 
-	void VulkanSwapchain::Destroy(VkDevice device)
+	void VulkanSwapchain::Destroy(VulkanDevice* device)
 	{
-		VkResult err = vkDeviceWaitIdle(device);
-		check_vk_result(err);
-
-        vkDestroySwapchainKHR(device, swapchain, allocator);
+        vkDestroySwapchainKHR(device->GetLogicalDevice(), swapchain, allocator);
         swapchain = VK_NULL_HANDLE;
         imageCount = 0;
 	}
 
-    std::vector<VkImage> VulkanSwapchain::GetBackbuffers(VkDevice device)
+    std::vector<VkImage> VulkanSwapchain::GetBackbuffers(VulkanDevice* device)
     {
         std::vector<VkImage> backbuffers;
         backbuffers.resize(imageCount);
-        VkResult err = vkGetSwapchainImagesKHR(device, swapchain, &imageCount, backbuffers.data());
+        VkResult err = vkGetSwapchainImagesKHR(device->GetLogicalDevice(), swapchain, &imageCount, backbuffers.data());
         check_vk_result(err);
         return backbuffers;
     }

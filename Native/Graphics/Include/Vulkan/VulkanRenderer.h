@@ -15,6 +15,7 @@
 namespace Odyssey
 {
 	class GUIElement;
+	class VulkanContext;
 
 	class VulkanRenderer
 	{
@@ -32,30 +33,16 @@ namespace Odyssey
 		void RebuildSwapchain();
 
 	private:
-		void GatherExtensions();
-		void CreateInstance();
 		VulkanImgui::InitInfo CreateImguiInitInfo();
-
-		bool IsExtensionAvailable(std::vector<VkExtensionProperties>& properties, const char* extension);
-
-	private: // Debug
-		bool enableValidation = true;
-		VkDebugReportCallbackEXT debugReport = VK_NULL_HANDLE;
-
-	private: // Extensions
-		std::vector<const char*> extensions;
-		uint32_t extensionsCount;
 
 	private:
 		std::unique_ptr<Window> window;
-		std::vector<std::unique_ptr<VulkanFrame>> frames;
+		std::vector<VulkanFrame> frames;
 		uint32_t frameIndex = 0;
 		bool rebuildSwapchain = false;
 
 	private: // Vulkan objects
-		VkAllocationCallbacks* allocator = nullptr;
-		VkInstance instance = VK_NULL_HANDLE;
-		std::unique_ptr<VulkanDevice> device;
+		std::shared_ptr<VulkanContext> context;
 		std::unique_ptr<VulkanQueue> graphicsQueue;
 		std::unique_ptr<VulkanDescriptorPool> descriptorPool;
 		std::unique_ptr<VulkanSurface> surface;

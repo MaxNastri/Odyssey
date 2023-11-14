@@ -1,25 +1,32 @@
 #include "VulkanFrame.h"
-#include "VulkanGlobals.h"
+#include "VulkanDevice.h"
+#include "VulkanPhysicalDevice.h"
+#include "VulkanRenderPass.h"
 
 namespace Odyssey
 {
-	VulkanFrame::VulkanFrame(VkDevice device, uint32_t queueIndex)
+	VulkanFrame::VulkanFrame(VulkanDevice* device, VulkanPhysicalDevice* physicalDevice)
 	{
-		CreateFence(device);
-		CreateSempaphores(device);
-		commandPool = std::make_unique<VulkanCommandPool>(device, queueIndex);
-		commandBuffer = commandPool->AllocateBuffer(device);
+		uint32_t graphicsIndex = physicalDevice->GetFamilyIndex(VulkanQueueType::Graphics);
+		VkDevice vkDevice = device->GetLogicalDevice();
+		CreateFence(vkDevice);
+		CreateSempaphores(vkDevice);
+
+		commandPool = VulkanCommandPool(device, graphicsIndex);
+		commandBuffer = commandPool.AllocateBuffer(device);
 	}
 
-	void VulkanFrame::Destroy(VkDevice device)
+	void VulkanFrame::Destroy(VulkanDevice* device)
 	{
-		commandPool->Destroy(device);
+		commandPool.Destroy(device);
 
-		vkDestroyFence(device, fence, allocator);
-		vkDestroyImageView(device, backbufferView, allocator);
-		vkDestroyFramebuffer(device, framebuffer, allocator);
-		vkDestroySemaphore(device, imageAcquiredSemaphore, allocator);
-		vkDestroySemaphore(device, renderCompleteSemaphore, allocator);
+		VkDevice vkDevice = device->GetLogicalDevice();
+
+		vkDestroyFence(vkDevice, fence, allocator);
+		vkDestroyImageView(vkDevice, backbufferView, allocator);
+		vkDestroyFramebuffer(vkDevice, framebuffer, allocator);
+		vkDestroySemaphore(vkDevice, imageAcquiredSemaphore, allocator);
+		vkDestroySemaphore(vkDevice, renderCompleteSemaphore, allocator);
 
 		fence = VK_NULL_HANDLE;
 		backbufferView = VK_NULL_HANDLE;
@@ -28,7 +35,7 @@ namespace Odyssey
 		renderCompleteSemaphore = VK_NULL_HANDLE;
 	}
 
-	void VulkanFrame::SetBackbuffer(VkDevice device, VkImage backbufferImage, VkFormat format)
+	void VulkanFrame::SetBackbuffer(VulkanDevice* device, VkImage backbufferImage, VkFormat format)
 	{
 		backbuffer = backbufferImage;
 
@@ -45,11 +52,11 @@ namespace Odyssey
 		info.subresourceRange = image_range;
 		info.image = backbuffer;
 
-		VkResult err = vkCreateImageView(device, &info, allocator, &backbufferView);
+		VkResult err = vkCreateImageView(device->GetLogicalDevice(), &info, allocator, &backbufferView);
 		check_vk_result(err);
 	}
 
-	void VulkanFrame::CreateFramebuffer(VkDevice device, VkRenderPass renderPass, int width, int height)
+	void VulkanFrame::CreateFramebuffer(VulkanDevice* device, VulkanRenderPass* renderPass, int width, int height)
 	{
 		VkImageView attachment[1]
 		{
@@ -57,13 +64,13 @@ namespace Odyssey
 		};
 		VkFramebufferCreateInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		info.renderPass = renderPass;
+		info.renderPass = renderPass->GetVK();
 		info.attachmentCount = 1;
 		info.pAttachments = attachment;
 		info.width = width;
 		info.height = height;
 		info.layers = 1;
-		VkResult err = vkCreateFramebuffer(device, &info, allocator, &framebuffer);
+		VkResult err = vkCreateFramebuffer(device->GetLogicalDevice(), &info, allocator, &framebuffer);
 		check_vk_result(err);
 	}
 

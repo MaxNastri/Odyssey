@@ -1,12 +1,16 @@
 #pragma once
-#include <vulkan/vulkan.h>
+#include "VulkanGlobals.h"
+
+VK_FWD_DECLARE(VkRenderPass)
 
 namespace Odyssey
 {
+	class VulkanDevice;
+
 	class VulkanRenderPass
 	{
 	public:
-		VulkanRenderPass(VkDevice device, VkFormat surfaceFormat);
+		VulkanRenderPass(VulkanDevice* device, VkFormat surfaceFormat);
 
 	public:
 		void Begin(VkCommandBuffer commandBuffer, VkFramebuffer framebuffer, int width, int height, VkClearValue clearValue);

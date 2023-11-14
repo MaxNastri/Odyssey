@@ -1,20 +1,17 @@
 #pragma once
-#include <vulkan/vulkan.h>
+#include "VulkanGlobals.h"
+
+VK_FWD_DECLARE(VkQueue);
 
 namespace Odyssey
 {
-	enum VulkanQueueType
-	{
-		Graphics = 0,
-		Compute = 1,
-		Transfer = 2,
-	};
+	class VulkanDevice;
+	class VulkanPhysicalDevice;
 
 	class VulkanQueue
 	{
 	public:
-		VulkanQueue() = default;
-		VulkanQueue(VulkanQueueType type, VkDevice logicalDevice, uint32_t familyIndex);
+		VulkanQueue(VulkanQueueType type, VulkanPhysicalDevice* physicalDevice, VulkanDevice* device);
 
 	public:
 		VulkanQueueType queueType;
