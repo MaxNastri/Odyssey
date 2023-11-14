@@ -15,7 +15,7 @@ namespace Odyssey::Editor
 	{
 	public:
 		static void ListenForEvents();
-		static void CreateInspectorWindow(Entities::GameObject gameObject);
+		static void CreateInspectorWindow(GameObject gameObject);
 
 	public:
 		static void OnRender(Graphics::OnGUIRenderEvent* guiRenderEvent);

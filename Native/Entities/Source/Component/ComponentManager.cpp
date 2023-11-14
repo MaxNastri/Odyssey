@@ -1,6 +1,6 @@
 #include "ComponentManager.h"
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	void ComponentManager::RemoveUserScript(const GameObject& gameObject, const std::string& managedName)
 	{

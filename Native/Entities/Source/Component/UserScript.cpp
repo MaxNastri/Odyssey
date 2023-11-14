@@ -4,7 +4,7 @@
 #include <vector>
 #include <String.hpp>
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	CLASS_DEFINITION(Odyssey.Entities, UserScript);
 

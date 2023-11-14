@@ -10,7 +10,7 @@ namespace Odyssey::Editor
 	{
 	public:
 		InspectorWindow() = default;
-		InspectorWindow(Entities::GameObject gameObject);
+		InspectorWindow(GameObject gameObject);
 
 	public:
 		virtual void Draw() override;

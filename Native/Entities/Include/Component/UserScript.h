@@ -3,7 +3,7 @@
 #include <ManagedObject.hpp>
 #include <Type.hpp>
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	class UserScript : public Component
 	{

@@ -3,7 +3,7 @@
 #include <Serialization.h>
 #include <ryml.hpp>
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	class GameObject
 	{

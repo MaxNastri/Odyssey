@@ -6,10 +6,6 @@
 
 namespace Odyssey
 {
-	namespace Entities
-	{
-		class Transform;
-	}
 	namespace Graphics
 	{
 		class GUIElement;
@@ -22,13 +18,13 @@ namespace Odyssey::Editor
 	{
 	public:
 		TransformInspector() = default;
-		TransformInspector(Entities::GameObject go);
+		TransformInspector(GameObject go);
 
 	public:
 		virtual void Draw() override;
 
 	private:
-		Entities::GameObject gameObject;
+		GameObject gameObject;
 		Vector3Drawer positionDrawer;
 		Vector3Drawer rotationDrawer;
 		Vector3Drawer scaleDrawer;

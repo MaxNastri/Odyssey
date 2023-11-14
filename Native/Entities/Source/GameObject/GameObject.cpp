@@ -2,7 +2,7 @@
 #include "Component.h"
 #include "ComponentManager.h"
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	CLASS_DEFINITION(Odyssey.Entities, GameObject);
 	GameObject::GameObject()

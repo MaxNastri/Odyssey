@@ -5,7 +5,7 @@
 
 namespace Odyssey::Editor
 {
-    std::vector<Entities::Scene> SceneManager::scenes;
+    std::vector<Scene> SceneManager::scenes;
     int SceneManager::activeScene = 0;
     void SceneManager::ListenForEvents()
     {
@@ -15,11 +15,11 @@ namespace Odyssey::Editor
 
     void SceneManager::LoadScene(const std::string& filename)
     {
-        Entities::Scene scene;
+        Scene scene;
         scene.Deserialize(filename);
 
         scenes.push_back(scene);
-        activeScene = scenes.size() - 1;
+        activeScene = (int)scenes.size() - 1;
 
         // TODO: Send a copy of the scene, so the GUI manager can use the game objects to reload the inspectors
         Framework::EventSystem::Dispatch<OnSceneLoaded>(&scenes[activeScene]);
@@ -31,7 +31,7 @@ namespace Odyssey::Editor
         scenes[activeScene].Serialize(filename);
     }
 
-    Entities::Scene& SceneManager::GetActiveScene()
+    Scene& SceneManager::GetActiveScene()
     {
         // TODO: insert return statement here
         return scenes[activeScene];

@@ -3,7 +3,7 @@
 #include "Globals.h"
 #include <Serialization.h>
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	// FWD Declarations
 	class GameObject;

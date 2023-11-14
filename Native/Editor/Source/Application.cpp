@@ -34,8 +34,8 @@ namespace Odyssey::Editor
 		// Create the scene
 		SceneManager::LoadScene("scene.json");
 
-		Entities::Scene scene = SceneManager::GetActiveScene();
-		Entities::GameObject go = scene.GetGameObject(0);
+		Scene scene = SceneManager::GetActiveScene();
+		GameObject go = scene.GetGameObject(0);
 		GUIManager::CreateInspectorWindow(go);
 
 		while (running)

@@ -13,7 +13,7 @@ namespace Odyssey::Editor
 		Framework::EventSystem::Listen<Graphics::OnGUIRenderEvent>(GUIManager::OnRender);
 	}
 
-	void GUIManager::CreateInspectorWindow(Entities::GameObject gameObject)
+	void GUIManager::CreateInspectorWindow(GameObject gameObject)
 	{
 		inspectorWindows.push_back(InspectorWindow(gameObject));
 	}

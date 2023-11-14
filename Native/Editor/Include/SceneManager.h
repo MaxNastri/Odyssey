@@ -18,7 +18,7 @@ namespace Odyssey::Editor
 		static void LoadScene(const std::string& filename);
 		static void SaveActiveScene(const std::string& filename);
 
-		static Entities::Scene& GetActiveScene();
+		static Scene& GetActiveScene();
 
 	public:
 		static void Update();
@@ -28,7 +28,7 @@ namespace Odyssey::Editor
 		static void AssembliesReloaded(Scripting::OnAssembliesReloaded* reloadedEvent);
 
 	private:
-		static std::vector<Entities::Scene> scenes;
+		static std::vector<Scene> scenes;
 		static int activeScene;
 		inline static const std::string tempSaveFilename = "tmpSave.json";
 

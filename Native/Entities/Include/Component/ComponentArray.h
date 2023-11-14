@@ -9,7 +9,7 @@
 #define MAX_GAME_OBJECTS 5000
 #endif // !MAX_GAME_OBJECTS
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	// FWD Declarations
 	class Component;

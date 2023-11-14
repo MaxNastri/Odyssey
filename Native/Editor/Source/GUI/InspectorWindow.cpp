@@ -5,10 +5,8 @@
 
 namespace Odyssey::Editor
 {
-	InspectorWindow::InspectorWindow(Entities::GameObject gameObject)
+	InspectorWindow::InspectorWindow(GameObject gameObject)
 	{
-		using namespace Entities;
-
 		if (ComponentManager::HasComponent<Transform>(gameObject))
 		{
 			transformInspector = TransformInspector(gameObject);

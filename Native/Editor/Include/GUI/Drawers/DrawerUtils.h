@@ -12,13 +12,9 @@
 
 namespace Odyssey::Editor
 {
-	using namespace Entities;
-
 	template <typename FieldType>
-	void AddIntDrawer(Entities::GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, FieldType initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	void AddIntDrawer(GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, FieldType initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
 	{
-		using namespace Entities;
-
 		std::function<void(FieldType)> callback = [gameObject, userScriptClassName, fieldName](FieldType fieldValue)
 			{
 				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject, userScriptClassName))
@@ -31,10 +27,8 @@ namespace Odyssey::Editor
 		drawers.push_back(std::move(drawer));
 	}
 
-	void AddBoolDrawer(Entities::GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, bool initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	void AddBoolDrawer(GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, bool initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
 	{
-		using namespace Entities;
-
 		std::function<void(bool)> callback = [gameObject, userScriptClassName, fieldName](bool fieldValue)
 			{
 				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject, userScriptClassName))
@@ -47,10 +41,8 @@ namespace Odyssey::Editor
 		drawers.push_back(std::move(drawer));
 	}
 
-	void AddFloatDrawer(Entities::GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, float initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	void AddFloatDrawer(GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, float initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
 	{
-		using namespace Entities;
-
 		std::function<void(float)> callback = [gameObject, userScriptClassName, fieldName](float fieldValue)
 			{
 				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject, userScriptClassName))
@@ -63,10 +55,8 @@ namespace Odyssey::Editor
 		drawers.push_back(std::move(drawer));
 	}
 
-	void AddDoubleDrawer(Entities::GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, double initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	void AddDoubleDrawer(GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, double initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
 	{
-		using namespace Entities;
-
 		std::function<void(double)> callback = [gameObject, userScriptClassName, fieldName](double fieldValue)
 			{
 				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject, userScriptClassName))
@@ -79,10 +69,8 @@ namespace Odyssey::Editor
 		drawers.push_back(std::move(drawer));
 	}
 
-	void AddStringDrawer(Entities::GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, std::string initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	void AddStringDrawer(GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, std::string initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
 	{
-		using namespace Entities;
-
 		std::function<void(std::string)> callback = [gameObject, userScriptClassName, fieldName](std::string fieldValue)
 			{
 				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject, userScriptClassName))
@@ -95,5 +83,4 @@ namespace Odyssey::Editor
 		std::unique_ptr<StringDrawer> drawer = std::make_unique<StringDrawer>(fieldName, initialValue, callback);
 		drawers.push_back(std::move(drawer));
 	}
-
 }

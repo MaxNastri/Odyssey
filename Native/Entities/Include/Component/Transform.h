@@ -3,7 +3,7 @@
 #include <Serialization.h>
 #include <glm.h>
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	class Transform : public Component
 	{

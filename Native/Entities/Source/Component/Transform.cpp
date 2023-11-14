@@ -3,7 +3,7 @@
 #include <glm.h>
 #include <Yaml.h>
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	CLASS_DEFINITION(Odyssey.Entities, Transform);
 

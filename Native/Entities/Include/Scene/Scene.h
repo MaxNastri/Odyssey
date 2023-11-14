@@ -5,7 +5,7 @@
 #include <vector>
 #include "GameObject.h"
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	// FWD Declarations
 	class Component;

@@ -4,7 +4,7 @@
 #include <GameObject.h>
 #include <ManagedObject.hpp>
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	class UserScript;
 }
@@ -17,20 +17,20 @@ namespace Odyssey::Editor
 	{
 	public:
 		UserScriptInspector() = default;
-		UserScriptInspector(Entities::GameObject go, Entities::UserScript* userScript, std::string_view className);
+		UserScriptInspector(GameObject go, UserScript* userScript, std::string_view className);
 
 	public:
 		virtual void Draw() override;
 		void UpdateFields();
 
 	private:
-		void InitializeDrawers(Entities::UserScript* userScript);
+		void InitializeDrawers(UserScript* userScript);
 
-		void CreateDrawerFromProperty(Entities::GameObject gameObject, const std::string& className, const std::string& fieldName, Coral::ManagedType managedType, Coral::ManagedObject userObject);
-		void CreateStringDrawer(Entities::GameObject gameObject, const std::string& className, const std::string& fieldName, Coral::ManagedObject userObject);
+		void CreateDrawerFromProperty(GameObject gameObject, const std::string& className, const std::string& fieldName, Coral::ManagedType managedType, Coral::ManagedObject userObject);
+		void CreateStringDrawer(GameObject gameObject, const std::string& className, const std::string& fieldName, Coral::ManagedObject userObject);
 
 	private:
-		Entities::GameObject gameObject;
+		GameObject gameObject;
 		std::string userScriptFullName;
 		std::string displayName;
 		std::vector<std::unique_ptr<PropertyDrawer>> drawers;

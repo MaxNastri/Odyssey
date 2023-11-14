@@ -6,7 +6,7 @@
 #include <typeindex>
 #include <string>
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	class ComponentManager
 	{

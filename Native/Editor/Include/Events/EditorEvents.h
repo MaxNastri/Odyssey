@@ -35,11 +35,11 @@ namespace Odyssey::Editor
 	struct OnSceneLoaded : public Framework::Event
 	{
 	public:
-		OnSceneLoaded(Entities::Scene* scene)
+		OnSceneLoaded(Scene* scene)
 		{
 			loadedScene = scene;
 		}
 
-		Entities::Scene* loadedScene;
+		Scene* loadedScene;
 	};
 }

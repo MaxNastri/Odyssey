@@ -4,7 +4,7 @@
 #include <string>
 #include <Yaml.h>
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	Scene::Scene()
 	{

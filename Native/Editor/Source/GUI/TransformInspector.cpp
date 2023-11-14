@@ -6,10 +6,8 @@
 
 namespace Odyssey::Editor
 {
-	TransformInspector::TransformInspector(Entities::GameObject go)
+	TransformInspector::TransformInspector(GameObject go)
 	{
-		using namespace Entities;
-
 		gameObject = go;
 
 		if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
