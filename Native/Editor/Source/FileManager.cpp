@@ -5,7 +5,7 @@
 
 namespace Odyssey
 {
-	Framework::FileWatcher FileManager::fileWatcher;
+	FileWatcher FileManager::fileWatcher;
 	std::map<int64_t, std::wstring> FileManager::folderIDs;
 	std::unordered_set<std::wstring> FileManager::trackedFolders;
 	int64_t FileManager::nextID;
@@ -32,17 +32,17 @@ namespace Odyssey
 		}
 	}
 
-	void FileManager::FileChangedEvent(int64_t id, const Framework::NotificationSet& notificationSet)
+	void FileManager::FileChangedEvent(int64_t id, const NotificationSet& notificationSet)
 	{
 		for (auto& notification : notificationSet)
 		{
 			std::string path = ConvertWideToUtf8(notification.first.c_str());
-			std::string action = Framework::Utils::FileNotifcationsToString(notification.second);
+			std::string action = Utils::FileNotifcationsToString(notification.second);
 
-			Framework::Logger::LogInfo("[FileManager] File changed: " + path + ", action = " + action);
+			Logger::LogInfo("[FileManager] File changed: " + path + ", action = " + action);
 		}
 
-		Framework::EventSystem::Dispatch<OnUserFilesModified>(notificationSet);
+		EventSystem::Dispatch<OnUserFilesModified>(notificationSet);
 	}
 
 	void FileManager::FileWatcherError(int64_t id)

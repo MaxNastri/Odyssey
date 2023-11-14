@@ -9,8 +9,8 @@ namespace Odyssey
     int SceneManager::activeScene = 0;
     void SceneManager::ListenForEvents()
     {
-        Framework::EventSystem::Listen<OnBuildFinished>(SceneManager::BuildFinished);
-        Framework::EventSystem::Listen<Scripting::OnAssembliesReloaded>(SceneManager::AssembliesReloaded);
+        EventSystem::Listen<OnBuildFinished>(SceneManager::BuildFinished);
+        EventSystem::Listen<Scripting::OnAssembliesReloaded>(SceneManager::AssembliesReloaded);
     }
 
     void SceneManager::LoadScene(const std::string& filename)
@@ -22,7 +22,7 @@ namespace Odyssey
         activeScene = (int)scenes.size() - 1;
 
         // TODO: Send a copy of the scene, so the GUI manager can use the game objects to reload the inspectors
-        Framework::EventSystem::Dispatch<OnSceneLoaded>(&scenes[activeScene]);
+        EventSystem::Dispatch<OnSceneLoaded>(&scenes[activeScene]);
 
     }
 
@@ -59,7 +59,7 @@ namespace Odyssey
         if (activeScene < scenes.size())
         {
             scenes[activeScene].Deserialize(tempSaveFilename);
-            Framework::EventSystem::Dispatch<OnSceneLoaded>(&scenes[activeScene]);
+            EventSystem::Dispatch<OnSceneLoaded>(&scenes[activeScene]);
         }
     }
 }

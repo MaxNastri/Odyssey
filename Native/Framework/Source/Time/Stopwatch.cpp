@@ -1,6 +1,6 @@
 #include "Stopwatch.h"
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	void Stopwatch::Start()
 	{

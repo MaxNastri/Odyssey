@@ -2,7 +2,7 @@
 #include <string>
 #include <format>
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	class Logger
 	{

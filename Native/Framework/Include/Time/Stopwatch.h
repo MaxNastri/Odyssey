@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	class Stopwatch
 	{

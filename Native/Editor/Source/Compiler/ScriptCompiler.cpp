@@ -12,14 +12,14 @@ namespace Odyssey
 
 	void ScriptCompiler::ListenForEvents()
 	{
-		Framework::EventSystem::Listen<OnUserFilesModified>(ScriptCompiler::UserFilesModified);
+		EventSystem::Listen<OnUserFilesModified>(ScriptCompiler::UserFilesModified);
 	}
 
 	bool ScriptCompiler::BuildUserAssembly()
 	{
 		if (buildInProgress)
 		{
-			Framework::Logger::LogError("Cannot compile while a build is in progress.");
+			Logger::LogError("Cannot compile while a build is in progress.");
 			return false;
 		}
 
@@ -31,7 +31,7 @@ namespace Odyssey
 			L"-o \"./tmp_build/\" -r \"win-x64\"";
 
 		bool success = BuildAssemblies(buildCommand);
-		Framework::EventSystem::Dispatch<OnBuildFinished>(success);
+		EventSystem::Dispatch<OnBuildFinished>(success);
 
 		if (success)
 		{
@@ -45,7 +45,7 @@ namespace Odyssey
 	{
 		buildInProgress = true;
 
-		Framework::EventSystem::Dispatch<OnBuildStart>();
+		EventSystem::Dispatch<OnBuildStart>();
 
 		STARTUPINFOW startInfo;
 		PROCESS_INFORMATION pi;
@@ -66,7 +66,7 @@ namespace Odyssey
 
 			std::ostringstream oss;
 			oss << "Failed to query process. Error code: " << std::hex << err;
-			Odyssey::Framework::Logger::LogError(oss.view());
+			Odyssey::Logger::LogError(oss.view());
 
 			CloseHandle(pi.hProcess);
 			CloseHandle(pi.hThread);
@@ -90,7 +90,7 @@ namespace Odyssey
 				auto err = GetLastError();
 				std::ostringstream oss;
 				oss << "Failed to query process. Error code: " << std::hex << err;
-				Odyssey::Framework::Logger::LogError(oss.view());
+				Odyssey::Logger::LogError(oss.view());
 				buildInProgress = false;
 				return false;
 			}
@@ -115,7 +115,7 @@ namespace Odyssey
 		// Failed build
 		else
 		{
-			Odyssey::Framework::Logger::LogError("Failed to build managed scripts!");
+			Odyssey::Logger::LogError("Failed to build managed scripts!");
 			return false;
 		}
 	}
@@ -126,8 +126,8 @@ namespace Odyssey
 		{
 			for (const auto& changedFile : fileSavedEvent->changedFileSet)
 			{
-				if (changedFile.second != Framework::FileNotifcations::RenamedNew &&
-					changedFile.second != Framework::FileNotifcations::RenamedOld)
+				if (changedFile.second != FileNotifcations::RenamedNew &&
+					changedFile.second != FileNotifcations::RenamedOld)
 				{
 					BuildUserAssembly();
 					break;

@@ -70,7 +70,7 @@ namespace glm
 		return ret != ryml::yml::npos;
 	}
 }
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	static void YamlSample()
 	{

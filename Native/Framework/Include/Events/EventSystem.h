@@ -4,7 +4,7 @@
 #include <functional>
 #include "EventListenerArray.h"
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	struct Event
 	{

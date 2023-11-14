@@ -17,9 +17,6 @@ GameObjects:
           - Name: EnterYourName
             ManagedType: String
             Value: Hello
-          - Name: EnterYourName2
-            ManagedType: String
-            Value: World
       - Name: Example.Managed.ExampleScript
         UUID: U_OET321097OET3210
         Fields:

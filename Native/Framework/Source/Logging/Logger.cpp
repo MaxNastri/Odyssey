@@ -1,7 +1,7 @@
 #include "Logger.h"
 #include "spdlog.h"
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	void Logger::LogInfo(const char* message)
 	{

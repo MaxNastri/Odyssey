@@ -13,7 +13,7 @@ namespace Odyssey::Scripting
 
 	void ExceptionCallback(std::string_view exception)
 	{
-		Framework::Logger::LogError(exception.data());
+		Logger::LogError(exception.data());
 	}
 
 	void ScriptingManager::Initialize()
@@ -57,7 +57,7 @@ namespace Odyssey::Scripting
 	{
 		UnloadUserAssemblies();
 		LoadUserAssemblies();
-		Framework::EventSystem::Dispatch<OnAssembliesReloaded>();
+		EventSystem::Dispatch<OnAssembliesReloaded>();
 	}
 
 	Coral::ManagedObject ScriptingManager::CreateManagedObject(std::string_view fqManagedClassName)

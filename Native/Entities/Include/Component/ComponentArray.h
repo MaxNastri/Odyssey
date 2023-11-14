@@ -43,7 +43,7 @@ namespace Odyssey
 			}
 			else
 			{
-				Framework::Logger::LogError("Cannot insert data for game object: " + std::to_string(gameObject));
+				Logger::LogError("Cannot insert data for game object: " + std::to_string(gameObject));
 				return -1;
 			}
 		}
@@ -56,7 +56,7 @@ namespace Odyssey
 				return static_cast<T*>(componentData[index].get());
 			}
 
-			Framework::Logger::LogError("Cannot Get Component Data for GameObject: " + std::to_string(gameObject));
+			Logger::LogError("Cannot Get Component Data for GameObject: " + std::to_string(gameObject));
 			return nullptr;
 		}
 
@@ -68,7 +68,7 @@ namespace Odyssey
 				return componentData[index].get();
 			}
 
-			Framework::Logger::LogError("Cannot Get Component for GameObject: " + std::to_string(gameObject));
+			Logger::LogError("Cannot Get Component for GameObject: " + std::to_string(gameObject));
 			return nullptr;
 		}
 
@@ -89,7 +89,7 @@ namespace Odyssey
 			// Make sure the game object has this component type
 			if (gameObjectToIndexMap.find(gameObject) == gameObjectToIndexMap.end())
 			{
-				Framework::Logger::LogError("Cannot remove component from game object: " + std::to_string(gameObject));
+				Logger::LogError("Cannot remove component from game object: " + std::to_string(gameObject));
 				return;
 			}
 

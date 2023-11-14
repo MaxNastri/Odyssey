@@ -5,23 +5,23 @@
 
 namespace Odyssey
 {
-	struct OnUserFilesModified : public Framework::Event
+	struct OnUserFilesModified : public Event
 	{
 	public:
-		OnUserFilesModified(const Framework::NotificationSet& notificationSet)
+		OnUserFilesModified(const NotificationSet& notificationSet)
 		{
 			changedFileSet = notificationSet;
 		}
 
-		Framework::NotificationSet changedFileSet;
+		NotificationSet changedFileSet;
 	};
 
-	struct OnBuildStart : public Framework::Event
+	struct OnBuildStart : public Event
 	{
 
 	};
 
-	struct OnBuildFinished : public Framework::Event
+	struct OnBuildFinished : public Event
 	{
 	public:
 		OnBuildFinished(bool succeeded)
@@ -32,7 +32,7 @@ namespace Odyssey
 		bool success = false;
 	};
 
-	struct OnSceneLoaded : public Framework::Event
+	struct OnSceneLoaded : public Event
 	{
 	public:
 		OnSceneLoaded(Scene* scene)

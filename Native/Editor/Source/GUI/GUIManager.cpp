@@ -9,8 +9,8 @@ namespace Odyssey
 
 	void GUIManager::ListenForEvents()
 	{
-		Framework::EventSystem::Listen<OnSceneLoaded>(GUIManager::SceneLoaded);
-		Framework::EventSystem::Listen<OnGUIRenderEvent>(GUIManager::OnRender);
+		EventSystem::Listen<OnSceneLoaded>(GUIManager::SceneLoaded);
+		EventSystem::Listen<OnGUIRenderEvent>(GUIManager::OnRender);
 	}
 
 	void GUIManager::CreateInspectorWindow(GameObject gameObject)

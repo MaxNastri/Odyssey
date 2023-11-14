@@ -46,7 +46,7 @@ namespace Odyssey
 		{
 			return gameObjectsByID[id];
 		}
-		Framework::Logger::LogError("[Scene] Cannot find game object " + std::to_string(id));
+		Logger::LogError("[Scene] Cannot find game object " + std::to_string(id));
 		return NULL;
 	}
 

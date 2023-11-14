@@ -2,7 +2,7 @@
 #include <VulkanRenderer.h>
 #include <Stopwatch.h>
 
-using namespace Odyssey::Framework;
+using namespace Odyssey;
 using namespace Odyssey;
 
 namespace Odyssey

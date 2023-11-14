@@ -2,7 +2,7 @@
 #include "Logger.h"
 #include "WatchInfo.h"
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	FileWatcher::FileWatcher()
 	{

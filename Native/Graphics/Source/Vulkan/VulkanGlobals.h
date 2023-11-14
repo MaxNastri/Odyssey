@@ -10,7 +10,7 @@ namespace Odyssey
     static VkAllocationCallbacks* allocator = nullptr;
     static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData)
     {
-        Framework::Logger::LogError(std::format("[vulkan] Debug report from ObjectType: %i\nMessage: %s\n\n", (uint64_t)objectType, pMessage));
+        Logger::LogError(std::format("[vulkan] Debug report from ObjectType: %i\nMessage: %s\n\n", (uint64_t)objectType, pMessage));
         return VK_FALSE;
     }
 
@@ -21,7 +21,7 @@ namespace Odyssey
             return;
         }
 
-        Framework::Logger::LogError(std::format("[vulkan] Error: VkResult = %d\n", (uint64_t)err));
+        Logger::LogError(std::format("[vulkan] Error: VkResult = %d\n", (uint64_t)err));
 
         if (err < 0)
         {

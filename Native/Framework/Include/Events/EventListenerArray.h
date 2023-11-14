@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	// Empty abstract base class so we can store the templated version in containers
 	class IEventListenerArray

@@ -3,7 +3,7 @@
 
 namespace Odyssey::Scripting
 {
-	struct OnAssembliesReloaded : public Framework::Event
+	struct OnAssembliesReloaded : public Event
 	{
 
 	};

@@ -8,10 +8,6 @@
                 "ManagedType": "String",
                 "Value": "Hello"
             },
-            "EnterYourName2": {
-                "ManagedType": "String",
-                "Value": "World"
-            },
             "ManagedType": "Example.Managed.AnotherScript",
             "Type": "Odyssey.Entities.UserScript"
         },

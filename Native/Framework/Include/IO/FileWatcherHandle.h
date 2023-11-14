@@ -7,7 +7,7 @@
 #include <functional>
 #include <windows.h>
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	enum class FileNotifcations
 	{
@@ -25,15 +25,15 @@ namespace Odyssey::Framework
 		{
 			switch (notifications)
 			{
-			case Odyssey::Framework::FileNotifcations::Added:
+			case Odyssey::FileNotifcations::Added:
 				return "File Added";
-			case Odyssey::Framework::FileNotifcations::Removed:
+			case Odyssey::FileNotifcations::Removed:
 				return "File Removed";
-			case Odyssey::Framework::FileNotifcations::Modified:
+			case Odyssey::FileNotifcations::Modified:
 				return "Modified";
-			case Odyssey::Framework::FileNotifcations::RenamedOld:
+			case Odyssey::FileNotifcations::RenamedOld:
 				return "Renamed Old";
-			case Odyssey::Framework::FileNotifcations::RenamedNew:
+			case Odyssey::FileNotifcations::RenamedNew:
 				return "Renamed New";
 			}
 

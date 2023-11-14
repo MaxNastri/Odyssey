@@ -88,7 +88,7 @@ namespace Odyssey
 			ImGui::ShowDemoWindow(&showDemoWindow);
 		}
 
-		Framework::EventSystem::Dispatch<OnGUIRenderEvent>();
+		EventSystem::Dispatch<OnGUIRenderEvent>();
 	}
 
 	void VulkanImgui::Render(VkCommandBuffer commandBuffer)

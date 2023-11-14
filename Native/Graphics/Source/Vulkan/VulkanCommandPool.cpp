@@ -15,7 +15,7 @@ namespace Odyssey
 
     VkCommandBuffer VulkanCommandPool::AllocateBuffer(VkDevice device)
     {
-        int cmdIndex = commandBuffers.size();
+        int cmdIndex = (int)commandBuffers.size();
         commandBuffers.push_back(nullptr);
 
         VkCommandBufferAllocateInfo info = {};
@@ -37,7 +37,7 @@ namespace Odyssey
 
     void VulkanCommandPool::Destroy(VkDevice device)
     {
-        vkFreeCommandBuffers(device, commandPool, commandBuffers.size(), commandBuffers.data());
+        vkFreeCommandBuffers(device, commandPool, (uint32_t)commandBuffers.size(), commandBuffers.data());
         vkDestroyCommandPool(device, commandPool, allocator);
         commandPool = VK_NULL_HANDLE;
         commandBuffers.clear();

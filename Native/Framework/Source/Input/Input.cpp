@@ -1,6 +1,6 @@
 #include "Input.h"
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
     std::array<std::bitset<1024>, Input::KeyState::Size> Input::keyInput;
     double Input::mouseX = 0.0;

@@ -1,7 +1,7 @@
 #include "WatchInfo.h"
 #include "Logger.h"
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	WatchInfo::WatchInfo(const int64_t& ID, std::unique_ptr<OVERLAPPED>&& overlapped, const std::wstring& path, HandlePtr&& directoryHandle)
 		: overlapped(std::move(overlapped)),

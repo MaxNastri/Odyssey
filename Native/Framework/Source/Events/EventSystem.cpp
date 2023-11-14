@@ -1,6 +1,6 @@
 #include "EventSystem.h"
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	std::map<std::type_index, std::unique_ptr<IEventListenerArray>> EventSystem::eventTypeToListeners;
 }

@@ -3,7 +3,7 @@
 
 namespace Odyssey
 {
-	struct OnGUIRenderEvent : public Framework::Event
+	struct OnGUIRenderEvent : public Event
 	{
 
 	};
