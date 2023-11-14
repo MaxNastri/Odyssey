@@ -1,7 +1,7 @@
 #include "VulkanRenderPass.h"
 #include "VulkanGlobals.h"
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	VulkanRenderPass::VulkanRenderPass(VkDevice device, VkFormat surfaceFormat)
 	{

@@ -9,15 +9,15 @@
     ".NETCoreApp,Version=v7.0/win-x64": {
       "Odyssey.Managed.Example/1.0.0": {
         "dependencies": {
-          "Odyssey.Managed.Core": "1.0.0"
+          "Coral.Managed": "1.0.0"
         },
         "runtime": {
           "Odyssey.Managed.Example.dll": {}
         }
       },
-      "Odyssey.Managed.Core/1.0.0": {
+      "Coral.Managed/1.0.0": {
         "runtime": {
-          "Odyssey.Managed.Core.dll": {}
+          "Coral.Managed.dll": {}
         }
       }
     }
@@ -28,7 +28,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Odyssey.Managed.Core/1.0.0": {
+    "Coral.Managed/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

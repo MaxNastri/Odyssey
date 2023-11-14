@@ -24,7 +24,6 @@ namespace Coral {
 		int32_t GetAssemblyID() const { return m_AssemblyID; }
 		AssemblyLoadStatus GetLoadStatus() const { return m_LoadStatus; }
 		std::string_view GetName() const { return m_Name; }
-		std::string_view GetPath() const { return m_Path; }
 
 		void AddInternalCall(std::string_view InClassName, std::string_view InVariableName, void* InFunctionPtr);
 		void UploadInternalCalls();
@@ -37,7 +36,6 @@ namespace Coral {
 		int32_t m_AssemblyID = -1;
 		AssemblyLoadStatus m_LoadStatus = AssemblyLoadStatus::UnknownError;
 		std::string m_Name;
-		std::string m_Path;
 
 	#if defined(CORAL_WIDE_CHARS)
 		std::vector<std::wstring> m_InternalCallNameStorage;

@@ -5,7 +5,7 @@
 // FWD Declarations
 struct GLFWwindow;
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	class Window;
 

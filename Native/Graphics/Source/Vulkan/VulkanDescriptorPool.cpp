@@ -1,7 +1,7 @@
 #include "VulkanDescriptorPool.h"
 #include "VulkanGlobals.h"
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	VulkanDescriptorPool::VulkanDescriptorPool(VkDevice logicalDevice)
 	{

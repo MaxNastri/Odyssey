@@ -1,11 +1,14 @@
 #pragma once
 #include "json.hpp"
 
+#if 1
 #define ODYSSEY_SERIALIZE(Type, ...)  \
     friend void to_json(nlohmann::json& nlohmann_json_j, const Type& nlohmann_json_t) { NLOHMANN_JSON_EXPAND(NLOHMANN_JSON_PASTE(NLOHMANN_JSON_TO, __VA_ARGS__)) } \
     friend void from_json(const nlohmann::json& nlohmann_json_j, Type& nlohmann_json_t) { NLOHMANN_JSON_EXPAND(NLOHMANN_JSON_PASTE(NLOHMANN_JSON_FROM, __VA_ARGS__)) }
 using namespace nlohmann;
+#elif YAML_SERIALIZATION
 
+#endif
 namespace nlohmann
 {
     template <typename T>

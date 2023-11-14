@@ -1,6 +1,6 @@
 #include "Window.h"
 #include "Input.h"
-#include <Log.h>
+#include <Logger.h>
 
 // GLFW3 Includes
 #ifndef GLFW_EXPOSE_NATIVE_WIN32
@@ -9,7 +9,7 @@
 #include <glfw3native.h>
 #endif
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	Window::Window()
 	{
@@ -53,7 +53,7 @@ namespace Odyssey::Graphics
 
 	void Window::ErrorCallback(int error, const char* description)
 	{
-		Framework::Log::Error(std::format("GLFW Error %d: %s\n", error, description));
+		Logger::LogError(std::format("GLFW Error %d: %s\n", error, description));
 	}
 
 	void Window::KeyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods)
@@ -61,30 +61,30 @@ namespace Odyssey::Graphics
 		if (action == GLFW_PRESS)
 		{
 			// Key press
-			Framework::Input::RegisterKeyPress(key, scanCode);
+			Input::RegisterKeyPress(key, scanCode);
 		}
 		else if (action == GLFW_REPEAT)
 		{
 			// DOWN
-			Framework::Input::RegisterKeyDown(key, scanCode);
+			Input::RegisterKeyDown(key, scanCode);
 		}
 		else if (action == GLFW_RELEASE)
 		{
 			// Up
-			Framework::Input::RegisterKeyUp(key, scanCode);
+			Input::RegisterKeyUp(key, scanCode);
 		}
 	}
 
 	void Window::MouseMoveCallback(GLFWwindow* window, double x, double y)
 	{
-		Framework::Input::RegisterMouseMove(x, y);
+		Input::RegisterMouseMove(x, y);
 	}
 
 	void Window::MouseEnteredCallback(GLFWwindow* window, int entered)
 	{
 		double xPos, yPos;
 		glfwGetCursorPos(window, &xPos, &yPos);
-		Framework::Input::RegisterMousePosition(xPos, yPos, entered);
+		Input::RegisterMousePosition(xPos, yPos, entered);
 	}
 
 	void Window::WindowResize(GLFWwindow* window, int width, int height)

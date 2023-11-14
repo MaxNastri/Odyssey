@@ -11,6 +11,6 @@
 
 int main(int argc, char** argv)
 {
-	Odyssey::Editor::Application editor;
+	Odyssey::Application editor;
 	editor.Run();
 }

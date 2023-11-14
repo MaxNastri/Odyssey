@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Core.hpp"
+#include "String.hpp"
 
 namespace Coral {
 
@@ -10,13 +11,13 @@ namespace Coral {
 	class PropertyInfo
 	{
 	public:
-		std::string GetName() const;
+		String GetName() const;
 		Type& GetType();
 
 		std::vector<Attribute> GetAttributes() const;
 
 	private:
-		ManagedHandle m_Handle = nullptr;
+		ManagedHandle m_Handle = -1;
 		Type* m_Type = nullptr;
 
 		friend class Type;

@@ -1,7 +1,7 @@
 #include "VulkanCommandPool.h"
 #include "VulkanGlobals.h"
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
     VulkanCommandPool::VulkanCommandPool(VkDevice device, uint32_t queueIndex)
     {
@@ -15,7 +15,7 @@ namespace Odyssey::Graphics
 
     VkCommandBuffer VulkanCommandPool::AllocateBuffer(VkDevice device)
     {
-        int cmdIndex = commandBuffers.size();
+        int cmdIndex = (int)commandBuffers.size();
         commandBuffers.push_back(nullptr);
 
         VkCommandBufferAllocateInfo info = {};
@@ -37,7 +37,7 @@ namespace Odyssey::Graphics
 
     void VulkanCommandPool::Destroy(VkDevice device)
     {
-        vkFreeCommandBuffers(device, commandPool, commandBuffers.size(), commandBuffers.data());
+        vkFreeCommandBuffers(device, commandPool, (uint32_t)commandBuffers.size(), commandBuffers.data());
         vkDestroyCommandPool(device, commandPool, allocator);
         commandPool = VK_NULL_HANDLE;
         commandBuffers.clear();

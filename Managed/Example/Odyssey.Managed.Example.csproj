@@ -14,7 +14,7 @@
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
     <OutputPath>..\..\Build\Debug\</OutputPath>
-    <IntermediateOutputPath>..\..\Intermediates\Debug\Debug\Odyssey.Managed.Example\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\Intermediates\Debug\</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
     <OutputPath>..\..\Build\Release\</OutputPath>
-    <IntermediateOutputPath>..\..\Intermediates\Release\Release\Odyssey.Managed.Example\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\Intermediates\Release\</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -38,9 +38,9 @@
     <Compile Include="Source\Main.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Odyssey.Managed.Core.csproj">
-      <Project>{2721EFE1-13B0-78AB-BCCE-8CA6A83C8951}</Project>
-      <Name>Odyssey.Managed.Core</Name>
+    <ProjectReference Include="..\Runtime\Coral.Managed.csproj">
+      <Project>{11178401-7DD7-FF37-4612-49B5B2914414}</Project>
+      <Name>Coral.Managed</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

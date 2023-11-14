@@ -1,21 +1,31 @@
 {
     "GameObject.0": {
         "Component.Transform": {
-            "Type": "Odyssey.Entities.Transform",
-            "position": {
-                "w": 0.0,
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            }
+            "Type": "Odyssey.Entities.Transform"
         },
-        "Component.UserScript": {
-            "IAmAlive": {
-                "ManagedType": 11,
-                "Value": false
-            },
+        "Component.UserScript.Example.Managed.AnotherScript": {
+            "ManagedType": "Example.Managed.AnotherScript",
+            "Type": "Odyssey.Entities.UserScript"
+        },
+        "Component.UserScript.Example.Managed.ExampleScript": {
             "ManagedType": "Example.Managed.ExampleScript",
+            "MyName": {
+                "ManagedType": "String",
+                "Value": "Max"
+            },
             "Type": "Odyssey.Entities.UserScript",
+            "anotherMovementThing": {
+                "ManagedType": 5,
+                "Value": -1
+            },
+            "movement": {
+                "ManagedType": 5,
+                "Value": 10
+            },
+            "newSpeedMulti": {
+                "ManagedType": 9,
+                "Value": 0.009999999776482582
+            },
             "speed": {
                 "ManagedType": 9,
                 "Value": 0.0

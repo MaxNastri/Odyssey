@@ -1,7 +1,7 @@
 #include "ScriptingManager.h"
-#include "ScriptCompiler.h"
 #include "Paths.h"
-#include <Log.h>
+#include <Logger.h>
+#include "ScriptingEvents.h"
 
 namespace Odyssey::Scripting
 {
@@ -9,12 +9,11 @@ namespace Odyssey::Scripting
 	Coral::HostSettings ScriptingManager::hostSettings;
 	Coral::AssemblyLoadContext ScriptingManager::userAssemblyContext;
 	Coral::ManagedAssembly ScriptingManager::userAssembly;
-	ScriptCompiler ScriptingManager::scriptCompiler;
 	std::vector<Coral::ManagedObject> ScriptingManager::managedObjects;
 
 	void ExceptionCallback(std::string_view exception)
 	{
-		Framework::Log::Error(exception.data());
+		Logger::LogError(exception.data());
 	}
 
 	void ScriptingManager::Initialize()
@@ -25,12 +24,11 @@ namespace Odyssey::Scripting
 		hostSettings =
 		{
 			.CoralDirectory = coralDir,
+			.CoralFilename = "Coral.Managed.dll",
 			.ExceptionCallback = ExceptionCallback
 		};
 		hostInstance.Initialize(hostSettings);
 
-		// Build and load the user assemblies
-		scriptCompiler.CompileUserAssembly();
 		LoadUserAssemblies();
 	}
 
@@ -55,18 +53,14 @@ namespace Odyssey::Scripting
 		hostInstance.UnloadAssemblyLoadContext(userAssemblyContext);
 	}
 
-	bool ScriptingManager::RecompileUserAssemblies()
-	{
-		return scriptCompiler.CompileUserAssembly();
-	}
-
 	void ScriptingManager::ReloadUserAssemblies()
 	{
 		UnloadUserAssemblies();
 		LoadUserAssemblies();
+		EventSystem::Dispatch<OnAssembliesReloaded>();
 	}
 
-	Coral::ManagedObject ScriptingManager::CreateManagedObject(const std::string& fqManagedClassName)
+	Coral::ManagedObject ScriptingManager::CreateManagedObject(std::string_view fqManagedClassName)
 	{
 		// TODO: insert return statement here
 		Coral::Type& managedType = userAssembly.GetType(fqManagedClassName);

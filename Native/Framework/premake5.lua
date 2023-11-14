@@ -36,7 +36,8 @@ project "Odyssey.Native.Framework"
         "Source",
         "Source/**",
     }
-    
+    defines { "GLM_FORCE_DEPTH_ZERO_TO_ONE", "YAML_CPP_STATIC_DEFINE" }
+
     filter { "configurations:Debug" }
         runtime "Debug"
         symbols "On"

@@ -1,7 +1,7 @@
 #include "WatchInfo.h"
-#include "Log.h"
+#include "Logger.h"
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	WatchInfo::WatchInfo(const int64_t& ID, std::unique_ptr<OVERLAPPED>&& overlapped, const std::wstring& path, HandlePtr&& directoryHandle)
 		: overlapped(std::move(overlapped)),
@@ -18,7 +18,7 @@ namespace Odyssey::Framework
 	{
 		if (state == State::Listening)
 		{
-			Log::Info("Destroying watcher.");
+			Logger::LogInfo("Destroying watcher.");
 		}
 	}
 
@@ -26,7 +26,7 @@ namespace Odyssey::Framework
 	{
 		if (state != State::Initialized)
 		{
-			Log::Error("Invalid file watcher state.");
+			Logger::LogError("Invalid file watcher state.");
 			return false;
 		}
 
@@ -41,7 +41,7 @@ namespace Odyssey::Framework
 		if (result == FALSE)
 		{
 			state = State::Initialized;
-			Log::Error("An error occured: " + GetLastError());
+			Logger::LogError("An error occured: " + GetLastError());
 			return false;
 		}
 

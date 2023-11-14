@@ -1,12 +1,15 @@
 #pragma once
+#include <vector>
+#include <memory>
 #include <vulkan/vulkan.h>
 
 // FWD Declarations
 struct GLFWwindow;
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	class VulkanDevice;
+	class GUIElement;
 
 	class VulkanImgui
 	{
@@ -27,7 +30,7 @@ namespace Odyssey::Graphics
 
 	public:
 		VulkanImgui(const InitInfo& initInfo);
-		void BeginFrame();
+		void SubmitDraws();
 		void Render(VkCommandBuffer commandBuffer);
 		void PostRender();
 

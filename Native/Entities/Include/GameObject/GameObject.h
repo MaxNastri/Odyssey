@@ -1,9 +1,9 @@
 #pragma once
 #include "Globals.h"
 #include <Serialization.h>
-#include <string>
+#include <ryml.hpp>
 
-namespace Odyssey::Entities
+namespace Odyssey
 {
 	class GameObject
 	{
@@ -12,6 +12,8 @@ namespace Odyssey::Entities
 		GameObject(unsigned int ID);
 		void Serialize(json& jsonObject);
 		void Deserialize(const json& jsonObject);
+		void Serialize(ryml::NodeRef& node);
+		void Deserialize(ryml::NodeRef& node);
 
 	public:
 		bool operator==(const GameObject& other) { return id == other.id; }
@@ -20,6 +22,8 @@ namespace Odyssey::Entities
 		bool active;
 		unsigned int id;
 		std::string name;
+		std::string uuid;
+
 		CLASS_DECLARATION(GameObject);
 		ODYSSEY_SERIALIZE(GameObject, Type, active, id, name);
 	};

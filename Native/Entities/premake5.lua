@@ -5,8 +5,18 @@ project "Odyssey.Native.Entities"
     cppdialect "C++20"
     kind "StaticLib"
     staticruntime "Off"
+
     architecture "x86_64"
     
+    pchheader "PCH.hpp"
+    pchsource "Source/PCH.cpp"
+
+    forceincludes { "PCH.hpp" }
+
+    filter { "action:xcode4" }
+        pchheader "Source/PCH.hpp"
+    filter { }
+
     files {
         "Include/**.h",
         "Include/**.inl",

@@ -4,5 +4,5 @@ workspace "Odyssey-Managed"
     targetdir "%{wks.location}/Build/%{cfg.buildcfg}"
 	objdir "%{wks.location}/Intermediates/%{cfg.buildcfg}"
 
-include "Managed/Core"
+include "Managed/Runtime"
 include "Managed/Example"

@@ -1,12 +1,11 @@
 #include "FileManager.h"
-#include <io.h>
-#include <cstdio>
-#include <fcntl.h>
-#include <Log.h>
+#include <Logger.h>
+#include <EventSystem.h>
+#include "EditorEvents.h"
 
-namespace Odyssey::Editor
+namespace Odyssey
 {
-	Framework::FileWatcher FileManager::fileWatcher;
+	FileWatcher FileManager::fileWatcher;
 	std::map<int64_t, std::wstring> FileManager::folderIDs;
 	std::unordered_set<std::wstring> FileManager::trackedFolders;
 	int64_t FileManager::nextID;
@@ -33,15 +32,17 @@ namespace Odyssey::Editor
 		}
 	}
 
-	void FileManager::FileChangedEvent(int64_t id, const Framework::NotificationSet& notificationSet)
+	void FileManager::FileChangedEvent(int64_t id, const NotificationSet& notificationSet)
 	{
 		for (auto& notification : notificationSet)
 		{
 			std::string path = ConvertWideToUtf8(notification.first.c_str());
-			std::string action = Framework::Utils::FileNotifcationsToString(notification.second);
+			std::string action = Utils::FileNotifcationsToString(notification.second);
 
-			Framework::Log::Info("[FileManager] File changed: " + path + ", action = " + action);
+			Logger::LogInfo("[FileManager] File changed: " + path + ", action = " + action);
 		}
+
+		EventSystem::Dispatch<OnUserFilesModified>(notificationSet);
 	}
 
 	void FileManager::FileWatcherError(int64_t id)

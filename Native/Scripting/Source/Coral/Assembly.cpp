@@ -3,7 +3,6 @@
 #include "CoralManagedFunctions.hpp"
 #include "Verify.hpp"
 #include "StringHelper.hpp"
-#include "NativeArray.hpp"
 #include "TypeCache.hpp"
 
 namespace Coral {
@@ -45,29 +44,33 @@ namespace Coral {
 
 	ManagedAssembly& AssemblyLoadContext::LoadAssembly(std::string_view InFilePath)
 	{
+		auto filepath = String::New(InFilePath);
+
 		auto[idx, result] = m_LoadedAssemblies.EmplaceBack();
 		result.m_Host = m_Host;
-		result.m_AssemblyID = s_ManagedFunctions.LoadManagedAssemblyFptr(m_ContextId, InFilePath);
+		result.m_AssemblyID = s_ManagedFunctions.LoadManagedAssemblyFptr(m_ContextId, filepath);
 		result.m_LoadStatus = s_ManagedFunctions.GetLastLoadStatusFptr();
 
 		if (result.m_LoadStatus == AssemblyLoadStatus::Success)
 		{
-			result.m_Name = s_ManagedFunctions.GetAssemblyNameFptr(result.m_AssemblyID);
-			result.m_Path = InFilePath;
+			auto assemblyName = s_ManagedFunctions.GetAssemblyNameFptr(result.m_AssemblyID);
+			result.m_Name = assemblyName;
+			String::Free(assemblyName);
 
 			int32_t typeCount = 0;
-			s_ManagedFunctions.GetAssemblyTypes(result.m_AssemblyID, nullptr, &typeCount);
+			s_ManagedFunctions.GetAssemblyTypesFptr(result.m_AssemblyID, nullptr, &typeCount);
 			std::vector<TypeId> typeIds(typeCount);
-			s_ManagedFunctions.GetAssemblyTypes(result.m_AssemblyID, typeIds.data(), &typeCount);
+			s_ManagedFunctions.GetAssemblyTypesFptr(result.m_AssemblyID, typeIds.data(), &typeCount);
 
 			for (auto typeId : typeIds)
 			{
 				Type type;
-				type.m_TypePtr = typeId;
-				type.RetrieveName();
+				type.m_Id = typeId;
 				result.m_Types.push_back(TypeCache::Get().CacheType(std::move(type)));
 			}
 		}
+
+		String::Free(filepath);
 
 		return result;
 	}

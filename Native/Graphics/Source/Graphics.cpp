@@ -23,7 +23,7 @@
 #define IMGUI_VULKAN_DEBUG_REPORT
 #endif
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
     // Data
     static VkAllocationCallbacks* g_Allocator = nullptr;
@@ -368,7 +368,7 @@ namespace Odyssey::Graphics
         wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount; // Now we can use the next set of semaphores
     }
 
-	void Graphics::Run()
+	void Run()
 	{
         glfwSetErrorCallback(glfw_error_callback);
         if (!glfwInit())

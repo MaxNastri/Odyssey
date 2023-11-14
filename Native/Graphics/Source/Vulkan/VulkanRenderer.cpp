@@ -7,7 +7,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <glfw3.h>
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	VulkanRenderer::VulkanRenderer()
 	{
@@ -44,7 +44,7 @@ namespace Odyssey::Graphics
 			RebuildSwapchain();
 		}
 
-		imgui->BeginFrame();
+		imgui->SubmitDraws();
 		RenderFrame();
 		imgui->PostRender();
 		Present();

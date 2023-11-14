@@ -1,7 +1,7 @@
 #include "VulkanFrame.h"
 #include "VulkanGlobals.h"
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	VulkanFrame::VulkanFrame(VkDevice device, uint32_t queueIndex)
 	{

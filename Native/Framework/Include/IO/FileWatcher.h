@@ -4,7 +4,7 @@
 #include <mutex>
 #include "FileWatcherHandle.h"
 
-namespace Odyssey::Framework
+namespace Odyssey
 {
 	class WatchInfo;
 

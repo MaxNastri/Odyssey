@@ -3,7 +3,7 @@
 #include <vulkan/vulkan.h>
 #include "VulkanQueue.h"
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	class VulkanDevice
 	{

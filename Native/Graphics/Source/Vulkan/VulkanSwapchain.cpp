@@ -2,7 +2,7 @@
 #include "VulkanGlobals.h"
 #include <assert.h>
 
-namespace Odyssey::Graphics
+namespace Odyssey
 {
 	VulkanSwapchain::VulkanSwapchain(VkDevice device, VkPhysicalDevice physicalDevice, VulkanSurface* surface)
 	{

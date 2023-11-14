@@ -5,17 +5,14 @@
 
 namespace Coral {
 
-	std::string Type::GetFullName() const
+	String Type::GetFullName() const
 	{
-		if (m_Namespace.empty())
-			return m_Name;
-
-		return m_Namespace + "." + m_Name;
+		return s_ManagedFunctions.GetFullTypeNameFptr(m_Id);
 	}
 
-	std::string Type::GetAssemblyQualifiedName() const
+	String Type::GetAssemblyQualifiedName() const
 	{
-		return s_ManagedFunctions.GetAssemblyQualifiedNameFptr(&m_TypePtr);
+		return s_ManagedFunctions.GetAssemblyQualifiedNameFptr(m_Id);
 	}
 
 	Type& Type::GetBaseType()
@@ -23,8 +20,7 @@ namespace Coral {
 		if (!m_BaseType)
 		{
 			Type baseType;
-			s_ManagedFunctions.GetBaseTypeFptr(&m_TypePtr, &baseType.m_TypePtr);
-			baseType.RetrieveName();
+			s_ManagedFunctions.GetBaseTypeFptr(m_Id, &baseType.m_Id);
 			m_BaseType = TypeCache::Get().CacheType(std::move(baseType));
 		}
 
@@ -33,25 +29,25 @@ namespace Coral {
 
 	bool Type::IsSubclassOf(const Type& InOther)
 	{
-		return s_ManagedFunctions.IsTypeSubclassOfFptr(&m_TypePtr, &InOther.m_TypePtr);
+		return s_ManagedFunctions.IsTypeSubclassOfFptr(m_Id, InOther.m_Id);
 	}
 
 	bool Type::IsAssignableTo(const Type& InOther)
 	{
-		return s_ManagedFunctions.IsTypeAssignableToFptr(&m_TypePtr, &InOther.m_TypePtr);
+		return s_ManagedFunctions.IsTypeAssignableToFptr(m_Id, InOther.m_Id);
 	}
 
 	bool Type::IsAssignableFrom(const Type& InOther)
 	{
-		return s_ManagedFunctions.IsTypeAssignableFromFptr(&m_TypePtr, &InOther.m_TypePtr);
+		return s_ManagedFunctions.IsTypeAssignableFromFptr(m_Id, InOther.m_Id);
 	}
 
 	std::vector<MethodInfo> Type::GetMethods() const
 	{
 		int32_t methodCount = 0;
-		s_ManagedFunctions.GetTypeMethodsFptr(&m_TypePtr, nullptr, &methodCount);
+		s_ManagedFunctions.GetTypeMethodsFptr(m_Id, nullptr, &methodCount);
 		std::vector<ManagedHandle> handles(methodCount);
-		s_ManagedFunctions.GetTypeMethodsFptr(&m_TypePtr, handles.data(), &methodCount);
+		s_ManagedFunctions.GetTypeMethodsFptr(m_Id, handles.data(), &methodCount);
 
 		std::vector<MethodInfo> methods(handles.size());
 		for (size_t i = 0; i < handles.size(); i++)
@@ -63,9 +59,9 @@ namespace Coral {
 	std::vector<FieldInfo> Type::GetFields() const
 	{
 		int32_t fieldCount = 0;
-		s_ManagedFunctions.GetTypeFieldsFptr(&m_TypePtr, nullptr, &fieldCount);
+		s_ManagedFunctions.GetTypeFieldsFptr(m_Id, nullptr, &fieldCount);
 		std::vector<ManagedHandle> handles(fieldCount);
-		s_ManagedFunctions.GetTypeFieldsFptr(&m_TypePtr, handles.data(), &fieldCount);
+		s_ManagedFunctions.GetTypeFieldsFptr(m_Id, handles.data(), &fieldCount);
 
 		std::vector<FieldInfo> fields(handles.size());
 		for (size_t i = 0; i < handles.size(); i++)
@@ -77,9 +73,9 @@ namespace Coral {
 	std::vector<PropertyInfo> Type::GetProperties() const
 	{
 		int32_t propertyCount = 0;
-		s_ManagedFunctions.GetTypePropertiesFptr(&m_TypePtr, nullptr, &propertyCount);
+		s_ManagedFunctions.GetTypePropertiesFptr(m_Id, nullptr, &propertyCount);
 		std::vector<ManagedHandle> handles(propertyCount);
-		s_ManagedFunctions.GetTypePropertiesFptr(&m_TypePtr, handles.data(), &propertyCount);
+		s_ManagedFunctions.GetTypePropertiesFptr(m_Id, handles.data(), &propertyCount);
 
 		std::vector<PropertyInfo> properties(handles.size());
 		for (size_t i = 0; i < handles.size(); i++)
@@ -91,9 +87,9 @@ namespace Coral {
 	std::vector<Attribute> Type::GetAttributes() const
 	{
 		int32_t attributeCount;
-		s_ManagedFunctions.GetTypeAttributesFptr(&m_TypePtr, nullptr, &attributeCount);
+		s_ManagedFunctions.GetTypeAttributesFptr(m_Id, nullptr, &attributeCount);
 		std::vector<ManagedHandle> attributeHandles(attributeCount);
-		s_ManagedFunctions.GetTypeAttributesFptr(&m_TypePtr, attributeHandles.data(), &attributeCount);
+		s_ManagedFunctions.GetTypeAttributesFptr(m_Id, attributeHandles.data(), &attributeCount);
 
 		std::vector<Attribute> result(attributeHandles.size());
 		for (size_t i = 0; i < attributeHandles.size(); i++)
@@ -104,50 +100,56 @@ namespace Coral {
 
 	ManagedType Type::GetManagedType() const
 	{
-		return s_ManagedFunctions.GetTypeManagedTypeFptr(&m_TypePtr);
+		return s_ManagedFunctions.GetTypeManagedTypeFptr(m_Id);
+	}
+
+	bool Type::IsString() const
+	{
+		return GetManagedType() == ManagedType::Unknown && GetFullName() == "System.String";
 	}
 
 	bool Type::operator==(const Type& InOther) const
 	{
-		return m_TypePtr == InOther.m_TypePtr;
-	}
-
-	void Type::RetrieveName()
-	{
-		if (m_TypePtr == nullptr)
-			return;
-
-		std::string fullName = s_ManagedFunctions.GetFullTypeNameFptr(&m_TypePtr);
-		size_t namespaceEnd = fullName.find_last_of('.');
-
-		if (namespaceEnd == std::string::npos)
-		{
-			m_Name = fullName;
-			m_Namespace = "";
-			return;
-		}
-
-		m_Name = fullName.substr(namespaceEnd + 1);
-		m_Namespace = fullName.substr(0, namespaceEnd);
+		return m_Id == InOther.m_Id;
 	}
 
 	ManagedObject Type::CreateInstanceInternal(const void** InParameters, const ManagedType* InParameterTypes, size_t InLength)
 	{
-		auto name = GetAssemblyQualifiedName();
-		auto result = s_ManagedFunctions.CreateObjectFptr(name, false, InParameters, InParameterTypes, static_cast<int32_t>(InLength));
+		ManagedObject result;
+		result.m_Handle = s_ManagedFunctions.CreateObjectFptr(m_Id, false, InParameters, InParameterTypes, static_cast<int32_t>(InLength));
 		result.m_Type = this;
 		return result;
 	}
 
 	void Type::InvokeStaticMethodInternal(std::string_view InMethodName, const void** InParameters, const ManagedType* InParameterTypes, size_t InLength) const
 	{
-		s_ManagedFunctions.InvokeStaticMethodFptr(&m_TypePtr, InMethodName, InParameters, InParameterTypes, static_cast<int32_t>(InLength));
+		auto methodName = String::New(InMethodName);
+		s_ManagedFunctions.InvokeStaticMethodFptr(m_Id, methodName, InParameters, InParameterTypes, static_cast<int32_t>(InLength));
+		String::Free(methodName);
 	}
 
 	void Type::InvokeStaticMethodRetInternal(std::string_view InMethodName, const void** InParameters, const ManagedType* InParameterTypes, size_t InLength, void* InResultStorage) const
 	{
-		s_ManagedFunctions.InvokeStaticMethodRetFptr(&m_TypePtr, InMethodName, InParameters, InParameterTypes, static_cast<int32_t>(InLength), InResultStorage);
+		auto methodName = String::New(InMethodName);
+		s_ManagedFunctions.InvokeStaticMethodRetFptr(m_Id, methodName, InParameters, InParameterTypes, static_cast<int32_t>(InLength), InResultStorage);
+		String::Free(methodName);
 	}
 
+
+	ReflectionType::operator Type&() const
+	{
+		static Type s_NullType;
+
+		auto* result = TypeCache::Get().GetTypeByID(m_TypeID);
+
+		if (result == nullptr)
+		{
+			Type type;
+			type.m_Id = m_TypeID;
+			result = TypeCache::Get().CacheType(std::move(type));
+		}
+
+		return result != nullptr ? *result : s_NullType;
+	}
 
 }

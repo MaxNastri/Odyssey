@@ -56,7 +56,7 @@ namespace Coral {
 			return ManagedType::Unknown;
 	}
 
-	template<typename TArg, size_t TIndex>
+	template <typename TArg, size_t TIndex>
 	inline void AddToArrayI(const void** InArgumentsArr, ManagedType* InParameterTypes, TArg&& InArg)
 	{
 		InParameterTypes[TIndex] = GetManagedType<TArg>();
@@ -71,7 +71,7 @@ namespace Coral {
 		}
 	}
 
-	template<typename... TArgs, size_t... TIndices>
+	template <typename... TArgs, size_t... TIndices>
 	inline void AddToArray(const void** InArgumentsArr, ManagedType* InParameterTypes, TArgs&&... InArgs, const std::index_sequence<TIndices...>&)
 	{
 		(AddToArrayI<TArgs, TIndices>(InArgumentsArr, InParameterTypes, std::forward<TArgs>(InArgs)), ...);
