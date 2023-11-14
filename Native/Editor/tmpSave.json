@@ -4,10 +4,6 @@
             "Type": "Odyssey.Entities.Transform"
         },
         "Component.UserScript.Example.Managed.AnotherScript": {
-            "EnterYourName": {
-                "ManagedType": "String",
-                "Value": "Hello"
-            },
             "ManagedType": "Example.Managed.AnotherScript",
             "Type": "Odyssey.Entities.UserScript"
         },

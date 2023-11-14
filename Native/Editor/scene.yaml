@@ -13,10 +13,7 @@ GameObjects:
         Scale: 'x: 0 y: 0 z: 0'
       - Name: Example.Managed.AnotherScript
         UUID: U_OET123097OET1230
-        Fields:
-          - Name: EnterYourName
-            ManagedType: String
-            Value: Hello
+        Fields: []
       - Name: Example.Managed.ExampleScript
         UUID: U_OET321097OET3210
         Fields:

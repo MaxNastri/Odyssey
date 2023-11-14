@@ -148,27 +148,36 @@ namespace Odyssey
 
 		ryml::ConstNodeRef fieldsNode = node["Fields"];
 		assert(fieldsNode.is_seq());
-		assert(fieldsNode.has_children());
 
-		for (size_t i = 0; i < fieldsNode.num_children(); i++)
+		if (fieldsNode.has_children())
 		{
-			ryml::ConstNodeRef fieldNode = fieldsNode.child(i);
-			assert(fieldNode.is_map());
-
-			std::string fieldName;
-			std::string managedType;
-			fieldNode["Name"] >> fieldName;
-			fieldNode["ManagedType"] >> managedType;
-
-			if (managedType == "String")
+			for (size_t i = 0; i < fieldsNode.num_children(); i++)
 			{
-				DeserializeNativeString(fieldName, fieldNode);
-			}
-			else
-			{
-				uint32_t managedTypeInt;
-				fieldNode["ManagedType"] >> managedTypeInt;
-				DeserializeNativeType((Coral::ManagedType)managedTypeInt, fieldName, fieldNode);
+				ryml::ConstNodeRef fieldNode = fieldsNode.child(i);
+				assert(fieldNode.is_map());
+
+				std::string fieldName;
+				std::string managedType;
+				fieldNode["Name"] >> fieldName;
+				fieldNode["ManagedType"] >> managedType;
+
+				// Make sure the field still exists on deserialization
+				for (auto& field : fields)
+				{
+					if (field.GetName() == fieldName)
+					{
+						if (managedType == "String")
+						{
+							DeserializeNativeString(fieldName, fieldNode);
+						}
+						else
+						{
+							uint32_t managedTypeInt;
+							fieldNode["ManagedType"] >> managedTypeInt;
+							DeserializeNativeType((Coral::ManagedType)managedTypeInt, fieldName, fieldNode);
+						}
+					}
+				}
 			}
 		}
 	}
