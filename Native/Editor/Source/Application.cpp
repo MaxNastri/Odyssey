@@ -32,7 +32,7 @@ namespace Odyssey
 		stopwatch.Start();
 
 		// Create the scene
-		SceneManager::LoadScene("scene.json");
+		SceneManager::LoadScene("scene.yaml");
 
 		Scene scene = SceneManager::GetActiveScene();
 		GameObject go = scene.GetGameObject(0);
@@ -45,6 +45,7 @@ namespace Odyssey
 			if (elapsed > MaxFPS)
 			{
 				stopwatch.Restart();
+				ScriptCompiler::Process();
 
 				SceneManager::Update();
 

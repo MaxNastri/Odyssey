@@ -13,8 +13,6 @@ namespace Odyssey
 		virtual void Awake() override;
 		virtual void Update() override;
 		virtual void OnDestroy() override;
-		virtual void Serialize(json& jsonObject) override;
-		virtual void Deserialize(const json& jsonObject) override;
 		virtual void Serialize(ryml::NodeRef& node) override;
 		virtual void Deserialize(ryml::ConstNodeRef node) override;
 
@@ -24,20 +22,13 @@ namespace Odyssey
 		Coral::ManagedObject GetManagedObject() { return managedInstance; }
 		void SetManagedType(std::string_view managedClassName);
 
-	private: //json
-		bool SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, json& jsonObject);
-		bool SerializeNativeString(const std::string& fieldName, json& jsonObject);
-		bool DeserializeNativeType(const Coral::ManagedType& managedType, const std::string& fieldName, const json& jsonObject);
-		bool DeserializeNativeString(const std::string& fieldName, const json& jsonObject);
-
 	private: // yaml
 		bool SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, ryml::NodeRef node);
 		bool SerializeNativeString(const std::string& fieldName, ryml::NodeRef& node);
-		bool DeserializeNativeType(const Coral::ManagedType& managedType, const std::string& fieldName, ryml::ConstNodeRef jsonObject);
+		bool DeserializeNativeType(const Coral::ManagedType& managedType, const std::string& fieldName, ryml::ConstNodeRef node);
 		bool DeserializeNativeString(const std::string& fieldName, ryml::ConstNodeRef node);
 	private:
 		Coral::ManagedObject managedInstance;
 		CLASS_DECLARATION(UserScript);
-		ODYSSEY_SERIALIZE(UserScript, Type);
 	};
 }

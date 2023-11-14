@@ -8,8 +8,6 @@
 
 namespace Odyssey
 {
-	bool ScriptCompiler::buildInProgress = false;
-
 	void ScriptCompiler::ListenForEvents()
 	{
 		EventSystem::Listen<OnUserFilesModified>(ScriptCompiler::UserFilesModified);
@@ -39,6 +37,17 @@ namespace Odyssey
 		}
 
 		return success;
+	}
+
+	bool ScriptCompiler::Process()
+	{
+		if (shouldRebuild)
+		{
+			shouldRebuild = false;
+			return BuildUserAssembly();
+		}
+
+		return true;
 	}
 
 	bool ScriptCompiler::BuildAssemblies(std::wstring buildCommand)
@@ -129,7 +138,7 @@ namespace Odyssey
 				if (changedFile.second != FileNotifcations::RenamedNew &&
 					changedFile.second != FileNotifcations::RenamedOld)
 				{
-					BuildUserAssembly();
+					shouldRebuild = true;
 					break;
 				}
 			}

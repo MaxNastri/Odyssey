@@ -76,20 +76,6 @@ namespace Odyssey
 
 	void Scene::Serialize(const std::string& filename)
 	{
-		json jsonObject
-		{
-			{ "name", name }
-		};
-
-		for (GameObject& gameObject : gameObjects)
-		{
-			gameObject.Serialize(jsonObject);
-		}
-
-		std::fstream file(filename, std::ios_base::out);
-		file << std::setw(4) << jsonObject << std::endl;
-		file.close();
-
 		ryml::Tree tree;
 		ryml::NodeRef root = tree.rootref();
 		root |= ryml::MAP;
@@ -104,29 +90,14 @@ namespace Odyssey
 			gameObject.Serialize(gameObjectsNode);
 		}
 
-		FILE* file2 = fopen("scene.yaml", "w+");
+		FILE* file2 = fopen(filename.c_str(), "w+");
 		size_t len = ryml::emit_yaml(tree, tree.root_id(), file2);
 		fclose(file2);
 	}
 
 	void Scene::Deserialize(const std::string& filename)
 	{
-		/*std::fstream file(filename, std::ios_base::in);
-		json jsonObject;
-		file >> jsonObject;
-
-		name = jsonObject.at("name");
-
-		for (auto& element : jsonObject)
-		{
-			if (element.is_object() && element.at("Type") == GameObject::Type)
-			{
-				GameObject go = CreateGameObject();
-				go.Deserialize(element);
-			}
-		}*/
-
-		if (std::ifstream ifs{ "scene.yaml"})
+		if (std::ifstream ifs{ filename })
 		{
 			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));

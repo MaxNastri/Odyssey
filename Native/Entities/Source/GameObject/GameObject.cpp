@@ -19,53 +19,6 @@ namespace Odyssey
 		active = true;
 	}
 
-	void GameObject::Serialize(json& sceneJson)
-	{
-		json gameObjectJson;
-		to_json(gameObjectJson, *this);
-
-		auto serializeComponent = [&gameObjectJson](Component* component)
-			{
-				component->Serialize(gameObjectJson);
-			};
-
-		ComponentManager::ExecuteOnGameObjectComponents(*this, serializeComponent);
-
-		auto userScripts = ComponentManager::GetAllUserScripts(*this);
-
-		for (auto& [scriptName, userScript] : userScripts)
-		{
-			userScript->Serialize(gameObjectJson);
-		}
-
-		sceneJson += {"GameObject." + std::to_string(id), gameObjectJson};
-	}
-
-	void GameObject::Deserialize(const json& jsonObject)
-	{
-		from_json(jsonObject, *this);
-
-		for (auto& element : jsonObject)
-		{
-			if (element.is_object())
-			{
-				std::string type = element.at("Type");
-				Component* component = nullptr;
-				if (type == UserScript::Type)
-				{
-					std::string managedType = element.at("ManagedType");
-					component = ComponentManager::AddUserScript(*this, managedType, managedType);
-				}
-				else
-				{
-					Component* component = nullptr;
-					component = ComponentManager::AddComponentByName(*this, type);
-				}
-				component->Deserialize(element);
-			}
-		}
-	}
-
 	void GameObject::Serialize(ryml::NodeRef& node)
 	{
 		ryml::NodeRef gameObjectNode = node.append_child();

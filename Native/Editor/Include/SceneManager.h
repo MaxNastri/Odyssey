@@ -30,7 +30,7 @@ namespace Odyssey
 	private:
 		static std::vector<Scene> scenes;
 		static int activeScene;
-		inline static const std::string tempSaveFilename = "tmpSave.json";
+		inline static const std::string tempSaveFilename = "tmps.yaml";
 
 	};
 }

@@ -11,6 +11,7 @@ namespace Odyssey
 
 	public:
 		static bool BuildUserAssembly();
+		static bool Process();
 
 	private:
 		static bool BuildAssemblies(std::wstring buildCommand);
@@ -20,6 +21,7 @@ namespace Odyssey
 		static void UserFilesModified(OnUserFilesModified* fileSavedEvent);
 
 	private:
-		static bool buildInProgress;
+		inline static bool buildInProgress = false;
+		inline static bool shouldRebuild = false;
 	};
 }

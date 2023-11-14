@@ -1,6 +1,5 @@
 #pragma once
 #include "Component.h"
-#include <Serialization.h>
 #include <glm.h>
 
 namespace Odyssey
@@ -11,8 +10,6 @@ namespace Odyssey
 		virtual void Awake() override;
 		virtual void Update() override;
 		virtual void OnDestroy() override;
-		virtual void Serialize(json& jsonObject) override;
-		virtual void Deserialize(const json& jsonObject) override;
         virtual void Serialize(ryml::NodeRef& node) override;
         virtual void Deserialize(ryml::ConstNodeRef node) override;
 
@@ -57,6 +54,5 @@ namespace Odyssey
         glm::mat4x4 worldMatrix;
         bool dirty;
 		CLASS_DECLARATION(Transform);
-		ODYSSEY_SERIALIZE(Transform, Type);
 	};
 }

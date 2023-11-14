@@ -235,18 +235,6 @@ namespace Odyssey
         dirty = true;
     }
 
-	void Transform::Serialize(json& jsonObject)
-	{
-		json componentJson;
-		to_json(componentJson, *this);
-		jsonObject += { "Component." + Transform::ClassName, componentJson};
-	}
-
-	void Transform::Deserialize(const json& jsonObject)
-	{
-		from_json(jsonObject, *this);
-	}
-
     void Transform::Serialize(ryml::NodeRef& node)
     {
         ryml::NodeRef componentNode = node.append_child();
