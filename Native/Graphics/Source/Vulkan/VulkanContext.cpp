@@ -17,10 +17,13 @@ namespace Odyssey
 
 	void VulkanContext::GatherExtensions()
 	{
-		const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionsCount);
-		for (uint32_t i = 0; i < extensionsCount; ++i)
+		if (glfwInit())
 		{
-			extensions.push_back(glfwExtensions[i]);
+			const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&extensionsCount);
+			for (uint32_t i = 0; i < extensionsCount; ++i)
+			{
+				extensions.push_back(glfwExtensions[i]);
+			}
 		}
 	}
 

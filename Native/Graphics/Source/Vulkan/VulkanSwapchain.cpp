@@ -33,7 +33,7 @@ namespace Odyssey
         check_vk_result(err);
 
 		minImageCount = GetMinImageCount(surface->GetPresentMode());
-        VkSurfaceFormatKHR surfaceFormat = surface->GetFormat();
+        VkSurfaceFormatKHR surfaceFormat = surface->GetSurfaceFormat();
         VkSurfaceKHR vkSurface = surface->GetVK();
         int width = surface->GetWidth();
         int height = surface->GetHeight();

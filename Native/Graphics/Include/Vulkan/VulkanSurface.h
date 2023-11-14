@@ -22,7 +22,8 @@ namespace Odyssey
 
 	public:
 		VkSurfaceKHR GetVK() { return surface; }
-		VkSurfaceFormatKHR GetFormat() { return format; }
+		VkFormat GetFormat() { return format.format; }
+		VkSurfaceFormatKHR GetSurfaceFormat() { return format; }
 		VkPresentModeKHR GetPresentMode() { return presentMode; }
 		int GetWidth() { return width; }
 		int GetHeight() { return height; }
