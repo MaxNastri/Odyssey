@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 #include <cstring>
 #include <string>
 #include <vector>
@@ -14,6 +13,9 @@
 #include <io.h>
 #include <cstdio>
 #include <fcntl.h>
+#include <iostream>
+#include <random>
+#include <chrono>
 
 #ifdef _WIN32
 	#define NOMINMAX

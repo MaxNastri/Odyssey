@@ -252,9 +252,18 @@ namespace Odyssey::Entities
         ryml::NodeRef componentNode = node.append_child();
         componentNode |= ryml::MAP;
 
-        componentNode["Name"] << "Component." + Transform::ClassName;
+        componentNode["Name"] << Transform::Type;
+        componentNode["UUID"] << uuid;
         componentNode["Position"] << position;
         componentNode["Rotation"] << eulerRotation;
         componentNode["Scale"] << scale;
+    }
+
+    void Transform::Deserialize(ryml::ConstNodeRef node)
+    {
+        node["UUID"] >> uuid;
+        node["Position"] >> position;
+        node["Rotation"] >> eulerRotation;
+        node["Scale"] >> scale;
     }
 }

@@ -6,11 +6,11 @@
         "Component.UserScript.Example.Managed.AnotherScript": {
             "EnterYourName": {
                 "ManagedType": "String",
-                "Value": ""
+                "Value": "Hello"
             },
             "EnterYourName2": {
                 "ManagedType": "String",
-                "Value": ""
+                "Value": "World"
             },
             "ManagedType": "Example.Managed.AnotherScript",
             "Type": "Odyssey.Entities.UserScript"
@@ -24,7 +24,7 @@
             "Type": "Odyssey.Entities.UserScript",
             "anotherMovementThing": {
                 "ManagedType": 5,
-                "Value": 4294967295
+                "Value": -1
             },
             "movement": {
                 "ManagedType": 5,

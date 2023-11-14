@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include <Serialization.h>
+#include <glm.h>
 
 namespace Odyssey::Entities
 {
@@ -13,6 +14,7 @@ namespace Odyssey::Entities
 		virtual void Serialize(json& jsonObject) override;
 		virtual void Deserialize(const json& jsonObject) override;
         virtual void Serialize(ryml::NodeRef& node) override;
+        virtual void Deserialize(ryml::ConstNodeRef node) override;
 
     public:
         void AddPosition(glm::vec3 pos);

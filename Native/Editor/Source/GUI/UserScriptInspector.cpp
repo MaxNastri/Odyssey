@@ -97,8 +97,8 @@ namespace Odyssey::Editor
 			}
 			case Coral::ManagedType::Short:
 			{
-				uint16_t intialValue = userObject.GetFieldValue<uint16_t>(fieldName);
-				AddIntDrawer<uint16_t>(gameObject, className, fieldName, intialValue, drawers);
+				int16_t intialValue = userObject.GetFieldValue<uint16_t>(fieldName);
+				AddIntDrawer<int16_t>(gameObject, className, fieldName, intialValue, drawers);
 				break;
 			}
 			case Coral::ManagedType::UShort:

@@ -14,7 +14,7 @@ namespace Odyssey::Scripting
 		static void ReloadUserAssemblies();
 
 	public:
-		static Coral::ManagedObject CreateManagedObject(const std::string& fqManagedClassName);
+		static Coral::ManagedObject CreateManagedObject(std::string_view fqManagedClassName);
 	private:
 		static Coral::HostInstance hostInstance;
 		static Coral::HostSettings hostSettings;

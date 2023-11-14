@@ -60,7 +60,7 @@ namespace Odyssey::Scripting
 		Framework::EventSystem::Dispatch<OnAssembliesReloaded>();
 	}
 
-	Coral::ManagedObject ScriptingManager::CreateManagedObject(const std::string& fqManagedClassName)
+	Coral::ManagedObject ScriptingManager::CreateManagedObject(std::string_view fqManagedClassName)
 	{
 		// TODO: insert return statement here
 		Coral::Type& managedType = userAssembly.GetType(fqManagedClassName);

@@ -62,6 +62,7 @@ namespace Odyssey::Entities
 			if (userScript)
 			{
 				userScript->SetGameObject(gameObject);
+				userScript->SetManagedType(managedName);
 			}
 
 			return userScript;

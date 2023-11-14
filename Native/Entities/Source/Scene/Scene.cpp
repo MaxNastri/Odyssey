@@ -111,7 +111,7 @@ namespace Odyssey::Entities
 
 	void Scene::Deserialize(const std::string& filename)
 	{
-		std::fstream file(filename, std::ios_base::in);
+		/*std::fstream file(filename, std::ios_base::in);
 		json jsonObject;
 		file >> jsonObject;
 
@@ -124,6 +124,30 @@ namespace Odyssey::Entities
 				GameObject go = CreateGameObject();
 				go.Deserialize(element);
 			}
+		}*/
+
+		if (std::ifstream ifs{ "scene.yaml"})
+		{
+			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
+			ryml::NodeRef root = tree.rootref();
+			
+			root["Name"] >> name;
+
+			ryml::NodeRef gameObjectsNode = root["GameObjects"];
+
+			assert(gameObjectsNode.is_seq());
+			assert(gameObjectsNode.has_children());
+
+			for (size_t i = 0; i < gameObjectsNode.num_children(); i++)
+			{
+				GameObject gameObject = CreateGameObject();
+				ryml::NodeRef child = gameObjectsNode.child(i);
+				gameObject.Deserialize(child);
+			}
 		}
+		else
+			std::cout << "Cannot open file\n";
+
 	}
 }

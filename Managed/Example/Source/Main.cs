@@ -30,8 +30,11 @@ namespace Example.Managed
 	public class AnotherScript : Component
 	{
 		public string EnterYourName = "";
-		public string EnterYourName2 = "";
-	}
+        public override void Update()
+        {
+			Console.WriteLine($"{EnterYourName}");
+        }
+    }
 
 
 
