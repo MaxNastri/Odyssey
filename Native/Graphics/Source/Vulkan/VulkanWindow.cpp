@@ -11,7 +11,7 @@ namespace Odyssey
 		m_Context = context;
 		window = std::make_unique<Window>();
 		surface = std::make_unique<VulkanSurface>(context.get(), window->GetWindowHandle());
-		swapchain = std::make_unique<VulkanSwapchain>(context.get(), surface.get());
+		swapchain = std::make_unique<VulkanSwapchain>(context, surface.get());
 
 	}
 
@@ -36,18 +36,18 @@ namespace Odyssey
 		return window->Update();
 	}
 
-	void VulkanWindow::PreRender(VulkanContext* context)
+	void VulkanWindow::PreRender()
 	{
 		if (rebuildSwapchain)
 		{
-			RebuildSwapchain(context);
+			RebuildSwapchain();
 		}
 	}
 
-	bool VulkanWindow::BeginFrame(VulkanContext* context, VulkanFrame*& currentFrame)
+	bool VulkanWindow::BeginFrame(VulkanFrame*& currentFrame)
 	{
 		VkResult err;
-		VkDevice vkDevice = context->GetDevice()->GetLogicalDevice();
+		VkDevice vkDevice = m_Context->GetDevice()->GetLogicalDevice();
 
 		const VkSemaphore* image_acquired_semaphore = frames[frameIndex].GetImageAcquiredSemaphore();
 		const VkSemaphore* render_complete_semaphore = frames[frameIndex].GetRenderCompleteSemaphore();
@@ -69,7 +69,7 @@ namespace Odyssey
 		err = vkResetFences(vkDevice, 1, &frame.fence);
 		check_vk_result(err);
 
-		frame.commandPool.Reset(context->GetDevice());
+		frame.commandPool.Reset(m_Context->GetDevice());
 
 		// Command buffer begin
 		VkCommandBufferBeginInfo info = {};
@@ -111,9 +111,9 @@ namespace Odyssey
 		SetupFrameData();
 	}
 
-	void VulkanWindow::RebuildSwapchain(VulkanContext* context)
+	void VulkanWindow::RebuildSwapchain()
 	{
-		VulkanDevice* device = context->GetDevice();
+		VulkanDevice* device = m_Context->GetDevice();
 		device->WaitForIdle();
 
 		// Destroy the existing frames
@@ -133,7 +133,7 @@ namespace Odyssey
 			// Remake the swapchain
 			swapchain->Destroy(device);
 			swapchain.reset();
-			swapchain = std::make_unique<VulkanSwapchain>(context, surface.get());
+			swapchain = std::make_unique<VulkanSwapchain>(m_Context, surface.get());
 
 			ImGui_ImplVulkan_SetMinImageCount(swapchain->minImageCount);
 			frameIndex = 0;

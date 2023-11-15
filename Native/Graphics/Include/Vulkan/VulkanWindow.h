@@ -22,8 +22,8 @@ namespace Odyssey
 
 	public:
 		bool Update();
-		void PreRender(VulkanContext* context);
-		bool BeginFrame(VulkanContext* context, VulkanFrame*& currentFrame);
+		void PreRender();
+		bool BeginFrame(VulkanFrame*& currentFrame);
 		void Present(VulkanQueue* graphicsQueue);
 		void SetRenderPass(std::shared_ptr<VulkanRenderPass> renderPass);
 
@@ -34,7 +34,7 @@ namespace Odyssey
 
 	private:
 		void SetupFrameData();
-		void RebuildSwapchain(VulkanContext* context);
+		void RebuildSwapchain();
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;

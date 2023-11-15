@@ -6,8 +6,9 @@
 
 namespace Odyssey
 {
-    VulkanSwapchain::VulkanSwapchain(VulkanContext* context, VulkanSurface* surface)
+    VulkanSwapchain::VulkanSwapchain(std::shared_ptr<VulkanContext> context, VulkanSurface* surface)
     {
+        m_Context = context;
         CreateSwapchain(context->GetDevice()->GetLogicalDevice(), context->GetPhysicalDevice()->GetPhysicalDevice(), surface);
     }
 

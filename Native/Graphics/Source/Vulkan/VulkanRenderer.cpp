@@ -14,7 +14,7 @@ namespace Odyssey
 	{
 		context = std::make_shared<VulkanContext>();
 		window = std::make_shared<VulkanWindow>(context);
-		graphicsQueue = std::make_unique<VulkanQueue>(VulkanQueueType::Graphics, context->GetPhysicalDevice(), context->GetDevice());
+		graphicsQueue = std::make_unique<VulkanQueue>(VulkanQueueType::Graphics, context);
 		descriptorPool = std::make_unique<VulkanDescriptorPool>(context->GetDevice());
 		renderPass = std::make_shared<VulkanRenderPass>(context->GetDevice(), window->GetSurface()->GetFormat());
 
@@ -31,7 +31,7 @@ namespace Odyssey
 
 	bool VulkanRenderer::Render()
 	{
-		window->PreRender(context.get());
+		window->PreRender();
 
 		imgui->SubmitDraws();
 		RenderFrame();
@@ -50,7 +50,7 @@ namespace Odyssey
 		ClearValue.color.float32[3] = 0.0f;
 
 		VulkanFrame* frame = nullptr;
-		if (window->BeginFrame(context.get(), frame))
+		if (window->BeginFrame(frame))
 		{
 			int width = window->GetSurface()->GetWidth();
 			int height = window->GetSurface()->GetHeight();
@@ -64,6 +64,7 @@ namespace Odyssey
 			// RenderPass end
 			renderPass->End(frame->commandBuffer);
 
+			// TODO: Move this into the context?
 			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			VkSubmitInfo submitInfo = {};
 			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

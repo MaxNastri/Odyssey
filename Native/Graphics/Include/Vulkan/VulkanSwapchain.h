@@ -14,7 +14,7 @@ namespace Odyssey
 	class VulkanSwapchain
 	{
 	public:
-		VulkanSwapchain(VulkanContext* context, VulkanSurface* surface);
+		VulkanSwapchain(std::shared_ptr<VulkanContext> context, VulkanSurface* surface);
 		void Destroy(VulkanDevice* device);
 
 	public:
@@ -27,6 +27,7 @@ namespace Odyssey
 		int GetMinImageCount(VkPresentModeKHR presentMode);
 
 	public:
+		std::shared_ptr<VulkanContext> m_Context;
 		VkSwapchainKHR swapchain;
 		uint32_t imageCount;
 		uint32_t minImageCount;

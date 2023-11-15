@@ -5,10 +5,12 @@
 
 namespace Odyssey
 {
-	VulkanQueue::VulkanQueue(VulkanQueueType type, VulkanPhysicalDevice* physicalDevice, VulkanDevice* device)
+	VulkanQueue::VulkanQueue(VulkanQueueType type, std::shared_ptr<VulkanContext> context)
 	{
+		m_Context = context;
 		queueType = type;
-		vkGetDeviceQueue(device->GetLogicalDevice(), 
-			physicalDevice->GetFamilyIndex(queueType), 0, &queue);
+
+		vkGetDeviceQueue(context->GetDevice()->GetLogicalDevice(),
+			context->GetPhysicalDevice()->GetFamilyIndex(queueType), 0, &queue);
 	}
 }
