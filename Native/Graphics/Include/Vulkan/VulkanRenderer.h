@@ -7,6 +7,8 @@
 #include "VulkanSwapchain.h"
 #include "VulkanFrame.h"
 #include "VulkanCommandPool.h"
+#include "VulkanGraphicsPipeline.h"
+#include "VulkanShader.h"
 
 namespace Odyssey
 {
@@ -42,9 +44,16 @@ namespace Odyssey
 		std::shared_ptr<VulkanWindow> window;
 		std::unique_ptr<VulkanQueue> graphicsQueue;
 		std::unique_ptr<VulkanDescriptorPool> descriptorPool;
-		std::unique_ptr<VulkanImgui> imgui;
 		std::vector<std::unique_ptr<VulkanCommandPool>> commandPool;
 		std::vector<VkCommandBuffer> commandBuffers;
+
+	private: // Pipeline
+		std::unique_ptr<VulkanGraphicsPipeline> graphicsPipeline;
+		std::unique_ptr<VulkanShader> fragmentShader;
+		std::unique_ptr<VulkanShader> vertexShader;
+
+	private: // IMGUI
+		std::unique_ptr<VulkanImgui> imgui;
 
 	private: // Swapchain
 		std::unique_ptr<VulkanSwapchain> swapchain;

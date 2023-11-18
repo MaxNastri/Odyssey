@@ -6,7 +6,6 @@
 #include "VulkanContext.h"
 #include "VulkanPhysicalDevice.h"
 #include "VulkanWindow.h"
-#include "VulkanRenderPass.h"
 
 namespace Odyssey
 {
@@ -18,8 +17,19 @@ namespace Odyssey
 		graphicsQueue = std::make_unique<VulkanQueue>(VulkanQueueType::Graphics, context);
 		descriptorPool = std::make_unique<VulkanDescriptorPool>(context->GetDevice());
 
-		VulkanImgui::InitInfo info = CreateImguiInitInfo();
-		imgui = std::make_unique<VulkanImgui>(context.get(), info);
+		// Shaders
+		fragmentShader = std::make_unique<VulkanShader>(context, ShaderType::Fragment, "frag.spv");
+		vertexShader = std::make_unique<VulkanShader>(context, ShaderType::Vertex, "vert.spv");
+
+		// Pipeline
+		VulkanPipelineInfo pipelineInfo;
+		pipelineInfo.fragmentShader = fragmentShader.get();
+		pipelineInfo.vertexShader = vertexShader.get();
+		graphicsPipeline = std::make_unique<VulkanGraphicsPipeline>(context, pipelineInfo);
+
+		// IMGUI
+		VulkanImgui::InitInfo imguiInfo = CreateImguiInitInfo();
+		imgui = std::make_unique<VulkanImgui>(context.get(), imguiInfo);
 
 		SetupFrameData();
 		for (int i = 0; i < frames.size(); ++i)
@@ -191,6 +201,24 @@ namespace Odyssey
 			rendering_info.pStencilAttachment = VK_NULL_HANDLE;
 
 			vkCmdBeginRendering(commandBuffer, &rendering_info);
+
+			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->GetPipeline());
+
+			VkViewport viewport{};
+			viewport.x = 0.0f;
+			viewport.y = 0.0f;
+			viewport.width = static_cast<float>(width);
+			viewport.height = static_cast<float>(height);
+			viewport.minDepth = 0.0f;
+			viewport.maxDepth = 1.0f;
+			vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+
+			VkRect2D scissor{};
+			scissor.offset = { 0, 0 };
+			scissor.extent = VkExtent2D{ width, height };
+			vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
+			vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 
 			// TODO: DRAW
 			imgui->Render(commandBuffer);

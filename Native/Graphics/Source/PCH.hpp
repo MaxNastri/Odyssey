@@ -3,7 +3,9 @@
 #include <assert.h>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <functional>
+#include <istream>
 #include <iostream>
 #include <limits>
 #include <map>

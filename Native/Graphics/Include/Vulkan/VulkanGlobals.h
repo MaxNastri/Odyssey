@@ -34,7 +34,7 @@ namespace Odyssey
     // DEBUGGING
     static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData)
     {
-        Logger::LogError(std::format("[vulkan] Debug report from ObjectType: %i\nMessage: %s\n\n", (uint64_t)objectType, pMessage));
+        Logger::LogError("[vulkan] Debug report: " + std::string(pMessage));
         return VK_FALSE;
     }
 
