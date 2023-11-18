@@ -11,15 +11,10 @@ namespace Odyssey
 		VkDevice vkDevice = device->GetLogicalDevice();
 		CreateFence(vkDevice);
 		CreateSempaphores(vkDevice);
-
-		commandPool = VulkanCommandPool(device, graphicsIndex);
-		commandBuffer = commandPool.AllocateBuffer(device);
 	}
 
 	void VulkanFrame::Destroy(VulkanDevice* device)
 	{
-		commandPool.Destroy(device);
-
 		VkDevice vkDevice = device->GetLogicalDevice();
 
 		vkDestroyFence(vkDevice, fence, allocator);

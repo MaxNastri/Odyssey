@@ -19,10 +19,34 @@ namespace Odyssey
 		descriptorPool = std::make_unique<VulkanDescriptorPool>(context->GetDevice());
 		renderPass = std::make_shared<VulkanRenderPass>(context->GetDevice(), window->GetSurface()->GetFormat());
 
-		window->SetRenderPass(swapchain.get(), renderPass);
-
 		VulkanImgui::InitInfo info = CreateImguiInitInfo();
 		imgui = std::make_unique<VulkanImgui>(context.get(), info);
+
+		SetupFrameData();
+		for (int i = 0; i < frames.size(); ++i)
+		{
+			commandPool.push_back(std::make_unique<VulkanCommandPool>(context->GetDevice(), context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics)));
+			commandBuffers.push_back(commandPool[i]->AllocateBuffer(context->GetDevice()));
+		}
+	}
+
+	void VulkanRenderer::Destroy()
+	{
+		VulkanDevice* device = context->GetDevice();
+		device->WaitForIdle();
+
+		for (int i = 0; i < frames.size(); ++i)
+		{
+			frames[i].Destroy(context->GetDevice());
+		}
+		frames.clear();
+
+		renderPass.reset();
+		descriptorPool.reset();
+		graphicsQueue.reset();
+		swapchain.reset();
+		window.reset();
+		context.reset();
 	}
 
 	bool VulkanRenderer::Update()
@@ -50,13 +74,12 @@ namespace Odyssey
 		if (rebuildSwapchain)
 			return false;
 
-		auto semaphore = window->GetRenderComplete();
-		uint32_t frameIndex = window->GetFrameIndex();
+		const VkSemaphore* render_complete_semaphore = frames[frameIndex].GetRenderCompleteSemaphore();
 
 		VkPresentInfoKHR info = {};
 		info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		info.waitSemaphoreCount = 1;
-		info.pWaitSemaphores = semaphore;
+		info.pWaitSemaphores = render_complete_semaphore;
 		info.swapchainCount = 1;
 		info.pSwapchains = &swapchain->swapchain;
 		info.pImageIndices = &frameIndex;
@@ -64,20 +87,18 @@ namespace Odyssey
 		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 		{
 			rebuildSwapchain = true;
-			return false;
 		}
 
 		check_vk_result(err);
-
-		window->UpdateFrameIndex(swapchain->imageCount);
+		frameIndex = (frameIndex + 1) % swapchain->imageCount;
 		return true;
 	}
 
 	bool VulkanRenderer::BeginFrame(VulkanFrame*& currentFrame)
 	{
 		VkDevice vkDevice = context->GetDevice()->GetLogicalDevice();
-		const VkSemaphore* imageAcquired = window->GetImageAcquired();
-		uint32_t frameIndex = window->GetFrameIndex();
+		const VkSemaphore* imageAcquired = frames[frameIndex].GetImageAcquiredSemaphore();
+		const VkSemaphore* render_complete_semaphore = frames[frameIndex].GetRenderCompleteSemaphore();
 
 		VkResult err = vkAcquireNextImageKHR(vkDevice, swapchain->GetVK(), UINT64_MAX, *imageAcquired, VK_NULL_HANDLE, &frameIndex);
 		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
@@ -87,7 +108,27 @@ namespace Odyssey
 		}
 
 		check_vk_result(err);
-		return window->BeginFrame(currentFrame);
+
+		VulkanFrame& frame = frames[frameIndex];
+
+		// Wait for the initial fences to clear
+		err = vkWaitForFences(vkDevice, 1, &(frame.fence), VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
+		check_vk_result(err);
+
+		err = vkResetFences(vkDevice, 1, &frame.fence);
+		check_vk_result(err);
+
+		commandPool[frameIndex]->Reset(context->GetDevice());
+
+		// Command buffer begin
+		VkCommandBufferBeginInfo info = {};
+		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		err = vkBeginCommandBuffer(commandBuffers[frameIndex], &info);
+		check_vk_result(err);
+
+		currentFrame = &frame;
+		return true;
 	}
 
 	void VulkanRenderer::RenderFrame()
@@ -105,13 +146,14 @@ namespace Odyssey
 			int height = window->GetSurface()->GetHeight();
 
 			// RenderPass begin
-			renderPass->Begin(frame->commandBuffer, frame->framebuffer, width, height, ClearValue);
+			VkCommandBuffer commandBuffer = commandBuffers[frameIndex];
+			renderPass->Begin(commandBuffer, frame->framebuffer, width, height, ClearValue);
 
 			// TODO: DRAW
-			imgui->Render(frame->commandBuffer);
+			imgui->Render(commandBuffer);
 
 			// RenderPass end
-			renderPass->End(frame->commandBuffer);
+			renderPass->End(commandBuffer);
 
 			// TODO: Move this into the context?
 			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -121,11 +163,11 @@ namespace Odyssey
 			submitInfo.pWaitSemaphores = frame->GetImageAcquiredSemaphore();
 			submitInfo.pWaitDstStageMask = &wait_stage;
 			submitInfo.commandBufferCount = 1;
-			submitInfo.pCommandBuffers = &frame->commandBuffer;
+			submitInfo.pCommandBuffers = &commandBuffer;
 			submitInfo.signalSemaphoreCount = 1;
 			submitInfo.pSignalSemaphores = frame->GetRenderCompleteSemaphore();
 
-			VkResult err = vkEndCommandBuffer(frame->commandBuffer);
+			VkResult err = vkEndCommandBuffer(commandBuffer);
 			check_vk_result(err);
 			err = vkQueueSubmit(graphicsQueue->queue, 1, &submitInfo, frame->fence);
 			check_vk_result(err);
@@ -137,13 +179,24 @@ namespace Odyssey
 		VulkanDevice* device = context->GetDevice();
 		device->WaitForIdle();
 
+		window->Resize(swapchain.get());
+
 		// Remake the swapchain
 		swapchain->Destroy(device);
 		swapchain.reset();
 		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
 		rebuildSwapchain = false;
 
-		window->Resize(swapchain.get());
+		// Destroy the existing frames
+		for (auto& frame : frames)
+		{
+			frame.Destroy(device);
+		}
+		frames.clear();
+
+		// Remake the frame data with the new size
+		SetupFrameData();
+		frameIndex = 0;
 	}
 
 	VulkanImgui::InitInfo VulkanRenderer::CreateImguiInitInfo()
@@ -160,5 +213,22 @@ namespace Odyssey
 		info.minImageCount = swapchain->minImageCount;
 		info.imageCount = swapchain->imageCount;
 		return info;
+	}
+
+	void VulkanRenderer::SetupFrameData()
+	{
+		VkDevice vkDevice = context->GetDevice()->GetLogicalDevice();
+		VkFormat format = window->GetSurface()->GetFormat();
+
+		std::vector<VkImage> backbuffers = swapchain->GetBackbuffers(context->GetDevice());
+		uint32_t imageCount = swapchain->GetImageCount();
+		frames.resize(imageCount);
+
+		for (uint32_t i = 0; i < imageCount; ++i)
+		{
+			frames[i] = VulkanFrame(context->GetDevice(), context->GetPhysicalDevice());
+			frames[i].SetBackbuffer(context->GetDevice(), backbuffers[i], format);
+			frames[i].CreateFramebuffer(context->GetDevice(), renderPass.get(), window->GetSurface()->GetWidth(), window->GetSurface()->GetHeight());
+		}
 	}
 }

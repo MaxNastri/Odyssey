@@ -36,12 +36,10 @@ namespace Odyssey
 		void CreateSempaphores(VkDevice device);
 
 	public:
-		VulkanCommandPool commandPool;
 		VkFence fence = VK_NULL_HANDLE;
 		VkImage backbuffer = VK_NULL_HANDLE;
 		VkImageView backbufferView = VK_NULL_HANDLE;
 		VkFramebuffer framebuffer = VK_NULL_HANDLE;
-		VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
 
 	private:
 		VkSemaphore imageAcquiredSemaphore;

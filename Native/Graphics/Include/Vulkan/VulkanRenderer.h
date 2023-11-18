@@ -1,13 +1,12 @@
 #pragma once
-#include <vector>
-#include <memory>
 #include <vulkan/vulkan.h>
-#include "Window.h"
 #include "VulkanDevice.h"
 #include "VulkanQueue.h"
 #include "VulkanDescriptorPool.h"
 #include "VulkanImgui.h"
 #include "VulkanSwapchain.h"
+#include "VulkanFrame.h"
+#include "VulkanCommandPool.h"
 
 namespace Odyssey
 {
@@ -21,6 +20,7 @@ namespace Odyssey
 	{
 	public:
 		VulkanRenderer();
+		void Destroy();
 
 	public:
 		bool Update();
@@ -34,6 +34,7 @@ namespace Odyssey
 
 	private:
 		VulkanImgui::InitInfo CreateImguiInitInfo();
+		void SetupFrameData();
 
 	private: // Vulkan objects
 		std::shared_ptr<VulkanContext> context;
@@ -42,9 +43,15 @@ namespace Odyssey
 		std::unique_ptr<VulkanDescriptorPool> descriptorPool;
 		std::shared_ptr<VulkanRenderPass> renderPass;
 		std::unique_ptr<VulkanImgui> imgui;
+		std::vector<std::unique_ptr<VulkanCommandPool>> commandPool;
+		std::vector<VkCommandBuffer> commandBuffers;
 
 	private: // Swapchain
 		std::unique_ptr<VulkanSwapchain> swapchain;
 		bool rebuildSwapchain = false;
+
+	private: // Frame data
+		std::vector<VulkanFrame> frames;
+		uint32_t frameIndex = 0;
 	};
 }

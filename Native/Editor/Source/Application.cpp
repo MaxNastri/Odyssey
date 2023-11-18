@@ -57,6 +57,7 @@ namespace Odyssey
 				r.Render();
 			}
 		}
+		r.Destroy();
 	}
 
 	void Application::Exit()
