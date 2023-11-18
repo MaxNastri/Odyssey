@@ -48,6 +48,9 @@ namespace Odyssey
 		init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 		init_info.Allocator = allocator;
 		init_info.CheckVkResultFn = check_vk_result;
+		init_info.UseDynamicRendering = true;
+		init_info.ColorAttachmentFormat = initInfo.colorFormat;
+
 		ImGui_ImplVulkan_Init(&init_info, initInfo.renderPass);
 
 		// Upload Fonts

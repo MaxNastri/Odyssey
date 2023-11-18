@@ -25,7 +25,6 @@ namespace Odyssey
 	public:
 		void Destroy(VulkanDevice* device);
 		void SetBackbuffer(VulkanDevice* device, VkImage backbufferImage, VkFormat format);
-		void CreateFramebuffer(VulkanDevice* device, VulkanRenderPass* renderPass, int width, int height);
 
 		const VkSemaphore* GetImageAcquiredSemaphore() { return &imageAcquiredSemaphore; }
 		const VkSemaphore* GetRenderCompleteSemaphore() { return &renderCompleteSemaphore; }
@@ -39,7 +38,6 @@ namespace Odyssey
 		VkFence fence = VK_NULL_HANDLE;
 		VkImage backbuffer = VK_NULL_HANDLE;
 		VkImageView backbufferView = VK_NULL_HANDLE;
-		VkFramebuffer framebuffer = VK_NULL_HANDLE;
 
 	private:
 		VkSemaphore imageAcquiredSemaphore;

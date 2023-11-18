@@ -17,7 +17,6 @@ namespace Odyssey
 		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
 		graphicsQueue = std::make_unique<VulkanQueue>(VulkanQueueType::Graphics, context);
 		descriptorPool = std::make_unique<VulkanDescriptorPool>(context->GetDevice());
-		renderPass = std::make_shared<VulkanRenderPass>(context->GetDevice(), window->GetSurface()->GetFormat());
 
 		VulkanImgui::InitInfo info = CreateImguiInitInfo();
 		imgui = std::make_unique<VulkanImgui>(context.get(), info);
@@ -41,7 +40,6 @@ namespace Odyssey
 		}
 		frames.clear();
 
-		renderPass.reset();
 		descriptorPool.reset();
 		graphicsQueue.reset();
 		swapchain.reset();
@@ -127,6 +125,21 @@ namespace Odyssey
 		err = vkBeginCommandBuffer(commandBuffers[frameIndex], &info);
 		check_vk_result(err);
 
+		// Transition the swapchain image back to a format for writing
+		VkImageMemoryBarrier image_memory_barrier{};
+		image_memory_barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		image_memory_barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		image_memory_barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		image_memory_barrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		image_memory_barrier.image = frames[frameIndex].backbuffer;
+		image_memory_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		image_memory_barrier.subresourceRange.baseMipLevel = 0;
+		image_memory_barrier.subresourceRange.levelCount = 1;
+		image_memory_barrier.subresourceRange.baseArrayLayer = 0;
+		image_memory_barrier.subresourceRange.layerCount = 1;
+
+		vkCmdPipelineBarrier(commandBuffers[frameIndex], VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+
 		currentFrame = &frame;
 		return true;
 	}
@@ -142,18 +155,45 @@ namespace Odyssey
 		VulkanFrame* frame = nullptr;
 		if (BeginFrame(frame))
 		{
-			int width = window->GetSurface()->GetWidth();
-			int height = window->GetSurface()->GetHeight();
+			unsigned int width = window->GetSurface()->GetWidth();
+			unsigned int height = window->GetSurface()->GetHeight();
 
 			// RenderPass begin
 			VkCommandBuffer commandBuffer = commandBuffers[frameIndex];
-			renderPass->Begin(commandBuffer, frame->framebuffer, width, height, ClearValue);
+
+
+			VkClearValue ClearValue;
+			ClearValue.color.float32[0] = 0.0f;
+			ClearValue.color.float32[1] = 0.0f;
+			ClearValue.color.float32[2] = 0.0f;
+			ClearValue.color.float32[3] = 0.0f;
+
+			VkRenderingAttachmentInfoKHR color_attachment_info{};
+			color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
+			color_attachment_info.pNext = VK_NULL_HANDLE;
+			color_attachment_info.imageView = frame->backbufferView;
+			color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
+			color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+			color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			color_attachment_info.clearValue = ClearValue;
+
+			VkRenderingInfoKHR rendering_info = {};
+			rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
+			rendering_info.pNext = VK_NULL_HANDLE;
+			rendering_info.flags = 0;
+			rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{width, height} };
+			rendering_info.layerCount = 1;
+			rendering_info.viewMask = 0;
+			rendering_info.colorAttachmentCount = 1;
+			rendering_info.pColorAttachments = &color_attachment_info;
+			rendering_info.pDepthAttachment = VK_NULL_HANDLE;
+			rendering_info.pStencilAttachment = VK_NULL_HANDLE;
+
+			vkCmdBeginRendering(commandBuffer, &rendering_info);
 
 			// TODO: DRAW
 			imgui->Render(commandBuffer);
-
-			// RenderPass end
-			renderPass->End(commandBuffer);
 
 			// TODO: Move this into the context?
 			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -167,8 +207,26 @@ namespace Odyssey
 			submitInfo.signalSemaphoreCount = 1;
 			submitInfo.pSignalSemaphores = frame->GetRenderCompleteSemaphore();
 
+			vkCmdEndRendering(commandBuffer);
+
+			// Transition the backbuffer layout for presenting
+			VkImageMemoryBarrier image_memory_barrier{};
+			image_memory_barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+			image_memory_barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			image_memory_barrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			image_memory_barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+			image_memory_barrier.image = frames[frameIndex].backbuffer;
+			image_memory_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			image_memory_barrier.subresourceRange.baseMipLevel = 0;
+			image_memory_barrier.subresourceRange.levelCount = 1;
+			image_memory_barrier.subresourceRange.baseArrayLayer = 0;
+			image_memory_barrier.subresourceRange.layerCount = 1;
+
+			vkCmdPipelineBarrier(commandBuffers[frameIndex], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+
 			VkResult err = vkEndCommandBuffer(commandBuffer);
 			check_vk_result(err);
+
 			err = vkQueueSubmit(graphicsQueue->queue, 1, &submitInfo, frame->fence);
 			check_vk_result(err);
 		}
@@ -209,9 +267,10 @@ namespace Odyssey
 		info.queueIndex = context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics);
 		info.queue = graphicsQueue->queue;
 		info.descriptorPool = descriptorPool->descriptorPool;
-		info.renderPass = renderPass->GetVK();
+		info.renderPass = nullptr;
 		info.minImageCount = swapchain->minImageCount;
 		info.imageCount = swapchain->imageCount;
+		info.colorFormat = window->GetSurface()->GetFormat();
 		return info;
 	}
 
@@ -228,7 +287,41 @@ namespace Odyssey
 		{
 			frames[i] = VulkanFrame(context->GetDevice(), context->GetPhysicalDevice());
 			frames[i].SetBackbuffer(context->GetDevice(), backbuffers[i], format);
-			frames[i].CreateFramebuffer(context->GetDevice(), renderPass.get(), window->GetSurface()->GetWidth(), window->GetSurface()->GetHeight());
 		}
+	}
+	VkRenderingInfo VulkanRenderer::GetRenderingInfo(VulkanFrame* frame)
+	{
+		VkClearValue ClearValue;
+		ClearValue.color.float32[0] = 0.0f;
+		ClearValue.color.float32[1] = 0.0f;
+		ClearValue.color.float32[2] = 0.0f;
+		ClearValue.color.float32[3] = 0.0f;
+
+		unsigned int width = window->GetSurface()->GetWidth();
+		unsigned int height = window->GetSurface()->GetHeight();
+
+		VkRenderingAttachmentInfoKHR color_attachment_info{};
+		color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
+		color_attachment_info.pNext = VK_NULL_HANDLE;
+		color_attachment_info.imageView = frame->backbufferView;
+		color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
+		color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		color_attachment_info.clearValue = ClearValue;
+
+		VkRenderingInfoKHR rendering_info = {};
+		rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
+		rendering_info.pNext = VK_NULL_HANDLE;
+		rendering_info.flags = 0;
+		rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{width, height} };
+		rendering_info.layerCount = 1;
+		rendering_info.viewMask = 0;
+		rendering_info.colorAttachmentCount = 1;
+		rendering_info.pColorAttachments = &color_attachment_info;
+		rendering_info.pDepthAttachment = VK_NULL_HANDLE;
+		rendering_info.pStencilAttachment = VK_NULL_HANDLE;
+
+		return rendering_info;
 	}
 }

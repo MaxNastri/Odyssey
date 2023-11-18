@@ -27,6 +27,7 @@ namespace Odyssey
 			VkRenderPass renderPass;
 			uint32_t minImageCount;
 			uint32_t imageCount;
+			VkFormat colorFormat;
 		};
 
 	public:

@@ -31,6 +31,12 @@ namespace Odyssey
 	{
 		VkResult err;
 
+		VkApplicationInfo appInfo = {};
+		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+		appInfo.pApplicationName = "Odyssey";
+		appInfo.pEngineName = "Odyssey";
+		appInfo.apiVersion = VK_API_VERSION_1_3;
+
 		VkInstanceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 
@@ -62,6 +68,7 @@ namespace Odyssey
 		}
 
 		// Create Vulkan Instance
+		create_info.pApplicationInfo = &appInfo;
 		create_info.enabledExtensionCount = (uint32_t)extensions.size();
 		create_info.ppEnabledExtensionNames = extensions.data();
 		err = vkCreateInstance(&create_info, allocator, &instance);

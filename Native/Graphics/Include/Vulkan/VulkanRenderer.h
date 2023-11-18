@@ -35,13 +35,13 @@ namespace Odyssey
 	private:
 		VulkanImgui::InitInfo CreateImguiInitInfo();
 		void SetupFrameData();
+		VkRenderingInfo GetRenderingInfo(VulkanFrame* frame);
 
 	private: // Vulkan objects
 		std::shared_ptr<VulkanContext> context;
 		std::shared_ptr<VulkanWindow> window;
 		std::unique_ptr<VulkanQueue> graphicsQueue;
 		std::unique_ptr<VulkanDescriptorPool> descriptorPool;
-		std::shared_ptr<VulkanRenderPass> renderPass;
 		std::unique_ptr<VulkanImgui> imgui;
 		std::vector<std::unique_ptr<VulkanCommandPool>> commandPool;
 		std::vector<VkCommandBuffer> commandBuffers;
