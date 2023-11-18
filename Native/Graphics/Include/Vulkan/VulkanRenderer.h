@@ -7,6 +7,7 @@
 #include "VulkanQueue.h"
 #include "VulkanDescriptorPool.h"
 #include "VulkanImgui.h"
+#include "VulkanSwapchain.h"
 
 namespace Odyssey
 {
@@ -14,6 +15,7 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanWindow;
 	class VulkanRenderPass;
+	class VulkanFrame;
 
 	class VulkanRenderer
 	{
@@ -23,9 +25,12 @@ namespace Odyssey
 	public:
 		bool Update();
 		bool Render();
+		bool Present();
 
 	private:
+		bool BeginFrame(VulkanFrame*& currentFrame);
 		void RenderFrame();
+		void RebuildSwapchain();
 
 	private:
 		VulkanImgui::InitInfo CreateImguiInitInfo();
@@ -37,5 +42,9 @@ namespace Odyssey
 		std::unique_ptr<VulkanDescriptorPool> descriptorPool;
 		std::shared_ptr<VulkanRenderPass> renderPass;
 		std::unique_ptr<VulkanImgui> imgui;
+
+	private: // Swapchain
+		std::unique_ptr<VulkanSwapchain> swapchain;
+		bool rebuildSwapchain = false;
 	};
 }

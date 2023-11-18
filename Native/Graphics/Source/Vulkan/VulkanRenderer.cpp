@@ -14,11 +14,12 @@ namespace Odyssey
 	{
 		context = std::make_shared<VulkanContext>();
 		window = std::make_shared<VulkanWindow>(context);
+		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
 		graphicsQueue = std::make_unique<VulkanQueue>(VulkanQueueType::Graphics, context);
 		descriptorPool = std::make_unique<VulkanDescriptorPool>(context->GetDevice());
 		renderPass = std::make_shared<VulkanRenderPass>(context->GetDevice(), window->GetSurface()->GetFormat());
 
-		window->SetRenderPass(renderPass);
+		window->SetRenderPass(swapchain.get(), renderPass);
 
 		VulkanImgui::InitInfo info = CreateImguiInitInfo();
 		imgui = std::make_unique<VulkanImgui>(context.get(), info);
@@ -31,14 +32,62 @@ namespace Odyssey
 
 	bool VulkanRenderer::Render()
 	{
-		window->PreRender();
+		if (rebuildSwapchain)
+		{
+			RebuildSwapchain();
+		}
 
 		imgui->SubmitDraws();
 		RenderFrame();
 		imgui->PostRender();
 
-		window->Present(graphicsQueue.get());
+		Present();
 		return true;
+	}
+
+	bool VulkanRenderer::Present()
+	{
+		if (rebuildSwapchain)
+			return false;
+
+		auto semaphore = window->GetRenderComplete();
+		uint32_t frameIndex = window->GetFrameIndex();
+
+		VkPresentInfoKHR info = {};
+		info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		info.waitSemaphoreCount = 1;
+		info.pWaitSemaphores = semaphore;
+		info.swapchainCount = 1;
+		info.pSwapchains = &swapchain->swapchain;
+		info.pImageIndices = &frameIndex;
+		VkResult err = vkQueuePresentKHR(graphicsQueue->queue, &info);
+		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
+		{
+			rebuildSwapchain = true;
+			return false;
+		}
+
+		check_vk_result(err);
+
+		window->UpdateFrameIndex(swapchain->imageCount);
+		return true;
+	}
+
+	bool VulkanRenderer::BeginFrame(VulkanFrame*& currentFrame)
+	{
+		VkDevice vkDevice = context->GetDevice()->GetLogicalDevice();
+		const VkSemaphore* imageAcquired = window->GetImageAcquired();
+		uint32_t frameIndex = window->GetFrameIndex();
+
+		VkResult err = vkAcquireNextImageKHR(vkDevice, swapchain->GetVK(), UINT64_MAX, *imageAcquired, VK_NULL_HANDLE, &frameIndex);
+		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
+		{
+			rebuildSwapchain = true;
+			return false;
+		}
+
+		check_vk_result(err);
+		return window->BeginFrame(currentFrame);
 	}
 
 	void VulkanRenderer::RenderFrame()
@@ -50,7 +99,7 @@ namespace Odyssey
 		ClearValue.color.float32[3] = 0.0f;
 
 		VulkanFrame* frame = nullptr;
-		if (window->BeginFrame(frame))
+		if (BeginFrame(frame))
 		{
 			int width = window->GetSurface()->GetWidth();
 			int height = window->GetSurface()->GetHeight();
@@ -83,6 +132,20 @@ namespace Odyssey
 		}
 	}
 
+	void VulkanRenderer::RebuildSwapchain()
+	{
+		VulkanDevice* device = context->GetDevice();
+		device->WaitForIdle();
+
+		// Remake the swapchain
+		swapchain->Destroy(device);
+		swapchain.reset();
+		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
+		rebuildSwapchain = false;
+
+		window->Resize(swapchain.get());
+	}
+
 	VulkanImgui::InitInfo VulkanRenderer::CreateImguiInitInfo()
 	{
 		VulkanImgui::InitInfo info;
@@ -94,8 +157,8 @@ namespace Odyssey
 		info.queue = graphicsQueue->queue;
 		info.descriptorPool = descriptorPool->descriptorPool;
 		info.renderPass = renderPass->GetVK();
-		info.minImageCount = window->GetSwapchain()->minImageCount;
-		info.imageCount = window->GetSwapchain()->imageCount;
+		info.minImageCount = swapchain->minImageCount;
+		info.imageCount = swapchain->imageCount;
 		return info;
 	}
 }

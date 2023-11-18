@@ -24,21 +24,21 @@ namespace Odyssey
 		bool Update();
 		void PreRender();
 		bool BeginFrame(VulkanFrame*& currentFrame);
-		void Present(VulkanQueue* graphicsQueue);
-		void SetRenderPass(std::shared_ptr<VulkanRenderPass> renderPass);
+		void UpdateFrameIndex(uint32_t imageCout);
+		void SetRenderPass(VulkanSwapchain* swapchain, std::shared_ptr<VulkanRenderPass> renderPass);
+		void Resize(VulkanSwapchain* swapchain);
+		const VkSemaphore* GetRenderComplete();
+		const VkSemaphore* GetImageAcquired();
 
 	public:
-		VulkanSwapchain* GetSwapchain() { return swapchain.get(); }
 		VulkanSurface* GetSurface() { return surface.get(); }
 		Window* GetWindow() { return window.get(); }
-
+		uint32_t GetFrameIndex() { return frameIndex; }
 	private:
-		void SetupFrameData();
-		void RebuildSwapchain();
+		void SetupFrameData(VulkanSwapchain* swapchain);
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
-		std::unique_ptr<VulkanSwapchain> swapchain;
 		std::unique_ptr<VulkanSurface> surface;
 		std::unique_ptr<Window> window;
 
@@ -46,6 +46,5 @@ namespace Odyssey
 		std::shared_ptr<VulkanRenderPass> frameBufferPass;
 		std::vector<VulkanFrame> frames;
 		uint32_t frameIndex = 0;
-		bool rebuildSwapchain = false;
 	};
 }
