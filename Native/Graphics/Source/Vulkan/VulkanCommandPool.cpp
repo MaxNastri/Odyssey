@@ -26,6 +26,20 @@ namespace Odyssey
         return commandBuffers[cmdIndex].get();
     }
 
+    void VulkanCommandPool::ReleaseBuffer(VulkanCommandBuffer* commandBuffer)
+    {
+        for (int i = 0; i < commandBuffers.size(); ++i)
+        {
+            if (commandBuffers[i].get() == commandBuffer)
+            {
+                commandBuffers.erase(commandBuffers.begin() + i);
+                break;
+            }
+        }
+
+        commandBuffer->Destroy(this);
+    }
+
     void VulkanCommandPool::Reset()
     {
         VkResult err = vkResetCommandPool(m_Context->GetDevice()->GetLogicalDevice(), commandPool, 0);

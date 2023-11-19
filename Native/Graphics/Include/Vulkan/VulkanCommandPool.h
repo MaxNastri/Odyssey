@@ -17,6 +17,8 @@ namespace Odyssey
 
 	public:
 		VulkanCommandBuffer* AllocateBuffer();
+		void ReleaseBuffer(VulkanCommandBuffer* commandBuffer);
+
 		void Reset();
 		void Destroy();
 

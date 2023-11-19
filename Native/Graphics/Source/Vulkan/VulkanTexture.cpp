@@ -34,6 +34,14 @@ namespace Odyssey
 		// Now that we have transfered the memory, free the original pixel data
 		stbi_image_free(pixels);
 
+		VulkanImageDescription imageDesc;
+		imageDesc.Width = texWidth;
+		imageDesc.Height = texHeight;
+		image = std::make_unique<VulkanImage>(context, imageDesc);
+
+		image->TransitionLayout(VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		image->SetData(&stagingBuffer, texWidth, texHeight);
+		image->TransitionLayout(VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	}
 }

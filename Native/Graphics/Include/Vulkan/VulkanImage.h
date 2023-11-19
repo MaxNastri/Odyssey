@@ -37,11 +37,20 @@ namespace Odyssey
 	};
 
 	class VulkanContext;
+	class VulkanBuffer;
 
 	class VulkanImage
 	{
 	public:
 		VulkanImage(std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc);
+
+	public:
+		void SetData(VulkanBuffer* buffer, uint32_t width, uint32_t height);
+
+		void TransitionLayout(VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+
+	public:
+		VkImage GetImage() { return image; }
 
 	private:
 		uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);

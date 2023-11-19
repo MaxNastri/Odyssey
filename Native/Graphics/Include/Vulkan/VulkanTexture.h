@@ -1,5 +1,6 @@
 #pragma once
 #include "VulkanGlobals.h"
+#include "VulkanImage.h"
 
 namespace Odyssey
 {
@@ -12,6 +13,6 @@ namespace Odyssey
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
-
+		std::unique_ptr<VulkanImage> image;
 	};
 }

@@ -23,6 +23,7 @@ namespace Odyssey
 		VkInstance GetInstance() { return instance; }
 		VulkanPhysicalDevice* GetPhysicalDevice() { return physicalDevice.get(); }
 		VulkanDevice* GetDevice() { return logicalDevice.get(); }
+		VulkanCommandPool* GetCommandPool() { return m_CommandPool.get(); }
 
 	private:
 		void GatherExtensions();
