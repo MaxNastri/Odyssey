@@ -1,18 +1,26 @@
 #pragma once
-#include <vulkan/vulkan.h>
+#include "VulkanGlobals.h"
+
+VK_FWD_DECLARE(VkBuffer)
+VK_FWD_DECLARE(VkDeviceMemory)
 
 namespace Odyssey
 {
+	class VulkanContext;
+
 	class VulkanBuffer
 	{
 	public:
-		VulkanBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
-
-	private:
-		uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+		VulkanBuffer(std::shared_ptr<VulkanContext> context, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 
 	public:
-		VkBuffer* buffer = nullptr;
-		VkDeviceMemory* bufferMemory = nullptr;
+		void SetMemory(VkDeviceSize size, void* data);
+	private:
+		uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+	public:
+		std::shared_ptr<VulkanContext> m_Context;
+		VkBuffer buffer = nullptr;
+		VkDeviceMemory bufferMemory;
 	};
 }
