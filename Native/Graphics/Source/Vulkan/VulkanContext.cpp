@@ -1,6 +1,7 @@
 #include "VulkanContext.h"
 #include "VulkanPhysicalDevice.h"
 #include "VulkanDevice.h"
+#include "VulkanCommandPool.h"
 #define GLFW_INCLUDE_VULKAN
 #include <glfw3.h>
 
@@ -13,6 +14,11 @@ namespace Odyssey
 
 		physicalDevice = std::make_shared<VulkanPhysicalDevice>(instance);
 		logicalDevice = std::make_shared<VulkanDevice>(physicalDevice.get());
+	}
+
+	void VulkanContext::SetCommandPool(std::shared_ptr<VulkanCommandPool> commandPool)
+	{
+		m_CommandPool = commandPool;
 	}
 
 	void VulkanContext::GatherExtensions()

@@ -12,6 +12,7 @@ namespace Odyssey
 	VulkanRenderer::VulkanRenderer()
 	{
 		context = std::make_shared<VulkanContext>();
+		context->SetCommandPool(std::make_shared<VulkanCommandPool>(context));
 		window = std::make_shared<VulkanWindow>(context);
 		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
 		graphicsQueue = std::make_unique<VulkanQueue>(VulkanQueueType::Graphics, context);
@@ -34,7 +35,7 @@ namespace Odyssey
 		SetupFrameData();
 		for (int i = 0; i < frames.size(); ++i)
 		{
-			commandPool.push_back(std::make_unique<VulkanCommandPool>(context, context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics)));
+			commandPool.push_back(std::make_unique<VulkanCommandPool>(context));
 			commandBuffers.push_back(commandPool[i]->AllocateBuffer());
 		}
 	}

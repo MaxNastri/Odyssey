@@ -10,12 +10,16 @@ namespace Odyssey
 {
 	class VulkanDevice;
 	class VulkanPhysicalDevice;
+	class VulkanCommandPool;
 
-	class VulkanContext
+	class VulkanContext : public std::enable_shared_from_this<VulkanContext>
 	{
 	public:
 		VulkanContext();
 
+		void SetCommandPool(std::shared_ptr<VulkanCommandPool> commandPool);
+
+	public:
 		VkInstance GetInstance() { return instance; }
 		VulkanPhysicalDevice* GetPhysicalDevice() { return physicalDevice.get(); }
 		VulkanDevice* GetDevice() { return logicalDevice.get(); }
@@ -25,10 +29,12 @@ namespace Odyssey
 		void CreateInstance();
 
 		bool IsExtensionAvailable(std::vector<VkExtensionProperties>& properties, const char* extension);
+
 	private: // Vulkan objects
 		VkInstance instance = nullptr;
 		std::shared_ptr<VulkanPhysicalDevice> physicalDevice;
 		std::shared_ptr<VulkanDevice> logicalDevice;
+		std::shared_ptr<VulkanCommandPool> m_CommandPool;
 
 	private: // Extensions
 		std::vector<const char*> extensions;

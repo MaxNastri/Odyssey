@@ -1,18 +1,20 @@
 #include "VulkanCommandPool.h"
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
+#include "VulkanPhysicalDevice.h"
 
 namespace Odyssey
 {
-    VulkanCommandPool::VulkanCommandPool(std::shared_ptr<VulkanContext> context, uint32_t queueIndex)
+    VulkanCommandPool::VulkanCommandPool(std::shared_ptr<VulkanContext> context)
     {
         m_Context = context;
+        uint32_t queueIndex = m_Context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics);
 
         VkCommandPoolCreateInfo info = {};
         info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         info.queueFamilyIndex = queueIndex;
-        VkResult err = vkCreateCommandPool(context->GetDevice()->GetLogicalDevice(), &info, allocator, &commandPool);
+        VkResult err = vkCreateCommandPool(m_Context->GetDevice()->GetLogicalDevice(), &info, allocator, &commandPool);
         check_vk_result(err);
     }
 

@@ -58,7 +58,7 @@ namespace Odyssey
 		// Upload Fonts
 		{
 			// Use any command queue
-			VulkanCommandPool pool(context, initInfo.queueIndex);
+			VulkanCommandPool pool(context);
 			VulkanCommandBuffer* commandBuffer = pool.AllocateBuffer();
 
 			commandBuffer->BeginCommands();
