@@ -12,11 +12,11 @@
 
 namespace Odyssey
 {
-	class GUIElement;
 	class VulkanContext;
 	class VulkanWindow;
 	class VulkanRenderPass;
 	class VulkanFrame;
+	class VulkanCommandBuffer;
 
 	class VulkanRenderer
 	{
@@ -44,8 +44,10 @@ namespace Odyssey
 		std::shared_ptr<VulkanWindow> window;
 		std::unique_ptr<VulkanQueue> graphicsQueue;
 		std::unique_ptr<VulkanDescriptorPool> descriptorPool;
+
+	private: // Commands
 		std::vector<std::unique_ptr<VulkanCommandPool>> commandPool;
-		std::vector<VkCommandBuffer> commandBuffers;
+		std::vector<VulkanCommandBuffer*> commandBuffers;
 
 	private: // Pipeline
 		std::unique_ptr<VulkanGraphicsPipeline> graphicsPipeline;

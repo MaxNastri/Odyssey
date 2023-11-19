@@ -1,44 +1,43 @@
 #include "VulkanCommandPool.h"
+#include "VulkanContext.h"
 #include "VulkanDevice.h"
 
 namespace Odyssey
 {
-    VulkanCommandPool::VulkanCommandPool(VulkanDevice* device, uint32_t queueIndex)
+    VulkanCommandPool::VulkanCommandPool(std::shared_ptr<VulkanContext> context, uint32_t queueIndex)
     {
+        m_Context = context;
+
         VkCommandPoolCreateInfo info = {};
         info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         info.queueFamilyIndex = queueIndex;
-        VkResult err = vkCreateCommandPool(device->GetLogicalDevice(), &info, allocator, &commandPool);
+        VkResult err = vkCreateCommandPool(context->GetDevice()->GetLogicalDevice(), &info, allocator, &commandPool);
         check_vk_result(err);
     }
 
-    VkCommandBuffer VulkanCommandPool::AllocateBuffer(VulkanDevice* device)
+    VulkanCommandBuffer* VulkanCommandPool::AllocateBuffer()
     {
         int cmdIndex = (int)commandBuffers.size();
-        commandBuffers.push_back(nullptr);
+        commandBuffers.push_back(std::make_unique<VulkanCommandBuffer>(m_Context, this));
 
-        VkCommandBufferAllocateInfo info = {};
-        info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        info.commandPool = commandPool;
-        info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        info.commandBufferCount = 1;
-        VkResult err = vkAllocateCommandBuffers(device->GetLogicalDevice(), &info, &(commandBuffers[cmdIndex]));
-        check_vk_result(err);
-
-        return commandBuffers[cmdIndex];
+        return commandBuffers[cmdIndex].get();
     }
 
-    void VulkanCommandPool::Reset(VulkanDevice* device)
+    void VulkanCommandPool::Reset()
     {
-        VkResult err = vkResetCommandPool(device->GetLogicalDevice(), commandPool, 0);
+        VkResult err = vkResetCommandPool(m_Context->GetDevice()->GetLogicalDevice(), commandPool, 0);
         check_vk_result(err);
     }
 
-    void VulkanCommandPool::Destroy(VulkanDevice* device)
+    void VulkanCommandPool::Destroy()
     {
-        vkFreeCommandBuffers(device->GetLogicalDevice(), commandPool, (uint32_t)commandBuffers.size(), commandBuffers.data());
-        vkDestroyCommandPool(device->GetLogicalDevice(), commandPool, allocator);
+        VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
+        for (auto& commandBuffer : commandBuffers)
+        {
+            commandBuffer->Destroy(this);
+        }
+        vkDestroyCommandPool(device, commandPool, allocator);
         commandPool = VK_NULL_HANDLE;
         commandBuffers.clear();
     }

@@ -3,7 +3,6 @@
 #include <Logger.h>
 #include <FileManager.h>
 #include <Paths.h>
-#include <Graphics.h>
 #include <VulkanRenderer.h>
 #include "ScriptCompiler.h"
 #include <ScriptingManager.h>

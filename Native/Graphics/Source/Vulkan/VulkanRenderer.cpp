@@ -29,13 +29,13 @@ namespace Odyssey
 
 		// IMGUI
 		VulkanImgui::InitInfo imguiInfo = CreateImguiInitInfo();
-		imgui = std::make_unique<VulkanImgui>(context.get(), imguiInfo);
+		imgui = std::make_unique<VulkanImgui>(context, imguiInfo);
 
 		SetupFrameData();
 		for (int i = 0; i < frames.size(); ++i)
 		{
-			commandPool.push_back(std::make_unique<VulkanCommandPool>(context->GetDevice(), context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics)));
-			commandBuffers.push_back(commandPool[i]->AllocateBuffer(context->GetDevice()));
+			commandPool.push_back(std::make_unique<VulkanCommandPool>(context, context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics)));
+			commandBuffers.push_back(commandPool[i]->AllocateBuffer());
 		}
 	}
 
@@ -126,14 +126,10 @@ namespace Odyssey
 		err = vkResetFences(vkDevice, 1, &frame.fence);
 		check_vk_result(err);
 
-		commandPool[frameIndex]->Reset(context->GetDevice());
+		commandPool[frameIndex]->Reset();
 
 		// Command buffer begin
-		VkCommandBufferBeginInfo info = {};
-		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-		err = vkBeginCommandBuffer(commandBuffers[frameIndex], &info);
-		check_vk_result(err);
+		commandBuffers[frameIndex]->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
 		VkImageMemoryBarrier image_memory_barrier{};
@@ -148,7 +144,7 @@ namespace Odyssey
 		image_memory_barrier.subresourceRange.baseArrayLayer = 0;
 		image_memory_barrier.subresourceRange.layerCount = 1;
 
-		vkCmdPipelineBarrier(commandBuffers[frameIndex], VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+		vkCmdPipelineBarrier(commandBuffers[frameIndex]->GetCommandBuffer(), VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
 
 		currentFrame = &frame;
 		return true;
@@ -169,7 +165,7 @@ namespace Odyssey
 			unsigned int height = window->GetSurface()->GetHeight();
 
 			// RenderPass begin
-			VkCommandBuffer commandBuffer = commandBuffers[frameIndex];
+			VulkanCommandBuffer* commandBuffer = commandBuffers[frameIndex];
 
 
 			VkClearValue ClearValue;
@@ -200,28 +196,33 @@ namespace Odyssey
 			rendering_info.pDepthAttachment = VK_NULL_HANDLE;
 			rendering_info.pStencilAttachment = VK_NULL_HANDLE;
 
-			vkCmdBeginRendering(commandBuffer, &rendering_info);
+			commandBuffer->BeginRendering(rendering_info);
+			commandBuffer->BindPipeline(graphicsPipeline.get());
 
-			vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline->GetPipeline());
-
-			VkViewport viewport{};
-			viewport.x = 0.0f;
-			viewport.y = 0.0f;
-			viewport.width = static_cast<float>(width);
-			viewport.height = static_cast<float>(height);
-			viewport.minDepth = 0.0f;
-			viewport.maxDepth = 1.0f;
-			vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-
-			VkRect2D scissor{};
-			scissor.offset = { 0, 0 };
-			scissor.extent = VkExtent2D{ width, height };
-			vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-			vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+			// Viewport
+			{
+				VkViewport viewport{};
+				viewport.x = 0.0f;
+				viewport.y = 0.0f;
+				viewport.width = static_cast<float>(width);
+				viewport.height = static_cast<float>(height);
+				viewport.minDepth = 0.0f;
+				viewport.maxDepth = 1.0f;
+				commandBuffer->BindViewport(viewport);
+			}
+			
+			// Scissor
+			{
+				VkRect2D scissor{};
+				scissor.offset = { 0, 0 };
+				scissor.extent = VkExtent2D{ width, height };
+				commandBuffer->SetScissor(scissor);
+			}
+			
+			commandBuffer->Draw(3, 1, 0, 0);
 
 			// TODO: DRAW
-			imgui->Render(commandBuffer);
+			imgui->Render(commandBuffer->GetCommandBuffer());
 
 			// TODO: Move this into the context?
 			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -231,11 +232,11 @@ namespace Odyssey
 			submitInfo.pWaitSemaphores = frame->GetImageAcquiredSemaphore();
 			submitInfo.pWaitDstStageMask = &wait_stage;
 			submitInfo.commandBufferCount = 1;
-			submitInfo.pCommandBuffers = &commandBuffer;
+			submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
 			submitInfo.signalSemaphoreCount = 1;
 			submitInfo.pSignalSemaphores = frame->GetRenderCompleteSemaphore();
 
-			vkCmdEndRendering(commandBuffer);
+			commandBuffer->EndRendering();
 
 			// Transition the backbuffer layout for presenting
 			VkImageMemoryBarrier image_memory_barrier{};
@@ -250,12 +251,10 @@ namespace Odyssey
 			image_memory_barrier.subresourceRange.baseArrayLayer = 0;
 			image_memory_barrier.subresourceRange.layerCount = 1;
 
-			vkCmdPipelineBarrier(commandBuffers[frameIndex], VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &image_memory_barrier);
+			commandBuffer->PipelineBarrier(image_memory_barrier, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
+			commandBuffer->EndCommands();
 
-			VkResult err = vkEndCommandBuffer(commandBuffer);
-			check_vk_result(err);
-
-			err = vkQueueSubmit(graphicsQueue->queue, 1, &submitInfo, frame->fence);
+			VkResult err = vkQueueSubmit(graphicsQueue->queue, 1, &submitInfo, frame->fence);
 			check_vk_result(err);
 		}
 	}

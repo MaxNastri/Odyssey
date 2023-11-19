@@ -31,12 +31,13 @@ namespace Odyssey
 		};
 
 	public:
-		VulkanImgui(VulkanContext* context, const InitInfo& initInfo);
+		VulkanImgui(std::shared_ptr<VulkanContext> context, const InitInfo& initInfo);
 		void SubmitDraws();
 		void Render(VkCommandBuffer commandBuffer);
 		void PostRender();
 
 	private:
+		std::shared_ptr<VulkanContext> m_Context;
 		bool showDemoWindow = true;
 	};
 }

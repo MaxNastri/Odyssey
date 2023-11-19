@@ -9,8 +9,10 @@
 
 namespace Odyssey
 {
-	VulkanImgui::VulkanImgui(VulkanContext* context, const InitInfo& initInfo)
+	VulkanImgui::VulkanImgui(std::shared_ptr<VulkanContext> context, const InitInfo& initInfo)
 	{
+		m_Context = context;
+
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -56,28 +58,27 @@ namespace Odyssey
 		// Upload Fonts
 		{
 			// Use any command queue
-			VulkanCommandPool pool(context->GetDevice(), initInfo.queueIndex);
-			VkCommandBuffer commandBuffer = pool.AllocateBuffer(context->GetDevice());
+			VulkanCommandPool pool(context, initInfo.queueIndex);
+			VulkanCommandBuffer* commandBuffer = pool.AllocateBuffer();
 
-			VkCommandBufferBeginInfo begin_info = {};
-			begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-			VkResult err = vkBeginCommandBuffer(commandBuffer, &begin_info);
-			check_vk_result(err);
+			commandBuffer->BeginCommands();
 
-			ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
+			ImGui_ImplVulkan_CreateFontsTexture(commandBuffer->GetCommandBuffer());
 
-			VkSubmitInfo end_info = {};
-			end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-			end_info.commandBufferCount = 1;
-			end_info.pCommandBuffers = &commandBuffer;
-			err = vkEndCommandBuffer(commandBuffer);
-			check_vk_result(err);
-			err = vkQueueSubmit(initInfo.queue, 1, &end_info, VK_NULL_HANDLE);
+			VkSubmitInfo submitInfo = {};
+			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			submitInfo.commandBufferCount = 1;
+			submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
+
+			commandBuffer->EndCommands();
+
+			VkResult err = vkQueueSubmit(initInfo.queue, 1, &submitInfo, VK_NULL_HANDLE);
 			check_vk_result(err);
 
 			err = vkDeviceWaitIdle(initInfo.logicalDevice);
 			check_vk_result(err);
+
+			pool.Destroy();
 			ImGui_ImplVulkan_DestroyFontUploadObjects();
 		}
 	}
