@@ -39,6 +39,16 @@ namespace Odyssey
 		vkBindBufferMemory(device, buffer, bufferMemory, 0);
 	}
 
+	void VulkanBuffer::Destroy()
+	{
+		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
+		vkFreeMemory(device, bufferMemory, allocator);
+		vkDestroyBuffer(device, buffer, allocator);
+
+		bufferMemory = VK_NULL_HANDLE;
+		buffer = VK_NULL_HANDLE;
+	}
+
 	void VulkanBuffer::SetMemory(VkDeviceSize size, void* data)
 	{
 		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();

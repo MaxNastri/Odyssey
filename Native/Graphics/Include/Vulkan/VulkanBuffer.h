@@ -12,6 +12,7 @@ namespace Odyssey
 	{
 	public:
 		VulkanBuffer(std::shared_ptr<VulkanContext> context, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
+		void Destroy();
 
 	public:
 		void SetMemory(VkDeviceSize size, void* data);

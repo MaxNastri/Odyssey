@@ -43,5 +43,6 @@ namespace Odyssey
 		image->SetData(&stagingBuffer, texWidth, texHeight);
 		image->TransitionLayout(VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
+		stagingBuffer.Destroy();
 	}
 }
