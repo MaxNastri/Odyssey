@@ -3,11 +3,12 @@
 
 namespace Odyssey
 {
+	class VulkanBuffer;
 	class VulkanContext;
 	class VulkanCommandPool;
 	class VulkanGraphicsPipeline;
-	class VulkanBuffer;
 	class VulkanImage;
+	class VulkanIndexBuffer;
 	class VulkanVertexBuffer;
 
 	class VulkanCommandBuffer
@@ -27,10 +28,12 @@ namespace Odyssey
 		void BindViewport(VkViewport viewport);
 		void SetScissor(VkRect2D scissor);
 		void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
+		void DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance);
 		void PipelineBarrier(VkImageMemoryBarrier memoryBarrier, VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage);
 		void CopyBufferToImage(VulkanBuffer* buffer, VulkanImage* image, uint32_t width, uint32_t height);
 		void BindVertexBuffer(VulkanVertexBuffer* vertexBuffer);
 		void CopyBufferToBuffer(VulkanBuffer* srcBuffer, VulkanBuffer* dstBuffer, uint32_t dataSize);
+		void BindIndexBuffer(VulkanIndexBuffer* indexBuffer);
 
 	public:
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }

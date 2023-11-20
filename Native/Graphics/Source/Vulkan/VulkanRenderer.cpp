@@ -9,6 +9,7 @@
 #include "VulkanBuffer.h"
 #include "VulkanQueue.h"
 #include "VulkanVertexBuffer.h"
+#include "VulkanIndexBuffer.h"
 
 namespace Odyssey
 {
@@ -241,7 +242,8 @@ namespace Odyssey
 			for (auto& drawCall : m_DrawCalls)
 			{
 				commandBuffer->BindVertexBuffer(drawCall.VertexBuffer.get());
-				commandBuffer->Draw(drawCall.VertexCount, 1, 0, 0);
+				commandBuffer->BindIndexBuffer(drawCall.IndexBuffer.get());
+				commandBuffer->DrawIndexed(drawCall.IndexCount, 1, 0, 0, 0);
 			}
 
 			// TODO: DRAW
@@ -312,12 +314,13 @@ namespace Odyssey
 		// Create the render object first
 		{
 			std::vector<VulkanVertex> vertices;
-			vertices.resize(3);
-			vertices[0] = VulkanVertex(glm::vec3(0, -0.5f, 0), glm::vec3(1, 0, 0));
-			vertices[1] = VulkanVertex(glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0, 1, 0));
-			vertices[2] = VulkanVertex(glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(0, 0, 1));
+			vertices.resize(4);
+			vertices[0] = VulkanVertex(glm::vec3(-0.5f, -0.5f, 0), glm::vec3(1, 0, 0));
+			vertices[1] = VulkanVertex(glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0, 1, 0));
+			vertices[2] = VulkanVertex(glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0, 0, 1));
+			vertices[3] = VulkanVertex(glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(1, 1, 1));
 
-			std::vector<uint32_t> indices{ 0, 1, 2 };
+			std::vector<uint32_t> indices{ 0, 1, 2, 2, 3, 0 };
 
 			m_RenderObjects.clear();
 			m_RenderObjects.push_back(RenderObject(vertices, indices));
@@ -329,21 +332,18 @@ namespace Odyssey
 
 			for (auto& renderObject : m_RenderObjects)
 			{
-				size_t vertexDataSize = renderObject.m_Vertices.size() * sizeof(VulkanVertex);
-				size_t indexDataSize = renderObject.m_Indices.size() * sizeof(uint32_t);
+				size_t vertexDataSize = renderObject.Vertices.size() * sizeof(VulkanVertex);
+				size_t indexDataSize = renderObject.Indices.size() * sizeof(uint32_t);
 
 				// Create and assign vertex buffer
-				m_VertexBuffers.push_back(std::make_shared<VulkanVertexBuffer>(context, renderObject.m_Vertices));
+				m_VertexBuffers.push_back(std::make_shared<VulkanVertexBuffer>(context, renderObject.Vertices));
 				m_DrawCalls[0].VertexBuffer = m_VertexBuffers[m_VertexBuffers.size() - 1];
 
 				// Create and assign index buffer
-				m_IndexBuffers.push_back(std::make_shared<VulkanBuffer>(context, BufferType::Index, indexDataSize));
+				m_IndexBuffers.push_back(std::make_shared<VulkanIndexBuffer>(context, renderObject.Indices));
 				m_DrawCalls[0].IndexBuffer = m_IndexBuffers[m_IndexBuffers.size() - 1];
 
-				// Transfer data int othe buffers
-				m_DrawCalls[0].IndexBuffer->SetMemory(indexDataSize, renderObject.m_Indices.data());
-
-				m_DrawCalls[0].VertexCount = (uint32_t)renderObject.m_Vertices.size();
+				m_DrawCalls[0].IndexCount = (uint32_t)renderObject.Indices.size();
 			}
 		}
 	}

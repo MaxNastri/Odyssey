@@ -6,6 +6,7 @@
 #include "VulkanBuffer.h"
 #include "VulkanImage.h"
 #include "VulkanVertexBuffer.h"
+#include "VulkanIndexBuffer.h"
 #include <vulkan/vulkan.h>
 
 namespace Odyssey
@@ -73,6 +74,10 @@ namespace Odyssey
     {
         vkCmdDraw(m_CommandBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
     }
+    void VulkanCommandBuffer::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance)
+    {
+        vkCmdDrawIndexed(m_CommandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+    }
     void VulkanCommandBuffer::PipelineBarrier(VkImageMemoryBarrier memoryBarrier, VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage)
     {
         vkCmdPipelineBarrier(m_CommandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &memoryBarrier);
@@ -106,5 +111,10 @@ namespace Odyssey
         copyRegion.dstOffset = 0; // Optional
         copyRegion.size = dataSize;
         vkCmdCopyBuffer(m_CommandBuffer, srcBuffer->buffer, dstBuffer->buffer, 1, &copyRegion);
+    }
+
+    void VulkanCommandBuffer::BindIndexBuffer(VulkanIndexBuffer* indexBuffer)
+    {
+        vkCmdBindIndexBuffer(m_CommandBuffer, indexBuffer->GetIndexBufferVK(), 0, VK_INDEX_TYPE_UINT32);
     }
 }

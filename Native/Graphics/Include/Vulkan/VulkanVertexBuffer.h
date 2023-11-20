@@ -1,4 +1,5 @@
 #pragma once
+#include "VulkanGlobals.h"
 #include "VulkanVertex.h"
 
 VK_FWD_DECLARE(VkBuffer)

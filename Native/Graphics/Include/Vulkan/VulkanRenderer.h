@@ -12,19 +12,20 @@
 
 namespace Odyssey
 {
-	class VulkanContext;
 	class VulkanBuffer;
-	class VulkanWindow;
-	class VulkanFrame;
 	class VulkanCommandBuffer;
+	class VulkanContext;
+	class VulkanFrame;
+	class VulkanIndexBuffer;
 	class VulkanVertexBuffer;
+	class VulkanWindow;
 
 	struct DrawCall
 	{
 	public:
 		std::shared_ptr<VulkanVertexBuffer> VertexBuffer;
-		std::shared_ptr<VulkanBuffer> IndexBuffer;
-		uint32_t VertexCount;
+		std::shared_ptr<VulkanIndexBuffer> IndexBuffer;
+		uint32_t IndexCount;
 	};
 
 	struct RenderObject
@@ -32,12 +33,12 @@ namespace Odyssey
 	public:
 		RenderObject(std::vector<VulkanVertex> vertices, std::vector<uint32_t> indices)
 		{
-			m_Vertices = vertices;
-			m_Indices = indices;
+			Vertices = vertices;
+			Indices = indices;
 		}
 
-		std::vector<VulkanVertex> m_Vertices;
-		std::vector<uint32_t> m_Indices;
+		std::vector<VulkanVertex> Vertices;
+		std::vector<uint32_t> Indices;
 	};
 
 	class VulkanRenderer
@@ -80,7 +81,7 @@ namespace Odyssey
 		std::vector<DrawCall> m_DrawCalls;
 		std::vector<RenderObject> m_RenderObjects;
 		std::vector<std::shared_ptr<VulkanVertexBuffer>> m_VertexBuffers;
-		std::vector<std::shared_ptr<VulkanBuffer>> m_IndexBuffers;
+		std::vector<std::shared_ptr<VulkanIndexBuffer>> m_IndexBuffers;
 
 	private: // IMGUI
 		std::unique_ptr<VulkanImgui> imgui;
