@@ -10,25 +10,28 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanDevice;
 	class VulkanSurface;
+	class VulkanImage;
 
 	class VulkanSwapchain
 	{
 	public:
 		VulkanSwapchain(std::shared_ptr<VulkanContext> context, VulkanSurface* surface);
-		void Destroy(VulkanDevice* device);
+		void Destroy();
 
 	public:
 		uint32_t GetImageCount() { return imageCount; }
-		std::vector<VkImage> GetBackbuffers(VulkanDevice* device);
+		std::vector<std::shared_ptr<VulkanImage>> GetBackbuffers();
 		VkSwapchainKHR GetVK() { return swapchain; }
 
 	private:
-		void CreateSwapchain(VkDevice device, VkPhysicalDevice physicalDevice, VulkanSurface* surface);
+		void CreateSwapchain(VulkanSurface* surface);
+		void CreateSwapchainImages(VkFormat surfaceFormat);
 		int GetMinImageCount(VkPresentModeKHR presentMode);
 
 	public:
 		std::shared_ptr<VulkanContext> m_Context;
 		VkSwapchainKHR swapchain;
+		std::vector<std::shared_ptr<VulkanImage>> backbuffers;
 		uint32_t imageCount;
 		uint32_t minImageCount;
 	};

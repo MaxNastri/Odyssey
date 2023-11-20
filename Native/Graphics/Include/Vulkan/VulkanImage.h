@@ -43,6 +43,7 @@ namespace Odyssey
 	{
 	public:
 		VulkanImage(std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc);
+		VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, VkFormat format);
 
 	public:
 		void SetData(VulkanBuffer* buffer, uint32_t width, uint32_t height);
@@ -50,13 +51,17 @@ namespace Odyssey
 		void TransitionLayout(VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 	public:
-		VkImage GetImage() { return image; }
+		VkImage GetImage() { return m_Image; }
+		VkImageView GetImageView() { return imageView; }
 
 	private:
 		uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
-		VkImage image;
+		VkImage m_Image;
+		VkImageView imageView;
+		VkImageLayout imageLayout;
 		VkDeviceMemory imageMemory;
 	};
 }

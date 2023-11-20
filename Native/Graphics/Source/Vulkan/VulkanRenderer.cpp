@@ -65,7 +65,7 @@ namespace Odyssey
 
 		for (int i = 0; i < frames.size(); ++i)
 		{
-			frames[i].Destroy(context->GetDevice());
+			frames[i].Destroy();
 		}
 
 		frames.clear();
@@ -158,7 +158,7 @@ namespace Odyssey
 		image_memory_barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		image_memory_barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		image_memory_barrier.newLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		image_memory_barrier.image = frames[frameIndex].backbuffer;
+		image_memory_barrier.image = frames[frameIndex].GetRenderTargetVK();
 		image_memory_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		image_memory_barrier.subresourceRange.baseMipLevel = 0;
 		image_memory_barrier.subresourceRange.levelCount = 1;
@@ -197,7 +197,7 @@ namespace Odyssey
 			VkRenderingAttachmentInfoKHR color_attachment_info{};
 			color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 			color_attachment_info.pNext = VK_NULL_HANDLE;
-			color_attachment_info.imageView = frame->backbufferView;
+			color_attachment_info.imageView = frame->GetRenderTargetViewVK();
 			color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 			color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -269,7 +269,7 @@ namespace Odyssey
 			image_memory_barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 			image_memory_barrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			image_memory_barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-			image_memory_barrier.image = frames[frameIndex].backbuffer;
+			image_memory_barrier.image = frames[frameIndex].GetRenderTargetVK();
 			image_memory_barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 			image_memory_barrier.subresourceRange.baseMipLevel = 0;
 			image_memory_barrier.subresourceRange.levelCount = 1;
@@ -292,7 +292,7 @@ namespace Odyssey
 		window->Resize(swapchain.get());
 
 		// Remake the swapchain
-		swapchain->Destroy(device);
+		swapchain->Destroy();
 		swapchain.reset();
 		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
 		rebuildSwapchain = false;
@@ -300,7 +300,7 @@ namespace Odyssey
 		// Destroy the existing frames
 		for (auto& frame : frames)
 		{
-			frame.Destroy(device);
+			frame.Destroy();
 		}
 		frames.clear();
 
@@ -370,14 +370,13 @@ namespace Odyssey
 		VkDevice vkDevice = context->GetDevice()->GetLogicalDevice();
 		VkFormat format = window->GetSurface()->GetFormat();
 
-		std::vector<VkImage> backbuffers = swapchain->GetBackbuffers(context->GetDevice());
+		std::vector<std::shared_ptr<VulkanImage>> backbuffers = swapchain->GetBackbuffers();
 		uint32_t imageCount = swapchain->GetImageCount();
 		frames.resize(imageCount);
 
 		for (uint32_t i = 0; i < imageCount; ++i)
 		{
-			frames[i] = VulkanFrame(context->GetDevice(), context->GetPhysicalDevice());
-			frames[i].SetBackbuffer(context->GetDevice(), backbuffers[i], format);
+			frames[i] = VulkanFrame(context, backbuffers[i], format);
 		}
 	}
 	VkRenderingInfo VulkanRenderer::GetRenderingInfo(VulkanFrame* frame)
@@ -394,7 +393,7 @@ namespace Odyssey
 		VkRenderingAttachmentInfoKHR color_attachment_info{};
 		color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 		color_attachment_info.pNext = VK_NULL_HANDLE;
-		color_attachment_info.imageView = frame->backbufferView;
+		color_attachment_info.imageView = frame->GetRenderTargetViewVK();
 		color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 		color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;

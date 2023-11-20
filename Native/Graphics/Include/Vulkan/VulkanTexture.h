@@ -14,5 +14,6 @@ namespace Odyssey
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		std::unique_ptr<VulkanImage> image;
+		// Sampler, view, layout
 	};
 }

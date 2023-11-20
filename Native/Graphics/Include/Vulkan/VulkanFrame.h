@@ -6,38 +6,38 @@
 VK_FWD_DECLARE(VkFence)
 VK_FWD_DECLARE(VkImage)
 VK_FWD_DECLARE(VkImageView)
-VK_FWD_DECLARE(VkFramebuffer)
-VK_FWD_DECLARE(VkCommandBuffer)
 VK_FWD_DECLARE(VkSemaphore)
 
 namespace Odyssey
 {
-	class VulkanDevice;
-	class VulkanPhysicalDevice;
-	class VulkanRenderPass;
+	class VulkanContext;
+	class VulkanImage;
 
 	class VulkanFrame
 	{
 	public:
 		VulkanFrame() = default;
-		VulkanFrame(VulkanDevice* device, VulkanPhysicalDevice* physicalDevice);
+		VulkanFrame(std::shared_ptr<VulkanContext> context, std::shared_ptr<VulkanImage> renderTarget, VkFormat format);
 
 	public:
-		void Destroy(VulkanDevice* device);
-		void SetBackbuffer(VulkanDevice* device, VkImage backbufferImage, VkFormat format);
-
+		void Destroy();
+		
+	public:
 		const VkSemaphore* GetImageAcquiredSemaphore() { return &imageAcquiredSemaphore; }
 		const VkSemaphore* GetRenderCompleteSemaphore() { return &renderCompleteSemaphore; }
 		VkFence GetFence() { return fence; }
+		VulkanImage* GetRenderTarget() { return m_RenderTarget.get(); }
+		VkImage GetRenderTargetVK();
+		VkImageView GetRenderTargetViewVK();
 
 	private:
-		void CreateFence(VkDevice device);
-		void CreateSempaphores(VkDevice device);
+		void CreateFence();
+		void CreateSempaphores();
 
 	public:
+		std::shared_ptr<VulkanContext> m_Context;
+		std::shared_ptr<VulkanImage> m_RenderTarget;
 		VkFence fence = VK_NULL_HANDLE;
-		VkImage backbuffer = VK_NULL_HANDLE;
-		VkImageView backbufferView = VK_NULL_HANDLE;
 
 	private:
 		VkSemaphore imageAcquiredSemaphore;

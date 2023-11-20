@@ -2,6 +2,8 @@
 #include "VulkanGlobals.h"
 
 VK_FWD_DECLARE(VkInstance)
+VK_FWD_DECLARE(VkPhysicalDevice)
+VK_FWD_DECLARE(VkDevice)
 VK_FWD_DECLARE(VkDebugReportCallbackEXT)
 VK_FWD_DECLARE(VkQueue)
 
@@ -28,7 +30,9 @@ namespace Odyssey
 	public:
 		VkInstance GetInstance() { return instance; }
 		VulkanPhysicalDevice* GetPhysicalDevice() { return physicalDevice.get(); }
+		VkPhysicalDevice GetPhysicalDeviceVK();
 		VulkanDevice* GetDevice() { return logicalDevice.get(); }
+		VkDevice GetDeviceVK();
 		VulkanQueue* GetGraphicsQueue();
 		const VkQueue GetGraphicsQueueVK();
 		VulkanCommandPool* GetCommandPool() { return m_CommandPool.get(); }

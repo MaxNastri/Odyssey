@@ -39,6 +39,16 @@ namespace Odyssey
 		vkQueueWaitIdle(m_GraphicsQueue->queue);
 	}
 
+	VkPhysicalDevice VulkanContext::GetPhysicalDeviceVK()
+	{
+		return physicalDevice->GetPhysicalDevice();
+	}
+
+	VkDevice VulkanContext::GetDeviceVK()
+	{
+		return logicalDevice->GetLogicalDevice();
+	}
+
 	VulkanQueue* VulkanContext::GetGraphicsQueue()
 	{
 		return m_GraphicsQueue.get();

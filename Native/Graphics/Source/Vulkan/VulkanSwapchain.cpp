@@ -3,34 +3,32 @@
 #include "VulkanDevice.h"
 #include "VulkanPhysicalDevice.h"
 #include "VulkanSurface.h"
+#include "VulkanImage.h"
 
 namespace Odyssey
 {
     VulkanSwapchain::VulkanSwapchain(std::shared_ptr<VulkanContext> context, VulkanSurface* surface)
     {
         m_Context = context;
-        CreateSwapchain(context->GetDevice()->GetLogicalDevice(), context->GetPhysicalDevice()->GetPhysicalDevice(), surface);
+        CreateSwapchain(surface);
+        CreateSwapchainImages(surface->GetSurfaceFormat().format);
     }
 
-	void VulkanSwapchain::Destroy(VulkanDevice* device)
+	void VulkanSwapchain::Destroy()
 	{
-        vkDestroySwapchainKHR(device->GetLogicalDevice(), swapchain, allocator);
+        vkDestroySwapchainKHR(m_Context->GetDeviceVK(), swapchain, allocator);
         swapchain = VK_NULL_HANDLE;
         imageCount = 0;
 	}
 
-    std::vector<VkImage> VulkanSwapchain::GetBackbuffers(VulkanDevice* device)
+    std::vector<std::shared_ptr<VulkanImage>> VulkanSwapchain::GetBackbuffers()
     {
-        std::vector<VkImage> backbuffers;
-        backbuffers.resize(imageCount);
-        VkResult err = vkGetSwapchainImagesKHR(device->GetLogicalDevice(), swapchain, &imageCount, backbuffers.data());
-        check_vk_result(err);
         return backbuffers;
     }
 
-    void VulkanSwapchain::CreateSwapchain(VkDevice device, VkPhysicalDevice physicalDevice, VulkanSurface* surface)
+    void VulkanSwapchain::CreateSwapchain(VulkanSurface* surface)
 	{
-        VkResult err = vkDeviceWaitIdle(device);
+        VkResult err = vkDeviceWaitIdle(m_Context->GetDeviceVK());
         check_vk_result(err);
 
 		minImageCount = GetMinImageCount(surface->GetPresentMode());
@@ -56,7 +54,7 @@ namespace Odyssey
 
         // Get the capabilities of the surface
         VkSurfaceCapabilitiesKHR cap;
-        err = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, vkSurface, &cap);
+        err = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_Context->GetPhysicalDeviceVK(), vkSurface, &cap);
         check_vk_result(err);
         if (info.minImageCount < cap.minImageCount)
             info.minImageCount = cap.minImageCount;
@@ -74,12 +72,30 @@ namespace Odyssey
             info.imageExtent.height = height = cap.currentExtent.height;
         }
 
-        err = vkCreateSwapchainKHR(device, &info, allocator, &swapchain);
+        err = vkCreateSwapchainKHR(m_Context->GetDeviceVK(), &info, allocator, &swapchain);
         check_vk_result(err);
 
-        err = vkGetSwapchainImagesKHR(device, swapchain, &imageCount, nullptr);
+        err = vkGetSwapchainImagesKHR(m_Context->GetDeviceVK(), swapchain, &imageCount, nullptr);
         check_vk_result(err);
 	}
+
+    void VulkanSwapchain::CreateSwapchainImages(VkFormat format)
+    {
+        // Get the swapchain backbuffers as raw vkimages
+        std::vector<VkImage> backbufferImages;
+        backbufferImages.resize(imageCount);
+        if (vkGetSwapchainImagesKHR(m_Context->GetDeviceVK(), swapchain, &imageCount, backbufferImages.data()) != VK_SUCCESS)
+        {
+            Logger::LogError("(VulkanSwapchain) Cannot retrieve swapchain images.");
+            return;
+        }
+
+        backbuffers.resize(backbufferImages.size());
+        for (uint16_t i = 0; i < backbuffers.size(); ++i)
+        {
+            backbuffers[i] = std::make_shared<VulkanImage>(m_Context, backbufferImages[i], format);
+        }
+    }
 
 	int VulkanSwapchain::GetMinImageCount(VkPresentModeKHR presentMode)
 	{
