@@ -7,16 +7,16 @@
 #include "VulkanPhysicalDevice.h"
 #include "VulkanWindow.h"
 #include "VulkanBuffer.h"
+#include "VulkanQueue.h"
 
 namespace Odyssey
 {
 	VulkanRenderer::VulkanRenderer()
 	{
 		context = std::make_shared<VulkanContext>();
-		context->SetCommandPool(std::make_shared<VulkanCommandPool>(context));
+		context->SetupResources();
 		window = std::make_shared<VulkanWindow>(context);
 		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
-		graphicsQueue = std::make_unique<VulkanQueue>(VulkanQueueType::Graphics, context);
 		descriptorPool = std::make_unique<VulkanDescriptorPool>(context->GetDevice());
 
 		// Shaders
@@ -69,9 +69,10 @@ namespace Odyssey
 		frames.clear();
 
 		descriptorPool.reset();
-		graphicsQueue.reset();
 		swapchain.reset();
 		window.reset();
+
+		context->Destroy();
 		context.reset();
 	}
 
@@ -109,7 +110,7 @@ namespace Odyssey
 		info.swapchainCount = 1;
 		info.pSwapchains = &swapchain->swapchain;
 		info.pImageIndices = &frameIndex;
-		VkResult err = vkQueuePresentKHR(graphicsQueue->queue, &info);
+		VkResult err = vkQueuePresentKHR(context->GetGraphicsQueueVK(), &info);
 		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 		{
 			rebuildSwapchain = true;
@@ -275,7 +276,7 @@ namespace Odyssey
 			commandBuffer->PipelineBarrier(image_memory_barrier, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT);
 			commandBuffer->EndCommands();
 
-			VkResult err = vkQueueSubmit(graphicsQueue->queue, 1, &submitInfo, frame->fence);
+			VkResult err = vkQueueSubmit(context->GetGraphicsQueueVK(), 1, &submitInfo, frame->fence);
 			check_vk_result(err);
 		}
 	}
@@ -355,7 +356,7 @@ namespace Odyssey
 		info.physicalDevice = context->GetPhysicalDevice()->GetPhysicalDevice();
 		info.logicalDevice = context->GetDevice()->GetLogicalDevice();
 		info.queueIndex = context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics);
-		info.queue = graphicsQueue->queue;
+		info.queue = context->GetGraphicsQueueVK();
 		info.descriptorPool = descriptorPool->descriptorPool;
 		info.renderPass = nullptr;
 		info.minImageCount = swapchain->minImageCount;

@@ -3,6 +3,7 @@
 
 VK_FWD_DECLARE(VkInstance)
 VK_FWD_DECLARE(VkDebugReportCallbackEXT)
+VK_FWD_DECLARE(VkQueue)
 
 struct VkExtensionProperties;
 
@@ -11,18 +12,23 @@ namespace Odyssey
 	class VulkanDevice;
 	class VulkanPhysicalDevice;
 	class VulkanCommandPool;
+	class VulkanQueue;
 
-	class VulkanContext : public std::enable_shared_from_this<VulkanContext>
+	class VulkanContext: public std::enable_shared_from_this<VulkanContext>
 	{
 	public:
 		VulkanContext();
+		void Destroy();
 
-		void SetCommandPool(std::shared_ptr<VulkanCommandPool> commandPool);
+	public:
+		void SetupResources();
 
 	public:
 		VkInstance GetInstance() { return instance; }
 		VulkanPhysicalDevice* GetPhysicalDevice() { return physicalDevice.get(); }
 		VulkanDevice* GetDevice() { return logicalDevice.get(); }
+		VulkanQueue* GetGraphicsQueue();
+		const VkQueue GetGraphicsQueueVK();
 		VulkanCommandPool* GetCommandPool() { return m_CommandPool.get(); }
 
 	private:
@@ -36,6 +42,7 @@ namespace Odyssey
 		std::shared_ptr<VulkanPhysicalDevice> physicalDevice;
 		std::shared_ptr<VulkanDevice> logicalDevice;
 		std::shared_ptr<VulkanCommandPool> m_CommandPool;
+		std::map<VulkanQueueType, std::shared_ptr<VulkanQueue>> m_Queues;
 
 	private: // Extensions
 		std::vector<const char*> extensions;

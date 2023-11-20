@@ -2,6 +2,7 @@
 #include "VulkanPhysicalDevice.h"
 #include "VulkanDevice.h"
 #include "VulkanCommandPool.h"
+#include "VulkanQueue.h"
 #define GLFW_INCLUDE_VULKAN
 #include <glfw3.h>
 
@@ -16,9 +17,25 @@ namespace Odyssey
 		logicalDevice = std::make_shared<VulkanDevice>(physicalDevice.get());
 	}
 
-	void VulkanContext::SetCommandPool(std::shared_ptr<VulkanCommandPool> commandPool)
+	void VulkanContext::Destroy()
 	{
-		m_CommandPool = commandPool;
+		m_CommandPool->Destroy();
+	}
+
+	void VulkanContext::SetupResources()
+	{
+		m_CommandPool = std::make_shared<VulkanCommandPool>(VulkanContext::shared_from_this());
+		m_Queues[VulkanQueueType::Graphics] = std::make_shared<VulkanQueue>(VulkanQueueType::Graphics, VulkanContext::shared_from_this());
+	}
+
+	VulkanQueue* VulkanContext::GetGraphicsQueue()
+	{
+		return m_Queues[VulkanQueueType::Graphics].get();
+	}
+
+	const VkQueue VulkanContext::GetGraphicsQueueVK()
+	{
+		return m_Queues[VulkanQueueType::Graphics]->queue;
 	}
 
 	void VulkanContext::GatherExtensions()
