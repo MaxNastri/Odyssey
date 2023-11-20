@@ -34,7 +34,7 @@ namespace Odyssey
 	public:
 		VulkanImgui(std::shared_ptr<VulkanContext> context, const InitInfo& initInfo);
 		void SubmitDraws();
-		void Render(VkCommandBuffer commandBuffer);
+		void Render(VkCommandBuffer commandBuffer, VkDescriptorSet id);
 		void PostRender();
 		VkDescriptorSet AddTexture(VulkanTexture* texture);
 

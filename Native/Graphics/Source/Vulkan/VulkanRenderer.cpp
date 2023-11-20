@@ -46,7 +46,7 @@ namespace Odyssey
 
 		// Draw data
 		InitDrawCalls();
-		renderTexture = std::make_shared<VulkanTexture>(context, 300, 300);
+		renderTexture = std::make_shared<VulkanTexture>(context, 1000, 1000);
 		rtSet = imgui->AddTexture(renderTexture.get());
 	}
 
@@ -190,7 +190,7 @@ namespace Odyssey
 				color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 				color_attachment_info.pNext = VK_NULL_HANDLE;
 				color_attachment_info.imageView = renderTexture->GetImage()->GetImageView();
-				color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 				color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 				color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 				color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -200,7 +200,7 @@ namespace Odyssey
 				rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
 				rendering_info.pNext = VK_NULL_HANDLE;
 				rendering_info.flags = 0;
-				rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{300, 300} };
+				rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{1000, 1000} };
 				rendering_info.layerCount = 1;
 				rendering_info.viewMask = 0;
 				rendering_info.colorAttachmentCount = 1;
@@ -216,8 +216,8 @@ namespace Odyssey
 					VkViewport viewport{};
 					viewport.x = 0.0f;
 					viewport.y = 0.0f;
-					viewport.width = static_cast<float>(300);
-					viewport.height = static_cast<float>(300);
+					viewport.width = static_cast<float>(1000);
+					viewport.height = static_cast<float>(1000);
 					viewport.minDepth = 0.0f;
 					viewport.maxDepth = 1.0f;
 					commandBuffer->BindViewport(viewport);
@@ -227,7 +227,7 @@ namespace Odyssey
 				{
 					VkRect2D scissor{};
 					scissor.offset = { 0, 0 };
-					scissor.extent = VkExtent2D{ 300, 300 };
+					scissor.extent = VkExtent2D{ 1000, 1000 };
 					commandBuffer->SetScissor(scissor);
 				}
 
@@ -237,8 +237,8 @@ namespace Odyssey
 					commandBuffer->BindIndexBuffer(drawCall.IndexBuffer.get());
 					commandBuffer->DrawIndexed(drawCall.IndexCount, 1, 0, 0, 0);
 				}
-
 				commandBuffer->EndRendering();
+				commandBuffer->TransitionLayouts(renderTexture->GetImage(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 			}
 
 			// rendering GUI to the back buffer
@@ -289,16 +289,8 @@ namespace Odyssey
 					commandBuffer->SetScissor(scissor);
 				}
 
-				for (auto& drawCall : m_DrawCalls)
-				{
-					commandBuffer->BindVertexBuffer(drawCall.VertexBuffer.get());
-					commandBuffer->BindIndexBuffer(drawCall.IndexBuffer.get());
-					commandBuffer->DrawIndexed(drawCall.IndexCount, 1, 0, 0, 0);
-				}
-
 				// TODO: DRAW
-				imgui->Render(commandBuffer->GetCommandBuffer());
-
+				imgui->Render(commandBuffer->GetCommandBuffer(), rtSet);
 				commandBuffer->EndRendering();
 
 				// Transition the backbuffer layout for presenting
@@ -306,67 +298,6 @@ namespace Odyssey
 			}
 
 			commandBuffer->EndCommands();
-
-			//VkRenderingAttachmentInfoKHR color_attachment_info{};
-			//color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
-			//color_attachment_info.pNext = VK_NULL_HANDLE;
-			//color_attachment_info.imageView = frame->GetRenderTargetViewVK();
-			//color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			//color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
-			//color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-			//color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-			//color_attachment_info.clearValue = ClearValue;
-
-			//VkRenderingInfoKHR rendering_info = {};
-			//rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
-			//rendering_info.pNext = VK_NULL_HANDLE;
-			//rendering_info.flags = 0;
-			//rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{width, height} };
-			//rendering_info.layerCount = 1;
-			//rendering_info.viewMask = 0;
-			//rendering_info.colorAttachmentCount = 1;
-			//rendering_info.pColorAttachments = &color_attachment_info;
-			//rendering_info.pDepthAttachment = VK_NULL_HANDLE;
-			//rendering_info.pStencilAttachment = VK_NULL_HANDLE;
-
-			//commandBuffer->BeginRendering(rendering_info);
-			//commandBuffer->BindPipeline(graphicsPipeline.get());
-
-			//// Viewport
-			//{
-			//	VkViewport viewport{};
-			//	viewport.x = 0.0f;
-			//	viewport.y = 0.0f;
-			//	viewport.width = static_cast<float>(width);
-			//	viewport.height = static_cast<float>(height);
-			//	viewport.minDepth = 0.0f;
-			//	viewport.maxDepth = 1.0f;
-			//	commandBuffer->BindViewport(viewport);
-			//}
-
-			//// Scissor
-			//{
-			//	VkRect2D scissor{};
-			//	scissor.offset = { 0, 0 };
-			//	scissor.extent = VkExtent2D{ width, height };
-			//	commandBuffer->SetScissor(scissor);
-			//}
-
-			//for (auto& drawCall : m_DrawCalls)
-			//{
-			//	commandBuffer->BindVertexBuffer(drawCall.VertexBuffer.get());
-			//	commandBuffer->BindIndexBuffer(drawCall.IndexBuffer.get());
-			//	commandBuffer->DrawIndexed(drawCall.IndexCount, 1, 0, 0, 0);
-			//}
-
-			//// TODO: DRAW
-			//imgui->Render(commandBuffer->GetCommandBuffer());
-
-			//commandBuffer->EndRendering();
-
-			//// Transition the backbuffer layout for presenting
-			//frames[frameIndex].GetRenderTarget()->TransitionLayout(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-			//commandBuffer->EndCommands();
 
 			// TODO: Move this into the context?
 			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;

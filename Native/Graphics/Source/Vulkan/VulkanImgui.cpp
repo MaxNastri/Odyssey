@@ -98,8 +98,16 @@ namespace Odyssey
 		EventSystem::Dispatch<OnGUIRenderEvent>();
 	}
 
-	void VulkanImgui::Render(VkCommandBuffer commandBuffer)
+	void VulkanImgui::Render(VkCommandBuffer commandBuffer, VkDescriptorSet id)
 	{
+		static bool open = true;
+		ImGui::SetNextWindowSize(ImVec2(1000, 1000), ImGuiCond_FirstUseEver);
+		if (ImGui::Begin("Scene", &open))
+		{
+			ImGui::Image(id, ImVec2(1000, 1000));
+		}
+		ImGui::End();
+
 		ImGui::Render();
 		ImDrawData* main_draw_data = ImGui::GetDrawData();
 
