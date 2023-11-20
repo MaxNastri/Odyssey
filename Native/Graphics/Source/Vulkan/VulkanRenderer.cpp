@@ -12,6 +12,7 @@
 #include "VulkanIndexBuffer.h"
 #include "VulkanImage.h"
 #include "VulkanTexture.h"
+#include "VulkanDescriptorSet.h"
 
 namespace Odyssey
 {
@@ -54,6 +55,14 @@ namespace Odyssey
 	{
 		VulkanDevice* device = context->GetDevice();
 		device->WaitForIdle();
+
+		uboDescriptor->Destroy();
+
+		for (auto uboBuffer : uboBuffers)
+		{
+			uboBuffer->Destroy();
+		}
+		uboBuffers.clear();
 
 		for (auto vertexBuffer : m_VertexBuffers)
 		{
@@ -398,16 +407,41 @@ namespace Odyssey
 	void VulkanRenderer::SetupFrameData()
 	{
 		frameIndex = 0;
+
 		VkDevice vkDevice = context->GetDevice()->GetLogicalDevice();
 		VkFormat format = window->GetSurface()->GetFormat();
 
-		std::vector<std::shared_ptr<VulkanImage>> backbuffers = swapchain->GetBackbuffers();
-		uint32_t imageCount = swapchain->GetImageCount();
-		frames.resize(imageCount);
-
-		for (uint32_t i = 0; i < imageCount; ++i)
+		// Create the frames
 		{
-			frames[i] = VulkanFrame(context, backbuffers[i], format);
+			std::vector<std::shared_ptr<VulkanImage>> backbuffers = swapchain->GetBackbuffers();
+			uint32_t imageCount = swapchain->GetImageCount();
+			frames.resize(imageCount);
+
+			for (uint32_t i = 0; i < imageCount; ++i)
+			{
+				frames[i] = VulkanFrame(context, backbuffers[i], format);
+			}
+		}
+
+		// Create the ubos per frame
+		{
+			uboBuffers.resize(frames.size());
+			uboData.resize(frames.size());
+
+			// Create the UBO descriptor
+			uboDescriptor = std::make_shared<VulkanDescriptorSet>(context);
+
+			for (int i = 0; i < frames.size(); ++i)
+			{
+				uboData[i].world = glm::identity<glm::mat4x4>();
+				uboData[i].inverseView = glm::identity<glm::mat4x4>();
+				uboData[i].proj = glm::identity<glm::mat4x4>();
+
+				uint32_t bufferSize = sizeof(uboData[i]);
+				uboBuffers[i] = std::make_shared<VulkanBuffer>(context, BufferType::Uniform, bufferSize);
+				uboBuffers[i]->AllocateMemory();
+				uboBuffers[i]->SetMemory(bufferSize, &uboData[i]);
+			}
 		}
 	}
 

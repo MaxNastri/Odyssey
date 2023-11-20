@@ -14,6 +14,7 @@ namespace Odyssey
 		Staging = 1,
 		Vertex = 2,
 		Index = 3,
+		Uniform = 4,
 	};
 	class VulkanBuffer
 	{
@@ -22,7 +23,11 @@ namespace Odyssey
 		void Destroy();
 
 	public:
+		void AllocateMemory();
+
 		void SetMemory(VkDeviceSize size, void* data);
+		VkDeviceMemory GetMemory() { return bufferMemory; }
+
 	private:
 		uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		VkBufferUsageFlags GetUsageFlags(BufferType bufferType);
@@ -32,5 +37,7 @@ namespace Odyssey
 		VkBuffer buffer = nullptr;
 		VkDeviceMemory bufferMemory;
 		BufferType m_BufferType;
+		uint32_t m_Size;
+		void* bufferMemoryMapped;
 	};
 }

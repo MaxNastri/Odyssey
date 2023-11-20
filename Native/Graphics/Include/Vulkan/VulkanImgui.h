@@ -1,10 +1,10 @@
 #pragma once
-#include <vector>
-#include <memory>
-#include <vulkan/vulkan.h>
+#include "VulkanGlobals.h"
 
 // FWD Declarations
 struct GLFWwindow;
+
+VK_FWD_DECLARE(VkDescriptorPool)
 
 namespace Odyssey
 {
@@ -36,10 +36,16 @@ namespace Odyssey
 		void SubmitDraws();
 		void Render(VkCommandBuffer commandBuffer, VkDescriptorSet id);
 		void PostRender();
+
+	public:
 		VkDescriptorSet AddTexture(VulkanTexture* texture);
 
 	private:
+		void CreateDescriptorPool();
+
+	private:
 		std::shared_ptr<VulkanContext> m_Context;
+		VkDescriptorPool descriptorPool;
 		bool showDemoWindow = true;
 	};
 }

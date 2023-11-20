@@ -8,6 +8,7 @@ namespace Odyssey
 {
 	class VulkanContext;
 	class VulkanShader;
+	class VulkanDescriptorSet;
 
 	struct VulkanPipelineInfo
 	{
@@ -23,6 +24,9 @@ namespace Odyssey
 		void Destroy();
 
 	public:
+		void AddDescriptorSet(std::shared_ptr<VulkanDescriptorSet> descriptorSet);
+
+	public:
 		VkPipeline GetPipeline() { return m_GraphicsPipeline; }
 
 	private:
@@ -30,6 +34,7 @@ namespace Odyssey
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
+		std::vector<std::shared_ptr<VulkanDescriptorSet>> m_DescriptorSets;
 		VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
 		VkPipeline m_GraphicsPipeline = VK_NULL_HANDLE;
 	};

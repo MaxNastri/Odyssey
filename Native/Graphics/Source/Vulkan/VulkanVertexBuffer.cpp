@@ -13,9 +13,11 @@ namespace Odyssey
 		VkDeviceSize dataSize = vertices.size() * sizeof(vertices[0]);
 
 		m_StagingBuffer = std::make_shared<VulkanBuffer>(context, BufferType::Staging, dataSize);
+		m_StagingBuffer->AllocateMemory();
 		m_StagingBuffer->SetMemory(dataSize, vertices.data());
 
 		m_VertexBuffer = std::make_shared<VulkanBuffer>(context, BufferType::Vertex, dataSize);
+		m_VertexBuffer->AllocateMemory();
 
 		// Copy the staging buffer into the vertex buffer
 		VulkanCommandBuffer* commandBuffer = m_Context->GetCommandPool()->AllocateBuffer();
