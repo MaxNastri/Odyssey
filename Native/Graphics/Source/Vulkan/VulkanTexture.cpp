@@ -25,10 +25,7 @@ namespace Odyssey
 
 		// Create a staging buffer to copy the pixel data into vulkanized memory
 		VkDeviceSize imageSize = texWidth * texHeight * 4;
-		VkBufferUsageFlags flags = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-		VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-		VulkanBuffer stagingBuffer(context, imageSize, flags, properties);
+		VulkanBuffer stagingBuffer(context, BufferType::Staging, imageSize);
 		stagingBuffer.SetMemory(imageSize, pixels);
 
 		// Now that we have transfered the memory, free the original pixel data

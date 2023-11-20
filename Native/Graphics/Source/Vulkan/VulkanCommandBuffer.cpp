@@ -92,4 +92,9 @@ namespace Odyssey
 
         vkCmdCopyBufferToImage(m_CommandBuffer, buffer->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
     }
+    void VulkanCommandBuffer::BindVertexBuffer(VulkanBuffer* buffer)
+    {
+        VkDeviceSize offsets[] = { 0 };
+        vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, &(buffer->buffer), offsets);
+    }
 }

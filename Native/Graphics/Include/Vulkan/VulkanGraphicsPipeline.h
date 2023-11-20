@@ -15,6 +15,7 @@ namespace Odyssey
 		VulkanShader* vertexShader;
 	};
 
+
 	class VulkanGraphicsPipeline
 	{
 	public:
@@ -23,6 +24,7 @@ namespace Odyssey
 
 	public:
 		VkPipeline GetPipeline() { return m_GraphicsPipeline; }
+
 	private:
 		void CreateLayout();
 

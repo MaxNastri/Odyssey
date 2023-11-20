@@ -2,6 +2,7 @@
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
 #include "VulkanShader.h"
+#include "VulkanVertex.h"
 #include <Logger.h>
 #include <vulkan/vulkan.h>
 
@@ -48,10 +49,14 @@ namespace Odyssey
 		// Vertex input
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 0;
-		vertexInputInfo.pVertexBindingDescriptions = nullptr; // Optional
-		vertexInputInfo.vertexAttributeDescriptionCount = 0;
-		vertexInputInfo.pVertexAttributeDescriptions = nullptr; // Optional
+
+		VkVertexInputBindingDescription bindingDescription = VulkanVertex::GetBindingDescription();
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+
+		std::array<VkVertexInputAttributeDescription,2> vertexAttributeDescriptions = VulkanVertex::GetAttributeDescriptions();
+		vertexInputInfo.vertexAttributeDescriptionCount = 2;
+		vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
 
 		// Input Assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};

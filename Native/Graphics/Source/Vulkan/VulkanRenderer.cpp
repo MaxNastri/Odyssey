@@ -6,6 +6,7 @@
 #include "VulkanContext.h"
 #include "VulkanPhysicalDevice.h"
 #include "VulkanWindow.h"
+#include "VulkanBuffer.h"
 
 namespace Odyssey
 {
@@ -38,6 +39,9 @@ namespace Odyssey
 			commandPool.push_back(std::make_unique<VulkanCommandPool>(context));
 			commandBuffers.push_back(commandPool[i]->AllocateBuffer());
 		}
+
+		// Draw data
+		InitDrawCalls();
 	}
 
 	void VulkanRenderer::Destroy()
@@ -45,10 +49,23 @@ namespace Odyssey
 		VulkanDevice* device = context->GetDevice();
 		device->WaitForIdle();
 
+		for (auto vertexBuffer : m_VertexBuffers)
+		{
+			vertexBuffer->Destroy();
+		}
+		m_VertexBuffers.clear();
+
+		for (auto indexBuffer : m_IndexBuffers)
+		{
+			indexBuffer->Destroy();
+		}
+		m_IndexBuffers.clear();
+
 		for (int i = 0; i < frames.size(); ++i)
 		{
 			frames[i].Destroy(context->GetDevice());
 		}
+
 		frames.clear();
 
 		descriptorPool.reset();
@@ -168,7 +185,6 @@ namespace Odyssey
 			// RenderPass begin
 			VulkanCommandBuffer* commandBuffer = commandBuffers[frameIndex];
 
-
 			VkClearValue ClearValue;
 			ClearValue.color.float32[0] = 0.0f;
 			ClearValue.color.float32[1] = 0.0f;
@@ -211,7 +227,7 @@ namespace Odyssey
 				viewport.maxDepth = 1.0f;
 				commandBuffer->BindViewport(viewport);
 			}
-			
+
 			// Scissor
 			{
 				VkRect2D scissor{};
@@ -219,8 +235,12 @@ namespace Odyssey
 				scissor.extent = VkExtent2D{ width, height };
 				commandBuffer->SetScissor(scissor);
 			}
-			
-			commandBuffer->Draw(3, 1, 0, 0);
+
+			for (auto& drawCall : m_DrawCalls)
+			{
+				commandBuffer->BindVertexBuffer(drawCall.VertexBuffer.get());
+				commandBuffer->Draw(drawCall.VertexCount, 1, 0, 0);
+			}
 
 			// TODO: DRAW
 			imgui->Render(commandBuffer->GetCommandBuffer());
@@ -283,6 +303,48 @@ namespace Odyssey
 		// Remake the frame data with the new size
 		SetupFrameData();
 		frameIndex = 0;
+	}
+
+	void VulkanRenderer::InitDrawCalls()
+	{
+		// Create the render object first
+		{
+			std::vector<VulkanVertex> vertices;
+			vertices.resize(3);
+			vertices[0] = VulkanVertex(glm::vec3(0, -0.5f, 0), glm::vec3(1, 0, 0));
+			vertices[1] = VulkanVertex(glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0, 1, 0));
+			vertices[2] = VulkanVertex(glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(0, 0, 1));
+
+			std::vector<uint32_t> indices{ 0, 1, 2 };
+
+			m_RenderObjects.clear();
+			m_RenderObjects.push_back(RenderObject(vertices, indices));
+		}
+
+		// Convert the render objects into draw calls
+		{
+			m_DrawCalls.resize(m_RenderObjects.size());
+
+			for (auto& renderObject : m_RenderObjects)
+			{
+				size_t vertexDataSize = renderObject.m_Vertices.size() * sizeof(VulkanVertex);
+				size_t indexDataSize = renderObject.m_Indices.size() * sizeof(uint32_t);
+
+				// Create and assign vertex buffer
+				m_VertexBuffers.push_back(std::make_shared<VulkanBuffer>(context, BufferType::Vertex, vertexDataSize));
+				m_DrawCalls[0].VertexBuffer = m_VertexBuffers[m_VertexBuffers.size() - 1];
+
+				// Create and assign index buffer
+				m_IndexBuffers.push_back(std::make_shared<VulkanBuffer>(context, BufferType::Index, indexDataSize));
+				m_DrawCalls[0].IndexBuffer = m_IndexBuffers[m_IndexBuffers.size() - 1];
+
+				// Transfer data int othe buffers
+				m_DrawCalls[0].VertexBuffer->SetMemory(vertexDataSize, renderObject.m_Vertices.data());
+				m_DrawCalls[0].IndexBuffer->SetMemory(indexDataSize, renderObject.m_Indices.data());
+
+				m_DrawCalls[0].VertexCount = (uint32_t)renderObject.m_Vertices.size();
+			}
+		}
 	}
 
 	VulkanImgui::InitInfo VulkanRenderer::CreateImguiInitInfo()

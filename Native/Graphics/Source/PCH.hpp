@@ -22,3 +22,6 @@
 	#define NOMINMAX
 	#include <Windows.h>
 #endif
+
+// Custom
+#include <glm.h>

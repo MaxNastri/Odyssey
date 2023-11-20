@@ -6,14 +6,17 @@
 
 namespace Odyssey
 {
-	VulkanBuffer::VulkanBuffer(std::shared_ptr<VulkanContext> context, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties)
+	VulkanBuffer::VulkanBuffer(std::shared_ptr<VulkanContext> context, BufferType bufferType, VkDeviceSize size)
 	{
+		m_Context = context;
+		m_BufferType = bufferType;
+
 		VkDevice device = context->GetDevice()->GetLogicalDevice();
 
 		VkBufferCreateInfo bufferInfo{};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = size;
-		bufferInfo.usage = usage;
+		bufferInfo.usage = GetUsageFlags(bufferType);
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
 		if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
@@ -24,6 +27,8 @@ namespace Odyssey
 
 		VkMemoryRequirements memoryRequirements;
 		vkGetBufferMemoryRequirements(device,buffer, &memoryRequirements);
+
+		VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -74,5 +79,24 @@ namespace Odyssey
 		}
 
 		throw std::runtime_error("failed to find suitable memory type!");
+	}
+
+	VkBufferUsageFlags VulkanBuffer::GetUsageFlags(BufferType bufferType)
+	{
+		switch (bufferType)
+		{
+			case Odyssey::BufferType::None:
+				Logger::LogError("Cannot get usage flags from buffer type: NONE");
+				return 0;
+			case Odyssey::BufferType::Staging:
+				return VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+			case Odyssey::BufferType::Vertex:
+				return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+				break;
+			case Odyssey::BufferType::Index:
+				return VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+		}
+
+		return 0;
 	}
 }
