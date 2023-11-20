@@ -10,6 +10,7 @@ namespace Odyssey
 	{
 		None = 0,
 		Image2D = 1,
+		RenderTexture = 2,
 	};
 
 	enum class ImageFormat
@@ -48,7 +49,8 @@ namespace Odyssey
 	public:
 		void SetData(VulkanBuffer* buffer, uint32_t width, uint32_t height);
 
-		void TransitionLayout(VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+	public:
+		static VkImageMemoryBarrier CreateMemoryBarrier(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage);
 
 	public:
 		VkImage GetImage() { return m_Image; }
@@ -56,6 +58,7 @@ namespace Odyssey
 
 	private:
 		uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+		VkImageUsageFlags GetUsage(ImageType imageType);
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;

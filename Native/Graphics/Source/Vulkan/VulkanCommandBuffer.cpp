@@ -45,6 +45,11 @@ namespace Odyssey
         check_vk_result(err);
     }
 
+    void VulkanCommandBuffer::Reset()
+    {
+        vkResetCommandBuffer(m_CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+    }
+
     void VulkanCommandBuffer::BeginRendering(VkRenderingInfoKHR& renderingInfo)
     {
         vkCmdBeginRendering(m_CommandBuffer, &renderingInfo);
@@ -74,13 +79,18 @@ namespace Odyssey
     {
         vkCmdDraw(m_CommandBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
     }
+
     void VulkanCommandBuffer::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance)
     {
         vkCmdDrawIndexed(m_CommandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
     }
-    void VulkanCommandBuffer::PipelineBarrier(VkImageMemoryBarrier memoryBarrier, VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage)
+
+    void VulkanCommandBuffer::TransitionLayouts(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout)
     {
-        vkCmdPipelineBarrier(m_CommandBuffer, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &memoryBarrier);
+        VkPipelineStageFlags srcStage;
+        VkPipelineStageFlags dstStage;
+        VkImageMemoryBarrier barrier = VulkanImage::CreateMemoryBarrier(image, oldLayout, newLayout, srcStage, dstStage);
+        vkCmdPipelineBarrier(m_CommandBuffer, srcStage, dstStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     }
 
     void VulkanCommandBuffer::CopyBufferToImage(VulkanBuffer* buffer, VulkanImage* image, uint32_t width, uint32_t height)

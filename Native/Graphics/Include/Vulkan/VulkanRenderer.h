@@ -17,6 +17,7 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanFrame;
 	class VulkanIndexBuffer;
+	class VulkanTexture;
 	class VulkanVertexBuffer;
 	class VulkanWindow;
 
@@ -82,6 +83,10 @@ namespace Odyssey
 		std::vector<RenderObject> m_RenderObjects;
 		std::vector<std::shared_ptr<VulkanVertexBuffer>> m_VertexBuffers;
 		std::vector<std::shared_ptr<VulkanIndexBuffer>> m_IndexBuffers;
+
+	private: // Render texture stuff
+		std::shared_ptr<VulkanTexture> renderTexture;
+		VkDescriptorSet rtSet;
 
 	private: // IMGUI
 		std::unique_ptr<VulkanImgui> imgui;

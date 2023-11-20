@@ -18,6 +18,7 @@ namespace Odyssey
 	private:
 		void CreatePhysicalDevice(VkInstance instance);
 		void FindGraphicsFamilyQueue();
+		bool IsDeviceSuitable(VkPhysicalDevice gpu);
 
 	private:
 

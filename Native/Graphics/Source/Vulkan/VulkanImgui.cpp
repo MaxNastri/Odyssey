@@ -6,6 +6,8 @@
 #include "VulkanCommandPool.h"
 #include "GraphicsEvents.h"
 #include "VulkanContext.h"
+#include "VulkanTexture.h"
+#include "VulkanTextureSampler.h"
 
 namespace Odyssey
 {
@@ -115,5 +117,12 @@ namespace Odyssey
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 		}
+	}
+	VkDescriptorSet VulkanImgui::AddTexture(VulkanTexture* texture)
+	{
+		VkSampler sampler = texture->GetSampler()->GetSamplerVK();
+		VkImageView view = texture->GetImage()->GetImageView();
+		VkImageLayout layout = VK_IMAGE_LAYOUT_GENERAL;
+		return ImGui_ImplVulkan_AddTexture(sampler, view, layout);
 	}
 }

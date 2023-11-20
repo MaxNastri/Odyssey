@@ -73,6 +73,16 @@ namespace Odyssey
 		assert(indices.graphicsFamily.has_value());
 	}
 
+	bool VulkanPhysicalDevice::IsDeviceSuitable(VkPhysicalDevice device)
+	{
+		VkPhysicalDeviceProperties deviceProperties{};
+		VkPhysicalDeviceFeatures deviceFeatures{};
+		vkGetPhysicalDeviceProperties(device, &deviceProperties);
+		vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+
+		return deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader && deviceFeatures.samplerAnisotropy;
+	}
+
 	uint32_t VulkanPhysicalDevice::GetFamilyIndex(VulkanQueueType queueType)
 	{
 		switch (queueType)

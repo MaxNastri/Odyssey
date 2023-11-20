@@ -11,6 +11,7 @@ namespace Odyssey
 	class VulkanDevice;
 	class VulkanContext;
 	class GUIElement;
+	class VulkanTexture;
 
 	class VulkanImgui
 	{
@@ -35,6 +36,7 @@ namespace Odyssey
 		void SubmitDraws();
 		void Render(VkCommandBuffer commandBuffer);
 		void PostRender();
+		VkDescriptorSet AddTexture(VulkanTexture* texture);
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
