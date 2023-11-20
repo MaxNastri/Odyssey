@@ -17,11 +17,12 @@ namespace Odyssey
 	class VulkanWindow;
 	class VulkanFrame;
 	class VulkanCommandBuffer;
+	class VulkanVertexBuffer;
 
 	struct DrawCall
 	{
 	public:
-		std::shared_ptr<VulkanBuffer> VertexBuffer;
+		std::shared_ptr<VulkanVertexBuffer> VertexBuffer;
 		std::shared_ptr<VulkanBuffer> IndexBuffer;
 		uint32_t VertexCount;
 	};
@@ -78,7 +79,7 @@ namespace Odyssey
 	private: // Draws
 		std::vector<DrawCall> m_DrawCalls;
 		std::vector<RenderObject> m_RenderObjects;
-		std::vector<std::shared_ptr<VulkanBuffer>> m_VertexBuffers;
+		std::vector<std::shared_ptr<VulkanVertexBuffer>> m_VertexBuffers;
 		std::vector<std::shared_ptr<VulkanBuffer>> m_IndexBuffers;
 
 	private: // IMGUI

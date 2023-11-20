@@ -9,9 +9,10 @@ struct VkExtensionProperties;
 
 namespace Odyssey
 {
+	class VulkanCommandBuffer;
+	class VulkanCommandPool;
 	class VulkanDevice;
 	class VulkanPhysicalDevice;
-	class VulkanCommandPool;
 	class VulkanQueue;
 
 	class VulkanContext: public std::enable_shared_from_this<VulkanContext>
@@ -22,6 +23,7 @@ namespace Odyssey
 
 	public:
 		void SetupResources();
+		void SubmitCommandBuffer(VulkanCommandBuffer* commandBuffer);
 
 	public:
 		VkInstance GetInstance() { return instance; }
@@ -42,7 +44,7 @@ namespace Odyssey
 		std::shared_ptr<VulkanPhysicalDevice> physicalDevice;
 		std::shared_ptr<VulkanDevice> logicalDevice;
 		std::shared_ptr<VulkanCommandPool> m_CommandPool;
-		std::map<VulkanQueueType, std::shared_ptr<VulkanQueue>> m_Queues;
+		std::shared_ptr<VulkanQueue> m_GraphicsQueue;
 
 	private: // Extensions
 		std::vector<const char*> extensions;

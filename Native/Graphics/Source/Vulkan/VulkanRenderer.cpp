@@ -8,6 +8,7 @@
 #include "VulkanWindow.h"
 #include "VulkanBuffer.h"
 #include "VulkanQueue.h"
+#include "VulkanVertexBuffer.h"
 
 namespace Odyssey
 {
@@ -332,7 +333,7 @@ namespace Odyssey
 				size_t indexDataSize = renderObject.m_Indices.size() * sizeof(uint32_t);
 
 				// Create and assign vertex buffer
-				m_VertexBuffers.push_back(std::make_shared<VulkanBuffer>(context, BufferType::Vertex, vertexDataSize));
+				m_VertexBuffers.push_back(std::make_shared<VulkanVertexBuffer>(context, renderObject.m_Vertices));
 				m_DrawCalls[0].VertexBuffer = m_VertexBuffers[m_VertexBuffers.size() - 1];
 
 				// Create and assign index buffer
@@ -340,7 +341,6 @@ namespace Odyssey
 				m_DrawCalls[0].IndexBuffer = m_IndexBuffers[m_IndexBuffers.size() - 1];
 
 				// Transfer data int othe buffers
-				m_DrawCalls[0].VertexBuffer->SetMemory(vertexDataSize, renderObject.m_Vertices.data());
 				m_DrawCalls[0].IndexBuffer->SetMemory(indexDataSize, renderObject.m_Indices.data());
 
 				m_DrawCalls[0].VertexCount = (uint32_t)renderObject.m_Vertices.size();

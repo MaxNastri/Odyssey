@@ -91,10 +91,10 @@ namespace Odyssey
 			case Odyssey::BufferType::Staging:
 				return VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 			case Odyssey::BufferType::Vertex:
-				return VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+				return VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 				break;
 			case Odyssey::BufferType::Index:
-				return VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+				return VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 		}
 
 		return 0;

@@ -5,6 +5,7 @@
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanBuffer.h"
 #include "VulkanImage.h"
+#include "VulkanVertexBuffer.h"
 #include <vulkan/vulkan.h>
 
 namespace Odyssey
@@ -92,9 +93,18 @@ namespace Odyssey
 
         vkCmdCopyBufferToImage(m_CommandBuffer, buffer->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
     }
-    void VulkanCommandBuffer::BindVertexBuffer(VulkanBuffer* buffer)
+    void VulkanCommandBuffer::BindVertexBuffer(VulkanVertexBuffer* vertexBuffer)
     {
         VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, &(buffer->buffer), offsets);
+        vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, vertexBuffer->GetVertexBufferVKRef(), offsets);
+    }
+
+    void VulkanCommandBuffer::CopyBufferToBuffer(VulkanBuffer* srcBuffer, VulkanBuffer* dstBuffer, uint32_t dataSize)
+    {
+        VkBufferCopy copyRegion{};
+        copyRegion.srcOffset = 0; // Optional
+        copyRegion.dstOffset = 0; // Optional
+        copyRegion.size = dataSize;
+        vkCmdCopyBuffer(m_CommandBuffer, srcBuffer->buffer, dstBuffer->buffer, 1, &copyRegion);
     }
 }

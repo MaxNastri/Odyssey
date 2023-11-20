@@ -25,17 +25,28 @@ namespace Odyssey
 	void VulkanContext::SetupResources()
 	{
 		m_CommandPool = std::make_shared<VulkanCommandPool>(VulkanContext::shared_from_this());
-		m_Queues[VulkanQueueType::Graphics] = std::make_shared<VulkanQueue>(VulkanQueueType::Graphics, VulkanContext::shared_from_this());
+		m_GraphicsQueue = std::make_shared<VulkanQueue>(VulkanQueueType::Graphics, VulkanContext::shared_from_this());
+	}
+
+	void VulkanContext::SubmitCommandBuffer(VulkanCommandBuffer* commandBuffer)
+	{
+		VkSubmitInfo submitInfo{};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
+
+		vkQueueSubmit(m_GraphicsQueue->queue, 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueWaitIdle(m_GraphicsQueue->queue);
 	}
 
 	VulkanQueue* VulkanContext::GetGraphicsQueue()
 	{
-		return m_Queues[VulkanQueueType::Graphics].get();
+		return m_GraphicsQueue.get();
 	}
 
 	const VkQueue VulkanContext::GetGraphicsQueueVK()
 	{
-		return m_Queues[VulkanQueueType::Graphics]->queue;
+		return m_GraphicsQueue->queue;
 	}
 
 	void VulkanContext::GatherExtensions()

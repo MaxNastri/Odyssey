@@ -32,12 +32,11 @@ namespace Odyssey
         {
             if (commandBuffers[i].get() == commandBuffer)
             {
+                commandBuffers[i]->Destroy(this);
                 commandBuffers.erase(commandBuffers.begin() + i);
                 break;
             }
         }
-
-        commandBuffer->Destroy(this);
     }
 
     void VulkanCommandPool::Reset()
