@@ -19,6 +19,6 @@ namespace Odyssey
 	void ResourceManager::DestroyVertexBuffer(ResourceHandle handle)
 	{
 		m_VertexBuffers[handle.ID]->Destroy();
-		m_VertexBuffers.Free(handle.ID);
+		m_VertexBuffers.Remove(handle.ID);
 	}
 }
