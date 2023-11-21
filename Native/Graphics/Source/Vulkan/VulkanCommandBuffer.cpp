@@ -8,6 +8,7 @@
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
 #include <vulkan/vulkan.h>
+#include "ResourceManager.h"
 
 namespace Odyssey
 {
@@ -108,10 +109,10 @@ namespace Odyssey
 
         vkCmdCopyBufferToImage(m_CommandBuffer, buffer->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
     }
-    void VulkanCommandBuffer::BindVertexBuffer(VulkanVertexBuffer* vertexBuffer)
+    void VulkanCommandBuffer::BindVertexBuffer(ResourceHandle vertexBufferHandle)
     {
         VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, vertexBuffer->GetVertexBufferVKRef(), offsets);
+        vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, ResourceManager::GetVertexBuffer(vertexBufferHandle)->GetVertexBufferVKRef(), offsets);
     }
 
     void VulkanCommandBuffer::CopyBufferToBuffer(VulkanBuffer* srcBuffer, VulkanBuffer* dstBuffer, uint32_t dataSize)

@@ -1,5 +1,6 @@
 #pragma once
 #include "VulkanGlobals.h"
+#include "ResourceManager.h"
 
 namespace Odyssey
 {
@@ -32,7 +33,7 @@ namespace Odyssey
 		void DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance);
 		void TransitionLayouts(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout);
 		void CopyBufferToImage(VulkanBuffer* buffer, VulkanImage* image, uint32_t width, uint32_t height);
-		void BindVertexBuffer(VulkanVertexBuffer* vertexBuffer);
+		void BindVertexBuffer(ResourceHandle vertexBufferHandle);
 		void CopyBufferToBuffer(VulkanBuffer* srcBuffer, VulkanBuffer* dstBuffer, uint32_t dataSize);
 		void BindIndexBuffer(VulkanIndexBuffer* indexBuffer);
 

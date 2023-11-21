@@ -13,6 +13,7 @@
 #include "VulkanImage.h"
 #include "VulkanTexture.h"
 #include "VulkanDescriptorSet.h"
+#include "ResourceManager.h"
 
 namespace Odyssey
 {
@@ -20,6 +21,8 @@ namespace Odyssey
 	{
 		context = std::make_shared<VulkanContext>();
 		context->SetupResources();
+		ResourceManager::Initialize(context);
+
 		window = std::make_shared<VulkanWindow>(context);
 		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
 		descriptorPool = std::make_unique<VulkanDescriptorPool>(context->GetDevice());
@@ -66,7 +69,8 @@ namespace Odyssey
 
 		for (auto vertexBuffer : m_VertexBuffers)
 		{
-			vertexBuffer->Destroy();
+			ResourceManager::DestroyVertexBuffer(vertexBuffer);
+			//vertexBuffer->Destroy();
 		}
 		m_VertexBuffers.clear();
 
@@ -242,7 +246,7 @@ namespace Odyssey
 
 				for (auto& drawCall : m_DrawCalls)
 				{
-					commandBuffer->BindVertexBuffer(drawCall.VertexBuffer.get());
+					commandBuffer->BindVertexBuffer(drawCall.VertexBuffer);
 					commandBuffer->BindIndexBuffer(drawCall.IndexBuffer.get());
 					commandBuffer->DrawIndexed(drawCall.IndexCount, 1, 0, 0, 0);
 				}
@@ -375,7 +379,7 @@ namespace Odyssey
 				size_t indexDataSize = renderObject.Indices.size() * sizeof(uint32_t);
 
 				// Create and assign vertex buffer
-				m_VertexBuffers.push_back(std::make_shared<VulkanVertexBuffer>(context, renderObject.Vertices));
+				m_VertexBuffers.push_back(ResourceManager::AllocateVertexBuffer(renderObject.Vertices));
 				m_DrawCalls[0].VertexBuffer = m_VertexBuffers[m_VertexBuffers.size() - 1];
 
 				// Create and assign index buffer

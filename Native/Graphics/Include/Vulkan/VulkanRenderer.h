@@ -9,6 +9,7 @@
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanShader.h"
 #include "VulkanVertex.h"
+#include "ResourceManager.h"
 
 namespace Odyssey
 {
@@ -25,7 +26,7 @@ namespace Odyssey
 	struct DrawCall
 	{
 	public:
-		std::shared_ptr<VulkanVertexBuffer> VertexBuffer;
+		ResourceHandle VertexBuffer;
 		std::shared_ptr<VulkanIndexBuffer> IndexBuffer;
 		uint32_t IndexCount;
 	};
@@ -94,7 +95,7 @@ namespace Odyssey
 	private: // Draws
 		std::vector<DrawCall> m_DrawCalls;
 		std::vector<RenderObject> m_RenderObjects;
-		std::vector<std::shared_ptr<VulkanVertexBuffer>> m_VertexBuffers;
+		std::vector<ResourceHandle> m_VertexBuffers;
 		std::vector<std::shared_ptr<VulkanIndexBuffer>> m_IndexBuffers;
 
 	private: // Render texture stuff
