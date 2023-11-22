@@ -20,9 +20,9 @@ namespace Odyssey
 		}
 
 	public:
-		T* operator[](int index)
+		std::shared_ptr<T> operator[](int index)
 		{
-			return m_Data[index].get();
+			return m_Data[index];
 		}
 
 	public:

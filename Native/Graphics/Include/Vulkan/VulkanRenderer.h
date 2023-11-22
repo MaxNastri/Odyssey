@@ -26,7 +26,7 @@ namespace Odyssey
 	struct DrawCall
 	{
 	public:
-		ResourceHandle VertexBuffer;
+		ResourceHandle<VulkanVertexBuffer> VertexBuffer;
 		std::shared_ptr<VulkanIndexBuffer> IndexBuffer;
 		uint32_t IndexCount;
 	};
@@ -95,7 +95,7 @@ namespace Odyssey
 	private: // Draws
 		std::vector<DrawCall> m_DrawCalls;
 		std::vector<RenderObject> m_RenderObjects;
-		std::vector<ResourceHandle> m_VertexBuffers;
+		std::vector<ResourceHandle<VulkanVertexBuffer>> m_VertexBuffers;
 		std::vector<std::shared_ptr<VulkanIndexBuffer>> m_IndexBuffers;
 
 	private: // Render texture stuff

@@ -9,16 +9,21 @@ namespace Odyssey
 		m_Context = context;
 	}
 
-	ResourceHandle ResourceManager::AllocateVertexBuffer(std::vector<VulkanVertex>& vertices)
+	ResourceHandle<VulkanVertexBuffer> ResourceManager::AllocateVertexBuffer(std::vector<VulkanVertex>& vertices)
 	{
 		//uint32_t id = m_VertexBuffers.Add(m_Context, vertices);
 		uint32_t id = m_VertexBuffers.Add(m_Context, vertices);
-		return ResourceHandle{ id };
+		return ResourceHandle<VulkanVertexBuffer>{ id, m_VertexBuffers[id].get() };
 	}
 
-	void ResourceManager::DestroyVertexBuffer(ResourceHandle handle)
+	VulkanVertexBuffer* ResourceManager::GetVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle)
 	{
-		m_VertexBuffers[handle.ID]->Destroy();
-		m_VertexBuffers.Remove(handle.ID);
+		return m_VertexBuffers[handle.m_ID].get();
+	}
+
+	void ResourceManager::DestroyVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle)
+	{
+		m_VertexBuffers[handle.m_ID]->Destroy();
+		m_VertexBuffers.Remove(handle.m_ID);
 	}
 }
