@@ -5,12 +5,9 @@
 #include <filesystem>
 #include <fstream>
 #include <functional>
-#include <istream>
 #include <iostream>
-#include <limits>
+#include <istream>
 #include <map>
-#include <optional>
-#include <queue>
 #include <set>
 #include <string>
 #include <typeindex>
@@ -24,5 +21,7 @@
 	#include <Windows.h>
 #endif
 
-// Custom
-#include <glm.h>
+// HostFXR / CoreCLR
+#include <nethost.h>
+#include <coreclr_delegates.h>
+#include <hostfxr.h>

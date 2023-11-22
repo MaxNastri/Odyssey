@@ -1,6 +1,6 @@
 local CoralDotNetPath = os.getenv("CORAL_DOTNET_PATH")
 
-project "Odyssey.Native.Scripting"
+project "Odyssey.Native.Engine"
     language "C++"
     cppdialect "C++20"
     kind "StaticLib"
@@ -36,30 +36,38 @@ project "Odyssey.Native.Scripting"
         "Source",
         "Source/**",
     }
-
     externalincludedirs {
         "%{wks.location}/Vendor/NetCore/7.0.7/",
-        "%{wks.location}/Native/Framework/Include/",
-        "%{wks.location}/Native/Framework/Include/**",
+        "%{wks.location}/Vendor/glfw3/",
+        "%{wks.location}/Vendor/Vulkan/Include/",
     }
-    
 
     libdirs {
         "%{cfg.targetdir}",
     }
 
     links {
-        "Odyssey.Native.Framework.lib",
+        "glfw3.lib",
+        "vulkan-1.lib",
     }
 
     filter { "system:windows" }
-
+        prebuildcommands {
+			'{ECHO} Copying "%{wks.location}/Vendor/glfw3/lib/glfw3.lib" to "%{cfg.targetdir}"',
+			'{COPYFILE} "%{wks.location}/Vendor/glfw3/lib/glfw3.lib" "%{cfg.targetdir}"',
+			'{COPYFILE} "%{wks.location}/Vendor/Vulkan/Lib/vulkan-1.lib" "%{cfg.targetdir}"',
+        }
 		postbuildcommands {
             '{COPYFILE} "%{wks.location}Managed/Runtime/Coral.Managed.runtimeconfig.json" "%{cfg.targetdir}"',
 		}
 	filter {}
 
-	filter { "system:windows" }
+    defines {
+        "GLM_FORCE_DEPTH_ZERO_TO_ONE",
+        "YAML_CPP_STATIC_DEFINE"
+    }
+
+    filter { "system:windows" }
 		defines { "CORAL_WINDOWS" }
 
     filter { "configurations:Debug" }
