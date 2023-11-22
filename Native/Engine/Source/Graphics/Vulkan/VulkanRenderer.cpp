@@ -35,7 +35,7 @@ namespace Odyssey
 		VulkanPipelineInfo pipelineInfo;
 		pipelineInfo.fragmentShader = fragmentShader.Get();
 		pipelineInfo.vertexShader = vertexShader.Get();
-		graphicsPipeline = std::make_unique<VulkanGraphicsPipeline>(context, pipelineInfo);
+		graphicsPipeline = ResourceManager::AllocateGraphicsPipeline(pipelineInfo);
 
 		// IMGUI
 		VulkanImgui::InitInfo imguiInfo = CreateImguiInitInfo();
@@ -63,7 +63,7 @@ namespace Odyssey
 
 		for (auto uboBuffer : uboBuffers)
 		{
-			uboBuffer->Destroy();
+			ResourceManager::DestroyBuffer(uboBuffer);
 		}
 		uboBuffers.clear();
 
@@ -87,7 +87,7 @@ namespace Odyssey
 		}
 
 		frames.clear();
-
+		ResourceManager::DestroyGraphicsPipeline(graphicsPipeline);
 		descriptorPool.reset();
 		swapchain.reset();
 		window.reset();
@@ -223,7 +223,7 @@ namespace Odyssey
 				rendering_info.pStencilAttachment = VK_NULL_HANDLE;
 
 				commandBuffer->BeginRendering(rendering_info);
-				commandBuffer->BindPipeline(graphicsPipeline.get());
+				commandBuffer->BindPipeline(graphicsPipeline);
 
 				// Viewport
 				{
@@ -280,7 +280,7 @@ namespace Odyssey
 				rendering_info.pStencilAttachment = VK_NULL_HANDLE;
 
 				commandBuffer->BeginRendering(rendering_info);
-				commandBuffer->BindPipeline(graphicsPipeline.get());
+				commandBuffer->BindPipeline(graphicsPipeline);
 
 
 				// Viewport
@@ -443,9 +443,9 @@ namespace Odyssey
 				uboData[i].proj = glm::identity<glm::mat4x4>();
 
 				uint32_t bufferSize = sizeof(uboData[i]);
-				uboBuffers[i] = std::make_shared<VulkanBuffer>(context, BufferType::Uniform, bufferSize);
-				uboBuffers[i]->AllocateMemory();
-				uboBuffers[i]->SetMemory(bufferSize, &uboData[i]);
+				uboBuffers[i] = ResourceManager::AllocateBuffer(BufferType::Uniform, bufferSize);
+				uboBuffers[i].Get()->AllocateMemory();
+				uboBuffers[i].Get()->SetMemory(bufferSize, &uboData[i]);
 			}
 		}
 	}

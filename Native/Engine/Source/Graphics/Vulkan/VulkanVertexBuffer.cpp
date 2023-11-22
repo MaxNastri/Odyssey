@@ -3,6 +3,7 @@
 #include "VulkanBuffer.h"
 #include "VulkanCommandPool.h"
 #include "VulkanCommandBuffer.h"
+#include "ResourceManager.h"
 
 namespace Odyssey
 {
@@ -12,17 +13,17 @@ namespace Odyssey
 
 		VkDeviceSize dataSize = vertices.size() * sizeof(vertices[0]);
 
-		m_StagingBuffer = std::make_shared<VulkanBuffer>(context, BufferType::Staging, dataSize);
-		m_StagingBuffer->AllocateMemory();
-		m_StagingBuffer->SetMemory(dataSize, vertices.data());
+		m_StagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, dataSize);
+		m_StagingBuffer.Get()->AllocateMemory();
+		m_StagingBuffer.Get()->SetMemory(dataSize, vertices.data());
 
-		m_VertexBuffer = std::make_shared<VulkanBuffer>(context, BufferType::Vertex, dataSize);
-		m_VertexBuffer->AllocateMemory();
+		m_VertexBuffer = ResourceManager::AllocateBuffer(BufferType::Vertex, dataSize);
+		m_VertexBuffer.Get()->AllocateMemory();
 
 		// Copy the staging buffer into the vertex buffer
 		VulkanCommandBuffer* commandBuffer = m_Context->GetCommandPool()->AllocateBuffer();
 		commandBuffer->BeginCommands();
-		commandBuffer->CopyBufferToBuffer(m_StagingBuffer.get(), m_VertexBuffer.get(), (uint32_t)dataSize);
+		commandBuffer->CopyBufferToBuffer(m_StagingBuffer, m_VertexBuffer, (uint32_t)dataSize);
 		commandBuffer->EndCommands();
 
 		m_Context->SubmitCommandBuffer(commandBuffer);
@@ -30,23 +31,20 @@ namespace Odyssey
 	}
 	void VulkanVertexBuffer::Destroy()
 	{
-		m_StagingBuffer->Destroy();
-		m_StagingBuffer.reset();
-
-		m_VertexBuffer->Destroy();
-		m_VertexBuffer.reset();
+		ResourceManager::DestroyBuffer(m_StagingBuffer);
+		ResourceManager::DestroyBuffer(m_VertexBuffer);
 	}
 
-	VulkanBuffer* VulkanVertexBuffer::GetVertexBuffer()
+	ResourceHandle<VulkanBuffer> VulkanVertexBuffer::GetVertexBuffer()
 	{
-		return m_VertexBuffer.get();
+		return m_VertexBuffer;
 	}
 	const VkBuffer VulkanVertexBuffer::GetVertexBufferVK()
 	{
-		return m_VertexBuffer->buffer;
+		return m_VertexBuffer.Get()->buffer;
 	}
 	const VkBuffer* VulkanVertexBuffer::GetVertexBufferVKRef()
 	{
-		return &(m_VertexBuffer->buffer);
+		return &(m_VertexBuffer.Get()->buffer);
 	}
 }

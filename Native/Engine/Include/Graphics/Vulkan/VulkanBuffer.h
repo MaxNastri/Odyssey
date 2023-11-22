@@ -1,5 +1,6 @@
 #pragma once
 #include "VulkanGlobals.h"
+#include "Enums.h"
 
 VK_FWD_DECLARE(VkBuffer)
 VK_FWD_DECLARE(VkDeviceMemory)
@@ -8,14 +9,6 @@ namespace Odyssey
 {
 	class VulkanContext;
 
-	enum class BufferType
-	{
-		None = 0,
-		Staging = 1,
-		Vertex = 2,
-		Index = 3,
-		Uniform = 4,
-	};
 	class VulkanBuffer
 	{
 	public:

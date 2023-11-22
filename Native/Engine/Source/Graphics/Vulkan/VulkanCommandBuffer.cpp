@@ -1,4 +1,5 @@
 #include "VulkanCommandBuffer.h"
+#include <vulkan/vulkan.h>
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
 #include "VulkanCommandPool.h"
@@ -7,7 +8,6 @@
 #include "VulkanImage.h"
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
-#include <vulkan/vulkan.h>
 #include "ResourceManager.h"
 
 namespace Odyssey
@@ -61,9 +61,9 @@ namespace Odyssey
         vkCmdEndRendering(m_CommandBuffer);
     }
 
-    void VulkanCommandBuffer::BindPipeline(VulkanGraphicsPipeline* pipeline)
+    void VulkanCommandBuffer::BindPipeline(ResourceHandle<VulkanGraphicsPipeline> handle)
     {
-        vkCmdBindPipeline(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->GetPipeline());
+        vkCmdBindPipeline(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, handle.Get()->GetPipeline());
     }
 
     void VulkanCommandBuffer::BindViewport(VkViewport viewport)
@@ -94,7 +94,7 @@ namespace Odyssey
         vkCmdPipelineBarrier(m_CommandBuffer, srcStage, dstStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
     }
 
-    void VulkanCommandBuffer::CopyBufferToImage(VulkanBuffer* buffer, VulkanImage* image, uint32_t width, uint32_t height)
+    void VulkanCommandBuffer::CopyBufferToImage(ResourceHandle<VulkanBuffer> handle, VulkanImage* image, uint32_t width, uint32_t height)
     {
         VkBufferImageCopy region{};
         region.bufferOffset = 0;
@@ -107,7 +107,7 @@ namespace Odyssey
         region.imageOffset = { 0, 0, 0 };
         region.imageExtent = { width, height, 1 };
 
-        vkCmdCopyBufferToImage(m_CommandBuffer, buffer->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+        vkCmdCopyBufferToImage(m_CommandBuffer, handle.Get()->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
     }
     void VulkanCommandBuffer::BindVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle)
     {
@@ -115,13 +115,13 @@ namespace Odyssey
         vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, handle.Get()->GetVertexBufferVKRef(), offsets);
     }
 
-    void VulkanCommandBuffer::CopyBufferToBuffer(VulkanBuffer* srcBuffer, VulkanBuffer* dstBuffer, uint32_t dataSize)
+    void VulkanCommandBuffer::CopyBufferToBuffer(ResourceHandle<VulkanBuffer> srcBuffer, ResourceHandle<VulkanBuffer> dstBuffer, uint32_t dataSize)
     {
         VkBufferCopy copyRegion{};
         copyRegion.srcOffset = 0; // Optional
         copyRegion.dstOffset = 0; // Optional
         copyRegion.size = dataSize;
-        vkCmdCopyBuffer(m_CommandBuffer, srcBuffer->buffer, dstBuffer->buffer, 1, &copyRegion);
+        vkCmdCopyBuffer(m_CommandBuffer, srcBuffer.Get()->buffer, dstBuffer.Get()->buffer, 1, &copyRegion);
     }
 
     void VulkanCommandBuffer::BindIndexBuffer(ResourceHandle<VulkanIndexBuffer> handle)

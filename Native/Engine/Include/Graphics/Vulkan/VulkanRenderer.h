@@ -6,7 +6,6 @@
 #include "VulkanSwapchain.h"
 #include "VulkanFrame.h"
 #include "VulkanCommandPool.h"
-#include "VulkanGraphicsPipeline.h"
 #include "VulkanShader.h"
 #include "VulkanVertex.h"
 #include "ResourceManager.h"
@@ -83,13 +82,13 @@ namespace Odyssey
 		std::vector<VulkanCommandBuffer*> commandBuffers;
 
 	private: // Pipeline
-		std::unique_ptr<VulkanGraphicsPipeline> graphicsPipeline;
+		ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline;
 		ResourceHandle<VulkanShader> fragmentShader;
 		ResourceHandle<VulkanShader> vertexShader;
 
 	private: // UBO
 		std::shared_ptr<VulkanDescriptorSet> uboDescriptor;
-		std::vector<std::shared_ptr<VulkanBuffer>> uboBuffers;
+		std::vector<ResourceHandle<VulkanBuffer>> uboBuffers;
 		std::vector<UBOMatrices> uboData;
 
 	private: // Draws

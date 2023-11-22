@@ -1,5 +1,6 @@
 #pragma once
 #include "VulkanGlobals.h"
+#include "VulkanTypes.h"
 
 VK_FWD_DECLARE(VkPipelineLayout)
 VK_FWD_DECLARE(VkPipeline)
@@ -9,13 +10,6 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanShader;
 	class VulkanDescriptorSet;
-
-	struct VulkanPipelineInfo
-	{
-		VulkanShader* fragmentShader;
-		VulkanShader* vertexShader;
-	};
-
 
 	class VulkanGraphicsPipeline
 	{

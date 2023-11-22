@@ -28,8 +28,8 @@ namespace Odyssey
 
 		// Create a staging buffer to copy the pixel data into vulkanized memory
 		VkDeviceSize imageSize = texWidth * texHeight * 4;
-		VulkanBuffer stagingBuffer(context, BufferType::Staging, imageSize);
-		stagingBuffer.SetMemory(imageSize, pixels);
+		ResourceHandle<VulkanBuffer> stagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, imageSize);
+		stagingBuffer.Get()->SetMemory(imageSize, pixels);
 
 		// Now that we have transfered the memory, free the original pixel data
 		stbi_image_free(pixels);
@@ -52,7 +52,7 @@ namespace Odyssey
 		}
 		
 		// Set the data from the staging buffer
-		m_Image->SetData(&stagingBuffer, texWidth, texHeight);
+		m_Image->SetData(stagingBuffer, texWidth, texHeight);
 		
 		// Reset the command buffer
 		commandBuffer->Reset();
@@ -67,7 +67,7 @@ namespace Odyssey
 		}
 
 		commandPool->ReleaseBuffer(commandBuffer);
-		stagingBuffer.Destroy();
+		ResourceManager::DestroyBuffer(stagingBuffer);
 	}
 
 	VulkanTexture::VulkanTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height)

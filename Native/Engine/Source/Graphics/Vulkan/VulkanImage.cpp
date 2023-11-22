@@ -115,13 +115,13 @@ namespace Odyssey
 		imageMemory = VK_NULL_HANDLE;
 	}
 
-	void VulkanImage::SetData(VulkanBuffer* buffer, uint32_t width, uint32_t height)
+	void VulkanImage::SetData(ResourceHandle<VulkanBuffer> handle, uint32_t width, uint32_t height)
 	{
 		VulkanCommandPool* commandPool = m_Context->GetCommandPool();
 		VulkanCommandBuffer* commandBuffer = commandPool->AllocateBuffer();
 
 		commandBuffer->BeginCommands();
-		commandBuffer->CopyBufferToImage(buffer, this, width, height);
+		commandBuffer->CopyBufferToImage(handle, this, width, height);
 		commandBuffer->EndCommands();
 		commandPool->ReleaseBuffer(commandBuffer);
 	}

@@ -1,5 +1,6 @@
 #pragma once
 #include "VulkanGlobals.h"
+#include "ResourceHandle.h"
 
 VK_FWD_DECLARE(VkBuffer)
 
@@ -15,13 +16,13 @@ namespace Odyssey
 		void Destroy();
 
 	public:
-		VulkanBuffer* GetIndexBuffer();
+		ResourceHandle<VulkanBuffer> GetIndexBuffer();
 		const VkBuffer GetIndexBufferVK();
 		const VkBuffer* GetIndexBufferVKRef();
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
-		std::shared_ptr<VulkanBuffer> m_StagingBuffer;
-		std::shared_ptr<VulkanBuffer> m_IndexBuffer;
+		ResourceHandle<VulkanBuffer> m_StagingBuffer;
+		ResourceHandle<VulkanBuffer> m_IndexBuffer;
 	};
 }

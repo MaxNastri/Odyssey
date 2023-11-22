@@ -4,12 +4,20 @@
 #include "VulkanIndexBuffer.h"
 #include "VulkanTexture.h"
 #include "VulkanShader.h"
+#include "VulkanGraphicsPipeline.h"
+#include "VulkanBuffer.h"
 
 namespace Odyssey
 {
 	void ResourceManager::Initialize(std::shared_ptr<VulkanContext> context)
 	{
 		m_Context = context;
+	}
+
+	ResourceHandle<VulkanBuffer> ResourceManager::AllocateBuffer(BufferType bufferType, uint32_t size)
+	{
+		uint32_t id = m_Buffers.Add(m_Context, bufferType, size);
+		return ResourceHandle<VulkanBuffer>(id, m_Buffers[id].get());
 	}
 
 	ResourceHandle<VulkanVertexBuffer> ResourceManager::AllocateVertexBuffer(std::vector<VulkanVertex>& vertices)
@@ -36,6 +44,18 @@ namespace Odyssey
 		return ResourceHandle<VulkanShader>(id, m_Shaders[id].get());
 	}
 
+	ResourceHandle<VulkanGraphicsPipeline> ResourceManager::AllocateGraphicsPipeline(const VulkanPipelineInfo& info)
+	{
+		uint32_t id = m_GraphicsPipelines.Add(m_Context, info);
+		return ResourceHandle<VulkanGraphicsPipeline>(id, m_GraphicsPipelines[id].get());
+	}
+
+	void ResourceManager::DestroyBuffer(ResourceHandle<VulkanBuffer> handle)
+	{
+		m_Buffers[handle.m_ID]->Destroy();
+		m_Buffers.Remove(handle.m_ID);
+	}
+
 	void ResourceManager::DestroyVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle)
 	{
 		m_VertexBuffers[handle.m_ID]->Destroy();
@@ -57,5 +77,11 @@ namespace Odyssey
 	{
 		m_Shaders[handle.m_ID]->Destroy();
 		m_Shaders.Remove(handle.m_ID);
+	}
+
+	void ResourceManager::DestroyGraphicsPipeline(ResourceHandle<VulkanGraphicsPipeline> handle)
+	{
+		m_GraphicsPipelines[handle.m_ID]->Destroy();
+		m_GraphicsPipelines.Remove(handle.m_ID);
 	}
 }

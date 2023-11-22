@@ -1,31 +1,13 @@
 #pragma once
+#include "Enums.h"
 #include "VulkanGlobals.h"
+#include "ResourceHandle.h"
 
 VK_FWD_DECLARE(VkImage)
 VK_FWD_DECLARE(VkDeviceMemory)
 
 namespace Odyssey
 {
-	enum class ImageType
-	{
-		None = 0,
-		Image2D = 1,
-		RenderTexture = 2,
-	};
-
-	enum class ImageFormat
-	{
-		None = 0,
-		R8G8B8A8_SRGB = 1
-	};
-
-	enum class ImageTiling
-	{
-		None = 0,
-		Optimal = 1,
-		Linear = 2,
-	};
-
 	struct VulkanImageDescription
 	{
 		ImageType ImageType = ImageType::None;
@@ -48,7 +30,7 @@ namespace Odyssey
 		void Destroy();
 
 	public:
-		void SetData(VulkanBuffer* buffer, uint32_t width, uint32_t height);
+		void SetData(ResourceHandle<VulkanBuffer> handle, uint32_t width, uint32_t height);
 
 	public:
 		static VkImageMemoryBarrier CreateMemoryBarrier(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage);
