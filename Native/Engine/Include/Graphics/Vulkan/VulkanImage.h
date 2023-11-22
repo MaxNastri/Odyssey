@@ -45,6 +45,7 @@ namespace Odyssey
 	public:
 		VulkanImage(std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc);
 		VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, VkFormat format);
+		void Destroy();
 
 	public:
 		void SetData(VulkanBuffer* buffer, uint32_t width, uint32_t height);

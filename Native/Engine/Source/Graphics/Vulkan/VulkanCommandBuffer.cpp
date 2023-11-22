@@ -124,8 +124,8 @@ namespace Odyssey
         vkCmdCopyBuffer(m_CommandBuffer, srcBuffer->buffer, dstBuffer->buffer, 1, &copyRegion);
     }
 
-    void VulkanCommandBuffer::BindIndexBuffer(VulkanIndexBuffer* indexBuffer)
+    void VulkanCommandBuffer::BindIndexBuffer(ResourceHandle<VulkanIndexBuffer> handle)
     {
-        vkCmdBindIndexBuffer(m_CommandBuffer, indexBuffer->GetIndexBufferVK(), 0, VK_INDEX_TYPE_UINT32);
+        vkCmdBindIndexBuffer(m_CommandBuffer, handle.Get()->GetIndexBufferVK(), 0, VK_INDEX_TYPE_UINT32);
     }
 }

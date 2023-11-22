@@ -28,13 +28,13 @@ namespace Odyssey
 		descriptorPool = std::make_unique<VulkanDescriptorPool>(context->GetDevice());
 
 		// Shaders
-		fragmentShader = std::make_unique<VulkanShader>(context, ShaderType::Fragment, "frag.spv");
-		vertexShader = std::make_unique<VulkanShader>(context, ShaderType::Vertex, "vert.spv");
+		fragmentShader = ResourceManager::AllocateShader(ShaderType::Fragment, "frag.spv");
+		vertexShader = ResourceManager::AllocateShader(ShaderType::Vertex, "vert.spv");
 
 		// Pipeline
 		VulkanPipelineInfo pipelineInfo;
-		pipelineInfo.fragmentShader = fragmentShader.get();
-		pipelineInfo.vertexShader = vertexShader.get();
+		pipelineInfo.fragmentShader = fragmentShader.Get();
+		pipelineInfo.vertexShader = vertexShader.Get();
 		graphicsPipeline = std::make_unique<VulkanGraphicsPipeline>(context, pipelineInfo);
 
 		// IMGUI
@@ -50,8 +50,8 @@ namespace Odyssey
 
 		// Draw data
 		InitDrawCalls();
-		renderTexture = std::make_shared<VulkanTexture>(context, 1000, 1000);
-		rtSet = imgui->AddTexture(renderTexture.get());
+		renderTexture = ResourceManager::AllocateTexture(1000, 1000);
+		rtSet = imgui->AddTexture(renderTexture.Get());
 	}
 
 	void VulkanRenderer::Destroy()
@@ -67,16 +67,17 @@ namespace Odyssey
 		}
 		uboBuffers.clear();
 
+		ResourceManager::DestroyTexture(renderTexture);
+
 		for (auto vertexBuffer : m_VertexBuffers)
 		{
 			ResourceManager::DestroyVertexBuffer(vertexBuffer);
-			//vertexBuffer->Destroy();
 		}
 		m_VertexBuffers.clear();
 
 		for (auto indexBuffer : m_IndexBuffers)
 		{
-			indexBuffer->Destroy();
+			ResourceManager::DestroyIndexBuffer(indexBuffer);
 		}
 		m_IndexBuffers.clear();
 
@@ -202,7 +203,7 @@ namespace Odyssey
 				VkRenderingAttachmentInfoKHR color_attachment_info{};
 				color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 				color_attachment_info.pNext = VK_NULL_HANDLE;
-				color_attachment_info.imageView = renderTexture->GetImage()->GetImageView();
+				color_attachment_info.imageView = renderTexture.Get()->GetImage()->GetImageView();
 				color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 				color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 				color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -247,11 +248,11 @@ namespace Odyssey
 				for (auto& drawCall : m_DrawCalls)
 				{
 					commandBuffer->BindVertexBuffer(drawCall.VertexBuffer);
-					commandBuffer->BindIndexBuffer(drawCall.IndexBuffer.get());
+					commandBuffer->BindIndexBuffer(drawCall.IndexBuffer);
 					commandBuffer->DrawIndexed(drawCall.IndexCount, 1, 0, 0, 0);
 				}
 				commandBuffer->EndRendering();
-				commandBuffer->TransitionLayouts(renderTexture->GetImage(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
+				commandBuffer->TransitionLayouts(renderTexture.Get()->GetImage(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 			}
 
 			// rendering GUI to the back buffer
@@ -383,7 +384,7 @@ namespace Odyssey
 				m_DrawCalls[0].VertexBuffer = m_VertexBuffers[m_VertexBuffers.size() - 1];
 
 				// Create and assign index buffer
-				m_IndexBuffers.push_back(std::make_shared<VulkanIndexBuffer>(context, renderObject.Indices));
+				m_IndexBuffers.push_back(ResourceManager::AllocateIndexBuffer(renderObject.Indices));
 				m_DrawCalls[0].IndexBuffer = m_IndexBuffers[m_IndexBuffers.size() - 1];
 
 				m_DrawCalls[0].IndexCount = (uint32_t)renderObject.Indices.size();

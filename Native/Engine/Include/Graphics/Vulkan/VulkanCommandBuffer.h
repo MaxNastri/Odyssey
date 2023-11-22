@@ -35,7 +35,7 @@ namespace Odyssey
 		void CopyBufferToImage(VulkanBuffer* buffer, VulkanImage* image, uint32_t width, uint32_t height);
 		void BindVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle);
 		void CopyBufferToBuffer(VulkanBuffer* srcBuffer, VulkanBuffer* dstBuffer, uint32_t dataSize);
-		void BindIndexBuffer(VulkanIndexBuffer* indexBuffer);
+		void BindIndexBuffer(ResourceHandle<VulkanIndexBuffer> handle);
 
 	public:
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }

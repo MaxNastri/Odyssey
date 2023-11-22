@@ -21,6 +21,7 @@ namespace Odyssey
 		SceneManager::ListenForEvents();
 
 		ScriptCompiler::BuildUserAssembly();
+		r = new VulkanRenderer();
 
 		running = true;
 	}
@@ -48,15 +49,17 @@ namespace Odyssey
 
 				SceneManager::Update();
 
-				if (!r.Update())
+				if (!r->Update())
 				{
 					running = false;
 				}
 
-				r.Render();
+				r->Render();
 			}
 		}
-		r.Destroy();
+		r->Destroy();
+		delete r;
+		r = nullptr;
 	}
 
 	void Application::Exit()

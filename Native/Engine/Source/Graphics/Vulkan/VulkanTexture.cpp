@@ -81,4 +81,10 @@ namespace Odyssey
 		m_Image = std::make_unique<VulkanImage>(context, imageDesc);
 		m_Sampler = std::make_unique<VulkanTextureSampler>(context);
 	}
+
+	void VulkanTexture::Destroy()
+	{
+		m_Image->Destroy();
+		m_Sampler->Destroy();
+	}
 }

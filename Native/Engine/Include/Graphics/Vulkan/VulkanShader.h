@@ -1,5 +1,6 @@
 #pragma once
 #include "VulkanGlobals.h"
+#include "Enums.h"
 
 VK_FWD_DECLARE(VkShaderModule)
 
@@ -7,12 +8,7 @@ namespace Odyssey
 {
 	class VulkanContext;
 
-	enum class ShaderType
-	{
-		None = 0,
-		Fragment = 1,
-		Vertex = 2,
-	};
+	
 	class VulkanShader
 	{
 	public:

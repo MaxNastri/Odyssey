@@ -27,7 +27,7 @@ namespace Odyssey
 	{
 	public:
 		ResourceHandle<VulkanVertexBuffer> VertexBuffer;
-		std::shared_ptr<VulkanIndexBuffer> IndexBuffer;
+		ResourceHandle<VulkanIndexBuffer> IndexBuffer;
 		uint32_t IndexCount;
 	};
 
@@ -84,8 +84,8 @@ namespace Odyssey
 
 	private: // Pipeline
 		std::unique_ptr<VulkanGraphicsPipeline> graphicsPipeline;
-		std::unique_ptr<VulkanShader> fragmentShader;
-		std::unique_ptr<VulkanShader> vertexShader;
+		ResourceHandle<VulkanShader> fragmentShader;
+		ResourceHandle<VulkanShader> vertexShader;
 
 	private: // UBO
 		std::shared_ptr<VulkanDescriptorSet> uboDescriptor;
@@ -96,10 +96,10 @@ namespace Odyssey
 		std::vector<DrawCall> m_DrawCalls;
 		std::vector<RenderObject> m_RenderObjects;
 		std::vector<ResourceHandle<VulkanVertexBuffer>> m_VertexBuffers;
-		std::vector<std::shared_ptr<VulkanIndexBuffer>> m_IndexBuffers;
+		std::vector<ResourceHandle<VulkanIndexBuffer>> m_IndexBuffers;
 
 	private: // Render texture stuff
-		std::shared_ptr<VulkanTexture> renderTexture;
+		ResourceHandle<VulkanTexture> renderTexture;
 		VkDescriptorSet rtSet;
 
 	private: // IMGUI

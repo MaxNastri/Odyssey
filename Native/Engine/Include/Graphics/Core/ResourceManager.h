@@ -1,50 +1,40 @@
 #pragma once
+#include "Enums.h"
+#include "DynamicList.h"
+#include "ResourceHandle.h"
 #include "VulkanVertex.h"
-#include "VulkanVertexBuffer.h"
-#include <DynamicList.h>
 
 namespace Odyssey
 {
 	class VulkanContext;
+	class VulkanIndexBuffer;
+	class VulkanShader;
+	class VulkanTexture;
 	class VulkanVertexBuffer;
-
-	template<typename T>
-	struct ResourceHandle
-	{
-	public:
-		ResourceHandle()
-		{
-			m_ID = -1;
-			m_Ptr = nullptr;
-		}
-
-		ResourceHandle(uint32_t id, T* ptr)
-		{
-			m_ID = id;
-			m_Ptr = ptr;
-		}
-
-	public:
-		T* Get() { return m_Ptr; }
-
-	private:
-		friend class ResourceManager;
-		uint32_t m_ID;
-		T* m_Ptr;
-	};
 
 	class ResourceManager
 	{
 	public:
 		static void Initialize(std::shared_ptr<VulkanContext> context);
 
+	public: // Allocations
 		static ResourceHandle<VulkanVertexBuffer> AllocateVertexBuffer(std::vector<VulkanVertex>& vertices);
-		static VulkanVertexBuffer* GetVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle);
+		static ResourceHandle<VulkanIndexBuffer> AllocateIndexBuffer(std::vector<uint32_t>& indices);
+		static ResourceHandle<VulkanTexture> AllocateTexture(uint32_t width, uint32_t height);
+		static ResourceHandle<VulkanShader> AllocateShader(ShaderType shaderType, const std::string& filename);
+
+	public: // Pure destruction
 		static void DestroyVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle);
+		static void DestroyIndexBuffer(ResourceHandle<VulkanIndexBuffer> handle);
+		static void DestroyTexture(ResourceHandle<VulkanTexture> handle);
+		static void DestroyShader(ResourceHandle<VulkanShader> handle);
 
 	private:
 		inline static std::shared_ptr<VulkanContext> m_Context = nullptr;
 		inline static DynamicList<VulkanVertexBuffer> m_VertexBuffers;
+		inline static DynamicList<VulkanIndexBuffer> m_IndexBuffers;
+		inline static DynamicList<VulkanTexture> m_Textures;
+		inline static DynamicList<VulkanShader> m_Shaders;
 	};
 
 }

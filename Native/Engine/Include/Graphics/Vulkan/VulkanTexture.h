@@ -12,6 +12,7 @@ namespace Odyssey
 	public:
 		VulkanTexture(std::shared_ptr<VulkanContext> context, const std::string& filename);
 		VulkanTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height);
+		void Destroy();
 
 	public:
 		VulkanImage* GetImage() { return m_Image.get(); }

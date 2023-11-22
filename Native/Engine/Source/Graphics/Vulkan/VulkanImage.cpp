@@ -106,6 +106,15 @@ namespace Odyssey
 		}
 	}
 
+	void VulkanImage::Destroy()
+	{
+		vkDestroyImage(m_Context->GetDeviceVK(), m_Image, allocator);
+		vkDestroyImageView(m_Context->GetDeviceVK(), imageView, allocator);
+		m_Image = VK_NULL_HANDLE;
+		imageView = VK_NULL_HANDLE;
+		imageMemory = VK_NULL_HANDLE;
+	}
+
 	void VulkanImage::SetData(VulkanBuffer* buffer, uint32_t width, uint32_t height)
 	{
 		VulkanCommandPool* commandPool = m_Context->GetCommandPool();
