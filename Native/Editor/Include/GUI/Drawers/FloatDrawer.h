@@ -6,6 +6,7 @@ namespace Odyssey
 	class FloatDrawer : public PropertyDrawer
 	{
 	public:
+		FloatDrawer() = default;
 		FloatDrawer(const std::string& propertyLabel, float initialValue, std::function<void(float)> callback);
 
 	public:

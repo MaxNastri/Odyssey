@@ -10,6 +10,7 @@ namespace Odyssey
 	class Component
 	{
 	public:
+
 		virtual void Awake() { }
 		virtual void Update() { }
 		virtual void OnDestroy() { }
@@ -25,6 +26,5 @@ namespace Odyssey
 	public:
 		bool active;
 		GameObject gameObject;
-		std::string uuid;
 	};
 }

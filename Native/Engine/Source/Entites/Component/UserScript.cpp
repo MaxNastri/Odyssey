@@ -37,7 +37,6 @@ namespace Odyssey
 		componentNode |= ryml::MAP;
 
 		componentNode["Name"] << fqManagedName;
-		componentNode["UUID"] << uuid;
 
 		std::vector<Coral::FieldInfo> fields = type.GetFields();
 
@@ -65,8 +64,6 @@ namespace Odyssey
 	{
 		const Coral::Type& type = managedInstance.GetType();
 		std::vector<Coral::FieldInfo> fields = type.GetFields();
-
-		node["UUID"] >> uuid;
 
 		ryml::ConstNodeRef fieldsNode = node["Fields"];
 		assert(fieldsNode.is_seq());

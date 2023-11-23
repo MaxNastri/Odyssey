@@ -2,6 +2,7 @@
 #include <GUIElement.h>
 #include <GameObject.h>
 #include "TransformInspector.h"
+#include "CameraInspector.h"
 #include "UserScriptInspector.h"
 
 namespace Odyssey
@@ -18,6 +19,7 @@ namespace Odyssey
 
 	private:
 		TransformInspector transformInspector;
+		CameraInspector cameraInspector;
 		std::vector<UserScriptInspector> userScriptInspectors;
 		bool open = true;
 	};

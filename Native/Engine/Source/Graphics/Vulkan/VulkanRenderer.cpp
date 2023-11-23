@@ -329,40 +329,4 @@ namespace Odyssey
 			}
 		}
 	}
-
-	VkRenderingInfo VulkanRenderer::GetRenderingInfo(VulkanFrame* frame)
-	{
-		VkClearValue ClearValue;
-		ClearValue.color.float32[0] = 0.0f;
-		ClearValue.color.float32[1] = 0.0f;
-		ClearValue.color.float32[2] = 0.0f;
-		ClearValue.color.float32[3] = 0.0f;
-
-		unsigned int width = window->GetSurface()->GetWidth();
-		unsigned int height = window->GetSurface()->GetHeight();
-
-		VkRenderingAttachmentInfoKHR color_attachment_info{};
-		color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
-		color_attachment_info.pNext = VK_NULL_HANDLE;
-		color_attachment_info.imageView = frame->GetRenderTargetViewVK();
-		color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
-		color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		color_attachment_info.clearValue = ClearValue;
-
-		VkRenderingInfoKHR rendering_info = {};
-		rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
-		rendering_info.pNext = VK_NULL_HANDLE;
-		rendering_info.flags = 0;
-		rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{width, height} };
-		rendering_info.layerCount = 1;
-		rendering_info.viewMask = 0;
-		rendering_info.colorAttachmentCount = 1;
-		rendering_info.pColorAttachments = &color_attachment_info;
-		rendering_info.pDepthAttachment = VK_NULL_HANDLE;
-		rendering_info.pStencilAttachment = VK_NULL_HANDLE;
-
-		return rendering_info;
-	}
 }

@@ -6,6 +6,10 @@
 #ifndef GLM_ENABLE_EXPERIMENTAL
 #define GLM_ENABLE_EXPERIMENTAL
 #endif // !GLM_ENABLE_EXPERIMENTAL
+#ifndef GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#endif
+
 #include "glm.hpp"
 #include "ext.hpp"
 

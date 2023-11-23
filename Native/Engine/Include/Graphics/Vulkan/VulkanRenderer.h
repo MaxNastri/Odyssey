@@ -62,7 +62,6 @@ namespace Odyssey
 	private:
 		VulkanImgui::InitInfo CreateImguiInitInfo();
 		void SetupFrameData();
-		VkRenderingInfo GetRenderingInfo(VulkanFrame* frame);
 
 	private: // Vulkan objects
 		std::shared_ptr<VulkanContext> context;

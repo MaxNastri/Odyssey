@@ -241,7 +241,6 @@ namespace Odyssey
         componentNode |= ryml::MAP;
 
         componentNode["Name"] << Transform::Type;
-        componentNode["UUID"] << uuid;
         componentNode["Position"] << position;
         componentNode["Rotation"] << eulerRotation;
         componentNode["Scale"] << scale;
@@ -249,7 +248,6 @@ namespace Odyssey
 
     void Transform::Deserialize(ryml::ConstNodeRef node)
     {
-        node["UUID"] >> uuid;
         node["Position"] >> position;
         node["Rotation"] >> eulerRotation;
         node["Scale"] >> scale;

@@ -60,9 +60,8 @@ namespace Odyssey
 			std::string componentType;
 			std::string componentUUID;
 			componentNode["Name"] >> componentType;
-			componentNode["UUID"] >> componentUUID;
-
-			if (componentUUID.starts_with("U_"))
+			
+			if (componentNode.has_child("Fields"))
 			{
 				UserScript* userScript = ComponentManager::AddUserScript(*this, componentType);
 				userScript->Deserialize(componentNode);

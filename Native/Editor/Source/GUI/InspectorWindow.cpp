@@ -12,6 +12,11 @@ namespace Odyssey
 			transformInspector = TransformInspector(gameObject);
 		}
 
+		if (ComponentManager::HasComponent<Camera>(gameObject))
+		{
+			cameraInspector = CameraInspector(gameObject);
+		}
+
 		std::vector<std::pair<std::string, UserScript*>> userScripts = ComponentManager::GetAllUserScripts(gameObject);
 
 		for (auto& [userScriptClassName, userScript] : userScripts)
@@ -32,6 +37,8 @@ namespace Odyssey
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
 
 		transformInspector.Draw();
+		cameraInspector.Draw();
+
 		for (auto& userScriptInspector : userScriptInspectors)
 		{
 			userScriptInspector.Draw();

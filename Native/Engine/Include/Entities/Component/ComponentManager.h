@@ -2,6 +2,7 @@
 #include "ComponentArray.h"
 #include "GameObject.h"
 #include "Transform.h"
+#include "Camera.h"
 #include "UserScript.h"
 #include <typeindex>
 #include <string>
@@ -17,6 +18,10 @@ namespace Odyssey
 			if (fqName == Transform::Type)
 			{
 				return AddComponent<Transform>(gameObject, params...);
+			}
+			else if (fqName == Camera::Type)
+			{
+				return AddComponent<Camera>(gameObject, params...);
 			}
 			else if (fqName == UserScript::Type)
 			{

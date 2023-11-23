@@ -8,6 +8,8 @@
 #include <ScriptingManager.h>
 #include "SceneManager.h"
 #include "GUIManager.h"
+#include <ComponentManager.h>
+#include <Camera.h>
 
 namespace Odyssey
 {
@@ -33,9 +35,10 @@ namespace Odyssey
 
 		// Create the scene
 		SceneManager::LoadScene("scene.yaml");
-
 		Scene scene = SceneManager::GetActiveScene();
+
 		GameObject go = scene.GetGameObject(0);
+
 		GUIManager::CreateInspectorWindow(go);
 
 		while (running)
