@@ -34,6 +34,9 @@ namespace Odyssey
 		// Now that we have transfered the memory, free the original pixel data
 		stbi_image_free(pixels);
 
+		m_Width = texWidth;
+		m_Height = texHeight;
+
 		VulkanImageDescription imageDesc;
 		imageDesc.Width = texWidth;
 		imageDesc.Height = texHeight;
@@ -73,12 +76,15 @@ namespace Odyssey
 
 	VulkanTexture::VulkanTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height)
 	{
+		m_Context = context;
+		m_Width = width;
+		m_Height = height;
+
 		VulkanImageDescription imageDesc;
 		imageDesc.Width = width;
 		imageDesc.Height = height;
 		imageDesc.ImageType = ImageType::RenderTexture;
 
-		m_Context = context;
 		m_Image = std::make_unique<VulkanImage>(context, imageDesc);
 		m_Sampler = std::make_unique<VulkanTextureSampler>(context);
 	}

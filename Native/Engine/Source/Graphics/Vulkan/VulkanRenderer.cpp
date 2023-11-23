@@ -14,6 +14,8 @@
 #include "VulkanTexture.h"
 #include "VulkanDescriptorSet.h"
 #include "ResourceManager.h"
+#include "RenderGraphNodes.h"
+#include "PerFrameRenderingData.h"
 
 namespace Odyssey
 {
@@ -33,13 +35,13 @@ namespace Odyssey
 
 		// Pipeline
 		VulkanPipelineInfo pipelineInfo;
-		pipelineInfo.fragmentShader = fragmentShader.Get();
-		pipelineInfo.vertexShader = vertexShader.Get();
+		pipelineInfo.fragmentShader = fragmentShader;
+		pipelineInfo.vertexShader = vertexShader;
 		graphicsPipeline = ResourceManager::AllocateGraphicsPipeline(pipelineInfo);
 
 		// IMGUI
 		VulkanImgui::InitInfo imguiInfo = CreateImguiInitInfo();
-		imgui = std::make_unique<VulkanImgui>(context, imguiInfo);
+		imgui = std::make_shared<VulkanImgui>(context, imguiInfo);
 
 		SetupFrameData();
 		for (int i = 0; i < frames.size(); ++i)
@@ -49,9 +51,10 @@ namespace Odyssey
 		}
 
 		// Draw data
-		InitDrawCalls();
 		renderTexture = ResourceManager::AllocateTexture(1000, 1000);
 		rtSet = imgui->AddTexture(renderTexture.Get());
+		InitDrawCalls();
+		BuildRenderGraph();
 	}
 
 	void VulkanRenderer::Destroy()
@@ -139,6 +142,29 @@ namespace Odyssey
 		return true;
 	}
 
+	void VulkanRenderer::BuildRenderGraph()
+	{
+		renderingData = std::make_shared<PerFrameRenderingData>();
+		BeginPassNode* beginSceneView = m_RenderGraph.CreateNode<BeginPassNode>("Begin Scene View", vertexShader, fragmentShader, renderTexture);
+		DrawNode* drawSceneView = m_RenderGraph.CreateNode<DrawNode>("Draw Scene View");
+		EndPassNode* endSceneView = m_RenderGraph.CreateNode<EndPassNode>("End Scene View", renderTexture, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
+
+		BeginPassNode* beginImgui = m_RenderGraph.CreateNode<BeginPassNode>("Begin Imgui View", vertexShader, fragmentShader);
+		ImguiDrawNode* drawImgui = m_RenderGraph.CreateNode<ImguiDrawNode>("Draw Imgui View", imgui);
+		drawImgui->AddDescriptorSet(rtSet);
+		EndPassNode* endImgui = m_RenderGraph.CreateNode<EndPassNode>("End Imgui View", VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+
+		SubmitNode* submit = m_RenderGraph.CreateNode<SubmitNode>("Submit Frame");
+
+		m_RenderGraph.SetRootNode(beginSceneView);
+		beginSceneView->SetNext(drawSceneView);
+		drawSceneView->SetNext(endSceneView);
+		endSceneView->SetNext(beginImgui);
+		beginImgui->SetNext(drawImgui);
+		drawImgui->SetNext(endImgui);
+		endImgui->SetNext(submit);
+	}
+
 	bool VulkanRenderer::BeginFrame(VulkanFrame*& currentFrame)
 	{
 		VkDevice vkDevice = context->GetDevice()->GetLogicalDevice();
@@ -177,12 +203,6 @@ namespace Odyssey
 
 	void VulkanRenderer::RenderFrame()
 	{
-		VkClearValue ClearValue;
-		ClearValue.color.float32[0] = 0.0f;
-		ClearValue.color.float32[1] = 0.0f;
-		ClearValue.color.float32[2] = 0.0f;
-		ClearValue.color.float32[3] = 0.0f;
-
 		VulkanFrame* frame = nullptr;
 		if (BeginFrame(frame))
 		{
@@ -191,142 +211,12 @@ namespace Odyssey
 
 			// RenderPass begin
 			VulkanCommandBuffer* commandBuffer = commandBuffers[frameIndex].Get();
-
-			VkClearValue ClearValue;
-			ClearValue.color.float32[0] = 0.0f;
-			ClearValue.color.float32[1] = 0.0f;
-			ClearValue.color.float32[2] = 0.0f;
-			ClearValue.color.float32[3] = 0.0f;
-
-			// Render to a texture the opaques
-			{
-				VkRenderingAttachmentInfoKHR color_attachment_info{};
-				color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
-				color_attachment_info.pNext = VK_NULL_HANDLE;
-				color_attachment_info.imageView = renderTexture.Get()->GetImage()->GetImageView();
-				color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-				color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
-				color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-				color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-				color_attachment_info.clearValue = ClearValue;
-
-				VkRenderingInfoKHR rendering_info = {};
-				rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
-				rendering_info.pNext = VK_NULL_HANDLE;
-				rendering_info.flags = 0;
-				rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{1000, 1000} };
-				rendering_info.layerCount = 1;
-				rendering_info.viewMask = 0;
-				rendering_info.colorAttachmentCount = 1;
-				rendering_info.pColorAttachments = &color_attachment_info;
-				rendering_info.pDepthAttachment = VK_NULL_HANDLE;
-				rendering_info.pStencilAttachment = VK_NULL_HANDLE;
-
-				commandBuffer->BeginRendering(rendering_info);
-				commandBuffer->BindPipeline(graphicsPipeline);
-
-				// Viewport
-				{
-					VkViewport viewport{};
-					viewport.x = 0.0f;
-					viewport.y = 0.0f;
-					viewport.width = static_cast<float>(1000);
-					viewport.height = static_cast<float>(1000);
-					viewport.minDepth = 0.0f;
-					viewport.maxDepth = 1.0f;
-					commandBuffer->BindViewport(viewport);
-				}
-
-				// Scissor
-				{
-					VkRect2D scissor{};
-					scissor.offset = { 0, 0 };
-					scissor.extent = VkExtent2D{ 1000, 1000 };
-					commandBuffer->SetScissor(scissor);
-				}
-
-				for (auto& drawCall : m_DrawCalls)
-				{
-					commandBuffer->BindVertexBuffer(drawCall.VertexBuffer);
-					commandBuffer->BindIndexBuffer(drawCall.IndexBuffer);
-					commandBuffer->DrawIndexed(drawCall.IndexCount, 1, 0, 0, 0);
-				}
-				commandBuffer->EndRendering();
-				commandBuffer->TransitionLayouts(renderTexture.Get()->GetImage(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
-			}
-
-			// rendering GUI to the back buffer
-			{
-				VkRenderingAttachmentInfoKHR color_attachment_info{};
-				color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
-				color_attachment_info.pNext = VK_NULL_HANDLE;
-				color_attachment_info.imageView = frame->GetRenderTargetViewVK();
-				color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
-				color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-				color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-				color_attachment_info.clearValue = ClearValue;
-
-				VkRenderingInfoKHR rendering_info = {};
-				rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
-				rendering_info.pNext = VK_NULL_HANDLE;
-				rendering_info.flags = 0;
-				rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{width, height} };
-				rendering_info.layerCount = 1;
-				rendering_info.viewMask = 0;
-				rendering_info.colorAttachmentCount = 1;
-				rendering_info.pColorAttachments = &color_attachment_info;
-				rendering_info.pDepthAttachment = VK_NULL_HANDLE;
-				rendering_info.pStencilAttachment = VK_NULL_HANDLE;
-
-				commandBuffer->BeginRendering(rendering_info);
-				commandBuffer->BindPipeline(graphicsPipeline);
-
-
-				// Viewport
-				{
-					VkViewport viewport{};
-					viewport.x = 0.0f;
-					viewport.y = 0.0f;
-					viewport.width = static_cast<float>(width);
-					viewport.height = static_cast<float>(height);
-					viewport.minDepth = 0.0f;
-					viewport.maxDepth = 1.0f;
-					commandBuffer->BindViewport(viewport);
-				}
-
-				// Scissor
-				{
-					VkRect2D scissor{};
-					scissor.offset = { 0, 0 };
-					scissor.extent = VkExtent2D{ width, height };
-					commandBuffer->SetScissor(scissor);
-				}
-
-				// TODO: DRAW
-				imgui->Render(commandBuffer->GetCommandBuffer(), rtSet);
-				commandBuffer->EndRendering();
-
-				// Transition the backbuffer layout for presenting
-				commandBuffer->TransitionLayouts(frames[frameIndex].GetRenderTarget(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-			}
-
-			commandBuffer->EndCommands();
-
-			// TODO: Move this into the context?
-			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			VkSubmitInfo submitInfo = {};
-			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-			submitInfo.waitSemaphoreCount = 1;
-			submitInfo.pWaitSemaphores = frame->GetImageAcquiredSemaphore();
-			submitInfo.pWaitDstStageMask = &wait_stage;
-			submitInfo.commandBufferCount = 1;
-			submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
-			submitInfo.signalSemaphoreCount = 1;
-			submitInfo.pSignalSemaphores = frame->GetRenderCompleteSemaphore();
-
-			VkResult err = vkQueueSubmit(context->GetGraphicsQueueVK(), 1, &submitInfo, frame->fence);
-			check_vk_result(err);
+			renderingData->frame = frame;
+			renderingData->m_Drawcalls = m_DrawCalls;
+			renderingData->width = width;
+			renderingData->height = height;
+			m_RenderGraph.Setup(context.get(), renderingData.get(), commandBuffers[frameIndex]);
+			m_RenderGraph.Execute(context.get(), renderingData.get(), commandBuffers[frameIndex]);
 		}
 	}
 

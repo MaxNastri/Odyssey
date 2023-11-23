@@ -9,6 +9,7 @@
 #include "VulkanShader.h"
 #include "ResourceManager.h"
 #include "Drawcall.h"
+#include "RenderGraph.h"
 
 namespace Odyssey
 {
@@ -52,6 +53,7 @@ namespace Odyssey
 		bool Present();
 
 	private:
+		void BuildRenderGraph();
 		bool BeginFrame(VulkanFrame*& currentFrame);
 		void RenderFrame();
 		void RebuildSwapchain();
@@ -82,6 +84,8 @@ namespace Odyssey
 		std::vector<UBOMatrices> uboData;
 
 	private: // Draws
+		RenderGraph m_RenderGraph;
+		std::shared_ptr<PerFrameRenderingData> renderingData;
 		std::vector<Drawcall> m_DrawCalls;
 		std::vector<RenderObject> m_RenderObjects;
 		std::vector<ResourceHandle<VulkanVertexBuffer>> m_VertexBuffers;
@@ -92,7 +96,7 @@ namespace Odyssey
 		VkDescriptorSet rtSet;
 
 	private: // IMGUI
-		std::unique_ptr<VulkanImgui> imgui;
+		std::shared_ptr<VulkanImgui> imgui;
 
 	private: // Swapchain
 		std::unique_ptr<VulkanSwapchain> swapchain;

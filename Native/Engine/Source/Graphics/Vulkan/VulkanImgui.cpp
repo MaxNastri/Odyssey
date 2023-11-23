@@ -128,6 +128,7 @@ namespace Odyssey
 			ImGui::RenderPlatformWindowsDefault();
 		}
 	}
+
 	VkDescriptorSet VulkanImgui::AddTexture(VulkanTexture* texture)
 	{
 		VkSampler sampler = texture->GetSampler()->GetSamplerVK();

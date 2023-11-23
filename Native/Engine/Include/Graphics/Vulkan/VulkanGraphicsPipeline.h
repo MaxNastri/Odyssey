@@ -15,7 +15,7 @@ namespace Odyssey
 	class VulkanGraphicsPipeline : public Resource
 	{
 	public:
-		VulkanGraphicsPipeline(std::shared_ptr<VulkanContext> context, const VulkanPipelineInfo& info);
+		VulkanGraphicsPipeline(std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info);
 		void Destroy();
 
 	public:

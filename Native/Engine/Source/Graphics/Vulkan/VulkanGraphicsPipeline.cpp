@@ -4,26 +4,30 @@
 #include "VulkanShader.h"
 #include "VulkanVertex.h"
 #include "VulkanDescriptorSet.h"
+#include "ResourceHandle.h"
 
 namespace Odyssey
 {
-	VulkanGraphicsPipeline::VulkanGraphicsPipeline(std::shared_ptr<VulkanContext> context, const VulkanPipelineInfo& info)
+	VulkanGraphicsPipeline::VulkanGraphicsPipeline(std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info)
 	{
 		m_Context = context;
 
 		CreateLayout();
 
 		// Shaders
+		VulkanShader* vertexShader = info.vertexShader.Get();
+		VulkanShader* fragmentShader = info.fragmentShader.Get();
+
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-		vertShaderStageInfo.module = info.vertexShader->GetShaderModule();
+		vertShaderStageInfo.module = vertexShader->GetShaderModule();
 		vertShaderStageInfo.pName = "main";
 
 		VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
 		fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-		fragShaderStageInfo.module = info.fragmentShader->GetShaderModule();
+		fragShaderStageInfo.module = fragmentShader->GetShaderModule();
 		fragShaderStageInfo.pName = "main";
 
 		VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };

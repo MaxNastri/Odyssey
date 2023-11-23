@@ -18,11 +18,14 @@ namespace Odyssey
 	public:
 		VulkanImage* GetImage() { return m_Image.get(); }
 		VulkanTextureSampler* GetSampler() { return m_Sampler.get(); }
+		uint32_t GetWidth() { return m_Width; }
+		uint32_t GetHeight() { return m_Height; }
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		std::unique_ptr<VulkanImage> m_Image;
 		std::unique_ptr<VulkanTextureSampler> m_Sampler;
+		uint32_t m_Width, m_Height;
 		// Sampler, view, layout
 	};
 }

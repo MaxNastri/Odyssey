@@ -1,4 +1,5 @@
 #pragma once
+#include "ResourceHandle.h"
 
 namespace Odyssey
 {
@@ -6,7 +7,8 @@ namespace Odyssey
 
 	struct VulkanPipelineInfo
 	{
-		VulkanShader* fragmentShader;
-		VulkanShader* vertexShader;
+	public:
+		ResourceHandle<VulkanShader> fragmentShader;
+		ResourceHandle<VulkanShader> vertexShader;
 	};
 }
