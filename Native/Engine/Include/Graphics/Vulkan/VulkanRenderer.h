@@ -10,6 +10,7 @@
 #include "ResourceManager.h"
 #include "Drawcall.h"
 #include "RenderGraph.h"
+#include "RenderScene.h"
 
 namespace Odyssey
 {
@@ -22,17 +23,6 @@ namespace Odyssey
 	class VulkanTexture;
 	class VulkanVertexBuffer;
 	class VulkanWindow;
-
-	struct RenderObject
-	{
-	public:
-		RenderObject(ResourceHandle<Mesh> mesh)
-		{
-			m_Mesh = mesh;
-		}
-
-		ResourceHandle<Mesh> m_Mesh;
-	};
 
 	struct UBOMatrices
 	{
@@ -57,7 +47,6 @@ namespace Odyssey
 		bool BeginFrame(VulkanFrame*& currentFrame);
 		void RenderFrame();
 		void RebuildSwapchain();
-		void InitDrawCalls();
 
 	private:
 		VulkanImgui::InitInfo CreateImguiInitInfo();
@@ -72,11 +61,6 @@ namespace Odyssey
 		std::vector<ResourceHandle<VulkanCommandPool>> commandPools;
 		std::vector<ResourceHandle<VulkanCommandBuffer>> commandBuffers;
 
-	private: // Pipeline
-		ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline;
-		ResourceHandle<VulkanShader> fragmentShader;
-		ResourceHandle<VulkanShader> vertexShader;
-
 	private: // UBO
 		std::shared_ptr<VulkanDescriptorSet> uboDescriptor;
 		std::vector<ResourceHandle<VulkanBuffer>> uboBuffers;
@@ -86,9 +70,6 @@ namespace Odyssey
 		RenderGraph m_RenderGraph;
 		std::shared_ptr<PerFrameRenderingData> renderingData;
 		std::vector<Drawcall> m_DrawCalls;
-		std::vector<RenderObject> m_RenderObjects;
-		std::vector<ResourceHandle<VulkanVertexBuffer>> m_VertexBuffers;
-		std::vector<ResourceHandle<VulkanIndexBuffer>> m_IndexBuffers;
 
 	private: // Render texture stuff
 		ResourceHandle<VulkanTexture> renderTexture;

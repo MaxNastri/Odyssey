@@ -16,6 +16,9 @@
 #include "ResourceManager.h"
 #include "RenderGraphNodes.h"
 #include "PerFrameRenderingData.h"
+#include "Scene.h"
+#include "SceneManager.h"
+#include "Material.h"
 
 namespace Odyssey
 {
@@ -28,16 +31,6 @@ namespace Odyssey
 		window = std::make_shared<VulkanWindow>(context);
 		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
 		descriptorPool = std::make_unique<VulkanDescriptorPool>(context->GetDevice());
-
-		// Shaders
-		fragmentShader = ResourceManager::AllocateShader(ShaderType::Fragment, "frag.spv");
-		vertexShader = ResourceManager::AllocateShader(ShaderType::Vertex, "vert.spv");
-
-		// Pipeline
-		VulkanPipelineInfo pipelineInfo;
-		pipelineInfo.fragmentShader = fragmentShader;
-		pipelineInfo.vertexShader = vertexShader;
-		graphicsPipeline = ResourceManager::AllocateGraphicsPipeline(pipelineInfo);
 
 		// IMGUI
 		VulkanImgui::InitInfo imguiInfo = CreateImguiInitInfo();
@@ -53,8 +46,6 @@ namespace Odyssey
 		// Draw data
 		renderTexture = ResourceManager::AllocateTexture(1000, 1000);
 		rtSet = imgui->AddTexture(renderTexture.Get());
-		InitDrawCalls();
-		BuildRenderGraph();
 	}
 
 	void VulkanRenderer::Destroy()
@@ -72,25 +63,12 @@ namespace Odyssey
 
 		ResourceManager::DestroyTexture(renderTexture);
 
-		for (auto vertexBuffer : m_VertexBuffers)
-		{
-			ResourceManager::DestroyVertexBuffer(vertexBuffer);
-		}
-		m_VertexBuffers.clear();
-
-		for (auto indexBuffer : m_IndexBuffers)
-		{
-			ResourceManager::DestroyIndexBuffer(indexBuffer);
-		}
-		m_IndexBuffers.clear();
-
 		for (int i = 0; i < frames.size(); ++i)
 		{
 			frames[i].Destroy();
 		}
 
 		frames.clear();
-		ResourceManager::DestroyGraphicsPipeline(graphicsPipeline);
 		descriptorPool.reset();
 		swapchain.reset();
 		window.reset();
@@ -110,6 +88,7 @@ namespace Odyssey
 			RebuildSwapchain();
 
 		imgui->SubmitDraws();
+		BuildRenderGraph();
 		RenderFrame();
 		imgui->PostRender();
 
@@ -144,25 +123,54 @@ namespace Odyssey
 
 	void VulkanRenderer::BuildRenderGraph()
 	{
-		renderingData = std::make_shared<PerFrameRenderingData>();
-		BeginPassNode* beginSceneView = m_RenderGraph.CreateNode<BeginPassNode>("Begin Scene View", vertexShader, fragmentShader, renderTexture);
-		DrawNode* drawSceneView = m_RenderGraph.CreateNode<DrawNode>("Draw Scene View");
-		EndPassNode* endSceneView = m_RenderGraph.CreateNode<EndPassNode>("End Scene View", renderTexture, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
+		// Convert the scene into a render scene
+		Scene* scene = SceneManager::GetActiveScene();
+		RenderScene renderScene(scene);
 
-		BeginPassNode* beginImgui = m_RenderGraph.CreateNode<BeginPassNode>("Begin Imgui View", vertexShader, fragmentShader);
+		renderingData = std::make_shared<PerFrameRenderingData>();
+
+		// Begin pass
+		BeginPassNode* beginSceneView = m_RenderGraph.CreateNode<BeginPassNode>("Begin Scene View", renderTexture);
+		RenderGraphNode* currentNode = beginSceneView;
+
+		// Foreach object, make a set pipeline + draw
+		for (RenderObject& renderObject : renderScene.m_RenderObjects)
+		{
+			Material* material = renderObject.Material.Get();
+			SetPipelineNode* pipelineNode = m_RenderGraph.CreateNode<SetPipelineNode>("Set Pipeline", material->GetVertexShader(), material->GetFragmentShader());
+			currentNode->SetNext(pipelineNode);
+			currentNode = pipelineNode;
+
+			Drawcall drawcall;
+			drawcall.SetMesh(renderObject.Mesh);
+			m_DrawCalls.push_back(drawcall);
+			DrawNode* drawNode = m_RenderGraph.CreateNode<DrawNode>("Draw Scene View", drawcall);
+			currentNode->SetNext(drawNode);
+			currentNode = drawNode;
+		}
+
+		EndPassNode* endSceneView = m_RenderGraph.CreateNode<EndPassNode>("End Scene View", renderTexture, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
+		currentNode->SetNext(endSceneView);
+		currentNode = endSceneView;
+
+		BeginPassNode* beginImgui = m_RenderGraph.CreateNode<BeginPassNode>("Begin Imgui View");
+		currentNode->SetNext(beginImgui);
+		currentNode = beginImgui;
+
 		ImguiDrawNode* drawImgui = m_RenderGraph.CreateNode<ImguiDrawNode>("Draw Imgui View", imgui);
 		drawImgui->AddDescriptorSet(rtSet);
+		currentNode->SetNext(drawImgui);
+		currentNode = drawImgui;
+
 		EndPassNode* endImgui = m_RenderGraph.CreateNode<EndPassNode>("End Imgui View", VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+		currentNode->SetNext(endImgui);
+		currentNode = endImgui;
 
 		SubmitNode* submit = m_RenderGraph.CreateNode<SubmitNode>("Submit Frame");
+		currentNode->SetNext(submit);
+		currentNode = submit;
 
 		m_RenderGraph.SetRootNode(beginSceneView);
-		beginSceneView->SetNext(drawSceneView);
-		drawSceneView->SetNext(endSceneView);
-		endSceneView->SetNext(beginImgui);
-		beginImgui->SetNext(drawImgui);
-		drawImgui->SetNext(endImgui);
-		endImgui->SetNext(submit);
 	}
 
 	bool VulkanRenderer::BeginFrame(VulkanFrame*& currentFrame)
@@ -241,35 +249,6 @@ namespace Odyssey
 
 		// Remake the frame data with the new size
 		SetupFrameData();
-	}
-
-	void VulkanRenderer::InitDrawCalls()
-	{
-		// Create the render object first
-		{
-			std::vector<VulkanVertex> vertices;
-			vertices.resize(4);
-			vertices[0] = VulkanVertex(glm::vec3(-0.5f, -0.5f, 0), glm::vec3(1, 0, 0));
-			vertices[1] = VulkanVertex(glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0, 1, 0));
-			vertices[2] = VulkanVertex(glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0, 0, 1));
-			vertices[3] = VulkanVertex(glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(1, 1, 1));
-
-			std::vector<uint32_t> indices{ 0, 1, 2, 2, 3, 0 };
-
-			ResourceHandle<Mesh> mesh = ResourceManager::AllocateMesh(vertices, indices);
-			m_RenderObjects.clear();
-			m_RenderObjects.push_back(RenderObject(mesh));
-		}
-
-		// Convert the render objects into draw calls
-		{
-			m_DrawCalls.resize(m_RenderObjects.size());
-
-			for (auto& renderObject : m_RenderObjects)
-			{
-				m_DrawCalls[0].SetMesh(renderObject.m_Mesh);
-			}
-		}
 	}
 
 	VulkanImgui::InitInfo VulkanRenderer::CreateImguiInitInfo()

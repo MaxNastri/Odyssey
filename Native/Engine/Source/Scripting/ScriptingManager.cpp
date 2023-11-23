@@ -1,9 +1,9 @@
 #include "ScriptingManager.h"
 #include "Paths.h"
 #include <Logger.h>
-#include "ScriptingEvents.h"
+#include "Events.h"
 
-namespace Odyssey::Scripting
+namespace Odyssey
 {
 	Coral::HostInstance ScriptingManager::hostInstance;
 	Coral::HostSettings ScriptingManager::hostSettings;

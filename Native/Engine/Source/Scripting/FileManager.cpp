@@ -1,7 +1,7 @@
 #include "FileManager.h"
 #include <Logger.h>
 #include <EventSystem.h>
-#include "EditorEvents.h"
+#include "Events.h"
 
 namespace Odyssey
 {

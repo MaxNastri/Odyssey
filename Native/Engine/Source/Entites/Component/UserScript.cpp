@@ -10,7 +10,7 @@ namespace Odyssey
 
 	UserScript::UserScript(const std::string& managedType)
 	{
-		managedInstance = Scripting::ScriptingManager::CreateManagedObject(managedType);
+		managedInstance = ScriptingManager::CreateManagedObject(managedType);
 	}
 
 	void UserScript::Awake()
@@ -109,7 +109,7 @@ namespace Odyssey
 	void UserScript::SetManagedType(std::string_view managedClassName)
 	{
 		// TODO (MAX): Destroy any existing managed instance first
-		managedInstance = Scripting::ScriptingManager::CreateManagedObject(managedClassName);
+		managedInstance = ScriptingManager::CreateManagedObject(managedClassName);
 	}
 
 	bool UserScript::SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, ryml::NodeRef node)

@@ -13,34 +13,16 @@ namespace Odyssey
 		m_Name = name;
 	}
 
-	BeginPassNode::BeginPassNode(const std::string& name, ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader, ResourceHandle<VulkanTexture> renderTarget)
+	BeginPassNode::BeginPassNode(const std::string& name, ResourceHandle<VulkanTexture> renderTarget)
 	{
 		m_Name = name;
-		m_VertexShader = vertexShader;
-		m_FragmentShader = fragmentShader;
 		m_RenderTarget = renderTarget;
-	}
-
-	BeginPassNode::BeginPassNode(const std::string& name, ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader)
-	{
-		m_Name = name;
-		m_VertexShader = vertexShader;
-		m_FragmentShader = fragmentShader;
 	}
 
 	void BeginPassNode::Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBuffer)
 	{
-		// Create the graphics pipeline
-		if (!m_GraphicsPipeline.IsValid())
-		{
-			VulkanPipelineInfo info;
-			info.fragmentShader = m_FragmentShader;
-			info.vertexShader = m_VertexShader;
-			m_GraphicsPipeline = ResourceManager::AllocateGraphicsPipeline(info);
-
-			// Init the clear value to black
-			m_ClearValue = glm::vec4(0, 0, 0, 1);
-		}
+		// Init the clear value to black
+		m_ClearValue = glm::vec4(0, 0, 0, 1);
 	}
 
 	void BeginPassNode::Execute(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle)
@@ -94,7 +76,6 @@ namespace Odyssey
 		rendering_info.pStencilAttachment = VK_NULL_HANDLE;
 
 		commandBuffer->BeginRendering(rendering_info);
-		commandBuffer->BindPipeline(m_GraphicsPipeline);
 
 		// Viewport
 		{
@@ -117,9 +98,10 @@ namespace Odyssey
 		}
 	}
 
-	DrawNode::DrawNode(const std::string& name)
+	DrawNode::DrawNode(const std::string& name, Drawcall& drawcall)
 	{
 		m_Name = name;
+		m_Drawcall = drawcall;
 	}
 
 	void DrawNode::Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle)
@@ -131,12 +113,9 @@ namespace Odyssey
 	{
 		VulkanCommandBuffer* commandBuffer = commandBufferHandle.Get();
 
-		for (auto& drawCall : renderingData->m_Drawcalls)
-		{
-			commandBuffer->BindVertexBuffer(drawCall.VertexBuffer);
-			commandBuffer->BindIndexBuffer(drawCall.IndexBuffer);
-			commandBuffer->DrawIndexed(drawCall.IndexCount, 1, 0, 0, 0);
-		}
+		commandBuffer->BindVertexBuffer(m_Drawcall.VertexBuffer);
+		commandBuffer->BindIndexBuffer(m_Drawcall.IndexBuffer);
+		commandBuffer->DrawIndexed(m_Drawcall.IndexCount, 1, 0, 0, 0);
 	}
 
 	SubmitNode::SubmitNode(const std::string& name)
@@ -244,5 +223,30 @@ namespace Odyssey
 	{
 		VulkanCommandBuffer* commandBuffer = commandBufferHandle.Get();
 		m_Imgui->Render(commandBuffer->GetCommandBuffer(), m_DescriptorSet);
+	}
+
+	SetPipelineNode::SetPipelineNode(const std::string& name, ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader)
+	{
+		m_Name = name;
+		m_VertexShader = vertexShader;
+		m_FragmentShader = fragmentShader;
+	}
+
+	void SetPipelineNode::Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle)
+	{
+		// Create the graphics pipeline
+		if (!m_GraphicsPipeline.IsValid())
+		{
+			VulkanPipelineInfo info;
+			info.fragmentShader = m_FragmentShader;
+			info.vertexShader = m_VertexShader;
+			m_GraphicsPipeline = ResourceManager::AllocateGraphicsPipeline(info);
+		}
+	}
+
+	void SetPipelineNode::Execute(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle)
+	{
+		VulkanCommandBuffer* commandBuffer = commandBufferHandle.Get();
+		commandBuffer->BindPipeline(m_GraphicsPipeline);
 	}
 }

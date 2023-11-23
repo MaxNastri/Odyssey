@@ -127,8 +127,9 @@ namespace Odyssey
 
     glm::mat4x4 Transform::GetWorldMatrix()
     {
-        UpdateWorldMatrix();
-        return worldMatrix;
+        //UpdateWorldMatrix();
+        ComposeLocalMatrix();
+        return localMatrix;
     }
 
     void Transform::UpdateWorldMatrix(bool forceUpdateWorld)

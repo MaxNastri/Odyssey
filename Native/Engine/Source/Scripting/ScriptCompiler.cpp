@@ -3,7 +3,7 @@
 #include <Logger.h>
 #include <Windows.h>
 #include <EventSystem.h>
-#include "EditorEvents.h"
+#include "Events.h"
 #include <ScriptingManager.h>
 
 namespace Odyssey
@@ -33,7 +33,7 @@ namespace Odyssey
 
 		if (success)
 		{
-			Scripting::ScriptingManager::ReloadUserAssemblies();
+			ScriptingManager::ReloadUserAssemblies();
 		}
 
 		return success;

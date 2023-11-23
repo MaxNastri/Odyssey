@@ -84,7 +84,7 @@ namespace Odyssey
 
 		ryml::NodeRef gameObjectsNode = root["GameObjects"];
 		gameObjectsNode |= ryml::SEQ;
-		
+
 		for (GameObject& gameObject : gameObjects)
 		{
 			gameObject.Serialize(gameObjectsNode);
@@ -102,7 +102,7 @@ namespace Odyssey
 			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
 			ryml::NodeRef root = tree.rootref();
-			
+
 			root["Name"] >> name;
 
 			ryml::NodeRef gameObjectsNode = root["GameObjects"];
@@ -120,5 +120,25 @@ namespace Odyssey
 		else
 			std::cout << "Cannot open file\n";
 
+	}
+
+	Camera* Scene::GetMainCamera()
+	{
+		if (m_MainCamera == nullptr)
+			FindMainCamera();
+
+		return m_MainCamera;
+	}
+
+	void Scene::FindMainCamera()
+	{
+		for (auto& gameObject : gameObjects)
+		{
+			if (Camera* camera = ComponentManager::GetComponent<Camera>(gameObject))
+			{
+				if (camera->IsMainCamera())
+					m_MainCamera = camera;
+			}
+		}
 	}
 }

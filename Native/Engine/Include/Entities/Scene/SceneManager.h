@@ -1,14 +1,10 @@
 #pragma once
 #include "Scene.h"
 
-namespace Odyssey::Scripting
-{
-	struct OnAssembliesReloaded;
-}
-
 namespace Odyssey
 {
 	struct OnBuildFinished;
+	struct OnAssembliesReloaded;
 
 	class SceneManager
 	{
@@ -18,18 +14,18 @@ namespace Odyssey
 		static void LoadScene(const std::string& filename);
 		static void SaveActiveScene(const std::string& filename);
 
-		static Scene& GetActiveScene();
+		static Scene* GetActiveScene();
 
 	public:
 		static void Update();
 
 	private:
 		static void BuildFinished(OnBuildFinished* onBuildFinished);
-		static void AssembliesReloaded(Scripting::OnAssembliesReloaded* reloadedEvent);
+		static void AssembliesReloaded(OnAssembliesReloaded* reloadedEvent);
 
 	private:
-		static std::vector<Scene> scenes;
-		static int activeScene;
+		inline static std::vector<std::shared_ptr<Scene>> scenes;
+		inline static int activeScene = -1;
 		inline static const std::string tempSaveFilename = "tmps.yaml";
 
 	};

@@ -15,7 +15,7 @@ namespace Odyssey
 				{
 					if (Camera* camera = ComponentManager::GetComponent<Camera>(go))
 					{
-						camera->m_FieldOfView = fov;
+						camera->SetFieldOfView(fov);
 					}
 				};
 
@@ -23,7 +23,7 @@ namespace Odyssey
 				{
 					if (Camera* camera = ComponentManager::GetComponent<Camera>(go))
 					{
-						camera->m_NearClip = nearClip;
+						camera->SetNearClip(nearClip);
 					}
 				};
 
@@ -31,13 +31,13 @@ namespace Odyssey
 				{
 					if (Camera* camera = ComponentManager::GetComponent<Camera>(go))
 					{
-						camera->m_FarClip = farClip;
+						camera->SetFarClip(farClip);
 					}
 				};
 
-			m_FieldOfViewDrawer = FloatDrawer("Field of View", camera->m_FieldOfView, fovModified);
-			m_NearClipDrawer = FloatDrawer("Near Clip", camera->m_NearClip, nearClipModified);
-			m_FarClipDrawer = FloatDrawer("Far Clip", camera->m_FarClip, farClipModified);
+			m_FieldOfViewDrawer = FloatDrawer("Field of View", camera->GetFieldOfView(), fovModified);
+			m_NearClipDrawer = FloatDrawer("Near Clip", camera->GetNearClip(), nearClipModified);
+			m_FarClipDrawer = FloatDrawer("Far Clip", camera->GetFarClip(), farClipModified);
 		}
 	}
 	void CameraInspector::Draw()

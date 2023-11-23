@@ -1,7 +1,7 @@
 #include "GUIManager.h"
 #include <EventSystem.h>
 #include "EditorEvents.h"
-#include <GraphicsEvents.h>
+#include <Events.h>
 
 namespace Odyssey
 {

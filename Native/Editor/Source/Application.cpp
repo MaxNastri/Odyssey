@@ -10,12 +10,13 @@
 #include "GUIManager.h"
 #include <ComponentManager.h>
 #include <Camera.h>
+#include <MeshRenderer.h>
 
 namespace Odyssey
 {
 	Application::Application()
 	{
-		Scripting::ScriptingManager::Initialize();
+		ScriptingManager::Initialize();
 		FileManager::Initialize();
 		FileManager::TrackFolder(Paths::Relative::ManagedProjectSource);
 		ScriptCompiler::ListenForEvents();
@@ -35,12 +36,15 @@ namespace Odyssey
 
 		// Create the scene
 		SceneManager::LoadScene("scene.yaml");
-		Scene scene = SceneManager::GetActiveScene();
 
-		GameObject go = scene.GetGameObject(0);
+		Scene* scene = SceneManager::GetActiveScene();
+		GameObject go = scene->GetGameObject(0);
+
+		ConstructVisuals();
 
 		GUIManager::CreateInspectorWindow(go);
 
+		scene->Awake();
 		while (running)
 		{
 			float elapsed = stopwatch.Elapsed();
@@ -68,5 +72,41 @@ namespace Odyssey
 	void Application::Exit()
 	{
 		running = false;
+	}
+
+	void Application::ConstructVisuals()
+	{
+		Scene* scene = SceneManager::GetActiveScene();
+		GameObject go = scene->GetGameObject(0);
+
+		ResourceHandle<Material> material;
+		{
+			ResourceHandle<VulkanShader> vertexShader = ResourceManager::AllocateShader(ShaderType::Vertex, "vert.spv");
+			ResourceHandle<VulkanShader> fragmentShader = ResourceManager::AllocateShader(ShaderType::Fragment, "frag.spv");
+			material = ResourceManager::AllocateMaterial(vertexShader, fragmentShader);
+		}
+		ResourceHandle<Mesh> mesh;
+		{
+			std::vector<VulkanVertex> vertices;
+			vertices.resize(4);
+			vertices[0] = VulkanVertex(glm::vec3(-0.5f, -0.5f, 0), glm::vec3(1, 0, 0));
+			vertices[1] = VulkanVertex(glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0, 1, 0));
+			vertices[2] = VulkanVertex(glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0, 0, 1));
+			vertices[3] = VulkanVertex(glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(1, 1, 1));
+
+			std::vector<uint32_t> indices{ 0, 1, 2, 2, 3, 0 };
+
+			mesh = ResourceManager::AllocateMesh(vertices, indices);
+		}
+
+		if (MeshRenderer* renderer = ComponentManager::GetComponent<MeshRenderer>(go))
+		{
+			renderer->SetMaterial(material);
+			renderer->SetMesh(mesh);
+		}
+		else
+		{
+			MeshRenderer* mr = ComponentManager::AddComponent<MeshRenderer>(go, mesh, material);
+		}
 	}
 }

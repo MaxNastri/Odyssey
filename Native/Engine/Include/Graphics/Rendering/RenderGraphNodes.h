@@ -35,25 +35,38 @@ namespace Odyssey
 	public:
 		BeginPassNode() = default;
 		BeginPassNode(const std::string& name);
-		BeginPassNode(const std::string& name, ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader, ResourceHandle<VulkanTexture> renderTarget);
-		BeginPassNode(const std::string& name, ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader);
+		BeginPassNode(const std::string& name, ResourceHandle<VulkanTexture> renderTarget);
 
 	public:
 		virtual void Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) override;
 		virtual void Execute(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) override;
 
 	public:
-		std::string_view GetName() { return m_Name; }
+		ResourceHandle<VulkanTexture> GetRenderTarget() { return m_RenderTarget; }
+
+	private:
+		ResourceHandle<VulkanTexture> m_RenderTarget;
+		glm::vec4 m_ClearValue;
+	};
+
+	class SetPipelineNode : public RenderGraphNode
+	{
+	public:
+		SetPipelineNode() = default;
+		SetPipelineNode(const std::string& name, ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader);
+
+	public:
+		virtual void Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) override;
+		virtual void Execute(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) override;
+
+	public:
 		ResourceHandle<VulkanShader> GetVertexShader() { return m_VertexShader; }
 		ResourceHandle<VulkanShader> GetFragmentShader() { return m_FragmentShader; }
-		ResourceHandle<VulkanTexture> GetRenderTarget() { return m_RenderTarget; }
 
 	private:
 		ResourceHandle<VulkanShader> m_VertexShader;
 		ResourceHandle<VulkanShader> m_FragmentShader;
-		ResourceHandle<VulkanTexture> m_RenderTarget;
 		ResourceHandle<VulkanGraphicsPipeline> m_GraphicsPipeline;
-		glm::vec4 m_ClearValue;
 	};
 
 	class DrawNode : public RenderGraphNode
@@ -61,6 +74,7 @@ namespace Odyssey
 	public:
 		DrawNode() = default;
 		DrawNode(const std::string& name);
+		DrawNode(const std::string& name, Drawcall& drawcall);
 
 	public:
 		virtual void Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) override;
@@ -68,6 +82,7 @@ namespace Odyssey
 
 	private:
 		std::bitset<16> m_RenderingLayers;
+		Drawcall m_Drawcall;
 	};
 
 	class EndPassNode : public RenderGraphNode

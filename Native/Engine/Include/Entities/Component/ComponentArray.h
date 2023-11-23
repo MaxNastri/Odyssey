@@ -56,7 +56,6 @@ namespace Odyssey
 				return static_cast<T*>(componentData[index].get());
 			}
 
-			Logger::LogError("Cannot Get Component Data for GameObject: " + std::to_string(gameObject));
 			return nullptr;
 		}
 
@@ -68,7 +67,6 @@ namespace Odyssey
 				return componentData[index].get();
 			}
 
-			Logger::LogError("Cannot Get Component for GameObject: " + std::to_string(gameObject));
 			return nullptr;
 		}
 

@@ -20,6 +20,9 @@ namespace Odyssey
 		void Exit();
 
 	private:
+		void ConstructVisuals();
+
+	private:
 		bool running;
 		bool allowRecompile = true;
 		Stopwatch stopwatch;

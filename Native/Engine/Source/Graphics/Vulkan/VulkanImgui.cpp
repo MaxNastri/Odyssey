@@ -4,7 +4,7 @@
 #include "imgui_impl_vulkan.h"
 #include "VulkanGlobals.h"
 #include "VulkanCommandPool.h"
-#include "GraphicsEvents.h"
+#include "Events.h"
 #include "VulkanContext.h"
 #include "VulkanTexture.h"
 #include "VulkanTextureSampler.h"

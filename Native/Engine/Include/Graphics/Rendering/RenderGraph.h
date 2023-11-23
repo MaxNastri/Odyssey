@@ -13,10 +13,13 @@ namespace Odyssey
 	class RenderGraph
 	{
 	public:
-		void Setup();
-		void Compile();
-		void Execute();
+		void Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle);
+		void Execute(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle);
 
+	public:
+		void SetRootNode(RenderGraphNode* root) { m_RootNode = root; }
+
+	public:
 		template<typename T, typename... Args>
 		T* CreateNode(Args... args)
 		{
@@ -24,12 +27,6 @@ namespace Odyssey
 			return static_cast<T*>(m_AllNodes[m_AllNodes.size() - 1].get());
 		}
 
-		void SetRootNode(RenderGraphNode* root) { m_RootNode = root; }
-
-	public:
-		void Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle);
-		void Execute(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle);
-	
 	private:
 		RenderGraphNode* m_RootNode;
 		std::vector<std::unique_ptr<RenderGraphNode>> m_AllNodes;

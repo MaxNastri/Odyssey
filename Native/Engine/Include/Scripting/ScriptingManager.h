@@ -3,7 +3,7 @@
 #include "ManagedObject.hpp"
 #include <EventSystem.h>
 
-namespace Odyssey::Scripting
+namespace Odyssey
 {
 	class ScriptingManager
 	{

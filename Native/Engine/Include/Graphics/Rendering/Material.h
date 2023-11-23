@@ -11,6 +11,11 @@ namespace Odyssey
 	{
 	public:
 		Material(ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader);
+
+	public:
+		ResourceHandle<VulkanShader> GetVertexShader() { return m_VertexShader; }
+		ResourceHandle<VulkanShader> GetFragmentShader() { return m_FragmentShader; }
+
 	private:
 		ResourceHandle<VulkanShader> m_VertexShader;
 		ResourceHandle<VulkanShader> m_FragmentShader;

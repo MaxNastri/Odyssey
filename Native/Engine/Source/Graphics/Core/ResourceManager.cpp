@@ -8,6 +8,7 @@
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanBuffer.h"
 #include "Mesh.h"
+#include "Material.h"
 #include "VulkanCommandPool.h"
 #include "VulkanCommandPool.h"
 
@@ -30,6 +31,13 @@ namespace Odyssey
 		uint32_t id = m_Meshes.Add(vertexBuffer, indexBuffer);
 		m_Meshes[id]->SetID(id);
 		return ResourceHandle<Mesh>(id, m_Meshes[id].get());
+	}
+
+	ResourceHandle<Material> ResourceManager::AllocateMaterial(ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader)
+	{
+		uint32_t id = m_Materials.Add(vertexShader, fragmentShader);
+		m_Materials[id]->SetID(id);
+		return ResourceHandle<Material>(id, m_Materials[id].get());
 	}
 
 	ResourceHandle<VulkanBuffer> ResourceManager::AllocateBuffer(BufferType bufferType, uint32_t size)

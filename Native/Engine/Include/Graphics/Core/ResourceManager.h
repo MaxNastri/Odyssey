@@ -7,6 +7,7 @@
 
 namespace Odyssey
 {
+	class Material;
 	class Mesh;
 	class VulkanBuffer;
 	class VulkanContext;
@@ -26,6 +27,7 @@ namespace Odyssey
 	public: // Base allocations
 		static ResourceHandle<Mesh> AllocateMesh(std::vector<VulkanVertex>& vertices, std::vector<uint32_t>& indices);
 		static ResourceHandle<Mesh> AllocateMesh(ResourceHandle<VulkanVertexBuffer> vertexBuffer, ResourceHandle<VulkanIndexBuffer> indexBuffer);
+		static ResourceHandle<Material> AllocateMaterial(ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader);
 
 	public: // Vulkan allocations
 		static ResourceHandle<VulkanBuffer> AllocateBuffer(BufferType bufferType, uint32_t size);
@@ -49,6 +51,7 @@ namespace Odyssey
 
 	private: // Base type members
 		inline static DynamicList<Mesh> m_Meshes;
+		inline static DynamicList<Material> m_Materials;
 
 	private: // Vulkan members
 		inline static std::shared_ptr<VulkanContext> m_Context = nullptr;
