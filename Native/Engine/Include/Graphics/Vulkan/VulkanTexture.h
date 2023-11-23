@@ -1,4 +1,5 @@
 #pragma once
+#include "Resource.h"
 #include "VulkanGlobals.h"
 #include "VulkanImage.h"
 #include "VulkanTextureSampler.h"
@@ -7,7 +8,7 @@ namespace Odyssey
 {
 	class VulkanContext;
 
-	class VulkanTexture
+	class VulkanTexture : public Resource
 	{
 	public:
 		VulkanTexture(std::shared_ptr<VulkanContext> context, const std::string& filename);

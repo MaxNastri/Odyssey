@@ -1,4 +1,5 @@
 #pragma once
+#include "Resource.h"
 #include "VulkanGlobals.h"
 #include "VulkanTypes.h"
 
@@ -11,7 +12,7 @@ namespace Odyssey
 	class VulkanShader;
 	class VulkanDescriptorSet;
 
-	class VulkanGraphicsPipeline
+	class VulkanGraphicsPipeline : public Resource
 	{
 	public:
 		VulkanGraphicsPipeline(std::shared_ptr<VulkanContext> context, const VulkanPipelineInfo& info);

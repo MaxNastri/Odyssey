@@ -1,4 +1,5 @@
 #pragma once
+#include "Resource.h"
 #include "VulkanGlobals.h"
 #include "Enums.h"
 
@@ -9,7 +10,7 @@ namespace Odyssey
 {
 	class VulkanContext;
 
-	class VulkanBuffer
+	class VulkanBuffer : public Resource
 	{
 	public:
 		VulkanBuffer(std::shared_ptr<VulkanContext> context, BufferType bufferType, VkDeviceSize size);

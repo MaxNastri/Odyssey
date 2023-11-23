@@ -1,4 +1,5 @@
 #pragma once
+#include "Resource.h"
 #include "ResourceHandle.h"
 #include "VulkanVertex.h"
 
@@ -7,7 +8,7 @@ namespace Odyssey
 	class VulkanVertexBuffer;
 	class VulkanIndexBuffer;
 
-	class Mesh
+	class Mesh : public Resource
 	{
 	public:
 		Mesh(std::vector<VulkanVertex>& vertices, std::vector<uint32_t>& indices);

@@ -1,4 +1,5 @@
 #pragma once
+#include "Resource.h"
 #include "VulkanGlobals.h"
 #include "Enums.h"
 
@@ -8,8 +9,7 @@ namespace Odyssey
 {
 	class VulkanContext;
 
-	
-	class VulkanShader
+	class VulkanShader : public Resource
 	{
 	public:
 		VulkanShader(std::shared_ptr<VulkanContext> context, ShaderType shaderType, const std::string& filename);

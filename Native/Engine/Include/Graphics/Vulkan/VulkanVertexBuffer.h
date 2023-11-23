@@ -1,4 +1,5 @@
 #pragma once
+#include "Resource.h"
 #include "VulkanGlobals.h"
 #include "VulkanVertex.h"
 #include "ResourceHandle.h"
@@ -10,7 +11,7 @@ namespace Odyssey
 	class VulkanBuffer;
 	class VulkanContext;
 
-	class VulkanVertexBuffer
+	class VulkanVertexBuffer : public Resource
 	{
 	public:
 		VulkanVertexBuffer(std::shared_ptr<VulkanContext> context, std::vector<VulkanVertex>& vertices);
