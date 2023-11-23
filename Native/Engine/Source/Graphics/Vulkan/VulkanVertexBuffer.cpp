@@ -11,7 +11,7 @@ namespace Odyssey
 	{
 		m_Context = context;
 
-		VkDeviceSize dataSize = vertices.size() * sizeof(vertices[0]);
+		uint32_t dataSize = (uint32_t)(vertices.size() * sizeof(vertices[0]));
 
 		m_StagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, dataSize);
 		m_StagingBuffer.Get()->AllocateMemory();
@@ -21,13 +21,16 @@ namespace Odyssey
 		m_VertexBuffer.Get()->AllocateMemory();
 
 		// Copy the staging buffer into the vertex buffer
-		VulkanCommandBuffer* commandBuffer = m_Context->GetCommandPool()->AllocateBuffer();
+		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
+		ResourceHandle<VulkanCommandBuffer> bufferHandle = commandPool.Get()->AllocateBuffer();
+
+		VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
 		commandBuffer->BeginCommands();
 		commandBuffer->CopyBufferToBuffer(m_StagingBuffer, m_VertexBuffer, (uint32_t)dataSize);
 		commandBuffer->EndCommands();
 
-		m_Context->SubmitCommandBuffer(commandBuffer);
-		m_Context->GetCommandPool()->ReleaseBuffer(commandBuffer);
+		m_Context->SubmitCommandBuffer(bufferHandle);
+		commandPool.Get()->ReleaseBuffer(bufferHandle);
 	}
 	void VulkanVertexBuffer::Destroy()
 	{

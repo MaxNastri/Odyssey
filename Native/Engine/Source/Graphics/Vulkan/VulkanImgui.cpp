@@ -62,8 +62,9 @@ namespace Odyssey
 		// Upload Fonts
 		{
 			// Use any command queue
-			VulkanCommandPool pool(context);
-			VulkanCommandBuffer* commandBuffer = pool.AllocateBuffer();
+			ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
+			ResourceHandle<VulkanCommandBuffer> bufferHandle = commandPool.Get()->AllocateBuffer();
+			VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
 
 			commandBuffer->BeginCommands();
 
@@ -82,7 +83,6 @@ namespace Odyssey
 			err = vkDeviceWaitIdle(initInfo.logicalDevice);
 			check_vk_result(err);
 
-			pool.Destroy();
 			ImGui_ImplVulkan_DestroyFontUploadObjects();
 		}
 	}

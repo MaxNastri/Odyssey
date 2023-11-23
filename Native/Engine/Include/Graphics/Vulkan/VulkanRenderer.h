@@ -7,8 +7,8 @@
 #include "VulkanFrame.h"
 #include "VulkanCommandPool.h"
 #include "VulkanShader.h"
-#include "VulkanVertex.h"
 #include "ResourceManager.h"
+#include "Drawcall.h"
 
 namespace Odyssey
 {
@@ -22,25 +22,15 @@ namespace Odyssey
 	class VulkanVertexBuffer;
 	class VulkanWindow;
 
-	struct DrawCall
-	{
-	public:
-		ResourceHandle<VulkanVertexBuffer> VertexBuffer;
-		ResourceHandle<VulkanIndexBuffer> IndexBuffer;
-		uint32_t IndexCount;
-	};
-
 	struct RenderObject
 	{
 	public:
-		RenderObject(std::vector<VulkanVertex> vertices, std::vector<uint32_t> indices)
+		RenderObject(ResourceHandle<Mesh> mesh)
 		{
-			Vertices = vertices;
-			Indices = indices;
+			m_Mesh = mesh;
 		}
 
-		std::vector<VulkanVertex> Vertices;
-		std::vector<uint32_t> Indices;
+		ResourceHandle<Mesh> m_Mesh;
 	};
 
 	struct UBOMatrices
@@ -78,8 +68,8 @@ namespace Odyssey
 		std::unique_ptr<VulkanDescriptorPool> descriptorPool;
 
 	private: // Commands
-		std::vector<std::unique_ptr<VulkanCommandPool>> commandPool;
-		std::vector<VulkanCommandBuffer*> commandBuffers;
+		std::vector<ResourceHandle<VulkanCommandPool>> commandPools;
+		std::vector<ResourceHandle<VulkanCommandBuffer>> commandBuffers;
 
 	private: // Pipeline
 		ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline;
@@ -92,7 +82,7 @@ namespace Odyssey
 		std::vector<UBOMatrices> uboData;
 
 	private: // Draws
-		std::vector<DrawCall> m_DrawCalls;
+		std::vector<Drawcall> m_DrawCalls;
 		std::vector<RenderObject> m_RenderObjects;
 		std::vector<ResourceHandle<VulkanVertexBuffer>> m_VertexBuffers;
 		std::vector<ResourceHandle<VulkanIndexBuffer>> m_IndexBuffers;

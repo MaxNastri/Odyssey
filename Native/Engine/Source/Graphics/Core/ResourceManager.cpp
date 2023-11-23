@@ -6,12 +6,27 @@
 #include "VulkanShader.h"
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanBuffer.h"
+#include "Mesh.h"
+#include "VulkanCommandPool.h"
+#include "VulkanCommandPool.h"
 
 namespace Odyssey
 {
 	void ResourceManager::Initialize(std::shared_ptr<VulkanContext> context)
 	{
 		m_Context = context;
+	}
+
+	ResourceHandle<Mesh> ResourceManager::AllocateMesh(std::vector<VulkanVertex>& vertices, std::vector<uint32_t>& indices)
+	{
+		uint32_t id = m_Meshes.Add(vertices, indices);
+		return ResourceHandle<Mesh>(id, m_Meshes[id].get());
+	}
+
+	ResourceHandle<Mesh> ResourceManager::AllocateMesh(ResourceHandle<VulkanVertexBuffer> vertexBuffer, ResourceHandle<VulkanIndexBuffer> indexBuffer)
+	{
+		uint32_t id = m_Meshes.Add(vertexBuffer, indexBuffer);
+		return ResourceHandle<Mesh>(id, m_Meshes[id].get());
 	}
 
 	ResourceHandle<VulkanBuffer> ResourceManager::AllocateBuffer(BufferType bufferType, uint32_t size)
@@ -50,6 +65,18 @@ namespace Odyssey
 		return ResourceHandle<VulkanGraphicsPipeline>(id, m_GraphicsPipelines[id].get());
 	}
 
+	ResourceHandle<VulkanCommandPool> ResourceManager::AllocateCommandPool()
+	{
+		uint32_t id = m_CommandPools.Add(m_Context);
+		return ResourceHandle<VulkanCommandPool>(id, m_CommandPools[id].get());
+	}
+
+	ResourceHandle<VulkanCommandBuffer> ResourceManager::AllocateCommandBuffer(ResourceHandle<VulkanCommandPool> commandPool)
+	{
+		uint32_t id = m_CommandBuffers.Add(m_Context, commandPool);
+		return ResourceHandle<VulkanCommandBuffer>(id, m_CommandBuffers[id].get());
+	}
+
 	void ResourceManager::DestroyBuffer(ResourceHandle<VulkanBuffer> handle)
 	{
 		m_Buffers[handle.m_ID]->Destroy();
@@ -83,5 +110,16 @@ namespace Odyssey
 	{
 		m_GraphicsPipelines[handle.m_ID]->Destroy();
 		m_GraphicsPipelines.Remove(handle.m_ID);
+	}
+
+	void ResourceManager::DestroyCommandPool(ResourceHandle<VulkanCommandPool> handle)
+	{
+		m_CommandPools[handle.m_ID]->Destroy();
+		m_CommandPools.Remove(handle.m_ID);
+	}
+	void ResourceManager::DestroyCommandBuffer(ResourceHandle<VulkanCommandBuffer> bufferHandle, ResourceHandle<VulkanCommandPool> poolHandle)
+	{
+		m_CommandBuffers[bufferHandle.m_ID]->Destroy(poolHandle);
+		m_CommandBuffers.Remove(bufferHandle.m_ID);
 	}
 }

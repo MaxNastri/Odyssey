@@ -117,13 +117,13 @@ namespace Odyssey
 
 	void VulkanImage::SetData(ResourceHandle<VulkanBuffer> handle, uint32_t width, uint32_t height)
 	{
-		VulkanCommandPool* commandPool = m_Context->GetCommandPool();
-		VulkanCommandBuffer* commandBuffer = commandPool->AllocateBuffer();
+		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
+		ResourceHandle<VulkanCommandBuffer> commandBuffer = commandPool.Get()->AllocateBuffer();
 
-		commandBuffer->BeginCommands();
-		commandBuffer->CopyBufferToImage(handle, this, width, height);
-		commandBuffer->EndCommands();
-		commandPool->ReleaseBuffer(commandBuffer);
+		commandBuffer.Get()->BeginCommands();
+		commandBuffer.Get()->CopyBufferToImage(handle, this, width, height);
+		commandBuffer.Get()->EndCommands();
+		commandPool.Get()->ReleaseBuffer(commandBuffer);
 	}
 
 	VkImageMemoryBarrier VulkanImage::CreateMemoryBarrier(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage)

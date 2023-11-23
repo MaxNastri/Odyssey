@@ -15,8 +15,8 @@ namespace Odyssey
 	class VulkanCommandBuffer
 	{
 	public:
-		VulkanCommandBuffer(std::shared_ptr<VulkanContext> context, VulkanCommandPool* commandPool);
-		void Destroy(VulkanCommandPool* commandPool);
+		VulkanCommandBuffer(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanCommandPool> commandPool);
+		void Destroy(ResourceHandle<VulkanCommandPool> poolHandle);
 
 	public:
 		void BeginCommands();
@@ -41,8 +41,6 @@ namespace Odyssey
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
 		const VkCommandBuffer* GetCommandBufferRef() { return &m_CommandBuffer; }
 
-	private:
-		VkImageMemoryBarrier CreateMemoryBarrier(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t& sourceStage, uint32_t& destStage);
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		VkCommandBuffer m_CommandBuffer;

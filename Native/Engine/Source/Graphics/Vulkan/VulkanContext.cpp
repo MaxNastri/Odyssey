@@ -19,21 +19,21 @@ namespace Odyssey
 
 	void VulkanContext::Destroy()
 	{
-		m_CommandPool->Destroy();
+		ResourceManager::DestroyCommandPool(m_CommandPool);
 	}
 
 	void VulkanContext::SetupResources()
 	{
-		m_CommandPool = std::make_shared<VulkanCommandPool>(VulkanContext::shared_from_this());
+		m_CommandPool = ResourceManager::AllocateCommandPool();
 		m_GraphicsQueue = std::make_shared<VulkanQueue>(VulkanQueueType::Graphics, VulkanContext::shared_from_this());
 	}
 
-	void VulkanContext::SubmitCommandBuffer(VulkanCommandBuffer* commandBuffer)
+	void VulkanContext::SubmitCommandBuffer(ResourceHandle<VulkanCommandBuffer> commandBuffer)
 	{
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
+		submitInfo.pCommandBuffers = commandBuffer.Get()->GetCommandBufferRef();
 
 		vkQueueSubmit(m_GraphicsQueue->queue, 1, &submitInfo, VK_NULL_HANDLE);
 		vkQueueWaitIdle(m_GraphicsQueue->queue);

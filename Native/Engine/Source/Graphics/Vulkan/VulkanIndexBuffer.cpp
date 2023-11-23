@@ -18,14 +18,19 @@ namespace Odyssey
 		m_IndexBuffer = ResourceManager::AllocateBuffer(BufferType::Index, dataSize);
 		m_IndexBuffer.Get()->AllocateMemory();
 
-		// Copy the staging buffer into the vertex buffer
-		VulkanCommandBuffer* commandBuffer = m_Context->GetCommandPool()->AllocateBuffer();
+		// Allocate a command buffer
+		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
+		ResourceHandle<VulkanCommandBuffer> bufferHandle = commandPool.Get()->AllocateBuffer();
+
+		// Copy the staging data into the index buffer
+		VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
 		commandBuffer->BeginCommands();
 		commandBuffer->CopyBufferToBuffer(m_StagingBuffer, m_IndexBuffer, (uint32_t)dataSize);
 		commandBuffer->EndCommands();
 
-		m_Context->SubmitCommandBuffer(commandBuffer);
-		m_Context->GetCommandPool()->ReleaseBuffer(commandBuffer);
+		// Submit and release
+		m_Context->SubmitCommandBuffer(bufferHandle);
+		commandPool.Get()->ReleaseBuffer(bufferHandle);
 	}
 
 	void VulkanIndexBuffer::Destroy()
@@ -33,14 +38,17 @@ namespace Odyssey
 		ResourceManager::DestroyBuffer(m_StagingBuffer);
 		ResourceManager::DestroyBuffer(m_IndexBuffer);
 	}
+
 	ResourceHandle<VulkanBuffer> VulkanIndexBuffer::GetIndexBuffer()
 	{
 		return m_IndexBuffer;
 	}
+
 	const VkBuffer VulkanIndexBuffer::GetIndexBufferVK()
 	{
 		return m_IndexBuffer.Get()->buffer;
 	}
+
 	const VkBuffer* VulkanIndexBuffer::GetIndexBufferVKRef()
 	{
 		return &(m_IndexBuffer.Get()->buffer);

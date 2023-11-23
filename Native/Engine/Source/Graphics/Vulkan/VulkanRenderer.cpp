@@ -20,8 +20,8 @@ namespace Odyssey
 	VulkanRenderer::VulkanRenderer()
 	{
 		context = std::make_shared<VulkanContext>();
-		context->SetupResources();
 		ResourceManager::Initialize(context);
+		context->SetupResources();
 
 		window = std::make_shared<VulkanWindow>(context);
 		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
@@ -44,8 +44,8 @@ namespace Odyssey
 		SetupFrameData();
 		for (int i = 0; i < frames.size(); ++i)
 		{
-			commandPool.push_back(std::make_unique<VulkanCommandPool>(context));
-			commandBuffers.push_back(commandPool[i]->AllocateBuffer());
+			commandPools.push_back(ResourceManager::AllocateCommandPool());
+			commandBuffers.push_back(commandPools[i].Get()->AllocateBuffer());
 		}
 
 		// Draw data
@@ -163,13 +163,13 @@ namespace Odyssey
 		err = vkResetFences(vkDevice, 1, &frame.fence);
 		check_vk_result(err);
 
-		commandPool[frameIndex]->Reset();
+		commandPools[frameIndex].Get()->Reset();
 
 		// Command buffer begin
-		commandBuffers[frameIndex]->BeginCommands();
+		commandBuffers[frameIndex].Get()->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
-		commandBuffers[frameIndex]->TransitionLayouts(frame.GetRenderTarget(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		commandBuffers[frameIndex].Get()->TransitionLayouts(frame.GetRenderTarget(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		currentFrame = &frame;
 		return true;
@@ -190,7 +190,7 @@ namespace Odyssey
 			unsigned int height = window->GetSurface()->GetHeight();
 
 			// RenderPass begin
-			VulkanCommandBuffer* commandBuffer = commandBuffers[frameIndex];
+			VulkanCommandBuffer* commandBuffer = commandBuffers[frameIndex].Get();
 
 			VkClearValue ClearValue;
 			ClearValue.color.float32[0] = 0.0f;
@@ -366,8 +366,9 @@ namespace Odyssey
 
 			std::vector<uint32_t> indices{ 0, 1, 2, 2, 3, 0 };
 
+			ResourceHandle<Mesh> mesh = ResourceManager::AllocateMesh(vertices, indices);
 			m_RenderObjects.clear();
-			m_RenderObjects.push_back(RenderObject(vertices, indices));
+			m_RenderObjects.push_back(RenderObject(mesh));
 		}
 
 		// Convert the render objects into draw calls
@@ -376,18 +377,7 @@ namespace Odyssey
 
 			for (auto& renderObject : m_RenderObjects)
 			{
-				size_t vertexDataSize = renderObject.Vertices.size() * sizeof(VulkanVertex);
-				size_t indexDataSize = renderObject.Indices.size() * sizeof(uint32_t);
-
-				// Create and assign vertex buffer
-				m_VertexBuffers.push_back(ResourceManager::AllocateVertexBuffer(renderObject.Vertices));
-				m_DrawCalls[0].VertexBuffer = m_VertexBuffers[m_VertexBuffers.size() - 1];
-
-				// Create and assign index buffer
-				m_IndexBuffers.push_back(ResourceManager::AllocateIndexBuffer(renderObject.Indices));
-				m_DrawCalls[0].IndexBuffer = m_IndexBuffers[m_IndexBuffers.size() - 1];
-
-				m_DrawCalls[0].IndexCount = (uint32_t)renderObject.Indices.size();
+				m_DrawCalls[0].SetMesh(renderObject.m_Mesh);
 			}
 		}
 	}

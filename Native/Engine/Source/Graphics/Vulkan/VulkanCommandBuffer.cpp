@@ -12,23 +12,23 @@
 
 namespace Odyssey
 {
-	VulkanCommandBuffer::VulkanCommandBuffer(std::shared_ptr<VulkanContext> context, VulkanCommandPool* commandPool)
+	VulkanCommandBuffer::VulkanCommandBuffer(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanCommandPool> commandPool)
 	{
 		m_Context = context;
 
         VkCommandBufferAllocateInfo info = {};
         info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        info.commandPool = commandPool->GetCommandPool();
+        info.commandPool = commandPool.Get()->GetCommandPool();
         info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         info.commandBufferCount = 1;
         VkResult err = vkAllocateCommandBuffers(m_Context->GetDevice()->GetLogicalDevice(), &info, &m_CommandBuffer);
         check_vk_result(err);
 	}
 
-    void VulkanCommandBuffer::Destroy(VulkanCommandPool* commandPool)
+    void VulkanCommandBuffer::Destroy(ResourceHandle<VulkanCommandPool> poolHandle)
     {
         VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
-        vkFreeCommandBuffers(device, commandPool->GetCommandPool(), 1, &m_CommandBuffer);
+        vkFreeCommandBuffers(device, poolHandle.Get()->GetCommandPool(), 1, &m_CommandBuffer);
     }
 
     void VulkanCommandBuffer::BeginCommands()

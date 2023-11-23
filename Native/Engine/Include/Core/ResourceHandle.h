@@ -22,6 +22,7 @@ namespace Odyssey
 
 	public:
 		T* Get() { return m_Ptr; }
+		uint32_t GetID() { return m_ID; }
 
 	private:
 		friend class ResourceManager;

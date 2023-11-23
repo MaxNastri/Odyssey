@@ -2,6 +2,7 @@
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
 #include "VulkanPhysicalDevice.h"
+#include "ResourceHandle.h"
 
 namespace Odyssey
 {
@@ -18,21 +19,23 @@ namespace Odyssey
         check_vk_result(err);
     }
 
-    VulkanCommandBuffer* VulkanCommandPool::AllocateBuffer()
+    ResourceHandle<VulkanCommandBuffer> VulkanCommandPool::AllocateBuffer()
     {
-        int cmdIndex = (int)commandBuffers.size();
-        commandBuffers.push_back(std::make_unique<VulkanCommandBuffer>(m_Context, this));
+        ResourceHandle poolHandle = ResourceHandle(m_ID, this);
+        ResourceHandle<VulkanCommandBuffer> bufferHandle = ResourceManager::AllocateCommandBuffer(poolHandle);
+        commandBuffers.push_back(bufferHandle);
 
-        return commandBuffers[cmdIndex].get();
+        return bufferHandle;
     }
 
-    void VulkanCommandPool::ReleaseBuffer(VulkanCommandBuffer* commandBuffer)
+    void VulkanCommandPool::ReleaseBuffer(ResourceHandle<VulkanCommandBuffer> commandBuffer)
     {
-        for (int i = 0; i < commandBuffers.size(); ++i)
+        for (int i = 0; i < commandBuffers.size(); i++)
         {
-            if (commandBuffers[i].get() == commandBuffer)
+            if (commandBuffers[i].GetID() == commandBuffer.GetID())
             {
-                commandBuffers[i]->Destroy(this);
+                ResourceHandle poolHandle = ResourceHandle(m_ID, this);
+                ResourceManager::DestroyCommandBuffer(commandBuffer, poolHandle);
                 commandBuffers.erase(commandBuffers.begin() + i);
                 break;
             }
@@ -48,9 +51,10 @@ namespace Odyssey
     void VulkanCommandPool::Destroy()
     {
         VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
+        ResourceHandle poolHandle = ResourceHandle(m_ID, this);
         for (auto& commandBuffer : commandBuffers)
         {
-            commandBuffer->Destroy(this);
+            ResourceManager::DestroyCommandBuffer(commandBuffer, poolHandle);
         }
         vkDestroyCommandPool(device, commandPool, allocator);
         commandPool = VK_NULL_HANDLE;

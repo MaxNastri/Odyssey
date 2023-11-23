@@ -27,7 +27,7 @@ namespace Odyssey
 		}
 
 		// Create a staging buffer to copy the pixel data into vulkanized memory
-		VkDeviceSize imageSize = texWidth * texHeight * 4;
+		uint32_t imageSize = (uint32_t)(texWidth * texHeight * 4);
 		ResourceHandle<VulkanBuffer> stagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, imageSize);
 		stagingBuffer.Get()->SetMemory(imageSize, pixels);
 
@@ -39,8 +39,9 @@ namespace Odyssey
 		imageDesc.Height = texHeight;
 		m_Image = std::make_unique<VulkanImage>(context, imageDesc);
 
-		VulkanCommandPool* commandPool = m_Context->GetCommandPool();
-		VulkanCommandBuffer* commandBuffer = commandPool->AllocateBuffer();
+		ResourceHandle<VulkanCommandPool> poolHandle = m_Context->GetCommandPool();
+		ResourceHandle<VulkanCommandBuffer> bufferHandle = poolHandle.Get()->AllocateBuffer();
+		VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
 
 		// Transition layouts so we can transfer data
 		{
@@ -48,7 +49,7 @@ namespace Odyssey
 			commandBuffer->TransitionLayouts(m_Image.get(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 			commandBuffer->EndCommands();
 
-			m_Context->SubmitCommandBuffer(commandBuffer);
+			m_Context->SubmitCommandBuffer(bufferHandle);
 		}
 		
 		// Set the data from the staging buffer
@@ -63,10 +64,10 @@ namespace Odyssey
 			commandBuffer->TransitionLayouts(m_Image.get(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 			commandBuffer->EndCommands();
 
-			m_Context->SubmitCommandBuffer(commandBuffer);
+			m_Context->SubmitCommandBuffer(bufferHandle);
 		}
 
-		commandPool->ReleaseBuffer(commandBuffer);
+		poolHandle.Get()->ReleaseBuffer(bufferHandle);
 		ResourceManager::DestroyBuffer(stagingBuffer);
 	}
 

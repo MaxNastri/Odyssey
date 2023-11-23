@@ -1,6 +1,8 @@
 #pragma once
 #include "VulkanGlobals.h"
 #include "VulkanCommandBuffer.h"
+#include "ResourceHandle.h"
+#include "Resource.h"
 
 VK_FWD_DECLARE(VkCommandPool)
 
@@ -9,15 +11,15 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanDevice;
 
-	class VulkanCommandPool
+	class VulkanCommandPool : public Resource
 	{
 	public:
 		VulkanCommandPool() = default;
 		VulkanCommandPool(std::shared_ptr<VulkanContext> context);
 
 	public:
-		VulkanCommandBuffer* AllocateBuffer();
-		void ReleaseBuffer(VulkanCommandBuffer* commandBuffer);
+		ResourceHandle<VulkanCommandBuffer>AllocateBuffer();
+		void ReleaseBuffer(ResourceHandle<VulkanCommandBuffer> commandBuffer);
 
 		void Reset();
 		void Destroy();
@@ -28,6 +30,6 @@ namespace Odyssey
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		VkCommandPool commandPool;
-		std::vector<std::unique_ptr<VulkanCommandBuffer>> commandBuffers;
+		std::vector<ResourceHandle<VulkanCommandBuffer>> commandBuffers;
 	};
 }

@@ -7,6 +7,7 @@
 
 namespace Odyssey
 {
+	class Mesh;
 	class VulkanBuffer;
 	class VulkanContext;
 	class VulkanGraphicsPipeline;
@@ -14,19 +15,27 @@ namespace Odyssey
 	class VulkanShader;
 	class VulkanTexture;
 	class VulkanVertexBuffer;
+	class VulkanCommandPool;
+	class VulkanCommandBuffer;
 
 	class ResourceManager
 	{
 	public:
 		static void Initialize(std::shared_ptr<VulkanContext> context);
 
-	public: // Allocations
+	public: // Base allocations
+		static ResourceHandle<Mesh> AllocateMesh(std::vector<VulkanVertex>& vertices, std::vector<uint32_t>& indices);
+		static ResourceHandle<Mesh> AllocateMesh(ResourceHandle<VulkanVertexBuffer> vertexBuffer, ResourceHandle<VulkanIndexBuffer> indexBuffer);
+
+	public: // Vulkan allocations
 		static ResourceHandle<VulkanBuffer> AllocateBuffer(BufferType bufferType, uint32_t size);
 		static ResourceHandle<VulkanVertexBuffer> AllocateVertexBuffer(std::vector<VulkanVertex>& vertices);
 		static ResourceHandle<VulkanIndexBuffer> AllocateIndexBuffer(std::vector<uint32_t>& indices);
 		static ResourceHandle<VulkanTexture> AllocateTexture(uint32_t width, uint32_t height);
 		static ResourceHandle<VulkanShader> AllocateShader(ShaderType shaderType, const std::string& filename);
 		static ResourceHandle<VulkanGraphicsPipeline> AllocateGraphicsPipeline(const VulkanPipelineInfo& info);
+		static ResourceHandle<VulkanCommandPool> AllocateCommandPool();
+		static ResourceHandle<VulkanCommandBuffer> AllocateCommandBuffer(ResourceHandle<VulkanCommandPool> commandPool);
 
 	public: // Pure destruction
 		static void DestroyBuffer(ResourceHandle<VulkanBuffer> handle);
@@ -35,8 +44,13 @@ namespace Odyssey
 		static void DestroyTexture(ResourceHandle<VulkanTexture> handle);
 		static void DestroyShader(ResourceHandle<VulkanShader> handle);
 		static void DestroyGraphicsPipeline(ResourceHandle<VulkanGraphicsPipeline> handle);
+		static void DestroyCommandPool(ResourceHandle<VulkanCommandPool> handle);
+		static void DestroyCommandBuffer(ResourceHandle<VulkanCommandBuffer> bufferHandle, ResourceHandle<VulkanCommandPool> poolHandle);
 
-	private:
+	private: // Base type members
+		inline static DynamicList<Mesh> m_Meshes;
+
+	private: // Vulkan members
 		inline static std::shared_ptr<VulkanContext> m_Context = nullptr;
 		inline static DynamicList<VulkanVertexBuffer> m_VertexBuffers;
 		inline static DynamicList<VulkanIndexBuffer> m_IndexBuffers;
@@ -44,6 +58,8 @@ namespace Odyssey
 		inline static DynamicList<VulkanShader> m_Shaders;
 		inline static DynamicList<VulkanGraphicsPipeline> m_GraphicsPipelines;
 		inline static DynamicList<VulkanBuffer> m_Buffers;
+		inline static DynamicList<VulkanCommandPool> m_CommandPools;
+		inline static DynamicList<VulkanCommandBuffer> m_CommandBuffers;
 	};
 
 }
