@@ -36,6 +36,8 @@ project "Odyssey.Native.Editor"
     externalincludedirs {
         "%{wks.location}/Native/Engine/Include",
         "%{wks.location}/Native/Engine/Include/**",
+        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral",
+        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**",
         "%{wks.location}/Vendor/Vulkan/Include/",
     }
     

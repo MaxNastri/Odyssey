@@ -19,6 +19,11 @@ namespace Odyssey
 		m_RenderTarget = renderTarget;
 	}
 
+	void BeginPassNode::Destroy()
+	{
+		// nop - we don't allocate any resources
+	}
+
 	void BeginPassNode::Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBuffer)
 	{
 		// Init the clear value to black
@@ -98,10 +103,20 @@ namespace Odyssey
 		}
 	}
 
+	DrawNode::DrawNode(const std::string& name)
+	{
+		m_Name = name;
+	}
+
 	DrawNode::DrawNode(const std::string& name, Drawcall& drawcall)
 	{
 		m_Name = name;
 		m_Drawcall = drawcall;
+	}
+
+	void DrawNode::Destroy()
+	{
+		// nop - we don't allocate any resources
 	}
 
 	void DrawNode::Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle)
@@ -121,6 +136,11 @@ namespace Odyssey
 	SubmitNode::SubmitNode(const std::string& name)
 	{
 		m_Name = name;
+	}
+
+	void SubmitNode::Destroy()
+	{
+		// nop - we don't allocate any resources
 	}
 
 	void SubmitNode::Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle)
@@ -168,6 +188,11 @@ namespace Odyssey
 		m_NewLayout = newLayout;
 	}
 
+	void EndPassNode::Destroy()
+	{
+		// nop - we don't allocate any resources
+	}
+
 	void EndPassNode::SetLayouts(VkImageLayout oldLayout, VkImageLayout newLayout)
 	{
 		m_OldLayout = oldLayout;
@@ -209,6 +234,11 @@ namespace Odyssey
 		m_Imgui = imgui;
 	}
 
+	void ImguiDrawNode::Destroy()
+	{
+		// nop - we don't allocate any resources
+	}
+
 	void ImguiDrawNode::AddDescriptorSet(VkDescriptorSet descriptorSet)
 	{
 		m_DescriptorSet = descriptorSet;
@@ -230,23 +260,27 @@ namespace Odyssey
 		m_Name = name;
 		m_VertexShader = vertexShader;
 		m_FragmentShader = fragmentShader;
+
+		// Create the graphics pipeline
+		VulkanPipelineInfo info;
+		info.fragmentShader = m_FragmentShader;
+		info.vertexShader = m_VertexShader;
+		m_GraphicsPipeline = ResourceManager::AllocateGraphicsPipeline(info);
 	}
 
 	void SetPipelineNode::Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle)
 	{
-		// Create the graphics pipeline
-		if (!m_GraphicsPipeline.IsValid())
-		{
-			VulkanPipelineInfo info;
-			info.fragmentShader = m_FragmentShader;
-			info.vertexShader = m_VertexShader;
-			m_GraphicsPipeline = ResourceManager::AllocateGraphicsPipeline(info);
-		}
 	}
 
 	void SetPipelineNode::Execute(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle)
 	{
 		VulkanCommandBuffer* commandBuffer = commandBufferHandle.Get();
 		commandBuffer->BindPipeline(m_GraphicsPipeline);
+	}
+
+	void SetPipelineNode::Destroy()
+	{
+		// nop - we don't allocate any resources
+		ResourceManager::DestroyGraphicsPipeline(m_GraphicsPipeline);
 	}
 }

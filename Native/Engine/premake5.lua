@@ -28,6 +28,10 @@ project "Odyssey.Native.Engine"
         "Source/**.cpp",
         "Source/**.hpp",
         "Source/**.hlsl",
+        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**.h",
+        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**.hpp",
+        "%{wks.location}/Vendor/Coral/Coral.Native/Source/Coral/**.cpp",
+        "%{wks.location}/Vendor/Coral/NetCore/**.h",
     }
 
     includedirs {
@@ -35,9 +39,12 @@ project "Odyssey.Native.Engine"
         "Include/**",
         "Source",
         "Source/**",
+        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/",
+        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**",
+        "%{wks.location}/Vendor/Coral/NetCore/**",
+        "%{wks.location}/Vendor/Coral/NetCore/",
     }
     externalincludedirs {
-        "%{wks.location}/Vendor/NetCore/7.0.7/",
         "%{wks.location}/Vendor/glfw3/",
         "%{wks.location}/Vendor/Vulkan/Include/",
     }
@@ -57,14 +64,15 @@ project "Odyssey.Native.Engine"
 			'{COPYFILE} "%{wks.location}/Vendor/glfw3/lib/glfw3.lib" "%{cfg.targetdir}"',
 			'{COPYFILE} "%{wks.location}/Vendor/Vulkan/Lib/vulkan-1.lib" "%{cfg.targetdir}"',
         }
-		postbuildcommands {
-            '{COPYFILE} "%{wks.location}Managed/Runtime/Coral.Managed.runtimeconfig.json" "%{cfg.targetdir}"',
-		}
+		--postbuildcommands {
+        --    '{COPYFILE} "%{wks.location}Vendor/Coral/Coral.Managed/Coral.Managed.runtimeconfig.json" "%{cfg.targetdir}"',
+		--}
 	filter {}
 
     defines {
         "GLM_FORCE_DEPTH_ZERO_TO_ONE",
-        "YAML_CPP_STATIC_DEFINE"
+        "YAML_CPP_STATIC_DEFINE",
+        "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING"
     }
 
     filter { "system:windows" }

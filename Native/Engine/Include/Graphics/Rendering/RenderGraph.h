@@ -17,6 +17,7 @@ namespace Odyssey
 		void Execute(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle);
 
 	public:
+		void Clear();
 		void SetRootNode(RenderGraphNode* root) { m_RootNode = root; }
 
 	public:

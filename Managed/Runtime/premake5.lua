@@ -2,7 +2,7 @@ include "../CSExtensions.lua"
 
 project "Coral.Managed"
     language "C#"
-    dotnetframework "net7.0"
+    dotnetframework "net8.0"
     kind "SharedLib"
 	clr "Unsafe"
 
@@ -18,5 +18,6 @@ project "Coral.Managed"
     }
 
     files {
-        "Source/**.cs"
+        "Source/**.cs",
+        "%{wks.location}/Vendor/Coral/Coral.Managed/Source/**.cs",
     }

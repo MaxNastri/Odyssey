@@ -22,7 +22,5 @@
 	#include <Windows.h>
 #endif
 
-// HostFXR / CoreCLR
-#include <nethost.h>
-#include <coreclr_delegates.h>
-#include <hostfxr.h>
+#include "coreclr_delegates.h"
+#include "hostfxr.h"

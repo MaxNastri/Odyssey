@@ -19,6 +19,7 @@ namespace Odyssey
 	public:
 		virtual void Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) = 0;
 		virtual void Execute(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) = 0;
+		virtual void Destroy() = 0;
 
 	public:
 		std::string_view GetName() { return m_Name; }
@@ -36,6 +37,7 @@ namespace Odyssey
 		BeginPassNode() = default;
 		BeginPassNode(const std::string& name);
 		BeginPassNode(const std::string& name, ResourceHandle<VulkanTexture> renderTarget);
+		virtual void Destroy() override;
 
 	public:
 		virtual void Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) override;
@@ -58,6 +60,7 @@ namespace Odyssey
 	public:
 		virtual void Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) override;
 		virtual void Execute(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) override;
+		virtual void Destroy() override;
 
 	public:
 		ResourceHandle<VulkanShader> GetVertexShader() { return m_VertexShader; }
@@ -75,6 +78,7 @@ namespace Odyssey
 		DrawNode() = default;
 		DrawNode(const std::string& name);
 		DrawNode(const std::string& name, Drawcall& drawcall);
+		virtual void Destroy() override;
 
 	public:
 		virtual void Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) override;
@@ -92,7 +96,9 @@ namespace Odyssey
 		EndPassNode(const std::string& name);
 		EndPassNode(const std::string& name, VkImageLayout oldLayout, VkImageLayout newLayout);
 		EndPassNode(const std::string& name, ResourceHandle<VulkanTexture> renderTarget, VkImageLayout oldLayout, VkImageLayout newLayout);
+		virtual void Destroy() override;
 
+	public:
 		void SetLayouts(VkImageLayout oldLayout, VkImageLayout newLayout);
 
 	public:
@@ -111,6 +117,7 @@ namespace Odyssey
 		ImguiDrawNode() = default;
 		ImguiDrawNode(const std::string& name);
 		ImguiDrawNode(const std::string& name, std::shared_ptr<VulkanImgui> imgui);
+		virtual void Destroy() override;
 
 	public:
 		void AddDescriptorSet(VkDescriptorSet descriptorSet);
@@ -129,6 +136,7 @@ namespace Odyssey
 	public:
 		SubmitNode() = default;
 		SubmitNode(const std::string& name);
+		virtual void Destroy() override;
 
 	public:
 		virtual void Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) override;

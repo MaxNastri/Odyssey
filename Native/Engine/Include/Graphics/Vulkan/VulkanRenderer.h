@@ -68,6 +68,7 @@ namespace Odyssey
 
 	private: // Draws
 		RenderGraph m_RenderGraph;
+		bool m_RenderGraphCreated = false;
 		std::shared_ptr<PerFrameRenderingData> renderingData;
 		std::vector<Drawcall> m_DrawCalls;
 

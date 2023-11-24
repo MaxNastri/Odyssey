@@ -23,4 +23,15 @@ namespace Odyssey
 			node = node->GetNext();
 		}
 	}
+
+	void RenderGraph::Clear()
+	{
+		for (auto& node : m_AllNodes)
+		{
+			node->Destroy();
+		}
+
+		m_AllNodes.clear();
+		m_RootNode = nullptr;
+	}
 }

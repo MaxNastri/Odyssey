@@ -12,5 +12,7 @@ workspace "Odyssey-Native"
 		"_CRT_SECURE_NO_WARNINGS"
 	}
 
+group "Core"
 include "Native/Editor"
 include "Native/Engine"
+group ""

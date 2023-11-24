@@ -21,6 +21,3 @@
 	#define NOMINMAX
 	#include <Windows.h>
 #endif
-
-// Coral
-#include <Utility.hpp>

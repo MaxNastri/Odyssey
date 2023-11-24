@@ -24,7 +24,6 @@ namespace Odyssey
 		hostSettings =
 		{
 			.CoralDirectory = coralDir,
-			.CoralFilename = "Coral.Managed.dll",
 			.ExceptionCallback = ExceptionCallback
 		};
 		hostInstance.Initialize(hostSettings);

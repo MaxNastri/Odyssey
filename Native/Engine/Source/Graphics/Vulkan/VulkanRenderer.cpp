@@ -88,7 +88,12 @@ namespace Odyssey
 			RebuildSwapchain();
 
 		imgui->SubmitDraws();
-		BuildRenderGraph();
+
+		if (!m_RenderGraphCreated)
+		{
+			BuildRenderGraph();
+			m_RenderGraphCreated = true;
+		}
 		RenderFrame();
 		imgui->PostRender();
 

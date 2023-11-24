@@ -47,11 +47,11 @@ namespace Odyssey
 			std::string fieldName = field.GetName();
 			Coral::Type fieldType = field.GetType();
 
-			if (fieldType.IsString())
-			{
-				SerializeNativeString(fieldName, fieldsNode);
-			}
-			else
+			//if (fieldType.IsString())
+			//{
+			//	SerializeNativeString(fieldName, fieldsNode);
+			//}
+			//else
 			{
 				Coral::ManagedType managedType = fieldType.GetManagedType();
 				if (managedType != Coral::ManagedType::Unknown)
