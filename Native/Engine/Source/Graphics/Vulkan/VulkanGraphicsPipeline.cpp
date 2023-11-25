@@ -3,7 +3,6 @@
 #include "VulkanDevice.h"
 #include "VulkanShader.h"
 #include "VulkanVertex.h"
-#include "VulkanDescriptorSet.h"
 #include "ResourceHandle.h"
 
 namespace Odyssey
@@ -153,25 +152,12 @@ namespace Odyssey
 		vkDestroyPipeline(m_Context->GetDevice()->GetLogicalDevice(), m_GraphicsPipeline, nullptr);
 	}
 
-	void VulkanGraphicsPipeline::AddDescriptorSet(std::shared_ptr<VulkanDescriptorSet> descriptorSet)
-	{
-		m_DescriptorSets.push_back(descriptorSet);
-	}
-
 	void VulkanGraphicsPipeline::CreateLayout()
 	{
-		std::vector<VkDescriptorSetLayout> layouts;
-		layouts.resize(m_DescriptorSets.size());
-
-		for (int i = 0; i < layouts.size(); ++i)
-		{
-			layouts[i] = m_DescriptorSets[i]->GetLayout();
-		}
-
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = (uint32_t)layouts.size(); // Optional
-		pipelineLayoutInfo.pSetLayouts = layouts.data(); // Optional
+		pipelineLayoutInfo.setLayoutCount = 0; // Optional
+		pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
 		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 

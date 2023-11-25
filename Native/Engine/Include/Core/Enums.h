@@ -11,6 +11,20 @@ namespace Odyssey
 		Uniform = 4,
 	};
 
+	enum DescriptorType
+	{
+		None = 0,
+		Uniform = 1,
+		Sampler = 2,
+	};
+
+	enum class ShaderStage
+	{
+		None = 0,
+		Fragment = 1,
+		Vertex = 2,
+	};
+
 	enum class ImageType
 	{
 		None = 0,

@@ -14,7 +14,7 @@ namespace Odyssey
 	public:
 		VkPhysicalDevice GetPhysicalDevice() { return physicalDevice; }
 		uint32_t GetFamilyIndex(VulkanQueueType queueType);
-
+		void* GetExtensionFeatures() { return last_requested_extension_feature; }
 	private:
 		void CreatePhysicalDevice(VkInstance instance);
 		void FindGraphicsFamilyQueue();
@@ -22,7 +22,10 @@ namespace Odyssey
 
 	private:
 
+	private:
 		VkPhysicalDevice physicalDevice;
 		VulkanQueueFamilies indices;
+		std::map<VkStructureType, std::shared_ptr<void>> m_ExtensionFeatures;
+		void* last_requested_extension_feature{ nullptr };
 	};
 }

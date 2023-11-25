@@ -3,6 +3,34 @@
 
 namespace Odyssey
 {
+	template<typename T>
+	T& AddExtensionFeature(VkStructureType type, std::map<VkStructureType, std::shared_ptr<void>>& extensionFeatures, VkPhysicalDevice physicalDevice, void* last_requested_extension_feature)
+	{
+		auto feature = extensionFeatures.find(type);
+		if (feature != extensionFeatures.end())
+		{
+			return *static_cast<T*>(feature->second.get());
+		}
+
+		T extension{ type };
+
+		// Insert the extension feature into the extension feature map so its ownership is held
+		extensionFeatures.insert({ type, std::make_shared<T>(extension) });
+
+		// Pull out the dereferenced void pointer, we can assume its type based on the template
+		auto* extension_ptr = static_cast<T*>(extensionFeatures.find(type)->second.get());
+
+		// If an extension feature has already been requested, we shift the linked list down by one
+		// Making this current extension the new base pointer
+		if (last_requested_extension_feature)
+		{
+			extension_ptr->pNext = last_requested_extension_feature;
+		}
+		last_requested_extension_feature = extension_ptr;
+
+		return *extension_ptr;
+	}
+
 	VulkanPhysicalDevice::VulkanPhysicalDevice(VkInstance instance)
 	{
 		CreatePhysicalDevice(instance);
@@ -28,6 +56,7 @@ namespace Odyssey
 		{
 			VkPhysicalDeviceProperties properties;
 			vkGetPhysicalDeviceProperties(device, &properties);
+
 			if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
 			{
 				physicalDevice = device;

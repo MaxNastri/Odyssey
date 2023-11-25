@@ -26,11 +26,19 @@ namespace Odyssey
 
 		std::vector<const char*> device_extensions;
 		device_extensions.push_back("VK_KHR_swapchain");
+
+		// Dynamic rendering
 		device_extensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
 		device_extensions.push_back("VK_KHR_depth_stencil_resolve");
 		device_extensions.push_back("VK_KHR_create_renderpass2");
 		device_extensions.push_back("VK_KHR_multiview");
 		device_extensions.push_back("VK_KHR_maintenance2");
+
+		// Descriptor buffers
+		device_extensions.push_back(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
+		device_extensions.push_back(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+		device_extensions.push_back(VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME);
+		device_extensions.push_back(VK_EXT_DESCRIPTOR_BUFFER_EXTENSION_NAME);
 
 		// Enumerate physical device extension
 		uint32_t properties_count;
@@ -56,6 +64,19 @@ namespace Odyssey
 		dynamic_rendering_feature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
 		dynamic_rendering_feature.dynamicRendering = VK_TRUE;
 
+		VkPhysicalDeviceBufferDeviceAddressFeatures bufferAddress{};
+		bufferAddress.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
+		bufferAddress.bufferDeviceAddress = VK_TRUE;
+
+		VkPhysicalDeviceDescriptorBufferFeaturesEXT descriptorBuffer{};
+		descriptorBuffer.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_FEATURES_EXT;
+		descriptorBuffer.descriptorBuffer = VK_TRUE;
+
+		dynamic_rendering_feature.pNext = &bufferAddress;
+		bufferAddress.pNext = &descriptorBuffer;
+
+		VkPhysicalDeviceFeatures deviceFeatures{};
+
 		VkDeviceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		create_info.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]);
@@ -63,6 +84,7 @@ namespace Odyssey
 		create_info.enabledExtensionCount = (uint32_t)device_extensions.size();
 		create_info.ppEnabledExtensionNames = device_extensions.data();
 		create_info.pNext = &dynamic_rendering_feature;
+		create_info.pEnabledFeatures = &deviceFeatures;
 
 		VkResult err = vkCreateDevice(vkPhysicalDevice, &create_info, allocator, &logicalDevice);
 		check_vk_result(err);

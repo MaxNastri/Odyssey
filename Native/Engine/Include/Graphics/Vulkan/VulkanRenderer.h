@@ -1,7 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
 #include "VulkanDevice.h"
-#include "VulkanDescriptorPool.h"
 #include "VulkanImgui.h"
 #include "VulkanSwapchain.h"
 #include "VulkanFrame.h"
@@ -55,7 +54,6 @@ namespace Odyssey
 	private: // Vulkan objects
 		std::shared_ptr<VulkanContext> context;
 		std::shared_ptr<VulkanWindow> window;
-		std::unique_ptr<VulkanDescriptorPool> descriptorPool;
 
 	private: // Commands
 		std::vector<ResourceHandle<VulkanCommandPool>> commandPools;

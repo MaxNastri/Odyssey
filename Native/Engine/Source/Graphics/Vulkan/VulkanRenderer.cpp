@@ -12,7 +12,6 @@
 #include "VulkanIndexBuffer.h"
 #include "VulkanImage.h"
 #include "VulkanTexture.h"
-#include "VulkanDescriptorSet.h"
 #include "ResourceManager.h"
 #include "RenderGraphNodes.h"
 #include "PerFrameRenderingData.h"
@@ -30,7 +29,6 @@ namespace Odyssey
 
 		window = std::make_shared<VulkanWindow>(context);
 		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
-		descriptorPool = std::make_unique<VulkanDescriptorPool>(context->GetDevice());
 
 		// IMGUI
 		VulkanImgui::InitInfo imguiInfo = CreateImguiInitInfo();
@@ -53,8 +51,6 @@ namespace Odyssey
 		VulkanDevice* device = context->GetDevice();
 		device->WaitForIdle();
 
-		uboDescriptor->Destroy();
-
 		for (auto uboBuffer : uboBuffers)
 		{
 			ResourceManager::DestroyBuffer(uboBuffer);
@@ -69,7 +65,6 @@ namespace Odyssey
 		}
 
 		frames.clear();
-		descriptorPool.reset();
 		swapchain.reset();
 		window.reset();
 
@@ -265,7 +260,7 @@ namespace Odyssey
 		info.logicalDevice = context->GetDevice()->GetLogicalDevice();
 		info.queueIndex = context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics);
 		info.queue = context->GetGraphicsQueueVK();
-		info.descriptorPool = descriptorPool->descriptorPool;
+		info.descriptorPool = nullptr;
 		info.renderPass = nullptr;
 		info.minImageCount = swapchain->minImageCount;
 		info.imageCount = swapchain->imageCount;
@@ -296,9 +291,6 @@ namespace Odyssey
 		{
 			uboBuffers.resize(frames.size());
 			uboData.resize(frames.size());
-
-			// Create the UBO descriptor
-			uboDescriptor = std::make_shared<VulkanDescriptorSet>(context);
 
 			for (int i = 0; i < frames.size(); ++i)
 			{
