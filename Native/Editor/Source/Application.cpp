@@ -94,7 +94,7 @@ namespace Odyssey
 			vertices[2] = VulkanVertex(glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0, 0, 1));
 			vertices[3] = VulkanVertex(glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(1, 1, 1));
 
-			std::vector<uint32_t> indices{ 0, 1, 2, 2, 3, 0 };
+			std::vector<uint32_t> indices{ 0, 3,2,2,1,0 };
 
 			mesh = ResourceManager::AllocateMesh(vertices, indices);
 		}

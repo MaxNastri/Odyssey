@@ -75,6 +75,7 @@ project "Odyssey.Native.Engine"
 
     defines {
         "GLM_FORCE_DEPTH_ZERO_TO_ONE",
+        "GLM_FORCE_LEFT_HANDED",
         "YAML_CPP_STATIC_DEFINE",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
         "VK_NO_PROTOTYPES",

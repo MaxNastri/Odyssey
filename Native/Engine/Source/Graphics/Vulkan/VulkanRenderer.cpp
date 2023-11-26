@@ -247,6 +247,7 @@ namespace Odyssey
 			static auto startTime = std::chrono::high_resolution_clock::now();
 			auto currentTime = std::chrono::high_resolution_clock::now();
 			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
 			uboData[frameIndex].world = glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 			uint32_t bufferSize = sizeof(uboData[frameIndex]);
 			uboBuffers[frameIndex].Get()->SetMemory(bufferSize, &uboData[frameIndex]);
@@ -330,10 +331,10 @@ namespace Odyssey
 
 			for (int i = 0; i < frames.size(); ++i)
 			{
-				uboData[i].world = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				uboData[i].inverseView = glm::lookAt(glm::vec3(0.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-				uboData[i].proj = glm::perspective(glm::radians(45.0f), 1000.0f / 1000.0f, 0.1f, 10.0f);
-				uboData[i].proj[1][1] *= -1;
+				uboData[i].world = glm::identity<mat4>();// glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				uboData[i].inverseView = glm::lookAt(glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				uboData[i].proj = glm::perspectiveLH(glm::radians(45.0f), 1000.0f / 1000.0f, 0.1f, 10.0f);
+				uboData[i].proj[1][1] = -uboData[i].proj[1][1];
 
 				uint32_t bufferSize = sizeof(uboData[i]);
 				uboBuffers[i] = ResourceManager::AllocateBuffer(BufferType::Uniform, bufferSize);
