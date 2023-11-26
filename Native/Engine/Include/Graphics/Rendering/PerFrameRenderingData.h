@@ -10,5 +10,7 @@ namespace Odyssey
 		std::vector<Drawcall> m_Drawcalls;
 		VulkanFrame* frame;
 		uint32_t width, height;
+		ResourceHandle<VulkanDescriptorBuffer> descriptorBuffer;
+		ResourceHandle<VulkanBuffer> uniformBuffer;
 	};
 }

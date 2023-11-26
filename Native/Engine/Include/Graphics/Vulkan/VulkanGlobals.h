@@ -41,19 +41,15 @@ namespace Odyssey
         return VK_FALSE;
     }
 
-    static void check_vk_result(VkResult err)
+    static bool check_vk_result(VkResult err)
     {
         if (err == 0)
         {
-            return;
+            return true;
         }
 
-        Logger::LogError(std::format("[vulkan] Error: VkResult = %d\n", (uint64_t)err));
-
-        if (err < 0)
-        {
-            abort();
-        }
+        Logger::LogError("[vulkan] Error: VkResult = " + std::to_string((uint64_t)err));
+        return false;
     }
 }
 #endif

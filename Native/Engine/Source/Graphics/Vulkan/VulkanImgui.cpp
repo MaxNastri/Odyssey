@@ -53,7 +53,7 @@ namespace Odyssey
 		init_info.ImageCount = initInfo.imageCount;
 		init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 		init_info.Allocator = allocator;
-		init_info.CheckVkResultFn = check_vk_result;
+		init_info.CheckVkResultFn = nullptr;
 		init_info.UseDynamicRendering = true;
 		init_info.ColorAttachmentFormat = initInfo.colorFormat;
 
@@ -82,10 +82,17 @@ namespace Odyssey
 			commandBuffer->EndCommands();
 
 			VkResult err = vkQueueSubmit(initInfo.queue, 1, &submitInfo, VK_NULL_HANDLE);
-			check_vk_result(err);
+
+			if (!check_vk_result(err))
+			{
+				Logger::LogError("(imgui 1)");
+			}
 
 			err = vkDeviceWaitIdle(initInfo.logicalDevice);
-			check_vk_result(err);
+			if (!check_vk_result(err))
+			{
+				Logger::LogError("(imgui 2)");
+			}
 
 			ImGui_ImplVulkan_DestroyFontUploadObjects();
 		}
@@ -166,6 +173,9 @@ namespace Odyssey
 		pool_info.poolSizeCount = arrayLength;
 		pool_info.pPoolSizes = pool_sizes;
 		VkResult err = vkCreateDescriptorPool(m_Context->GetDeviceVK(), &pool_info, allocator, &descriptorPool);
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(imgui 3)");
+		}
 	}
 }

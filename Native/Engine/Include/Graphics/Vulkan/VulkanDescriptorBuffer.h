@@ -2,6 +2,7 @@
 #include "Enums.h"
 #include "ResourceHandle.h"
 #include "VulkanGlobals.h"
+#include "Resource.h"
 
 VK_FWD_DECLARE(VkDescriptorSetLayout)
 
@@ -11,10 +12,10 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanDescriptorLayout;
 
-	class VulkanDescriptorBuffer
+	class VulkanDescriptorBuffer : public Resource
 	{
 	public:
-		VulkanDescriptorBuffer(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count);
+		VulkanDescriptorBuffer(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanDescriptorLayout> layout, uint32_t descriptorCount);
 		void Destroy();
 
 	public:

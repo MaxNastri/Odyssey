@@ -17,7 +17,10 @@ namespace Odyssey
 	void VulkanDevice::WaitForIdle()
 	{
 		VkResult err = vkDeviceWaitIdle(logicalDevice);
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(device 1)");
+		}
 	}
 
 	void VulkanDevice::CreateLogicalDevice(VulkanPhysicalDevice* physicalDevice)
@@ -87,7 +90,10 @@ namespace Odyssey
 		create_info.pEnabledFeatures = &deviceFeatures;
 
 		VkResult err = vkCreateDevice(vkPhysicalDevice, &create_info, allocator, &logicalDevice);
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(device 2)");
+		}
 
 		volkLoadDevice(logicalDevice);
 	}

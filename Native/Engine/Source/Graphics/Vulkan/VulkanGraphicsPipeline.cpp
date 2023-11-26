@@ -3,6 +3,7 @@
 #include "VulkanDevice.h"
 #include "VulkanShader.h"
 #include "VulkanVertex.h"
+#include "VulkanDescriptorLayout.h"
 #include "ResourceHandle.h"
 
 namespace Odyssey
@@ -11,7 +12,7 @@ namespace Odyssey
 	{
 		m_Context = context;
 
-		CreateLayout();
+		CreateLayout(info);
 
 		// Shaders
 		VulkanShader* vertexShader = info.vertexShader.Get();
@@ -138,6 +139,7 @@ namespace Odyssey
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 		pipelineInfo.basePipelineIndex = -1; // Optional
+		pipelineInfo.flags = VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT;
 
 		if (vkCreateGraphicsPipelines(m_Context->GetDevice()->GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicsPipeline) != VK_SUCCESS)
 		{
@@ -152,12 +154,21 @@ namespace Odyssey
 		vkDestroyPipeline(m_Context->GetDevice()->GetLogicalDevice(), m_GraphicsPipeline, nullptr);
 	}
 
-	void VulkanGraphicsPipeline::CreateLayout()
+	void VulkanGraphicsPipeline::CreateLayout(VulkanPipelineInfo& info)
 	{
+		// Convert resource handles to vulkan data
+		std::vector<VkDescriptorSetLayout> setLayouts{};
+		setLayouts.resize(info.descriptorLayouts.size());
+
+		for (int i = 0; i < info.descriptorLayouts.size(); i++)
+		{
+			setLayouts[i] = info.descriptorLayouts[i].Get()->GetHandle();
+		}
+
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 0; // Optional
-		pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+		pipelineLayoutInfo.setLayoutCount = (uint32_t)setLayouts.size(); // Optional
+		pipelineLayoutInfo.pSetLayouts = setLayouts.data(); // Optional
 		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 

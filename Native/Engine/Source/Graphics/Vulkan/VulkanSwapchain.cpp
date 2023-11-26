@@ -29,7 +29,10 @@ namespace Odyssey
     void VulkanSwapchain::CreateSwapchain(VulkanSurface* surface)
 	{
         VkResult err = vkDeviceWaitIdle(m_Context->GetDeviceVK());
-        check_vk_result(err);
+        if (!check_vk_result(err))
+        {
+            Logger::LogError("(Swapchain 1)");
+        }
 
 		minImageCount = GetMinImageCount(surface->GetPresentMode());
         VkSurfaceFormatKHR surfaceFormat = surface->GetSurfaceFormat();
@@ -55,7 +58,10 @@ namespace Odyssey
         // Get the capabilities of the surface
         VkSurfaceCapabilitiesKHR cap;
         err = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_Context->GetPhysicalDeviceVK(), vkSurface, &cap);
-        check_vk_result(err);
+        if (!check_vk_result(err))
+        {
+            Logger::LogError("(Swapchain 2)");
+        }
         if (info.minImageCount < cap.minImageCount)
             info.minImageCount = cap.minImageCount;
         else if (cap.maxImageCount != 0 && info.minImageCount > cap.maxImageCount)
@@ -73,10 +79,16 @@ namespace Odyssey
         }
 
         err = vkCreateSwapchainKHR(m_Context->GetDeviceVK(), &info, allocator, &swapchain);
-        check_vk_result(err);
+        if (!check_vk_result(err))
+        {
+            Logger::LogError("(Swapchain 3)");
+        }
 
         err = vkGetSwapchainImagesKHR(m_Context->GetDeviceVK(), swapchain, &imageCount, nullptr);
-        check_vk_result(err);
+        if (!check_vk_result(err))
+        {
+            Logger::LogError("(Swapchain 4)");
+        }
 	}
 
     void VulkanSwapchain::CreateSwapchainImages(VkFormat format)

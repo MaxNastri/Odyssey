@@ -18,6 +18,8 @@ namespace Odyssey
 	class VulkanVertexBuffer;
 	class VulkanCommandPool;
 	class VulkanCommandBuffer;
+	class VulkanDescriptorBuffer;
+	class VulkanDescriptorLayout;
 
 	class ResourceManager
 	{
@@ -38,6 +40,8 @@ namespace Odyssey
 		static ResourceHandle<VulkanGraphicsPipeline> AllocateGraphicsPipeline(const VulkanPipelineInfo& info);
 		static ResourceHandle<VulkanCommandPool> AllocateCommandPool();
 		static ResourceHandle<VulkanCommandBuffer> AllocateCommandBuffer(ResourceHandle<VulkanCommandPool> commandPool);
+		static ResourceHandle<VulkanDescriptorLayout> AllocateDescriptorLayout(DescriptorType type, ShaderStage shaderStag, uint32_t bindingIndex);
+		static ResourceHandle<VulkanDescriptorBuffer> AllocateDescriptorBuffer(ResourceHandle<VulkanDescriptorLayout> layout, uint32_t descriptorCount);
 
 	public: // Pure destruction
 		static void DestroyBuffer(ResourceHandle<VulkanBuffer> handle);
@@ -63,6 +67,8 @@ namespace Odyssey
 		inline static DynamicList<VulkanBuffer> m_Buffers;
 		inline static DynamicList<VulkanCommandPool> m_CommandPools;
 		inline static DynamicList<VulkanCommandBuffer> m_CommandBuffers;
+		inline static DynamicList<VulkanDescriptorLayout> m_DescriptorLayouts;
+		inline static DynamicList<VulkanDescriptorBuffer> m_DescriptorBuffers;
 	};
 
 }

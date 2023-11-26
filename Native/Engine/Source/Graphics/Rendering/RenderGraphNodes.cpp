@@ -5,6 +5,7 @@
 #include "VulkanCommandBuffer.h"
 #include "VulkanTexture.h"
 #include "VulkanImgui.h"
+#include "VulkanGraphicsPipeline.h"
 
 namespace Odyssey
 {
@@ -167,7 +168,10 @@ namespace Odyssey
 
 		commandBuffer->EndCommands();
 		VkResult err = vkQueueSubmit(context->GetGraphicsQueueVK(), 1, &submitInfo, frame->fence);
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(graphnode 1)");
+		}
 	}
 
 	EndPassNode::EndPassNode(const std::string& name)
@@ -255,7 +259,7 @@ namespace Odyssey
 		m_Imgui->Render(commandBuffer->GetCommandBuffer(), m_DescriptorSet);
 	}
 
-	SetPipelineNode::SetPipelineNode(const std::string& name, ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader)
+	SetPipelineNode::SetPipelineNode(const std::string& name, ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts)
 	{
 		m_Name = name;
 		m_VertexShader = vertexShader;
@@ -265,6 +269,7 @@ namespace Odyssey
 		VulkanPipelineInfo info;
 		info.fragmentShader = m_FragmentShader;
 		info.vertexShader = m_VertexShader;
+		info.descriptorLayouts = descriptorLayouts;
 		m_GraphicsPipeline = ResourceManager::AllocateGraphicsPipeline(info);
 	}
 
@@ -276,6 +281,15 @@ namespace Odyssey
 	{
 		VulkanCommandBuffer* commandBuffer = commandBufferHandle.Get();
 		commandBuffer->BindPipeline(m_GraphicsPipeline);
+
+		std::vector<ResourceHandle<VulkanDescriptorBuffer>> descriptorBuffers;
+		descriptorBuffers.push_back(renderingData->descriptorBuffer);
+
+		uint32_t buffer_index_ubo = 0;
+		VkDeviceSize buffer_offset = 0;
+
+		commandBuffer->BindDescriptorBuffers(descriptorBuffers);
+		commandBuffer->SetDescriptorBufferOffset(m_GraphicsPipeline, 0, &buffer_index_ubo, &buffer_offset);
 	}
 
 	void SetPipelineNode::Destroy()

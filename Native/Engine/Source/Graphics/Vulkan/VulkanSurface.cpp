@@ -12,7 +12,10 @@ namespace Odyssey
 		uint32_t graphicsIndex = physicalDevice->GetFamilyIndex(VulkanQueueType::Graphics);
 
 		VkResult err = glfwCreateWindowSurface(context->GetInstance(), window, allocator, &surface);
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(surface 1)");
+		}
 
 		glfwGetFramebufferSize(window, &width, &height);
 

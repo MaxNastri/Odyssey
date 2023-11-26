@@ -23,7 +23,10 @@ namespace Odyssey
         info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         info.commandBufferCount = 1;
         VkResult err = vkAllocateCommandBuffers(m_Context->GetDevice()->GetLogicalDevice(), &info, &m_CommandBuffer);
-        check_vk_result(err);
+        if (!check_vk_result(err))
+        {
+            Logger::LogError("(VulkanCommandBuffer) ctor");
+        }
 	}
 
     void VulkanCommandBuffer::Destroy(ResourceHandle<VulkanCommandPool> poolHandle)
@@ -38,13 +41,19 @@ namespace Odyssey
         begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
         VkResult err = vkBeginCommandBuffer(m_CommandBuffer, &begin_info);
-        check_vk_result(err);
+        if (!check_vk_result(err))
+        {
+            Logger::LogError("(commandbuf 2)");
+        }
     }
 
     void VulkanCommandBuffer::EndCommands()
     {
         VkResult err = vkEndCommandBuffer(m_CommandBuffer);
-        check_vk_result(err);
+        if (!check_vk_result(err))
+        {
+            Logger::LogError("(commandbuf 3)");
+        }
     }
 
     void VulkanCommandBuffer::Reset()
@@ -129,6 +138,7 @@ namespace Odyssey
     {
         vkCmdBindIndexBuffer(m_CommandBuffer, handle.Get()->GetIndexBufferVK(), 0, VK_INDEX_TYPE_UINT32);
     }
+
     void VulkanCommandBuffer::BindDescriptorBuffers(std::vector<ResourceHandle<VulkanDescriptorBuffer>> handles)
     {
         std::vector<VkDescriptorBufferBindingInfoEXT> bindingInfos;
@@ -145,8 +155,8 @@ namespace Odyssey
 
         vkCmdBindDescriptorBuffersEXT(m_CommandBuffer, (uint32_t)bindingInfos.size(), bindingInfos.data());
     }
-    void VulkanCommandBuffer::SetDescriptorBufferOffset(ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline, uint32_t descriptorIndex, const uint32_t* bufferIndex, const VkDeviceSize* bufferOffset)
+    void VulkanCommandBuffer::SetDescriptorBufferOffset(ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline, uint32_t setIndex, const uint32_t* bufferIndex, const VkDeviceSize* bufferOffset)
     {
-        vkCmdSetDescriptorBufferOffsetsEXT(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.Get()->GetLayout(), descriptorIndex, 1, bufferIndex, bufferOffset);
+        vkCmdSetDescriptorBufferOffsetsEXT(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.Get()->GetLayout(), setIndex, 1, bufferIndex, bufferOffset);
     }
 }

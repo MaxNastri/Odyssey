@@ -55,7 +55,7 @@ namespace Odyssey
 	{
 	public:
 		SetPipelineNode() = default;
-		SetPipelineNode(const std::string& name, ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader);
+		SetPipelineNode(const std::string& name, ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts);
 
 	public:
 		virtual void Setup(VulkanContext* context, PerFrameRenderingData* renderingData, ResourceHandle<VulkanCommandBuffer> commandBufferHandle) override;

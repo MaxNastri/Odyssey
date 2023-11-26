@@ -23,7 +23,7 @@ namespace Odyssey
 		VkPipelineLayout GetLayout() { return m_PipelineLayout; }
 
 	private:
-		void CreateLayout();
+		void CreateLayout(VulkanPipelineInfo& info);
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;

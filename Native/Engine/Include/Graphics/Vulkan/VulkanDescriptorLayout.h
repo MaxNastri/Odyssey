@@ -1,6 +1,7 @@
 #pragma once
 #include "VulkanGlobals.h"
 #include "Enums.h"
+#include "Resource.h"
 
 VK_FWD_DECLARE(VkDescriptorSetLayout)
 
@@ -8,10 +9,10 @@ namespace Odyssey
 {
 	class VulkanContext;
 
-	class VulkanDescriptorLayout
+	class VulkanDescriptorLayout : public Resource
 	{
 	public:
-		VulkanDescriptorLayout(std::shared_ptr<VulkanContext> context, DescriptorType type, ShaderStage shaderStag, uint32_t bindingIndex);
+		VulkanDescriptorLayout(std::shared_ptr<VulkanContext> context, DescriptorType type, ShaderStage shaderStage, uint32_t bindingIndex);
 
 		VkDescriptorSetLayout GetHandle() { return m_Layout; }
 		DescriptorType GetType() { return m_Type; }

@@ -67,7 +67,7 @@ namespace Odyssey
 
 		vkBindBufferMemory(m_Context->GetDeviceVK(), buffer, bufferMemory, 0);
 
-		if (m_BufferType == BufferType::Uniform)
+		if (m_BufferType == BufferType::Uniform || m_BufferType == BufferType::DescriptorUniform || m_BufferType == BufferType::DescriptorSampler)
 		{
 			vkMapMemory(m_Context->GetDeviceVK(), bufferMemory, 0, m_Size, 0, &bufferMemoryMapped);
 		}

@@ -42,14 +42,22 @@ namespace Odyssey
 		// Get the number of GPUs
 		uint32_t gpu_count;
 		VkResult err = vkEnumeratePhysicalDevices(instance, &gpu_count, nullptr);
-		check_vk_result(err);
+
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(phys 1)");
+		}
 		assert(gpu_count > 0);
 
 		// Get the GPUs
 		std::vector<VkPhysicalDevice> gpus;
 		gpus.resize(gpu_count);
 		err = vkEnumeratePhysicalDevices(instance, &gpu_count, gpus.data());
-		check_vk_result(err);
+
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(phys 2)");
+		}
 
 		// Find the descrete GPU, if it exists
 		for (VkPhysicalDevice& device : gpus)

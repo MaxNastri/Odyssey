@@ -97,7 +97,10 @@ namespace Odyssey
 		vkEnumerateInstanceExtensionProperties(nullptr, &properties_count, nullptr);
 		properties.resize(properties_count);
 		err = vkEnumerateInstanceExtensionProperties(nullptr, &properties_count, properties.data());
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(context 1)");
+		}
 
 		// Enable required extensions
 		if (IsExtensionAvailable(properties, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME))
@@ -123,7 +126,10 @@ namespace Odyssey
 		create_info.enabledExtensionCount = (uint32_t)extensions.size();
 		create_info.ppEnabledExtensionNames = extensions.data();
 		err = vkCreateInstance(&create_info, allocator, &instance);
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(context 2)");
+		}
 
 		// Setup the debug report callback
 		auto vkCreateDebugReportCallbackEXT = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
@@ -135,7 +141,10 @@ namespace Odyssey
 		debug_report_ci.pfnCallback = debug_report;
 		debug_report_ci.pUserData = nullptr;
 		err = vkCreateDebugReportCallbackEXT(instance, &debug_report_ci, allocator, &debugReport);
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(context 3)");
+		}
 	}
 
 	bool VulkanContext::IsExtensionAvailable(std::vector<VkExtensionProperties>& properties, const char* extension)

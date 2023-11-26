@@ -11,6 +11,8 @@
 #include "Material.h"
 #include "VulkanCommandPool.h"
 #include "VulkanCommandPool.h"
+#include "VulkanDescriptorLayout.h"
+#include "VulkanDescriptorBuffer.h"
 
 namespace Odyssey
 {
@@ -94,6 +96,20 @@ namespace Odyssey
 		uint32_t id = m_CommandBuffers.Add(m_Context, commandPool);
 		m_CommandBuffers[id]->SetID(id);
 		return ResourceHandle<VulkanCommandBuffer>(id, m_CommandBuffers[id].get());
+	}
+
+	ResourceHandle<VulkanDescriptorLayout> ResourceManager::AllocateDescriptorLayout(DescriptorType type, ShaderStage shaderStage, uint32_t bindingIndex)
+	{
+		uint32_t id = m_DescriptorLayouts.Add(m_Context, type, shaderStage, bindingIndex);
+		m_DescriptorLayouts[id]->SetID(id);
+		return ResourceHandle<VulkanDescriptorLayout>(id, m_DescriptorLayouts[id].get());
+	}
+
+	ResourceHandle<VulkanDescriptorBuffer> ResourceManager::AllocateDescriptorBuffer(ResourceHandle<VulkanDescriptorLayout> layout, uint32_t descriptorCount)
+	{
+		uint32_t id = m_DescriptorBuffers.Add(m_Context, layout, descriptorCount);
+		m_DescriptorBuffers[id]->SetID(id);
+		return ResourceHandle<VulkanDescriptorBuffer>(id, m_DescriptorBuffers[id].get());
 	}
 
 	void ResourceManager::DestroyBuffer(ResourceHandle<VulkanBuffer> handle)

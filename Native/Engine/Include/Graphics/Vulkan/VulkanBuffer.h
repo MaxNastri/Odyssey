@@ -35,6 +35,6 @@ namespace Odyssey
 		VkDeviceMemory bufferMemory;
 		BufferType m_BufferType;
 		uint32_t m_Size;
-		void* bufferMemoryMapped;
+		void* bufferMemoryMapped = nullptr;
 	};
 }

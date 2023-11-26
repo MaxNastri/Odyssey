@@ -16,7 +16,6 @@ namespace Odyssey
 	class VulkanBuffer;
 	class VulkanCommandBuffer;
 	class VulkanContext;
-	class VulkanDescriptorSet;
 	class VulkanFrame;
 	class VulkanIndexBuffer;
 	class VulkanTexture;
@@ -26,8 +25,8 @@ namespace Odyssey
 	struct UBOMatrices
 	{
 		glm::mat4x4 world;
-		glm::mat4x4 proj;
 		glm::mat4x4 inverseView;
+		glm::mat4x4 proj;
 	};
 
 	class VulkanRenderer
@@ -50,6 +49,7 @@ namespace Odyssey
 	private:
 		VulkanImgui::InitInfo CreateImguiInitInfo();
 		void SetupFrameData();
+		void SetupDrawData();
 
 	private: // Vulkan objects
 		std::shared_ptr<VulkanContext> context;
@@ -59,9 +59,12 @@ namespace Odyssey
 		std::vector<ResourceHandle<VulkanCommandPool>> commandPools;
 		std::vector<ResourceHandle<VulkanCommandBuffer>> commandBuffers;
 
-	private: // UBO
-		std::shared_ptr<VulkanDescriptorSet> uboDescriptor;
+	private: // UBO - per fif
 		std::vector<ResourceHandle<VulkanBuffer>> uboBuffers;
+		std::vector<ResourceHandle<VulkanDescriptorBuffer>> sceneBuffer;
+		std::vector<ResourceHandle<VulkanDescriptorBuffer>> objectBuffer;
+		std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts;
+
 		std::vector<UBOMatrices> uboData;
 
 	private: // Draws

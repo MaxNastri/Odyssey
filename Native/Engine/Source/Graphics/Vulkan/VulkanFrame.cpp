@@ -44,7 +44,10 @@ namespace Odyssey
 		info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 		info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 		VkResult err = vkCreateFence(m_Context->GetDeviceVK(), &info, allocator, &fence);
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(frame 1)");
+		}
 	}
 
 	void VulkanFrame::CreateSempaphores()
@@ -53,9 +56,15 @@ namespace Odyssey
 		info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
 		VkResult err = vkCreateSemaphore(m_Context->GetDeviceVK(), &info, allocator, &imageAcquiredSemaphore);
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(frame 2)");
+		}
 
 		err = vkCreateSemaphore(m_Context->GetDeviceVK(), &info, allocator, &renderCompleteSemaphore);
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(frame 3)");
+		}
 	}
 }

@@ -18,6 +18,8 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Material.h"
+#include "VulkanDescriptorBuffer.h"
+#include <chrono>
 
 namespace Odyssey
 {
@@ -34,16 +36,17 @@ namespace Odyssey
 		VulkanImgui::InitInfo imguiInfo = CreateImguiInitInfo();
 		imgui = std::make_shared<VulkanImgui>(context, imguiInfo);
 
+		// Drawing
+		descriptorLayouts.push_back(ResourceManager::AllocateDescriptorLayout(DescriptorType::Uniform, ShaderStage::Vertex, 0));
 		SetupFrameData();
+		SetupDrawData();
+
 		for (int i = 0; i < frames.size(); ++i)
 		{
 			commandPools.push_back(ResourceManager::AllocateCommandPool());
 			commandBuffers.push_back(commandPools[i].Get()->AllocateBuffer());
 		}
 
-		// Draw data
-		renderTexture = ResourceManager::AllocateTexture(1000, 1000);
-		rtSet = imgui->AddTexture(renderTexture.Get());
 	}
 
 	void VulkanRenderer::Destroy()
@@ -116,7 +119,10 @@ namespace Odyssey
 			rebuildSwapchain = true;
 		}
 
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(renderer 1)");
+		}
 		frameIndex = (frameIndex + 1) % swapchain->imageCount;
 		return true;
 	}
@@ -137,7 +143,7 @@ namespace Odyssey
 		for (RenderObject& renderObject : renderScene.m_RenderObjects)
 		{
 			Material* material = renderObject.Material.Get();
-			SetPipelineNode* pipelineNode = m_RenderGraph.CreateNode<SetPipelineNode>("Set Pipeline", material->GetVertexShader(), material->GetFragmentShader());
+			SetPipelineNode* pipelineNode = m_RenderGraph.CreateNode<SetPipelineNode>("Set Pipeline", material->GetVertexShader(), material->GetFragmentShader(), descriptorLayouts);
 			currentNode->SetNext(pipelineNode);
 			currentNode = pipelineNode;
 
@@ -186,16 +192,27 @@ namespace Odyssey
 			return false;
 		}
 
-		check_vk_result(err);
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(renderer 2)");
+		}
 
 		VulkanFrame& frame = frames[frameIndex];
 
 		// Wait for the initial fences to clear
 		err = vkWaitForFences(vkDevice, 1, &(frame.fence), VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
-		check_vk_result(err);
+
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(renderer 3)");
+		}
 
 		err = vkResetFences(vkDevice, 1, &frame.fence);
-		check_vk_result(err);
+
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(renderer 4)");
+		}
 
 		commandPools[frameIndex].Get()->Reset();
 
@@ -223,6 +240,17 @@ namespace Odyssey
 			renderingData->m_Drawcalls = m_DrawCalls;
 			renderingData->width = width;
 			renderingData->height = height;
+			renderingData->descriptorBuffer = sceneBuffer[frameIndex];
+			renderingData->uniformBuffer = uboBuffers[frameIndex];
+
+
+			static auto startTime = std::chrono::high_resolution_clock::now();
+			auto currentTime = std::chrono::high_resolution_clock::now();
+			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+			uboData[frameIndex].world = glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			uint32_t bufferSize = sizeof(uboData[frameIndex]);
+			uboBuffers[frameIndex].Get()->SetMemory(bufferSize, &uboData[frameIndex]);
+
 			m_RenderGraph.Setup(context.get(), renderingData.get(), commandBuffers[frameIndex]);
 			m_RenderGraph.Execute(context.get(), renderingData.get(), commandBuffers[frameIndex]);
 		}
@@ -287,6 +315,14 @@ namespace Odyssey
 			}
 		}
 
+	}
+
+	void VulkanRenderer::SetupDrawData()
+	{
+		// Draw data
+		renderTexture = ResourceManager::AllocateTexture(1000, 1000);
+		rtSet = imgui->AddTexture(renderTexture.Get());
+
 		// Create the ubos per frame
 		{
 			uboBuffers.resize(frames.size());
@@ -294,15 +330,24 @@ namespace Odyssey
 
 			for (int i = 0; i < frames.size(); ++i)
 			{
-				uboData[i].world = glm::identity<glm::mat4x4>();
-				uboData[i].inverseView = glm::identity<glm::mat4x4>();
-				uboData[i].proj = glm::identity<glm::mat4x4>();
+				uboData[i].world = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+				uboData[i].inverseView = glm::lookAt(glm::vec3(0.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+				uboData[i].proj = glm::perspective(glm::radians(45.0f), 1000.0f / 1000.0f, 0.1f, 10.0f);
+				uboData[i].proj[1][1] *= -1;
 
 				uint32_t bufferSize = sizeof(uboData[i]);
 				uboBuffers[i] = ResourceManager::AllocateBuffer(BufferType::Uniform, bufferSize);
 				uboBuffers[i].Get()->AllocateMemory();
 				uboBuffers[i].Get()->SetMemory(bufferSize, &uboData[i]);
 			}
+		}
+
+		sceneBuffer.resize(frames.size());
+
+		for (int i = 0; i < frames.size(); i++)
+		{
+			sceneBuffer[i] = ResourceManager::AllocateDescriptorBuffer(descriptorLayouts[0], 1);
+			sceneBuffer[i].Get()->SetUniformBuffer(uboBuffers[i], 0);
 		}
 	}
 }

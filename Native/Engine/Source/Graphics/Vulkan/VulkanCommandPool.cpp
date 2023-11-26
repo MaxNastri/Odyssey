@@ -16,7 +16,10 @@ namespace Odyssey
         info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         info.queueFamilyIndex = queueIndex;
         VkResult err = vkCreateCommandPool(m_Context->GetDevice()->GetLogicalDevice(), &info, allocator, &commandPool);
-        check_vk_result(err);
+        if (!check_vk_result(err))
+        {
+            Logger::LogError("(cpool 1)");
+        }
     }
 
     ResourceHandle<VulkanCommandBuffer> VulkanCommandPool::AllocateBuffer()
@@ -45,7 +48,10 @@ namespace Odyssey
     void VulkanCommandPool::Reset()
     {
         VkResult err = vkResetCommandPool(m_Context->GetDevice()->GetLogicalDevice(), commandPool, 0);
-        check_vk_result(err);
+        if (!check_vk_result(err))
+        {
+            Logger::LogError("(cpool 2)");
+        }
     }
 
     void VulkanCommandPool::Destroy()
