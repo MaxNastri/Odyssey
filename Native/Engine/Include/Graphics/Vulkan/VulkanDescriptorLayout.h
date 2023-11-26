@@ -13,6 +13,9 @@ namespace Odyssey
 	public:
 		VulkanDescriptorLayout(std::shared_ptr<VulkanContext> context, DescriptorType type, ShaderStage shaderStag, uint32_t bindingIndex);
 
+		VkDescriptorSetLayout GetHandle() { return m_Layout; }
+		DescriptorType GetType() { return m_Type; }
+
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		DescriptorType m_Type;

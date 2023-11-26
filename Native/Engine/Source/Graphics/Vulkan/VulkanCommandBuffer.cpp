@@ -1,5 +1,5 @@
 #include "VulkanCommandBuffer.h"
-#include <vulkan/vulkan.h>
+#include "volk.h"
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
 #include "VulkanCommandPool.h"
@@ -9,6 +9,7 @@
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
 #include "ResourceManager.h"
+#include "VulkanDescriptorBuffer.h"
 
 namespace Odyssey
 {
@@ -127,5 +128,25 @@ namespace Odyssey
     void VulkanCommandBuffer::BindIndexBuffer(ResourceHandle<VulkanIndexBuffer> handle)
     {
         vkCmdBindIndexBuffer(m_CommandBuffer, handle.Get()->GetIndexBufferVK(), 0, VK_INDEX_TYPE_UINT32);
+    }
+    void VulkanCommandBuffer::BindDescriptorBuffers(std::vector<ResourceHandle<VulkanDescriptorBuffer>> handles)
+    {
+        std::vector<VkDescriptorBufferBindingInfoEXT> bindingInfos;
+
+        for (auto& handle : handles)
+        {
+            VulkanDescriptorBuffer* descriptorBuffer = handle.Get();
+            VkDescriptorBufferBindingInfoEXT bindingInfo{};
+            bindingInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT;
+            bindingInfo.address = descriptorBuffer->GetBuffer().Get()->GetAddress();
+            bindingInfo.usage = VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT;
+            bindingInfos.push_back(bindingInfo);
+        }
+
+        vkCmdBindDescriptorBuffersEXT(m_CommandBuffer, (uint32_t)bindingInfos.size(), bindingInfos.data());
+    }
+    void VulkanCommandBuffer::SetDescriptorBufferOffset(ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline, uint32_t descriptorIndex, const uint32_t* bufferIndex, const VkDeviceSize* bufferOffset)
+    {
+        vkCmdSetDescriptorBufferOffsetsEXT(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.Get()->GetLayout(), descriptorIndex, 1, bufferIndex, bufferOffset);
     }
 }

@@ -20,6 +20,7 @@ namespace Odyssey
 
 	public:
 		VkPipeline GetPipeline() { return m_GraphicsPipeline; }
+		VkPipelineLayout GetLayout() { return m_PipelineLayout; }
 
 	private:
 		void CreateLayout();

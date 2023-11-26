@@ -3,15 +3,22 @@
 #include "VulkanDevice.h"
 #include "VulkanCommandPool.h"
 #include "VulkanQueue.h"
+#ifndef GLFW_INCLUDE_VULKAN
 #define GLFW_INCLUDE_VULKAN
+#endif
 #include <glfw3.h>
+#ifndef VK_NO_PROTOTYPES
+#define VK_NO_PROTOTYPES
+#endif
 
 namespace Odyssey
 {
 	VulkanContext::VulkanContext()
 	{
+		VkResult result = volkInitialize();
 		GatherExtensions();
 		CreateInstance();
+		volkLoadInstance(instance);
 
 		physicalDevice = std::make_shared<VulkanPhysicalDevice>(instance);
 		logicalDevice = std::make_shared<VulkanDevice>(physicalDevice.get());

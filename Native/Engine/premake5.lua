@@ -28,6 +28,7 @@ project "Odyssey.Native.Engine"
         "Source/**.cpp",
         "Source/**.hpp",
         "Source/**.hlsl",
+        "Source/**.c",
         "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**.h",
         "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**.hpp",
         "%{wks.location}/Vendor/Coral/Coral.Native/Source/Coral/**.cpp",
@@ -55,8 +56,11 @@ project "Odyssey.Native.Engine"
 
     links {
         "glfw3.lib",
-        "vulkan-1.lib",
     }
+
+    
+	filter "files:Source/**.c"
+	flags { "NoPCH" }
 
     filter { "system:windows" }
         prebuildcommands {
@@ -72,7 +76,8 @@ project "Odyssey.Native.Engine"
     defines {
         "GLM_FORCE_DEPTH_ZERO_TO_ONE",
         "YAML_CPP_STATIC_DEFINE",
-        "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING"
+        "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
+        "VK_NO_PROTOTYPES",
     }
 
     filter { "system:windows" }

@@ -57,7 +57,11 @@ namespace Odyssey
 		init_info.UseDynamicRendering = true;
 		init_info.ColorAttachmentFormat = initInfo.colorFormat;
 
+		ImGui_ImplVulkan_LoadFunctions([](const char* function_name, void* vulkan_instance) {
+			return vkGetInstanceProcAddr(*(reinterpret_cast<VkInstance*>(vulkan_instance)), function_name);
+			}, &init_info.Instance);
 		ImGui_ImplVulkan_Init(&init_info, initInfo.renderPass);
+
 
 		// Upload Fonts
 		{

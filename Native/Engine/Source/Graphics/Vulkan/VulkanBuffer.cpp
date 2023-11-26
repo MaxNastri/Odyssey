@@ -43,11 +43,21 @@ namespace Odyssey
 		vkGetBufferMemoryRequirements(m_Context->GetDeviceVK(), buffer, &memoryRequirements);
 
 		VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+		
+
+		VkMemoryAllocateFlagsInfo memoryFlags{};
+		memoryFlags.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
 
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memoryRequirements.size;
 		allocInfo.memoryTypeIndex = FindMemoryType(m_Context->GetPhysicalDeviceVK(), memoryRequirements.memoryTypeBits, properties);
+		
+		if (m_BufferType == BufferType::Uniform || m_BufferType == BufferType::DescriptorUniform || m_BufferType == BufferType::DescriptorSampler)
+		{
+			memoryFlags.flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT;
+			allocInfo.pNext = &memoryFlags;
+		}
 
 		if (vkAllocateMemory(m_Context->GetDeviceVK(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
 		{
@@ -78,6 +88,14 @@ namespace Odyssey
 			memcpy(bufferMemoryMapped, data, static_cast<size_t>(size));
 			vkUnmapMemory(device, bufferMemory);
 		}
+	}
+
+	uint64_t VulkanBuffer::GetAddress()
+	{
+		VkBufferDeviceAddressInfo addressInfo{};
+		addressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+		addressInfo.buffer = buffer;
+		return vkGetBufferDeviceAddress(m_Context->GetDeviceVK(), &addressInfo);
 	}
 
 	uint32_t VulkanBuffer::FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties)
@@ -111,7 +129,11 @@ namespace Odyssey
 			case Odyssey::BufferType::Index:
 				return VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 			case BufferType::Uniform:
-				return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+				return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+			case BufferType::DescriptorUniform:
+				return VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+			case BufferType::DescriptorSampler:
+				return VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT | VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 		}
 
 		return 0;

@@ -1,7 +1,10 @@
 #pragma once
 #ifndef VULKAN_CALLBACKS_H
 #define VULKAN_CALLBACKS_H
-#include <vulkan/vulkan.h>
+#ifndef VK_NO_PROTOTYPES
+#define VK_NO_PROTOTYPES
+#endif
+#include "volk.h"
 #include <Logger.h>
 #include <format>
 

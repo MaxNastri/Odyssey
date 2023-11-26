@@ -5,7 +5,7 @@
 #include "VulkanCommandPool.h"
 #include "VulkanCommandBuffer.h"
 #include <Logger.h>
-#include <vulkan/vulkan.h>
+#include "volk.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 

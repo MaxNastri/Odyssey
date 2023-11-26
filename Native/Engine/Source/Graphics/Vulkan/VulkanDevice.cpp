@@ -88,5 +88,7 @@ namespace Odyssey
 
 		VkResult err = vkCreateDevice(vkPhysicalDevice, &create_info, allocator, &logicalDevice);
 		check_vk_result(err);
+
+		volkLoadDevice(logicalDevice);
 	}
 }
