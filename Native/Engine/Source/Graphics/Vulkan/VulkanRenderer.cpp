@@ -13,7 +13,6 @@
 #include "VulkanImage.h"
 #include "VulkanTexture.h"
 #include "ResourceManager.h"
-#include "RenderGraphNodes.h"
 #include "PerFrameRenderingData.h"
 #include "Scene.h"
 #include "SceneManager.h"
@@ -36,29 +35,24 @@ namespace Odyssey
 		VulkanImgui::InitInfo imguiInfo = CreateImguiInitInfo();
 		imgui = std::make_shared<VulkanImgui>(context, imguiInfo);
 
+		renderingData = std::make_shared<PerFrameRenderingData>();
+
 		// Drawing
-		descriptorLayouts.push_back(ResourceManager::AllocateDescriptorLayout(DescriptorType::Uniform, ShaderStage::Vertex, 0));
 		SetupFrameData();
 		SetupDrawData();
+		CreateRenderPasses();
 
 		for (int i = 0; i < frames.size(); ++i)
 		{
 			commandPools.push_back(ResourceManager::AllocateCommandPool());
 			commandBuffers.push_back(commandPools[i].Get()->AllocateBuffer());
 		}
-
 	}
 
 	void VulkanRenderer::Destroy()
 	{
 		VulkanDevice* device = context->GetDevice();
 		device->WaitForIdle();
-
-		for (auto uboBuffer : uboBuffers)
-		{
-			ResourceManager::DestroyBuffer(uboBuffer);
-		}
-		uboBuffers.clear();
 
 		ResourceManager::DestroyTexture(renderTexture);
 
@@ -86,12 +80,6 @@ namespace Odyssey
 			RebuildSwapchain();
 
 		imgui->SubmitDraws();
-
-		if (!m_RenderGraphCreated)
-		{
-			BuildRenderGraph();
-			m_RenderGraphCreated = true;
-		}
 		RenderFrame();
 		imgui->PostRender();
 
@@ -127,56 +115,22 @@ namespace Odyssey
 		return true;
 	}
 
-	void VulkanRenderer::BuildRenderGraph()
+	void VulkanRenderer::CreateRenderPasses()
 	{
-		// Convert the scene into a render scene
-		Scene* scene = SceneManager::GetActiveScene();
-		RenderScene renderScene(scene);
+		VulkanPipelineInfo info;
+		info.vertexShader = ResourceManager::AllocateShader(ShaderType::Vertex, "vert.spv");
+		info.fragmentShader = ResourceManager::AllocateShader(ShaderType::Fragment, "frag.spv");
 
-		renderingData = std::make_shared<PerFrameRenderingData>();
+		std::unique_ptr<OpaquePass> opaquePass = std::make_unique<OpaquePass>(context);
+		opaquePass->SetRenderTarget(renderTexture);
+		opaquePass->SetLayouts(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 
-		// Begin pass
-		BeginPassNode* beginSceneView = m_RenderGraph.CreateNode<BeginPassNode>("Begin Scene View", renderTexture);
-		RenderGraphNode* currentNode = beginSceneView;
+		std::unique_ptr<ImguiPass> imguiPass = std::make_unique<ImguiPass>();
+		imguiPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+		imguiPass->SetImguiState(imgui, rtSet);
 
-		// Foreach object, make a set pipeline + draw
-		for (RenderObject& renderObject : renderScene.m_RenderObjects)
-		{
-			Material* material = renderObject.Material.Get();
-			SetPipelineNode* pipelineNode = m_RenderGraph.CreateNode<SetPipelineNode>("Set Pipeline", material->GetVertexShader(), material->GetFragmentShader(), descriptorLayouts);
-			currentNode->SetNext(pipelineNode);
-			currentNode = pipelineNode;
-
-			Drawcall drawcall;
-			drawcall.SetMesh(renderObject.Mesh);
-			m_DrawCalls.push_back(drawcall);
-			DrawNode* drawNode = m_RenderGraph.CreateNode<DrawNode>("Draw Scene View", drawcall);
-			currentNode->SetNext(drawNode);
-			currentNode = drawNode;
-		}
-
-		EndPassNode* endSceneView = m_RenderGraph.CreateNode<EndPassNode>("End Scene View", renderTexture, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
-		currentNode->SetNext(endSceneView);
-		currentNode = endSceneView;
-
-		BeginPassNode* beginImgui = m_RenderGraph.CreateNode<BeginPassNode>("Begin Imgui View");
-		currentNode->SetNext(beginImgui);
-		currentNode = beginImgui;
-
-		ImguiDrawNode* drawImgui = m_RenderGraph.CreateNode<ImguiDrawNode>("Draw Imgui View", imgui);
-		drawImgui->AddDescriptorSet(rtSet);
-		currentNode->SetNext(drawImgui);
-		currentNode = drawImgui;
-
-		EndPassNode* endImgui = m_RenderGraph.CreateNode<EndPassNode>("End Imgui View", VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-		currentNode->SetNext(endImgui);
-		currentNode = endImgui;
-
-		SubmitNode* submit = m_RenderGraph.CreateNode<SubmitNode>("Submit Frame");
-		currentNode->SetNext(submit);
-		currentNode = submit;
-
-		m_RenderGraph.SetRootNode(beginSceneView);
+		renderPasses.push_back(std::move(opaquePass));
+		renderPasses.push_back(std::move(imguiPass));
 	}
 
 	bool VulkanRenderer::BeginFrame(VulkanFrame*& currentFrame)
@@ -234,26 +188,46 @@ namespace Odyssey
 			unsigned int width = window->GetSurface()->GetWidth();
 			unsigned int height = window->GetSurface()->GetHeight();
 
+			renderScenes[frameIndex]->ConvertScene(SceneManager::GetActiveScene());
+
 			// RenderPass begin
 			VulkanCommandBuffer* commandBuffer = commandBuffers[frameIndex].Get();
 			renderingData->frame = frame;
-			renderingData->m_Drawcalls = m_DrawCalls;
+			renderingData->renderScene = renderScenes[frameIndex];
 			renderingData->width = width;
 			renderingData->height = height;
-			renderingData->descriptorBuffer = sceneBuffer[frameIndex];
-			renderingData->uniformBuffer = uboBuffers[frameIndex];
 
+			RenderPassParams params;
+			params.commandBuffer = commandBuffers[frameIndex];
+			params.context = context;
+			params.renderingData = renderingData;
 
-			static auto startTime = std::chrono::high_resolution_clock::now();
-			auto currentTime = std::chrono::high_resolution_clock::now();
-			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+			renderPasses[1]->SetRenderTarget(frame->GetRenderTarget());
 
-			uboData[frameIndex].world = glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-			uint32_t bufferSize = sizeof(uboData[frameIndex]);
-			uboBuffers[frameIndex].Get()->SetMemory(bufferSize, &uboData[frameIndex]);
+			for (const auto& renderPass : renderPasses)
+			{
+				renderPass->BeginPass(params);
+				renderPass->Execute(params);
+				renderPass->EndPass(params);
+			}
 
-			m_RenderGraph.Setup(context.get(), renderingData.get(), commandBuffers[frameIndex]);
-			m_RenderGraph.Execute(context.get(), renderingData.get(), commandBuffers[frameIndex]);
+			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			VkSubmitInfo submitInfo = {};
+			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+			submitInfo.waitSemaphoreCount = 1;
+			submitInfo.pWaitSemaphores = frame->GetImageAcquiredSemaphore();
+			submitInfo.pWaitDstStageMask = &wait_stage;
+			submitInfo.commandBufferCount = 1;
+			submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
+			submitInfo.signalSemaphoreCount = 1;
+			submitInfo.pSignalSemaphores = frame->GetRenderCompleteSemaphore();
+
+			commandBuffer->EndCommands();
+			VkResult err = vkQueueSubmit(context->GetGraphicsQueueVK(), 1, &submitInfo, frame->fence);
+			if (!check_vk_result(err))
+			{
+				Logger::LogError("(graphnode 1)");
+			}
 		}
 	}
 
@@ -316,6 +290,12 @@ namespace Odyssey
 			}
 		}
 
+		// Render scenes
+		renderScenes.resize(frames.size());
+		for (int i = 0; i < renderScenes.size(); i++)
+		{
+			renderScenes[i] = std::make_shared<RenderScene>();
+		}
 	}
 
 	void VulkanRenderer::SetupDrawData()
@@ -323,32 +303,5 @@ namespace Odyssey
 		// Draw data
 		renderTexture = ResourceManager::AllocateTexture(1000, 1000);
 		rtSet = imgui->AddTexture(renderTexture.Get());
-
-		// Create the ubos per frame
-		{
-			uboBuffers.resize(frames.size());
-			uboData.resize(frames.size());
-
-			for (int i = 0; i < frames.size(); ++i)
-			{
-				uboData[i].world = glm::identity<mat4>();// glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				uboData[i].inverseView = glm::lookAt(glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-				uboData[i].proj = glm::perspectiveLH(glm::radians(45.0f), 1000.0f / 1000.0f, 0.1f, 10.0f);
-				uboData[i].proj[1][1] = -uboData[i].proj[1][1];
-
-				uint32_t bufferSize = sizeof(uboData[i]);
-				uboBuffers[i] = ResourceManager::AllocateBuffer(BufferType::Uniform, bufferSize);
-				uboBuffers[i].Get()->AllocateMemory();
-				uboBuffers[i].Get()->SetMemory(bufferSize, &uboData[i]);
-			}
-		}
-
-		sceneBuffer.resize(frames.size());
-
-		for (int i = 0; i < frames.size(); i++)
-		{
-			sceneBuffer[i] = ResourceManager::AllocateDescriptorBuffer(descriptorLayouts[0], 1);
-			sceneBuffer[i].Get()->SetUniformBuffer(uboBuffers[i], 0);
-		}
 	}
 }

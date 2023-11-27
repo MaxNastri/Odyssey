@@ -52,6 +52,8 @@ namespace Odyssey
 		static void DestroyGraphicsPipeline(ResourceHandle<VulkanGraphicsPipeline> handle);
 		static void DestroyCommandPool(ResourceHandle<VulkanCommandPool> handle);
 		static void DestroyCommandBuffer(ResourceHandle<VulkanCommandBuffer> bufferHandle, ResourceHandle<VulkanCommandPool> poolHandle);
+		static void DestroyDescriptorLayout(ResourceHandle<VulkanDescriptorLayout> handle);
+		static void DestroyDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle);
 
 	private: // Base type members
 		inline static DynamicList<Mesh> m_Meshes;

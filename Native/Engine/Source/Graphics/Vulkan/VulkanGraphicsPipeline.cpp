@@ -74,7 +74,7 @@ namespace Odyssey
 		rasterizer.rasterizerDiscardEnable = VK_FALSE;
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
-		rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+		rasterizer.cullMode = VK_CULL_MODE_NONE;
 		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 		rasterizer.depthBiasConstantFactor = 0.0f; // Optional
@@ -158,11 +158,15 @@ namespace Odyssey
 	{
 		// Convert resource handles to vulkan data
 		std::vector<VkDescriptorSetLayout> setLayouts{};
-		setLayouts.resize(info.descriptorLayouts.size());
 
-		for (int i = 0; i < info.descriptorLayouts.size(); i++)
+		if (info.descriptorLayouts.size() > 0)
 		{
-			setLayouts[i] = info.descriptorLayouts[i].Get()->GetHandle();
+			setLayouts.resize(info.descriptorLayouts.size());
+
+			for (int i = 0; i < info.descriptorLayouts.size(); i++)
+			{
+				setLayouts[i] = info.descriptorLayouts[i].Get()->GetHandle();
+			}
 		}
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};

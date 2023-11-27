@@ -1,6 +1,7 @@
 #pragma once
 #include "ResourceHandle.h"
 #include <bitset>
+#include "glm.h"
 
 namespace Odyssey
 {

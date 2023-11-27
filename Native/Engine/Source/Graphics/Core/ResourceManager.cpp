@@ -165,4 +165,16 @@ namespace Odyssey
 		m_CommandBuffers[bufferHandle.m_ID]->SetID(-1);
 		m_CommandBuffers.Remove(bufferHandle.m_ID);
 	}
+	void ResourceManager::DestroyDescriptorLayout(ResourceHandle<VulkanDescriptorLayout> handle)
+	{
+		m_DescriptorLayouts[handle.m_ID]->Destroy();
+		m_DescriptorLayouts[handle.m_ID]->SetID(-1);
+		m_DescriptorLayouts.Remove(handle.m_ID);
+	}
+	void ResourceManager::DestroyDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle)
+	{
+		m_DescriptorBuffers[handle.m_ID]->Destroy();
+		m_DescriptorBuffers[handle.m_ID]->SetID(-1);
+		m_DescriptorBuffers.Remove(handle.m_ID);
+	}
 }

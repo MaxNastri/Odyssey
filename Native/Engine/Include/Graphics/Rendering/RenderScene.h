@@ -1,31 +1,62 @@
 #pragma once
 #include "glm.h"
 #include "ResourceHandle.h"
+#include "Drawcall.h"
 
 namespace Odyssey
 {
 	class Material;
 	class Mesh;
 	class Scene;
+	class VulkanGraphicsPipeline;
+	class VulkanDescriptorBuffer;
+	class VulkanBuffer;
+	class VulkanDescriptorLayout;
 
-	struct RenderObject
+	struct UBOMatrices
+	{
+		glm::mat4 world;
+		glm::mat4 inverseView;
+		glm::mat4 proj;
+	};
+
+	struct SetPass
 	{
 	public:
-		glm::mat4 WorldMatrix;
-		ResourceHandle<Mesh> Mesh;
-		ResourceHandle<Material> Material;
-		bool IsValid = false;
+		SetPass() = default;
+		SetPass(ResourceHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout);
+
+	public:
+		void SetMaterial(ResourceHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout);
+
+	public:
+		ResourceHandle<VulkanGraphicsPipeline> pipeline;
+		std::vector<Drawcall> drawcalls;
+		uint32_t vertexShaderID = -1;
+		uint32_t fragmentShaderID = -1;
 	};
 
 	class RenderScene
 	{
 	public:
-		RenderScene() = default;
-		RenderScene(Scene* scene);
+		RenderScene();
 
 	public:
-		std::vector<RenderObject> m_RenderObjects;
-		glm::mat4 m_CameraInverseView;
-		glm::mat4 m_CameraProjection;
+		void ConvertScene(Scene* scene);
+		void ClearSceneData();
+
+	private:
+		void SetupCameraData(Scene* scene);
+		void SetupDrawcalls(Scene* scene);
+		bool SetPassCreated(ResourceHandle<Material> material, SetPass* outSetPass);
+
+	public:
+		// Uniform buffer for scene matrices
+		UBOMatrices uboData;
+		ResourceHandle<VulkanBuffer> sceneBuffer;
+		ResourceHandle<VulkanDescriptorLayout> descriptorLayout;
+		std::vector<ResourceHandle<VulkanDescriptorBuffer>> sceneDescriptorBuffers;
+
+		std::vector<SetPass> setPasses;
 	};
 }

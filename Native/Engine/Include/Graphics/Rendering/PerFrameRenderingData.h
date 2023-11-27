@@ -1,16 +1,15 @@
 #pragma once
-#include "Drawcall.h"
-#include "VulkanFrame.h"
 
 namespace Odyssey
 {
+	class RenderScene;
+	class VulkanFrame;
+
 	struct PerFrameRenderingData
 	{
 	public:
-		std::vector<Drawcall> m_Drawcalls;
+		std::shared_ptr<RenderScene> renderScene;
 		VulkanFrame* frame;
 		uint32_t width, height;
-		ResourceHandle<VulkanDescriptorBuffer> descriptorBuffer;
-		ResourceHandle<VulkanBuffer> uniformBuffer;
 	};
 }

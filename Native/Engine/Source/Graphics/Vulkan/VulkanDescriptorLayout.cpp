@@ -64,4 +64,9 @@ namespace Odyssey
 			Logger::LogError("(VulkanDescriptorLayout) Could not create descriptor set layout.");
 		}
 	}
+
+	void VulkanDescriptorLayout::Destroy()
+	{
+		vkDestroyDescriptorSetLayout(m_Context->GetDeviceVK(), m_Layout, allocator);
+	}
 }
