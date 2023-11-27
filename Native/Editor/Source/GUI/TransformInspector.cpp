@@ -26,7 +26,7 @@ namespace Odyssey
 				{
 					if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
 					{
-						transform->eulerRotation = rotation;
+						transform->SetRotation(rotation);
 					}
 				};
 

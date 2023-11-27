@@ -7,7 +7,14 @@ namespace Odyssey
 {
 	CLASS_DEFINITION(Odyssey.Entities, Transform);
 
-	void Transform::Awake()
+    Transform::Transform()
+    {
+        position = glm::vec3(0, 0, 0);
+        rotation = glm::quat(0, 0, 0, 1);
+        scale = glm::vec3(1, 1, 1);
+    }
+
+    void Transform::Awake()
 	{
 	}
 
@@ -215,7 +222,7 @@ namespace Odyssey
     {
         // Compose the position, rotation and scale into 3 matrices
         mat4x4 t = glm::translate(glm::identity<mat4x4>(), position);
-        mat4x4 r = glm::toMat4(glm::quat(rotation.x, rotation.y, rotation.z, rotation.w));
+        mat4x4 r = glm::toMat4(rotation);
         mat4x4 s = glm::scale(glm::identity<mat4x4>(), scale);
         localMatrix = t * r * s;
         worldMatrix = localMatrix;

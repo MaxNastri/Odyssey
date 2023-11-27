@@ -6,6 +6,9 @@ namespace Odyssey
 {
 	class Transform : public Component
 	{
+    public:
+        Transform();
+
 	public:
 		virtual void Awake() override;
 		virtual void Update() override;

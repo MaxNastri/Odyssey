@@ -9,7 +9,7 @@ GameObjects:
       - Name: Odyssey.Entities.Transform
         Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
       - Name: Odyssey.Camera
         Field of View: 45
         Near Clip: 0.1
