@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_vulkan.h"
+#include "ImGuizmo.h"
 #include "VulkanGlobals.h"
 #include "VulkanCommandPool.h"
 #include "Events.h"
@@ -102,6 +103,7 @@ namespace Odyssey
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 
 		if (showDemoWindow)
 		{

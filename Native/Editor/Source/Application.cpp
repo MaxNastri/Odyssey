@@ -100,7 +100,7 @@ namespace Odyssey
 			mesh = ResourceManager::AllocateMesh(vertices, indices);
 		}
 
-		if (MeshRenderer* renderer = ComponentManager::GetComponent<MeshRenderer>(go))
+		if (MeshRenderer* renderer = ComponentManager::GetComponent<MeshRenderer>(go->id))
 		{
 			renderer->SetMaterial(material);
 			renderer->SetMesh(mesh);

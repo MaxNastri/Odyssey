@@ -26,7 +26,11 @@ namespace Odyssey
 		static void OnGameObjectSelected(uint32_t id);
 
 	private:
+		static void RenderGizmos();
+
+	private:
 		inline static std::vector<InspectorWindow> inspectorWindows;
 		inline static std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
+		inline static uint32_t selectedObject = std::numeric_limits<uint32_t>::max();
 	};
 }

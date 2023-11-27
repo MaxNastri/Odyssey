@@ -57,14 +57,14 @@ namespace Odyssey
 
 			//uboData.inverseView = mainCamera->GetInverseView();
 			GameObject* gameObject = scene->GetGameObject(0);
-			if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject))
+			if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject->id))
 			{
 				uboData.world = transform->GetWorldMatrix();// glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 1.0f));
 			}
 
 			uboData.inverseView = glm::lookAt(glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 			//uboData.proj = mainCamera->GetProjection();
-			uboData.proj = glm::perspectiveLH(glm::radians(45.0f), 1000.0f / 1000.0f, 0.1f, 10.0f);
+			uboData.proj = glm::perspectiveLH(glm::radians(90.0f), 1000.0f / 1000.0f, 0.1f, 100.0f);
 			uboData.proj[1][1] = -uboData.proj[1][1];
 
 			uint32_t bufferSize = sizeof(uboData);

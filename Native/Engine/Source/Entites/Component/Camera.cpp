@@ -9,7 +9,7 @@ namespace Odyssey
 	void Camera::Awake()
 	{
 		// Cache the transform
-		m_Transform = ComponentManager::GetComponent<Transform>(gameObject);
+		m_Transform = ComponentManager::GetComponent<Transform>(gameObject->id);
 
 		m_Width = 1920;
 		m_Height = 1080;

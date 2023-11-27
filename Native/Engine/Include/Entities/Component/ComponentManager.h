@@ -94,10 +94,10 @@ namespace Odyssey
 		}
 
 		template<typename T>
-		static T* GetComponent(const GameObject* gameObject)
+		static T* GetComponent(const uint32_t id)
 		{
 			ComponentArray<T>* componentArray = GetComponentArray<T>();
-			return componentArray->GetComponentData(gameObject->id);
+			return componentArray->GetComponentData(id);
 		}
 
 		template<typename T>
