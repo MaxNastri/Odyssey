@@ -20,10 +20,13 @@ namespace Odyssey
 		void Exit();
 
 	private:
+		void ConstructVisuals();
+
+	private:
 		bool running;
 		bool allowRecompile = true;
 		Stopwatch stopwatch;
-		VulkanRenderer r;
+		VulkanRenderer* r;
 
 		const float MaxFPS = 1.0f / 144.0f;
 	};

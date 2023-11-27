@@ -67,7 +67,9 @@ namespace Odyssey
 			{
 				std::string fieldName = field.GetName();
 				Coral::Type fieldType = field.GetType();
-				if (fieldType.IsString())
+				bool fieldIsString = fieldType.GetManagedType() == Coral::ManagedType::Unknown && fieldType.GetFullName() == "System.String";
+
+				if (fieldIsString)
 				{
 					CreateStringDrawer(gameObject, userScriptFullName, fieldName, userObject);
 				}

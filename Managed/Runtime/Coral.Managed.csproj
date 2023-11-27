@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -13,8 +13,8 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>Build\Debug\</OutputPath>
-    <IntermediateOutputPath>Intermediates\Debug\</IntermediateOutputPath>
+    <OutputPath>..\..\Build\Debug\</OutputPath>
+    <IntermediateOutputPath>..\..\Intermediates\Debug\Debug\Coral.Managed\</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,8 +25,8 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>Build\Release\</OutputPath>
-    <IntermediateOutputPath>Intermediates\Release\</IntermediateOutputPath>
+    <OutputPath>..\..\Build\Release\</OutputPath>
+    <IntermediateOutputPath>..\..\Intermediates\Release\Release\Coral.Managed\</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -38,16 +38,38 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Component.cs" />
-    <Compile Include="Source\Coral\AssemblyLoader.cs" />
-    <Compile Include="Source\Coral\ExtensionMethods.cs" />
-    <Compile Include="Source\Coral\GarbageCollector.cs" />
-    <Compile Include="Source\Coral\InternalCalls.cs" />
-    <Compile Include="Source\Coral\InteropTypes.cs" />
-    <Compile Include="Source\Coral\ManagedHost.cs" />
-    <Compile Include="Source\Coral\ManagedObject.cs" />
-    <Compile Include="Source\Coral\Marshalling.cs" />
-    <Compile Include="Source\Coral\TypeInterface.cs" />
-    <Compile Include="Source\Coral\TypeNotFoundException.cs" />
-    <Compile Include="Source\Coral\UniqueList.cs" />
+    <Compile Include="..\..\Vendor\Coral\Coral.Managed\Source\AssemblyLoader.cs">
+      <Link>Vendor\Coral\Coral.Managed\Source\AssemblyLoader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Vendor\Coral\Coral.Managed\Source\ExtensionMethods.cs">
+      <Link>Vendor\Coral\Coral.Managed\Source\ExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Vendor\Coral\Coral.Managed\Source\GarbageCollector.cs">
+      <Link>Vendor\Coral\Coral.Managed\Source\GarbageCollector.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Vendor\Coral\Coral.Managed\Source\InternalCalls.cs">
+      <Link>Vendor\Coral\Coral.Managed\Source\InternalCalls.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Vendor\Coral\Coral.Managed\Source\InteropTypes.cs">
+      <Link>Vendor\Coral\Coral.Managed\Source\InteropTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Vendor\Coral\Coral.Managed\Source\ManagedHost.cs">
+      <Link>Vendor\Coral\Coral.Managed\Source\ManagedHost.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Vendor\Coral\Coral.Managed\Source\ManagedObject.cs">
+      <Link>Vendor\Coral\Coral.Managed\Source\ManagedObject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Vendor\Coral\Coral.Managed\Source\Marshalling.cs">
+      <Link>Vendor\Coral\Coral.Managed\Source\Marshalling.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Vendor\Coral\Coral.Managed\Source\TypeInterface.cs">
+      <Link>Vendor\Coral\Coral.Managed\Source\TypeInterface.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Vendor\Coral\Coral.Managed\Source\TypeNotFoundException.cs">
+      <Link>Vendor\Coral\Coral.Managed\Source\TypeNotFoundException.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Vendor\Coral\Coral.Managed\Source\UniqueList.cs">
+      <Link>Vendor\Coral\Coral.Managed\Source\UniqueList.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>

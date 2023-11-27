@@ -21,6 +21,4 @@
 	#define NOMINMAX
 	#include <Windows.h>
 #endif
-
-// Coral
-#include <Utility.hpp>
+#include "volk.h"

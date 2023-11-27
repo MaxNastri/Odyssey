@@ -1,0 +1,4 @@
+[submodule "Vendor/Coral"]
+	path = Vendor/Coral
+	url = https://github.com/StudioCherno/Coral.git
+	branch = main

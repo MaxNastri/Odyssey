@@ -1,8 +1,8 @@
 #pragma once
 #include <GUIElement.h>
-#include "PropertyDrawer.h"
 #include <GameObject.h>
-#include <Vector3Drawer.h>
+#include "Vector3Drawer.h"
+#include "PropertyDrawer.h"
 
 namespace Odyssey
 {

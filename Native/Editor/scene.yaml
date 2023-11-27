@@ -7,15 +7,17 @@ GameObjects:
     UUID: ''
     Components:
       - Name: Odyssey.Entities.Transform
-        UUID: OET123098OET123098
         Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 0 y: 0 z: 0'
+      - Name: Odyssey.Camera
+        Field of View: 45
+        Near Clip: 0.1
+        Far Clip: 1000
+        Main Camera: true
       - Name: Example.Managed.AnotherScript
-        UUID: U_OET123097OET1230
         Fields: []
       - Name: Example.Managed.ExampleScript
-        UUID: U_OET321097OET3210
         Fields:
           - Name: MyName
             ManagedType: String
