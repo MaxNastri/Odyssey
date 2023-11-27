@@ -15,6 +15,7 @@ namespace Odyssey
 		static void SaveActiveScene(const std::string& filename);
 
 		static Scene* GetActiveScene();
+		static std::shared_ptr<Scene> GetActiveSceneRef();
 
 	public:
 		static void Update();

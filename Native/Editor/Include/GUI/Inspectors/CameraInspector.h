@@ -10,13 +10,13 @@ namespace Odyssey
 	{
 	public:
 		CameraInspector() = default;
-		CameraInspector(GameObject go);
+		CameraInspector(RefHandle<GameObject> go);
 
 	public:
 		virtual void Draw() override;
 
 	private:
-		GameObject m_GameObject;
+		RefHandle<GameObject> m_GameObject;
 		FloatDrawer m_FieldOfViewDrawer;
 		FloatDrawer m_NearClipDrawer;
 		FloatDrawer m_FarClipDrawer;

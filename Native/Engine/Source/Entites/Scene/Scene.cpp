@@ -15,22 +15,33 @@ namespace Odyssey
 		nextGameObjectID = 0;
 	}
 
-	GameObject Scene::CreateGameObject()
+	RefHandle<GameObject> Scene::CreateGameObject()
 	{
-		GameObject gameObject = GameObject(nextGameObjectID++);
+		// Create a new game object
+		uint32_t id = nextGameObjectID++;
+		RefHandle<GameObject> gameObject = RefHandle<GameObject>::Create(id, id);
+
 		gameObjects.push_back(gameObject);
-		gameObjectsByID[gameObject.id] = gameObject;
+		gameObjectsByID[id] = gameObject;
 		return gameObject;
 	}
 
-	void Scene::DestroyGameObject(GameObject gameObject)
+	void Scene::DestroyGameObject(RefHandle<GameObject>& gameObject)
 	{
 		ComponentManager::RemoveGameObject(gameObject);
-		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObject));
+		for (int i = 0; i < gameObjects.size(); i++)
+		{
+			if (gameObjects[i]->id == gameObject->id)
+			{
+				gameObjects.erase(gameObjects.begin() + i);
+				break;
+			}
+		}
 	}
+
 	void Scene::Clear()
 	{
-		for (GameObject& gameObject : gameObjects)
+		for (auto& gameObject : gameObjects)
 		{
 			DestroyGameObject(gameObject);
 		}
@@ -40,19 +51,20 @@ namespace Odyssey
 		nextGameObjectID = 0;
 	}
 
-	GameObject Scene::GetGameObject(unsigned int id)
+	RefHandle<GameObject> Scene::GetGameObject(uint32_t id)
 	{
 		if (gameObjectsByID.find(id) != gameObjectsByID.end())
 		{
 			return gameObjectsByID[id];
 		}
+
 		Logger::LogError("[Scene] Cannot find game object " + std::to_string(id));
-		return NULL;
+		return RefHandle<GameObject>::Empty();
 	}
 
 	void Scene::Awake()
 	{
-		for (const GameObject& gameObject : gameObjects)
+		for (const auto& gameObject : gameObjects)
 		{
 			ComponentManager::ExecuteOnGameObjectComponents(gameObject, awakeFunc);
 		}
@@ -60,7 +72,7 @@ namespace Odyssey
 
 	void Scene::Update()
 	{
-		for (const GameObject& gameObject : gameObjects)
+		for (const auto& gameObject : gameObjects)
 		{
 			ComponentManager::ExecuteOnGameObjectComponents(gameObject, updateFunc);
 		}
@@ -68,7 +80,7 @@ namespace Odyssey
 
 	void Scene::OnDestroy()
 	{
-		for (const GameObject& gameObject : gameObjects)
+		for (const auto& gameObject : gameObjects)
 		{
 			ComponentManager::ExecuteOnGameObjectComponents(gameObject, onDestroyFunc);
 		}
@@ -85,9 +97,9 @@ namespace Odyssey
 		ryml::NodeRef gameObjectsNode = root["GameObjects"];
 		gameObjectsNode |= ryml::SEQ;
 
-		for (GameObject& gameObject : gameObjects)
+		for (auto& gameObject : gameObjects)
 		{
-			gameObject.Serialize(gameObjectsNode);
+			gameObject->Serialize(gameObjectsNode);
 		}
 
 		FILE* file2 = fopen(filename.c_str(), "w+");
@@ -112,9 +124,9 @@ namespace Odyssey
 
 			for (size_t i = 0; i < gameObjectsNode.num_children(); i++)
 			{
-				GameObject gameObject = CreateGameObject();
+				RefHandle<GameObject> gameObject = CreateGameObject();
 				ryml::NodeRef child = gameObjectsNode.child(i);
-				gameObject.Deserialize(child);
+				gameObject->Deserialize(child);
 			}
 		}
 		else

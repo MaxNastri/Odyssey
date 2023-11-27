@@ -11,7 +11,7 @@
 
 namespace Odyssey
 {
-	UserScriptInspector::UserScriptInspector(GameObject go, UserScript* userScript, std::string_view className)
+	UserScriptInspector::UserScriptInspector(RefHandle<GameObject> go, UserScript* userScript, std::string_view className)
 	{
 		gameObject = go;
 		userScriptFullName = displayName = className;
@@ -81,7 +81,7 @@ namespace Odyssey
 		}
 	}
 
-	void UserScriptInspector::CreateDrawerFromProperty(GameObject gameObject, const std::string& className, const std::string& fieldName, Coral::ManagedType managedType, Coral::ManagedObject userObject)
+	void UserScriptInspector::CreateDrawerFromProperty(GameObject* gameObject, const std::string& className, const std::string& fieldName, Coral::ManagedType managedType, Coral::ManagedObject userObject)
 	{
 		switch (managedType)
 		{
@@ -154,7 +154,7 @@ namespace Odyssey
 		}
 	}
 
-	void UserScriptInspector::CreateStringDrawer(GameObject gameObject, const std::string& className, const std::string& fieldName, Coral::ManagedObject userObject)
+	void UserScriptInspector::CreateStringDrawer(GameObject* gameObject, const std::string& className, const std::string& fieldName, Coral::ManagedObject userObject)
 	{
 		Coral::ScopedString initialValue = userObject.GetFieldValue<Coral::String>(fieldName);
 		AddStringDrawer(gameObject, className, fieldName, initialValue, drawers);

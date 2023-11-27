@@ -5,7 +5,7 @@
 
 namespace Odyssey
 {
-	CameraInspector::CameraInspector(GameObject go)
+	CameraInspector::CameraInspector(RefHandle<GameObject> go)
 	{
 		m_GameObject = go;
 
@@ -40,6 +40,7 @@ namespace Odyssey
 			m_FarClipDrawer = FloatDrawer("Far Clip", camera->GetFarClip(), farClipModified);
 		}
 	}
+
 	void CameraInspector::Draw()
 	{
 		if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))

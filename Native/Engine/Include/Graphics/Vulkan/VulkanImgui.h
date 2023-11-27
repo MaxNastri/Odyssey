@@ -46,6 +46,6 @@ namespace Odyssey
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		VkDescriptorPool descriptorPool;
-		bool showDemoWindow = true;
+		bool showDemoWindow = false;
 	};
 }

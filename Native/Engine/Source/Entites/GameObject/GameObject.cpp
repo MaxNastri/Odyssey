@@ -12,7 +12,7 @@ namespace Odyssey
 		active = false;
 	}
 
-	GameObject::GameObject(unsigned int ID)
+	GameObject::GameObject(uint32_t ID)
 	{
 		name = "GameObject";
 		id = ID;
@@ -37,7 +37,7 @@ namespace Odyssey
 				component->Serialize(componentsNode);
 			};
 
-		ComponentManager::ExecuteOnGameObjectComponents(*this, serializeComponent);
+		ComponentManager::ExecuteOnGameObjectComponents(this, serializeComponent);
 	}
 
 	void GameObject::Deserialize(ryml::NodeRef& node)
@@ -63,12 +63,14 @@ namespace Odyssey
 			
 			if (componentNode.has_child("Fields"))
 			{
-				UserScript* userScript = ComponentManager::AddUserScript(*this, componentType);
+				UserScript* userScript = ComponentManager::AddUserScript(this, componentType);
+				userScript->SetGameObject(this);
 				userScript->Deserialize(componentNode);
 			}
 			else
 			{
-				Component* component = ComponentManager::AddComponentByName(*this, componentType);
+				Component* component = ComponentManager::AddComponentByName(this, componentType);
+				component->SetGameObject(this);
 				component->Deserialize(componentNode);
 			}
 		}

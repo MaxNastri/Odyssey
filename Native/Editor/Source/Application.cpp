@@ -38,11 +38,12 @@ namespace Odyssey
 		SceneManager::LoadScene("scene.yaml");
 
 		Scene* scene = SceneManager::GetActiveScene();
-		GameObject go = scene->GetGameObject(0);
+		RefHandle<GameObject> go = scene->GetGameObject(0);
 
 		ConstructVisuals();
 
 		GUIManager::CreateInspectorWindow(go);
+		GUIManager::CreateSceneHierarchyWindow(SceneManager::GetActiveSceneRef());
 
 		scene->Awake();
 		while (running)
@@ -77,7 +78,7 @@ namespace Odyssey
 	void Application::ConstructVisuals()
 	{
 		Scene* scene = SceneManager::GetActiveScene();
-		GameObject go = scene->GetGameObject(0);
+		GameObject* go = scene->GetGameObject(0);
 
 		ResourceHandle<Material> material;
 		{

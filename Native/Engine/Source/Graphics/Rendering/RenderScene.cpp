@@ -56,7 +56,7 @@ namespace Odyssey
 			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 			//uboData.inverseView = mainCamera->GetInverseView();
-			GameObject gameObject = scene->GetGameObject(0);
+			GameObject* gameObject = scene->GetGameObject(0);
 			if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject))
 			{
 				uboData.world = transform->GetWorldMatrix();// glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 1.0f));

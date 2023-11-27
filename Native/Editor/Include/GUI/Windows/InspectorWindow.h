@@ -11,13 +11,17 @@ namespace Odyssey
 	{
 	public:
 		InspectorWindow() = default;
-		InspectorWindow(GameObject gameObject);
+		InspectorWindow(RefHandle<GameObject> gameObject);
 
 	public:
 		virtual void Draw() override;
+
+	public:
+		void SetGameObject(RefHandle<GameObject> gameObject);
 		void RefreshUserScripts();
 
 	private:
+		std::vector<std::unique_ptr<GUIElement>> inspectors;
 		TransformInspector transformInspector;
 		CameraInspector cameraInspector;
 		std::vector<UserScriptInspector> userScriptInspectors;

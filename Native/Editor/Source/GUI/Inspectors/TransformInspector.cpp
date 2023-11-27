@@ -6,7 +6,7 @@
 
 namespace Odyssey
 {
-	TransformInspector::TransformInspector(GameObject go)
+	TransformInspector::TransformInspector(RefHandle<GameObject> go)
 	{
 		gameObject = go;
 

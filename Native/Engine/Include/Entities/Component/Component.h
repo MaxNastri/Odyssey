@@ -18,13 +18,13 @@ namespace Odyssey
 		virtual void Deserialize(ryml::ConstNodeRef node) { }
 
 	public:
-		void SetGameObject(GameObject go)
+		void SetGameObject(GameObject* go)
 		{
 			gameObject = go;
 		}
 
 	public:
 		bool active;
-		GameObject gameObject;
+		GameObject* gameObject;
 	};
 }

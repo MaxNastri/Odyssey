@@ -29,8 +29,12 @@ namespace Odyssey
 
     Scene* SceneManager::GetActiveScene()
     {
-        // TODO: insert return statement here
         return scenes[activeScene].get();
+    }
+
+    std::shared_ptr<Scene> SceneManager::GetActiveSceneRef()
+    {
+        return scenes[activeScene];
     }
 
     void SceneManager::Update()
