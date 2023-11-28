@@ -43,7 +43,7 @@ namespace Odyssey
 		// Prepare descriptor buffer
 		BufferType bufferType = m_Layout.Get()->GetType() == DescriptorType::Uniform ? BufferType::DescriptorUniform : BufferType::DescriptorSampler;
 
-		m_Buffer = ResourceManager::AllocateBuffer(bufferType, m_Size);
+		m_Buffer = ResourceManager::AllocateBuffer(bufferType, m_Size * count);
 		m_Buffer.Get()->AllocateMemory();
 	}
 

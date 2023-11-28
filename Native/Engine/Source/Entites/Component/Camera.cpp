@@ -11,8 +11,8 @@ namespace Odyssey
 		// Cache the transform
 		m_Transform = ComponentManager::GetComponent<Transform>(gameObject->id);
 
-		m_Width = 1920;
-		m_Height = 1080;
+		m_Width = 1000;
+		m_Height = 1000;
 		// Calculate our matrices
 		CalculateInverseView();
 		CalculateProjection();
@@ -28,7 +28,6 @@ namespace Odyssey
 		componentNode["Near Clip"] << m_NearClip;
 		componentNode["Far Clip"] << m_FarClip;
 		componentNode["Main Camera"] << m_MainCamera;
-
 	}
 
 	void Camera::Deserialize(ryml::ConstNodeRef node)
@@ -63,6 +62,7 @@ namespace Odyssey
 	void Camera::CalculateProjection()
 	{
 		m_Projection = glm::perspectiveFovLH(m_FieldOfView, m_Width, m_Height, m_NearClip, m_FarClip);
+		m_Projection[1][1] = -m_Projection[1][1];
 	}
 
 	void Camera::CalculateInverseView()

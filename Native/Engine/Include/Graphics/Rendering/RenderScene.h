@@ -13,11 +13,15 @@ namespace Odyssey
 	class VulkanBuffer;
 	class VulkanDescriptorLayout;
 
-	struct UBOMatrices
+	struct SceneUniformData
 	{
-		glm::mat4 world;
 		glm::mat4 inverseView;
 		glm::mat4 proj;
+	};
+
+	struct ObjectUniformData
+	{
+		glm::mat4 world;
 	};
 
 	struct SetPass
@@ -51,12 +55,18 @@ namespace Odyssey
 		bool SetPassCreated(ResourceHandle<Material> material, SetPass* outSetPass);
 
 	public:
-		// Uniform buffer for scene matrices
-		UBOMatrices uboData;
-		ResourceHandle<VulkanBuffer> sceneBuffer;
+		// Data structs
+		SceneUniformData sceneData;
+		ObjectUniformData objectData;
+
+		// Descriptor buffer for per-scene data
 		ResourceHandle<VulkanDescriptorLayout> descriptorLayout;
-		std::vector<ResourceHandle<VulkanDescriptorBuffer>> sceneDescriptorBuffers;
+		ResourceHandle<VulkanBuffer> sceneUniformBuffer;
+		std::vector<ResourceHandle<VulkanBuffer>> perObjectUniformBuffers;
+		ResourceHandle<VulkanDescriptorBuffer> descriptorBuffer;
 
 		std::vector<SetPass> setPasses;
+		uint32_t m_NextUniformBuffer = 0;
+		const uint32_t Max_Uniform_Buffers = 1024;
 	};
 }

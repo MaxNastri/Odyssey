@@ -19,5 +19,6 @@ namespace Odyssey
 		ResourceHandle<VulkanVertexBuffer> VertexBuffer;
 		ResourceHandle<VulkanIndexBuffer> IndexBuffer;
 		uint32_t IndexCount;
+		uint32_t UniformBufferIndex;
 	};
 }

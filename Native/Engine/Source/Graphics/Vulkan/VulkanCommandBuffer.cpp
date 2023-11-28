@@ -139,6 +139,20 @@ namespace Odyssey
         vkCmdBindIndexBuffer(m_CommandBuffer, handle.Get()->GetIndexBufferVK(), 0, VK_INDEX_TYPE_UINT32);
     }
 
+    void VulkanCommandBuffer::BindDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle)
+    {
+        std::vector<VkDescriptorBufferBindingInfoEXT> bindingInfos;
+
+        VulkanDescriptorBuffer* descriptorBuffer = handle.Get();
+        VkDescriptorBufferBindingInfoEXT bindingInfo{};
+        bindingInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT;
+        bindingInfo.address = descriptorBuffer->GetBuffer().Get()->GetAddress();
+        bindingInfo.usage = VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT;
+        bindingInfos.push_back(bindingInfo);
+
+        vkCmdBindDescriptorBuffersEXT(m_CommandBuffer, (uint32_t)bindingInfos.size(), bindingInfos.data());
+    }
+
     void VulkanCommandBuffer::BindDescriptorBuffers(std::vector<ResourceHandle<VulkanDescriptorBuffer>> handles)
     {
         std::vector<VkDescriptorBufferBindingInfoEXT> bindingInfos;

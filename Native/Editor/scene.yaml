@@ -10,11 +10,6 @@ GameObjects:
         Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
-      - Name: Odyssey.Camera
-        Field of View: 45
-        Near Clip: 0.1
-        Far Clip: 1000
-        Main Camera: true
       - Name: Example.Managed.AnotherScript
         Fields: []
       - Name: Example.Managed.ExampleScript
@@ -41,6 +36,11 @@ GameObjects:
     UUID: ''
     Components:
       - Name: Odyssey.Entities.Transform
-        Position: 'x: 1 y: 2 z: 3'
-        Rotation: 'x: 4 y: 5 z: 6'
-        Scale: 'x: 7 y: 8 z: 9'
+        Position: 'x: 0 y: 0 z: -2'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Name: Odyssey.Camera
+        Field of View: 90
+        Near Clip: 0.1
+        Far Clip: 1000
+        Main Camera: true

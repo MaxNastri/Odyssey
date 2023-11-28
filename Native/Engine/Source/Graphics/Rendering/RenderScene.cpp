@@ -16,18 +16,32 @@ namespace Odyssey
 {
 	RenderScene::RenderScene()
 	{
-		// Uniform buffer
-		uint32_t bufferSize = sizeof(uboData);
-		sceneBuffer = ResourceManager::AllocateBuffer(BufferType::Uniform, bufferSize);
-		sceneBuffer.Get()->AllocateMemory();
-		sceneBuffer.Get()->SetMemory(bufferSize, &uboData);
-
-		// Descriptor layout and buffer
+		// Descriptor layout for the combined uniform buffers
 		descriptorLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		sceneDescriptorBuffers.push_back(ResourceManager::AllocateDescriptorBuffer(descriptorLayout, 1));
+		descriptorBuffer = ResourceManager::AllocateDescriptorBuffer(descriptorLayout, Max_Uniform_Buffers);
 
-		// Assign the uniform buffer to the descriptor buffer
-		sceneDescriptorBuffers[0].Get()->SetUniformBuffer(sceneBuffer, 0);
+		// Scene uniform buffer
+		uint32_t sceneUniformSize = sizeof(sceneData);
+		sceneUniformBuffer = ResourceManager::AllocateBuffer(BufferType::Uniform, sceneUniformSize);
+		sceneUniformBuffer.Get()->AllocateMemory();
+		sceneUniformBuffer.Get()->SetMemory(sceneUniformSize, &sceneData);
+
+		// Put the scene uniform buffer into the descriptor buffer [0]
+		descriptorBuffer.Get()->SetUniformBuffer(sceneUniformBuffer, 0);
+
+		// Per-object uniform buffers
+		uint32_t perObjectUniformSize = sizeof(objectData);
+
+		for (uint32_t i = 1; i < Max_Uniform_Buffers; i++)
+		{
+			ResourceHandle<VulkanBuffer> uniformBuffer = ResourceManager::AllocateBuffer(BufferType::Uniform, perObjectUniformSize);
+			uniformBuffer.Get()->AllocateMemory();
+			uniformBuffer.Get()->SetMemory(perObjectUniformSize, &objectData);
+			perObjectUniformBuffers.push_back(uniformBuffer);
+
+			// Put the per-object uniform buffer into the descriptor buffer [i]
+			descriptorBuffer.Get()->SetUniformBuffer(uniformBuffer, i);
+		}
 	}
 
 	void RenderScene::ConvertScene(Scene* scene)
@@ -45,30 +59,18 @@ namespace Odyssey
 		}
 
 		setPasses.clear();
+		m_NextUniformBuffer = 0;
 	}
 
 	void RenderScene::SetupCameraData(Scene* scene)
 	{
 		if (Camera* mainCamera = scene->GetMainCamera())
 		{
-			static auto startTime = std::chrono::high_resolution_clock::now();
-			auto currentTime = std::chrono::high_resolution_clock::now();
-			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+			sceneData.inverseView = mainCamera->GetInverseView();
+			sceneData.proj = mainCamera->GetProjection();
 
-			//uboData.inverseView = mainCamera->GetInverseView();
-			GameObject* gameObject = scene->GetGameObject(0);
-			if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject->id))
-			{
-				uboData.world = transform->GetWorldMatrix();// glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 1.0f));
-			}
-
-			uboData.inverseView = glm::lookAt(glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			//uboData.proj = mainCamera->GetProjection();
-			uboData.proj = glm::perspectiveLH(glm::radians(90.0f), 1000.0f / 1000.0f, 0.1f, 100.0f);
-			uboData.proj[1][1] = -uboData.proj[1][1];
-
-			uint32_t bufferSize = sizeof(uboData);
-			sceneBuffer.Get()->SetMemory(bufferSize, &uboData);
+			uint32_t sceneUniformSize = sizeof(sceneData);
+			sceneUniformBuffer.Get()->SetMemory(sceneUniformSize, &sceneData);
 		}
 	}
 
@@ -83,6 +85,7 @@ namespace Odyssey
 					SetPass* setPass = nullptr;
 					Drawcall drawcall;
 
+					// Create the set pass, if its not already created
 					if (!SetPassCreated(renderer->GetMaterial(), setPass))
 					{
 						setPasses.push_back(SetPass());
@@ -91,12 +94,18 @@ namespace Odyssey
 					}
 
 					Mesh* mesh = renderer->GetMesh().Get();
-					// This is temporary, move this to a separate per-object ubo
+
+					// Create the drawcall data
 					drawcall.VertexBuffer = mesh->GetVertexBuffer();
 					drawcall.IndexBuffer = mesh->GetIndexBuffer();
 					drawcall.IndexCount = mesh->GetIndexCount();
-
+					drawcall.UniformBufferIndex = m_NextUniformBuffer++;
 					setPass->drawcalls.push_back(drawcall);
+
+					// Update the per-object uniform buffer
+					uint32_t perObjectSize = sizeof(objectData);
+					objectData.world = transform->GetWorldMatrix();
+					perObjectUniformBuffers[drawcall.UniformBufferIndex].Get()->SetMemory(perObjectSize, &objectData);
 				}
 			}
 		}
@@ -128,6 +137,7 @@ namespace Odyssey
 	{
 		// Allocate a graphics pipeline
 		std::vector<ResourceHandle<VulkanDescriptorLayout>> layouts{};
+		layouts.push_back(descriptorLayout);
 		layouts.push_back(descriptorLayout);
 
 		VulkanPipelineInfo info;

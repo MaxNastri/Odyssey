@@ -7,6 +7,7 @@
 #include "Drawcall.h"
 #include "RenderScene.h"
 #include "VulkanImgui.h"
+#include "VulkanDescriptorBuffer.h"
 
 namespace Odyssey
 {
@@ -110,7 +111,7 @@ namespace Odyssey
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
 
 		// Bind the scene descriptor buffer
-		commandBuffer->BindDescriptorBuffers(renderScene->sceneDescriptorBuffers);
+		commandBuffer->BindDescriptorBuffer(renderScene->descriptorBuffer);
 
 		for (auto& setPass : params.renderingData->renderScene->setPasses)
 		{
@@ -119,10 +120,19 @@ namespace Odyssey
 			// Set the scene descriptor buffer offset
 			uint32_t buffer_index_ubo = 0;
 			VkDeviceSize buffer_offset = 0;
+
 			commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 0, &buffer_index_ubo, &buffer_offset);
+
+			uint32_t descriptorIndex = 1;
 
 			for (auto& drawcall : setPass.drawcalls)
 			{
+				// Bind the per-objectdescriptor buffer 
+				buffer_offset = descriptorIndex * renderScene->descriptorBuffer.Get()->GetSize();
+				commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 1, &buffer_index_ubo, &buffer_offset);
+				descriptorIndex++;
+
+				// Set the per-object descriptor buffer offset
 				commandBuffer->BindVertexBuffer(drawcall.VertexBuffer);
 				commandBuffer->BindIndexBuffer(drawcall.IndexBuffer);
 				commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);
