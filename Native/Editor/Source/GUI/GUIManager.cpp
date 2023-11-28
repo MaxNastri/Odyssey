@@ -72,10 +72,9 @@ namespace Odyssey
 		if (selectedObject != std::numeric_limits<uint32_t>::max())
 		{
 			Transform* component = ComponentManager::GetComponent<Transform>(selectedObject);
-			glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			glm::mat4 proj = glm::perspectiveLH(glm::radians(90.0f), 1920.0f / 1080.0f, 0.1f, 100.0f);
-			proj[1][1] = proj[1][1];
-
+			glm::mat4 view = scene->GetMainCamera()->GetInverseView();
+			glm::mat4 proj = scene->GetMainCamera()->GetProjection();
+			proj[1][1] *= -1.0f;
 			glm::mat4 transform = component->GetWorldMatrix();
 
 			ImGuizmo::SetRect(500, 500, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
