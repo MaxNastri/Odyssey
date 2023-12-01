@@ -23,6 +23,7 @@ namespace Odyssey
 		static void KeyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods);
 		static void MouseMoveCallback(GLFWwindow* window, double x, double y);
 		static void MouseEnteredCallback(GLFWwindow* window, int entered);
+		static void MouseButtonClicked(GLFWwindow* window, int button, int action, int mods);
 		static void WindowResize(GLFWwindow* window, int width, int height);
 
 	private:

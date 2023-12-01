@@ -1,11 +1,8 @@
 #include "Input.h"
+#include "Logger.h"
 
 namespace Odyssey
 {
-    std::array<std::bitset<1024>, Input::KeyState::Size> Input::keyInput;
-    double Input::mouseX = 0.0;
-    double Input::mouseY = 0.0;
-
     void Input::Initialize()
     {
         keyInput[KeyState::Up].reset();
@@ -25,6 +22,20 @@ namespace Odyssey
     bool Input::GetKeyUp(KeyCode keyCode)
     {
         return keyInput[KeyState::Up][keyCode];
+    }
+
+    bool Input::GetMouseButtonDown(MouseButton button)
+    {
+        return mouseInput[button];
+    }
+
+    void Input::Update()
+    {
+        prevMouseX = mouseX;
+        prevMouseY = mouseY;
+
+        mouseAxisH = (mouseX - prevMouseX);
+        mouseAxisV = (mouseY - prevMouseY);
     }
 
     void Input::RegisterKeyPress(int key, int scanCode)
@@ -59,20 +70,31 @@ namespace Odyssey
 
     void Input::RegisterMouseMove(double x, double y)
     {
+        prevMouseX = mouseX;
+        prevMouseY = mouseY;
+
         mouseX = x;
         mouseY = y;
+
+        mouseAxisH = (mouseX - prevMouseX);
+        mouseAxisV = (mouseY - prevMouseY);
     }
 
     void Input::RegisterMousePosition(double x, double y, bool entered)
     {
         if (entered)
         {
-            mouseX = x;
-            mouseY = y;
+            mouseX = prevMouseX = x;
+            mouseY = prevMouseY = y;
         }
         else
         {
-            mouseX = mouseY = 0.0;
+            mouseX = mouseY = prevMouseX = prevMouseY = 0.0;
         }
+    }
+
+    void Input::RegisterMouseClick(MouseButton button, bool pressed)
+    {
+        mouseInput[button] = pressed;
     }
 }

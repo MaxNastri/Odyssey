@@ -56,6 +56,7 @@ namespace Odyssey
 
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
 
+		UpdateCameraController();
 		RenderGizmos();
 
 		ImGui::PopStyleVar();
@@ -114,6 +115,69 @@ namespace Odyssey
 				component->SetPosition(pos);
 				component->AddRotation(diffRotation);
 				component->SetScale(scale);
+			}
+		}
+	}
+
+	void SceneViewWindow::UpdateCameraController()
+	{
+		const float speed = 3.0f;
+		Scene* scene = SceneManager::GetActiveScene();
+		Camera* camera = scene->GetMainCamera();
+		
+		if (Transform* transform = ComponentManager::GetComponent<Transform>(camera->gameObject->id))
+		{
+			glm::vec3 inputVel = glm::zero<vec3>();
+
+			if (Input::GetMouseButtonDown(MouseButton::Right))
+			{
+				if (Input::GetKeyDown(KeyCode::W))
+				{
+					inputVel += glm::vec3(0, 0, 1);
+				}
+				else if(Input::GetKeyDown(KeyCode::S))
+				{
+					inputVel += glm::vec3(0, 0, -1);
+				}
+				else if (Input::GetKeyDown(KeyCode::D))
+				{
+					inputVel += glm::vec3(1, 0, 0);
+				}
+				else if (Input::GetKeyDown(KeyCode::A))
+				{
+					inputVel += glm::vec3(-1, 0, 0);
+				}
+				else if (Input::GetKeyDown(KeyCode::E))
+				{
+					inputVel += glm::vec3(0, 1, 0);
+				}
+				else if (Input::GetKeyDown(KeyCode::Q))
+				{
+					inputVel += glm::vec3(0, -1, 0);
+				}
+
+				if (inputVel != glm::zero<vec3>())
+				{
+					inputVel = glm::normalize(inputVel);
+					glm::vec3 right = transform->Right() * inputVel.x;
+					glm::vec3 up = transform->Up() * inputVel.y;
+					glm::vec3 fwd = transform->Forward() * inputVel.z;
+					glm::vec3 velocity = (right + up + fwd)* speed* (1.0f / 144.0f);
+					transform->AddPosition(velocity);
+				}
+
+				float mouseH = Input::GetMouseAxisHorizontal();
+				float mouseV = Input::GetMouseAxisVerticle();
+
+				Logger::LogInfo("(SceneView) H: " + std::to_string(mouseH) + ", V: " + std::to_string(mouseV));
+				if (mouseH != 0.0f || mouseV != 0.0f)
+				{
+					glm::vec3 yaw = vec3(0,1,0) * mouseH * (1.0f / 144.0f) * 15.0f;
+					glm::vec3 pitch = vec3(1,0,0) * mouseV * (1.0f / 144.0f) * 15.0f;
+
+					transform->AddRotation(yaw);
+					transform->AddRotation(pitch);
+				}
 			}
 		}
 	}

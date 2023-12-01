@@ -22,6 +22,7 @@ namespace Odyssey
 
 	private:
 		void RenderGizmos();
+		void UpdateCameraController();
 
 	private: // Rendering stuff
 		std::shared_ptr<OpaquePass> m_SceneViewPass;

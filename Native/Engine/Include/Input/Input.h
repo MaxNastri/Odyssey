@@ -18,14 +18,18 @@ namespace Odyssey
 		static bool GetKeyPress(KeyCode keyCode);
 		static bool GetKeyDown(KeyCode keyCode);
 		static bool GetKeyUp(KeyCode keyCode);
+		static bool GetMouseButtonDown(MouseButton button);
+		static double GetMouseAxisHorizontal() { return mouseAxisH; }
+		static double GetMouseAxisVerticle() { return mouseAxisV; }
 
 	public:
+		static void Update();
 		static void RegisterKeyPress(int key, int scanCode);
 		static void RegisterKeyDown(int key, int scanCode);
 		static void RegisterKeyUp(int key, int scanCode);
 		static void RegisterMouseMove(double x, double y);
 		static void RegisterMousePosition(double x, double y, bool entered);
-
+		static void RegisterMouseClick(MouseButton button, bool pressed);
 	private:
 		enum KeyState
 		{
@@ -35,7 +39,10 @@ namespace Odyssey
 			Size = 3,
 		};
 
-		static std::array<std::bitset<1024>, KeyState::Size> keyInput;
-		static double mouseX, mouseY;
+		inline static std::array<std::bitset<1024>, KeyState::Size> keyInput;
+		inline static std::array<bool, MouseButton::Size> mouseInput;
+		inline static double mouseX = 0.0, mouseY = 0.0;
+		inline static double prevMouseX = 0.0, prevMouseY = 0.0;
+		inline static double mouseAxisH = 0.0, mouseAxisV = 0.0;
 	};
 }
