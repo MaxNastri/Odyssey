@@ -97,8 +97,10 @@ namespace Odyssey
 				op = ImGuizmo::OPERATION::SCALE;
 			}
 
+			ImGuizmo::AllowAxisFlip(false);
+			ImGuizmo::SetGizmoSizeClipSpace(0.1f);
 			ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj),
-				(ImGuizmo::OPERATION)op, ImGuizmo::LOCAL, glm::value_ptr(transform));
+				(ImGuizmo::OPERATION)op, ImGuizmo::WORLD, glm::value_ptr(transform));
 
 			if (ImGuizmo::IsUsing())
 			{

@@ -54,7 +54,7 @@ namespace ImGuizmo
 	static const float RAD2DEG = (180.f / ZPI);
 	static const float DEG2RAD = (ZPI / 180.f);
 	const float screenRotateSize = 0.06f;
-	static float ArrowLength = 1.2f;
+
 	static OPERATION operator&(OPERATION lhs, OPERATION rhs)
 	{
 		return static_cast<OPERATION>(static_cast<int>(lhs) & static_cast<int>(rhs));
@@ -1398,7 +1398,7 @@ namespace ImGuizmo
 			if (belowAxisLimit && Intersects(op, static_cast<OPERATION>(TRANSLATE_X << i)))
 			{
 				ImVec2 baseSSpace = worldToPos(dirAxis * 0.1f * gContext.mScreenFactor, gContext.mMVP);
-				ImVec2 worldDirSSpace = worldToPos(dirAxis * gContext.mScreenFactor * ArrowLength, gContext.mMVP);
+				ImVec2 worldDirSSpace = worldToPos(dirAxis * gContext.mScreenFactor, gContext.mMVP);
 
 				drawList->AddLine(baseSSpace, worldDirSSpace, colors[i + 1], lineThickness);
 
