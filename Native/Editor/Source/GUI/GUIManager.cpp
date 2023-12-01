@@ -78,5 +78,10 @@ namespace Odyssey
 		{
 			inspectorWindow.SetGameObject(gameObject);
 		}
+
+		for (auto& sceneViewWindow : sceneViewWindows)
+		{
+			sceneViewWindow.SetSelectedIndex(gameObject->id);
+		}
 	}
 }

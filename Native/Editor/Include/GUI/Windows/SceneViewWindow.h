@@ -18,6 +18,8 @@ namespace Odyssey
 	public:
 		std::shared_ptr<OpaquePass> GetRenderPass() { return m_SceneViewPass; }
 
+		void SetSelectedIndex(uint32_t selected) { m_SelectedObject = selected; }
+
 	private:
 		void RenderGizmos();
 
@@ -33,5 +35,6 @@ namespace Odyssey
 		glm::vec2 m_WindowSize;
 		glm::vec2 m_WindowMin;
 		glm::vec2 m_WindowMax;
+		uint32_t op = 7;
 	};
 }

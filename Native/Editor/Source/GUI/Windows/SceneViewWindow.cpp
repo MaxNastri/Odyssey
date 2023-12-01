@@ -11,6 +11,7 @@
 #include "VulkanImgui.h"
 #include "Application.h"
 #include "RenderPasses.h"
+#include "Input.h"
 
 namespace Odyssey
 {
@@ -22,7 +23,7 @@ namespace Odyssey
 		// Window stuff
 		m_WindowPos = glm::vec2(0, 0);
 		m_WindowSize = glm::vec2(500, 500);
-		m_RenderTexture = ResourceManager::AllocateTexture(m_WindowSize.x, m_WindowSize.y);
+		m_RenderTexture = ResourceManager::AllocateTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
 		if (std::shared_ptr<VulkanRenderer> renderer = Application::GetRenderer())
 		{
 			m_RenderTextureID = renderer->GetImGui()->AddTexture(m_RenderTexture);
@@ -79,12 +80,38 @@ namespace Odyssey
 			glm::mat4 transform = component->GetWorldMatrix();
 
 			ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
+
+			if (Input::GetKeyPress(KeyCode::Q))
+			{
+				// Translation
+				op = ImGuizmo::OPERATION::TRANSLATE;
+			}
+			else if (Input::GetKeyPress(KeyCode::W))
+			{
+				// ROTATION
+				op = ImGuizmo::OPERATION::ROTATE;
+			}
+			else if (Input::GetKeyPress(KeyCode::E))
+			{
+				// SCALE
+				op = ImGuizmo::OPERATION::SCALE;
+			}
+
 			ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj),
-				ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(transform));
+				(ImGuizmo::OPERATION)op, ImGuizmo::LOCAL, glm::value_ptr(transform));
 
 			if (ImGuizmo::IsUsing())
 			{
-				component->SetPosition(glm::vec3(transform[3]));
+				glm::vec3 pos;
+				glm::vec3 rot;
+				glm::vec3 scale;
+				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform), glm::value_ptr(pos), glm::value_ptr(rot), glm::value_ptr(scale));
+
+				glm::vec3 currentRotation = component->GetEulerRotation();
+				glm::vec3 diffRotation = rot - currentRotation;
+				component->SetPosition(pos);
+				component->AddRotation(diffRotation);
+				component->SetScale(scale);
 			}
 		}
 	}
