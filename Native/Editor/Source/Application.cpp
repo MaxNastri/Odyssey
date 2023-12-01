@@ -16,16 +16,30 @@ namespace Odyssey
 {
 	Application::Application()
 	{
+		// Initialize our managers
 		ScriptingManager::Initialize();
 		FileManager::Initialize();
 		FileManager::TrackFolder(Paths::Relative::ManagedProjectSource);
+
+		// Create the renderer
+		renderer = std::make_shared<VulkanRenderer>();
+
+		// Start listening for events
 		ScriptCompiler::ListenForEvents();
-		GUIManager::ListenForEvents();
+		GUIManager::Initialize();
 		SceneManager::ListenForEvents();
 
+		// Build the user assembly
 		ScriptCompiler::BuildUserAssembly();
-		r = new VulkanRenderer();
 
+		// Create the scene
+		SceneManager::LoadScene("scene.yaml");
+
+		ConstructVisuals();
+		SetupEditorGUI();
+		CreateRenderPasses();
+
+		// We're off an running
 		running = true;
 	}
 
@@ -34,18 +48,7 @@ namespace Odyssey
 		running = true;
 		stopwatch.Start();
 
-		// Create the scene
-		SceneManager::LoadScene("scene.yaml");
-
-		Scene* scene = SceneManager::GetActiveScene();
-		RefHandle<GameObject> go = scene->GetGameObject(0);
-
-		ConstructVisuals();
-
-		GUIManager::CreateInspectorWindow(go);
-		GUIManager::CreateSceneHierarchyWindow(SceneManager::GetActiveSceneRef());
-
-		scene->Awake();
+		SceneManager::Awake();
 		while (running)
 		{
 			float elapsed = stopwatch.Elapsed();
@@ -57,17 +60,15 @@ namespace Odyssey
 
 				SceneManager::Update();
 
-				if (!r->Update())
+				if (!renderer->Update())
 				{
 					running = false;
 				}
 
-				r->Render();
+				renderer->Render();
 			}
 		}
-		r->Destroy();
-		delete r;
-		r = nullptr;
+		renderer->Destroy();
 	}
 
 	void Application::Exit()
@@ -109,5 +110,18 @@ namespace Odyssey
 		{
 			MeshRenderer* mr = ComponentManager::AddComponent<MeshRenderer>(go, mesh, material);
 		}
+	}
+
+	void Application::SetupEditorGUI()
+	{
+		GUIManager::CreateInspectorWindow(RefHandle<GameObject>::Empty());
+		GUIManager::CreateSceneHierarchyWindow();
+		GUIManager::CreateSceneViewWindow();
+	}
+
+	void Application::CreateRenderPasses()
+	{
+		renderer->AddRenderPass(GUIManager::GetSceneViewWindow(0).GetRenderPass());
+		renderer->AddRenderPass(GUIManager::GetRenderPass());
 	}
 }

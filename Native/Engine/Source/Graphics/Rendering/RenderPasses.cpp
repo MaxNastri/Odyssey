@@ -22,9 +22,8 @@ namespace Odyssey
 		m_RenderTarget = renderTarget;
 	}
 
-	OpaquePass::OpaquePass(std::shared_ptr<VulkanContext> context)
+	OpaquePass::OpaquePass()
 	{
-		m_Context = context;
 		m_ClearValue = glm::vec4(0, 0, 0, 1);
 	}
 
@@ -225,7 +224,7 @@ namespace Odyssey
 	void ImguiPass::Execute(RenderPassParams& params)
 	{
 		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
-		m_Imgui->Render(commandBuffer->GetCommandBuffer(), m_DescriptorSet);
+		m_Imgui->Render(commandBuffer->GetCommandBuffer());
 	}
 
 	void ImguiPass::EndPass(RenderPassParams& params)
@@ -239,9 +238,8 @@ namespace Odyssey
 		commandBuffer->TransitionLayouts(m_RenderTarget, m_OldLayout, m_NewLayout);
 	}
 
-	void ImguiPass::SetImguiState(std::shared_ptr<VulkanImgui> imgui, VkDescriptorSet renderTexture)
+	void ImguiPass::SetImguiState(std::shared_ptr<VulkanImgui> imgui)
 	{
 		m_Imgui = imgui;
-		m_DescriptorSet = renderTexture;
 	}
 }

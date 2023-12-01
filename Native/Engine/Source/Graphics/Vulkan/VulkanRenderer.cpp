@@ -39,8 +39,6 @@ namespace Odyssey
 
 		// Drawing
 		SetupFrameData();
-		SetupDrawData();
-		CreateRenderPasses();
 
 		for (int i = 0; i < frames.size(); ++i)
 		{
@@ -53,8 +51,6 @@ namespace Odyssey
 	{
 		VulkanDevice* device = context->GetDevice();
 		device->WaitForIdle();
-
-		ResourceManager::DestroyTexture(renderTexture);
 
 		for (int i = 0; i < frames.size(); ++i)
 		{
@@ -113,24 +109,6 @@ namespace Odyssey
 		}
 		frameIndex = (frameIndex + 1) % swapchain->imageCount;
 		return true;
-	}
-
-	void VulkanRenderer::CreateRenderPasses()
-	{
-		VulkanPipelineInfo info;
-		info.vertexShader = ResourceManager::AllocateShader(ShaderType::Vertex, "vert.spv");
-		info.fragmentShader = ResourceManager::AllocateShader(ShaderType::Fragment, "frag.spv");
-
-		std::unique_ptr<OpaquePass> opaquePass = std::make_unique<OpaquePass>(context);
-		opaquePass->SetRenderTarget(renderTexture);
-		opaquePass->SetLayouts(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
-
-		std::unique_ptr<ImguiPass> imguiPass = std::make_unique<ImguiPass>();
-		imguiPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-		imguiPass->SetImguiState(imgui, rtSet);
-
-		renderPasses.push_back(std::move(opaquePass));
-		renderPasses.push_back(std::move(imguiPass));
 	}
 
 	bool VulkanRenderer::BeginFrame(VulkanFrame*& currentFrame)
@@ -296,12 +274,5 @@ namespace Odyssey
 		{
 			renderScenes[i] = std::make_shared<RenderScene>();
 		}
-	}
-
-	void VulkanRenderer::SetupDrawData()
-	{
-		// Draw data
-		renderTexture = ResourceManager::AllocateTexture(1000, 1000);
-		rtSet = imgui->AddTexture(renderTexture.Get());
 	}
 }

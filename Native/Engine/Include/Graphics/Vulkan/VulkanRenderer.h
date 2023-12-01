@@ -33,9 +33,12 @@ namespace Odyssey
 		bool Render();
 		bool Present();
 
+	public:
+		void AddRenderPass(std::shared_ptr<RenderPass> renderPass) { renderPasses.push_back(renderPass); }
+	public:
+		std::shared_ptr<VulkanImgui> GetImGui() { return imgui; }
+
 	private:
-		void BuildRenderGraph();
-		void CreateRenderPasses();
 		bool BeginFrame(VulkanFrame*& currentFrame);
 		void RenderFrame();
 		void RebuildSwapchain();
@@ -43,7 +46,6 @@ namespace Odyssey
 	private:
 		VulkanImgui::InitInfo CreateImguiInitInfo();
 		void SetupFrameData();
-		void SetupDrawData();
 
 	private: // Vulkan objects
 		std::shared_ptr<VulkanContext> context;
@@ -53,17 +55,11 @@ namespace Odyssey
 		std::vector<ResourceHandle<VulkanCommandPool>> commandPools;
 		std::vector<ResourceHandle<VulkanCommandBuffer>> commandBuffers;
 
-
 	private: // Draws
 		std::vector<std::shared_ptr<RenderScene>> renderScenes;
-		std::vector<std::unique_ptr<RenderPass>> renderPasses;
-		ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline;
+		std::vector<std::shared_ptr<RenderPass>> renderPasses;
 
 		std::shared_ptr<PerFrameRenderingData> renderingData;
-
-	private: // Render texture stuff
-		ResourceHandle<VulkanTexture> renderTexture;
-		VkDescriptorSet rtSet;
 
 	private: // IMGUI
 		std::shared_ptr<VulkanImgui> imgui;

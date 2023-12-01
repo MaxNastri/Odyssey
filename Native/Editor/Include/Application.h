@@ -19,14 +19,19 @@ namespace Odyssey
 		void Run();
 		void Exit();
 
+	public:
+		static std::shared_ptr<VulkanRenderer> GetRenderer() { return renderer; }
+
 	private:
 		void ConstructVisuals();
+		void SetupEditorGUI();
+		void CreateRenderPasses();
 
 	private:
 		bool running;
 		bool allowRecompile = true;
 		Stopwatch stopwatch;
-		VulkanRenderer* r;
+		inline static std::shared_ptr<VulkanRenderer> renderer = nullptr;
 
 		const float MaxFPS = 1.0f / 144.0f;
 	};

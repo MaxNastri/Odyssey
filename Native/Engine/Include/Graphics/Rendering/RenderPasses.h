@@ -45,15 +45,12 @@ namespace Odyssey
 	class OpaquePass : public RenderPass
 	{
 	public:
-		OpaquePass(std::shared_ptr<VulkanContext> context);
+		OpaquePass();
 
 	public:
 		virtual void BeginPass(RenderPassParams& params) override;
 		virtual void Execute(RenderPassParams& params) override;
 		virtual void EndPass(RenderPassParams& params) override;
-
-	private:
-		std::shared_ptr<VulkanContext> m_Context;
 	};
 
 	class ImguiPass : public RenderPass
@@ -70,10 +67,9 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) override;
 
 	public:
-		void SetImguiState(std::shared_ptr<VulkanImgui> imgui, VkDescriptorSet renderTexture);
+		void SetImguiState(std::shared_ptr<VulkanImgui> imgui);
 
 	private:
 		std::shared_ptr<VulkanImgui> m_Imgui;
-		VkDescriptorSet m_DescriptorSet;
 	};
 }

@@ -20,7 +20,7 @@ namespace Odyssey
 		static RefHandle<T> Empty()
 		{
 			RefHandle<T> handle;
-			handle.m_ID = -1;
+			handle.m_ID = std::numeric_limits<uint32_t>::max();
 			handle.m_Ptr = nullptr;
 			return handle;
 		}
@@ -29,13 +29,16 @@ namespace Odyssey
 		operator T* () const { return m_Ptr.get(); }
 
 	public:
+		bool IsValid() { return m_ID != std::numeric_limits<uint32_t>::max(); }
+
+	public:
 		uint32_t ID() { return m_ID; }
 		T* Get() { return m_Ptr.get(); }
 		std::shared_ptr<T> operator->() { return m_Ptr; }
 
 	private:
-		uint32_t m_ID;
-		std::shared_ptr<T> m_Ptr;
+		uint32_t m_ID = std::numeric_limits<uint32_t>::max();
+		std::shared_ptr<T> m_Ptr = nullptr;
 	};
 
 	class GameObject

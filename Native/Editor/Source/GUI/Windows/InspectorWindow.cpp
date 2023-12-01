@@ -39,21 +39,24 @@ namespace Odyssey
 		inspectors.clear();
 		userScriptInspectors.clear();
 
-		if (ComponentManager::HasComponent<Transform>(gameObject))
+		if (gameObject.IsValid())
 		{
-			inspectors.push_back(std::make_unique<TransformInspector>(gameObject));
-		}
+			if (ComponentManager::HasComponent<Transform>(gameObject))
+			{
+				inspectors.push_back(std::make_unique<TransformInspector>(gameObject));
+			}
 
-		if (ComponentManager::HasComponent<Camera>(gameObject))
-		{
-			inspectors.push_back(std::make_unique<CameraInspector>(gameObject));
-		}
+			if (ComponentManager::HasComponent<Camera>(gameObject))
+			{
+				inspectors.push_back(std::make_unique<CameraInspector>(gameObject));
+			}
 
-		std::vector<std::pair<std::string, UserScript*>> userScripts = ComponentManager::GetAllUserScripts(gameObject);
+			std::vector<std::pair<std::string, UserScript*>> userScripts = ComponentManager::GetAllUserScripts(gameObject);
 
-		for (auto& [userScriptClassName, userScript] : userScripts)
-		{
-			userScriptInspectors.push_back(UserScriptInspector(gameObject, userScript, userScriptClassName));
+			for (auto& [userScriptClassName, userScript] : userScripts)
+			{
+				userScriptInspectors.push_back(UserScriptInspector(gameObject, userScript, userScriptClassName));
+			}
 		}
 	}
 

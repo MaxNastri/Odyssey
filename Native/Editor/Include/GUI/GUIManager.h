@@ -2,6 +2,7 @@
 #include <GameObject.h>
 #include "InspectorWindow.h"
 #include "SceneHierarchyWindow.h"
+#include "SceneViewWindow.h"
 
 namespace Odyssey
 {
@@ -12,25 +13,30 @@ namespace Odyssey
 {
 	struct OnSceneLoaded;
 	class Scene;
+	class ImguiPass;
 
 	class GUIManager
 	{
 	public:
-		static void ListenForEvents();
+		static void Initialize();
 		static void CreateInspectorWindow(RefHandle<GameObject> gameObject);
-		static void CreateSceneHierarchyWindow(std::shared_ptr<Scene> scene);
+		static void CreateSceneHierarchyWindow();
+		static void CreateSceneViewWindow();
 
 	public:
 		static void OnRender(OnGUIRenderEvent* guiRenderEvent);
 		static void SceneLoaded(OnSceneLoaded* sceneLoadedEvent);
 		static void OnGameObjectSelected(uint32_t id);
 
-	private:
-		static void RenderGizmos();
+	public:
+		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
+		static SceneViewWindow& GetSceneViewWindow(uint32_t index) { return sceneViewWindows[index]; }
 
 	private:
 		inline static std::vector<InspectorWindow> inspectorWindows;
 		inline static std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
+		inline static std::vector<SceneViewWindow> sceneViewWindows;
 		inline static uint32_t selectedObject = std::numeric_limits<uint32_t>::max();
+		inline static std::shared_ptr<ImguiPass> m_GUIPass;
 	};
 }

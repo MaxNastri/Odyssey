@@ -18,6 +18,7 @@ namespace Odyssey
 		static std::shared_ptr<Scene> GetActiveSceneRef();
 
 	public:
+		static void Awake();
 		static void Update();
 
 	private:

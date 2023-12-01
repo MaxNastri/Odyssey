@@ -37,6 +37,11 @@ namespace Odyssey
         return scenes[activeScene];
     }
 
+    void SceneManager::Awake()
+    {
+        scenes[activeScene]->Awake();
+    }
+
     void SceneManager::Update()
     {
         scenes[activeScene]->Update();
