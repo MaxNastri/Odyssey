@@ -39,6 +39,24 @@ namespace Odyssey
 		sceneViewWindows.push_back(SceneViewWindow());
 	}
 
+	void GUIManager::Update()
+	{
+		for (auto& inspectorWindow : inspectorWindows)
+		{
+			inspectorWindow.Update();
+		}
+
+		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
+		{
+			sceneHierarchyWindow.Update();
+		}
+
+		for (auto& sceneViewWindow : sceneViewWindows)
+		{
+			sceneViewWindow.Update();
+		}
+	}
+
 	void GUIManager::OnRender(OnGUIRenderEvent* guiRenderEvent)
 	{
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());

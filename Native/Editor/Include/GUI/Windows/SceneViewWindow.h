@@ -12,6 +12,7 @@ namespace Odyssey
 	{
 	public:
 		SceneViewWindow();
+		virtual void Update() override;
 		virtual void Draw() override;
 		void Destroy();
 
@@ -23,6 +24,10 @@ namespace Odyssey
 	private:
 		void RenderGizmos();
 		void UpdateCameraController();
+		void UpdateGizmosInput();
+
+	private:
+		bool m_CameraControllerInUse = false;
 
 	private: // Rendering stuff
 		std::shared_ptr<OpaquePass> m_SceneViewPass;

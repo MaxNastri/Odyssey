@@ -28,7 +28,19 @@ namespace Odyssey
 		{
 			m_RenderTextureID = renderer->GetImGui()->AddTexture(m_RenderTexture);
 		}
-		m_SceneViewPass->SetRenderTarget(m_RenderTexture);
+		m_SceneViewPass->SetRenderTexture(m_RenderTexture);
+	}
+
+	void SceneViewWindow::Update()
+	{
+		// Reset the camera controller use flag before updating the camera controller
+		m_CameraControllerInUse = false;
+		UpdateCameraController();
+
+		if (!m_CameraControllerInUse)
+		{
+			UpdateGizmosInput();
+		}
 	}
 
 	void SceneViewWindow::Draw()
@@ -56,7 +68,6 @@ namespace Odyssey
 
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
 
-		UpdateCameraController();
 		RenderGizmos();
 
 		ImGui::PopStyleVar();
@@ -82,21 +93,6 @@ namespace Odyssey
 
 			ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 
-			if (Input::GetKeyPress(KeyCode::Q))
-			{
-				// Translation
-				op = ImGuizmo::OPERATION::TRANSLATE;
-			}
-			else if (Input::GetKeyPress(KeyCode::W))
-			{
-				// ROTATION
-				op = ImGuizmo::OPERATION::ROTATE;
-			}
-			else if (Input::GetKeyPress(KeyCode::E))
-			{
-				// SCALE
-				op = ImGuizmo::OPERATION::SCALE;
-			}
 
 			ImGuizmo::AllowAxisFlip(false);
 			ImGuizmo::SetGizmoSizeClipSpace(0.1f);
@@ -112,9 +108,13 @@ namespace Odyssey
 
 				glm::vec3 currentRotation = component->GetEulerRotation();
 				glm::vec3 diffRotation = rot - currentRotation;
-				component->SetPosition(pos);
-				component->AddRotation(diffRotation);
-				component->SetScale(scale);
+
+				if (op == ImGuizmo::OPERATION::TRANSLATE)
+					component->SetPosition(pos);
+				else if (op == ImGuizmo::ROTATE)
+					component->AddRotation(diffRotation);
+				else if (op == ImGuizmo::SCALE)
+					component->SetScale(scale);
 			}
 		}
 	}
@@ -131,6 +131,8 @@ namespace Odyssey
 
 			if (Input::GetMouseButtonDown(MouseButton::Right))
 			{
+				m_CameraControllerInUse = true;
+
 				if (Input::GetKeyDown(KeyCode::W))
 				{
 					inputVel += glm::vec3(0, 0, 1);
@@ -166,10 +168,9 @@ namespace Odyssey
 					transform->AddPosition(velocity);
 				}
 
-				float mouseH = Input::GetMouseAxisHorizontal();
-				float mouseV = Input::GetMouseAxisVerticle();
+				float mouseH = (float)Input::GetMouseAxisHorizontal();
+				float mouseV = (float)Input::GetMouseAxisVerticle();
 
-				Logger::LogInfo("(SceneView) H: " + std::to_string(mouseH) + ", V: " + std::to_string(mouseV));
 				if (mouseH != 0.0f || mouseV != 0.0f)
 				{
 					glm::vec3 yaw = vec3(0,1,0) * mouseH * (1.0f / 144.0f) * 15.0f;
@@ -179,6 +180,24 @@ namespace Odyssey
 					transform->AddRotation(pitch);
 				}
 			}
+		}
+	}
+	void SceneViewWindow::UpdateGizmosInput()
+	{
+		if (Input::GetKeyPress(KeyCode::Q))
+		{
+			// Translation
+			op = ImGuizmo::OPERATION::TRANSLATE;
+		}
+		else if (Input::GetKeyPress(KeyCode::W))
+		{
+			// ROTATION
+			op = ImGuizmo::OPERATION::ROTATE;
+		}
+		else if (Input::GetKeyPress(KeyCode::E))
+		{
+			// SCALE
+			op = ImGuizmo::OPERATION::SCALE;
 		}
 	}
 }

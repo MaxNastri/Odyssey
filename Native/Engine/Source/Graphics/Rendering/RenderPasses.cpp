@@ -11,7 +11,7 @@
 
 namespace Odyssey
 {
-	void RenderPass::SetRenderTarget(ResourceHandle<VulkanTexture> renderTarget)
+	void RenderPass::SetRenderTexture(ResourceHandle<VulkanTexture> renderTarget)
 	{
 		m_RenderTexture = renderTarget;
 		m_RenderTarget = renderTarget.Get()->GetImage();

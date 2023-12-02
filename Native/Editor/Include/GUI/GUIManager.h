@@ -24,6 +24,7 @@ namespace Odyssey
 		static void CreateSceneViewWindow();
 
 	public:
+		static void Update();
 		static void OnRender(OnGUIRenderEvent* guiRenderEvent);
 		static void SceneLoaded(OnSceneLoaded* sceneLoadedEvent);
 		static void OnGameObjectSelected(uint32_t id);

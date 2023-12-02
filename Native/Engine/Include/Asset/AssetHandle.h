@@ -3,19 +3,19 @@
 
 namespace Odyssey
 {
-	class ResourceManager;
+	class AssetManager;
 
 	template<typename T>
-	struct ResourceHandle
+	struct AssetHandle
 	{
 	public:
-		ResourceHandle()
+		AssetHandle()
 		{
 			m_ID = -1;
 			m_Ptr = nullptr;
 		}
 
-		ResourceHandle(uint32_t id, T* ptr)
+		AssetHandle(uint32_t id, T* ptr)
 		{
 			m_ID = id;
 			m_Ptr = ptr;
@@ -27,7 +27,7 @@ namespace Odyssey
 		bool IsValid() { return m_ID != std::numeric_limits<uint32_t>::max(); }
 
 	private:
-		friend class ResourceManager;
+		friend class AssetManager;
 		uint32_t m_ID = std::numeric_limits<uint32_t>::max();
 		T* m_Ptr = nullptr;
 	};

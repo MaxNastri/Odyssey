@@ -11,6 +11,7 @@
 #include <ComponentManager.h>
 #include <Camera.h>
 #include <MeshRenderer.h>
+#include "Mesh.h"
 
 namespace Odyssey
 {
@@ -49,6 +50,7 @@ namespace Odyssey
 		stopwatch.Start();
 
 		SceneManager::Awake();
+
 		while (running)
 		{
 			float elapsed = stopwatch.Elapsed();
@@ -58,6 +60,7 @@ namespace Odyssey
 				stopwatch.Restart();
 				ScriptCompiler::Process();
 
+				GUIManager::Update();
 				SceneManager::Update();
 
 				if (!renderer->Update())
@@ -99,6 +102,9 @@ namespace Odyssey
 			std::vector<uint32_t> indices{ 0, 3,2,2,1,0 };
 
 			mesh = ResourceManager::AllocateMesh(vertices, indices);
+
+			auto buffer = mesh.Get()->Serialize();
+			mesh.Get()->Deserialize(buffer);
 		}
 
 		if (MeshRenderer* renderer = ComponentManager::GetComponent<MeshRenderer>(go->id))

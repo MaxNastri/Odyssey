@@ -29,7 +29,7 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) = 0;
 
 	public:
-		void SetRenderTarget(ResourceHandle<VulkanTexture> renderTarget);
+		void SetRenderTexture(ResourceHandle<VulkanTexture> renderTarget);
 		void SetRenderTarget(VulkanImage* renderTarget);
 		void SetLayouts(VkImageLayout oldLayout, VkImageLayout newLayout) { m_OldLayout = oldLayout; m_NewLayout = newLayout; }
 		void SetClearValue(glm::vec4 clearValue) { m_ClearValue = clearValue; }
