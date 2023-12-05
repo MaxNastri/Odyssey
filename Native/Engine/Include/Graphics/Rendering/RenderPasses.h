@@ -8,7 +8,7 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanCommandBuffer;
 	class VulkanTexture;
-	class VulkanShader;
+	class VulkanShaderModule;
 	class VulkanGraphicsPipeline;
 	class VulkanImgui;
 	class VulkanImage;

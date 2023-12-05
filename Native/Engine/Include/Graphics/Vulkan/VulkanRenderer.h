@@ -5,7 +5,7 @@
 #include "VulkanSwapchain.h"
 #include "VulkanFrame.h"
 #include "VulkanCommandPool.h"
-#include "VulkanShader.h"
+#include "VulkanShaderModule.h"
 #include "ResourceManager.h"
 #include "Drawcall.h"
 #include "RenderScene.h"

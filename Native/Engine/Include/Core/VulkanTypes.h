@@ -3,14 +3,14 @@
 
 namespace Odyssey
 {
-	class VulkanShader;
+	class VulkanShaderModule;
 	class VulkanDescriptorLayout;
 
 	struct VulkanPipelineInfo
 	{
 	public:
-		ResourceHandle<VulkanShader> fragmentShader;
-		ResourceHandle<VulkanShader> vertexShader;
+		ResourceHandle<VulkanShaderModule> fragmentShader;
+		ResourceHandle<VulkanShaderModule> vertexShader;
 		std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts;
 	};
 }

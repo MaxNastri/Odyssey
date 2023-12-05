@@ -6,6 +6,7 @@
 #include "ComponentManager.h"
 #include "Mesh.h"
 #include "Material.h"
+#include "Shader.h"
 #include "ResourceManager.h"
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
@@ -141,8 +142,8 @@ namespace Odyssey
 		layouts.push_back(descriptorLayout);
 
 		VulkanPipelineInfo info;
-		info.vertexShader = material.Get()->GetVertexShader();
-		info.fragmentShader = material.Get()->GetFragmentShader();
+		info.vertexShader = material.Get()->GetVertexShader().Get()->GetShaderModule();
+		info.fragmentShader = material.Get()->GetFragmentShader().Get()->GetShaderModule();
 		info.descriptorLayouts = layouts;
 		pipeline = ResourceManager::AllocateGraphicsPipeline(info);
 

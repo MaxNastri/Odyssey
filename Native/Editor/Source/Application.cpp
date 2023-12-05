@@ -22,6 +22,7 @@ namespace Odyssey
 		ScriptingManager::Initialize();
 		FileManager::Initialize();
 		FileManager::TrackFolder(Paths::Relative::ManagedProjectSource);
+		AssetManager::CreateDatabase();
 
 		// Create the renderer
 		renderer = std::make_shared<VulkanRenderer>();
@@ -87,9 +88,9 @@ namespace Odyssey
 
 		ResourceHandle<Material> material;
 		{
-			ResourceHandle<VulkanShader> vertexShader = ResourceManager::AllocateShader(ShaderType::Vertex, "Assets/Shaders/vert.spv");
-			ResourceHandle<VulkanShader> fragmentShader = ResourceManager::AllocateShader(ShaderType::Fragment, "Assets/Shaders/frag.spv");
-			material = ResourceManager::AllocateMaterial(vertexShader, fragmentShader);
+			ResourceHandle<VulkanShaderModule> vertexShader = ResourceManager::AllocateShaderModule(ShaderType::Vertex, "Assets/Shaders/vert.spv");
+			ResourceHandle<VulkanShaderModule> fragmentShader = ResourceManager::AllocateShaderModule(ShaderType::Fragment, "Assets/Shaders/frag.spv");
+			//material = AssetManager::LoadMaterial("");
 		}
 		
 		AssetHandle<Mesh> mesh = AssetManager::LoadMesh("Assets/Meshes/Quad.mesh");

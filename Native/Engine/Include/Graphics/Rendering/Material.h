@@ -1,23 +1,27 @@
 #pragma once
-#include "Resource.h"
-#include "ResourceHandle.h"
+#include "Asset.h"
+#include "AssetHandle.h"
 
 namespace Odyssey
 {
-	class VulkanShader;
-	class VulkanTexture;
+	class Shader;
 
-	class Material : public Resource
+	class Material : public Asset
 	{
 	public:
-		Material(ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader);
+		Material() = default;
+		Material(const std::string& path);
 
 	public:
-		ResourceHandle<VulkanShader> GetVertexShader() { return m_VertexShader; }
-		ResourceHandle<VulkanShader> GetFragmentShader() { return m_FragmentShader; }
+		void Load(const std::string& path);
+		void Save(const std::string& path);
+
+	public:
+		AssetHandle<Shader> GetVertexShader() { return m_VertexShader; }
+		AssetHandle<Shader> GetFragmentShader() { return m_FragmentShader; }
 
 	private:
-		ResourceHandle<VulkanShader> m_VertexShader;
-		ResourceHandle<VulkanShader> m_FragmentShader;
+		AssetHandle<Shader> m_VertexShader;
+		AssetHandle<Shader> m_FragmentShader;
 	};
 }

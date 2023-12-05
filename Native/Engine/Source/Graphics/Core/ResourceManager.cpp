@@ -4,7 +4,7 @@
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
 #include "VulkanTexture.h"
-#include "VulkanShader.h"
+#include "VulkanShaderModule.h"
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanBuffer.h"
 #include "Mesh.h"
@@ -19,13 +19,6 @@ namespace Odyssey
 	void ResourceManager::Initialize(std::shared_ptr<VulkanContext> context)
 	{
 		m_Context = context;
-	}
-
-	ResourceHandle<Material> ResourceManager::AllocateMaterial(ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader)
-	{
-		uint32_t id = m_Materials.Add(vertexShader, fragmentShader);
-		m_Materials[id]->SetID(id);
-		return ResourceHandle<Material>(id, m_Materials[id].get());
 	}
 
 	ResourceHandle<VulkanBuffer> ResourceManager::AllocateBuffer(BufferType bufferType, uint32_t size)
@@ -56,11 +49,11 @@ namespace Odyssey
 		return ResourceHandle<VulkanTexture>(id, m_Textures[id].get());
 	}
 
-	ResourceHandle<VulkanShader> ResourceManager::AllocateShader(ShaderType shaderType, const std::string& filename)
+	ResourceHandle<VulkanShaderModule> ResourceManager::AllocateShaderModule(ShaderType shaderType, const std::string& filename)
 	{
 		uint32_t id = m_Shaders.Add(m_Context, shaderType, filename);
 		m_Shaders[id]->SetID(id);
-		return ResourceHandle<VulkanShader>(id, m_Shaders[id].get());
+		return ResourceHandle<VulkanShaderModule>(id, m_Shaders[id].get());
 	}
 
 	ResourceHandle<VulkanGraphicsPipeline> ResourceManager::AllocateGraphicsPipeline(const VulkanPipelineInfo& info)
@@ -125,7 +118,7 @@ namespace Odyssey
 		m_Textures[handle.m_ID]->SetID(-1);
 		m_Textures.Remove(handle.m_ID);
 	}
-	void ResourceManager::DestroyShader(ResourceHandle<VulkanShader> handle)
+	void ResourceManager::DestroyShader(ResourceHandle<VulkanShaderModule> handle)
 	{
 		m_Shaders[handle.m_ID]->Destroy();
 		m_Shaders[handle.m_ID]->SetID(-1);

@@ -1,131 +1,202 @@
 #include "Mesh.h"
 #include "ResourceManager.h"
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <string>
 
 namespace Odyssey
 {
 	Mesh::Mesh(const std::string& filename)
 	{
-		Deserialize(filename);
+		Load(filename);
 
 		m_VertexBuffer = ResourceManager::AllocateVertexBuffer(m_Vertices);
 		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
 	}
 
-	void Mesh::Serialize(const std::string& filename)
+	void Mesh::Save(const std::string& filename)
 	{
-		// MeshData
-		std::vector<char> meshData = SerializeMeshData();
-
+		// Create a tree and root node
 		ryml::Tree tree;
 		ryml::NodeRef root = tree.rootref();
 		root |= ryml::MAP;
-		root["UUID"] << m_UUID;
-		root["MeshData"] << std::string(meshData.begin(), meshData.end());
 
+		// Serialize the base asset data
+		root["UUID"] << m_UUID;
+		root["Name"] << m_Name;
+		root["Path"] << m_Path;
+		root["Type"] << m_Type;
+
+		// Serialize the mesh-specific data
+		root["Vertex count"] << m_Vertices.size();
+		root["Vertex data"] << VertexDataToHex();
+		root["Index count"] << m_IndexCount;
+		root["Index data"] << IndexDataToHex();
+
+		// Save to disk
 		FILE* file2 = fopen(filename.c_str(), "w+");
 		size_t len = ryml::emit_yaml(tree, tree.root_id(), file2);
 		fclose(file2);
 	}
 
-	void Mesh::Deserialize(const std::string& filename)
+	void Mesh::Load(const std::string& filename)
 	{
 		if (std::ifstream ifs{ filename })
 		{
+			// Create the yaml root node
 			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
 			ryml::NodeRef node = tree.rootref();
 
-			std::string buffer;
+			// Deserialize the base asset data
 			node["UUID"] >> m_UUID;
-			node["MeshData"] >> buffer;
+			node["Name"] >> m_Name;
+			node["Path"] >> m_Path;
+			node["Type"] >> m_Type;
 
-			std::vector<char> meshData(buffer.begin(), buffer.end());
-			DeserializeMeshData(meshData);
+			// Deserialize the mesh-specific data
+			std::string vertexData;
+			std::string indexData;
+			node["Vertex count"] >> m_VertexCount;
+			node["Vertex data"] >> vertexData;
+			node["Index count"] >> m_IndexCount;
+			node["Index data"] >> indexData;
+
+			// Convert the vertex/index data from hex into real values
+			HexToVertexData(vertexData, m_VertexCount);
+			HexToIndexData(indexData, m_IndexCount);
 		}
 	}
 
-	std::vector<char> Mesh::SerializeMeshData()
+	std::string Mesh::VertexDataToHex()
 	{
-		// Calculate the size of the data we are serializing
-		size_t sizeOffset = sizeof(size_t);
-		size_t vertexDataOffset = sizeof(VulkanVertex) * m_Vertices.size();
-		size_t indexDataOffset = sizeof(uint32_t) * m_Indices.size();
+		// Start by converting the vertex data into binary
+		size_t bufferSize = sizeof(VulkanVertex) * m_Vertices.size();
+		std::vector<unsigned char> buffer(bufferSize);
 
-		// Calculate the total size of buffer needed to store our typeless data
-		size_t bufferSize = sizeOffset;
-		bufferSize += vertexDataOffset;
-		bufferSize += sizeOffset;
-		bufferSize += indexDataOffset;
+		// Mem-copy the vertex data into the binary buffer
+		memcpy(&buffer[0], m_Vertices.data(), bufferSize);
 
-		size_t vertexCount = m_Vertices.size();
-		size_t indexCount = m_Indices.size();
+		std::stringstream stream;
+		stream << std::hex << std::setfill('0');
 
-		std::vector<char> buffer(bufferSize);
-		size_t index = 0;
+		// Now lets convert the binary data into hex
+		for (int i = 0; i < buffer.size(); i++)
+		{
+			uint16_t b = static_cast<uint16_t>(buffer[i]);
+			stream << std::setw(sizeof(uint16_t) * 2) << b;
+		}
 
-		memcpy(&buffer[index], &vertexCount, sizeOffset);
-		index += sizeOffset;
-
-		memcpy(&buffer[index], m_Vertices.data(), vertexDataOffset);
-		index += vertexDataOffset;
-
-		memcpy(&buffer[index], &indexCount, sizeOffset);
-		index += sizeOffset;
-
-		memcpy(&buffer[index], m_Indices.data(), indexDataOffset);
-
-		return buffer;
+		// Return the hex string
+		return stream.str();
 	}
 
-	void Mesh::DeserializeMeshData(std::vector<char> buffer)
+	void Mesh::HexToVertexData(const std::string& hexData, uint32_t vertexCount)
 	{
-		size_t sizeOffset = sizeof(size_t);
+		// Read the hex data into a stream
+		std::istringstream stream(hexData);
+		stream >> std::hex;
 
-		m_Vertices.clear();
-		m_Indices.clear();
+		// Create a buffer for the binary data
+		size_t bufferSize = sizeof(VulkanVertex) * vertexCount;
+		std::vector<unsigned char> buffer(bufferSize);
 
-		size_t index = 0;
+		// Create a char buffer so we can read in each hex value
+		std::vector<char> hexBuffer(sizeof(uint16_t) * 2);
 
-		// Vertex data
+		for (uint16_t i = 0; i < bufferSize; i++)
 		{
+			// Read in a hex value
+			stream.read(hexBuffer.data(), sizeof(uint16_t) * 2);
 
-			// Read in the vertex count
-			size_t vertexCount = 0;
-			memcpy(&vertexCount, &buffer[index], sizeOffset);
+			uint16_t value;
 
-			// Advance the buffer to the next element (vertex data)
-			index += sizeOffset;
+			// Use another stringstream to parse the individual hex value
+			std::stringstream local(hexBuffer.data());
+			local >> std::hex >> std::setw(sizeof(uint16_t) * 2) >> value;
 
-			// Resize the vertices to match the vertex count
-			size_t vertexDataOffset = sizeof(VulkanVertex) * vertexCount;
-			m_Vertices.resize(vertexCount);
-
-			// Copy the vertex data into the vertices vector
-			memcpy(m_Vertices.data(), &buffer[index], vertexDataOffset);
-
-			// Advance the buffer to the next element (index count)
-			index += vertexDataOffset;
+			// Write the binary value into the buffer
+			buffer[i] = static_cast<unsigned char>(value);
 		}
 
-		// Index data
+		// Now resize the vertices to match the vertex count
+		m_Vertices.resize(vertexCount);
+
+		// Copy the binary vertex data into the vertices vector
+		memcpy(m_Vertices.data(), &buffer[0], bufferSize);
+	}
+
+	std::string Mesh::IndexDataToHex()
+	{
+		// Start by converting the vertex data into binary
+		size_t bufferSize = sizeof(uint32_t) * m_Indices.size();
+		std::vector<unsigned char> buffer(bufferSize);
+
+		// Mem-copy the vertex data into the binary buffer
+		memcpy(&buffer[0], m_Indices.data(), bufferSize);
+
+		std::stringstream stream;
+		stream << std::hex << std::setfill('0');
+
+		// Now lets convert the binary data into hex
+		for (int i = 0; i < buffer.size(); i++)
 		{
-			// Read in the index count
-			size_t indexCount = 0;
-			memcpy(&indexCount, &buffer[index], sizeOffset);
-
-			// Advance the buffer to the next element (index data)
-			index += sizeOffset;
-
-			// Resize the indices to match the index count
-			m_IndexCount = (uint32_t)indexCount;
-			size_t indexDataOffset = sizeof(uint32_t) * indexCount;
-			m_Indices.resize(indexCount);
-
-			// Copy the index data into the indices vector
-			memcpy(m_Indices.data(), &buffer[index], indexDataOffset);
+			stream << std::setw(sizeof(uint16_t) * 2) << static_cast<uint16_t>(buffer[i]);
 		}
+
+		// Return the hex string
+		return stream.str();
+	}
+
+	void Mesh::HexToIndexData(const std::string& hexData, uint32_t indexCount)
+	{
+		// Read the hex data into a stream
+		std::istringstream stream(hexData);
+		stream >> std::hex;
+
+		// Create a buffer for the binary data
+		size_t bufferSize = sizeof(uint32_t) * indexCount;
+		std::vector<unsigned char> buffer(bufferSize);
+
+		// Create a char buffer so we can read in each hex value
+		std::vector<char> hexBuffer(sizeof(uint16_t) * 2);
+
+		for (uint16_t i = 0; i < bufferSize; i++)
+		{
+			// Read in a hex value
+			stream.read(hexBuffer.data(), sizeof(uint16_t) * 2);
+
+			uint16_t value;
+
+			// Use another stringstream to parse the individual hex value
+			std::stringstream local(hexBuffer.data());
+			local >> std::hex >> std::setw(sizeof(uint16_t) * 2) >> value;
+
+			// Write the binary value into the buffer
+			buffer[i] = static_cast<unsigned char>(value);
+		}
+
+		// Now resize the vertices to match the vertex count
+		m_Indices.resize(indexCount);
+
+		// Copy the binary vertex data into the vertices vector
+		memcpy(m_Indices.data(), &buffer[0], bufferSize);
+	}
+
+	void Mesh::SetVertices(std::vector<VulkanVertex>& vertices)
+	{
+		m_Vertices = vertices;
+		m_VertexCount = (uint16_t)m_Vertices.size();
 
 		m_VertexBuffer = ResourceManager::AllocateVertexBuffer(m_Vertices);
+	}
+
+	void Mesh::SetIndices(std::vector<uint32_t>& indices)
+	{
+		m_Indices = indices;
+		m_IndexCount = (uint32_t)m_Indices.size();
+
 		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
 	}
 }

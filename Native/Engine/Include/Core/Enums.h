@@ -48,7 +48,7 @@ namespace Odyssey
 
 	};
 
-	enum class ShaderType
+	enum class ShaderType : uint32_t
 	{
 		None = 0,
 		Fragment = 1,

@@ -14,6 +14,7 @@ namespace Odyssey
 
 	protected:
 		std::string m_UUID;
+		std::string m_Name;
 		std::string m_Path;
 		std::string m_Type;
 	};

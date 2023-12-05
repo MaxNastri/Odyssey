@@ -2,9 +2,18 @@
 
 namespace Odyssey
 {
-	Material::Material(ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader)
+	Material::Material(const std::string& path)
 	{
-		m_VertexShader = vertexShader;
-		m_FragmentShader = fragmentShader;
+
+	}
+
+	void Material::Load(const std::string& path)
+	{
+
+	}
+
+	void Material::Save(const std::string& path)
+	{
+
 	}
 }
