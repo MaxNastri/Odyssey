@@ -20,6 +20,9 @@ namespace Odyssey
 		AssetHandle<Shader> GetVertexShader() { return m_VertexShader; }
 		AssetHandle<Shader> GetFragmentShader() { return m_FragmentShader; }
 
+	public:
+		void SetFragmentShader(AssetHandle<Shader> shader) { m_FragmentShader = shader; }
+		void SetVertexShader(AssetHandle<Shader> shader) { m_VertexShader = shader; }
 	private:
 		AssetHandle<Shader> m_VertexShader;
 		AssetHandle<Shader> m_FragmentShader;

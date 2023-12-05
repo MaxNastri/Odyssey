@@ -13,6 +13,8 @@
 #include <MeshRenderer.h>
 #include "Mesh.h"
 #include "AssetManager.h"
+#include "Shader.h"
+#include "Material.h"
 
 namespace Odyssey
 {
@@ -83,27 +85,6 @@ namespace Odyssey
 
 	void Application::ConstructVisuals()
 	{
-		Scene* scene = SceneManager::GetActiveScene();
-		GameObject* go = scene->GetGameObject(0);
-
-		ResourceHandle<Material> material;
-		{
-			ResourceHandle<VulkanShaderModule> vertexShader = ResourceManager::AllocateShaderModule(ShaderType::Vertex, "Assets/Shaders/vert.spv");
-			ResourceHandle<VulkanShaderModule> fragmentShader = ResourceManager::AllocateShaderModule(ShaderType::Fragment, "Assets/Shaders/frag.spv");
-			//material = AssetManager::LoadMaterial("");
-		}
-		
-		AssetHandle<Mesh> mesh = AssetManager::LoadMesh("Assets/Meshes/Quad.mesh");
-
-		if (MeshRenderer* renderer = ComponentManager::GetComponent<MeshRenderer>(go->id))
-		{
-			renderer->SetMaterial(material);
-			renderer->SetMesh(mesh);
-		}
-		else
-		{
-			MeshRenderer* mr = ComponentManager::AddComponent<MeshRenderer>(go, mesh, material);
-		}
 	}
 
 	void Application::SetupEditorGUI()

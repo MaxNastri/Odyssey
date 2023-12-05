@@ -10,6 +10,9 @@ GameObjects:
         Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
+      - Name: Odyssey.MeshRenderer
+        m_Mesh: '3e2d47b1-28c9-4269-98aa-492b6735b7d7'
+        m_Material: '2fbc687a-c486-4f04-81a2-f455e2075f49'
       - Name: Example.Managed.AnotherScript
         Fields: []
       - Name: Example.Managed.ExampleScript
@@ -34,7 +37,7 @@ GameObjects:
     Components:
       - Name: Odyssey.Entities.Transform
         Position: 'x: -1 y: 2 z: -2'
-        Rotation: 'x: 45 y: 45 z: 0'
+        Rotation: 'x: 46.66668 y: 47.812504 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Name: Odyssey.Camera
         Field of View: 90

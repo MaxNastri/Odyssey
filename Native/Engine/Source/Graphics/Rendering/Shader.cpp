@@ -5,31 +5,13 @@
 
 namespace Odyssey
 {
-	Shader::Shader(const std::string& filename)
+	Shader::Shader(const std::string& assetPath)
 	{
-		Load(filename);
-		m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, filename);
+		Load(assetPath);
+		m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ModulePath);
 	}
 
 	void Shader::Load(const std::string& path)
-	{
-		ryml::Tree tree;
-		ryml::NodeRef root = tree.rootref();
-		root |= ryml::MAP;
-		
-		root["UUID"] << m_UUID;
-		root["Name"] << m_Name;
-		root["Path"] << m_Path;
-		root["Type"] << m_Type;
-
-		root["Shader Type"] << (uint32_t)m_ShaderType;
-
-		FILE* file = fopen(path.c_str(), "w+");
-		size_t len = ryml::emit_yaml(tree, tree.root_id(), file);
-		fclose(file);
-	}
-
-	void Shader::Save(const std::string& path)
 	{
 		if (std::ifstream ifs{ path })
 		{
@@ -39,14 +21,33 @@ namespace Odyssey
 
 			uint32_t shaderType = 0;
 
-			node["UUID"] >> m_UUID;
-			node["Name"] >> m_Name;
-			node["Path"] >> m_Path;
-			node["Type"] >> m_Type;
+			node["m_UUID"] >> m_UUID;
+			node["m_Name"] >> m_Name;
+			node["m_AssetPath"] >> m_AssetPath;
+			node["m_Type"] >> m_Type;
 
-			node["Shader Type"] >> shaderType;
-
+			node["m_ShaderType"] >> shaderType;
+			node["m_ModulePath"] >> m_ModulePath;
 			m_ShaderType = (ShaderType)shaderType;
 		}
+	}
+
+	void Shader::Save(const std::string& path)
+	{
+		ryml::Tree tree;
+		ryml::NodeRef root = tree.rootref();
+		root |= ryml::MAP;
+
+		root["m_UUID"] << m_UUID;
+		root["m_Name"] << m_Name;
+		root["m_AssetPath"] << m_AssetPath;
+		root["m_Type"] << m_Type;
+
+		root["m_ShaderType"] << (uint32_t)m_ShaderType;
+		root["m_ModulePath"] << m_ModulePath;
+
+		FILE* file = fopen(path.c_str(), "w+");
+		size_t len = ryml::emit_yaml(tree, tree.root_id(), file);
+		fclose(file);
 	}
 }

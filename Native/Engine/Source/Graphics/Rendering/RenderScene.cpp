@@ -112,7 +112,7 @@ namespace Odyssey
 		}
 	}
 
-	bool RenderScene::SetPassCreated(ResourceHandle<Material> material, SetPass* outSetPass)
+	bool RenderScene::SetPassCreated(AssetHandle<Material> material, SetPass* outSetPass)
 	{
 		for (auto& setpass : setPasses)
 		{
@@ -129,12 +129,12 @@ namespace Odyssey
 		return false;
 	}
 
-	SetPass::SetPass(ResourceHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout)
+	SetPass::SetPass(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout)
 	{
 		SetMaterial(material, descriptorLayout);
 	}
 
-	void SetPass::SetMaterial(ResourceHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout)
+	void SetPass::SetMaterial(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout)
 	{
 		// Allocate a graphics pipeline
 		std::vector<ResourceHandle<VulkanDescriptorLayout>> layouts{};

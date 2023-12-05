@@ -1,6 +1,7 @@
 #pragma once
 #include "glm.h"
 #include "ResourceHandle.h"
+#include "AssetHandle.h"
 #include "Drawcall.h"
 
 namespace Odyssey
@@ -28,10 +29,10 @@ namespace Odyssey
 	{
 	public:
 		SetPass() = default;
-		SetPass(ResourceHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout);
+		SetPass(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout);
 
 	public:
-		void SetMaterial(ResourceHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout);
+		void SetMaterial(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout);
 
 	public:
 		ResourceHandle<VulkanGraphicsPipeline> pipeline;
@@ -52,7 +53,7 @@ namespace Odyssey
 	private:
 		void SetupCameraData(Scene* scene);
 		void SetupDrawcalls(Scene* scene);
-		bool SetPassCreated(ResourceHandle<Material> material, SetPass* outSetPass);
+		bool SetPassCreated(AssetHandle<Material> material, SetPass* outSetPass);
 
 	public:
 		// Data structs

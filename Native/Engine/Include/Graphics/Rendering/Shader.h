@@ -22,6 +22,7 @@ namespace Odyssey
 
 	private:
 		ShaderType m_ShaderType;
+		std::string m_ModulePath;
 		ResourceHandle<VulkanShaderModule> m_ShaderModule;
 	};
 }

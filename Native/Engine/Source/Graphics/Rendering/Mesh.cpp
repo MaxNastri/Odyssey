@@ -7,15 +7,15 @@
 
 namespace Odyssey
 {
-	Mesh::Mesh(const std::string& filename)
+	Mesh::Mesh(const std::string& assetPath)
 	{
-		Load(filename);
+		Load(assetPath);
 
 		m_VertexBuffer = ResourceManager::AllocateVertexBuffer(m_Vertices);
 		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
 	}
 
-	void Mesh::Save(const std::string& filename)
+	void Mesh::Save(const std::string& assetPath)
 	{
 		// Create a tree and root node
 		ryml::Tree tree;
@@ -23,26 +23,26 @@ namespace Odyssey
 		root |= ryml::MAP;
 
 		// Serialize the base asset data
-		root["UUID"] << m_UUID;
-		root["Name"] << m_Name;
-		root["Path"] << m_Path;
-		root["Type"] << m_Type;
+		root["m_UUID"] << m_UUID;
+		root["m_Name"] << m_Name;
+		root["m_AssetPath"] << m_AssetPath;
+		root["m_Type"] << m_Type;
 
 		// Serialize the mesh-specific data
-		root["Vertex count"] << m_Vertices.size();
-		root["Vertex data"] << VertexDataToHex();
-		root["Index count"] << m_IndexCount;
-		root["Index data"] << IndexDataToHex();
+		root["m_VertexCount"] << m_VertexCount;
+		root["m_VertexData"] << VertexDataToHex();
+		root["m_IndexCount"] << m_IndexCount;
+		root["m_IndexData"] << IndexDataToHex();
 
 		// Save to disk
-		FILE* file2 = fopen(filename.c_str(), "w+");
+		FILE* file2 = fopen(m_AssetPath.c_str(), "w+");
 		size_t len = ryml::emit_yaml(tree, tree.root_id(), file2);
 		fclose(file2);
 	}
 
-	void Mesh::Load(const std::string& filename)
+	void Mesh::Load(const std::string& assetPath)
 	{
-		if (std::ifstream ifs{ filename })
+		if (std::ifstream ifs{ assetPath })
 		{
 			// Create the yaml root node
 			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
@@ -50,18 +50,18 @@ namespace Odyssey
 			ryml::NodeRef node = tree.rootref();
 
 			// Deserialize the base asset data
-			node["UUID"] >> m_UUID;
-			node["Name"] >> m_Name;
-			node["Path"] >> m_Path;
-			node["Type"] >> m_Type;
+			node["m_UUID"] >> m_UUID;
+			node["m_Name"] >> m_Name;
+			node["m_AssetPath"] >> m_AssetPath;
+			node["m_Type"] >> m_Type;
 
 			// Deserialize the mesh-specific data
 			std::string vertexData;
 			std::string indexData;
-			node["Vertex count"] >> m_VertexCount;
-			node["Vertex data"] >> vertexData;
-			node["Index count"] >> m_IndexCount;
-			node["Index data"] >> indexData;
+			node["m_VertexCount"] >> m_VertexCount;
+			node["m_VertexData"] >> vertexData;
+			node["m_IndexCount"] >> m_IndexCount;
+			node["m_IndexData"] >> indexData;
 
 			// Convert the vertex/index data from hex into real values
 			HexToVertexData(vertexData, m_VertexCount);
