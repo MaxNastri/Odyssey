@@ -17,6 +17,7 @@ namespace Odyssey
 	public:
 		GLFWwindow* GetWindowHandle() { return glfwHandle; }
 		void GetFrameBufferSize(int& x, int& y);
+		void SetSize(uint32_t width, uint32_t height);
 
 	private:
 		static void ErrorCallback(int error, const char* description);
@@ -28,9 +29,8 @@ namespace Odyssey
 
 	private:
 		GLFWwindow* glfwHandle;
-
 		// Properties
-		unsigned int width, height;
+		uint32_t m_Width, m_Height;
 		std::string title;
 	};
 }

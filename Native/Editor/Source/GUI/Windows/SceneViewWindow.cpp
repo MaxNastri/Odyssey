@@ -20,15 +20,17 @@ namespace Odyssey
 		// Rendering stuff
 		m_SceneViewPass = std::make_shared<OpaquePass>();
 		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
+
 		// Window stuff
 		m_WindowPos = glm::vec2(0, 0);
 		m_WindowSize = glm::vec2(500, 500);
-		m_RenderTexture = ResourceManager::AllocateTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
-		if (std::shared_ptr<VulkanRenderer> renderer = Application::GetRenderer())
-		{
-			m_RenderTextureID = renderer->GetImGui()->AddTexture(m_RenderTexture);
-		}
-		m_SceneViewPass->SetRenderTexture(m_RenderTexture);
+
+		m_RenderTexture.resize(2);
+		m_RenderTextureID.resize(2);
+
+		// Create the render texture
+		CreateRenderTexture(0);
+		CreateRenderTexture(1);
 	}
 
 	void SceneViewWindow::Update()
@@ -45,8 +47,10 @@ namespace Odyssey
 
 	void SceneViewWindow::Draw()
 	{
-		ImGui::SetNextWindowSize(ImVec2(430, 450), ImGuiCond_FirstUseEver);
-		if (!ImGui::Begin("Scene View Window", &open))
+		uint32_t frameIndex = VulkanRenderer::GetFrameIndex();
+
+		ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
+		if (!ImGui::Begin("Scene View", &open))
 		{
 			ImGui::End();
 			return;
@@ -62,11 +66,18 @@ namespace Odyssey
 		m_WindowPos = glm::vec2(pos.x, pos.y);
 		m_WindowMin = glm::vec2(min.x, min.y) + m_WindowPos;
 		m_WindowMax = glm::vec2(max.x, max.y) + m_WindowPos;
-		m_WindowSize = m_WindowMax - m_WindowMin;
+		glm::vec2 windowSize = m_WindowMax - m_WindowMin;
 
 		// TODO: Re-allocate a texture if size has changed
+		if (windowSize != m_WindowSize)
+		{
+			m_WindowSize = windowSize;
+			DestroyRenderTexture(frameIndex);
+			CreateRenderTexture(frameIndex);
+		}
 
-		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
+		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID[frameIndex]), ImVec2(m_WindowSize.x, m_WindowSize.y));
+		m_SceneViewPass->SetRenderTexture(m_RenderTexture[frameIndex]);
 
 		RenderGizmos();
 
@@ -76,7 +87,34 @@ namespace Odyssey
 
 	void SceneViewWindow::Destroy()
 	{
-		ResourceManager::DestroyTexture(m_RenderTexture);
+		DestroyRenderTexture(0);
+		DestroyRenderTexture(1);
+	}
+
+	void SceneViewWindow::CreateRenderTexture(uint32_t index)
+	{
+		// Create a new render texture at the correct size and set it as the render target for the scene view pass
+		m_RenderTexture[index] = ResourceManager::AllocateTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
+
+		// Create an IMGui texture handle
+		if (auto renderer = Application::GetRenderer())
+			if (auto imgui = renderer->GetImGui())
+				m_RenderTextureID[index] = imgui->AddTexture(m_RenderTexture[index]);
+	}
+
+	void SceneViewWindow::DestroyRenderTexture(uint32_t index)
+	{
+		// Destroy the existing render texture
+		if (m_RenderTexture[index].IsValid())
+		{
+			// Remove the imgui texture
+			if (auto renderer = Application::GetRenderer())
+				if (auto imgui = renderer->GetImGui())
+					//imgui->RemoveTexture(m_RenderTextureID[index]);
+
+			// Destroy the render texture
+			ResourceManager::DestroyTexture(m_RenderTexture[index], index);
+		}
 	}
 
 	void SceneViewWindow::RenderGizmos()
@@ -86,13 +124,15 @@ namespace Odyssey
 		if (m_SelectedObject != std::numeric_limits<uint32_t>::max())
 		{
 			Transform* component = ComponentManager::GetComponent<Transform>(m_SelectedObject);
+			Camera* mainCamera = scene->GetMainCamera();
+
+			mainCamera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+			ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
+
+			glm::mat4 transform = component->GetWorldMatrix();
 			glm::mat4 view = scene->GetMainCamera()->GetInverseView();
 			glm::mat4 proj = scene->GetMainCamera()->GetProjection();
 			proj[1][1] *= -1.0f;
-			glm::mat4 transform = component->GetWorldMatrix();
-
-			ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
-
 
 			ImGuizmo::AllowAxisFlip(false);
 			ImGuizmo::SetGizmoSizeClipSpace(0.1f);
@@ -124,7 +164,7 @@ namespace Odyssey
 		const float speed = 3.0f;
 		Scene* scene = SceneManager::GetActiveScene();
 		Camera* camera = scene->GetMainCamera();
-		
+
 		if (Transform* transform = ComponentManager::GetComponent<Transform>(camera->gameObject->id))
 		{
 			glm::vec3 inputVel = glm::zero<vec3>();
@@ -137,7 +177,7 @@ namespace Odyssey
 				{
 					inputVel += glm::vec3(0, 0, 1);
 				}
-				if(Input::GetKeyDown(KeyCode::S))
+				if (Input::GetKeyDown(KeyCode::S))
 				{
 					inputVel += glm::vec3(0, 0, -1);
 				}
@@ -164,7 +204,7 @@ namespace Odyssey
 					glm::vec3 right = transform->Right() * inputVel.x;
 					glm::vec3 up = transform->Up() * inputVel.y;
 					glm::vec3 fwd = transform->Forward() * inputVel.z;
-					glm::vec3 velocity = (right + up + fwd)* speed* (1.0f / 144.0f);
+					glm::vec3 velocity = (right + up + fwd) * speed * (1.0f / 144.0f);
 					transform->AddPosition(velocity);
 				}
 
@@ -173,8 +213,8 @@ namespace Odyssey
 
 				if (mouseH != 0.0f || mouseV != 0.0f)
 				{
-					glm::vec3 yaw = vec3(0,1,0) * mouseH * (1.0f / 144.0f) * 15.0f;
-					glm::vec3 pitch = vec3(1,0,0) * mouseV * (1.0f / 144.0f) * 15.0f;
+					glm::vec3 yaw = vec3(0, 1, 0) * mouseH * (1.0f / 144.0f) * 15.0f;
+					glm::vec3 pitch = vec3(1, 0, 0) * mouseV * (1.0f / 144.0f) * 15.0f;
 
 					transform->AddRotation(yaw);
 					transform->AddRotation(pitch);

@@ -40,6 +40,13 @@ namespace Odyssey
 		// Drawing
 		SetupFrameData();
 
+		// Render scenes
+		renderScenes.resize(frames.size());
+		for (int i = 0; i < renderScenes.size(); i++)
+		{
+			renderScenes[i] = std::make_shared<RenderScene>();
+		}
+
 		for (int i = 0; i < frames.size(); ++i)
 		{
 			commandPools.push_back(ResourceManager::AllocateCommandPool());
@@ -101,6 +108,7 @@ namespace Odyssey
 		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 		{
 			rebuildSwapchain = true;
+			return false;
 		}
 
 		if (!check_vk_result(err))
@@ -146,6 +154,8 @@ namespace Odyssey
 			Logger::LogError("(renderer 4)");
 		}
 
+		// Clear resources for this frame index
+		ResourceManager::FlushDestroys(frameIndex);
 		commandPools[frameIndex].Get()->Reset();
 
 		// Command buffer begin
@@ -268,11 +278,5 @@ namespace Odyssey
 			}
 		}
 
-		// Render scenes
-		renderScenes.resize(frames.size());
-		for (int i = 0; i < renderScenes.size(); i++)
-		{
-			renderScenes[i] = std::make_shared<RenderScene>();
-		}
 	}
 }

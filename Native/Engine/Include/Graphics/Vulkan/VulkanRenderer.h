@@ -37,7 +37,7 @@ namespace Odyssey
 		void AddRenderPass(std::shared_ptr<RenderPass> renderPass) { renderPasses.push_back(renderPass); }
 	public:
 		std::shared_ptr<VulkanImgui> GetImGui() { return imgui; }
-
+		static uint32_t GetFrameIndex() { return frameIndex; }
 	private:
 		bool BeginFrame(VulkanFrame*& currentFrame);
 		void RenderFrame();
@@ -70,6 +70,6 @@ namespace Odyssey
 
 	private: // Frame data
 		std::vector<VulkanFrame> frames;
-		uint32_t frameIndex = 0;
+		inline static uint32_t frameIndex = 0;
 	};
 }

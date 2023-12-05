@@ -41,6 +41,7 @@ namespace Odyssey
 
 	public:
 		uint64_t AddTexture(ResourceHandle<VulkanTexture> handle);
+		void RemoveTexture(uint64_t id);
 
 	private:
 		void CreateDescriptorPool();

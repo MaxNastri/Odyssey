@@ -118,6 +118,32 @@ namespace Odyssey
 		m_Textures[handle.m_ID]->SetID(-1);
 		m_Textures.Remove(handle.m_ID);
 	}
+	void ResourceManager::DestroyTexture(ResourceHandle<VulkanTexture> handle, uint32_t frameIndex)
+	{
+		if (frameIndex == 0)
+		{
+			uint32_t id = handle.m_ID;
+			auto callback = [id]()
+				{
+					m_Textures[id]->Destroy();
+					m_Textures[id]->SetID(-1);
+					m_Textures.Remove(id);
+				};
+			destroys0.push_back(callback);
+		}
+		else
+		{
+			uint32_t id = handle.m_ID;
+			auto callback = [id]()
+				{
+					m_Textures[id]->Destroy();
+					m_Textures[id]->SetID(-1);
+					m_Textures.Remove(id);
+				};
+			destroys1.push_back(callback);
+		}
+	}
+
 	void ResourceManager::DestroyShader(ResourceHandle<VulkanShaderModule> handle)
 	{
 		m_Shaders[handle.m_ID]->Destroy();
@@ -155,5 +181,25 @@ namespace Odyssey
 		m_DescriptorBuffers[handle.m_ID]->Destroy();
 		m_DescriptorBuffers[handle.m_ID]->SetID(-1);
 		m_DescriptorBuffers.Remove(handle.m_ID);
+	}
+
+	void ResourceManager::FlushDestroys(uint32_t frameIndex)
+	{
+		if (frameIndex == 0)
+		{
+			for (const auto& callback : destroys0)
+			{
+				callback();
+			}
+			destroys0.clear();
+		}
+		else
+		{
+			for (const auto& callback : destroys1)
+			{
+				callback();
+			}
+			destroys1.clear();
+		}
 	}
 }

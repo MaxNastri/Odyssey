@@ -41,12 +41,16 @@ namespace Odyssey
 		static void DestroyVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle);
 		static void DestroyIndexBuffer(ResourceHandle<VulkanIndexBuffer> handle);
 		static void DestroyTexture(ResourceHandle<VulkanTexture> handle);
+		static void DestroyTexture(ResourceHandle<VulkanTexture> handle, uint32_t frameIndex);
 		static void DestroyShader(ResourceHandle<VulkanShaderModule> handle);
 		static void DestroyGraphicsPipeline(ResourceHandle<VulkanGraphicsPipeline> handle);
 		static void DestroyCommandPool(ResourceHandle<VulkanCommandPool> handle);
 		static void DestroyCommandBuffer(ResourceHandle<VulkanCommandBuffer> bufferHandle, ResourceHandle<VulkanCommandPool> poolHandle);
 		static void DestroyDescriptorLayout(ResourceHandle<VulkanDescriptorLayout> handle);
 		static void DestroyDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle);
+
+	public:
+		static void FlushDestroys(uint32_t frameIndex);
 
 	private: // Vulkan members
 		inline static std::shared_ptr<VulkanContext> m_Context = nullptr;
@@ -60,6 +64,10 @@ namespace Odyssey
 		inline static DynamicList<VulkanCommandBuffer> m_CommandBuffers;
 		inline static DynamicList<VulkanDescriptorLayout> m_DescriptorLayouts;
 		inline static DynamicList<VulkanDescriptorBuffer> m_DescriptorBuffers;
+
+	private:
+		inline static std::vector<std::function<void(void)>> destroys0;
+		inline static std::vector<std::function<void(void)>> destroys1;
 	};
 
 }

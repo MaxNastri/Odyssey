@@ -143,6 +143,11 @@ namespace Odyssey
 		return reinterpret_cast<uint64_t>(ImGui_ImplVulkan_AddTexture(sampler, view, layout));
 	}
 
+	void VulkanImgui::RemoveTexture(uint64_t id)
+	{
+		ImGui_ImplVulkan_RemoveTexture(reinterpret_cast<VkDescriptorSet>(id));
+	}
+
 	void VulkanImgui::CreateDescriptorPool()
 	{
 		VkDescriptorPoolSize pool_sizes[] = {

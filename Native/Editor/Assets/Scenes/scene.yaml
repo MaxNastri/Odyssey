@@ -40,7 +40,7 @@ GameObjects:
         Rotation: 'x: 45 y: 45 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Name: Odyssey.Camera
-        Field of View: 90
+        Field of View: 45
         Near Clip: 0.1
         Far Clip: 1000
         Main Camera: 1

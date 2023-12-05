@@ -45,6 +45,13 @@ namespace Odyssey
 		}
 	}
 
+	void RenderScene::Destroy()
+	{
+		ResourceManager::DestroyDescriptorLayout(descriptorLayout);
+		ResourceManager::DestroyDescriptorBuffer(descriptorBuffer);
+		ResourceManager::DestroyBuffer(sceneUniformBuffer);
+	}
+
 	void RenderScene::ConvertScene(Scene* scene)
 	{
 		ClearSceneData();

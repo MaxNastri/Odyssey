@@ -13,7 +13,7 @@ namespace Odyssey
 	void InspectorWindow::Draw()
 	{
 		ImGui::SetNextWindowSize(ImVec2(430, 450), ImGuiCond_FirstUseEver);
-		if (!ImGui::Begin("Inspector Window", &open))
+		if (!ImGui::Begin("Inspector", &open))
 		{
 			ImGui::End();
 			return;

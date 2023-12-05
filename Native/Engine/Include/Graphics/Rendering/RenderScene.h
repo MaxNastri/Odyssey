@@ -45,6 +45,7 @@ namespace Odyssey
 	{
 	public:
 		RenderScene();
+		void Destroy();
 
 	public:
 		void ConvertScene(Scene* scene);
@@ -68,6 +69,6 @@ namespace Odyssey
 
 		std::vector<SetPass> setPasses;
 		uint32_t m_NextUniformBuffer = 0;
-		const uint32_t Max_Uniform_Buffers = 1024;
+		const uint32_t Max_Uniform_Buffers = 512;
 	};
 }

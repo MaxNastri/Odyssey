@@ -14,7 +14,7 @@ namespace Odyssey
 	void SceneHierarchyWindow::Draw()
 	{
 		ImGui::SetNextWindowSize(ImVec2(430, 450), ImGuiCond_FirstUseEver);
-		if (!ImGui::Begin("Scene Hierarchy Window", &m_Open))
+		if (!ImGui::Begin("Scene Hierarchy", &m_Open))
 		{
 			ImGui::End();
 			return;

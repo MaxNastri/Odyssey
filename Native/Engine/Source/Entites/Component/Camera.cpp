@@ -63,6 +63,16 @@ namespace Odyssey
 		m_FarClip = farClip;
 	}
 
+	void Camera::SetViewportSize(float width, float height)
+	{
+		if (m_Width != width || m_Height != height)
+		{
+			m_Width = width;
+			m_Height = height;
+			CalculateProjection();
+		}
+	}
+
 	void Camera::CalculateProjection()
 	{
 		m_Projection = glm::perspectiveFovLH(m_FieldOfView, m_Width, m_Height, m_NearClip, m_FarClip);

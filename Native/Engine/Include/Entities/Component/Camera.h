@@ -23,6 +23,7 @@ namespace Odyssey
 		void SetFieldOfView(float fov);
 		void SetNearClip(float nearClip);
 		void SetFarClip(float farClip);
+		void SetViewportSize(float width, float height);
 
 	private:
 		void CalculateProjection();

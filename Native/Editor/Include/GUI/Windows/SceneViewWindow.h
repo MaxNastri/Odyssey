@@ -1,5 +1,6 @@
 #pragma once
 #include <GUIElement.h>
+#include <vector>
 #include "glm.h"
 #include "ResourceHandle.h"
 
@@ -22,6 +23,8 @@ namespace Odyssey
 		void SetSelectedIndex(uint32_t selected) { m_SelectedObject = selected; }
 
 	private:
+		void CreateRenderTexture(uint32_t index);
+		void DestroyRenderTexture(uint32_t index);
 		void RenderGizmos();
 		void UpdateCameraController();
 		void UpdateGizmosInput();
@@ -31,8 +34,8 @@ namespace Odyssey
 
 	private: // Rendering stuff
 		std::shared_ptr<OpaquePass> m_SceneViewPass;
-		uint64_t m_RenderTextureID;
-		ResourceHandle<VulkanTexture> m_RenderTexture;
+		std::vector<uint64_t> m_RenderTextureID;
+		std::vector<ResourceHandle<VulkanTexture>> m_RenderTexture;
 
 	private: // Window stuff
 		bool open = true;
