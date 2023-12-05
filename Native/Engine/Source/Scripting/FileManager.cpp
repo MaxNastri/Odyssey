@@ -32,6 +32,11 @@ namespace Odyssey
 		}
 	}
 
+	void FileManager::AddFilesChangedCallback(std::function<void(const NotificationSet& notificationSet)> callback)
+	{
+		s_OnFilesChanged.push_back(callback);
+	}
+
 	void FileManager::FileChangedEvent(int64_t id, const NotificationSet& notificationSet)
 	{
 		for (auto& notification : notificationSet)
@@ -42,7 +47,10 @@ namespace Odyssey
 			Logger::LogInfo("[FileManager] File changed: " + path + ", action = " + action);
 		}
 
-		EventSystem::Dispatch<OnUserFilesModified>(notificationSet);
+		for (const auto& callback : s_OnFilesChanged)
+		{
+			callback(notificationSet);
+		}
 	}
 
 	void FileManager::FileWatcherError(int64_t id)

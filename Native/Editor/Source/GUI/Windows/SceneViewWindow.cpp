@@ -137,23 +137,23 @@ namespace Odyssey
 				{
 					inputVel += glm::vec3(0, 0, 1);
 				}
-				else if(Input::GetKeyDown(KeyCode::S))
+				if(Input::GetKeyDown(KeyCode::S))
 				{
 					inputVel += glm::vec3(0, 0, -1);
 				}
-				else if (Input::GetKeyDown(KeyCode::D))
+				if (Input::GetKeyDown(KeyCode::D))
 				{
 					inputVel += glm::vec3(1, 0, 0);
 				}
-				else if (Input::GetKeyDown(KeyCode::A))
+				if (Input::GetKeyDown(KeyCode::A))
 				{
 					inputVel += glm::vec3(-1, 0, 0);
 				}
-				else if (Input::GetKeyDown(KeyCode::E))
+				if (Input::GetKeyDown(KeyCode::E))
 				{
 					inputVel += glm::vec3(0, 1, 0);
 				}
-				else if (Input::GetKeyDown(KeyCode::Q))
+				if (Input::GetKeyDown(KeyCode::Q))
 				{
 					inputVel += glm::vec3(0, -1, 0);
 				}

@@ -92,6 +92,7 @@ namespace Odyssey
 		GUIManager::CreateInspectorWindow(RefHandle<GameObject>::Empty());
 		GUIManager::CreateSceneHierarchyWindow();
 		GUIManager::CreateSceneViewWindow();
+		GUIManager::CreateContentBrowserWindow();
 	}
 
 	void Application::CreateRenderPasses()

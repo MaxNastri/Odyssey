@@ -2,12 +2,13 @@
 #include "imgui.h"
 #include "Scene.h"
 #include "GameObject.h"
+#include "SceneManager.h"
 
 namespace Odyssey
 {
-	SceneHierarchyWindow::SceneHierarchyWindow(std::shared_ptr<Scene> scene)
+	SceneHierarchyWindow::SceneHierarchyWindow()
 	{
-		m_Scene = scene;
+		m_Scene = SceneManager::GetActiveScene();
 	}
 
 	void SceneHierarchyWindow::Draw()
@@ -77,5 +78,9 @@ namespace Odyssey
 
 		ImGui::PopStyleVar();
 		ImGui::End();
+	}
+	void SceneHierarchyWindow::OnSceneChanged()
+	{
+		m_Scene = SceneManager::GetActiveScene();
 	}
 }

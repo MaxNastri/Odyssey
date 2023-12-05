@@ -12,6 +12,13 @@ namespace Odyssey
 
     void SceneManager::LoadScene(const std::string& filename)
     {
+        if (activeScene != -1)
+        {
+            scenes[activeScene]->OnDestroy();
+            scenes[activeScene]->Clear();
+            scenes[activeScene].reset();
+        }
+
         std::shared_ptr<Scene> scene = std::make_shared<Scene>();
         scene->Deserialize(filename);
         scenes.push_back(scene);

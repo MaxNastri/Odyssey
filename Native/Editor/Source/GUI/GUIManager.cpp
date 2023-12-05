@@ -17,6 +17,7 @@ namespace Odyssey
 	{
 		EventSystem::Listen<OnSceneLoaded>(GUIManager::SceneLoaded);
 		EventSystem::Listen<OnGUIRenderEvent>(GUIManager::OnRender);
+		FileManager::AddFilesChangedCallback(GUIManager::OnFilesChanged);
 
 		m_GUIPass = std::make_shared<ImguiPass>();
 		m_GUIPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
@@ -30,13 +31,18 @@ namespace Odyssey
 
 	void GUIManager::CreateSceneHierarchyWindow()
 	{
-		sceneHierarchyWindows.push_back(SceneHierarchyWindow(SceneManager::GetActiveSceneRef()));
+		sceneHierarchyWindows.push_back(SceneHierarchyWindow());
 		sceneHierarchyWindows[sceneHierarchyWindows.size() - 1].OnGameObjectSelected(OnGameObjectSelected);
 	}
 
 	void GUIManager::CreateSceneViewWindow()
 	{
 		sceneViewWindows.push_back(SceneViewWindow());
+	}
+
+	void GUIManager::CreateContentBrowserWindow()
+	{
+		contentBrowserWindows.push_back(ContentBrowserWindow());
 	}
 
 	void GUIManager::Update()
@@ -54,6 +60,11 @@ namespace Odyssey
 		for (auto& sceneViewWindow : sceneViewWindows)
 		{
 			sceneViewWindow.Update();
+		}
+
+		for (auto& contentBrowserWindow : contentBrowserWindows)
+		{
+			contentBrowserWindow.Update();
 		}
 	}
 
@@ -75,10 +86,20 @@ namespace Odyssey
 		{
 			sceneViewWindow.Draw();
 		}
+
+		for (auto& contentBrowserWindow : contentBrowserWindows)
+		{
+			contentBrowserWindow.Draw();
+		}
 	}
 
 	void GUIManager::SceneLoaded(OnSceneLoaded* sceneLoadedEvent)
 	{
+		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
+		{
+			sceneHierarchyWindow.OnSceneChanged();
+		}
+
 		for (auto& inspectorWindow : inspectorWindows)
 		{
 			inspectorWindow.RefreshUserScripts();
@@ -100,6 +121,14 @@ namespace Odyssey
 		for (auto& sceneViewWindow : sceneViewWindows)
 		{
 			sceneViewWindow.SetSelectedIndex(gameObject->id);
+		}
+	}
+
+	void GUIManager::OnFilesChanged(const NotificationSet& notificationSet)
+	{
+		for (auto& contentBrowserWindow : contentBrowserWindows)
+		{
+			contentBrowserWindow.UpdatePaths();
 		}
 	}
 }

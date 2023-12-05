@@ -3,6 +3,7 @@
 #include "InspectorWindow.h"
 #include "SceneHierarchyWindow.h"
 #include "SceneViewWindow.h"
+#include "ContentBrowserWindow.h"
 
 namespace Odyssey
 {
@@ -22,6 +23,7 @@ namespace Odyssey
 		static void CreateInspectorWindow(RefHandle<GameObject> gameObject);
 		static void CreateSceneHierarchyWindow();
 		static void CreateSceneViewWindow();
+		static void CreateContentBrowserWindow();
 
 	public:
 		static void Update();
@@ -34,9 +36,13 @@ namespace Odyssey
 		static SceneViewWindow& GetSceneViewWindow(uint32_t index) { return sceneViewWindows[index]; }
 
 	private:
+		static void OnFilesChanged(const NotificationSet& notificationSet);
+
+	private:
 		inline static std::vector<InspectorWindow> inspectorWindows;
 		inline static std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
 		inline static std::vector<SceneViewWindow> sceneViewWindows;
+		inline static std::vector<ContentBrowserWindow> contentBrowserWindows;
 		inline static uint32_t selectedObject = std::numeric_limits<uint32_t>::max();
 		inline static std::shared_ptr<ImguiPass> m_GUIPass;
 	};
