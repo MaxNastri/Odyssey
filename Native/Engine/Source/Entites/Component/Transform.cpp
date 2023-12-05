@@ -259,5 +259,10 @@ namespace Odyssey
 		node["Position"] >> position;
 		node["Rotation"] >> eulerRotation;
 		node["Scale"] >> scale;
+
+		// TODO: This is a hack to set the quat rotation on deserialization
+		// Just serialize out the quat instead
+		SetRotation(eulerRotation);
+		ComposeLocalMatrix();
 	}
 }

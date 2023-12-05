@@ -36,6 +36,10 @@ namespace Odyssey
 		node["Near Clip"] >> m_NearClip;
 		node["Far Clip"] >> m_FarClip;
 		node["Main Camera"] >> m_MainCamera;
+
+		m_Width = 1000;
+		m_Height = 1000;
+		CalculateProjection();
 	}
 
 	glm::mat4 Camera::GetInverseView()

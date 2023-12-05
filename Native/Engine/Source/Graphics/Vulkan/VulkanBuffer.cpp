@@ -118,6 +118,7 @@ namespace Odyssey
 	{
 		switch (bufferType)
 		{
+			
 			case Odyssey::BufferType::None:
 				Logger::LogError("Cannot get usage flags from buffer type: NONE");
 				return 0;
