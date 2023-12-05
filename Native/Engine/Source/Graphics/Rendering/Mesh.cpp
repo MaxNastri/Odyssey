@@ -3,24 +3,48 @@
 
 namespace Odyssey
 {
-	Mesh::Mesh(std::vector<VulkanVertex>& vertices, std::vector<uint32_t>& indices)
+	Mesh::Mesh(const std::string& filename)
 	{
-		m_Vertices = vertices;
-		m_Indices = indices;
-		m_IndexCount = (uint32_t)m_Indices.size();
+		Deserialize(filename);
+
+		m_VertexBuffer = ResourceManager::AllocateVertexBuffer(m_Vertices);
+		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
 	}
 
-	Mesh::Mesh(ResourceHandle<VulkanVertexBuffer> vertexBuffer, ResourceHandle<VulkanIndexBuffer> indexBuffer)
+	void Mesh::Serialize(const std::string& filename)
 	{
-		// TODO (MAX): Map the vertices from the buffers into our arrays
-		m_Vertices.clear();
-		m_Indices.clear();
-		m_IndexCount = 0;
+		// MeshData
+		std::vector<char> meshData = SerializeMeshData();
 
-		m_VertexBuffer = vertexBuffer;
-		m_IndexBuffer = indexBuffer;
+		ryml::Tree tree;
+		ryml::NodeRef root = tree.rootref();
+		root |= ryml::MAP;
+		root["UUID"] << m_UUID;
+		root["MeshData"] << std::string(meshData.begin(), meshData.end());
+
+		FILE* file2 = fopen(filename.c_str(), "w+");
+		size_t len = ryml::emit_yaml(tree, tree.root_id(), file2);
+		fclose(file2);
 	}
-	std::vector<char> Mesh::Serialize()
+
+	void Mesh::Deserialize(const std::string& filename)
+	{
+		if (std::ifstream ifs{ filename })
+		{
+			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
+			ryml::NodeRef node = tree.rootref();
+
+			std::string buffer;
+			node["UUID"] >> m_UUID;
+			node["MeshData"] >> buffer;
+
+			std::vector<char> meshData(buffer.begin(), buffer.end());
+			DeserializeMeshData(meshData);
+		}
+	}
+
+	std::vector<char> Mesh::SerializeMeshData()
 	{
 		// Calculate the size of the data we are serializing
 		size_t sizeOffset = sizeof(size_t);
@@ -53,7 +77,7 @@ namespace Odyssey
 		return buffer;
 	}
 
-	void Mesh::Deserialize(std::vector<char> buffer)
+	void Mesh::DeserializeMeshData(std::vector<char> buffer)
 	{
 		size_t sizeOffset = sizeof(size_t);
 

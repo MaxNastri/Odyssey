@@ -27,8 +27,6 @@ namespace Odyssey
 		static void Initialize(std::shared_ptr<VulkanContext> context);
 
 	public: // Base allocations
-		static ResourceHandle<Mesh> AllocateMesh(std::vector<VulkanVertex>& vertices, std::vector<uint32_t>& indices);
-		static ResourceHandle<Mesh> AllocateMesh(ResourceHandle<VulkanVertexBuffer> vertexBuffer, ResourceHandle<VulkanIndexBuffer> indexBuffer);
 		static ResourceHandle<Material> AllocateMaterial(ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader);
 
 	public: // Vulkan allocations

@@ -1,10 +1,11 @@
 #include "MeshRenderer.h"
+#include "Mesh.h"
 
 namespace Odyssey
 {
 	CLASS_DEFINITION(Odyssey, MeshRenderer);
 
-	MeshRenderer::MeshRenderer(ResourceHandle<Mesh> mesh, ResourceHandle<Material> material)
+	MeshRenderer::MeshRenderer(AssetHandle<Mesh> mesh, ResourceHandle<Material> material)
 	{
 		m_Mesh = mesh;
 		m_Material = material;
@@ -16,6 +17,7 @@ namespace Odyssey
 		componentNode |= ryml::MAP;
 
 		componentNode["Name"] << MeshRenderer::Type;
+		componentNode["Mesh"] << m_Mesh.Get()->GetUUID();
 	}
 
 	void MeshRenderer::Deserialize(ryml::ConstNodeRef node)
@@ -23,7 +25,7 @@ namespace Odyssey
 
 	}
 
-	void MeshRenderer::SetMesh(ResourceHandle<Mesh> mesh)
+	void MeshRenderer::SetMesh(AssetHandle<Mesh> mesh)
 	{
 		m_Mesh = mesh;
 	}

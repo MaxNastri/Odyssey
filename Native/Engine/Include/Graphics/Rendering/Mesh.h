@@ -1,5 +1,6 @@
 #pragma once
 #include "Resource.h"
+#include "Asset.h"
 #include "ResourceHandle.h"
 #include "VulkanVertex.h"
 #include "ryml.hpp"
@@ -9,15 +10,18 @@ namespace Odyssey
 	class VulkanVertexBuffer;
 	class VulkanIndexBuffer;
 
-	class Mesh : public Resource
+	class Mesh : public Resource, public Asset
 	{
 	public:
-		Mesh(std::vector<VulkanVertex>& vertices, std::vector<uint32_t>& indices);
-		Mesh(ResourceHandle<VulkanVertexBuffer> vertexBuffer, ResourceHandle<VulkanIndexBuffer> indexBuffer);
+		Mesh(const std::string& filename); 
 
 	public:
-		std::vector<char> Serialize();
-		void Deserialize(std::vector<char> buffer);
+		void Serialize(const std::string& filename);
+		void Deserialize(const std::string& filename);
+
+	private:
+		std::vector<char> SerializeMeshData();
+		void DeserializeMeshData(std::vector<char> buffer);
 
 	public:
 		ResourceHandle<VulkanVertexBuffer> GetVertexBuffer() { return m_VertexBuffer; }

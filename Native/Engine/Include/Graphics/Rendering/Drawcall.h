@@ -12,7 +12,8 @@ namespace Odyssey
 	struct Drawcall
 	{
 	public:
-		void SetMesh(ResourceHandle<Mesh> mesh);
+		Drawcall() = default;
+		Drawcall(ResourceHandle<VulkanVertexBuffer> vertexBuffer, ResourceHandle<VulkanIndexBuffer> indexBuffer, uint32_t indexCount);
 
 	public:
 		std::bitset<16> RenderLayers;

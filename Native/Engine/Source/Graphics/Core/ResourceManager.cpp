@@ -21,20 +21,6 @@ namespace Odyssey
 		m_Context = context;
 	}
 
-	ResourceHandle<Mesh> ResourceManager::AllocateMesh(std::vector<VulkanVertex>& vertices, std::vector<uint32_t>& indices)
-	{
-		uint32_t id = m_Meshes.Add(vertices, indices);
-		m_Meshes[id]->SetID(id);
-		return ResourceHandle<Mesh>(id, m_Meshes[id].get());
-	}
-
-	ResourceHandle<Mesh> ResourceManager::AllocateMesh(ResourceHandle<VulkanVertexBuffer> vertexBuffer, ResourceHandle<VulkanIndexBuffer> indexBuffer)
-	{
-		uint32_t id = m_Meshes.Add(vertexBuffer, indexBuffer);
-		m_Meshes[id]->SetID(id);
-		return ResourceHandle<Mesh>(id, m_Meshes[id].get());
-	}
-
 	ResourceHandle<Material> ResourceManager::AllocateMaterial(ResourceHandle<VulkanShader> vertexShader, ResourceHandle<VulkanShader> fragmentShader)
 	{
 		uint32_t id = m_Materials.Add(vertexShader, fragmentShader);
