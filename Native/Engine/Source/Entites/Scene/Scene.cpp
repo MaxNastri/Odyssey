@@ -43,12 +43,13 @@ namespace Odyssey
 	{
 		for (auto& gameObject : gameObjects)
 		{
-			DestroyGameObject(gameObject);
+			ComponentManager::RemoveGameObject(gameObject);
 		}
 
 		gameObjects.clear();
 		gameObjectsByID.clear();
 		nextGameObjectID = 0;
+		m_MainCamera = nullptr;
 	}
 
 	RefHandle<GameObject> Scene::GetGameObject(uint32_t id)

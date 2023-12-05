@@ -67,6 +67,9 @@ namespace Odyssey
 
 	void Camera::CalculateInverseView()
 	{
+		if (m_Transform == nullptr)
+			m_Transform = ComponentManager::GetComponent<Transform>(gameObject->id);
+
 		m_InverseView = glm::inverse(m_Transform->GetWorldMatrix());
 	}
 }

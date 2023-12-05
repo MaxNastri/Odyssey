@@ -11,6 +11,7 @@ namespace Odyssey
 	class MeshRenderer : public Component
 	{
 	public:
+		MeshRenderer() = default;
 		MeshRenderer(AssetHandle<Mesh> mesh, ResourceHandle<Material> material);
 
 	public:

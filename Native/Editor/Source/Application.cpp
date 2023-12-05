@@ -35,7 +35,7 @@ namespace Odyssey
 		ScriptCompiler::BuildUserAssembly();
 
 		// Create the scene
-		SceneManager::LoadScene("scene.yaml");
+		SceneManager::LoadScene("Assets/Scenes/scene.yaml");
 
 		ConstructVisuals();
 		SetupEditorGUI();
@@ -87,8 +87,8 @@ namespace Odyssey
 
 		ResourceHandle<Material> material;
 		{
-			ResourceHandle<VulkanShader> vertexShader = ResourceManager::AllocateShader(ShaderType::Vertex, "vert.spv");
-			ResourceHandle<VulkanShader> fragmentShader = ResourceManager::AllocateShader(ShaderType::Fragment, "frag.spv");
+			ResourceHandle<VulkanShader> vertexShader = ResourceManager::AllocateShader(ShaderType::Vertex, "Assets/Shaders/vert.spv");
+			ResourceHandle<VulkanShader> fragmentShader = ResourceManager::AllocateShader(ShaderType::Fragment, "Assets/Shaders/frag.spv");
 			material = ResourceManager::AllocateMaterial(vertexShader, fragmentShader);
 		}
 		

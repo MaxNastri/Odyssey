@@ -13,11 +13,11 @@ namespace Odyssey
 
 	void MeshRenderer::Serialize(ryml::NodeRef& node)
 	{
-		ryml::NodeRef componentNode = node.append_child();
-		componentNode |= ryml::MAP;
-
-		componentNode["Name"] << MeshRenderer::Type;
-		componentNode["Mesh"] << m_Mesh.Get()->GetUUID();
+		//ryml::NodeRef componentNode = node.append_child();
+		//componentNode |= ryml::MAP;
+		//
+		//componentNode["Name"] << MeshRenderer::Type;
+		//componentNode["Mesh"] << m_Mesh.Get()->GetUUID();
 	}
 
 	void MeshRenderer::Deserialize(ryml::ConstNodeRef node)

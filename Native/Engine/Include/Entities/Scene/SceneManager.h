@@ -28,7 +28,7 @@ namespace Odyssey
 	private:
 		inline static std::vector<std::shared_ptr<Scene>> scenes;
 		inline static int activeScene = -1;
-		inline static const std::string tempSaveFilename = "tmps.yaml";
+		inline static const std::string tempSaveFilename = "Assets/Scenes/tmps.yaml";
 
 	};
 }

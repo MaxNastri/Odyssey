@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "Camera.h"
+#include "MeshRenderer.h"
 #include "UserScript.h"
 #include <typeindex>
 #include <string>
@@ -22,6 +23,10 @@ namespace Odyssey
 			else if (fqName == Camera::Type)
 			{
 				return AddComponent<Camera>(gameObject, params...);
+			}
+			else if (fqName == MeshRenderer::Type)
+			{
+				return AddComponent<MeshRenderer>(gameObject, params...);
 			}
 			else if (fqName == UserScript::Type)
 			{
