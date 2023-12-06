@@ -1,8 +1,8 @@
 #pragma once
 #include <GUIElement.h>
-#include <vector>
 #include "glm.h"
 #include "ResourceHandle.h"
+#include "Camera.h"
 
 namespace Odyssey
 {
@@ -29,7 +29,11 @@ namespace Odyssey
 		void UpdateCameraController();
 		void UpdateGizmosInput();
 
-	private:
+	private: // Camera stuff
+		GameObject m_GameObject;
+		Transform* m_CameraTransform;
+		Camera* m_Camera;
+
 		bool m_CameraControllerInUse = false;
 
 	private: // Rendering stuff

@@ -55,7 +55,10 @@ namespace Odyssey
 	void RenderScene::ConvertScene(Scene* scene)
 	{
 		ClearSceneData();
-		SetupCameraData(scene);
+		if (Camera* mainCamera = scene->GetMainCamera())
+		{
+			SetCameraData(mainCamera);
+		}
 		SetupDrawcalls(scene);
 	}
 
@@ -70,16 +73,13 @@ namespace Odyssey
 		m_NextUniformBuffer = 0;
 	}
 
-	void RenderScene::SetupCameraData(Scene* scene)
+	void RenderScene::SetCameraData(Camera* camera)
 	{
-		if (Camera* mainCamera = scene->GetMainCamera())
-		{
-			sceneData.inverseView = mainCamera->GetInverseView();
-			sceneData.proj = mainCamera->GetProjection();
+		sceneData.inverseView = camera->GetInverseView();
+		sceneData.proj = camera->GetProjection();
 
-			uint32_t sceneUniformSize = sizeof(sceneData);
-			sceneUniformBuffer.Get()->SetMemory(sceneUniformSize, &sceneData);
-		}
+		uint32_t sceneUniformSize = sizeof(sceneData);
+		sceneUniformBuffer.Get()->SetMemory(sceneUniformSize, &sceneData);
 	}
 
 	void RenderScene::SetupDrawcalls(Scene* scene)

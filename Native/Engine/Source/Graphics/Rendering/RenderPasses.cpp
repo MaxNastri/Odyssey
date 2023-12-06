@@ -109,6 +109,9 @@ namespace Odyssey
 		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
 
+		if (m_Camera)
+			renderScene->SetCameraData(m_Camera);
+
 		// Bind the scene descriptor buffer
 		commandBuffer->BindDescriptorBuffer(renderScene->descriptorBuffer);
 

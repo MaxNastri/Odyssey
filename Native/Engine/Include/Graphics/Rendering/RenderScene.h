@@ -6,6 +6,7 @@
 
 namespace Odyssey
 {
+	class Camera;
 	class Material;
 	class Mesh;
 	class Scene;
@@ -51,8 +52,9 @@ namespace Odyssey
 		void ConvertScene(Scene* scene);
 		void ClearSceneData();
 
+		void SetCameraData(Camera* camera);
+
 	private:
-		void SetupCameraData(Scene* scene);
 		void SetupDrawcalls(Scene* scene);
 		bool SetPassCreated(AssetHandle<Material> material, SetPass* outSetPass);
 

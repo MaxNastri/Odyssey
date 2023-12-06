@@ -5,6 +5,7 @@
 
 namespace Odyssey
 {
+	class Camera;
 	class VulkanContext;
 	class VulkanCommandBuffer;
 	class VulkanTexture;
@@ -51,6 +52,12 @@ namespace Odyssey
 		virtual void BeginPass(RenderPassParams& params) override;
 		virtual void Execute(RenderPassParams& params) override;
 		virtual void EndPass(RenderPassParams& params) override;
+
+	public:
+		void SetCamera(Camera* camera) { m_Camera = camera; }
+
+	private:
+		Camera* m_Camera = nullptr;
 	};
 
 	class ImguiPass : public RenderPass

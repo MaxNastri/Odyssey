@@ -31,6 +31,18 @@ namespace Odyssey
 		// Create the render texture
 		CreateRenderTexture(0);
 		CreateRenderTexture(1);
+
+		m_GameObject.id = std::numeric_limits<uint32_t>::max();
+
+		m_CameraTransform = ComponentManager::AddComponent<Transform>(m_GameObject.id);
+		m_CameraTransform->SetGameObject(&m_GameObject);
+		m_CameraTransform->Awake();
+
+		m_Camera = ComponentManager::AddComponent<Camera>(m_GameObject.id);
+		m_Camera->SetGameObject(&m_GameObject);
+		m_Camera->Awake();
+
+		m_SceneViewPass->SetCamera(m_Camera);
 	}
 
 	void SceneViewWindow::Update()
@@ -49,7 +61,7 @@ namespace Odyssey
 	{
 		uint32_t frameIndex = VulkanRenderer::GetFrameIndex();
 
-		ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(m_WindowSize.x, m_WindowSize.y), ImGuiCond_FirstUseEver);
 		if (!ImGui::Begin("Scene View", &open))
 		{
 			ImGui::End();
@@ -74,6 +86,7 @@ namespace Odyssey
 			m_WindowSize = windowSize;
 			DestroyRenderTexture(frameIndex);
 			CreateRenderTexture(frameIndex);
+			m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
 		}
 
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID[frameIndex]), ImVec2(m_WindowSize.x, m_WindowSize.y));
@@ -113,25 +126,19 @@ namespace Odyssey
 					//imgui->RemoveTexture(m_RenderTextureID[index]);
 
 			// Destroy the render texture
-			ResourceManager::DestroyTexture(m_RenderTexture[index], index);
+					ResourceManager::DestroyTexture(m_RenderTexture[index], index);
 		}
 	}
 
 	void SceneViewWindow::RenderGizmos()
 	{
-		Scene* scene = SceneManager::GetActiveScene();
-
-		if (scene && m_SelectedObject != std::numeric_limits<uint32_t>::max())
+		if (m_SelectedObject != std::numeric_limits<uint32_t>::max())
 		{
-			Transform* component = ComponentManager::GetComponent<Transform>(m_SelectedObject);
-			Camera* mainCamera = scene->GetMainCamera();
-
-			mainCamera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
 			ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 
-			glm::mat4 transform = component->GetWorldMatrix();
-			glm::mat4 view = scene->GetMainCamera()->GetInverseView();
-			glm::mat4 proj = scene->GetMainCamera()->GetProjection();
+			glm::mat4 transform = m_CameraTransform->GetWorldMatrix();
+			glm::mat4 view = m_Camera->GetInverseView();
+			glm::mat4 proj = m_Camera->GetProjection();
 			proj[1][1] *= -1.0f;
 
 			ImGuizmo::AllowAxisFlip(false);
@@ -141,20 +148,18 @@ namespace Odyssey
 
 			if (ImGuizmo::IsUsing())
 			{
-				glm::vec3 pos;
-				glm::vec3 rot;
-				glm::vec3 scale;
+				glm::vec3 pos, rot, scale;
 				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(transform), glm::value_ptr(pos), glm::value_ptr(rot), glm::value_ptr(scale));
 
-				glm::vec3 currentRotation = component->GetEulerRotation();
+				glm::vec3 currentRotation = m_CameraTransform->GetEulerRotation();
 				glm::vec3 diffRotation = rot - currentRotation;
 
 				if (op == ImGuizmo::OPERATION::TRANSLATE)
-					component->SetPosition(pos);
+					m_CameraTransform->SetPosition(pos);
 				else if (op == ImGuizmo::ROTATE)
-					component->AddRotation(diffRotation);
+					m_CameraTransform->AddRotation(diffRotation);
 				else if (op == ImGuizmo::SCALE)
-					component->SetScale(scale);
+					m_CameraTransform->SetScale(scale);
 			}
 		}
 	}
@@ -162,70 +167,62 @@ namespace Odyssey
 	void SceneViewWindow::UpdateCameraController()
 	{
 		const float speed = 3.0f;
-		Scene* scene = SceneManager::GetActiveScene();
 
-		if (scene == nullptr)
-			return;
+		glm::vec3 inputVel = glm::zero<vec3>();
 
-		Camera* camera = scene->GetMainCamera();
-
-		if (Transform* transform = ComponentManager::GetComponent<Transform>(camera->gameObject->id))
+		if (Input::GetMouseButtonDown(MouseButton::Right))
 		{
-			glm::vec3 inputVel = glm::zero<vec3>();
+			m_CameraControllerInUse = true;
 
-			if (Input::GetMouseButtonDown(MouseButton::Right))
+			if (Input::GetKeyDown(KeyCode::W))
 			{
-				m_CameraControllerInUse = true;
+				inputVel += glm::vec3(0, 0, 1);
+			}
+			if (Input::GetKeyDown(KeyCode::S))
+			{
+				inputVel += glm::vec3(0, 0, -1);
+			}
+			if (Input::GetKeyDown(KeyCode::D))
+			{
+				inputVel += glm::vec3(1, 0, 0);
+			}
+			if (Input::GetKeyDown(KeyCode::A))
+			{
+				inputVel += glm::vec3(-1, 0, 0);
+			}
+			if (Input::GetKeyDown(KeyCode::E))
+			{
+				inputVel += glm::vec3(0, 1, 0);
+			}
+			if (Input::GetKeyDown(KeyCode::Q))
+			{
+				inputVel += glm::vec3(0, -1, 0);
+			}
 
-				if (Input::GetKeyDown(KeyCode::W))
-				{
-					inputVel += glm::vec3(0, 0, 1);
-				}
-				if (Input::GetKeyDown(KeyCode::S))
-				{
-					inputVel += glm::vec3(0, 0, -1);
-				}
-				if (Input::GetKeyDown(KeyCode::D))
-				{
-					inputVel += glm::vec3(1, 0, 0);
-				}
-				if (Input::GetKeyDown(KeyCode::A))
-				{
-					inputVel += glm::vec3(-1, 0, 0);
-				}
-				if (Input::GetKeyDown(KeyCode::E))
-				{
-					inputVel += glm::vec3(0, 1, 0);
-				}
-				if (Input::GetKeyDown(KeyCode::Q))
-				{
-					inputVel += glm::vec3(0, -1, 0);
-				}
+			if (inputVel != glm::zero<vec3>())
+			{
+				inputVel = glm::normalize(inputVel);
+				glm::vec3 right = m_CameraTransform->Right() * inputVel.x;
+				glm::vec3 up = m_CameraTransform->Up() * inputVel.y;
+				glm::vec3 fwd = m_CameraTransform->Forward() * inputVel.z;
+				glm::vec3 velocity = (right + up + fwd) * speed * (1.0f / 144.0f);
+				m_CameraTransform->AddPosition(velocity);
+			}
 
-				if (inputVel != glm::zero<vec3>())
-				{
-					inputVel = glm::normalize(inputVel);
-					glm::vec3 right = transform->Right() * inputVel.x;
-					glm::vec3 up = transform->Up() * inputVel.y;
-					glm::vec3 fwd = transform->Forward() * inputVel.z;
-					glm::vec3 velocity = (right + up + fwd) * speed * (1.0f / 144.0f);
-					transform->AddPosition(velocity);
-				}
+			float mouseH = (float)Input::GetMouseAxisHorizontal();
+			float mouseV = (float)Input::GetMouseAxisVerticle();
 
-				float mouseH = (float)Input::GetMouseAxisHorizontal();
-				float mouseV = (float)Input::GetMouseAxisVerticle();
+			if (mouseH != 0.0f || mouseV != 0.0f)
+			{
+				glm::vec3 yaw = vec3(0, 1, 0) * mouseH * (1.0f / 144.0f) * 15.0f;
+				glm::vec3 pitch = vec3(1, 0, 0) * mouseV * (1.0f / 144.0f) * 15.0f;
 
-				if (mouseH != 0.0f || mouseV != 0.0f)
-				{
-					glm::vec3 yaw = vec3(0, 1, 0) * mouseH * (1.0f / 144.0f) * 15.0f;
-					glm::vec3 pitch = vec3(1, 0, 0) * mouseV * (1.0f / 144.0f) * 15.0f;
-
-					transform->AddRotation(yaw);
-					transform->AddRotation(pitch);
-				}
+				m_CameraTransform->AddRotation(yaw);
+				m_CameraTransform->AddRotation(pitch);
 			}
 		}
 	}
+
 	void SceneViewWindow::UpdateGizmosInput()
 	{
 		if (Input::GetKeyPress(KeyCode::Q))
