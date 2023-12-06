@@ -121,7 +121,7 @@ namespace Odyssey
 	{
 		Scene* scene = SceneManager::GetActiveScene();
 
-		if (m_SelectedObject != std::numeric_limits<uint32_t>::max())
+		if (scene && m_SelectedObject != std::numeric_limits<uint32_t>::max())
 		{
 			Transform* component = ComponentManager::GetComponent<Transform>(m_SelectedObject);
 			Camera* mainCamera = scene->GetMainCamera();
@@ -163,6 +163,10 @@ namespace Odyssey
 	{
 		const float speed = 3.0f;
 		Scene* scene = SceneManager::GetActiveScene();
+
+		if (scene == nullptr)
+			return;
+
 		Camera* camera = scene->GetMainCamera();
 
 		if (Transform* transform = ComponentManager::GetComponent<Transform>(camera->gameObject->id))

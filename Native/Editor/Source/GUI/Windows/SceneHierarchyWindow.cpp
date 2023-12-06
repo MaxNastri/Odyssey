@@ -29,45 +29,48 @@ namespace Odyssey
 		static int selectionMask = (1 << 2);
 		int node_clicked = -1;
 
-		for (auto& gameObject : m_Scene->GetGameObjects())
+		if (m_Scene)
 		{
-			bool hasChildren = false;
-			const bool isSelected = (selectionMask & (1 << id)) != 0;
-			ImGuiTreeNodeFlags nodeFlags = baseFlags;
-
-			if (hasChildren)
+			for (auto& gameObject : m_Scene->GetGameObjects())
 			{
-				// Draw as tree node
-				bool open = ImGui::TreeNodeEx((void*)(intptr_t)id, nodeFlags, gameObject->name.c_str());
+				bool hasChildren = false;
+				const bool isSelected = (selectionMask & (1 << id)) != 0;
+				ImGuiTreeNodeFlags nodeFlags = baseFlags;
 
-				if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-					node_clicked = id;
-
-				if (open)
+				if (hasChildren)
 				{
-					// Draw child
+					// Draw as tree node
+					bool open = ImGui::TreeNodeEx((void*)(intptr_t)id, nodeFlags, gameObject->name.c_str());
 
-					// ImGui::TreePop();
-				}
-			}
-			else
-			{
-				// Draw as tree leaf
-				nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-				ImGui::TreeNodeEx((void*)(intptr_t)id, nodeFlags, gameObject->name.c_str());
+					if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+						node_clicked = id;
 
-				if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-				{
-					node_clicked = id;
-
-					for (auto& callback : m_OnGameObjectSelected)
+					if (open)
 					{
-						callback(gameObject->id);
+						// Draw child
+
+						// ImGui::TreePop();
+					}
+				}
+				else
+				{
+					// Draw as tree leaf
+					nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+					ImGui::TreeNodeEx((void*)(intptr_t)id, nodeFlags, gameObject->name.c_str());
+
+					if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+					{
+						node_clicked = id;
+
+						for (auto& callback : m_OnGameObjectSelected)
+						{
+							callback(gameObject->id);
+						}
 					}
 				}
 			}
 		}
-
+		
 		if (node_clicked != -1)
 		{
 			if (ImGui::GetIO().KeyCtrl)

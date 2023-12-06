@@ -37,9 +37,6 @@ namespace Odyssey
 		// Build the user assembly
 		ScriptCompiler::BuildUserAssembly();
 
-		// Create the scene
-		SceneManager::LoadScene("Assets/Scenes/scene.yaml");
-
 		ConstructVisuals();
 		SetupEditorGUI();
 		CreateRenderPasses();

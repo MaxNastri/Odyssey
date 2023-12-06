@@ -176,7 +176,10 @@ namespace Odyssey
 			unsigned int width = window->GetSurface()->GetWidth();
 			unsigned int height = window->GetSurface()->GetHeight();
 
-			renderScenes[frameIndex]->ConvertScene(SceneManager::GetActiveScene());
+			if (Scene* scene = SceneManager::GetActiveScene())
+			{
+				renderScenes[frameIndex]->ConvertScene(scene);
+			}
 
 			// RenderPass begin
 			VulkanCommandBuffer* commandBuffer = commandBuffers[frameIndex].Get();
