@@ -105,11 +105,6 @@ namespace Odyssey
 		ImGui::NewFrame();
 		ImGuizmo::BeginFrame();
 
-		if (showDemoWindow)
-		{
-			ImGui::ShowDemoWindow(&showDemoWindow);
-		}
-
 		EventSystem::Dispatch<OnGUIRenderEvent>();
 	}
 

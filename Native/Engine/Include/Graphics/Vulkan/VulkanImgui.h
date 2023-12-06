@@ -50,6 +50,5 @@ namespace Odyssey
 		std::shared_ptr<VulkanContext> m_Context;
 		std::map<int64_t, VkDescriptorSet> m_RenderTextures;
 		VkDescriptorPool descriptorPool;
-		bool showDemoWindow = false;
 	};
 }

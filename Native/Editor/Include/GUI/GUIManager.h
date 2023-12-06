@@ -45,5 +45,7 @@ namespace Odyssey
 		inline static std::vector<ContentBrowserWindow> contentBrowserWindows;
 		inline static uint32_t selectedObject = std::numeric_limits<uint32_t>::max();
 		inline static std::shared_ptr<ImguiPass> m_GUIPass;
+
+		inline static bool s_ShowDemoWindow = true;
 	};
 }

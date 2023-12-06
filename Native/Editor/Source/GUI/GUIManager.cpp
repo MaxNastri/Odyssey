@@ -72,6 +72,11 @@ namespace Odyssey
 	{
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
+		if (s_ShowDemoWindow)
+		{
+			ImGui::ShowDemoWindow(&s_ShowDemoWindow);
+		}
+
 		for (auto& inspectorWindow : inspectorWindows)
 		{
 			inspectorWindow.Draw();

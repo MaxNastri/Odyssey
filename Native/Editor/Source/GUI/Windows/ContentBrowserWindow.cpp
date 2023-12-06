@@ -1,6 +1,7 @@
 #include "ContentBrowserWindow.h"
 #include "imgui.h"
 #include "SceneManager.h"
+#include "Input.h"
 
 namespace Odyssey
 {
@@ -67,6 +68,8 @@ namespace Odyssey
 			}
 		}
 
+		HandleContextMenu();
+
 		ImGui::End();
 	}
 
@@ -78,6 +81,26 @@ namespace Odyssey
 		for (auto& iter : std::filesystem::directory_iterator(m_CurrentPath))
 		{
 			m_PathsToDisplay.push_back(std::pair(iter.path(), iter.is_directory()));
+		}
+	}
+
+	void ContentBrowserWindow::HandleContextMenu()
+	{
+		if (!m_ContextMenuOpen && Input::GetMouseButtonDown(MouseButton::Right))
+			ImGui::OpenPopup("Content Browser Context Menu");
+
+		// TODO: Check its inside content area
+		if (m_ContextMenuOpen = ImGui::BeginPopup("Content Browser Context Menu"))
+		{
+			if (ImGui::Selectable("Example Entry 1"))
+			{
+
+			}
+			else if (ImGui::Selectable("Example Entry 2"))
+			{
+
+			}
+			ImGui::EndPopup();
 		}
 	}
 

@@ -18,6 +18,9 @@ namespace Odyssey
 		void UpdatePaths();
 
 	private:
+		void HandleContextMenu();
+
+	private: // Pathing
 		bool m_UpdatePaths = true;
 		std::filesystem::path m_CurrentPath;
 		std::vector<std::pair<std::filesystem::path, bool>> m_PathsToDisplay;
@@ -28,5 +31,8 @@ namespace Odyssey
 		glm::vec2 m_WindowSize;
 		glm::vec2 m_WindowMin;
 		glm::vec2 m_WindowMax;
+
+	private: // Context menu
+		bool m_ContextMenuOpen = false;
 	};
 }
