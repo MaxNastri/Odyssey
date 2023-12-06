@@ -60,7 +60,7 @@ namespace Odyssey
 		}
 
 		Logger::LogError("[Scene] Cannot find game object " + std::to_string(id));
-		return RefHandle<GameObject>::Empty();
+		return nullptr;
 	}
 
 	void Scene::Awake()

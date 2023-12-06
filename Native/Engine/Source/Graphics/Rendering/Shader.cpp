@@ -21,7 +21,7 @@ namespace Odyssey
 
 			uint32_t shaderType = 0;
 
-			node["m_UUID"] >> m_UUID;
+			node["m_GUID"] >> m_GUID;
 			node["m_Name"] >> m_Name;
 			node["m_AssetPath"] >> m_AssetPath;
 			node["m_Type"] >> m_Type;
@@ -38,7 +38,7 @@ namespace Odyssey
 		ryml::NodeRef root = tree.rootref();
 		root |= ryml::MAP;
 
-		root["m_UUID"] << m_UUID;
+		root["m_GUID"] << m_GUID;
 		root["m_Name"] << m_Name;
 		root["m_AssetPath"] << m_AssetPath;
 		root["m_Type"] << m_Type;

@@ -23,7 +23,7 @@ namespace Odyssey
 		root |= ryml::MAP;
 
 		// Serialize the base asset data
-		root["m_UUID"] << m_UUID;
+		root["m_GUID"] << m_GUID;
 		root["m_Name"] << m_Name;
 		root["m_AssetPath"] << m_AssetPath;
 		root["m_Type"] << m_Type;
@@ -50,7 +50,7 @@ namespace Odyssey
 			ryml::NodeRef node = tree.rootref();
 
 			// Deserialize the base asset data
-			node["m_UUID"] >> m_UUID;
+			node["m_GUID"] >> m_GUID;
 			node["m_Name"] >> m_Name;
 			node["m_AssetPath"] >> m_AssetPath;
 			node["m_Type"] >> m_Type;

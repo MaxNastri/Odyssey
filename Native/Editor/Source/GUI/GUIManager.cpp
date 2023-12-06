@@ -24,7 +24,7 @@ namespace Odyssey
 		m_GUIPass->SetImguiState(Application::GetRenderer()->GetImGui());
 	}
 
-	void GUIManager::CreateInspectorWindow(RefHandle<GameObject> gameObject)
+	void GUIManager::CreateInspectorWindow(GameObject* gameObject)
 	{
 		inspectorWindows.push_back(InspectorWindow(gameObject));
 	}

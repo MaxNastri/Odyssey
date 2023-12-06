@@ -32,7 +32,7 @@ namespace Odyssey
 		CreateRenderTexture(0);
 		CreateRenderTexture(1);
 
-		m_GameObject.id = std::numeric_limits<uint32_t>::max();
+		m_GameObject.id = UINT_MAX;
 
 		m_CameraTransform = ComponentManager::AddComponent<Transform>(m_GameObject.id);
 		m_CameraTransform->SetGameObject(&m_GameObject);

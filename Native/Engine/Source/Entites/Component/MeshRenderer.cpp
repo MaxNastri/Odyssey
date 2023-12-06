@@ -19,8 +19,8 @@ namespace Odyssey
 		componentNode |= ryml::MAP;
 		
 		componentNode["Name"] << MeshRenderer::Type;
-		componentNode["m_Mesh"] << m_Mesh.Get()->GetUUID();
-		componentNode["m_Material"] << m_Material.Get()->GetUUID();
+		componentNode["m_Mesh"] << m_Mesh.Get()->GetGUID();
+		componentNode["m_Material"] << m_Material.Get()->GetGUID();
 	}
 
 	void MeshRenderer::Deserialize(ryml::ConstNodeRef node)

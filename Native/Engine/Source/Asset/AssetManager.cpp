@@ -24,10 +24,10 @@ namespace Odyssey
 						ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
 						ryml::NodeRef node = tree.rootref();
 
-						std::string uuid;
-						node["m_UUID"] >> uuid;
+						std::string guid;
+						node["m_GUID"] >> guid;
 
-						s_AssetDatabase[uuid] = path;
+						s_AssetDatabase[guid] = path;
 					}
 				}
 			}
@@ -36,18 +36,18 @@ namespace Odyssey
 
 	AssetHandle<Mesh> Odyssey::AssetManager::LoadMesh(const std::string& path)
 	{
-		uint32_t id = m_Meshes.Add(path);
-		Mesh* mesh = m_Meshes[id].get();
-		s_LoadedAssets[mesh->GetUUID()] = id;
+		uint32_t id = s_Meshes.Add(path);
+		Mesh* mesh = s_Meshes[id].get();
+		s_LoadedAssets[mesh->GetGUID()] = id;
 
 		return AssetHandle<Mesh>(id, mesh);
 	}
 
 	AssetHandle<Shader> AssetManager::LoadShader(const std::string& filename)
 	{
-		uint32_t id = m_Shaders.Add(filename);
-		Shader* shader = m_Shaders[id].get();
-		s_LoadedAssets[shader->GetUUID()] = id;
+		uint32_t id = s_Shaders.Add(filename);
+		Shader* shader = s_Shaders[id].get();
+		s_LoadedAssets[shader->GetGUID()] = id;
 
 		return AssetHandle<Shader>(id, shader);
 	}
@@ -56,23 +56,23 @@ namespace Odyssey
 	{
 		uint32_t id = s_Materials.Add(assetPath);
 		Material* material = s_Materials[id].get();
-		s_LoadedAssets[material->GetUUID()] = id;
+		s_LoadedAssets[material->GetGUID()] = id;
 
 		return AssetHandle<Material>(id, material);
 	}
 
-	AssetHandle<Shader> AssetManager::LoadShaderByUUID(const std::string& uuid)
+	AssetHandle<Shader> AssetManager::LoadShaderByGUID(const std::string& guid)
 	{
 		// Check if we have already loaded this asset
-		if (s_LoadedAssets.find(uuid) != s_LoadedAssets.end())
+		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
 		{
 			// Return a handle
-			uint32_t id = s_LoadedAssets[uuid];
-			return AssetHandle<Shader>(id, m_Shaders[id].get());
+			uint32_t id = s_LoadedAssets[guid];
+			return AssetHandle<Shader>(id, s_Shaders[id].get());
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabase[uuid];
+		std::filesystem::path path = s_AssetDatabase[guid];
 		return AssetManager::LoadShader(path.generic_string());
 	}
 
@@ -98,7 +98,7 @@ namespace Odyssey
 		{
 			// Return a handle
 			uint32_t id = s_LoadedAssets[guid];
-			return AssetHandle<Mesh>(id, m_Meshes[id].get());
+			return AssetHandle<Mesh>(id, s_Meshes[id].get());
 		}
 
 		// Load it and return a handle
@@ -106,8 +106,8 @@ namespace Odyssey
 		return AssetManager::LoadMesh(path.generic_string());
 	}
 
-	std::string AssetManager::GenerateUUID()
+	std::string AssetManager::GenerateGUID()
 	{
-		return uuidGenerator.getUUID().str();
+		return s_GUIDGenerator.getUUID().str();
 	}
 }

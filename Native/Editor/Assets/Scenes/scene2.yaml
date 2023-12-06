@@ -4,7 +4,7 @@ GameObjects:
     Type: Odyssey.Entities.GameObject
     Active: 1
     ID: 0
-    UUID: ''
+    m_GUID: ''
     Components:
       - Name: Odyssey.Entities.Transform
         Position: 'x: 0 y: 0 z: 0'
@@ -31,7 +31,7 @@ GameObjects:
     Type: Odyssey.Entities.GameObject
     Active: 1
     ID: 1
-    UUID: ''
+    m_GUID: ''
     Components:
       - Name: Odyssey.Entities.Transform
         Position: 'x: 0 y: 0 z: -2'

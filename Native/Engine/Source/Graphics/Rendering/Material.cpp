@@ -19,18 +19,18 @@ namespace Odyssey
 			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
 			ryml::NodeRef node = tree.rootref();
 
-			node["m_UUID"] >> m_UUID;
+			node["m_GUID"] >> m_GUID;
 			node["m_Name"] >> m_Name;
 			node["m_AssetPath"] >> m_AssetPath;
 			node["m_Type"] >> m_Type;
 
-			std::string fragUUID;
-			std::string vertUUID;
-			node["m_FragmentShader"] >> fragUUID;
-			node["m_VertexShader"] >> vertUUID;
+			std::string fragGUID;
+			std::string vertGUID;
+			node["m_FragmentShader"] >> fragGUID;
+			node["m_VertexShader"] >> vertGUID;
 
-			m_FragmentShader = AssetManager::LoadShaderByUUID(fragUUID);
-			m_VertexShader = AssetManager::LoadShaderByUUID(vertUUID);
+			m_FragmentShader = AssetManager::LoadShaderByGUID(fragGUID);
+			m_VertexShader = AssetManager::LoadShaderByGUID(vertGUID);
 		}
 	}
 
@@ -42,13 +42,13 @@ namespace Odyssey
 		root |= ryml::MAP;
 
 		// Serialize the base asset data
-		root["m_UUID"] << m_UUID;
+		root["m_GUID"] << m_GUID;
 		root["m_Name"] << m_Name;
 		root["m_AssetPath"] << m_AssetPath;
 		root["m_Type"] << m_Type;
 
-		root["m_FragmentShader"] << m_FragmentShader.Get()->GetUUID();
-		root["m_VertexShader"] << m_VertexShader.Get()->GetUUID();
+		root["m_FragmentShader"] << m_FragmentShader.Get()->GetGUID();
+		root["m_VertexShader"] << m_VertexShader.Get()->GetGUID();
 
 		// Save to disk
 		FILE* file2 = fopen(m_AssetPath.c_str(), "w+");

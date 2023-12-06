@@ -27,7 +27,7 @@ namespace Odyssey
 		gameObjectNode["Type"] << Type;
 		gameObjectNode["Active"] << active;
 		gameObjectNode["ID"] << id;
-		gameObjectNode["UUID"] << uuid;
+		gameObjectNode["m_GUID"] << m_GUID;
 
 		ryml::NodeRef componentsNode = gameObjectNode["Components"];
 		componentsNode |= ryml::SEQ;
@@ -46,7 +46,7 @@ namespace Odyssey
 		node["Name"] >> name;
 		node["Active"] >> active;
 		node["ID"] >> id;
-		node["UUID"] >> uuid;
+		node["m_GUID"] >> m_GUID;
 
 		ryml::NodeRef componentsNode = node["Components"];
 		assert(componentsNode.is_seq());
@@ -58,7 +58,6 @@ namespace Odyssey
 			assert(componentNode.is_map());
 
 			std::string componentType;
-			std::string componentUUID;
 			componentNode["Name"] >> componentType;
 			
 			if (componentNode.has_child("Fields"))

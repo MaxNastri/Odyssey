@@ -21,17 +21,17 @@ namespace Odyssey
 		static AssetHandle<Material> LoadMaterial(const std::string& assetPath);
 
 	public:
-		static AssetHandle<Shader> LoadShaderByUUID(const std::string& uuid);
+		static AssetHandle<Shader> LoadShaderByGUID(const std::string& guid);
 		static AssetHandle<Material> LoadMaterialByGUID(const std::string& guid);
 		static AssetHandle<Mesh> LoadMeshByGUID(const std::string& guid);
 
 	private:
-		static std::string GenerateUUID();
+		static std::string GenerateGUID();
 	private:
 		inline static DynamicList<Mesh> s_Meshes;
 		inline static DynamicList<Shader> s_Shaders;
 		inline static DynamicList<Material> s_Materials;
-		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_uuidGenerator;
+		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
 
 		// Asset Database
 		inline static std::unordered_map<std::string, std::filesystem::path> s_AssetDatabase;

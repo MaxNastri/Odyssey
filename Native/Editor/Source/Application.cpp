@@ -86,7 +86,7 @@ namespace Odyssey
 
 	void Application::SetupEditorGUI()
 	{
-		GUIManager::CreateInspectorWindow(RefHandle<GameObject>::Empty());
+		GUIManager::CreateInspectorWindow(nullptr);
 		GUIManager::CreateSceneHierarchyWindow();
 		GUIManager::CreateSceneViewWindow();
 		GUIManager::CreateContentBrowserWindow();
