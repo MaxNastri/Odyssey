@@ -30,10 +30,10 @@ namespace Odyssey
         void SetScale(glm::vec3 scaleFactor);
         void SetScale(float x, float y, float z);
 
-        glm::vec3 GetPosition() { return position; }
-        glm::vec3 GetEulerRotation() { return eulerRotation; }
-        glm::quat GetRotation() { return rotation; }
-        glm::vec3 GetScale() { return scale; }
+        glm::vec3 GetPosition() { return m_Position; }
+        glm::vec3 GetEulerRotation() { return m_EulerRotation; }
+        glm::quat GetRotation() { return m_Rotation; }
+        glm::vec3 GetScale() { return m_Scale; }
         glm::vec3 Forward();
         glm::vec3 Right();
         glm::vec3 Up();
@@ -49,13 +49,13 @@ namespace Odyssey
         void Reset();
 
 	public:
-		glm::vec3 position;
-		glm::vec3 eulerRotation;
-        glm::quat rotation;
-        glm::vec3 scale;
-        glm::mat4x4 localMatrix;
-        glm::mat4x4 worldMatrix;
-        bool dirty;
+		glm::vec3 m_Position;
+		glm::vec3 m_EulerRotation;
+        glm::quat m_Rotation;
+        glm::vec3 m_Scale;
+        glm::mat4x4 m_LocalMatrix;
+        glm::mat4x4 m_WorldMatrix;
+        bool m_Dirty;
 		CLASS_DECLARATION(Transform);
 	};
 }

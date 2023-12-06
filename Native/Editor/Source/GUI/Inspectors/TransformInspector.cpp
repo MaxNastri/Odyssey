@@ -17,7 +17,7 @@ namespace Odyssey
 				{
 					if (Transform* transform = ComponentManager::GetComponent<Transform>(go->id))
 					{
-						transform->position = position;
+						transform->m_Position = position;
 					}
 				};
 
@@ -35,13 +35,13 @@ namespace Odyssey
 				{
 					if (Transform* transform = ComponentManager::GetComponent<Transform>(go->id))
 					{
-						transform->scale = scale;
+						transform->m_Scale = scale;
 					}
 				};
 
-			positionDrawer = Vector3Drawer("Position", transform->position, positionModified);
-			rotationDrawer = Vector3Drawer("Rotation", transform->eulerRotation, rotationModified);
-			scaleDrawer = Vector3Drawer("Scale", transform->scale, scaleModified);
+			positionDrawer = Vector3Drawer("Position", transform->m_Position, positionModified);
+			rotationDrawer = Vector3Drawer("Rotation", transform->m_EulerRotation, rotationModified);
+			scaleDrawer = Vector3Drawer("Scale", transform->m_Scale, scaleModified);
 		}
 	}
 

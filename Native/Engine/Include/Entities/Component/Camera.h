@@ -9,7 +9,6 @@ namespace Odyssey
 	class Camera : public Component
 	{
 	public:
-		Camera();
 		virtual void Awake() override;
 		virtual void Serialize(ryml::NodeRef& node) override;
 		virtual void Deserialize(ryml::ConstNodeRef node) override;

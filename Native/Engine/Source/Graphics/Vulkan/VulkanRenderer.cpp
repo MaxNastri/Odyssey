@@ -24,67 +24,67 @@ namespace Odyssey
 {
 	VulkanRenderer::VulkanRenderer()
 	{
-		context = std::make_shared<VulkanContext>();
-		ResourceManager::Initialize(context);
-		context->SetupResources();
+		m_Context = std::make_shared<VulkanContext>();
+		ResourceManager::Initialize(m_Context);
+		m_Context->SetupResources();
 
-		window = std::make_shared<VulkanWindow>(context);
-		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
+		m_Window = std::make_shared<VulkanWindow>(m_Context);
+		m_Swapchain = std::make_unique<VulkanSwapchain>(m_Context, m_Window->GetSurface());
 
 		// IMGUI
 		VulkanImgui::InitInfo imguiInfo = CreateImguiInitInfo();
-		imgui = std::make_shared<VulkanImgui>(context, imguiInfo);
+		m_Imgui = std::make_shared<VulkanImgui>(m_Context, imguiInfo);
 
-		renderingData = std::make_shared<PerFrameRenderingData>();
+		m_RenderingData = std::make_shared<PerFrameRenderingData>();
 
 		// Drawing
 		SetupFrameData();
 
 		// Render scenes
-		renderScenes.resize(frames.size());
-		for (int i = 0; i < renderScenes.size(); i++)
+		m_RenderScenes.resize(m_Frames.size());
+		for (int i = 0; i < m_RenderScenes.size(); i++)
 		{
-			renderScenes[i] = std::make_shared<RenderScene>();
+			m_RenderScenes[i] = std::make_shared<RenderScene>();
 		}
 
-		for (int i = 0; i < frames.size(); ++i)
+		for (int i = 0; i < m_Frames.size(); ++i)
 		{
-			commandPools.push_back(ResourceManager::AllocateCommandPool());
-			commandBuffers.push_back(commandPools[i].Get()->AllocateBuffer());
+			m_CommandPools.push_back(ResourceManager::AllocateCommandPool());
+			m_CommandBuffers.push_back(m_CommandPools[i].Get()->AllocateBuffer());
 		}
 	}
 
 	void VulkanRenderer::Destroy()
 	{
-		VulkanDevice* device = context->GetDevice();
+		VulkanDevice* device = m_Context->GetDevice();
 		device->WaitForIdle();
 
-		for (int i = 0; i < frames.size(); ++i)
+		for (int i = 0; i < m_Frames.size(); ++i)
 		{
-			frames[i].Destroy();
+			m_Frames[i].Destroy();
 		}
 
-		frames.clear();
-		swapchain.reset();
-		window.reset();
+		m_Frames.clear();
+		m_Swapchain.reset();
+		m_Window.reset();
 
-		context->Destroy();
-		context.reset();
+		m_Context->Destroy();
+		m_Context.reset();
 	}
 
 	bool VulkanRenderer::Update()
 	{
-		return window->Update();
+		return m_Window->Update();
 	}
 
 	bool VulkanRenderer::Render()
 	{
-		if (rebuildSwapchain)
+		if (m_RebuildSwapchain)
 			RebuildSwapchain();
 
-		imgui->SubmitDraws();
+		m_Imgui->SubmitDraws();
 		RenderFrame();
-		imgui->PostRender();
+		m_Imgui->PostRender();
 
 		Present();
 		return true;
@@ -92,22 +92,22 @@ namespace Odyssey
 
 	bool VulkanRenderer::Present()
 	{
-		if (rebuildSwapchain)
+		if (m_RebuildSwapchain)
 			return false;
 
-		const VkSemaphore* render_complete_semaphore = frames[frameIndex].GetRenderCompleteSemaphore();
+		const VkSemaphore* render_complete_semaphore = m_Frames[s_FrameIndex].GetRenderCompleteSemaphore();
 
 		VkPresentInfoKHR info = {};
 		info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 		info.waitSemaphoreCount = 1;
 		info.pWaitSemaphores = render_complete_semaphore;
 		info.swapchainCount = 1;
-		info.pSwapchains = &swapchain->swapchain;
-		info.pImageIndices = &frameIndex;
-		VkResult err = vkQueuePresentKHR(context->GetGraphicsQueueVK(), &info);
+		info.pSwapchains = &m_Swapchain->swapchain;
+		info.pImageIndices = &s_FrameIndex;
+		VkResult err = vkQueuePresentKHR(m_Context->GetGraphicsQueueVK(), &info);
 		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 		{
-			rebuildSwapchain = true;
+			m_RebuildSwapchain = true;
 			return false;
 		}
 
@@ -115,20 +115,20 @@ namespace Odyssey
 		{
 			Logger::LogError("(renderer 1)");
 		}
-		frameIndex = (frameIndex + 1) % swapchain->imageCount;
+		s_FrameIndex = (s_FrameIndex + 1) % m_Swapchain->imageCount;
 		return true;
 	}
 
 	bool VulkanRenderer::BeginFrame(VulkanFrame*& currentFrame)
 	{
-		VkDevice vkDevice = context->GetDevice()->GetLogicalDevice();
-		const VkSemaphore* imageAcquired = frames[frameIndex].GetImageAcquiredSemaphore();
-		const VkSemaphore* render_complete_semaphore = frames[frameIndex].GetRenderCompleteSemaphore();
+		VkDevice vkDevice = m_Context->GetDevice()->GetLogicalDevice();
+		const VkSemaphore* imageAcquired = m_Frames[s_FrameIndex].GetImageAcquiredSemaphore();
+		const VkSemaphore* render_complete_semaphore = m_Frames[s_FrameIndex].GetRenderCompleteSemaphore();
 
-		VkResult err = vkAcquireNextImageKHR(vkDevice, swapchain->GetVK(), UINT64_MAX, *imageAcquired, VK_NULL_HANDLE, &frameIndex);
+		VkResult err = vkAcquireNextImageKHR(vkDevice, m_Swapchain->GetVK(), UINT64_MAX, *imageAcquired, VK_NULL_HANDLE, &s_FrameIndex);
 		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 		{
-			rebuildSwapchain = true;
+			m_RebuildSwapchain = true;
 			return false;
 		}
 
@@ -137,7 +137,7 @@ namespace Odyssey
 			Logger::LogError("(renderer 2)");
 		}
 
-		VulkanFrame& frame = frames[frameIndex];
+		VulkanFrame& frame = m_Frames[s_FrameIndex];
 
 		// Wait for the initial fences to clear
 		err = vkWaitForFences(vkDevice, 1, &(frame.fence), VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
@@ -155,14 +155,14 @@ namespace Odyssey
 		}
 
 		// Clear resources for this frame index
-		ResourceManager::FlushDestroys(frameIndex);
-		commandPools[frameIndex].Get()->Reset();
+		ResourceManager::FlushDestroys(s_FrameIndex);
+		m_CommandPools[s_FrameIndex].Get()->Reset();
 
 		// Command buffer begin
-		commandBuffers[frameIndex].Get()->BeginCommands();
+		m_CommandBuffers[s_FrameIndex].Get()->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
-		commandBuffers[frameIndex].Get()->TransitionLayouts(frame.GetRenderTarget(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		m_CommandBuffers[s_FrameIndex].Get()->TransitionLayouts(frame.GetRenderTarget(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		currentFrame = &frame;
 		return true;
@@ -173,29 +173,29 @@ namespace Odyssey
 		VulkanFrame* frame = nullptr;
 		if (BeginFrame(frame))
 		{
-			unsigned int width = window->GetSurface()->GetWidth();
-			unsigned int height = window->GetSurface()->GetHeight();
+			unsigned int width = m_Window->GetSurface()->GetWidth();
+			unsigned int height = m_Window->GetSurface()->GetHeight();
 
 			if (Scene* scene = SceneManager::GetActiveScene())
 			{
-				renderScenes[frameIndex]->ConvertScene(scene);
+				m_RenderScenes[s_FrameIndex]->ConvertScene(scene);
 			}
 
 			// RenderPass begin
-			VulkanCommandBuffer* commandBuffer = commandBuffers[frameIndex].Get();
-			renderingData->frame = frame;
-			renderingData->renderScene = renderScenes[frameIndex];
-			renderingData->width = width;
-			renderingData->height = height;
+			VulkanCommandBuffer* commandBuffer = m_CommandBuffers[s_FrameIndex].Get();
+			m_RenderingData->frame = frame;
+			m_RenderingData->renderScene = m_RenderScenes[s_FrameIndex];
+			m_RenderingData->width = width;
+			m_RenderingData->height = height;
 
 			RenderPassParams params;
-			params.commandBuffer = commandBuffers[frameIndex];
-			params.context = context;
-			params.renderingData = renderingData;
+			params.commandBuffer = m_CommandBuffers[s_FrameIndex];
+			params.context = m_Context;
+			params.renderingData = m_RenderingData;
 
-			renderPasses[1]->SetRenderTarget(frame->GetRenderTarget());
+			m_RenderPasses[1]->SetRenderTarget(frame->GetRenderTarget());
 
-			for (const auto& renderPass : renderPasses)
+			for (const auto& renderPass : m_RenderPasses)
 			{
 				renderPass->BeginPass(params);
 				renderPass->Execute(params);
@@ -214,7 +214,7 @@ namespace Odyssey
 			submitInfo.pSignalSemaphores = frame->GetRenderCompleteSemaphore();
 
 			commandBuffer->EndCommands();
-			VkResult err = vkQueueSubmit(context->GetGraphicsQueueVK(), 1, &submitInfo, frame->fence);
+			VkResult err = vkQueueSubmit(m_Context->GetGraphicsQueueVK(), 1, &submitInfo, frame->fence);
 			if (!check_vk_result(err))
 			{
 				Logger::LogError("(graphnode 1)");
@@ -224,22 +224,22 @@ namespace Odyssey
 
 	void VulkanRenderer::RebuildSwapchain()
 	{
-		VulkanDevice* device = context->GetDevice();
+		VulkanDevice* device = m_Context->GetDevice();
 		device->WaitForIdle();
 
-		window->Resize(swapchain.get());
+		m_Window->Resize(m_Swapchain.get());
 
 		// Remake the swapchain
-		swapchain->Destroy();
-		swapchain = std::make_unique<VulkanSwapchain>(context, window->GetSurface());
-		rebuildSwapchain = false;
+		m_Swapchain->Destroy();
+		m_Swapchain = std::make_unique<VulkanSwapchain>(m_Context, m_Window->GetSurface());
+		m_RebuildSwapchain = false;
 
 		// Destroy the existing frames
-		for (auto& frame : frames)
+		for (auto& frame : m_Frames)
 		{
 			frame.Destroy();
 		}
-		frames.clear();
+		m_Frames.clear();
 
 		// Remake the frame data with the new size
 		SetupFrameData();
@@ -248,36 +248,36 @@ namespace Odyssey
 	VulkanImgui::InitInfo VulkanRenderer::CreateImguiInitInfo()
 	{
 		VulkanImgui::InitInfo info;
-		info.window = window->GetWindow()->GetWindowHandle();
-		info.instance = context->GetInstance();
-		info.physicalDevice = context->GetPhysicalDevice()->GetPhysicalDevice();
-		info.logicalDevice = context->GetDevice()->GetLogicalDevice();
-		info.queueIndex = context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics);
-		info.queue = context->GetGraphicsQueueVK();
+		info.window = m_Window->GetWindow()->GetWindowHandle();
+		info.instance = m_Context->GetInstance();
+		info.physicalDevice = m_Context->GetPhysicalDevice()->GetPhysicalDevice();
+		info.logicalDevice = m_Context->GetDevice()->GetLogicalDevice();
+		info.queueIndex = m_Context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics);
+		info.queue = m_Context->GetGraphicsQueueVK();
 		info.descriptorPool = nullptr;
 		info.renderPass = nullptr;
-		info.minImageCount = swapchain->minImageCount;
-		info.imageCount = swapchain->imageCount;
-		info.colorFormat = window->GetSurface()->GetFormat();
+		info.minImageCount = m_Swapchain->minImageCount;
+		info.imageCount = m_Swapchain->imageCount;
+		info.colorFormat = m_Window->GetSurface()->GetFormat();
 		return info;
 	}
 
 	void VulkanRenderer::SetupFrameData()
 	{
-		frameIndex = 0;
+		s_FrameIndex = 0;
 
-		VkDevice vkDevice = context->GetDevice()->GetLogicalDevice();
-		VkFormat format = window->GetSurface()->GetFormat();
+		VkDevice vkDevice = m_Context->GetDevice()->GetLogicalDevice();
+		VkFormat format = m_Window->GetSurface()->GetFormat();
 
 		// Create the frames
 		{
-			std::vector<std::shared_ptr<VulkanImage>> backbuffers = swapchain->GetBackbuffers();
-			uint32_t imageCount = swapchain->GetImageCount();
-			frames.resize(imageCount);
+			std::vector<std::shared_ptr<VulkanImage>> backbuffers = m_Swapchain->GetBackbuffers();
+			uint32_t imageCount = m_Swapchain->GetImageCount();
+			m_Frames.resize(imageCount);
 
 			for (uint32_t i = 0; i < imageCount; ++i)
 			{
-				frames[i] = VulkanFrame(context, backbuffers[i], format);
+				m_Frames[i] = VulkanFrame(m_Context, backbuffers[i], format);
 			}
 		}
 

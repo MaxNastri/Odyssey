@@ -53,17 +53,17 @@ namespace Odyssey
 		static void FlushDestroys(uint32_t frameIndex);
 
 	private: // Vulkan members
-		inline static std::shared_ptr<VulkanContext> m_Context = nullptr;
-		inline static DynamicList<VulkanVertexBuffer> m_VertexBuffers;
-		inline static DynamicList<VulkanIndexBuffer> m_IndexBuffers;
-		inline static DynamicList<VulkanTexture> m_Textures;
-		inline static DynamicList<VulkanShaderModule> m_Shaders;
-		inline static DynamicList<VulkanGraphicsPipeline> m_GraphicsPipelines;
-		inline static DynamicList<VulkanBuffer> m_Buffers;
-		inline static DynamicList<VulkanCommandPool> m_CommandPools;
-		inline static DynamicList<VulkanCommandBuffer> m_CommandBuffers;
-		inline static DynamicList<VulkanDescriptorLayout> m_DescriptorLayouts;
-		inline static DynamicList<VulkanDescriptorBuffer> m_DescriptorBuffers;
+		inline static std::shared_ptr<VulkanContext> s_Context = nullptr;
+		inline static DynamicList<VulkanVertexBuffer> s_VertexBuffers;
+		inline static DynamicList<VulkanIndexBuffer> s_IndexBuffers;
+		inline static DynamicList<VulkanTexture> s_Textures;
+		inline static DynamicList<VulkanShaderModule> s_Shaders;
+		inline static DynamicList<VulkanGraphicsPipeline> s_GraphicsPipelines;
+		inline static DynamicList<VulkanBuffer> s_Buffers;
+		inline static DynamicList<VulkanCommandPool> s_CommandPools;
+		inline static DynamicList<VulkanCommandBuffer> s_CommandBuffers;
+		inline static DynamicList<VulkanDescriptorLayout> s_DescriptorLayouts;
+		inline static DynamicList<VulkanDescriptorBuffer> s_DescriptorBuffers;
 
 	private:
 		inline static std::vector<std::function<void(void)>> destroys0;

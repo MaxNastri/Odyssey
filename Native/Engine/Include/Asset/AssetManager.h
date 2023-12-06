@@ -28,10 +28,10 @@ namespace Odyssey
 	private:
 		static std::string GenerateUUID();
 	private:
-		inline static DynamicList<Mesh> m_Meshes;
-		inline static DynamicList<Shader> m_Shaders;
+		inline static DynamicList<Mesh> s_Meshes;
+		inline static DynamicList<Shader> s_Shaders;
 		inline static DynamicList<Material> s_Materials;
-		inline static UUIDv4::UUIDGenerator<std::mt19937_64> uuidGenerator;
+		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_uuidGenerator;
 
 		// Asset Database
 		inline static std::unordered_map<std::string, std::filesystem::path> s_AssetDatabase;
