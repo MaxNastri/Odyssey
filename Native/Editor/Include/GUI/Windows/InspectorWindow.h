@@ -11,13 +11,13 @@ namespace Odyssey
 	{
 	public:
 		InspectorWindow() = default;
-		InspectorWindow(RefHandle<GameObject> gameObject);
+		InspectorWindow(GameObject* gameObject);
 
 	public:
 		virtual void Draw() override;
 
 	public:
-		void SetGameObject(RefHandle<GameObject> gameObject);
+		void SetGameObject(GameObject* gameObject);
 		void RefreshUserScripts();
 
 	private:

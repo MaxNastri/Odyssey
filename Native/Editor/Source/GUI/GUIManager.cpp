@@ -111,7 +111,7 @@ namespace Odyssey
 		selectedObject = id;
 
 		Scene* scene = SceneManager::GetActiveScene();
-		RefHandle<GameObject> gameObject = scene->GetGameObject(id);
+		GameObject* gameObject = scene->GetGameObject(id);
 
 		for (auto& inspectorWindow : inspectorWindows)
 		{

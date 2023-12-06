@@ -11,7 +11,7 @@
 
 namespace Odyssey
 {
-	UserScriptInspector::UserScriptInspector(RefHandle<GameObject> go, UserScript* userScript, std::string_view className)
+	UserScriptInspector::UserScriptInspector(GameObject* go, UserScript* userScript, std::string_view className)
 	{
 		gameObject = go;
 		userScriptFullName = displayName = className;
@@ -48,7 +48,7 @@ namespace Odyssey
 	void UserScriptInspector::UpdateFields()
 	{
 		drawers.clear();
-		if (UserScript* userScript = ComponentManager::GetUserScript(gameObject, userScriptFullName))
+		if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptFullName))
 		{
 			InitializeDrawers(userScript);
 		}

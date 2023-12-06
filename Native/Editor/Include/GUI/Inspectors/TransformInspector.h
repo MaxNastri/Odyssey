@@ -12,13 +12,13 @@ namespace Odyssey
 	{
 	public:
 		TransformInspector() = default;
-		TransformInspector(RefHandle<GameObject> go);
+		TransformInspector(GameObject* go);
 
 	public:
 		virtual void Draw() override;
 
 	private:
-		RefHandle<GameObject> gameObject;
+		GameObject* gameObject;
 		Vector3Drawer positionDrawer;
 		Vector3Drawer rotationDrawer;
 		Vector3Drawer scaleDrawer;

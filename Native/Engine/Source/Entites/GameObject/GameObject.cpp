@@ -37,7 +37,7 @@ namespace Odyssey
 				component->Serialize(componentsNode);
 			};
 
-		ComponentManager::ExecuteOnGameObjectComponents(this, serializeComponent);
+		ComponentManager::ExecuteOnGameObjectComponents(id, serializeComponent);
 	}
 
 	void GameObject::Deserialize(ryml::NodeRef& node)
@@ -63,13 +63,13 @@ namespace Odyssey
 			
 			if (componentNode.has_child("Fields"))
 			{
-				UserScript* userScript = ComponentManager::AddUserScript(this, componentType);
+				UserScript* userScript = ComponentManager::AddUserScript(id, componentType);
 				userScript->SetGameObject(this);
 				userScript->Deserialize(componentNode);
 			}
 			else
 			{
-				Component* component = ComponentManager::AddComponentByName(this, componentType);
+				Component* component = ComponentManager::AddComponentByName(id, componentType);
 				component->SetGameObject(this);
 				component->Deserialize(componentNode);
 			}

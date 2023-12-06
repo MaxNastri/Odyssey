@@ -15,13 +15,13 @@ namespace Odyssey
 	{
 	public:
 		Scene();
-		RefHandle<GameObject> CreateGameObject();
-		void DestroyGameObject(RefHandle<GameObject>& gameObject);
+		GameObject* CreateGameObject();
+		void DestroyGameObject(GameObject* gameObject);
 		void Clear();
 
 	public:
-		std::vector<RefHandle<GameObject>>& GetGameObjects() { return gameObjects; }
-		RefHandle<GameObject> GetGameObject(uint32_t id);
+		std::vector<std::shared_ptr<GameObject>>& GetGameObjects() { return gameObjects; }
+		GameObject* GetGameObject(uint32_t id);
 
 	public:
 		void Awake();
@@ -39,8 +39,8 @@ namespace Odyssey
 	private:
 		friend class RenderScene;
 		std::string name;
-		std::vector<RefHandle<GameObject>> gameObjects;
-		std::unordered_map<unsigned int, RefHandle<GameObject>> gameObjectsByID;
+		std::vector<std::shared_ptr<GameObject>> gameObjects;
+		std::unordered_map<uint32_t, std::shared_ptr<GameObject>> gameObjectsByID;
 		uint32_t nextGameObjectID;
 		Camera* m_MainCamera = nullptr;
 

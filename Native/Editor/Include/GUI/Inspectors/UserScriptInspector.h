@@ -17,7 +17,7 @@ namespace Odyssey
 	{
 	public:
 		UserScriptInspector() = default;
-		UserScriptInspector(RefHandle<GameObject> go, UserScript* userScript, std::string_view className);
+		UserScriptInspector(GameObject* go, UserScript* userScript, std::string_view className);
 
 	public:
 		virtual void Draw() override;
@@ -30,7 +30,7 @@ namespace Odyssey
 		void CreateStringDrawer(GameObject* gameObject, const std::string& className, const std::string& fieldName, Coral::ManagedObject userObject);
 
 	private:
-		RefHandle<GameObject> gameObject;
+		GameObject* gameObject;
 		std::string userScriptFullName;
 		std::string displayName;
 		std::vector<std::unique_ptr<PropertyDrawer>> drawers;

@@ -5,7 +5,7 @@
 
 namespace Odyssey
 {
-	InspectorWindow::InspectorWindow(RefHandle<GameObject> gameObject)
+	InspectorWindow::InspectorWindow(GameObject* gameObject)
 	{
 		SetGameObject(gameObject);
 	}
@@ -34,24 +34,24 @@ namespace Odyssey
 		ImGui::End();
 	}
 
-	void InspectorWindow::SetGameObject(RefHandle<GameObject> gameObject)
+	void InspectorWindow::SetGameObject(GameObject* gameObject)
 	{
 		inspectors.clear();
 		userScriptInspectors.clear();
 
-		if (gameObject.IsValid())
+		if (gameObject)
 		{
-			if (ComponentManager::HasComponent<Transform>(gameObject))
+			if (ComponentManager::HasComponent<Transform>(gameObject->id))
 			{
 				inspectors.push_back(std::make_unique<TransformInspector>(gameObject));
 			}
 
-			if (ComponentManager::HasComponent<Camera>(gameObject))
+			if (ComponentManager::HasComponent<Camera>(gameObject->id))
 			{
 				inspectors.push_back(std::make_unique<CameraInspector>(gameObject));
 			}
 
-			std::vector<std::pair<std::string, UserScript*>> userScripts = ComponentManager::GetAllUserScripts(gameObject);
+			std::vector<std::pair<std::string, UserScript*>> userScripts = ComponentManager::GetAllUserScripts(gameObject->id);
 
 			for (auto& [userScriptClassName, userScript] : userScripts)
 			{

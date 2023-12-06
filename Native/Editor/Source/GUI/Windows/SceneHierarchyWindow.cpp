@@ -31,7 +31,7 @@ namespace Odyssey
 
 		if (m_Scene)
 		{
-			for (auto& gameObject : m_Scene->GetGameObjects())
+			for (auto gameObject : m_Scene->GetGameObjects())
 			{
 				bool hasChildren = false;
 				const bool isSelected = (selectionMask & (1 << id)) != 0;

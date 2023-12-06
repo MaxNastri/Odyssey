@@ -86,9 +86,9 @@ namespace Odyssey
 	{
 		for (auto& gameObject : scene->gameObjects)
 		{
-			if (MeshRenderer* renderer = ComponentManager::GetComponent<MeshRenderer>(gameObject))
+			if (MeshRenderer* renderer = ComponentManager::GetComponent<MeshRenderer>(gameObject->id))
 			{
-				if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject))
+				if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject->id))
 				{
 					SetPass* setPass = nullptr;
 					Drawcall drawcall;

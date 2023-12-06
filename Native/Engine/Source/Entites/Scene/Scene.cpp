@@ -15,20 +15,20 @@ namespace Odyssey
 		nextGameObjectID = 0;
 	}
 
-	RefHandle<GameObject> Scene::CreateGameObject()
+	GameObject* Scene::CreateGameObject()
 	{
 		// Create a new game object
 		uint32_t id = nextGameObjectID++;
-		RefHandle<GameObject> gameObject = RefHandle<GameObject>::Create(id, id);
+		std::shared_ptr<GameObject> gameObject = std::make_shared<GameObject>(id);
 
 		gameObjects.push_back(gameObject);
 		gameObjectsByID[id] = gameObject;
-		return gameObject;
+		return gameObject.get();
 	}
 
-	void Scene::DestroyGameObject(RefHandle<GameObject>& gameObject)
+	void Scene::DestroyGameObject(GameObject* gameObject)
 	{
-		ComponentManager::RemoveGameObject(gameObject);
+		ComponentManager::RemoveGameObject(gameObject->id);
 		for (int i = 0; i < gameObjects.size(); i++)
 		{
 			if (gameObjects[i]->id == gameObject->id)
@@ -43,7 +43,7 @@ namespace Odyssey
 	{
 		for (auto& gameObject : gameObjects)
 		{
-			ComponentManager::RemoveGameObject(gameObject);
+			ComponentManager::RemoveGameObject(gameObject->id);
 		}
 
 		gameObjects.clear();
@@ -52,11 +52,11 @@ namespace Odyssey
 		m_MainCamera = nullptr;
 	}
 
-	RefHandle<GameObject> Scene::GetGameObject(uint32_t id)
+	GameObject* Scene::GetGameObject(uint32_t id)
 	{
 		if (gameObjectsByID.find(id) != gameObjectsByID.end())
 		{
-			return gameObjectsByID[id];
+			return gameObjectsByID[id].get();
 		}
 
 		Logger::LogError("[Scene] Cannot find game object " + std::to_string(id));
@@ -67,7 +67,7 @@ namespace Odyssey
 	{
 		for (const auto& gameObject : gameObjects)
 		{
-			ComponentManager::ExecuteOnGameObjectComponents(gameObject, awakeFunc);
+			ComponentManager::ExecuteOnGameObjectComponents(gameObject->id, awakeFunc);
 		}
 	}
 
@@ -75,7 +75,7 @@ namespace Odyssey
 	{
 		for (const auto& gameObject : gameObjects)
 		{
-			ComponentManager::ExecuteOnGameObjectComponents(gameObject, updateFunc);
+			ComponentManager::ExecuteOnGameObjectComponents(gameObject->id, updateFunc);
 		}
 	}
 
@@ -83,7 +83,7 @@ namespace Odyssey
 	{
 		for (const auto& gameObject : gameObjects)
 		{
-			ComponentManager::ExecuteOnGameObjectComponents(gameObject, onDestroyFunc);
+			ComponentManager::ExecuteOnGameObjectComponents(gameObject->id, onDestroyFunc);
 		}
 	}
 
@@ -125,7 +125,7 @@ namespace Odyssey
 
 			for (size_t i = 0; i < gameObjectsNode.num_children(); i++)
 			{
-				RefHandle<GameObject> gameObject = CreateGameObject();
+				GameObject* gameObject = CreateGameObject();
 				ryml::NodeRef child = gameObjectsNode.child(i);
 				gameObject->Deserialize(child);
 			}
@@ -147,7 +147,7 @@ namespace Odyssey
 	{
 		for (auto& gameObject : gameObjects)
 		{
-			if (Camera* camera = ComponentManager::GetComponent<Camera>(gameObject))
+			if (Camera* camera = ComponentManager::GetComponent<Camera>(gameObject->id))
 			{
 				if (camera->IsMainCamera())
 					m_MainCamera = camera;

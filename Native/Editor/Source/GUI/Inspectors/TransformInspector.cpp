@@ -6,16 +6,16 @@
 
 namespace Odyssey
 {
-	TransformInspector::TransformInspector(RefHandle<GameObject> go)
+	TransformInspector::TransformInspector(GameObject* go)
 	{
 		gameObject = go;
 
-		if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
+		if (Transform* transform = ComponentManager::GetComponent<Transform>(go->id))
 		{
 			// Callback for when the position is modified through the drawer
 			std::function<void(glm::vec3)> positionModified = [go](glm::vec3 position)
 				{
-					if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
+					if (Transform* transform = ComponentManager::GetComponent<Transform>(go->id))
 					{
 						transform->position = position;
 					}
@@ -24,7 +24,7 @@ namespace Odyssey
 			// Callback for when the rotation is modified through the drawer
 			std::function<void(glm::vec3)> rotationModified = [go](glm::vec3 rotation)
 				{
-					if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
+					if (Transform* transform = ComponentManager::GetComponent<Transform>(go->id))
 					{
 						transform->SetRotation(rotation);
 					}
@@ -33,7 +33,7 @@ namespace Odyssey
 			// Callback for when the scale is modified through the drawer
 			std::function<void(glm::vec3)> scaleModified = [go](glm::vec3 scale)
 				{
-					if (Transform* transform = ComponentManager::GetComponent<Transform>(go))
+					if (Transform* transform = ComponentManager::GetComponent<Transform>(go->id))
 					{
 						transform->scale = scale;
 					}
