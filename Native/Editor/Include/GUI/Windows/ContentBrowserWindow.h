@@ -18,6 +18,7 @@ namespace Odyssey
 		void UpdatePaths();
 
 	private:
+		void UpdateWindowProperties();
 		void HandleContextMenu();
 
 	private: // Pathing
@@ -31,6 +32,9 @@ namespace Odyssey
 		glm::vec2 m_WindowSize;
 		glm::vec2 m_WindowMin;
 		glm::vec2 m_WindowMax;
+		glm::vec2 m_FramePadding;
+		bool m_CursorInContentRegion = false;
+		bool m_WindowResized = false;
 
 	private: // Context menu
 		bool m_ContextMenuOpen = false;

@@ -23,6 +23,7 @@ namespace Odyssey
 		void SetSelectedIndex(uint32_t selected) { m_SelectedObject = selected; }
 
 	private:
+		void UpdateWindowProperties();
 		void CreateRenderTexture(uint32_t index);
 		void DestroyRenderTexture(uint32_t index);
 		void RenderGizmos();
@@ -48,6 +49,9 @@ namespace Odyssey
 		glm::vec2 m_WindowSize;
 		glm::vec2 m_WindowMin;
 		glm::vec2 m_WindowMax;
+		glm::vec2 m_FramePadding;
+		bool m_CursorInContentRegion = false;
+		bool m_WindowResized = false;
 		uint32_t op = 7;
 	};
 }

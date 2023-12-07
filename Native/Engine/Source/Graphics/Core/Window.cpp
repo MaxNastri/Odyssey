@@ -30,6 +30,11 @@ namespace Odyssey
 		glfwSetCursorPosCallback(glfwHandle, Window::MouseMoveCallback);
 		glfwSetCursorEnterCallback(glfwHandle, Window::MouseEnteredCallback);
 		glfwSetMouseButtonCallback(glfwHandle, Window::MouseButtonClicked);
+		glfwSetWindowPosCallback(glfwHandle, Window::WindowMoved);
+
+		int xpos, ypos;
+		glfwGetWindowPos(glfwHandle, &xpos, &ypos);
+		s_WindowPos = glm::vec2(xpos, ypos);
 	}
 
 	bool Window::Update()
@@ -105,5 +110,10 @@ namespace Odyssey
 		bool pressed = action == GLFW_PRESS;
 
 		Input::RegisterMouseClick(mouseButton, pressed);
+	}
+
+	void Window::WindowMoved(GLFWwindow* window, int xpos, int ypos)
+	{
+		s_WindowPos = glm::vec2(xpos, ypos);
 	}
 }

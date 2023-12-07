@@ -6636,7 +6636,10 @@ bool ImGui::Selectable(const char* label, bool selected, ImGuiSelectableFlags fl
     RenderTextClipped(text_min, text_max, label, NULL, &label_size, style.SelectableTextAlign, &bb);
 
     // Automatically close popups
-    if (pressed && (window->Flags & ImGuiWindowFlags_Popup) && !(flags & ImGuiSelectableFlags_DontClosePopups) && !(g.LastItemData.InFlags & ImGuiItemFlags_SelectableDontClosePopup))
+    bool c1 = (window->Flags & ImGuiWindowFlags_Popup);
+    bool c2 = !(flags & ImGuiSelectableFlags_DontClosePopups);
+    bool c3 = !(g.LastItemData.InFlags & ImGuiItemFlags_SelectableDontClosePopup);
+    if (pressed && c1 && c2 && c3)
         CloseCurrentPopup();
 
     if (disabled_item && !disabled_global)

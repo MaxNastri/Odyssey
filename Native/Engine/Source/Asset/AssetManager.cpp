@@ -32,6 +32,30 @@ namespace Odyssey
 				}
 			}
 		}
+
+		s_DefaultVertexShader = LoadShader(s_DefaultVertexShaderPath);
+		s_DefaultFragmentShader = LoadShader(s_DefaultFragmentShaderPath);
+	}
+
+	AssetHandle<Material> AssetManager::CreateMaterial(const std::string& assetPath)
+	{
+		uint32_t id = s_Materials.Add();
+		Material* material = s_Materials[id].get();
+
+		// Set asset data
+		material->SetGUID(GenerateGUID());
+		material->SetName("Default");
+		material->SetPath(assetPath);
+		material->SetType("Material");
+
+		// Assign default shaders
+		material->SetVertexShader(s_DefaultVertexShader);
+		material->SetFragmentShader(s_DefaultFragmentShader);
+
+		// Save to disk
+		material->Save(assetPath);
+
+		return AssetHandle<Material>(id, material);
 	}
 
 	AssetHandle<Mesh> Odyssey::AssetManager::LoadMesh(const std::string& path)

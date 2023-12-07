@@ -1,4 +1,5 @@
 #pragma once
+#include "glm.h"
 #include <bitset>
 #include "KeyCode.h"
 
@@ -21,6 +22,8 @@ namespace Odyssey
 		static bool GetMouseButtonDown(MouseButton button);
 		static double GetMouseAxisHorizontal() { return mouseAxisH; }
 		static double GetMouseAxisVerticle() { return mouseAxisV; }
+		static glm::vec2 GetMousePosition() { return glm::vec2(mouseX, mouseY); }
+		static glm::vec2 GetScreenSpaceMousePosition();
 
 	public:
 		static void Update();

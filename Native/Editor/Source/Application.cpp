@@ -24,10 +24,11 @@ namespace Odyssey
 		ScriptingManager::Initialize();
 		FileManager::Initialize();
 		FileManager::TrackFolder(Paths::Relative::ManagedProjectSource);
-		AssetManager::CreateDatabase();
 
 		// Create the renderer
 		renderer = std::make_shared<VulkanRenderer>();
+
+		AssetManager::CreateDatabase();
 
 		// Start listening for events
 		ScriptCompiler::ListenForEvents();

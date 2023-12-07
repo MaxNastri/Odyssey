@@ -24,7 +24,7 @@ namespace Odyssey
 		// Window stuff
 		m_WindowPos = glm::vec2(0, 0);
 		m_WindowSize = glm::vec2(500, 500);
-
+		m_FramePadding = glm::vec2(2, 2);
 		m_RenderTexture.resize(2);
 		m_RenderTextureID.resize(2);
 
@@ -68,22 +68,12 @@ namespace Odyssey
 			return;
 		}
 
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
+		UpdateWindowProperties();
 
-		// Draw
-		ImVec2 pos = ImGui::GetWindowPos();
-		ImVec2 min = ImGui::GetWindowContentRegionMin();
-		ImVec2 max = ImGui::GetWindowContentRegionMax();
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(m_FramePadding.x, m_FramePadding.y));
 
-		m_WindowPos = glm::vec2(pos.x, pos.y);
-		m_WindowMin = glm::vec2(min.x, min.y) + m_WindowPos;
-		m_WindowMax = glm::vec2(max.x, max.y) + m_WindowPos;
-		glm::vec2 windowSize = m_WindowMax - m_WindowMin;
-
-		// TODO: Re-allocate a texture if size has changed
-		if (windowSize != m_WindowSize)
+		if (m_WindowResized)
 		{
-			m_WindowSize = windowSize;
 			DestroyRenderTexture(frameIndex);
 			CreateRenderTexture(frameIndex);
 			m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
@@ -102,6 +92,31 @@ namespace Odyssey
 	{
 		DestroyRenderTexture(0);
 		DestroyRenderTexture(1);
+	}
+
+	void SceneViewWindow::UpdateWindowProperties()
+	{
+		// Get the position and content region
+		ImVec2 pos = ImGui::GetWindowPos();
+		ImVec2 min = ImGui::GetWindowContentRegionMin();
+		ImVec2 max = ImGui::GetWindowContentRegionMax();
+		ImVec2 windowPadding = ImGui::GetStyle().WindowPadding;
+		glm::vec2 windowPad = glm::vec2(windowPadding.x, windowPadding.y);
+
+		// Calculate the window content region min + max
+		m_WindowPos = glm::vec2(pos.x, pos.y);
+		m_WindowMin = glm::vec2(min.x, min.y) + m_WindowPos;
+		m_WindowMax = glm::vec2(max.x, max.y) + m_WindowPos;
+
+		// Update the window size
+		glm::vec2 windowSize = m_WindowMax - m_WindowMin;
+		m_WindowResized = windowSize != m_WindowSize;
+		m_WindowSize = windowSize;
+
+		// Check if the cursor is in the content region
+		glm::vec2 cursorPos = Input::GetScreenSpaceMousePosition();
+		m_CursorInContentRegion = (cursorPos.x >= m_WindowMin.x && cursorPos.x <= m_WindowMax.x) &&
+			(cursorPos.y >= m_WindowMin.y && cursorPos.y <= m_WindowMax.y);
 	}
 
 	void SceneViewWindow::CreateRenderTexture(uint32_t index)
@@ -173,7 +188,7 @@ namespace Odyssey
 
 		glm::vec3 inputVel = glm::zero<vec3>();
 
-		if (Input::GetMouseButtonDown(MouseButton::Right))
+		if (m_CursorInContentRegion && Input::GetMouseButtonDown(MouseButton::Right))
 		{
 			m_CameraControllerInUse = true;
 
@@ -228,20 +243,23 @@ namespace Odyssey
 
 	void SceneViewWindow::UpdateGizmosInput()
 	{
-		if (Input::GetKeyPress(KeyCode::Q))
+		if (m_CursorInContentRegion)
 		{
-			// Translation
-			op = ImGuizmo::OPERATION::TRANSLATE;
-		}
-		else if (Input::GetKeyPress(KeyCode::W))
-		{
-			// ROTATION
-			op = ImGuizmo::OPERATION::ROTATE;
-		}
-		else if (Input::GetKeyPress(KeyCode::E))
-		{
-			// SCALE
-			op = ImGuizmo::OPERATION::SCALE;
+			if (Input::GetKeyPress(KeyCode::Q))
+			{
+				// Translation
+				op = ImGuizmo::OPERATION::TRANSLATE;
+			}
+			else if (Input::GetKeyPress(KeyCode::W))
+			{
+				// ROTATION
+				op = ImGuizmo::OPERATION::ROTATE;
+			}
+			else if (Input::GetKeyPress(KeyCode::E))
+			{
+				// SCALE
+				op = ImGuizmo::OPERATION::SCALE;
+			}
 		}
 	}
 }

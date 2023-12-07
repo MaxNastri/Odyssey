@@ -1,5 +1,6 @@
 #include "Input.h"
 #include "Logger.h"
+#include "Window.h"
 
 namespace Odyssey
 {
@@ -27,6 +28,11 @@ namespace Odyssey
     bool Input::GetMouseButtonDown(MouseButton button)
     {
         return mouseInput[button];
+    }
+
+    glm::vec2 Input::GetScreenSpaceMousePosition()
+    {
+        return Window::GetWindowPos() + glm::vec2(mouseX, mouseY);
     }
 
     void Input::Update()
