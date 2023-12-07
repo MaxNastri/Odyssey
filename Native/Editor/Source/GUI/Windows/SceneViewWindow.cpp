@@ -2,6 +2,7 @@
 #include <imgui.h>
 #include "Scene.h"
 #include "SceneManager.h"
+#include "Camera.h"
 #include "Transform.h"
 #include "ComponentManager.h"
 #include "ImGuizmo.h"
@@ -16,15 +17,14 @@
 namespace Odyssey
 {
 	SceneViewWindow::SceneViewWindow()
+		: DockableWindow("Scene View",
+			glm::vec2(0,0), glm::vec2(500,500), glm::vec2(2,2))
 	{
 		// Rendering stuff
 		m_SceneViewPass = std::make_shared<OpaquePass>();
 		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 
 		// Window stuff
-		m_WindowPos = glm::vec2(0, 0);
-		m_WindowSize = glm::vec2(500, 500);
-		m_FramePadding = glm::vec2(2, 2);
 		m_RenderTexture.resize(2);
 		m_RenderTextureID.resize(2);
 
@@ -45,6 +45,12 @@ namespace Odyssey
 		m_SceneViewPass->SetCamera(m_Camera);
 	}
 
+	void SceneViewWindow::Destroy()
+	{
+		DestroyRenderTexture(0);
+		DestroyRenderTexture(1);
+	}
+
 	void SceneViewWindow::Update()
 	{
 		// Reset the camera controller use flag before updating the camera controller
@@ -59,64 +65,25 @@ namespace Odyssey
 
 	void SceneViewWindow::Draw()
 	{
-		uint32_t frameIndex = VulkanRenderer::GetFrameIndex();
-
-		ImGui::SetNextWindowSize(ImVec2(m_WindowSize.x, m_WindowSize.y), ImGuiCond_FirstUseEver);
-		if (!ImGui::Begin("Scene View", &open))
-		{
-			ImGui::End();
+		if (!Begin())
 			return;
-		}
 
-		UpdateWindowProperties();
-
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(m_FramePadding.x, m_FramePadding.y));
-
-		if (m_WindowResized)
-		{
-			DestroyRenderTexture(frameIndex);
-			CreateRenderTexture(frameIndex);
-			m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
-		}
-
+		// Set the current RT as the scene view pass target
+		uint32_t frameIndex = VulkanRenderer::GetFrameIndex();
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID[frameIndex]), ImVec2(m_WindowSize.x, m_WindowSize.y));
 		m_SceneViewPass->SetRenderTexture(m_RenderTexture[frameIndex]);
 
+		// Render gizmos
 		RenderGizmos();
-
-		ImGui::PopStyleVar();
-		ImGui::End();
+		End();
 	}
 
-	void SceneViewWindow::Destroy()
+	void SceneViewWindow::OnWindowResize()
 	{
-		DestroyRenderTexture(0);
-		DestroyRenderTexture(1);
-	}
-
-	void SceneViewWindow::UpdateWindowProperties()
-	{
-		// Get the position and content region
-		ImVec2 pos = ImGui::GetWindowPos();
-		ImVec2 min = ImGui::GetWindowContentRegionMin();
-		ImVec2 max = ImGui::GetWindowContentRegionMax();
-		ImVec2 windowPadding = ImGui::GetStyle().WindowPadding;
-		glm::vec2 windowPad = glm::vec2(windowPadding.x, windowPadding.y);
-
-		// Calculate the window content region min + max
-		m_WindowPos = glm::vec2(pos.x, pos.y);
-		m_WindowMin = glm::vec2(min.x, min.y) + m_WindowPos;
-		m_WindowMax = glm::vec2(max.x, max.y) + m_WindowPos;
-
-		// Update the window size
-		glm::vec2 windowSize = m_WindowMax - m_WindowMin;
-		m_WindowResized = windowSize != m_WindowSize;
-		m_WindowSize = windowSize;
-
-		// Check if the cursor is in the content region
-		glm::vec2 cursorPos = Input::GetScreenSpaceMousePosition();
-		m_CursorInContentRegion = (cursorPos.x >= m_WindowMin.x && cursorPos.x <= m_WindowMax.x) &&
-			(cursorPos.y >= m_WindowMin.y && cursorPos.y <= m_WindowMax.y);
+		uint32_t frameIndex = VulkanRenderer::GetFrameIndex();
+		DestroyRenderTexture(frameIndex);
+		CreateRenderTexture(frameIndex);
+		m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
 	}
 
 	void SceneViewWindow::CreateRenderTexture(uint32_t index)

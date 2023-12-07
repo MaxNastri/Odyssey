@@ -1,24 +1,25 @@
 #pragma once
-#include "GUIElement.h"
+#include "DockableWindow.h"
 #include "glm.h"
 #include "FileManager.h"
 #include <filesystem>
 
 namespace Odyssey
 {
-	class ContentBrowserWindow : public GUIElement
+	class ContentBrowserWindow : public DockableWindow
 	{
 	public:
 		ContentBrowserWindow();
+		void Destroy();
+
+	public:
 		virtual void Update() override;
 		virtual void Draw() override;
-		void Destroy();
 
 	public:
 		void UpdatePaths();
 
 	private:
-		void UpdateWindowProperties();
 		void HandleContextMenu();
 
 	private: // Pathing
