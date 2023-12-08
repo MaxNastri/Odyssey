@@ -28,6 +28,12 @@ namespace Odyssey
 		renderCompleteSemaphore = VK_NULL_HANDLE;
 	}
 
+	void VulkanFrame::SetRenderTarget(std::shared_ptr<VulkanImage> renderTarget, uint32_t imageIndex)
+	{
+		m_RenderTarget = renderTarget;
+		m_ImageIndex = imageIndex;
+	}
+
 	VkImage VulkanFrame::GetRenderTargetVK()
 	{
 		return m_RenderTarget->GetImage();

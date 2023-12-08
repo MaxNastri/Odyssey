@@ -103,7 +103,7 @@ namespace Odyssey
 		info.pWaitSemaphores = render_complete_semaphore;
 		info.swapchainCount = 1;
 		info.pSwapchains = &m_Swapchain->swapchain;
-		info.pImageIndices = &s_FrameIndex;
+		info.pImageIndices = &m_Frames[s_FrameIndex].m_ImageIndex;
 		VkResult err = vkQueuePresentKHR(m_Context->GetGraphicsQueueVK(), &info);
 		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 		{
@@ -125,7 +125,8 @@ namespace Odyssey
 		const VkSemaphore* imageAcquired = m_Frames[s_FrameIndex].GetImageAcquiredSemaphore();
 		const VkSemaphore* render_complete_semaphore = m_Frames[s_FrameIndex].GetRenderCompleteSemaphore();
 
-		VkResult err = vkAcquireNextImageKHR(vkDevice, m_Swapchain->GetVK(), UINT64_MAX, *imageAcquired, VK_NULL_HANDLE, &s_FrameIndex);
+		uint32_t imageIndex = 0;
+		VkResult err = vkAcquireNextImageKHR(vkDevice, m_Swapchain->GetVK(), UINT64_MAX, *imageAcquired, VK_NULL_HANDLE, &imageIndex);
 		if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 		{
 			m_RebuildSwapchain = true;
@@ -138,6 +139,7 @@ namespace Odyssey
 		}
 
 		VulkanFrame& frame = m_Frames[s_FrameIndex];
+		frame.SetRenderTarget(m_Swapchain->GetBackbuffers()[imageIndex], imageIndex);
 
 		// Wait for the initial fences to clear
 		err = vkWaitForFences(vkDevice, 1, &(frame.fence), VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
