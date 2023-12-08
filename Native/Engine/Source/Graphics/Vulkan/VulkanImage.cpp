@@ -110,6 +110,8 @@ namespace Odyssey
 	{
 		vkDestroyImage(m_Context->GetDeviceVK(), m_Image, allocator);
 		vkDestroyImageView(m_Context->GetDeviceVK(), imageView, allocator);
+		vkFreeMemory(m_Context->GetDeviceVK(),imageMemory, allocator);
+
 		m_Image = VK_NULL_HANDLE;
 		imageView = VK_NULL_HANDLE;
 		imageMemory = VK_NULL_HANDLE;

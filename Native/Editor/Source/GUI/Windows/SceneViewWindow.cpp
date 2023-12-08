@@ -24,13 +24,8 @@ namespace Odyssey
 		m_SceneViewPass = std::make_shared<OpaquePass>();
 		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 
-		// Window stuff
-		m_RenderTexture.resize(2);
-		m_RenderTextureID.resize(2);
-
 		// Create the render texture
 		CreateRenderTexture(0);
-		CreateRenderTexture(1);
 
 		m_GameObject.id = UINT_MAX;
 
@@ -70,8 +65,8 @@ namespace Odyssey
 
 		// Set the current RT as the scene view pass target
 		uint32_t frameIndex = VulkanRenderer::GetFrameIndex();
-		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID[frameIndex]), ImVec2(m_WindowSize.x, m_WindowSize.y));
-		m_SceneViewPass->SetRenderTexture(m_RenderTexture[frameIndex]);
+		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
+		m_SceneViewPass->SetRenderTexture(m_RenderTexture);
 
 		// Render gizmos
 		RenderGizmos();
@@ -89,18 +84,18 @@ namespace Odyssey
 	void SceneViewWindow::CreateRenderTexture(uint32_t index)
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
-		m_RenderTexture[index] = ResourceManager::AllocateTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
+		m_RenderTexture = ResourceManager::AllocateTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
 
 		// Create an IMGui texture handle
 		if (auto renderer = Application::GetRenderer())
 			if (auto imgui = renderer->GetImGui())
-				m_RenderTextureID[index] = imgui->AddTexture(m_RenderTexture[index]);
+				m_RenderTextureID = imgui->AddTexture(m_RenderTexture);
 	}
 
 	void SceneViewWindow::DestroyRenderTexture(uint32_t index)
 	{
 		// Destroy the existing render texture
-		if (m_RenderTexture[index].IsValid())
+		if (m_RenderTexture.IsValid())
 		{
 			// Remove the imgui texture
 			if (auto renderer = Application::GetRenderer())
@@ -108,7 +103,7 @@ namespace Odyssey
 					//imgui->RemoveTexture(m_RenderTextureID[index]);
 
 			// Destroy the render texture
-					ResourceManager::DestroyTexture(m_RenderTexture[index], index);
+					ResourceManager::DestroyTexture(m_RenderTexture);
 		}
 	}
 

@@ -71,5 +71,6 @@ namespace Odyssey
 	private: // Frame data
 		std::vector<VulkanFrame> m_Frames;
 		inline static uint32_t s_FrameIndex = 0;
+		inline static uint32_t s_PreviousFrame = 0;
 	};
 }

@@ -41,8 +41,8 @@ namespace Odyssey
 
 	private: // Rendering stuff
 		std::shared_ptr<OpaquePass> m_SceneViewPass;
-		std::vector<uint64_t> m_RenderTextureID;
-		std::vector<ResourceHandle<VulkanTexture>> m_RenderTexture;
+		uint64_t m_RenderTextureID;
+		ResourceHandle<VulkanTexture> m_RenderTexture;
 
 	private: // Gizmos
 		uint32_t m_SelectedObject;

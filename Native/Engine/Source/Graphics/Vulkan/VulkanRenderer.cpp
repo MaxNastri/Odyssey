@@ -115,6 +115,8 @@ namespace Odyssey
 		{
 			Logger::LogError("(renderer 1)");
 		}
+
+		s_PreviousFrame = s_FrameIndex;
 		s_FrameIndex = (s_FrameIndex + 1) % m_Swapchain->imageCount;
 		return true;
 	}
@@ -141,9 +143,6 @@ namespace Odyssey
 		VulkanFrame& frame = m_Frames[s_FrameIndex];
 		frame.SetRenderTarget(m_Swapchain->GetBackbuffers()[imageIndex], imageIndex);
 
-		// Wait for the initial fences to clear
-		err = vkWaitForFences(vkDevice, 1, &(frame.fence), VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
-
 		if (!check_vk_result(err))
 		{
 			Logger::LogError("(renderer 3)");
@@ -156,8 +155,6 @@ namespace Odyssey
 			Logger::LogError("(renderer 4)");
 		}
 
-		// Clear resources for this frame index
-		ResourceManager::FlushDestroys(s_FrameIndex);
 		m_CommandPools[s_FrameIndex].Get()->Reset();
 
 		// Command buffer begin
@@ -216,6 +213,19 @@ namespace Odyssey
 			submitInfo.pSignalSemaphores = frame->GetRenderCompleteSemaphore();
 
 			commandBuffer->EndCommands();
+
+
+			// Wait for the initial fences to clear
+			if (s_PreviousFrame != s_FrameIndex)
+			{
+				VkResult err = vkWaitForFences(m_Context->GetDeviceVK(), 1, &(m_Frames[s_PreviousFrame].fence), VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
+				if (!check_vk_result(err))
+				{
+					Logger::LogError("(graphnode 0)");
+				}
+				ResourceManager::Flush();
+			}
+
 			VkResult err = vkQueueSubmit(m_Context->GetGraphicsQueueVK(), 1, &submitInfo, frame->fence);
 			if (!check_vk_result(err))
 			{

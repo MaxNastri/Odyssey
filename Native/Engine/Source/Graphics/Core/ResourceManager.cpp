@@ -114,34 +114,14 @@ namespace Odyssey
 
 	void ResourceManager::DestroyTexture(ResourceHandle<VulkanTexture> handle)
 	{
-		s_Textures[handle.m_ID]->Destroy();
-		s_Textures[handle.m_ID]->SetID(-1);
-		s_Textures.Remove(handle.m_ID);
-	}
-	void ResourceManager::DestroyTexture(ResourceHandle<VulkanTexture> handle, uint32_t frameIndex)
-	{
-		if (frameIndex == 0)
-		{
-			uint32_t id = handle.m_ID;
-			auto callback = [id]()
-				{
-					s_Textures[id]->Destroy();
-					s_Textures[id]->SetID(-1);
-					s_Textures.Remove(id);
-				};
-			destroys0.push_back(callback);
-		}
-		else
-		{
-			uint32_t id = handle.m_ID;
-			auto callback = [id]()
-				{
-					s_Textures[id]->Destroy();
-					s_Textures[id]->SetID(-1);
-					s_Textures.Remove(id);
-				};
-			destroys1.push_back(callback);
-		}
+		uint32_t id = handle.m_ID;
+		auto callback = [id]()
+			{
+				s_Textures[id]->Destroy();
+				s_Textures[id]->SetID(-1);
+				s_Textures.Remove(id);
+			};
+		s_PendingDestroys.push_back(callback);
 	}
 
 	void ResourceManager::DestroyShader(ResourceHandle<VulkanShaderModule> handle)
@@ -183,23 +163,12 @@ namespace Odyssey
 		s_DescriptorBuffers.Remove(handle.m_ID);
 	}
 
-	void ResourceManager::FlushDestroys(uint32_t frameIndex)
+	void ResourceManager::Flush()
 	{
-		if (frameIndex == 0)
+		for (const auto& func : s_PendingDestroys)
 		{
-			for (const auto& callback : destroys0)
-			{
-				callback();
-			}
-			destroys0.clear();
+			func();
 		}
-		else
-		{
-			for (const auto& callback : destroys1)
-			{
-				callback();
-			}
-			destroys1.clear();
-		}
+		s_PendingDestroys.clear();
 	}
 }
