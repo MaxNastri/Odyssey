@@ -15,62 +15,75 @@ namespace Odyssey
 		nextGameObjectID = 0;
 	}
 
-	GameObject Scene::CreateGameObject()
+	GameObject* Scene::CreateGameObject()
 	{
-		GameObject gameObject = GameObject(nextGameObjectID++);
+		// Create a new game object
+		uint32_t id = nextGameObjectID++;
+		std::shared_ptr<GameObject> gameObject = std::make_shared<GameObject>(id);
+
 		gameObjects.push_back(gameObject);
-		gameObjectsByID[gameObject.id] = gameObject;
-		return gameObject;
+		gameObjectsByID[id] = gameObject;
+		return gameObject.get();
 	}
 
-	void Scene::DestroyGameObject(GameObject gameObject)
+	void Scene::DestroyGameObject(GameObject* gameObject)
 	{
-		ComponentManager::RemoveGameObject(gameObject);
-		gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), gameObject));
+		ComponentManager::RemoveGameObject(gameObject->id);
+		for (int i = 0; i < gameObjects.size(); i++)
+		{
+			if (gameObjects[i]->id == gameObject->id)
+			{
+				gameObjects.erase(gameObjects.begin() + i);
+				break;
+			}
+		}
 	}
+
 	void Scene::Clear()
 	{
-		for (GameObject& gameObject : gameObjects)
+		for (auto& gameObject : gameObjects)
 		{
-			DestroyGameObject(gameObject);
+			ComponentManager::RemoveGameObject(gameObject->id);
 		}
 
 		gameObjects.clear();
 		gameObjectsByID.clear();
 		nextGameObjectID = 0;
+		m_MainCamera = nullptr;
 	}
 
-	GameObject Scene::GetGameObject(unsigned int id)
+	GameObject* Scene::GetGameObject(uint32_t id)
 	{
 		if (gameObjectsByID.find(id) != gameObjectsByID.end())
 		{
-			return gameObjectsByID[id];
+			return gameObjectsByID[id].get();
 		}
+
 		Logger::LogError("[Scene] Cannot find game object " + std::to_string(id));
-		return NULL;
+		return nullptr;
 	}
 
 	void Scene::Awake()
 	{
-		for (const GameObject& gameObject : gameObjects)
+		for (const auto& gameObject : gameObjects)
 		{
-			ComponentManager::ExecuteOnGameObjectComponents(gameObject, awakeFunc);
+			ComponentManager::ExecuteOnGameObjectComponents(gameObject->id, awakeFunc);
 		}
 	}
 
 	void Scene::Update()
 	{
-		for (const GameObject& gameObject : gameObjects)
+		for (const auto& gameObject : gameObjects)
 		{
-			ComponentManager::ExecuteOnGameObjectComponents(gameObject, updateFunc);
+			ComponentManager::ExecuteOnGameObjectComponents(gameObject->id, updateFunc);
 		}
 	}
 
 	void Scene::OnDestroy()
 	{
-		for (const GameObject& gameObject : gameObjects)
+		for (const auto& gameObject : gameObjects)
 		{
-			ComponentManager::ExecuteOnGameObjectComponents(gameObject, onDestroyFunc);
+			ComponentManager::ExecuteOnGameObjectComponents(gameObject->id, onDestroyFunc);
 		}
 	}
 
@@ -85,9 +98,9 @@ namespace Odyssey
 		ryml::NodeRef gameObjectsNode = root["GameObjects"];
 		gameObjectsNode |= ryml::SEQ;
 
-		for (GameObject& gameObject : gameObjects)
+		for (auto& gameObject : gameObjects)
 		{
-			gameObject.Serialize(gameObjectsNode);
+			gameObject->Serialize(gameObjectsNode);
 		}
 
 		FILE* file2 = fopen(filename.c_str(), "w+");
@@ -112,9 +125,9 @@ namespace Odyssey
 
 			for (size_t i = 0; i < gameObjectsNode.num_children(); i++)
 			{
-				GameObject gameObject = CreateGameObject();
+				GameObject* gameObject = CreateGameObject();
 				ryml::NodeRef child = gameObjectsNode.child(i);
-				gameObject.Deserialize(child);
+				gameObject->Deserialize(child);
 			}
 		}
 		else
@@ -134,7 +147,7 @@ namespace Odyssey
 	{
 		for (auto& gameObject : gameObjects)
 		{
-			if (Camera* camera = ComponentManager::GetComponent<Camera>(gameObject))
+			if (Camera* camera = ComponentManager::GetComponent<Camera>(gameObject->id))
 			{
 				if (camera->IsMainCamera())
 					m_MainCamera = camera;

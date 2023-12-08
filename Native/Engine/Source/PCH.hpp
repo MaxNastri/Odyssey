@@ -9,6 +9,7 @@
 #include <iostream>
 #include <istream>
 #include <map>
+#include <queue>
 #include <set>
 #include <string>
 #include <typeindex>

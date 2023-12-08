@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_vulkan.h"
+#include "ImGuizmo.h"
 #include "VulkanGlobals.h"
 #include "VulkanCommandPool.h"
 #include "Events.h"
@@ -102,25 +103,13 @@ namespace Odyssey
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-
-		if (showDemoWindow)
-		{
-			ImGui::ShowDemoWindow(&showDemoWindow);
-		}
+		ImGuizmo::BeginFrame();
 
 		EventSystem::Dispatch<OnGUIRenderEvent>();
 	}
 
-	void VulkanImgui::Render(VkCommandBuffer commandBuffer, VkDescriptorSet id)
+	void VulkanImgui::Render(VkCommandBuffer commandBuffer)
 	{
-		static bool open = true;
-		ImGui::SetNextWindowSize(ImVec2(1000, 1000), ImGuiCond_FirstUseEver);
-		if (ImGui::Begin("Scene", &open))
-		{
-			ImGui::Image(id, ImVec2(1000, 1000));
-		}
-		ImGui::End();
-
 		ImGui::Render();
 		ImDrawData* main_draw_data = ImGui::GetDrawData();
 
@@ -140,12 +129,18 @@ namespace Odyssey
 		}
 	}
 
-	VkDescriptorSet VulkanImgui::AddTexture(VulkanTexture* texture)
+	uint64_t VulkanImgui::AddTexture(ResourceHandle<VulkanTexture> handle)
 	{
+		VulkanTexture* texture = handle.Get();
 		VkSampler sampler = texture->GetSampler()->GetSamplerVK();
 		VkImageView view = texture->GetImage()->GetImageView();
 		VkImageLayout layout = VK_IMAGE_LAYOUT_GENERAL;
-		return ImGui_ImplVulkan_AddTexture(sampler, view, layout);
+		return reinterpret_cast<uint64_t>(ImGui_ImplVulkan_AddTexture(sampler, view, layout));
+	}
+
+	void VulkanImgui::RemoveTexture(uint64_t id)
+	{
+		ImGui_ImplVulkan_RemoveTexture(reinterpret_cast<VkDescriptorSet>(id));
 	}
 
 	void VulkanImgui::CreateDescriptorPool()

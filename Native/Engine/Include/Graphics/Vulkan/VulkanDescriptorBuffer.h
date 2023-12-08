@@ -23,6 +23,7 @@ namespace Odyssey
 		
 	public:
 		ResourceHandle<VulkanBuffer> GetBuffer() { return m_Buffer; }
+		uint32_t GetSize() { return m_Size; }
 
 	private:
 		struct Properties

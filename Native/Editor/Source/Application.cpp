@@ -11,21 +11,38 @@
 #include <ComponentManager.h>
 #include <Camera.h>
 #include <MeshRenderer.h>
+#include "Mesh.h"
+#include "AssetManager.h"
+#include "Shader.h"
+#include "Material.h"
 
 namespace Odyssey
 {
 	Application::Application()
 	{
+		// Initialize our managers
 		ScriptingManager::Initialize();
 		FileManager::Initialize();
 		FileManager::TrackFolder(Paths::Relative::ManagedProjectSource);
+
+		// Create the renderer
+		renderer = std::make_shared<VulkanRenderer>();
+
+		AssetManager::CreateDatabase();
+
+		// Start listening for events
 		ScriptCompiler::ListenForEvents();
-		GUIManager::ListenForEvents();
+		GUIManager::Initialize();
 		SceneManager::ListenForEvents();
 
+		// Build the user assembly
 		ScriptCompiler::BuildUserAssembly();
-		r = new VulkanRenderer();
 
+		ConstructVisuals();
+		SetupEditorGUI();
+		CreateRenderPasses();
+
+		// We're off an running
 		running = true;
 	}
 
@@ -34,17 +51,8 @@ namespace Odyssey
 		running = true;
 		stopwatch.Start();
 
-		// Create the scene
-		SceneManager::LoadScene("scene.yaml");
+		SceneManager::Awake();
 
-		Scene* scene = SceneManager::GetActiveScene();
-		GameObject go = scene->GetGameObject(0);
-
-		ConstructVisuals();
-
-		GUIManager::CreateInspectorWindow(go);
-
-		scene->Awake();
 		while (running)
 		{
 			float elapsed = stopwatch.Elapsed();
@@ -54,19 +62,18 @@ namespace Odyssey
 				stopwatch.Restart();
 				ScriptCompiler::Process();
 
+				GUIManager::Update();
 				SceneManager::Update();
 
-				if (!r->Update())
+				if (!renderer->Update())
 				{
 					running = false;
 				}
 
-				r->Render();
+				renderer->Render();
 			}
 		}
-		r->Destroy();
-		delete r;
-		r = nullptr;
+		renderer->Destroy();
 	}
 
 	void Application::Exit()
@@ -76,37 +83,19 @@ namespace Odyssey
 
 	void Application::ConstructVisuals()
 	{
-		Scene* scene = SceneManager::GetActiveScene();
-		GameObject go = scene->GetGameObject(0);
+	}
 
-		ResourceHandle<Material> material;
-		{
-			ResourceHandle<VulkanShader> vertexShader = ResourceManager::AllocateShader(ShaderType::Vertex, "vert.spv");
-			ResourceHandle<VulkanShader> fragmentShader = ResourceManager::AllocateShader(ShaderType::Fragment, "frag.spv");
-			material = ResourceManager::AllocateMaterial(vertexShader, fragmentShader);
-		}
-		ResourceHandle<Mesh> mesh;
-		{
-			std::vector<VulkanVertex> vertices;
-			vertices.resize(4);
-			vertices[0] = VulkanVertex(glm::vec3(-0.5f, -0.5f, 0), glm::vec3(1, 0, 0));
-			vertices[1] = VulkanVertex(glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0, 1, 0));
-			vertices[2] = VulkanVertex(glm::vec3(0.5f, 0.5f, 0.0f), glm::vec3(0, 0, 1));
-			vertices[3] = VulkanVertex(glm::vec3(-0.5f, 0.5f, 0.0f), glm::vec3(1, 1, 1));
+	void Application::SetupEditorGUI()
+	{
+		GUIManager::CreateInspectorWindow(nullptr);
+		GUIManager::CreateSceneHierarchyWindow();
+		GUIManager::CreateSceneViewWindow();
+		GUIManager::CreateContentBrowserWindow();
+	}
 
-			std::vector<uint32_t> indices{ 0, 3,2,2,1,0 };
-
-			mesh = ResourceManager::AllocateMesh(vertices, indices);
-		}
-
-		if (MeshRenderer* renderer = ComponentManager::GetComponent<MeshRenderer>(go))
-		{
-			renderer->SetMaterial(material);
-			renderer->SetMesh(mesh);
-		}
-		else
-		{
-			MeshRenderer* mr = ComponentManager::AddComponent<MeshRenderer>(go, mesh, material);
-		}
+	void Application::CreateRenderPasses()
+	{
+		renderer->AddRenderPass(GUIManager::GetSceneViewWindow(0).GetRenderPass());
+		renderer->AddRenderPass(GUIManager::GetRenderPass());
 	}
 }

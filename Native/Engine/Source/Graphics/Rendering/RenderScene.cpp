@@ -6,6 +6,7 @@
 #include "ComponentManager.h"
 #include "Mesh.h"
 #include "Material.h"
+#include "Shader.h"
 #include "ResourceManager.h"
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
@@ -16,24 +17,48 @@ namespace Odyssey
 {
 	RenderScene::RenderScene()
 	{
-		// Uniform buffer
-		uint32_t bufferSize = sizeof(uboData);
-		sceneBuffer = ResourceManager::AllocateBuffer(BufferType::Uniform, bufferSize);
-		sceneBuffer.Get()->AllocateMemory();
-		sceneBuffer.Get()->SetMemory(bufferSize, &uboData);
-
-		// Descriptor layout and buffer
+		// Descriptor layout for the combined uniform buffers
 		descriptorLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		sceneDescriptorBuffers.push_back(ResourceManager::AllocateDescriptorBuffer(descriptorLayout, 1));
+		descriptorBuffer = ResourceManager::AllocateDescriptorBuffer(descriptorLayout, Max_Uniform_Buffers);
 
-		// Assign the uniform buffer to the descriptor buffer
-		sceneDescriptorBuffers[0].Get()->SetUniformBuffer(sceneBuffer, 0);
+		// Scene uniform buffer
+		uint32_t sceneUniformSize = sizeof(sceneData);
+		sceneUniformBuffer = ResourceManager::AllocateBuffer(BufferType::Uniform, sceneUniformSize);
+		sceneUniformBuffer.Get()->AllocateMemory();
+		sceneUniformBuffer.Get()->SetMemory(sceneUniformSize, &sceneData);
+
+		// Put the scene uniform buffer into the descriptor buffer [0]
+		descriptorBuffer.Get()->SetUniformBuffer(sceneUniformBuffer, 0);
+
+		// Per-object uniform buffers
+		uint32_t perObjectUniformSize = sizeof(objectData);
+
+		for (uint32_t i = 1; i < Max_Uniform_Buffers; i++)
+		{
+			ResourceHandle<VulkanBuffer> uniformBuffer = ResourceManager::AllocateBuffer(BufferType::Uniform, perObjectUniformSize);
+			uniformBuffer.Get()->AllocateMemory();
+			uniformBuffer.Get()->SetMemory(perObjectUniformSize, &objectData);
+			perObjectUniformBuffers.push_back(uniformBuffer);
+
+			// Put the per-object uniform buffer into the descriptor buffer [i]
+			descriptorBuffer.Get()->SetUniformBuffer(uniformBuffer, i);
+		}
+	}
+
+	void RenderScene::Destroy()
+	{
+		ResourceManager::DestroyDescriptorLayout(descriptorLayout);
+		ResourceManager::DestroyDescriptorBuffer(descriptorBuffer);
+		ResourceManager::DestroyBuffer(sceneUniformBuffer);
 	}
 
 	void RenderScene::ConvertScene(Scene* scene)
 	{
 		ClearSceneData();
-		SetupCameraData(scene);
+		if (Camera* mainCamera = scene->GetMainCamera())
+		{
+			SetCameraData(mainCamera);
+		}
 		SetupDrawcalls(scene);
 	}
 
@@ -45,39 +70,30 @@ namespace Odyssey
 		}
 
 		setPasses.clear();
+		m_NextUniformBuffer = 0;
 	}
 
-	void RenderScene::SetupCameraData(Scene* scene)
+	void RenderScene::SetCameraData(Camera* camera)
 	{
-		if (Camera* mainCamera = scene->GetMainCamera())
-		{
-			static auto startTime = std::chrono::high_resolution_clock::now();
-			auto currentTime = std::chrono::high_resolution_clock::now();
-			float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+		sceneData.inverseView = camera->GetInverseView();
+		sceneData.proj = camera->GetProjection();
 
-			//uboData.inverseView = mainCamera->GetInverseView();
-			uboData.world = glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 1.0f));
-			uboData.inverseView = glm::lookAt(glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			//uboData.proj = mainCamera->GetProjection();
-			uboData.proj = glm::perspectiveLH(glm::radians(45.0f), 1000.0f / 1000.0f, 0.1f, 10.0f);
-			uboData.proj[1][1] = -uboData.proj[1][1];
-
-			uint32_t bufferSize = sizeof(uboData);
-			sceneBuffer.Get()->SetMemory(bufferSize, &uboData);
-		}
+		uint32_t sceneUniformSize = sizeof(sceneData);
+		sceneUniformBuffer.Get()->SetMemory(sceneUniformSize, &sceneData);
 	}
 
 	void RenderScene::SetupDrawcalls(Scene* scene)
 	{
 		for (auto& gameObject : scene->gameObjects)
 		{
-			if (MeshRenderer* renderer = ComponentManager::GetComponent<MeshRenderer>(gameObject))
+			if (MeshRenderer* renderer = ComponentManager::GetComponent<MeshRenderer>(gameObject->id))
 			{
-				if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject))
+				if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject->id))
 				{
 					SetPass* setPass = nullptr;
 					Drawcall drawcall;
 
+					// Create the set pass, if its not already created
 					if (!SetPassCreated(renderer->GetMaterial(), setPass))
 					{
 						setPasses.push_back(SetPass());
@@ -86,18 +102,24 @@ namespace Odyssey
 					}
 
 					Mesh* mesh = renderer->GetMesh().Get();
-					// This is temporary, move this to a separate per-object ubo
+
+					// Create the drawcall data
 					drawcall.VertexBuffer = mesh->GetVertexBuffer();
 					drawcall.IndexBuffer = mesh->GetIndexBuffer();
 					drawcall.IndexCount = mesh->GetIndexCount();
-
+					drawcall.UniformBufferIndex = m_NextUniformBuffer++;
 					setPass->drawcalls.push_back(drawcall);
+
+					// Update the per-object uniform buffer
+					uint32_t perObjectSize = sizeof(objectData);
+					objectData.world = transform->GetWorldMatrix();
+					perObjectUniformBuffers[drawcall.UniformBufferIndex].Get()->SetMemory(perObjectSize, &objectData);
 				}
 			}
 		}
 	}
 
-	bool RenderScene::SetPassCreated(ResourceHandle<Material> material, SetPass* outSetPass)
+	bool RenderScene::SetPassCreated(AssetHandle<Material> material, SetPass* outSetPass)
 	{
 		for (auto& setpass : setPasses)
 		{
@@ -114,20 +136,21 @@ namespace Odyssey
 		return false;
 	}
 
-	SetPass::SetPass(ResourceHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout)
+	SetPass::SetPass(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout)
 	{
 		SetMaterial(material, descriptorLayout);
 	}
 
-	void SetPass::SetMaterial(ResourceHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout)
+	void SetPass::SetMaterial(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout)
 	{
 		// Allocate a graphics pipeline
 		std::vector<ResourceHandle<VulkanDescriptorLayout>> layouts{};
 		layouts.push_back(descriptorLayout);
+		layouts.push_back(descriptorLayout);
 
 		VulkanPipelineInfo info;
-		info.vertexShader = material.Get()->GetVertexShader();
-		info.fragmentShader = material.Get()->GetFragmentShader();
+		info.vertexShader = material.Get()->GetVertexShader().Get()->GetShaderModule();
+		info.fragmentShader = material.Get()->GetFragmentShader().Get()->GetShaderModule();
 		info.descriptorLayouts = layouts;
 		pipeline = ResourceManager::AllocateGraphicsPipeline(info);
 

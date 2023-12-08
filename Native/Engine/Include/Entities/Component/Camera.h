@@ -23,6 +23,7 @@ namespace Odyssey
 		void SetFieldOfView(float fov);
 		void SetNearClip(float nearClip);
 		void SetFarClip(float farClip);
+		void SetViewportSize(float width, float height);
 
 	private:
 		void CalculateProjection();
@@ -35,7 +36,7 @@ namespace Odyssey
 		bool m_MainCamera = true;
 
 	private: // Non-serialized
-		Transform* m_Transform;
+		Transform* m_Transform = nullptr;
 		glm::mat4 m_Projection;
 		glm::mat4 m_InverseView;
 		float m_Width;

@@ -5,7 +5,7 @@
 #include "VulkanSwapchain.h"
 #include "VulkanFrame.h"
 #include "VulkanCommandPool.h"
-#include "VulkanShader.h"
+#include "VulkanShaderModule.h"
 #include "ResourceManager.h"
 #include "Drawcall.h"
 #include "RenderScene.h"
@@ -33,9 +33,12 @@ namespace Odyssey
 		bool Render();
 		bool Present();
 
+	public:
+		void AddRenderPass(std::shared_ptr<RenderPass> renderPass) { m_RenderPasses.push_back(renderPass); }
+	public:
+		std::shared_ptr<VulkanImgui> GetImGui() { return m_Imgui; }
+		static uint32_t GetFrameIndex() { return s_FrameIndex; }
 	private:
-		void BuildRenderGraph();
-		void CreateRenderPasses();
 		bool BeginFrame(VulkanFrame*& currentFrame);
 		void RenderFrame();
 		void RebuildSwapchain();
@@ -43,37 +46,31 @@ namespace Odyssey
 	private:
 		VulkanImgui::InitInfo CreateImguiInitInfo();
 		void SetupFrameData();
-		void SetupDrawData();
 
 	private: // Vulkan objects
-		std::shared_ptr<VulkanContext> context;
-		std::shared_ptr<VulkanWindow> window;
+		std::shared_ptr<VulkanContext> m_Context;
+		std::shared_ptr<VulkanWindow> m_Window;
 
 	private: // Commands
-		std::vector<ResourceHandle<VulkanCommandPool>> commandPools;
-		std::vector<ResourceHandle<VulkanCommandBuffer>> commandBuffers;
-
+		std::vector<ResourceHandle<VulkanCommandPool>> m_CommandPools;
+		std::vector<ResourceHandle<VulkanCommandBuffer>> m_CommandBuffers;
 
 	private: // Draws
-		std::vector<std::shared_ptr<RenderScene>> renderScenes;
-		std::vector<std::unique_ptr<RenderPass>> renderPasses;
-		ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline;
+		std::vector<std::shared_ptr<RenderScene>> m_RenderScenes;
+		std::vector<std::shared_ptr<RenderPass>> m_RenderPasses;
 
-		std::shared_ptr<PerFrameRenderingData> renderingData;
-
-	private: // Render texture stuff
-		ResourceHandle<VulkanTexture> renderTexture;
-		VkDescriptorSet rtSet;
+		std::shared_ptr<PerFrameRenderingData> m_RenderingData;
 
 	private: // IMGUI
-		std::shared_ptr<VulkanImgui> imgui;
+		std::shared_ptr<VulkanImgui> m_Imgui;
 
 	private: // Swapchain
-		std::unique_ptr<VulkanSwapchain> swapchain;
-		bool rebuildSwapchain = false;
+		std::unique_ptr<VulkanSwapchain> m_Swapchain;
+		bool m_RebuildSwapchain = false;
 
 	private: // Frame data
-		std::vector<VulkanFrame> frames;
-		uint32_t frameIndex = 0;
+		std::vector<VulkanFrame> m_Frames;
+		inline static uint32_t s_FrameIndex = 0;
+		inline static uint32_t s_PreviousFrame = 0;
 	};
 }

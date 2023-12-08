@@ -9,7 +9,7 @@ VK_FWD_DECLARE(VkPipeline)
 namespace Odyssey
 {
 	class VulkanContext;
-	class VulkanShader;
+	class VulkanShaderModule;
 	class VulkanDescriptorSet;
 
 	class VulkanGraphicsPipeline : public Resource

@@ -1,6 +1,9 @@
 #pragma once
 #include <GameObject.h>
 #include "InspectorWindow.h"
+#include "SceneHierarchyWindow.h"
+#include "SceneViewWindow.h"
+#include "ContentBrowserWindow.h"
 
 namespace Odyssey
 {
@@ -10,18 +13,39 @@ namespace Odyssey
 namespace Odyssey
 {
 	struct OnSceneLoaded;
+	class Scene;
+	class ImguiPass;
 
 	class GUIManager
 	{
 	public:
-		static void ListenForEvents();
-		static void CreateInspectorWindow(GameObject gameObject);
+		static void Initialize();
+		static void CreateInspectorWindow(GameObject* gameObject);
+		static void CreateSceneHierarchyWindow();
+		static void CreateSceneViewWindow();
+		static void CreateContentBrowserWindow();
 
 	public:
+		static void Update();
 		static void OnRender(OnGUIRenderEvent* guiRenderEvent);
 		static void SceneLoaded(OnSceneLoaded* sceneLoadedEvent);
+		static void OnGameObjectSelected(uint32_t id);
+
+	public:
+		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
+		static SceneViewWindow& GetSceneViewWindow(uint32_t index) { return sceneViewWindows[index]; }
 
 	private:
-		static std::vector<InspectorWindow> inspectorWindows;
+		static void OnFilesChanged(const NotificationSet& notificationSet);
+
+	private:
+		inline static std::vector<InspectorWindow> inspectorWindows;
+		inline static std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
+		inline static std::vector<SceneViewWindow> sceneViewWindows;
+		inline static std::vector<ContentBrowserWindow> contentBrowserWindows;
+		inline static uint32_t selectedObject = std::numeric_limits<uint32_t>::max();
+		inline static std::shared_ptr<ImguiPass> m_GUIPass;
+
+		inline static bool s_ShowDemoWindow = true;
 	};
 }

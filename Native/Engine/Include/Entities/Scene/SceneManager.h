@@ -15,8 +15,10 @@ namespace Odyssey
 		static void SaveActiveScene(const std::string& filename);
 
 		static Scene* GetActiveScene();
+		static std::shared_ptr<Scene> GetActiveSceneRef();
 
 	public:
+		static void Awake();
 		static void Update();
 
 	private:
@@ -26,7 +28,7 @@ namespace Odyssey
 	private:
 		inline static std::vector<std::shared_ptr<Scene>> scenes;
 		inline static int activeScene = -1;
-		inline static const std::string tempSaveFilename = "tmps.yaml";
+		inline static const std::string tempSaveFilename = "Assets/Scenes/tmps.yaml";
 
 	};
 }

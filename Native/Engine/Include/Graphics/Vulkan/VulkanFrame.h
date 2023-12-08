@@ -23,6 +23,9 @@ namespace Odyssey
 		void Destroy();
 		
 	public:
+		void SetRenderTarget(std::shared_ptr<VulkanImage> renderTarget, uint32_t imageIndex);
+
+	public:
 		const VkSemaphore* GetImageAcquiredSemaphore() { return &imageAcquiredSemaphore; }
 		const VkSemaphore* GetRenderCompleteSemaphore() { return &renderCompleteSemaphore; }
 		VkFence GetFence() { return fence; }
@@ -37,8 +40,8 @@ namespace Odyssey
 	public:
 		std::shared_ptr<VulkanContext> m_Context;
 		std::shared_ptr<VulkanImage> m_RenderTarget;
+		uint32_t m_ImageIndex;
 		VkFence fence = VK_NULL_HANDLE;
-
 	private:
 		VkSemaphore imageAcquiredSemaphore;
 		VkSemaphore renderCompleteSemaphore;

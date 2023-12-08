@@ -5,10 +5,11 @@
 
 namespace Odyssey
 {
+	class Camera;
 	class VulkanContext;
 	class VulkanCommandBuffer;
 	class VulkanTexture;
-	class VulkanShader;
+	class VulkanShaderModule;
 	class VulkanGraphicsPipeline;
 	class VulkanImgui;
 	class VulkanImage;
@@ -29,7 +30,7 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) = 0;
 
 	public:
-		void SetRenderTarget(ResourceHandle<VulkanTexture> renderTarget);
+		void SetRenderTexture(ResourceHandle<VulkanTexture> renderTarget);
 		void SetRenderTarget(VulkanImage* renderTarget);
 		void SetLayouts(VkImageLayout oldLayout, VkImageLayout newLayout) { m_OldLayout = oldLayout; m_NewLayout = newLayout; }
 		void SetClearValue(glm::vec4 clearValue) { m_ClearValue = clearValue; }
@@ -45,15 +46,18 @@ namespace Odyssey
 	class OpaquePass : public RenderPass
 	{
 	public:
-		OpaquePass(std::shared_ptr<VulkanContext> context);
+		OpaquePass();
 
 	public:
 		virtual void BeginPass(RenderPassParams& params) override;
 		virtual void Execute(RenderPassParams& params) override;
 		virtual void EndPass(RenderPassParams& params) override;
 
+	public:
+		void SetCamera(Camera* camera) { m_Camera = camera; }
+
 	private:
-		std::shared_ptr<VulkanContext> m_Context;
+		Camera* m_Camera = nullptr;
 	};
 
 	class ImguiPass : public RenderPass
@@ -70,10 +74,9 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) override;
 
 	public:
-		void SetImguiState(std::shared_ptr<VulkanImgui> imgui, VkDescriptorSet renderTexture);
+		void SetImguiState(std::shared_ptr<VulkanImgui> imgui);
 
 	private:
 		std::shared_ptr<VulkanImgui> m_Imgui;
-		VkDescriptorSet m_DescriptorSet;
 	};
 }

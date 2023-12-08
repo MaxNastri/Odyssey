@@ -1,7 +1,7 @@
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
-#include "VulkanShader.h"
+#include "VulkanShaderModule.h"
 #include "VulkanVertex.h"
 #include "VulkanDescriptorLayout.h"
 #include "ResourceHandle.h"
@@ -15,8 +15,8 @@ namespace Odyssey
 		CreateLayout(info);
 
 		// Shaders
-		VulkanShader* vertexShader = info.vertexShader.Get();
-		VulkanShader* fragmentShader = info.fragmentShader.Get();
+		VulkanShaderModule* vertexShader = info.vertexShader.Get();
+		VulkanShaderModule* fragmentShader = info.fragmentShader.Get();
 
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;

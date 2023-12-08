@@ -14,8 +14,8 @@ namespace Odyssey
 	Window::Window()
 	{
 		title = "Odyssey Engine";
-		width = 1920;
-		height = 1080;
+		m_Width = 1920;
+		m_Height = 1080;
 
 		// Initialize the glfw library
 		glfwInit();
@@ -24,16 +24,22 @@ namespace Odyssey
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 		// Create the glfw window and store the glfw + windows handles
-		glfwHandle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+		glfwHandle = glfwCreateWindow(m_Width, m_Height, title.c_str(), nullptr, nullptr);
 
 		glfwSetKeyCallback(glfwHandle, Window::KeyCallback);
 		glfwSetCursorPosCallback(glfwHandle, Window::MouseMoveCallback);
 		glfwSetCursorEnterCallback(glfwHandle, Window::MouseEnteredCallback);
-		glfwSetFramebufferSizeCallback(glfwHandle, Window::WindowResize);
+		glfwSetMouseButtonCallback(glfwHandle, Window::MouseButtonClicked);
+		glfwSetWindowPosCallback(glfwHandle, Window::WindowMoved);
+
+		int xpos, ypos;
+		glfwGetWindowPos(glfwHandle, &xpos, &ypos);
+		s_WindowPos = glm::vec2(xpos, ypos);
 	}
 
 	bool Window::Update()
 	{
+		Input::Update();
 		glfwPollEvents();
 		return !ShouldClose();
 	}
@@ -54,6 +60,12 @@ namespace Odyssey
 	void Window::GetFrameBufferSize(int& width, int& height)
 	{
 		glfwGetFramebufferSize(glfwHandle, &width, &height);
+	}
+
+	void Window::SetSize(uint32_t width, uint32_t height)
+	{
+		m_Width = width;
+		m_Height = height;
 	}
 
 	void Window::ErrorCallback(int error, const char* description)
@@ -92,8 +104,16 @@ namespace Odyssey
 		Input::RegisterMousePosition(xPos, yPos, entered);
 	}
 
-	void Window::WindowResize(GLFWwindow* window, int width, int height)
+	void Window::MouseButtonClicked(GLFWwindow* window, int button, int action, int mods)
 	{
+		MouseButton mouseButton = button == GLFW_MOUSE_BUTTON_LEFT ? MouseButton::Left : MouseButton::Right;
+		bool pressed = action == GLFW_PRESS;
 
+		Input::RegisterMouseClick(mouseButton, pressed);
+	}
+
+	void Window::WindowMoved(GLFWwindow* window, int xpos, int ypos)
+	{
+		s_WindowPos = glm::vec2(xpos, ypos);
 	}
 }

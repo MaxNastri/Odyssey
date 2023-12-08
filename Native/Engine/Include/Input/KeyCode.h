@@ -2,6 +2,13 @@
 
 namespace Odyssey
 {
+    enum MouseButton
+    {
+        Left = 1,
+        Right = 2,
+        Middle = 3,
+        Size = 4,
+    };
     enum KeyCode
     {
         Space = 32,

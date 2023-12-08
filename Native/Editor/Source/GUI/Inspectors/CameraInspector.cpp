@@ -5,15 +5,15 @@
 
 namespace Odyssey
 {
-	CameraInspector::CameraInspector(GameObject go)
+	CameraInspector::CameraInspector(GameObject* go)
 	{
 		m_GameObject = go;
 
-		if (Camera* camera = ComponentManager::GetComponent<Camera>(m_GameObject))
+		if (Camera* camera = ComponentManager::GetComponent<Camera>(m_GameObject->id))
 		{
 			std::function<void(float)> fovModified = [go](float fov)
 				{
-					if (Camera* camera = ComponentManager::GetComponent<Camera>(go))
+					if (Camera* camera = ComponentManager::GetComponent<Camera>(go->id))
 					{
 						camera->SetFieldOfView(fov);
 					}
@@ -21,7 +21,7 @@ namespace Odyssey
 
 			std::function<void(float)> nearClipModified = [go](float nearClip)
 				{
-					if (Camera* camera = ComponentManager::GetComponent<Camera>(go))
+					if (Camera* camera = ComponentManager::GetComponent<Camera>(go->id))
 					{
 						camera->SetNearClip(nearClip);
 					}
@@ -29,7 +29,7 @@ namespace Odyssey
 
 			std::function<void(float)> farClipModified = [go](float farClip)
 				{
-					if (Camera* camera = ComponentManager::GetComponent<Camera>(go))
+					if (Camera* camera = ComponentManager::GetComponent<Camera>(go->id))
 					{
 						camera->SetFarClip(farClip);
 					}
@@ -40,6 +40,7 @@ namespace Odyssey
 			m_FarClipDrawer = FloatDrawer("Far Clip", camera->GetFarClip(), farClipModified);
 		}
 	}
+
 	void CameraInspector::Draw()
 	{
 		if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))

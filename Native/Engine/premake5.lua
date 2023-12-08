@@ -79,6 +79,7 @@ project "Odyssey.Native.Engine"
         "YAML_CPP_STATIC_DEFINE",
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
         "VK_NO_PROTOTYPES",
+        "IMGUI_DEFINE_MATH_OPERATORS",
     }
 
     filter { "system:windows" }

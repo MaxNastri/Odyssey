@@ -3,10 +3,10 @@
 
 namespace Odyssey
 {
-	void Drawcall::SetMesh(ResourceHandle<Mesh> mesh)
+	Drawcall::Drawcall(ResourceHandle<VulkanVertexBuffer> vertexBuffer, ResourceHandle<VulkanIndexBuffer> indexBuffer, uint32_t indexCount)
 	{
-		VertexBuffer = mesh.Get()->GetVertexBuffer();
-		IndexBuffer = mesh.Get()->GetIndexBuffer();
-		IndexCount = mesh.Get()->GetIndexCount();
+		VertexBuffer = vertexBuffer;
+		IndexBuffer = indexBuffer;
+		indexCount = indexCount;
 	}
 }

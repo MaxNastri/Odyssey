@@ -1,4 +1,4 @@
-#include "VulkanShader.h"
+#include "VulkanShaderModule.h"
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
 #include <Logger.h>
@@ -6,7 +6,7 @@
 
 namespace Odyssey
 {
-	VulkanShader::VulkanShader(std::shared_ptr<VulkanContext> context, ShaderType shaderType, const std::string& filename)
+	VulkanShaderModule::VulkanShaderModule(std::shared_ptr<VulkanContext> context, ShaderType shaderType, const std::string& filename)
 	{
 		m_Context = context;
 		m_ShaderType = shaderType;
@@ -16,12 +16,12 @@ namespace Odyssey
 		CreateShaderModule(shaderCode);
 	}
 
-	void VulkanShader::Destroy()
+	void VulkanShaderModule::Destroy()
 	{
 		vkDestroyShaderModule(m_Context->GetDevice()->GetLogicalDevice(), m_ShaderModule, nullptr);
 	}
 
-	std::vector<char> VulkanShader::ReadShaderCode(const std::string& filename)
+	std::vector<char> VulkanShaderModule::ReadShaderCode(const std::string& filename)
 	{
 		std::vector<char> buffer;
 
@@ -45,7 +45,7 @@ namespace Odyssey
 		return buffer;
 	}
 
-	void VulkanShader::CreateShaderModule(std::vector<char> shaderCode)
+	void VulkanShaderModule::CreateShaderModule(std::vector<char> shaderCode)
 	{
 		VkShaderModuleCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

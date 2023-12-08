@@ -29,6 +29,6 @@ namespace Odyssey
 	private:
 		friend class ResourceManager;
 		uint32_t m_ID = std::numeric_limits<uint32_t>::max();
-		T* m_Ptr;
+		T* m_Ptr = nullptr;
 	};
 }

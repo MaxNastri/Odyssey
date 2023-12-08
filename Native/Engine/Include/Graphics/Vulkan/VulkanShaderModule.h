@@ -9,10 +9,10 @@ namespace Odyssey
 {
 	class VulkanContext;
 
-	class VulkanShader : public Resource
+	class VulkanShaderModule : public Resource
 	{
 	public:
-		VulkanShader(std::shared_ptr<VulkanContext> context, ShaderType shaderType, const std::string& filename);
+		VulkanShaderModule(std::shared_ptr<VulkanContext> context, ShaderType shaderType, const std::string& filename);
 		void Destroy();
 
 	public:

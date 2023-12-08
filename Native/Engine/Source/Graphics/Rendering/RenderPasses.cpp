@@ -7,10 +7,11 @@
 #include "Drawcall.h"
 #include "RenderScene.h"
 #include "VulkanImgui.h"
+#include "VulkanDescriptorBuffer.h"
 
 namespace Odyssey
 {
-	void RenderPass::SetRenderTarget(ResourceHandle<VulkanTexture> renderTarget)
+	void RenderPass::SetRenderTexture(ResourceHandle<VulkanTexture> renderTarget)
 	{
 		m_RenderTexture = renderTarget;
 		m_RenderTarget = renderTarget.Get()->GetImage();
@@ -21,9 +22,8 @@ namespace Odyssey
 		m_RenderTarget = renderTarget;
 	}
 
-	OpaquePass::OpaquePass(std::shared_ptr<VulkanContext> context)
+	OpaquePass::OpaquePass()
 	{
-		m_Context = context;
 		m_ClearValue = glm::vec4(0, 0, 0, 1);
 	}
 
@@ -109,8 +109,11 @@ namespace Odyssey
 		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
 
+		if (m_Camera)
+			renderScene->SetCameraData(m_Camera);
+
 		// Bind the scene descriptor buffer
-		commandBuffer->BindDescriptorBuffers(renderScene->sceneDescriptorBuffers);
+		commandBuffer->BindDescriptorBuffer(renderScene->descriptorBuffer);
 
 		for (auto& setPass : params.renderingData->renderScene->setPasses)
 		{
@@ -119,10 +122,19 @@ namespace Odyssey
 			// Set the scene descriptor buffer offset
 			uint32_t buffer_index_ubo = 0;
 			VkDeviceSize buffer_offset = 0;
+
 			commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 0, &buffer_index_ubo, &buffer_offset);
+
+			uint32_t descriptorIndex = 1;
 
 			for (auto& drawcall : setPass.drawcalls)
 			{
+				// Bind the per-objectdescriptor buffer 
+				buffer_offset = descriptorIndex * renderScene->descriptorBuffer.Get()->GetSize();
+				commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 1, &buffer_index_ubo, &buffer_offset);
+				descriptorIndex++;
+
+				// Set the per-object descriptor buffer offset
 				commandBuffer->BindVertexBuffer(drawcall.VertexBuffer);
 				commandBuffer->BindIndexBuffer(drawcall.IndexBuffer);
 				commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);
@@ -215,7 +227,7 @@ namespace Odyssey
 	void ImguiPass::Execute(RenderPassParams& params)
 	{
 		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
-		m_Imgui->Render(commandBuffer->GetCommandBuffer(), m_DescriptorSet);
+		m_Imgui->Render(commandBuffer->GetCommandBuffer());
 	}
 
 	void ImguiPass::EndPass(RenderPassParams& params)
@@ -229,9 +241,8 @@ namespace Odyssey
 		commandBuffer->TransitionLayouts(m_RenderTarget, m_OldLayout, m_NewLayout);
 	}
 
-	void ImguiPass::SetImguiState(std::shared_ptr<VulkanImgui> imgui, VkDescriptorSet renderTexture)
+	void ImguiPass::SetImguiState(std::shared_ptr<VulkanImgui> imgui)
 	{
 		m_Imgui = imgui;
-		m_DescriptorSet = renderTexture;
 	}
 }

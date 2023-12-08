@@ -1,14 +1,15 @@
 #pragma once
+#include "Asset.h"
 #include "Globals.h"
 #include <ryml.hpp>
 
 namespace Odyssey
 {
-	class GameObject
+	class GameObject : public Asset
 	{
 	public:
 		GameObject();
-		GameObject(unsigned int ID);
+		GameObject(uint32_t ID);
 		void Serialize(ryml::NodeRef& node);
 		void Deserialize(ryml::NodeRef& node);
 
@@ -17,9 +18,8 @@ namespace Odyssey
 
 	public:
 		bool active;
-		unsigned int id;
+		uint32_t id;
 		std::string name;
-		std::string uuid;
 		CLASS_DECLARATION(GameObject);
 	};
 }

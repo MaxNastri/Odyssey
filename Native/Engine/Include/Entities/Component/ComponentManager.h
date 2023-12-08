@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "Camera.h"
+#include "MeshRenderer.h"
 #include "UserScript.h"
 #include <typeindex>
 #include <string>
@@ -13,60 +14,56 @@ namespace Odyssey
 	{
 	public: // Public templates
 		template<typename... Args>
-		static Component* AddComponentByName(const GameObject& gameObject, const std::string& fqName, Args&&... params)
+		static Component* AddComponentByName(const uint32_t id, const std::string& fqName, Args&&... params)
 		{
 			if (fqName == Transform::Type)
 			{
-				return AddComponent<Transform>(gameObject, params...);
+				return AddComponent<Transform>(id, params...);
 			}
 			else if (fqName == Camera::Type)
 			{
-				return AddComponent<Camera>(gameObject, params...);
+				return AddComponent<Camera>(id, params...);
+			}
+			else if (fqName == MeshRenderer::Type)
+			{
+				return AddComponent<MeshRenderer>(id, params...);
 			}
 			else if (fqName == UserScript::Type)
 			{
-				return AddUserScript(gameObject, fqName, params...);
+				return AddUserScript(id, fqName, params...);
 			}
 			return nullptr;
 		}
 
 		template<typename T, typename... Args>
-		static T* AddComponent(const GameObject& gameObject, Args&&... params)
+		static T* AddComponent(const uint32_t id, Args&&... params)
 		{
 			std::type_index typeID = typeid(T);
 			ComponentArray<T>* componentArray = GetComponentArray<T>();
-			unsigned int index = componentArray->InsertData(gameObject.id, params...);
+			unsigned int index = componentArray->InsertData(id, params...);
 
 			if (index != -1)
 			{
 				std::pair indexPair = std::make_pair(typeID, index);
-				gameObjectToComponentArrayIndex[gameObject.id].push_back(indexPair);
+				gameObjectToComponentArrayIndex[id].push_back(indexPair);
 			}
 
-			T* component = componentArray->GetComponentData(gameObject.id);
-
-			if (component)
-			{
-				component->SetGameObject(gameObject);
-			}
-
-			return component;
+			return componentArray->GetComponentData(id);
 		}
 
 		template<typename... Args>
-		static UserScript* AddUserScript(const GameObject& gameObject, const std::string& managedName, Args&&... params)
+		static UserScript* AddUserScript(const uint32_t id, const std::string& managedName, Args&&... params)
 		{
 			ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(managedName);
-			unsigned int index = userScriptArray->InsertData(gameObject.id, params...);
+			unsigned int index = userScriptArray->InsertData(id, params...);
 			if (index != -1)
 			{
-				gameObjectToUserScriptIndex[gameObject.id].push_back(std::make_pair(managedName, index));
+				gameObjectToUserScriptIndex[id].push_back(std::make_pair(managedName, index));
 			}
 
-			UserScript* userScript = userScriptArray->GetComponentData(gameObject.id);
+			UserScript* userScript = userScriptArray->GetComponentData(id);
 			if (userScript)
 			{
-				userScript->SetGameObject(gameObject);
 				userScript->SetManagedType(managedName);
 			}
 
@@ -74,26 +71,26 @@ namespace Odyssey
 		}
 
 		template<typename T>
-		static void RemoveComponent(const GameObject& gameObject)
+		static void RemoveComponent(const uint32_t id)
 		{
 			if (ComponentArray<T>* componentArray = GetComponentArray<T>())
 			{
-				componentArray->RemoveGameObject(gameObject.id);
+				componentArray->RemoveGameObject(id);
 			}
 
 			std::type_index typeID = typeid(T);
 
-			for (int i = 0; i < gameObjectToComponentArrayIndex[gameObject.id].size(); ++i)
+			for (int i = 0; i < gameObjectToComponentArrayIndex[id].size(); ++i)
 			{
-				auto& pair = gameObjectToComponentArrayIndex[gameObject.id][i];
+				auto& pair = gameObjectToComponentArrayIndex[id][i];
 
 				if (pair.first == typeID)
 				{
-					gameObjectToComponentArrayIndex[gameObject.id].erase(gameObjectToComponentArrayIndex[gameObject.id].begin() + i);
+					gameObjectToComponentArrayIndex[id].erase(gameObjectToComponentArrayIndex[id].begin() + i);
 
-					if (gameObjectToComponentArrayIndex[gameObject.id].size() == 0)
+					if (gameObjectToComponentArrayIndex[id].size() == 0)
 					{
-						gameObjectToComponentArrayIndex.erase(gameObject.id);
+						gameObjectToComponentArrayIndex.erase(id);
 					}
 
 					break;
@@ -102,17 +99,17 @@ namespace Odyssey
 		}
 
 		template<typename T>
-		static T* GetComponent(const GameObject& gameObject)
+		static T* GetComponent(const uint32_t id)
 		{
 			ComponentArray<T>* componentArray = GetComponentArray<T>();
-			return componentArray->GetComponentData(gameObject.id);
+			return componentArray->GetComponentData(id);
 		}
 
 		template<typename T>
-		static bool HasComponent(const GameObject& gameObject)
+		static bool HasComponent(const uint32_t id)
 		{
 			ComponentArray<T>* componentArray = GetComponentArray<T>();
-			return componentArray->HasComponent(gameObject.id);
+			return componentArray->HasComponent(id);
 		}
 
 	private: // Private templates
@@ -128,14 +125,14 @@ namespace Odyssey
 		}
 
 	public:
-		static void RemoveUserScript(const GameObject& gameObject, const std::string& managedName);
-		static UserScript* GetUserScript(const GameObject& gameObject, const std::string& managedName);
-		static std::vector<std::pair<std::string, UserScript*>> GetAllUserScripts(const GameObject& gameObject);
+		static void RemoveUserScript(const uint32_t id, const std::string& managedName);
+		static UserScript* GetUserScript(const uint32_t id, const std::string& managedName);
+		static std::vector<std::pair<std::string, UserScript*>> GetAllUserScripts(const uint32_t id);
 
-		static bool HasUserScript(const GameObject& gameObject, const std::string& managedName);
+		static bool HasUserScript(const uint32_t id, const std::string& managedName);
 
-		static void ExecuteOnGameObjectComponents(const GameObject& gameObject, std::function<void(Component*)> func);
-		static void RemoveGameObject(const GameObject& gameObject);
+		static void ExecuteOnGameObjectComponents(const uint32_t id, std::function<void(Component*)> func);
+		static void RemoveGameObject(const uint32_t id);
 
 	private:
 		static ComponentArray<UserScript>* GetUserScriptArray(const std::string& managedName);

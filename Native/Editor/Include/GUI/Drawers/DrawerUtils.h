@@ -13,11 +13,11 @@
 namespace Odyssey
 {
 	template <typename FieldType>
-	void AddIntDrawer(GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, FieldType initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	void AddIntDrawer(GameObject* gameObject, const std::string& userScriptClassName, const std::string& fieldName, FieldType initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
 	{
 		std::function<void(FieldType)> callback = [gameObject, userScriptClassName, fieldName](FieldType fieldValue)
 			{
-				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject, userScriptClassName))
+				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptClassName))
 				{
 					userScript->GetManagedObject().SetFieldValue<FieldType>(fieldName, fieldValue);
 				}
@@ -27,11 +27,11 @@ namespace Odyssey
 		drawers.push_back(std::move(drawer));
 	}
 
-	void AddBoolDrawer(GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, bool initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	void AddBoolDrawer(GameObject* gameObject, const std::string& userScriptClassName, const std::string& fieldName, bool initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
 	{
 		std::function<void(bool)> callback = [gameObject, userScriptClassName, fieldName](bool fieldValue)
 			{
-				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject, userScriptClassName))
+				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptClassName))
 				{
 					userScript->GetManagedObject().SetFieldValue<uint32_t>(fieldName, fieldValue);
 				}
@@ -41,11 +41,11 @@ namespace Odyssey
 		drawers.push_back(std::move(drawer));
 	}
 
-	void AddFloatDrawer(GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, float initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	void AddFloatDrawer(GameObject* gameObject, const std::string& userScriptClassName, const std::string& fieldName, float initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
 	{
 		std::function<void(float)> callback = [gameObject, userScriptClassName, fieldName](float fieldValue)
 			{
-				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject, userScriptClassName))
+				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptClassName))
 				{
 					userScript->GetManagedObject().SetFieldValue<float>(fieldName, fieldValue);
 				}
@@ -55,11 +55,11 @@ namespace Odyssey
 		drawers.push_back(std::move(drawer));
 	}
 
-	void AddDoubleDrawer(GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, double initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	void AddDoubleDrawer(GameObject* gameObject, const std::string& userScriptClassName, const std::string& fieldName, double initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
 	{
 		std::function<void(double)> callback = [gameObject, userScriptClassName, fieldName](double fieldValue)
 			{
-				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject, userScriptClassName))
+				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptClassName))
 				{
 					userScript->GetManagedObject().SetFieldValue<double>(fieldName, fieldValue);
 				}
@@ -69,11 +69,11 @@ namespace Odyssey
 		drawers.push_back(std::move(drawer));
 	}
 
-	void AddStringDrawer(GameObject gameObject, const std::string& userScriptClassName, const std::string& fieldName, std::string initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	void AddStringDrawer(GameObject* gameObject, const std::string& userScriptClassName, const std::string& fieldName, std::string initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
 	{
 		std::function<void(std::string)> callback = [gameObject, userScriptClassName, fieldName](std::string fieldValue)
 			{
-				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject, userScriptClassName))
+				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptClassName))
 				{
 					Coral::ScopedString field = Coral::String::New(fieldValue);
 					userScript->GetManagedObject().SetFieldValue<Coral::String>(fieldName, field);

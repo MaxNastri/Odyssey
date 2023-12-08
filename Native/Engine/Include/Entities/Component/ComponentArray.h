@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <unordered_map>
+#include <queue>
 #include "Component.h"
 #include <Logger.h>
 #include <string>
@@ -17,8 +18,8 @@ namespace Odyssey
 
 	class IComponentArray
 	{
-		virtual Component* GetComponent(unsigned int gameObject) = 0;
-		virtual void RemoveGameObject(unsigned int gameObject) = 0;
+		virtual Component* GetComponent(uint32_t gameObject) = 0;
+		virtual void RemoveGameObject(uint32_t gameObject) = 0;
 
 	protected:
 		friend class ComponentManager;
@@ -29,13 +30,23 @@ namespace Odyssey
 	class ComponentArray : public IComponentArray
 	{
 	public:
+		ComponentArray()
+		{
+			for (uint32_t i = 0; i < MAX_GAME_OBJECTS; i++)
+			{
+				availableIndices.push(i);
+			}
+		}
+	public:
 		template<typename... Args>
-		unsigned int InsertData(unsigned int gameObject, Args&&... params)
+		uint32_t InsertData(uint32_t gameObject, Args&&... params)
 		{
 			if (gameObjectToIndexMap.find(gameObject) == gameObjectToIndexMap.end())
 			{
 				// Assign the index to the lookup and create the component
-				unsigned int newIndex = size;
+				uint32_t newIndex = availableIndices.front();
+				availableIndices.pop();
+
 				gameObjectToIndexMap[gameObject] = newIndex;
 				componentData[newIndex] = std::make_unique<T>(params...);
 				++size;
@@ -48,39 +59,38 @@ namespace Odyssey
 			}
 		}
 
-		T* GetComponentData(unsigned int gameObject)
+		T* GetComponentData(uint32_t gameObject)
 		{
 			if (gameObjectToIndexMap.find(gameObject) != gameObjectToIndexMap.end())
 			{
-				unsigned int index = gameObjectToIndexMap[gameObject];
+				uint32_t index = gameObjectToIndexMap[gameObject];
 				return static_cast<T*>(componentData[index].get());
 			}
 
 			return nullptr;
 		}
 
-		virtual Component* GetComponent(unsigned int gameObject) override
+		virtual Component* GetComponent(uint32_t gameObject) override
 		{
 			if (gameObjectToIndexMap.find(gameObject) != gameObjectToIndexMap.end())
 			{
-				unsigned int index = gameObjectToIndexMap[gameObject];
+				uint32_t index = gameObjectToIndexMap[gameObject];
 				return componentData[index].get();
 			}
 
 			return nullptr;
 		}
 
-		bool HasComponent(unsigned int gameObject)
+		bool HasComponent(uint32_t gameObject)
 		{
 			return gameObjectToIndexMap.find(gameObject) != gameObjectToIndexMap.end();
 		}
 
 		virtual void RemoveGameObject(unsigned int gameObject) override
 		{
-			if (size == 0)
+			if (availableIndices.size() == 0)
 			{
-				gameObjectToIndexMap.clear();
-				size = 0;
+				// TODO: Log error
 				return;
 			}
 
@@ -92,25 +102,22 @@ namespace Odyssey
 			}
 
 			// Get the index of the removed game object and our last element
-			unsigned int removalIndex = gameObjectToIndexMap[gameObject];
-			unsigned int lastIndex = size - 1;
+			uint32_t removalIndex = gameObjectToIndexMap[gameObject];
 			
 			// Call on destroy for the removed component
 			componentData[removalIndex]->OnDestroy();
+			componentData[removalIndex].reset();
 			
-			// Replace the removed component with the last element and reset the last index ptr
-			componentData[removalIndex] = std::move(componentData[lastIndex]);
-			componentData[lastIndex].reset();
+			availableIndices.push(removalIndex);
 
 			// Remove the gameObject from the index lookup
 			gameObjectToIndexMap.erase(gameObject);
-
-			// The last index is now the next viable slot
-			size = lastIndex;
+			size--;
 		}
 
 	private:
-		std::unordered_map<unsigned int, unsigned int> gameObjectToIndexMap;
-		unsigned int size;
+		std::unordered_map<uint32_t, uint32_t> gameObjectToIndexMap;
+		size_t size;
+		std::queue<uint32_t> availableIndices;
 	};
 }

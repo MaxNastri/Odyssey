@@ -1,5 +1,6 @@
 #pragma once
 #include "VulkanGlobals.h"
+#include "ResourceHandle.h"
 
 // FWD Declarations
 struct GLFWwindow;
@@ -12,6 +13,7 @@ namespace Odyssey
 	class VulkanContext;
 	class GUIElement;
 	class VulkanTexture;
+
 
 	class VulkanImgui
 	{
@@ -34,18 +36,19 @@ namespace Odyssey
 	public:
 		VulkanImgui(std::shared_ptr<VulkanContext> context, const InitInfo& initInfo);
 		void SubmitDraws();
-		void Render(VkCommandBuffer commandBuffer, VkDescriptorSet id);
+		void Render(VkCommandBuffer commandBuffer);
 		void PostRender();
 
 	public:
-		VkDescriptorSet AddTexture(VulkanTexture* texture);
+		uint64_t AddTexture(ResourceHandle<VulkanTexture> handle);
+		void RemoveTexture(uint64_t id);
 
 	private:
 		void CreateDescriptorPool();
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
+		std::map<int64_t, VkDescriptorSet> m_RenderTextures;
 		VkDescriptorPool descriptorPool;
-		bool showDemoWindow = true;
 	};
 }
