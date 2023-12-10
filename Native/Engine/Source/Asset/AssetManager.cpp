@@ -58,6 +58,25 @@ namespace Odyssey
 		return AssetHandle<Material>(id, material);
 	}
 
+	AssetHandle<Mesh> AssetManager::CreateMesh(const std::string& assetPath)
+	{
+		// Create an empty mesh at the desired location
+
+		uint32_t id = s_Meshes.Add();
+		Mesh* mesh = s_Meshes[id].get();
+
+		// Set asset data
+		mesh->SetGUID(GenerateGUID());
+		mesh->SetName("Default");
+		mesh->SetPath(assetPath);
+		mesh->SetType("Mesh");
+
+		// Save to disk
+		mesh->Save(assetPath);
+
+		return AssetHandle<Mesh>(id, mesh);
+	}
+
 	AssetHandle<Mesh> Odyssey::AssetManager::LoadMesh(const std::string& path)
 	{
 		uint32_t id = s_Meshes.Add(path);

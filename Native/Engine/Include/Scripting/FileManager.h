@@ -18,9 +18,6 @@ namespace Odyssey
 		static void FileChangedEvent(int64_t id, const NotificationSet& notificationSet);
 		static void FileWatcherError(int64_t id);
 
-		static std::string ConvertWideToUtf8(const std::wstring& wstr);
-		static std::wstring ConvertUtf8ToWide(const std::string& str);
-
 	private:
 		static FileWatcher fileWatcher;
 		static std::map<int64_t, std::wstring> folderIDs;

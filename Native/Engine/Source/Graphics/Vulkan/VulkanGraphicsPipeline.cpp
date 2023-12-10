@@ -57,8 +57,8 @@ namespace Odyssey
 		vertexInputInfo.vertexBindingDescriptionCount = 1;
 		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 
-		std::array<VkVertexInputAttributeDescription,2> vertexAttributeDescriptions = VulkanVertex::GetAttributeDescriptions();
-		vertexInputInfo.vertexAttributeDescriptionCount = 2;
+		std::array<VkVertexInputAttributeDescription,4> vertexAttributeDescriptions = VulkanVertex::GetAttributeDescriptions();
+		vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
 		vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
 
 		// Input Assembly
@@ -74,7 +74,7 @@ namespace Odyssey
 		rasterizer.rasterizerDiscardEnable = VK_FALSE;
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
-		rasterizer.cullMode = VK_CULL_MODE_NONE;
+		rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
 		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 		rasterizer.depthBiasConstantFactor = 0.0f; // Optional

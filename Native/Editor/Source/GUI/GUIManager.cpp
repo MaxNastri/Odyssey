@@ -47,6 +47,8 @@ namespace Odyssey
 
 	void GUIManager::Update()
 	{
+		s_MenuBar.Update();
+
 		for (auto& inspectorWindow : inspectorWindows)
 		{
 			inspectorWindow.Update();
@@ -72,10 +74,7 @@ namespace Odyssey
 	{
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
-		if (s_ShowDemoWindow)
-		{
-			ImGui::ShowDemoWindow(&s_ShowDemoWindow);
-		}
+		s_MenuBar.Draw();
 
 		for (auto& inspectorWindow : inspectorWindows)
 		{

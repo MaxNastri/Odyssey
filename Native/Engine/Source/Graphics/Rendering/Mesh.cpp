@@ -30,9 +30,9 @@ namespace Odyssey
 
 		// Serialize the mesh-specific data
 		root["m_VertexCount"] << m_VertexCount;
-		root["m_VertexData"] << VertexDataToHex();
+		root["m_VertexData"] << (m_VertexCount > 0 ? VertexDataToHex() : "");
 		root["m_IndexCount"] << m_IndexCount;
-		root["m_IndexData"] << IndexDataToHex();
+		root["m_IndexData"] << (m_IndexCount > 0 ? IndexDataToHex() : "");
 
 		// Save to disk
 		FILE* file2 = fopen(m_AssetPath.c_str(), "w+");
@@ -64,8 +64,10 @@ namespace Odyssey
 			node["m_IndexData"] >> indexData;
 
 			// Convert the vertex/index data from hex into real values
-			HexToVertexData(vertexData, m_VertexCount);
-			HexToIndexData(indexData, m_IndexCount);
+			if (m_VertexCount > 0 && vertexData != "")
+				HexToVertexData(vertexData, m_VertexCount);
+			if (m_IndexCount > 0 && indexData != "")
+				HexToIndexData(indexData, m_IndexCount);
 		}
 	}
 
@@ -189,6 +191,9 @@ namespace Odyssey
 		m_Vertices = vertices;
 		m_VertexCount = (uint16_t)m_Vertices.size();
 
+		if (m_VertexBuffer.IsValid())
+			ResourceManager::DestroyVertexBuffer(m_VertexBuffer);
+
 		m_VertexBuffer = ResourceManager::AllocateVertexBuffer(m_Vertices);
 	}
 
@@ -196,6 +201,9 @@ namespace Odyssey
 	{
 		m_Indices = indices;
 		m_IndexCount = (uint32_t)m_Indices.size();
+
+		if (m_IndexBuffer.IsValid())
+			ResourceManager::DestroyIndexBuffer(m_IndexBuffer);
 
 		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
 	}

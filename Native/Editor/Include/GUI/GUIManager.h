@@ -4,6 +4,7 @@
 #include "SceneHierarchyWindow.h"
 #include "SceneViewWindow.h"
 #include "ContentBrowserWindow.h"
+#include "EditorMenuBar.h"
 
 namespace Odyssey
 {
@@ -39,13 +40,12 @@ namespace Odyssey
 		static void OnFilesChanged(const NotificationSet& notificationSet);
 
 	private:
+		inline static EditorMenuBar s_MenuBar;
 		inline static std::vector<InspectorWindow> inspectorWindows;
 		inline static std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
 		inline static std::vector<SceneViewWindow> sceneViewWindows;
 		inline static std::vector<ContentBrowserWindow> contentBrowserWindows;
 		inline static uint32_t selectedObject = std::numeric_limits<uint32_t>::max();
 		inline static std::shared_ptr<ImguiPass> m_GUIPass;
-
-		inline static bool s_ShowDemoWindow = true;
 	};
 }

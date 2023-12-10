@@ -3,6 +3,8 @@
 #include "imgui.h"
 #include "SceneManager.h"
 #include "AssetManager.h"
+#include "GeometryUtil.h"
+#include "Mesh.h"
 
 namespace Odyssey
 {
@@ -13,6 +15,7 @@ namespace Odyssey
 			glm::vec2(0,0), glm::vec2(500,500), glm::vec2(2,2))
 	{
 		m_CurrentPath = s_AssetsPath;
+		m_DebugEnabled = true;
 		UpdatePaths();
 	}
 
@@ -105,7 +108,13 @@ namespace Odyssey
 				}
 				else if (ImGui::MenuItem("Mesh"))
 				{
-					
+					std::vector<VulkanVertex> vertices;
+					std::vector<uint32_t> indices;
+					GeometryUtil::ComputeBox(glm::vec3(0,0,0), glm::vec3(1,1,1), vertices, indices);
+					AssetHandle<Mesh> mesh = AssetManager::CreateMesh("Assets/Meshes/Cube.mesh");
+					mesh.Get()->SetVertices(vertices);
+					mesh.Get()->SetIndices(indices);
+					mesh.Get()->Save(mesh.Get()->GetAssetPath());
 				}
 				else if (ImGui::MenuItem("Scene"))
 				{

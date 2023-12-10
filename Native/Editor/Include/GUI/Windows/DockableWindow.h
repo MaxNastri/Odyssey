@@ -22,6 +22,7 @@ namespace Odyssey
 
 	protected:
 		bool m_Open = true;
+		bool m_DebugEnabled = false;
 		std::string m_WindowName;
 		glm::vec2 m_WindowPos;
 		glm::vec2 m_WindowSize;
