@@ -1,27 +1,22 @@
 #include "Application.h"
-#include <Input.h>
-#include <Logger.h>
-#include <FileManager.h>
-#include <Paths.h>
-#include <VulkanRenderer.h>
-#include "ScriptCompiler.h"
-#include <ScriptingManager.h>
-#include "SceneManager.h"
-#include "GUIManager.h"
-#include <ComponentManager.h>
-#include <Camera.h>
-#include <MeshRenderer.h>
-#include "Mesh.h"
+#include "FileManager.h"
 #include "AssetManager.h"
-#include "Shader.h"
-#include "Material.h"
+#include "ScriptCompiler.h"
+#include "ScriptingManager.h"
+#include "GUIManager.h"
+#include "SceneManager.h"
+#include <VulkanRenderer.h>
+#include "OdysseyTime.h"
 
 namespace Odyssey
 {
 	Application::Application()
 	{
-		// Initialize our managers
+		// Its important we initialize scripting first due to a bug with VS2022
+		// With native debugging enabled, our breakpoints wont work before we init scripting
 		ScriptingManager::Initialize();
+
+		// Track the manage project folder for any file changes
 		FileManager::Initialize();
 		FileManager::TrackFolder(Paths::Relative::ManagedProjectSource);
 
@@ -32,13 +27,12 @@ namespace Odyssey
 
 		// Start listening for events
 		ScriptCompiler::ListenForEvents();
-		GUIManager::Initialize();
 		SceneManager::ListenForEvents();
+		GUIManager::Initialize();
 
 		// Build the user assembly
 		ScriptCompiler::BuildUserAssembly();
 
-		ConstructVisuals();
 		SetupEditorGUI();
 		CreateRenderPasses();
 
@@ -49,17 +43,21 @@ namespace Odyssey
 	void Application::Run()
 	{
 		running = true;
-		stopwatch.Start();
 
+		Time::Begin();
 		SceneManager::Awake();
 
 		while (running)
 		{
-			float elapsed = stopwatch.Elapsed();
+			Time::Tick();
+			float deltaTime = Time::DeltaTime();
+			m_TimeSinceLastUpdate += deltaTime;
 
-			if (elapsed > MaxFPS)
+			if (m_TimeSinceLastUpdate > MaxFPS)
 			{
-				stopwatch.Restart();
+				m_TimeSinceLastUpdate = 0.0f;
+
+				// Process any changes made to the user's managed dll
 				ScriptCompiler::Process();
 
 				GUIManager::Update();
@@ -79,10 +77,6 @@ namespace Odyssey
 	void Application::Exit()
 	{
 		running = false;
-	}
-
-	void Application::ConstructVisuals()
-	{
 	}
 
 	void Application::SetupEditorGUI()

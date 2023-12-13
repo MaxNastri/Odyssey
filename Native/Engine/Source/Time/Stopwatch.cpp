@@ -6,6 +6,7 @@ namespace Odyssey
 	{
 		Restart();
 		running = true;
+		lastSignal = std::chrono::high_resolution_clock::now();
 	}
 
 	void Stopwatch::Signal()

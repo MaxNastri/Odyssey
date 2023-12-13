@@ -11,7 +11,7 @@ GameObjects:
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Name: Odyssey.MeshRenderer
-        m_Mesh: '250acb1c-a4ab-4d1e-8d31-549664d7ef71'
+        m_Mesh: 'a9bd3a9a-7c4d-4ad1-a410-ae328bf40f94'
         m_Material: '2fbc687a-c486-4f04-81a2-f455e2075f49'
       - Name: Example.Managed.AnotherScript
         Fields: []

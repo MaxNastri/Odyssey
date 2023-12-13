@@ -8,14 +8,11 @@
 
 namespace Odyssey
 {
-	static std::filesystem::path s_AssetsPath = "Assets";
-
 	ContentBrowserWindow::ContentBrowserWindow()
 		: DockableWindow("Content Browser", 
 			glm::vec2(0,0), glm::vec2(500,500), glm::vec2(2,2))
 	{
 		m_CurrentPath = s_AssetsPath;
-		m_DebugEnabled = true;
 		UpdatePaths();
 	}
 
@@ -106,21 +103,35 @@ namespace Odyssey
 				{
 					AssetManager::CreateMaterial("Assets/Materials/MyMaterial.mat");
 				}
-				else if (ImGui::MenuItem("Mesh"))
+				if (ImGui::BeginMenu("Mesh"))
 				{
-					std::vector<VulkanVertex> vertices;
-					std::vector<uint32_t> indices;
-					GeometryUtil::ComputeBox(glm::vec3(0,0,0), glm::vec3(1,1,1), vertices, indices);
-					AssetHandle<Mesh> mesh = AssetManager::CreateMesh("Assets/Meshes/Cube.mesh");
-					mesh.Get()->SetVertices(vertices);
-					mesh.Get()->SetIndices(indices);
-					mesh.Get()->Save(mesh.Get()->GetAssetPath());
+					if (ImGui::MenuItem("Cube"))
+					{
+						std::vector<VulkanVertex> vertices;
+						std::vector<uint32_t> indices;
+						GeometryUtil::ComputeBox(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), vertices, indices);
+						AssetHandle<Mesh> mesh = AssetManager::CreateMesh("Assets/Meshes/Cube.mesh");
+						mesh.Get()->SetVertices(vertices);
+						mesh.Get()->SetIndices(indices);
+						mesh.Get()->Save(mesh.Get()->GetAssetPath());
+					}
+					if (ImGui::MenuItem("Sphere"))
+					{
+						std::vector<VulkanVertex> vertices;
+						std::vector<uint32_t> indices;
+						GeometryUtil::ComputeSphere(1.0f, 50, vertices, indices);
+						AssetHandle<Mesh> mesh = AssetManager::CreateMesh("Assets/Meshes/Sphere.mesh");
+						mesh.Get()->SetVertices(vertices);
+						mesh.Get()->SetIndices(indices);
+						mesh.Get()->Save(mesh.Get()->GetAssetPath());
+					}
+					ImGui::EndMenu();
 				}
-				else if (ImGui::MenuItem("Scene"))
+				if (ImGui::MenuItem("Scene"))
 				{
 
 				}
-				else if (ImGui::MenuItem("Shader"))
+				if (ImGui::MenuItem("Shader"))
 				{
 
 				}

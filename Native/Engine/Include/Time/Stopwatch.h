@@ -26,12 +26,6 @@ namespace Odyssey
         std::chrono::steady_clock::time_point prevLastSignal;
         std::chrono::steady_clock::time_point lastSignal;
         std::chrono::steady_clock::time_point stop;
-        const double* timeMultipliers = new double[4]
-            {
-                1e-9,
-                    1e-6,
-                    1e-3,
-                    1.0,
-            };
+        const double* timeMultipliers = new double[4] { 1e-9, 1e-6, 1e-3, 1.0, };
     };
 }

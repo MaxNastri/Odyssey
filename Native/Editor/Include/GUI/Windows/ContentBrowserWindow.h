@@ -29,5 +29,8 @@ namespace Odyssey
 
 	private: // Context menu
 		bool m_ContextMenuOpen = false;
+
+	private: // Statics
+		inline static std::filesystem::path s_AssetsPath = "Assets";
 	};
 }

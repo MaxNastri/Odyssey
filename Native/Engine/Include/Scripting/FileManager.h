@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
 #include <unordered_set>
-#include <FileWatcher.h>
+#include "FileWatcher.h"
+#include "Paths.h"
 
 namespace Odyssey
 {

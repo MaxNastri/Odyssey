@@ -176,7 +176,7 @@ namespace Odyssey
 			}
 		}
 
-		//ReverseWinding(vertices, indices);
+		ReverseWinding(vertices, indices);
 	}
 
 	void GeometryUtil::ReverseWinding(std::vector<VulkanVertex>& vertices, std::vector<unsigned int>& indices)
