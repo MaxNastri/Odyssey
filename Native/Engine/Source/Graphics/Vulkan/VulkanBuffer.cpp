@@ -42,9 +42,10 @@ namespace Odyssey
 		VkMemoryRequirements memoryRequirements;
 		vkGetBufferMemoryRequirements(m_Context->GetDeviceVK(), buffer, &memoryRequirements);
 
+		m_Size = memoryRequirements.size;
+
 		VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 		
-
 		VkMemoryAllocateFlagsInfo memoryFlags{};
 		memoryFlags.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
 
@@ -73,7 +74,7 @@ namespace Odyssey
 		}
 	}
 
-	void VulkanBuffer::SetMemory(VkDeviceSize size, void* data)
+	void VulkanBuffer::SetMemory(VkDeviceSize size, const void* data)
 	{
 		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
 
@@ -84,8 +85,16 @@ namespace Odyssey
 		else
 		{
 			// Map, copy and unmap the buffer memory
-			vkMapMemory(device, bufferMemory, 0, size, 0, &bufferMemoryMapped);
+			VkResult err = vkMapMemory(device, bufferMemory, 0, m_Size, 0, &bufferMemoryMapped);
+
 			memcpy(bufferMemoryMapped, data, static_cast<size_t>(size));
+
+			VkMappedMemoryRange range[1] = {};
+			range[0].sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+			range[0].memory = bufferMemory;
+			range[0].size = m_Size;
+			err = vkFlushMappedMemoryRanges(device, 1, range);
+
 			vkUnmapMemory(device, bufferMemory);
 		}
 	}

@@ -26,8 +26,8 @@ namespace Odyssey
 		void SetSelectedIndex(uint32_t selected) { m_SelectedObject = selected; }
 
 	private:
-		void CreateRenderTexture(uint32_t index);
-		void DestroyRenderTexture(uint32_t index);
+		void CreateRenderTexture();
+		void DestroyRenderTexture();
 		void RenderGizmos();
 		void UpdateCameraController();
 		void UpdateGizmosInput();

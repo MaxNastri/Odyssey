@@ -16,23 +16,25 @@
 
 namespace Odyssey
 {
+	namespace RayTracing
+	{
+	}
+
 	SceneViewWindow::SceneViewWindow()
 		: DockableWindow("Scene View",
 			glm::vec2(0,0), glm::vec2(500,500), glm::vec2(2,2))
 	{
 		// Rendering stuff
 		m_SceneViewPass = std::make_shared<OpaquePass>();
-		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
+		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		// Create the render texture
-		CreateRenderTexture(0);
+		CreateRenderTexture();
 
 		m_GameObject.id = UINT_MAX;
-
 		m_CameraTransform = ComponentManager::AddComponent<Transform>(m_GameObject.id);
 		m_CameraTransform->SetGameObject(&m_GameObject);
 		m_CameraTransform->Awake();
-
 		m_Camera = ComponentManager::AddComponent<Camera>(m_GameObject.id);
 		m_Camera->SetGameObject(&m_GameObject);
 		m_Camera->Awake();
@@ -42,8 +44,7 @@ namespace Odyssey
 
 	void SceneViewWindow::Destroy()
 	{
-		DestroyRenderTexture(0);
-		DestroyRenderTexture(1);
+		DestroyRenderTexture();
 	}
 
 	void SceneViewWindow::Update()
@@ -63,8 +64,6 @@ namespace Odyssey
 		if (!Begin())
 			return;
 
-		// Set the current RT as the scene view pass target
-		uint32_t frameIndex = VulkanRenderer::GetFrameIndex();
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
 		m_SceneViewPass->SetRenderTexture(m_RenderTexture);
 
@@ -75,13 +74,13 @@ namespace Odyssey
 
 	void SceneViewWindow::OnWindowResize()
 	{
-		uint32_t frameIndex = VulkanRenderer::GetFrameIndex();
-		DestroyRenderTexture(frameIndex);
-		CreateRenderTexture(frameIndex);
+		DestroyRenderTexture();
+		CreateRenderTexture();
 		m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+
 	}
 
-	void SceneViewWindow::CreateRenderTexture(uint32_t index)
+	void SceneViewWindow::CreateRenderTexture()
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
 		m_RenderTexture = ResourceManager::AllocateTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
@@ -92,7 +91,7 @@ namespace Odyssey
 				m_RenderTextureID = imgui->AddTexture(m_RenderTexture);
 	}
 
-	void SceneViewWindow::DestroyRenderTexture(uint32_t index)
+	void SceneViewWindow::DestroyRenderTexture()
 	{
 		// Destroy the existing render texture
 		if (m_RenderTexture.IsValid())

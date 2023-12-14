@@ -4,6 +4,7 @@
 #include "SceneHierarchyWindow.h"
 #include "SceneViewWindow.h"
 #include "ContentBrowserWindow.h"
+#include "RayTracingWindow.h"
 #include "EditorMenuBar.h"
 
 namespace Odyssey
@@ -25,6 +26,7 @@ namespace Odyssey
 		static void CreateSceneHierarchyWindow();
 		static void CreateSceneViewWindow();
 		static void CreateContentBrowserWindow();
+		static void CreateRayTracingWindow();
 
 	public:
 		static void Update();
@@ -45,6 +47,7 @@ namespace Odyssey
 		inline static std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
 		inline static std::vector<SceneViewWindow> sceneViewWindows;
 		inline static std::vector<ContentBrowserWindow> contentBrowserWindows;
+		inline static std::vector<RayTracingWindow> s_RayTracingWindows;
 		inline static uint32_t selectedObject = std::numeric_limits<uint32_t>::max();
 		inline static std::shared_ptr<ImguiPass> m_GUIPass;
 	};

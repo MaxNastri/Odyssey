@@ -24,6 +24,7 @@ namespace Odyssey
 		void BeginCommands();
 		void EndCommands();
 		void Reset();
+		void Flush();
 
 	public:
 		void BeginRendering(VkRenderingInfoKHR& renderingInfo);

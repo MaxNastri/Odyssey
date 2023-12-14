@@ -7,6 +7,7 @@
 #include "SceneManager.h"
 #include <VulkanRenderer.h>
 #include "OdysseyTime.h"
+#include "Random.h"
 
 namespace Odyssey
 {
@@ -15,6 +16,7 @@ namespace Odyssey
 		// Its important we initialize scripting first due to a bug with VS2022
 		// With native debugging enabled, our breakpoints wont work before we init scripting
 		ScriptingManager::Initialize();
+		Random::Initialize();
 
 		// Track the manage project folder for any file changes
 		FileManager::Initialize();
@@ -85,6 +87,7 @@ namespace Odyssey
 		GUIManager::CreateSceneHierarchyWindow();
 		GUIManager::CreateSceneViewWindow();
 		GUIManager::CreateContentBrowserWindow();
+		GUIManager::CreateRayTracingWindow();
 	}
 
 	void Application::CreateRenderPasses()

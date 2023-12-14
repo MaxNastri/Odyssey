@@ -30,7 +30,7 @@ namespace Odyssey
 		void Destroy();
 
 	public:
-		void SetData(ResourceHandle<VulkanBuffer> handle, uint32_t width, uint32_t height);
+		void SetData(const void* data);
 
 	public:
 		static VkImageMemoryBarrier CreateMemoryBarrier(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage);
@@ -49,5 +49,7 @@ namespace Odyssey
 		VkImageView imageView;
 		VkImageLayout imageLayout;
 		VkDeviceMemory imageMemory;
+		uint32_t m_Width, m_Height;
+		ResourceHandle<VulkanBuffer> m_StagingBuffer;
 	};
 }

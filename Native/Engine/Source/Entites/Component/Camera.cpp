@@ -48,6 +48,15 @@ namespace Odyssey
 		return m_InverseView;
 	}
 
+	glm::mat4 Camera::GetView()
+	{
+		if (m_Transform == nullptr)
+			m_Transform = ComponentManager::GetComponent<Transform>(gameObject->id);
+
+		m_View = m_Transform->GetWorldMatrix();
+		return m_View;
+	}
+
 	void Camera::SetFieldOfView(float fov)
 	{
 		m_FieldOfView = fov;
@@ -77,6 +86,7 @@ namespace Odyssey
 	{
 		m_Projection = glm::perspectiveFovLH(m_FieldOfView, m_Width, m_Height, m_NearClip, m_FarClip);
 		m_Projection[1][1] = -m_Projection[1][1];
+		m_InverseProjection = glm::inverse(m_Projection);
 	}
 
 	void Camera::CalculateInverseView()
@@ -84,6 +94,7 @@ namespace Odyssey
 		if (m_Transform == nullptr)
 			m_Transform = ComponentManager::GetComponent<Transform>(gameObject->id);
 
-		m_InverseView = glm::inverse(m_Transform->GetWorldMatrix());
+		m_View = m_Transform->GetWorldMatrix();
+		m_InverseView = glm::inverse(m_View);
 	}
 }

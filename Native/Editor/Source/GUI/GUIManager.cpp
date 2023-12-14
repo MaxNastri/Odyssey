@@ -10,6 +10,7 @@
 #include "ComponentManager.h"
 #include "RenderPasses.h"
 #include "Application.h"
+#include "RayTracingWindow.h"
 
 namespace Odyssey
 {
@@ -45,6 +46,11 @@ namespace Odyssey
 		contentBrowserWindows.push_back(ContentBrowserWindow());
 	}
 
+	void GUIManager::CreateRayTracingWindow()
+	{
+		s_RayTracingWindows.push_back(RayTracingWindow());
+	}
+
 	void GUIManager::Update()
 	{
 		s_MenuBar.Update();
@@ -67,6 +73,11 @@ namespace Odyssey
 		for (auto& contentBrowserWindow : contentBrowserWindows)
 		{
 			contentBrowserWindow.Update();
+		}
+
+		for (auto& rayTracingWindow : s_RayTracingWindows)
+		{
+			rayTracingWindow.Update();
 		}
 	}
 
@@ -94,6 +105,11 @@ namespace Odyssey
 		for (auto& contentBrowserWindow : contentBrowserWindows)
 		{
 			contentBrowserWindow.Draw();
+		}
+
+		for (auto& rayTracingWindow : s_RayTracingWindows)
+		{
+			rayTracingWindow.Draw();
 		}
 	}
 
