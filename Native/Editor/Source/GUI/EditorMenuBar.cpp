@@ -1,7 +1,9 @@
 #include "EditorMenuBar.h"
 #include "imgui.h"
-#include <windows.h>
-#include <shobjidl.h> 
+#include "FileDialogs.h"
+#include "Application.h"
+#include "VulkanWindow.h"
+#include "SceneManager.h"
 
 namespace Odyssey
 {
@@ -21,8 +23,28 @@ namespace Odyssey
         {
             if (ImGui::MenuItem("Open"))
             {
-                OpenFileDialog();
+				void* window = Application::GetRenderer()->GetWindow()->GetNativeWindow();
+				std::string scenePath = FileDialogs::OpenFile(window, "Odyssey Scene (*.yaml)\0*.yaml\0");
+
+				if (!scenePath.empty())
+				{
+					SceneManager::LoadScene(scenePath);
+				}
             }
+			if (ImGui::MenuItem("Save"))
+			{
+					SceneManager::SaveActiveScene();
+			}
+			if (ImGui::MenuItem("Save As..."))
+			{
+				void* window = Application::GetRenderer()->GetWindow()->GetNativeWindow();
+				std::string scenePath = FileDialogs::SaveFile(window, "Odyssey Scene (*.yaml)\0*.yaml\0");
+
+				if (!scenePath.empty())
+				{
+					SceneManager::SaveActiveSceneTo(scenePath);
+				}
+			}
             ImGui::EndMenu();
         }
 		if (ImGui::BeginMenu("Imgui"))
@@ -40,46 +62,5 @@ namespace Odyssey
 		}
 
 		ImGui::EndMainMenuBar();
-	}
-	void EditorMenuBar::OpenFileDialog()
-	{
-        HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
-            COINIT_DISABLE_OLE1DDE);
-        if (SUCCEEDED(hr))
-        {
-            IFileOpenDialog* pFileOpen;
-
-            // Create the FileOpenDialog object.
-            hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL,
-                IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
-
-            if (SUCCEEDED(hr))
-            {
-                // Show the Open dialog box.
-                hr = pFileOpen->Show(NULL);
-
-                // Get the file name from the dialog box.
-                if (SUCCEEDED(hr))
-                {
-                    IShellItem* pItem;
-                    hr = pFileOpen->GetResult(&pItem);
-                    if (SUCCEEDED(hr))
-                    {
-                        PWSTR pszFilePath;
-                        hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
-
-                        // Display the file name to the user.
-                        if (SUCCEEDED(hr))
-                        {
-                            MessageBoxW(NULL, pszFilePath, L"File Path", MB_OK);
-                            CoTaskMemFree(pszFilePath);
-                        }
-                        pItem->Release();
-                    }
-                }
-                pFileOpen->Release();
-            }
-            CoUninitialize();
-        }
 	}
 }

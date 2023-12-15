@@ -14,6 +14,7 @@ namespace Odyssey
 
 		static void LoadScene(const std::string& assetPath);
 		static void SaveActiveScene();
+		static void SaveActiveSceneTo(const std::string& assetPath);
 
 		static Scene* GetActiveScene();
 

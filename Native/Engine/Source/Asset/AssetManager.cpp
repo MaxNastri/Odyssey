@@ -126,6 +126,12 @@ namespace Odyssey
 		uint32_t id = s_Scenes.Add(assetPath);
 		Scene* scene = s_Scenes[id].get();
 
+		if (scene->GetGUID() == "")
+			scene->SetGUID(GenerateGUID());
+
+		if (scene->GetAssetPath() == "")
+			scene->SetPath(assetPath);
+
 		// Track the asset
 		s_LoadedAssets[scene->GetGUID()] = id;
 

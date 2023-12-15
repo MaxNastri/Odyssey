@@ -27,6 +27,7 @@ namespace Odyssey
 	public:
 		VulkanSurface* GetSurface() { return surface.get(); }
 		Window* GetWindow() { return window.get(); }
+		void* GetNativeWindow() { return window->GetWindowHandle(); }
 	private:
 
 	private:

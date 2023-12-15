@@ -1,6 +1,6 @@
 m_GUID: 'a77ecccb-ca5d-4e87-832d-19acf6658b7c'
 m_Name: Scene
-m_AssetPath: 'D:\Git\Odyssey\Native\Editor\Assets\Scenes\scene.yaml'
+m_AssetPath: 'D:\Git\Odyssey\Native\Editor\Assets\Scenes\scene_dupe.yaml'
 m_Type: Scene
 GameObjects:
   - Name: "Max's GameObject"
@@ -10,7 +10,7 @@ GameObjects:
     m_GUID: ''
     Components:
       - Name: Odyssey.Entities.Transform
-        Position: 'x: 1.3013215 y: 0 z: 2'
+        Position: 'x: 1.3013215 y: 1.0207323 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Name: Odyssey.MeshRenderer

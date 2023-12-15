@@ -134,7 +134,10 @@ namespace Odyssey
 			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
 			ryml::NodeRef root = tree.rootref();
 
-			root["Name"] >> m_Name;
+			root["m_GUID"] >> m_GUID;
+			root["m_Name"] >> m_Name;
+			root["m_AssetPath"] >> m_AssetPath;
+			root["m_Type"] >> m_Type;
 
 			ryml::NodeRef gameObjectsNode = root["GameObjects"];
 

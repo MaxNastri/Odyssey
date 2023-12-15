@@ -32,7 +32,14 @@ namespace Odyssey
 
 	void SceneManager::SaveActiveScene()
 	{
-		scenes[activeScene].Get()->Save();
+		if (activeScene < scenes.size())
+			scenes[activeScene].Get()->Save();
+	}
+
+	void SceneManager::SaveActiveSceneTo(const std::string& assetPath)
+	{
+		if (activeScene < scenes.size())
+			scenes[activeScene].Get()->SaveTo(assetPath);
 	}
 
 	Scene* SceneManager::GetActiveScene()
