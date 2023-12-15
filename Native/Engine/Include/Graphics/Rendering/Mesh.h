@@ -16,7 +16,8 @@ namespace Odyssey
 		Mesh(const std::string& assetPath);
 
 	public:
-		void Save(const std::string& assetPath);
+		void Save();
+		void SaveTo(const std::string& assetPath);
 		void Load(const std::string& assetPath);
 
 	private:

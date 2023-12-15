@@ -9,6 +9,7 @@ namespace Odyssey
 	class Material;
 	class Mesh;
 	class Shader;
+	class Scene;
 
 	class AssetManager
 	{
@@ -19,16 +20,22 @@ namespace Odyssey
 		static AssetHandle<Material> CreateMaterial(const std::string& assetPath);
 		static AssetHandle<Mesh> CreateMesh(const std::string& assetPath);
 		static AssetHandle<Shader> CreateShader(const std::string& assetPath);
+		static AssetHandle<Scene> CreateScene(const std::string& assetPath);
 
 	public:
 		static AssetHandle<Material> LoadMaterial(const std::string& assetPath);
 		static AssetHandle<Mesh> LoadMesh(const std::string& assetPath);
 		static AssetHandle<Shader> LoadShader(const std::string& assetPath);
+		static AssetHandle<Scene> LoadScene(const std::string& assetPath);
 
 	public:
 		static AssetHandle<Material> LoadMaterialByGUID(const std::string& guid);
 		static AssetHandle<Mesh> LoadMeshByGUID(const std::string& guid);
 		static AssetHandle<Shader> LoadShaderByGUID(const std::string& guid);
+		static AssetHandle<Scene> LoadSceneByGUID(const std::string& guid);
+
+	public:
+		static void UnloadScene(AssetHandle<Scene> scene);
 
 	private:
 		static std::string GenerateGUID();
@@ -37,6 +44,7 @@ namespace Odyssey
 		inline static DynamicList<Mesh> s_Meshes;
 		inline static DynamicList<Shader> s_Shaders;
 		inline static DynamicList<Material> s_Materials;
+		inline static DynamicList<Scene> s_Scenes;
 		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
 
 		// Asset Database

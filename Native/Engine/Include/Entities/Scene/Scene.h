@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 #include "GameObject.h"
+#include "Asset.h"
 
 namespace Odyssey
 {
@@ -11,10 +12,11 @@ namespace Odyssey
 	class Camera;
 	class Component;
 
-	class Scene
+	class Scene : public Asset
 	{
 	public:
 		Scene();
+		Scene(const std::string& assetPath);
 		GameObject* CreateGameObject();
 		void DestroyGameObject(GameObject* gameObject);
 		void Clear();
@@ -27,8 +29,9 @@ namespace Odyssey
 		void Awake();
 		void Update();
 		void OnDestroy();
-		void Serialize(const std::string& filename);
-		void Deserialize(const std::string& filename);
+		void Save();
+		void SaveTo(const std::string& assetPath);
+		void Load(const std::string& assetPath);
 
 	public:
 		Camera* GetMainCamera();
@@ -38,7 +41,6 @@ namespace Odyssey
 
 	private:
 		friend class RenderScene;
-		std::string name;
 		std::vector<std::shared_ptr<GameObject>> gameObjects;
 		std::unordered_map<uint32_t, std::shared_ptr<GameObject>> gameObjectsByID;
 		uint32_t nextGameObjectID;

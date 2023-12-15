@@ -62,7 +62,9 @@ namespace Odyssey
 				{
 					if (ImGui::Button(filename.c_str()))
 					{
-						SceneManager::LoadScene(path.string());
+						const std::string& pathStr = path.string();
+
+						SceneManager::LoadScene(pathStr);
 					}
 				}
 				else
@@ -113,7 +115,7 @@ namespace Odyssey
 						AssetHandle<Mesh> mesh = AssetManager::CreateMesh("Assets/Meshes/Cube.mesh");
 						mesh.Get()->SetVertices(vertices);
 						mesh.Get()->SetIndices(indices);
-						mesh.Get()->Save(mesh.Get()->GetAssetPath());
+						mesh.Get()->Save();
 					}
 					if (ImGui::MenuItem("Sphere"))
 					{
@@ -123,7 +125,7 @@ namespace Odyssey
 						AssetHandle<Mesh> mesh = AssetManager::CreateMesh("Assets/Meshes/Sphere.mesh");
 						mesh.Get()->SetVertices(vertices);
 						mesh.Get()->SetIndices(indices);
-						mesh.Get()->Save(mesh.Get()->GetAssetPath());
+						mesh.Get()->Save();
 					}
 					ImGui::EndMenu();
 				}

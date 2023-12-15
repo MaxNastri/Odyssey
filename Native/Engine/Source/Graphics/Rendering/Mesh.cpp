@@ -16,7 +16,12 @@ namespace Odyssey
 		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
 	}
 
-	void Mesh::Save(const std::string& assetPath)
+	void Mesh::Save()
+	{
+		SaveTo(m_AssetPath);
+	}
+
+	void Mesh::SaveTo(const std::string& path)
 	{
 		// Create a tree and root node
 		ryml::Tree tree;
@@ -26,7 +31,7 @@ namespace Odyssey
 		// Serialize the base asset data
 		root["m_GUID"] << m_GUID;
 		root["m_Name"] << m_Name;
-		root["m_AssetPath"] << m_AssetPath;
+		root["m_AssetPath"] << path;
 		root["m_Type"] << m_Type;
 
 		// Serialize the mesh-specific data
@@ -36,7 +41,7 @@ namespace Odyssey
 		root["m_IndexData"] << (m_IndexCount > 0 ? IndexDataToHex() : "");
 
 		// Save to disk
-		FILE* file2 = fopen(m_AssetPath.c_str(), "w+");
+		FILE* file2 = fopen(path.c_str(), "w+");
 		size_t len = ryml::emit_yaml(tree, tree.root_id(), file2);
 		fclose(file2);
 	}

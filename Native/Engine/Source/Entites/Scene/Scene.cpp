@@ -11,8 +11,17 @@ namespace Odyssey
 		awakeFunc = [](Component* component) { component->Awake(); };
 		updateFunc = [](Component* component) { component->Update(); };
 		onDestroyFunc = [](Component* component) { component->OnDestroy(); };
-		name = "Scene";
 		nextGameObjectID = 0;
+	}
+
+	Scene::Scene(const std::string& assetPath)
+	{
+		awakeFunc = [](Component* component) { component->Awake(); };
+		updateFunc = [](Component* component) { component->Update(); };
+		onDestroyFunc = [](Component* component) { component->OnDestroy(); };
+		nextGameObjectID = 0;
+
+		Load(assetPath);
 	}
 
 	GameObject* Scene::CreateGameObject()
@@ -87,13 +96,22 @@ namespace Odyssey
 		}
 	}
 
-	void Scene::Serialize(const std::string& filename)
+	void Scene::Save()
+	{
+		SaveTo(m_AssetPath);
+	}
+
+	void Scene::SaveTo(const std::string& assetPath)
 	{
 		ryml::Tree tree;
 		ryml::NodeRef root = tree.rootref();
 		root |= ryml::MAP;
 
-		root["Name"] << name;
+		// Serialize the base asset data
+		root["m_GUID"] << m_GUID;
+		root["m_Name"] << m_Name;
+		root["m_AssetPath"] << assetPath;
+		root["m_Type"] << m_Type;
 
 		ryml::NodeRef gameObjectsNode = root["GameObjects"];
 		gameObjectsNode |= ryml::SEQ;
@@ -103,20 +121,20 @@ namespace Odyssey
 			gameObject->Serialize(gameObjectsNode);
 		}
 
-		FILE* file2 = fopen(filename.c_str(), "w+");
+		FILE* file2 = fopen(assetPath.c_str(), "w+");
 		size_t len = ryml::emit_yaml(tree, tree.root_id(), file2);
 		fclose(file2);
 	}
 
-	void Scene::Deserialize(const std::string& filename)
+	void Scene::Load(const std::string& assetPath)
 	{
-		if (std::ifstream ifs{ filename })
+		if (std::ifstream ifs{ assetPath })
 		{
 			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
 			ryml::NodeRef root = tree.rootref();
 
-			root["Name"] >> name;
+			root["Name"] >> m_Name;
 
 			ryml::NodeRef gameObjectsNode = root["GameObjects"];
 

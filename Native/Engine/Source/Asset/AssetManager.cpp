@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "Shader.h"
+#include "Scene.h"
 #include "ryml.hpp"
 
 namespace Odyssey
@@ -39,6 +40,7 @@ namespace Odyssey
 
 	AssetHandle<Material> AssetManager::CreateMaterial(const std::string& assetPath)
 	{
+		// Push back an empty material
 		uint32_t id = s_Materials.Add();
 		Material* material = s_Materials[id].get();
 
@@ -60,8 +62,7 @@ namespace Odyssey
 
 	AssetHandle<Mesh> AssetManager::CreateMesh(const std::string& assetPath)
 	{
-		// Create an empty mesh at the desired location
-
+		// Push back an empty mesh
 		uint32_t id = s_Meshes.Add();
 		Mesh* mesh = s_Meshes[id].get();
 
@@ -72,27 +73,63 @@ namespace Odyssey
 		mesh->SetType("Mesh");
 
 		// Save to disk
-		mesh->Save(assetPath);
+		mesh->Save();
 
 		return AssetHandle<Mesh>(id, mesh);
 	}
 
-	AssetHandle<Mesh> Odyssey::AssetManager::LoadMesh(const std::string& path)
+	AssetHandle<Scene> AssetManager::CreateScene(const std::string& assetPath)
 	{
-		uint32_t id = s_Meshes.Add(path);
+		// Push back an empty mesh
+		uint32_t id = s_Scenes.Add();
+		Scene* scene = s_Scenes[id].get();
+
+		// Set asset data
+		scene->SetGUID(GenerateGUID());
+		scene->SetName("Scene");
+		scene->SetPath(assetPath);
+		scene->SetType("Scene");
+
+		// Save to disk
+		scene->Save();
+
+		return AssetHandle<Scene>(id, scene);
+	}
+
+	AssetHandle<Mesh> Odyssey::AssetManager::LoadMesh(const std::string& assetPath)
+	{
+		// Push back a mesh loaded from the asset path
+		uint32_t id = s_Meshes.Add(assetPath);
 		Mesh* mesh = s_Meshes[id].get();
+
+		// Track the asset
 		s_LoadedAssets[mesh->GetGUID()] = id;
 
 		return AssetHandle<Mesh>(id, mesh);
 	}
 
-	AssetHandle<Shader> AssetManager::LoadShader(const std::string& filename)
+	AssetHandle<Shader> AssetManager::LoadShader(const std::string& assetPath)
 	{
-		uint32_t id = s_Shaders.Add(filename);
+		// Push back a shader loaded from the asset path
+		uint32_t id = s_Shaders.Add(assetPath);
 		Shader* shader = s_Shaders[id].get();
+
+		// Track the asset
 		s_LoadedAssets[shader->GetGUID()] = id;
 
 		return AssetHandle<Shader>(id, shader);
+	}
+
+	AssetHandle<Scene> AssetManager::LoadScene(const std::string& assetPath)
+	{
+		// Push back a scene loaded from the asset path
+		uint32_t id = s_Scenes.Add(assetPath);
+		Scene* scene = s_Scenes[id].get();
+
+		// Track the asset
+		s_LoadedAssets[scene->GetGUID()] = id;
+
+		return AssetHandle<Scene>(id, scene);
 	}
 
 	AssetHandle<Material> AssetManager::LoadMaterial(const std::string& assetPath)
@@ -117,6 +154,17 @@ namespace Odyssey
 		// Load it and return a handle
 		std::filesystem::path path = s_AssetDatabase[guid];
 		return AssetManager::LoadShader(path.generic_string());
+	}
+
+	void AssetManager::UnloadScene(AssetHandle<Scene> scene)
+	{
+		const std::string& guid = scene.Get()->GetGUID();
+		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
+		{
+			s_LoadedAssets.erase(guid);
+		}
+		s_Scenes.Remove(scene.m_ID);
+		scene.Reset();
 	}
 
 	AssetHandle<Material> AssetManager::LoadMaterialByGUID(const std::string& guid)
