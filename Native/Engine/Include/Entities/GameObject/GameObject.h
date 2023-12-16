@@ -10,7 +10,7 @@ namespace Odyssey
 	{
 	public:
 		GameObject();
-		GameObject(uint32_t ID);
+		GameObject(int32_t ID);
 
 	public:
 		bool operator==(const GameObject& other) { return id == other.id; }
@@ -54,9 +54,10 @@ namespace Odyssey
 		{
 			return ComponentManager::GetUserScript(id, managedName);
 		}
+
 	public:
-		bool active;
-		uint32_t id;
+		bool active = true;
+		int32_t id = -1;
 		std::string name;
 		CLASS_DECLARATION(GameObject);
 	};

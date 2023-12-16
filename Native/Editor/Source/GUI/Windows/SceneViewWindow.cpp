@@ -30,7 +30,7 @@ namespace Odyssey
 		// Create the render texture
 		CreateRenderTexture();
 
-		m_GameObject.id = UINT_MAX;
+		m_GameObject.id = -3;
 		m_CameraTransform = m_GameObject.AddComponent<Transform>();
 		m_CameraTransform->SetGameObject(&m_GameObject);
 		m_CameraTransform->Awake();

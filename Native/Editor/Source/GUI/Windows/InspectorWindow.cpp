@@ -1,5 +1,5 @@
 #include "InspectorWindow.h"
-#include <ComponentManager.h>
+#include "ComponentManager.h"
 #include <Transform.h>
 #include <imgui.h>
 #include "MeshRendererInspector.h"
@@ -57,11 +57,11 @@ namespace Odyssey
 				inspectors.push_back(std::make_unique<MeshRendererInspector>(gameObject));
 			}
 
-			std::vector<std::pair<std::string, UserScript*>> userScripts = ComponentManager::GetAllUserScripts(gameObject->id);
+			std::vector<UserScript*> userScripts = ComponentManager::GetAllUserScripts(gameObject->id);
 
-			for (auto& [userScriptClassName, userScript] : userScripts)
+			for (UserScript* userScript : userScripts)
 			{
-				userScriptInspectors.push_back(UserScriptInspector(gameObject, userScript, userScriptClassName));
+				userScriptInspectors.push_back(UserScriptInspector(gameObject, userScript, userScript->GetManagedTypeName()));
 			}
 		}
 	}

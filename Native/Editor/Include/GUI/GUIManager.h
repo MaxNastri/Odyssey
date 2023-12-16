@@ -32,7 +32,7 @@ namespace Odyssey
 		static void Update();
 		static void OnRender(OnGUIRenderEvent* guiRenderEvent);
 		static void SceneLoaded(OnSceneLoaded* sceneLoadedEvent);
-		static void OnGameObjectSelected(uint32_t id);
+		static void OnGameObjectSelected(int32_t id);
 
 	public:
 		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }

@@ -125,7 +125,7 @@ namespace Odyssey
 		}
 	}
 
-	void GUIManager::OnGameObjectSelected(uint32_t id)
+	void GUIManager::OnGameObjectSelected(int32_t id)
 	{
 		selectedObject = id;
 

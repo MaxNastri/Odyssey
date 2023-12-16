@@ -26,7 +26,7 @@ namespace Odyssey
 	RayTracingWindow::RayTracingWindow()
 		: DockableWindow("Ray Tracing", glm::vec2(0,0), glm::vec2(500,500), glm::vec2(2,2))
 	{
-		m_GameObject.id = UINT_MAX - 1;
+		m_GameObject.id = -2;
 		m_CameraTransform = m_GameObject.AddComponent<Transform>();
 		m_CameraTransform->SetGameObject(&m_GameObject);
 		m_CameraTransform->Awake();

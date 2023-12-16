@@ -10,11 +10,11 @@ GameObjects:
     m_GUID: ''
     Components:
       - Name: Odyssey.Entities.Transform
-        Position: 'x: 1.3013215 y: 0 z: 2'
+        Position: 'x: 0.72083634 y: 0 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Name: Odyssey.MeshRenderer
-        m_Mesh: 'a9bd3a9a-7c4d-4ad1-a410-ae328bf40f94'
+        m_Mesh: 'f0f1c672-fab7-4e57-95bf-f49905e6ec17'
         m_Material: '2fbc687a-c486-4f04-81a2-f455e2075f49'
       - Name: Example.Managed.AnotherScript
         Fields: []

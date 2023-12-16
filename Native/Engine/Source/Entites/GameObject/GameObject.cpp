@@ -11,7 +11,7 @@ namespace Odyssey
 		active = false;
 	}
 
-	GameObject::GameObject(uint32_t ID)
+	GameObject::GameObject(int32_t ID)
 	{
 		name = "GameObject";
 		id = ID;

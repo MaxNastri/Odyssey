@@ -16,6 +16,11 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	private:
+		static void OnFieldOfViewChanged(GameObject* gameObject, float fov);
+		static void OnNearClipChanged(GameObject* gameObject, float nearClip);
+		static void OnFarClipChanged(GameObject* gameObject, float farClip);
+
+	private:
 		GameObject* m_GameObject;
 		FloatDrawer m_FieldOfViewDrawer;
 		FloatDrawer m_NearClipDrawer;

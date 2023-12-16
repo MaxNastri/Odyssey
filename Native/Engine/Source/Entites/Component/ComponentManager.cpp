@@ -2,7 +2,7 @@
 
 namespace Odyssey
 {
-	void ComponentManager::RemoveUserScript(const uint32_t id, const std::string& managedName)
+	void ComponentManager::RemoveUserScript(const int32_t id, const std::string& managedName)
 	{
 		if (ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(managedName))
 		{
@@ -12,10 +12,10 @@ namespace Odyssey
 		// Iterate through this game object's user scripts
 		for (int i = 0; i < gameObjectToUserScriptIndex[id].size(); ++i)
 		{
-			auto& pair = gameObjectToUserScriptIndex[id][i];
+			UserScriptArrayEntry& entry = gameObjectToUserScriptIndex[id][i];
 
 			// Check if this pair matches the managed name of the script to remove
-			if (pair.first == managedName)
+			if (entry.Type == managedName)
 			{
 				// Remove it from the list of user scripts
 				gameObjectToUserScriptIndex[id].erase(gameObjectToUserScriptIndex[id].begin() + i);
@@ -31,31 +31,31 @@ namespace Odyssey
 		}
 	}
 
-	UserScript* ComponentManager::GetUserScript(const uint32_t id, const std::string& managedName)
+	UserScript* ComponentManager::GetUserScript(const int32_t id, const std::string& managedName)
 	{
 		ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(managedName);
 		return userScriptArray->GetComponentData(id);
 	}
 
-	std::vector<std::pair<std::string, UserScript*>> ComponentManager::GetAllUserScripts(const uint32_t id)
+	std::vector<UserScript*> ComponentManager::GetAllUserScripts(const int32_t id)
 	{
-		std::vector<std::pair<std::string, UserScript*>> userScripts;
+		std::vector<UserScript*> userScripts;
 
 		if (gameObjectToUserScriptIndex.find(id) != gameObjectToUserScriptIndex.end())
 		{
-			std::vector<std::pair<std::string, unsigned int>> storedUserScripts = gameObjectToUserScriptIndex[id];
+			std::vector<UserScriptArrayEntry> storedUserScripts = gameObjectToUserScriptIndex[id];
 
 			for (const auto& [managedName, index] : storedUserScripts)
 			{
 				ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(managedName);
-				userScripts.push_back(std::make_pair(managedName, userScriptArray->GetComponentData(id)));
+				userScripts.push_back(userScriptArray->GetComponentData(id));
 			}
 		}
 
 		return userScripts;
 	}
 
-	bool ComponentManager::HasUserScript(const uint32_t id, const std::string& managedName)
+	bool ComponentManager::HasUserScript(const int32_t id, const std::string& managedName)
 	{
 		ComponentArray<UserScript>* userScriptArray = GetUserScriptArray(managedName);
 		return userScriptArray->HasComponent(id);
@@ -71,7 +71,7 @@ namespace Odyssey
 		return userScriptArrays[managedName].get();
 	}
 
-	void ComponentManager::ExecuteOnGameObjectComponents(const uint32_t id, std::function<void(Component*)> func)
+	void ComponentManager::ExecuteOnGameObjectComponents(const int32_t id, std::function<void(Component*)> func)
 	{
 		// For each component assigned to the game object
 		for (const auto& [componentType, componentIndex] : gameObjectToComponentArrayIndex[id])
@@ -86,15 +86,15 @@ namespace Odyssey
 		}
 	}
 
-	void ComponentManager::RemoveGameObject(const uint32_t id)
+	void ComponentManager::RemoveGameObject(const int32_t id)
 	{
 		// For each component assigned to the game object
 		if (gameObjectToComponentArrayIndex.find(id) != gameObjectToComponentArrayIndex.end())
 		{
-			for (const auto& pair : gameObjectToComponentArrayIndex[id])
+			for (const auto& componentArrayIndex : gameObjectToComponentArrayIndex[id])
 			{
 				// Remove the game object from each component array
-				componentArrays[pair.first]->RemoveGameObject(id);
+				componentArrays[componentArrayIndex.Type]->RemoveGameObject(id);
 			}
 
 			gameObjectToComponentArrayIndex.erase(id);

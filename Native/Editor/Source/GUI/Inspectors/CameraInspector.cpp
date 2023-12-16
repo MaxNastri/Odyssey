@@ -11,33 +11,9 @@ namespace Odyssey
 
 		if (Camera* camera = m_GameObject->GetComponent<Camera>())
 		{
-			std::function<void(float)> fovModified = [gameObject](float fov)
-				{
-					if (Camera* camera = gameObject->GetComponent<Camera>())
-					{
-						camera->SetFieldOfView(fov);
-					}
-				};
-
-			std::function<void(float)> nearClipModified = [gameObject](float nearClip)
-				{
-					if (Camera* camera = gameObject->GetComponent<Camera>())
-					{
-						camera->SetNearClip(nearClip);
-					}
-				};
-
-			std::function<void(float)> farClipModified = [gameObject](float farClip)
-				{
-					if (Camera* camera = gameObject->GetComponent<Camera>())
-					{
-						camera->SetFarClip(farClip);
-					}
-				};
-
-			m_FieldOfViewDrawer = FloatDrawer("Field of View", camera->GetFieldOfView(), fovModified);
-			m_NearClipDrawer = FloatDrawer("Near Clip", camera->GetNearClip(), nearClipModified);
-			m_FarClipDrawer = FloatDrawer("Far Clip", camera->GetFarClip(), farClipModified);
+			m_FieldOfViewDrawer = FloatDrawer("Field of View", camera->GetFieldOfView(), [gameObject](float fov) { OnFieldOfViewChanged(gameObject, fov); });
+			m_NearClipDrawer = FloatDrawer("Near Clip", camera->GetNearClip(), [gameObject](float nearClip) { OnNearClipChanged(gameObject, nearClip); });
+			m_FarClipDrawer = FloatDrawer("Far Clip", camera->GetFarClip(), [gameObject](float farClip) { OnFarClipChanged(gameObject, farClip); });
 		}
 	}
 
@@ -58,5 +34,29 @@ namespace Odyssey
 		}
 
 		ImGui::Separator();
+	}
+
+	void CameraInspector::OnFieldOfViewChanged(GameObject* gameObject, float fov)
+	{
+		if (Camera* camera = gameObject->GetComponent<Camera>())
+		{
+			camera->SetFieldOfView(fov);
+		}
+	}
+
+	void CameraInspector::OnNearClipChanged(GameObject* gameObject, float nearClip)
+	{
+		if (Camera* camera = gameObject->GetComponent<Camera>())
+		{
+			camera->SetNearClip(nearClip);
+		}
+	}
+
+	void CameraInspector::OnFarClipChanged(GameObject* gameObject, float farClip)
+	{
+		if (Camera* camera = gameObject->GetComponent<Camera>())
+		{
+			camera->SetFarClip(farClip);
+		}
 	}
 }
