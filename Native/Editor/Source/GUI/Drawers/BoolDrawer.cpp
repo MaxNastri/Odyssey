@@ -13,7 +13,7 @@ namespace Odyssey
 	void BoolDrawer::Draw()
 	{
 		ImGui::TableNextColumn();
-		ImGui::TextUnformatted(label.data());
+		ImGui::TextUnformatted(m_Label.data());
 		ImGui::TableNextColumn();
 		ImGui::PushItemWidth(-0.01f);
 		if (ImGui::Checkbox("##label", &data))

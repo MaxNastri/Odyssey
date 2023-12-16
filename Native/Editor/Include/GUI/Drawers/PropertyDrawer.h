@@ -9,12 +9,12 @@ namespace Odyssey
 	public:
 		PropertyDrawer() = default;
 		PropertyDrawer(const std::string& label)
-			: label(label)
+			: m_Label(label)
 		{
 
 		}
 
 	protected:
-		std::string label;
+		std::string m_Label;
 	};
 }

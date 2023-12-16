@@ -9,8 +9,8 @@
 namespace Odyssey
 {
 	ContentBrowserWindow::ContentBrowserWindow()
-		: DockableWindow("Content Browser", 
-			glm::vec2(0,0), glm::vec2(500,500), glm::vec2(2,2))
+		: DockableWindow("Content Browser",
+			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		m_CurrentPath = s_AssetsPath;
 		UpdatePaths();
@@ -69,7 +69,15 @@ namespace Odyssey
 				}
 				else
 				{
+					ImGui::PushID(filename.c_str());
 					ImGui::Text("%s", filename.c_str());
+					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+					{
+						std::string guid = AssetManager::PathToGUID(path);
+						ImGui::SetDragDropPayload("Asset", guid.c_str(), sizeof(guid));
+						ImGui::EndDragDropSource();
+					}
+					ImGui::PopID();
 				}
 			}
 		}

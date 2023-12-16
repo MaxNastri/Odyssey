@@ -14,7 +14,7 @@ namespace Odyssey
 	void StringDrawer::Draw()
 	{
 		ImGui::TableNextColumn();
-		ImGui::TextUnformatted(label.data());
+		ImGui::TextUnformatted(m_Label.data());
 		ImGui::TableNextColumn();
 		ImGui::PushItemWidth(-0.01f);
 		if (ImGui::InputText("##string", &data))

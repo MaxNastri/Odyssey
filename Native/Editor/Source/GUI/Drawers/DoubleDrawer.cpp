@@ -13,10 +13,10 @@ namespace Odyssey
 	void DoubleDrawer::Draw()
 	{
 		ImGui::TableNextColumn();
-		ImGui::TextUnformatted(label.data());
+		ImGui::TextUnformatted(m_Label.data());
 		ImGui::TableNextColumn();
 		ImGui::PushItemWidth(-0.01f);
-		if (ImGui::InputDouble(label.data(), &value, step, stepFast))
+		if (ImGui::InputDouble(m_Label.data(), &value, step, stepFast))
 		{
 			valueUpdatedCallback(value);
 		}

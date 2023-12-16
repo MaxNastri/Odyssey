@@ -28,7 +28,8 @@ namespace Odyssey
 						std::string guid;
 						node["m_GUID"] >> guid;
 
-						s_AssetDatabase[guid] = path;
+						s_AssetDatabaseGUIDs[guid] = path;
+						s_AssetDatabasePaths[path] = guid;
 					}
 				}
 			}
@@ -158,7 +159,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabase[guid];
+		std::filesystem::path path = s_AssetDatabaseGUIDs[guid];
 		return AssetManager::LoadShader(path.generic_string());
 	}
 
@@ -173,6 +174,11 @@ namespace Odyssey
 		scene.Reset();
 	}
 
+	std::string AssetManager::PathToGUID(std::filesystem::path path)
+	{
+		return s_AssetDatabasePaths[path];
+	}
+
 	AssetHandle<Material> AssetManager::LoadMaterialByGUID(const std::string& guid)
 	{
 		// Check if we have already loaded this asset
@@ -184,7 +190,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabase[guid];
+		std::filesystem::path path = s_AssetDatabaseGUIDs[guid];
 		return AssetManager::LoadMaterial(path.generic_string());
 	}
 
@@ -199,7 +205,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabase[guid];
+		std::filesystem::path path = s_AssetDatabaseGUIDs[guid];
 		return AssetManager::LoadMesh(path.generic_string());
 	}
 

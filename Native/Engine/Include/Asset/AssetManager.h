@@ -37,6 +37,9 @@ namespace Odyssey
 	public:
 		static void UnloadScene(AssetHandle<Scene> scene);
 
+	public:
+		static std::string PathToGUID(std::filesystem::path path);
+
 	private:
 		static std::string GenerateGUID();
 
@@ -48,7 +51,8 @@ namespace Odyssey
 		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
 
 		// Asset Database
-		inline static std::unordered_map<std::string, std::filesystem::path> s_AssetDatabase;
+		inline static std::unordered_map<std::string, std::filesystem::path> s_AssetDatabaseGUIDs;
+		inline static std::unordered_map<std::filesystem::path, std::string> s_AssetDatabasePaths;
 		inline static std::unordered_map<std::string, uint32_t> s_LoadedAssets;
 
 		inline static AssetHandle<Shader> s_DefaultVertexShader;

@@ -2,6 +2,7 @@
 #include <ComponentManager.h>
 #include <Transform.h>
 #include <imgui.h>
+#include "MeshRendererInspector.h"
 
 namespace Odyssey
 {
@@ -49,6 +50,11 @@ namespace Odyssey
 			if (ComponentManager::HasComponent<Camera>(gameObject->id))
 			{
 				inspectors.push_back(std::make_unique<CameraInspector>(gameObject));
+			}
+
+			if (ComponentManager::HasComponent<MeshRenderer>(gameObject->id))
+			{
+				inspectors.push_back(std::make_unique<MeshRendererInspector>(gameObject));
 			}
 
 			std::vector<std::pair<std::string, UserScript*>> userScripts = ComponentManager::GetAllUserScripts(gameObject->id);
