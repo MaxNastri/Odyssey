@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "VulkanWindow.h"
 #include "SceneManager.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
@@ -55,7 +56,11 @@ namespace Odyssey
 			}
 			ImGui::EndMenu();
 		}
-
+		if (ImGui::BeginMenu("Ray Tracing"))
+		{
+			GUIManager::CreateRayTracingWindow();
+			ImGui::EndMenu();
+		}
 		if (m_ShowDemoWindow)
 		{
 			ImGui::ShowDemoWindow(&m_ShowDemoWindow);

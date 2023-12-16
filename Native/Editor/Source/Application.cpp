@@ -87,7 +87,6 @@ namespace Odyssey
 		GUIManager::CreateSceneHierarchyWindow();
 		GUIManager::CreateSceneViewWindow();
 		GUIManager::CreateContentBrowserWindow();
-		GUIManager::CreateRayTracingWindow();
 	}
 
 	void Application::CreateRenderPasses()

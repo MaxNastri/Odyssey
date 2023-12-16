@@ -1,4 +1,5 @@
 #include "TransformInspector.h"
+#include "GameObject.h"
 #include <Transform.h>
 #include <ComponentManager.h>
 #include <imgui.h>

@@ -1,12 +1,11 @@
 #pragma once
 #include <GUIElement.h>
-#include <GameObject.h>
 #include "Vector3Drawer.h"
 #include "PropertyDrawer.h"
 
 namespace Odyssey
 {
-	class GUIElement;
+	class GameObject;
 
 	class TransformInspector : public GUIElement
 	{
