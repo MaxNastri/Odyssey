@@ -7,42 +7,20 @@
 
 namespace Odyssey
 {
-	TransformInspector::TransformInspector(GameObject* go)
+	TransformInspector::TransformInspector(GameObject* gameObject)
 	{
-		gameObject = go;
+		m_GameObject = gameObject;
 
-		if (Transform* transform = ComponentManager::GetComponent<Transform>(go->id))
+		if (Transform* transform = gameObject->GetComponent<Transform>())
 		{
-			// Callback for when the position is modified through the drawer
-			std::function<void(glm::vec3)> positionModified = [go](glm::vec3 position)
-				{
-					if (Transform* transform = ComponentManager::GetComponent<Transform>(go->id))
-					{
-						transform->m_Position = position;
-					}
-				};
+			positionDrawer = Vector3Drawer("Position", transform->m_Position,
+				[gameObject](glm::vec3 position) { OnPositionChanged(gameObject, position); });
 
-			// Callback for when the rotation is modified through the drawer
-			std::function<void(glm::vec3)> rotationModified = [go](glm::vec3 rotation)
-				{
-					if (Transform* transform = ComponentManager::GetComponent<Transform>(go->id))
-					{
-						transform->SetRotation(rotation);
-					}
-				};
+			rotationDrawer = Vector3Drawer("Rotation", transform->m_EulerRotation, 
+				[gameObject](glm::vec3 rotation) { OnRotationChanged(gameObject, rotation); });
 
-			// Callback for when the scale is modified through the drawer
-			std::function<void(glm::vec3)> scaleModified = [go](glm::vec3 scale)
-				{
-					if (Transform* transform = ComponentManager::GetComponent<Transform>(go->id))
-					{
-						transform->m_Scale = scale;
-					}
-				};
-
-			positionDrawer = Vector3Drawer("Position", transform->m_Position, positionModified);
-			rotationDrawer = Vector3Drawer("Rotation", transform->m_EulerRotation, rotationModified);
-			scaleDrawer = Vector3Drawer("Scale", transform->m_Scale, scaleModified);
+			scaleDrawer = Vector3Drawer("Scale", transform->m_Scale, 
+				[gameObject](glm::vec3 scale) { OnScaleChanged(gameObject, scale); });
 		}
 	}
 
@@ -63,5 +41,29 @@ namespace Odyssey
 		}
 
 		ImGui::Separator();
+	}
+
+	void TransformInspector::OnPositionChanged(GameObject* gameObject, glm::vec3 position)
+	{
+		if (Transform* transform = gameObject->GetComponent<Transform>())
+		{
+			transform->m_Position = position;
+		}
+	}
+
+	void TransformInspector::OnRotationChanged(GameObject* gameObject, glm::vec3 rotation)
+	{
+		if (Transform* transform = gameObject->GetComponent<Transform>())
+		{
+			transform->SetRotation(rotation);
+		}
+	}
+
+	void TransformInspector::OnScaleChanged(GameObject* gameObject, glm::vec3 scale)
+	{
+		if (Transform* transform = gameObject->GetComponent<Transform>())
+		{
+			transform->m_Scale = scale;
+		}
 	}
 }

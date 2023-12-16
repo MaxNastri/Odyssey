@@ -79,6 +79,24 @@ namespace Odyssey
 		return AssetHandle<Mesh>(id, mesh);
 	}
 
+	AssetHandle<Shader> AssetManager::CreateShader(const std::string& assetPath)
+	{
+		// Push back an empty mesh
+		uint32_t id = s_Shaders.Add();
+		Shader* shader = s_Shaders[id].get();
+
+		// Set asset data
+		shader->SetGUID(GenerateGUID());
+		shader->SetName("Default");
+		shader->SetPath(assetPath);
+		shader->SetType("Shader");
+
+		// Save to disk
+		shader->Save();
+
+		return AssetHandle<Shader>(id, shader);
+	}
+
 	AssetHandle<Scene> AssetManager::CreateScene(const std::string& assetPath)
 	{
 		// Push back an empty mesh

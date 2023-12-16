@@ -7,7 +7,6 @@
 #include "imgui.h"
 #include "ImGuizmo.h"
 #include "Camera.h"
-#include "ComponentManager.h"
 #include "RenderPasses.h"
 #include "Application.h"
 #include "RayTracingWindow.h"

@@ -1,6 +1,5 @@
 #include "GameObject.h"
 #include "Component.h"
-#include "ComponentManager.h"
 
 namespace Odyssey
 {

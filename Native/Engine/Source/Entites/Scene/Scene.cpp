@@ -168,7 +168,7 @@ namespace Odyssey
 	{
 		for (auto& gameObject : gameObjects)
 		{
-			if (Camera* camera = ComponentManager::GetComponent<Camera>(gameObject->id))
+			if (Camera* camera = gameObject->GetComponent<Camera>())
 			{
 				if (camera->IsMainCamera())
 					m_MainCamera = camera;

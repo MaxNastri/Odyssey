@@ -18,7 +18,8 @@ namespace Odyssey
 
 	public:
 		void Load(const std::string& path);
-		void Save(const std::string& path);
+		void Save();
+		void SaveTo(const std::string& path);
 
 	private:
 		ShaderType m_ShaderType;

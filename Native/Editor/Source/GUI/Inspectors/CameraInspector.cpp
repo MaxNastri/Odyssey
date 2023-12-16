@@ -5,31 +5,31 @@
 
 namespace Odyssey
 {
-	CameraInspector::CameraInspector(GameObject* go)
+	CameraInspector::CameraInspector(GameObject* gameObject)
 	{
-		m_GameObject = go;
+		m_GameObject = gameObject;
 
-		if (Camera* camera = ComponentManager::GetComponent<Camera>(m_GameObject->id))
+		if (Camera* camera = m_GameObject->GetComponent<Camera>())
 		{
-			std::function<void(float)> fovModified = [go](float fov)
+			std::function<void(float)> fovModified = [gameObject](float fov)
 				{
-					if (Camera* camera = ComponentManager::GetComponent<Camera>(go->id))
+					if (Camera* camera = gameObject->GetComponent<Camera>())
 					{
 						camera->SetFieldOfView(fov);
 					}
 				};
 
-			std::function<void(float)> nearClipModified = [go](float nearClip)
+			std::function<void(float)> nearClipModified = [gameObject](float nearClip)
 				{
-					if (Camera* camera = ComponentManager::GetComponent<Camera>(go->id))
+					if (Camera* camera = gameObject->GetComponent<Camera>())
 					{
 						camera->SetNearClip(nearClip);
 					}
 				};
 
-			std::function<void(float)> farClipModified = [go](float farClip)
+			std::function<void(float)> farClipModified = [gameObject](float farClip)
 				{
-					if (Camera* camera = ComponentManager::GetComponent<Camera>(go->id))
+					if (Camera* camera = gameObject->GetComponent<Camera>())
 					{
 						camera->SetFarClip(farClip);
 					}

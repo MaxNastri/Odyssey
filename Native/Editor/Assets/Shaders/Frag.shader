@@ -3,4 +3,4 @@ m_Name: ''
 m_AssetPath: Assets/Shaders/Frag.shader
 m_Type: Shader
 m_ShaderType: 1
-m_ModulePath: Assets/Shaders/frag.spv
+m_ModulePath: Assets/Shaders/bin/frag.spv

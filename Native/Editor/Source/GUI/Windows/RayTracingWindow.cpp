@@ -3,8 +3,6 @@
 #include "ResourceManager.h"
 #include "VulkanTexture.h"
 #include "imgui.h"
-
-#include "ComponentManager.h"
 #include "Camera.h"
 #include "Transform.h"
 #include "Input.h"
@@ -29,10 +27,10 @@ namespace Odyssey
 		: DockableWindow("Ray Tracing", glm::vec2(0,0), glm::vec2(500,500), glm::vec2(2,2))
 	{
 		m_GameObject.id = UINT_MAX - 1;
-		m_CameraTransform = ComponentManager::AddComponent<Transform>(m_GameObject.id);
+		m_CameraTransform = m_GameObject.AddComponent<Transform>();
 		m_CameraTransform->SetGameObject(&m_GameObject);
 		m_CameraTransform->Awake();
-		m_Camera = ComponentManager::AddComponent<Camera>(m_GameObject.id);
+		m_Camera = m_GameObject.AddComponent<Camera>();
 		m_Camera->SetGameObject(&m_GameObject);
 		m_Camera->Awake();
 

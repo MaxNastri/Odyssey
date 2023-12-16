@@ -1,16 +1,16 @@
 #include "MeshRendererInspector.h"
 #include "imgui.h"
-#include "ComponentManager.h"
 #include "MeshRenderer.h"
 #include "Mesh.h"
 #include "AssetManager.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
     MeshRendererInspector::MeshRendererInspector(GameObject* gameObject)
     {
         m_GameObject = gameObject;
-        m_MeshRenderer = ComponentManager::GetComponent<MeshRenderer>(gameObject->id);
+        m_MeshRenderer = gameObject->GetComponent<MeshRenderer>();
 
         
         m_MeshDrawer = AssetFieldDrawer("Mesh", m_MeshRenderer->GetMesh().Get()->GetGUID(),
@@ -34,7 +34,7 @@ namespace Odyssey
     }
     void MeshRendererInspector::OnMeshModified(GameObject* gameObject, const std::string& guid)
     {
-        if (MeshRenderer* meshRenderer = ComponentManager::GetComponent<MeshRenderer>(gameObject->id))
+        if (MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>())
         {
             meshRenderer->SetMesh(AssetManager::LoadMeshByGUID(guid));
         }

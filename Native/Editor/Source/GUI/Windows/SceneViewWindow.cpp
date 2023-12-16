@@ -4,7 +4,6 @@
 #include "SceneManager.h"
 #include "Camera.h"
 #include "Transform.h"
-#include "ComponentManager.h"
 #include "ImGuizmo.h"
 #include "ResourceManager.h"
 #include "VulkanTexture.h"
@@ -32,10 +31,10 @@ namespace Odyssey
 		CreateRenderTexture();
 
 		m_GameObject.id = UINT_MAX;
-		m_CameraTransform = ComponentManager::AddComponent<Transform>(m_GameObject.id);
+		m_CameraTransform = m_GameObject.AddComponent<Transform>();
 		m_CameraTransform->SetGameObject(&m_GameObject);
 		m_CameraTransform->Awake();
-		m_Camera = ComponentManager::AddComponent<Camera>(m_GameObject.id);
+		m_Camera = m_GameObject.AddComponent<Camera>();
 		m_Camera->SetGameObject(&m_GameObject);
 		m_Camera->Awake();
 
@@ -110,7 +109,7 @@ namespace Odyssey
 	{
 		if (m_SelectedObject != std::numeric_limits<uint32_t>::max())
 		{
-			if (Transform* transform = ComponentManager::GetComponent<Transform>(m_SelectedObject))
+			if (Transform* transform = m_SelectedObject.GetComponent<Transform>())
 			{
 				ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 

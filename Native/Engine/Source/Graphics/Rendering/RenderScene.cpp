@@ -3,7 +3,6 @@
 #include "Camera.h"
 #include "Transform.h"
 #include "MeshRenderer.h"
-#include "ComponentManager.h"
 #include "Mesh.h"
 #include "Material.h"
 #include "Shader.h"
@@ -86,9 +85,9 @@ namespace Odyssey
 	{
 		for (auto& gameObject : scene->gameObjects)
 		{
-			if (MeshRenderer* renderer = ComponentManager::GetComponent<MeshRenderer>(gameObject->id))
+			if (MeshRenderer* renderer = gameObject->GetComponent<MeshRenderer>())
 			{
-				if (Transform* transform = ComponentManager::GetComponent<Transform>(gameObject->id))
+				if (Transform* transform = gameObject->GetComponent<Transform>())
 				{
 					SetPass* setPass = nullptr;
 					Drawcall drawcall;

@@ -3,4 +3,4 @@ m_Name: ''
 m_AssetPath: Assets/Shaders/Vert.shader
 m_Type: Shader
 m_ShaderType: 2
-m_ModulePath: Assets/Shaders/vert.spv
+m_ModulePath: Assets/Shaders/bin/vert.spv

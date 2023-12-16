@@ -1,12 +1,12 @@
 #pragma once
 #include "ComponentArray.h"
-#include "GameObject.h"
 #include "Transform.h"
 #include "Camera.h"
 #include "MeshRenderer.h"
 #include "UserScript.h"
+
 #include <typeindex>
-#include <string>
+#include <unordered_map>
 
 namespace Odyssey
 {

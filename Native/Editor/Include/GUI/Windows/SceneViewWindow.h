@@ -23,7 +23,7 @@ namespace Odyssey
 
 	public:
 		std::shared_ptr<OpaquePass> GetRenderPass() { return m_SceneViewPass; }
-		void SetSelectedIndex(uint32_t selected) { m_SelectedObject = selected; }
+		void SetSelectedIndex(uint32_t selected) { m_SelectedObject = GameObject(selected); }
 
 	private:
 		void CreateRenderTexture();
@@ -45,7 +45,7 @@ namespace Odyssey
 		ResourceHandle<VulkanTexture> m_RenderTexture;
 
 	private: // Gizmos
-		uint32_t m_SelectedObject;
+		GameObject m_SelectedObject;
 		uint32_t op = 7;
 	};
 }

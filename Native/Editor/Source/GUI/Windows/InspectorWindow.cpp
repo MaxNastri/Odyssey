@@ -42,17 +42,17 @@ namespace Odyssey
 
 		if (gameObject)
 		{
-			if (ComponentManager::HasComponent<Transform>(gameObject->id))
+			if (gameObject->HasComponent<Transform>())
 			{
 				inspectors.push_back(std::make_unique<TransformInspector>(gameObject));
 			}
 
-			if (ComponentManager::HasComponent<Camera>(gameObject->id))
+			if (gameObject->HasComponent<Camera>())
 			{
 				inspectors.push_back(std::make_unique<CameraInspector>(gameObject));
 			}
 
-			if (ComponentManager::HasComponent<MeshRenderer>(gameObject->id))
+			if (gameObject->HasComponent<MeshRenderer>())
 			{
 				inspectors.push_back(std::make_unique<MeshRendererInspector>(gameObject));
 			}

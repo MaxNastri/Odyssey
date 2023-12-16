@@ -1,6 +1,6 @@
 #include "Camera.h"
-#include "ComponentManager.h"
 #include "Transform.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
@@ -9,7 +9,7 @@ namespace Odyssey
 	void Camera::Awake()
 	{
 		// Cache the transform
-		m_Transform = ComponentManager::GetComponent<Transform>(gameObject->id);
+		m_Transform = gameObject->GetComponent<Transform>();
 
 		m_Width = 1000;
 		m_Height = 1000;
@@ -51,7 +51,7 @@ namespace Odyssey
 	glm::mat4 Camera::GetView()
 	{
 		if (m_Transform == nullptr)
-			m_Transform = ComponentManager::GetComponent<Transform>(gameObject->id);
+			m_Transform = gameObject->GetComponent<Transform>();
 
 		m_View = m_Transform->GetWorldMatrix();
 		return m_View;
@@ -92,7 +92,7 @@ namespace Odyssey
 	void Camera::CalculateInverseView()
 	{
 		if (m_Transform == nullptr)
-			m_Transform = ComponentManager::GetComponent<Transform>(gameObject->id);
+			m_Transform = gameObject->GetComponent<Transform>();
 
 		m_View = m_Transform->GetWorldMatrix();
 		m_InverseView = glm::inverse(m_View);

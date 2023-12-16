@@ -8,7 +8,8 @@ namespace Odyssey
 	Shader::Shader(const std::string& assetPath)
 	{
 		Load(assetPath);
-		m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ModulePath);
+		if (!m_ModulePath.empty())
+			m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ModulePath);
 	}
 
 	void Shader::Load(const std::string& path)
@@ -32,7 +33,12 @@ namespace Odyssey
 		}
 	}
 
-	void Shader::Save(const std::string& path)
+	void Shader::Save()
+	{
+		SaveTo(m_AssetPath);
+	}
+
+	void Shader::SaveTo(const std::string& path)
 	{
 		ryml::Tree tree;
 		ryml::NodeRef root = tree.rootref();
