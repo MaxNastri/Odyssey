@@ -6,6 +6,7 @@
 #include "GeometryUtil.h"
 #include "Mesh.h"
 #include "GUIManager.h"
+#include "ModelLoader.h"
 
 namespace Odyssey
 {
@@ -163,7 +164,20 @@ namespace Odyssey
 				}
 				ImGui::EndMenu();
 			}
-
+			if (ImGui::BeginMenu("Import"))
+			{
+				if (ImGui::MenuItem("Spiderman"))
+				{
+					const std::filesystem::path path("Assets/Models/SpiderMan.fbx");
+					ModelLoader loader;
+					ModelAsset asset;
+					if (loader.LoadModel(path, asset))
+					{
+						asset.Mesh.Get()->SaveTo("Assets/Meshes/Spiderman.mesh");
+					}
+				}
+				ImGui::EndMenu();
+			}
 			ImGui::EndPopup();
 		}
 	}

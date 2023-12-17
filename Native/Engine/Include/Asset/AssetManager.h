@@ -17,6 +17,8 @@ namespace Odyssey
 		static void CreateDatabase();
 
 	public:
+		static AssetHandle<Mesh> CreateMesh();
+	public:
 		static AssetHandle<Material> CreateMaterial(const std::string& assetPath);
 		static AssetHandle<Mesh> CreateMesh(const std::string& assetPath);
 		static AssetHandle<Shader> CreateShader(const std::string& assetPath);

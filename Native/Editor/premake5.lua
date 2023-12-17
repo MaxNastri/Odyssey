@@ -39,6 +39,7 @@ project "Odyssey.Native.Editor"
         "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral",
         "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**",
         "%{wks.location}/Vendor/Vulkan/Include/",
+        "%{wks.location}/Vendor/assimp/include/",
     }
     
     includedirs {
@@ -52,6 +53,7 @@ project "Odyssey.Native.Editor"
 
     links {
         "Odyssey.Native.Engine.lib",
+        "assimp-vc143-mtd.lib"
     }
 
     filter { "configurations:Debug" }

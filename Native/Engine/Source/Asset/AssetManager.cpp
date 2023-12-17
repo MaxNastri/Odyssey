@@ -39,6 +39,20 @@ namespace Odyssey
 		s_DefaultFragmentShader = LoadShader(s_DefaultFragmentShaderPath);
 	}
 
+	AssetHandle<Mesh> AssetManager::CreateMesh()
+	{
+		// Push back an empty mesh
+		uint32_t id = s_Meshes.Add();
+		Mesh* mesh = s_Meshes[id].get();
+
+		// Set asset data
+		mesh->SetGUID(GenerateGUID());
+		mesh->SetName("Default");
+		mesh->SetType("Mesh");
+
+		return AssetHandle<Mesh>(id, mesh);
+	}
+
 	AssetHandle<Material> AssetManager::CreateMaterial(const std::string& assetPath)
 	{
 		// Push back an empty material

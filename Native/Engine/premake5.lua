@@ -48,6 +48,7 @@ project "Odyssey.Native.Engine"
     externalincludedirs {
         "%{wks.location}/Vendor/glfw3/",
         "%{wks.location}/Vendor/Vulkan/Include/",
+        "%{wks.location}/Vendor/assimp/include/",
     }
 
     libdirs {
@@ -56,6 +57,7 @@ project "Odyssey.Native.Engine"
 
     links {
         "glfw3.lib",
+        "assimp-vc143-mtd.lib"
     }
 
     
@@ -64,9 +66,9 @@ project "Odyssey.Native.Engine"
 
     filter { "system:windows" }
         prebuildcommands {
-			'{ECHO} Copying "%{wks.location}/Vendor/glfw3/lib/glfw3.lib" to "%{cfg.targetdir}"',
+            '{COPY} "%{wks.location}/Vendor/assimp/bin/Debug/assimp-vc143-mtd.dll" "%{cfg.targetdir}"',
 			'{COPYFILE} "%{wks.location}/Vendor/glfw3/lib/glfw3.lib" "%{cfg.targetdir}"',
-			'{COPYFILE} "%{wks.location}/Vendor/Vulkan/Lib/vulkan-1.lib" "%{cfg.targetdir}"',
+			'{COPYFILE} "%{wks.location}/Vendor/assimp/bin/Debug/assimp-vc143-mtd.lib" "%{cfg.targetdir}"',
         }
 		--postbuildcommands {
         --    '{COPYFILE} "%{wks.location}Vendor/Coral/Coral.Managed/Coral.Managed.runtimeconfig.json" "%{cfg.targetdir}"',

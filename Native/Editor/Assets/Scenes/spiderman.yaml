@@ -1,6 +1,6 @@
 m_GUID: 'a77ecccb-ca5d-4e87-832d-19acf6658b7c'
 m_Name: Scene
-m_AssetPath: 'D:\Git\Odyssey\Native\Editor\Assets\Scenes\scene.yaml'
+m_AssetPath: 'D:\Git\Odyssey\Native\Editor\Assets\Scenes\spiderman.yaml'
 m_Type: Scene
 GameObjects:
   - Name: "Max's GameObject"
@@ -12,9 +12,9 @@ GameObjects:
       - Name: Odyssey.Entities.Transform
         Position: 'x: 0.72083634 y: 0 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
+        Scale: 'x: 0.005 y: 0.005 z: 0.005'
       - Name: Odyssey.MeshRenderer
-        m_Mesh: 'a9bd3a9a-7c4d-4ad1-a410-ae328bf40f94'
+        m_Mesh: '7c387cd5-8cbd-4a2a-8a3c-8961092a07bf'
         m_Material: '25e6f648-9749-4769-9e84-7c40eeb7995d'
       - Name: Example.Managed.AnotherScript
         Fields: []
