@@ -12,7 +12,6 @@ namespace Odyssey
         m_GameObject = gameObject;
         m_MeshRenderer = gameObject->GetComponent<MeshRenderer>();
 
-        
         m_MeshDrawer = AssetFieldDrawer("Mesh", m_MeshRenderer->GetMesh().Get()->GetGUID(),
             [gameObject](const std::string& guid) { OnMeshModified(gameObject, guid); });
     }

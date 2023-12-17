@@ -10,6 +10,7 @@
 #include "RenderPasses.h"
 #include "Application.h"
 #include "RayTracingWindow.h"
+#include "GameObjectInspector.h"
 
 namespace Odyssey
 {
@@ -26,7 +27,7 @@ namespace Odyssey
 
 	void GUIManager::CreateInspectorWindow(GameObject* gameObject)
 	{
-		inspectorWindows.push_back(InspectorWindow(gameObject));
+		inspectorWindows.push_back(InspectorWindow(std::make_shared<GameObjectInspector>(gameObject)));
 	}
 
 	void GUIManager::CreateSceneHierarchyWindow()
@@ -121,7 +122,7 @@ namespace Odyssey
 
 		for (auto& inspectorWindow : inspectorWindows)
 		{
-			inspectorWindow.RefreshUserScripts();
+			inspectorWindow.Reload();
 		}
 	}
 
@@ -132,14 +133,18 @@ namespace Odyssey
 		Scene* scene = SceneManager::GetActiveScene();
 		GameObject* gameObject = scene->GetGameObject(id);
 
-		for (auto& inspectorWindow : inspectorWindows)
-		{
-			inspectorWindow.SetGameObject(gameObject);
-		}
-
 		for (auto& sceneViewWindow : sceneViewWindows)
 		{
 			sceneViewWindow.SetSelectedIndex(gameObject->id);
+		}
+	}
+
+	void GUIManager::OnSelectionContextChanged(const GUISelection& context)
+	{
+		// foreach window, invoke event
+		for (auto& window : inspectorWindows)
+		{
+			window.OnSelectionContextChanged(context);
 		}
 	}
 

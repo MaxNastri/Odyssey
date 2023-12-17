@@ -1,4 +1,5 @@
 #pragma once
+#include "EditorEnums.h"
 #include <GameObject.h>
 #include "InspectorWindow.h"
 #include "SceneHierarchyWindow.h"
@@ -10,12 +11,7 @@
 namespace Odyssey
 {
 	struct OnGUIRenderEvent;
-}
-
-namespace Odyssey
-{
 	struct OnSceneLoaded;
-	class Scene;
 	class ImguiPass;
 
 	class GUIManager
@@ -33,6 +29,7 @@ namespace Odyssey
 		static void OnRender(OnGUIRenderEvent* guiRenderEvent);
 		static void SceneLoaded(OnSceneLoaded* sceneLoadedEvent);
 		static void OnGameObjectSelected(int32_t id);
+		static void OnSelectionContextChanged(const GUISelection& context);
 
 	public:
 		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
@@ -43,12 +40,14 @@ namespace Odyssey
 
 	private:
 		inline static EditorMenuBar s_MenuBar;
+
+		// Windows
 		inline static std::vector<InspectorWindow> inspectorWindows;
 		inline static std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
 		inline static std::vector<SceneViewWindow> sceneViewWindows;
 		inline static std::vector<ContentBrowserWindow> contentBrowserWindows;
 		inline static std::vector<RayTracingWindow> s_RayTracingWindows;
-		inline static uint32_t selectedObject = std::numeric_limits<uint32_t>::max();
+		inline static int32_t selectedObject = -1;
 		inline static std::shared_ptr<ImguiPass> m_GUIPass;
 	};
 }

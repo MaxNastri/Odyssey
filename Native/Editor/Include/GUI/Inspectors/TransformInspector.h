@@ -1,5 +1,5 @@
 #pragma once
-#include <GUIElement.h>
+#include "Inspector.h"
 #include "Vector3Drawer.h"
 #include "PropertyDrawer.h"
 
@@ -7,7 +7,7 @@ namespace Odyssey
 {
 	class GameObject;
 
-	class TransformInspector : public GUIElement
+	class TransformInspector : public Inspector
 	{
 	public:
 		TransformInspector() = default;

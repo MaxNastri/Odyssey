@@ -1,5 +1,5 @@
 #pragma once
-#include "GUIElement.h"
+#include "Inspector.h"
 #include "AssetFieldDrawer.h"
 
 namespace Odyssey
@@ -7,7 +7,7 @@ namespace Odyssey
 	class GameObject;
 	class MeshRenderer;
 
-	class MeshRendererInspector : public GUIElement
+	class MeshRendererInspector : public Inspector
 	{
 	public:
 		MeshRendererInspector() = default;

@@ -1,6 +1,7 @@
 #pragma once
-#include "glm.h"
 #include "GUIElement.h"
+#include "glm.h"
+#include "EditorEnums.h"
 
 namespace Odyssey
 {
@@ -14,6 +15,7 @@ namespace Odyssey
 		virtual void Update() { }
 		virtual void Draw() { };
 		virtual void OnWindowResize() { }
+		virtual void OnSelectionContextChanged(const GUISelection& context) { }
 
 	protected:
 		bool Begin();

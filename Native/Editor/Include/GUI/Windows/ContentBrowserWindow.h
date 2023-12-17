@@ -25,8 +25,8 @@ namespace Odyssey
 	private: // Pathing
 		bool m_UpdatePaths = true;
 		std::filesystem::path m_CurrentPath;
-		std::vector<std::pair<std::filesystem::path, bool>> m_PathsToDisplay;
-
+		std::vector<std::filesystem::path> m_FoldersToDisplay;
+		std::vector<std::filesystem::path> m_FilesToDisplay;
 	private: // Context menu
 		bool m_ContextMenuOpen = false;
 

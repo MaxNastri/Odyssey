@@ -1,30 +1,25 @@
 #pragma once
-#include <GUIElement.h>
-#include <GameObject.h>
-#include "TransformInspector.h"
-#include "CameraInspector.h"
-#include "UserScriptInspector.h"
+#include "EditorEnums.h"
+#include "DockableWindow.h"
 
 namespace Odyssey
 {
-	class InspectorWindow : public GUIElement
+	class Inspector;
+
+	class InspectorWindow : public DockableWindow
 	{
 	public:
 		InspectorWindow() = default;
-		InspectorWindow(GameObject* gameObject);
+		InspectorWindow(std::shared_ptr<Inspector> inspector);
 
 	public:
 		virtual void Draw() override;
 
 	public:
-		void SetGameObject(GameObject* gameObject);
-		void RefreshUserScripts();
+		virtual void OnSelectionContextChanged(const GUISelection& context) override;
 
 	private:
-		std::vector<std::unique_ptr<GUIElement>> inspectors;
-		TransformInspector transformInspector;
-		CameraInspector cameraInspector;
-		std::vector<UserScriptInspector> userScriptInspectors;
+		std::shared_ptr<Inspector> m_Inspector;
 		bool open = true;
 	};
 }

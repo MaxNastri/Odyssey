@@ -61,7 +61,7 @@ namespace Odyssey
 		m_MainCamera = nullptr;
 	}
 
-	GameObject* Scene::GetGameObject(uint32_t id)
+	GameObject* Scene::GetGameObject(int32_t id)
 	{
 		if (gameObjectsByID.find(id) != gameObjectsByID.end())
 		{

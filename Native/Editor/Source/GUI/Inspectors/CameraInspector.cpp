@@ -1,6 +1,6 @@
 #include "CameraInspector.h"
-#include <Camera.h>
-#include <ComponentManager.h>
+#include "GameObject.h"
+#include "Camera.h"
 #include <imgui.h>
 
 namespace Odyssey

@@ -18,7 +18,8 @@ namespace Odyssey
 
 	void ContentBrowserWindow::Destroy()
 	{
-		m_PathsToDisplay.clear();
+		m_FoldersToDisplay.clear();
+		m_FilesToDisplay.clear();
 	}
 
 	void ContentBrowserWindow::Update()
@@ -43,42 +44,45 @@ namespace Odyssey
 			}
 		}
 
-		for (auto& [path, isDirectory] : m_PathsToDisplay)
+		// Draw folders first
+		for (auto& path : m_FoldersToDisplay)
 		{
 			auto relativePath = std::filesystem::relative(path);
 			std::string filename = relativePath.filename().string();
 
-			if (isDirectory)
+			if (ImGui::Button(filename.c_str()))
+			{
+				m_CurrentPath = path;
+				m_UpdatePaths = true;
+			}
+		}
+
+		// Now files
+		for (auto& path : m_FilesToDisplay)
+		{
+			auto relativePath = std::filesystem::relative(path);
+			std::string filename = relativePath.filename().string();
+
+			if (relativePath.extension() == ".yaml")
 			{
 				if (ImGui::Button(filename.c_str()))
 				{
-					m_CurrentPath = path;
-					m_UpdatePaths = true;
+					const std::string& pathStr = path.string();
+
+					SceneManager::LoadScene(pathStr);
 				}
 			}
 			else
 			{
-				if (relativePath.extension() == ".yaml")
+				ImGui::PushID(filename.c_str());
+				ImGui::Selectable(filename.c_str());
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 				{
-					if (ImGui::Button(filename.c_str()))
-					{
-						const std::string& pathStr = path.string();
-
-						SceneManager::LoadScene(pathStr);
-					}
+					std::string guid = AssetManager::PathToGUID(path);
+					ImGui::SetDragDropPayload("Asset", guid.c_str(), sizeof(guid));
+					ImGui::EndDragDropSource();
 				}
-				else
-				{
-					ImGui::PushID(filename.c_str());
-					ImGui::Text("%s", filename.c_str());
-					if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-					{
-						std::string guid = AssetManager::PathToGUID(path);
-						ImGui::SetDragDropPayload("Asset", guid.c_str(), sizeof(guid));
-						ImGui::EndDragDropSource();
-					}
-					ImGui::PopID();
-				}
+				ImGui::PopID();
 			}
 		}
 
@@ -91,11 +95,15 @@ namespace Odyssey
 	void ContentBrowserWindow::UpdatePaths()
 	{
 		m_UpdatePaths = false;
-		m_PathsToDisplay.clear();
+		m_FilesToDisplay.clear();
+		m_FoldersToDisplay.clear();
 
 		for (auto& iter : std::filesystem::directory_iterator(m_CurrentPath))
 		{
-			m_PathsToDisplay.push_back(std::pair(iter.path(), iter.is_directory()));
+			if (iter.is_directory())
+				m_FoldersToDisplay.push_back(iter.path());
+			else if (iter.is_regular_file())
+				m_FilesToDisplay.push_back(iter.path());
 		}
 	}
 

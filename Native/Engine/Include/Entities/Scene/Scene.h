@@ -23,7 +23,7 @@ namespace Odyssey
 
 	public:
 		std::vector<std::shared_ptr<GameObject>>& GetGameObjects() { return gameObjects; }
-		GameObject* GetGameObject(uint32_t id);
+		GameObject* GetGameObject(int32_t id);
 
 	public:
 		void Awake();
@@ -42,8 +42,8 @@ namespace Odyssey
 	private:
 		friend class RenderScene;
 		std::vector<std::shared_ptr<GameObject>> gameObjects;
-		std::unordered_map<uint32_t, std::shared_ptr<GameObject>> gameObjectsByID;
-		uint32_t nextGameObjectID;
+		std::unordered_map<int32_t, std::shared_ptr<GameObject>> gameObjectsByID;
+		int32_t nextGameObjectID;
 		Camera* m_MainCamera = nullptr;
 
 	private:
