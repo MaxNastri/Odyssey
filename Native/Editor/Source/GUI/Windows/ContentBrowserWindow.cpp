@@ -5,6 +5,7 @@
 #include "AssetManager.h"
 #include "GeometryUtil.h"
 #include "Mesh.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
@@ -75,7 +76,13 @@ namespace Odyssey
 			else
 			{
 				ImGui::PushID(filename.c_str());
-				ImGui::Selectable(filename.c_str());
+				if (ImGui::Selectable(filename.c_str()))
+				{
+					GUISelection selection;
+					selection.guid = AssetManager::PathToGUID(path);
+					selection.Type = GUISelection::SelectionType::Material;
+					GUIManager::OnSelectionContextChanged(selection);
+				}
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 				{
 					std::string guid = AssetManager::PathToGUID(path);

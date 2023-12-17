@@ -42,7 +42,7 @@ namespace Odyssey
 
 	void MaterialInspector::Draw()
 	{
-		if (ImGui::BeginTable("MeshRendererInspector", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
+		if (ImGui::BeginTable("MaterialInspector", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 		{
 			ImGui::TableSetupColumn("##A", 0, 0.4f);
 			m_VertexShaderDrawer.Draw();

@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "MeshRenderer.h"
 #include "Mesh.h"
+#include "Material.h"
 #include "AssetManager.h"
 #include "GameObject.h"
 
@@ -14,6 +15,9 @@ namespace Odyssey
 
         m_MeshDrawer = AssetFieldDrawer("Mesh", m_MeshRenderer->GetMesh().Get()->GetGUID(),
             [gameObject](const std::string& guid) { OnMeshModified(gameObject, guid); });
+
+        m_MaterialDrawer = AssetFieldDrawer("Material", m_MeshRenderer->GetMaterial().Get()->GetGUID(),
+            [gameObject](const std::string& guid) { OnMaterialModified(gameObject, guid); });
     }
 
     void MeshRendererInspector::Draw()
@@ -24,6 +28,8 @@ namespace Odyssey
             {
                 ImGui::TableSetupColumn("##A", 0, 0.4f);
                 m_MeshDrawer.Draw();
+                ImGui::TableNextRow();
+                m_MaterialDrawer.Draw();
                 ImGui::TableNextRow();
                 ImGui::EndTable();
             }
@@ -36,6 +42,14 @@ namespace Odyssey
         if (MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>())
         {
             meshRenderer->SetMesh(AssetManager::LoadMeshByGUID(guid));
+        }
+    }
+
+    void MeshRendererInspector::OnMaterialModified(GameObject* gameObject, const std::string& guid)
+    {
+        if (MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>())
+        {
+            meshRenderer->SetMaterial(AssetManager::LoadMaterialByGUID(guid));
         }
     }
 }

@@ -18,10 +18,12 @@ namespace Odyssey
 
 	private:
 		static void OnMeshModified(GameObject* gameObject, const std::string& guid);
+		static void OnMaterialModified(GameObject* gameObject, const std::string& guid);
 
 	private:
 		GameObject* m_GameObject;
 		MeshRenderer* m_MeshRenderer;
 		AssetFieldDrawer m_MeshDrawer;
+		AssetFieldDrawer m_MaterialDrawer;
 	};
 }
