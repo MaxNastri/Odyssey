@@ -58,5 +58,6 @@ namespace Odyssey
 		VkDeviceMemory imageMemory;
 		uint32_t m_Width, m_Height;
 		ResourceHandle<VulkanBuffer> m_StagingBuffer;
+		bool isDepth = false;
 	};
 }

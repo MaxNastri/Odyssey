@@ -84,6 +84,7 @@ namespace Odyssey
 		imageDesc.Width = width;
 		imageDesc.Height = height;
 		imageDesc.ImageType = TextureType::RenderTexture;
+		imageDesc.Format = TextureFormat::R8G8B8A8_UNORM;
 
 		m_Image = ResourceManager::AllocateImage(imageDesc);
 
@@ -118,8 +119,10 @@ namespace Odyssey
 
 		if (VulkanCommandBuffer* commandBuffer = commandBufferHandle.Get())
 		{
+			VkImageLayout layout = IsDepthTexture(format) ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL :
+				VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			commandBuffer->BeginCommands();
-			commandBuffer->TransitionLayouts(m_Image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			commandBuffer->TransitionLayouts(m_Image, layout);
 			commandBuffer->EndCommands();
 			commandBuffer->Flush();
 		}

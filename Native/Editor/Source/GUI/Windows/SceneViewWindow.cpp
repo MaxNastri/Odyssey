@@ -65,6 +65,7 @@ namespace Odyssey
 
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
 		m_SceneViewPass->SetColorRenderTexture(m_RenderTexture);
+		m_SceneViewPass->SetDepthRenderTexture(m_DepthRT);
 
 		// Render gizmos
 		RenderGizmos();
@@ -83,6 +84,7 @@ namespace Odyssey
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
 		m_RenderTexture = ResourceManager::AllocateTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
+		m_DepthRT = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
 		m_RTSampler = ResourceManager::AllocateSampler();
 
 		// Create an IMGui texture handle
@@ -98,6 +100,7 @@ namespace Odyssey
 		{
 			// Destroy the render texture
 			ResourceManager::DestroyTexture(m_RenderTexture);
+			ResourceManager::DestroyTexture(m_DepthRT);
 			ResourceManager::DestroySampler(m_RTSampler);
 		}
 	}

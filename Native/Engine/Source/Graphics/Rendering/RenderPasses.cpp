@@ -75,6 +75,9 @@ namespace Odyssey
 
 		if (m_DepthRT.IsValid())
 		{
+			VkClearValue clearValue;
+			clearValue.depthStencil = { 1.0f, 0 };
+
 			VulkanImage* depthAttachment = m_DepthRT.Get()->GetImage().Get();
 			VkRenderingAttachmentInfoKHR depthAttachmentInfo{};
 			depthAttachmentInfo.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
@@ -83,8 +86,9 @@ namespace Odyssey
 			depthAttachmentInfo.imageLayout = depthAttachment->GetLayout();
 			depthAttachmentInfo.resolveMode = VK_RESOLVE_MODE_NONE;
 			depthAttachmentInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-			depthAttachmentInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			depthAttachmentInfo.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 			depthAttachmentInfo.clearValue = clearValue;
+			attachments.push_back(depthAttachmentInfo);
 		}
 
 		// Rendering info
