@@ -8,7 +8,7 @@ namespace Odyssey
 	class Camera;
 	class VulkanContext;
 	class VulkanCommandBuffer;
-	class VulkanTexture;
+	class VulkanRenderTexture;
 	class VulkanShaderModule;
 	class VulkanGraphicsPipeline;
 	class VulkanImgui;
@@ -30,14 +30,12 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) = 0;
 
 	public:
-		void SetRenderTexture(ResourceHandle<VulkanTexture> renderTarget);
-		void SetRenderTarget(ResourceHandle<VulkanImage> renderTarget);
+		void SetRenderTexture(ResourceHandle<VulkanRenderTexture> renderTarget);
 		void SetLayouts(VkImageLayout oldLayout, VkImageLayout newLayout) { m_OldLayout = oldLayout; m_NewLayout = newLayout; }
 		void SetClearValue(glm::vec4 clearValue) { m_ClearValue = clearValue; }
 
 	protected:
-		ResourceHandle<VulkanTexture> m_RenderTexture;
-		ResourceHandle<VulkanImage> m_RenderTarget;
+		ResourceHandle<VulkanRenderTexture> m_RenderTexture;
 		glm::vec4 m_ClearValue;
 		VkImageLayout m_OldLayout;
 		VkImageLayout m_NewLayout;

@@ -29,7 +29,7 @@ namespace Odyssey
 			imageInfo.extent.depth = desc.Depth;
 			imageInfo.mipLevels = desc.MipLevels;
 			imageInfo.arrayLayers = desc.ArrayLayers;
-			imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+			imageInfo.format = GetFormat(desc.Format);
 			imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 			imageInfo.initialLayout = imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			imageInfo.usage = GetUsage(desc.ImageType);
@@ -82,10 +82,12 @@ namespace Odyssey
 		}
 	}
 
-	VulkanImage::VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, VkFormat format)
+	VulkanImage::VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, VkFormat format)
 	{
 		m_Context = context;
 		m_Image = image;
+		m_Width = width;
+		m_Height = height;
 
 		// Image view
 		{
@@ -134,7 +136,7 @@ namespace Odyssey
 		ResourceHandle<VulkanCommandBuffer> commandBuffer = commandPool.Get()->AllocateBuffer();
 
 		commandBuffer.Get()->BeginCommands();
-		commandBuffer.Get()->CopyBufferToImage(m_StagingBuffer, this, m_Width, m_Height);
+		commandBuffer.Get()->CopyBufferToImage(m_StagingBuffer, ResourceHandle<VulkanImage>(0, this), m_Width, m_Height);
 		commandBuffer.Get()->EndCommands();
 		commandBuffer.Get()->Flush();
 		commandPool.Get()->ReleaseBuffer(commandBuffer);
@@ -235,6 +237,20 @@ namespace Odyssey
 				return VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 			default:
 				return 0;
+		}
+	}
+	VkFormat VulkanImage::GetFormat(TextureFormat format)
+	{
+		switch (format)
+		{
+			case Odyssey::TextureFormat::None:
+			case Odyssey::TextureFormat::R8G8B8A8_SRGB:
+				return VK_FORMAT_R8G8B8A8_SRGB;
+			case Odyssey::TextureFormat::R8G8B8A8_UNORM:
+				return VK_FORMAT_R8G8B8A8_UNORM;
+			default:
+				return VK_FORMAT_R8G8B8A8_UNORM;
+				break;
 		}
 	}
 }

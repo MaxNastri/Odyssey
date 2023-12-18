@@ -8,7 +8,8 @@ namespace Odyssey
 {
 	class Camera;
 	class Transform;
-	class VulkanTexture;
+	class VulkanRenderTexture;
+	class VulkanTextureSampler;
 
 	class RayTracingWindow : DockableWindow
 	{
@@ -75,7 +76,8 @@ namespace Odyssey
 
 	private:
 		uint64_t m_RenderTextureID;
-		ResourceHandle<VulkanTexture> m_RenderTexture;
+		ResourceHandle<VulkanRenderTexture> m_RenderTexture;
+		ResourceHandle<VulkanTextureSampler> m_RTSampler;
 		std::vector<uint32_t> m_ImageData;
 		std::vector<glm::vec4> m_AccumulationData;
 		std::vector<glm::vec3> m_RayDirections;

@@ -1,7 +1,7 @@
 #include "RenderPasses.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanImage.h"
-#include "VulkanTexture.h"
+#include "VulkanRenderTexture.h"
 #include "Logger.h"
 #include "PerFrameRenderingData.h"
 #include "Drawcall.h"
@@ -11,15 +11,9 @@
 
 namespace Odyssey
 {
-	void RenderPass::SetRenderTexture(ResourceHandle<VulkanTexture> renderTarget)
+	void RenderPass::SetRenderTexture(ResourceHandle<VulkanRenderTexture> renderTarget)
 	{
 		m_RenderTexture = renderTarget;
-		m_RenderTarget = renderTarget.Get()->GetImage();
-	}
-
-	void RenderPass::SetRenderTarget(ResourceHandle<VulkanImage> renderTarget)
-	{
-		m_RenderTarget = renderTarget;
 	}
 
 	OpaquePass::OpaquePass()
@@ -36,7 +30,7 @@ namespace Odyssey
 		uint32_t height = 0;
 
 		// Extract the render target and width/height
-		if (VulkanTexture* renderTexture = m_RenderTexture.Get())
+		if (VulkanRenderTexture* renderTexture = m_RenderTexture.Get())
 		{
 			renderTarget = renderTexture->GetImage().Get();
 			width = renderTexture->GetWidth();
@@ -156,8 +150,7 @@ namespace Odyssey
 		}
 
 		// Transition the backbuffer layout for presenting
-		VulkanImage* renderTarget = m_RenderTexture.Get()->GetImage().Get();
-		commandBuffer->TransitionLayouts(renderTarget, m_OldLayout, m_NewLayout);
+		commandBuffer->TransitionLayouts(m_RenderTexture, m_OldLayout, m_NewLayout);
 	}
 
 	void ImguiPass::BeginPass(RenderPassParams& params)
@@ -176,7 +169,7 @@ namespace Odyssey
 		VkRenderingAttachmentInfoKHR color_attachment_info{};
 		color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 		color_attachment_info.pNext = VK_NULL_HANDLE;
-		color_attachment_info.imageView = m_RenderTarget.Get()->GetImageView();
+		color_attachment_info.imageView = m_RenderTexture.Get()->GetImage().Get()->GetImageView();
 		color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 		color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 		color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -232,7 +225,7 @@ namespace Odyssey
 		commandBuffer->EndRendering();
 
 		// Transition the backbuffer layout for presenting
-		commandBuffer->TransitionLayouts(m_RenderTarget.Get(), m_OldLayout, m_NewLayout);
+		commandBuffer->TransitionLayouts(m_RenderTexture, m_OldLayout, m_NewLayout);
 	}
 
 	void ImguiPass::SetImguiState(std::shared_ptr<VulkanImgui> imgui)

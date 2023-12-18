@@ -10,6 +10,7 @@
 #include "VulkanIndexBuffer.h"
 #include "ResourceManager.h"
 #include "VulkanDescriptorBuffer.h"
+#include "VulkanRenderTexture.h"
 
 namespace Odyssey
 {
@@ -122,26 +123,41 @@ namespace Odyssey
         vkCmdDrawIndexed(m_CommandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
     }
 
-    void VulkanCommandBuffer::TransitionLayouts(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout)
+    void VulkanCommandBuffer::TransitionLayouts(ResourceHandle<VulkanRenderTexture> renderTexture, VkImageLayout oldLayout, VkImageLayout newLayout)
+    {
+        if (VulkanRenderTexture* rt = renderTexture.Get())
+        {
+            TransitionLayouts(rt->GetImage(), oldLayout, newLayout);
+        }
+    }
+
+    void VulkanCommandBuffer::TransitionLayouts(ResourceHandle<VulkanImage> imageHandle, VkImageLayout oldLayout, VkImageLayout newLayout)
     {
         VkPipelineStageFlags srcStage;
         VkPipelineStageFlags dstStage;
-        VkImageMemoryBarrier barrier = VulkanImage::CreateMemoryBarrier(image, oldLayout, newLayout, srcStage, dstStage);
-        vkCmdPipelineBarrier(m_CommandBuffer, srcStage, dstStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+        if (VulkanImage* image = imageHandle.Get())
+        {
+            VkImageMemoryBarrier barrier = VulkanImage::CreateMemoryBarrier(image, oldLayout, newLayout, srcStage, dstStage);
+            vkCmdPipelineBarrier(m_CommandBuffer, srcStage, dstStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+        }
     }
 
-    void VulkanCommandBuffer::CopyBufferToImage(ResourceHandle<VulkanBuffer> handle, VulkanImage* image, uint32_t width, uint32_t height)
+    void VulkanCommandBuffer::CopyBufferToImage(ResourceHandle<VulkanBuffer> handle, ResourceHandle<VulkanImage> imageHandle, uint32_t width, uint32_t height)
     {
-        TransitionLayouts(image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-        VkBufferImageCopy region{};
-        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        region.imageSubresource.layerCount = 1;
-        region.imageOffset = { 0, 0, 0 };
-        region.imageExtent = { width, height, 1 };
+        if (VulkanImage* image = imageHandle.Get())
+        {
+            TransitionLayouts(imageHandle, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+            VkBufferImageCopy region{};
+            region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            region.imageSubresource.layerCount = 1;
+            region.imageOffset = { 0, 0, 0 };
+            region.imageExtent = { width, height, 1 };
 
-        vkCmdCopyBufferToImage(m_CommandBuffer, handle.Get()->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+            vkCmdCopyBufferToImage(m_CommandBuffer, handle.Get()->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-        TransitionLayouts(image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            TransitionLayouts(imageHandle, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        }
     }
     void VulkanCommandBuffer::BindVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle)
     {

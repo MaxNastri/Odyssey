@@ -1,7 +1,7 @@
 #include "RayTracingWindow.h"
 #include "Application.h"
 #include "ResourceManager.h"
-#include "VulkanTexture.h"
+#include "VulkanRenderTexture.h"
 #include "imgui.h"
 #include "Camera.h"
 #include "Transform.h"
@@ -24,7 +24,7 @@ namespace Odyssey
 	}
 
 	RayTracingWindow::RayTracingWindow()
-		: DockableWindow("Ray Tracing", glm::vec2(0,0), glm::vec2(500,500), glm::vec2(2,2))
+		: DockableWindow("Ray Tracing", glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		m_GameObject.id = -2;
 		m_CameraTransform = m_GameObject.AddComponent<Transform>();
@@ -275,11 +275,12 @@ namespace Odyssey
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
 		m_RenderTexture = ResourceManager::AllocateTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
+		m_RTSampler = ResourceManager::AllocateSampler();
 
 		// Create an IMGui texture handle
 		if (auto renderer = Application::GetRenderer())
 			if (auto imgui = renderer->GetImGui())
-				m_RenderTextureID = imgui->AddTexture(m_RenderTexture);
+				m_RenderTextureID = imgui->AddTexture(m_RenderTexture, m_RTSampler);
 	}
 
 	void RayTracingWindow::DestroyRenderTexture()
@@ -287,13 +288,9 @@ namespace Odyssey
 		// Destroy the existing render texture
 		if (m_RenderTexture.IsValid())
 		{
-			// Remove the imgui texture
-			if (auto renderer = Application::GetRenderer())
-				if (auto imgui = renderer->GetImGui())
-					//imgui->RemoveTexture(m_RenderTextureID[index]);
-
 			// Destroy the render texture
-					ResourceManager::DestroyTexture(m_RenderTexture);
+			ResourceManager::DestroyTexture(m_RenderTexture);
+			ResourceManager::DestroySampler(m_RTSampler);
 		}
 	}
 

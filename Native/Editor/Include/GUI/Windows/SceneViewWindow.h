@@ -6,9 +6,10 @@
 namespace Odyssey
 {
 	class Camera;
-	class Transform;
-	class VulkanTexture;
 	class OpaquePass;
+	class Transform;
+	class VulkanRenderTexture;
+	class VulkanTextureSampler;
 
 	class SceneViewWindow : public DockableWindow
 	{
@@ -42,7 +43,8 @@ namespace Odyssey
 	private: // Rendering stuff
 		std::shared_ptr<OpaquePass> m_SceneViewPass;
 		uint64_t m_RenderTextureID;
-		ResourceHandle<VulkanTexture> m_RenderTexture;
+		ResourceHandle<VulkanRenderTexture> m_RenderTexture;
+		ResourceHandle<VulkanTextureSampler> m_RTSampler;
 
 	private: // Gizmos
 		GameObject m_SelectedObject;

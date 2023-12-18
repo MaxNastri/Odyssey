@@ -11,7 +11,7 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanDevice;
 	class VulkanSurface;
-	class VulkanImage;
+	class VulkanRenderTexture;
 
 	class VulkanSwapchain
 	{
@@ -21,7 +21,7 @@ namespace Odyssey
 
 	public:
 		uint32_t GetImageCount() { return imageCount; }
-		std::vector<ResourceHandle<VulkanImage>> GetBackbuffers();
+		std::vector<ResourceHandle<VulkanRenderTexture>> GetBackbuffers();
 		VkSwapchainKHR GetVK() { return swapchain; }
 
 	private:
@@ -32,8 +32,9 @@ namespace Odyssey
 	public:
 		std::shared_ptr<VulkanContext> m_Context;
 		VkSwapchainKHR swapchain;
-		std::vector<ResourceHandle<VulkanImage>> backbuffers;
+		std::vector<ResourceHandle<VulkanRenderTexture>> backbuffers;
 		uint32_t imageCount;
 		uint32_t minImageCount;
+		uint32_t m_Width, m_Height;
 	};
 }

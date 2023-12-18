@@ -34,10 +34,11 @@ namespace Odyssey
 		RenderTexture = 2,
 	};
 
-	enum class ImageFormat
+	enum class TextureFormat
 	{
 		None = 0,
-		R8G8B8A8_SRGB = 1
+		R8G8B8A8_SRGB = 1,
+		R8G8B8A8_UNORM = 2,
 	};
 
 	enum class ImageTiling

@@ -12,6 +12,7 @@ namespace Odyssey
 	struct VulkanImageDescription
 	{
 		ImageType ImageType = ImageType::None;
+		TextureFormat Format = TextureFormat::R8G8B8A8_UNORM;
 		uint32_t Width = 1;
 		uint32_t Height = 1;
 		uint32_t Depth = 1;
@@ -27,7 +28,7 @@ namespace Odyssey
 	{
 	public:
 		VulkanImage(std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc);
-		VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, VkFormat format);
+		VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, VkFormat format);
 		void Destroy();
 
 	public:
@@ -39,10 +40,13 @@ namespace Odyssey
 	public:
 		VkImage GetImage() { return m_Image; }
 		VkImageView GetImageView() { return imageView; }
+		uint32_t GetWidth() { return m_Width; }
+		uint32_t GetHeight() { return m_Height; }
 
 	private:
 		uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 		VkImageUsageFlags GetUsage(ImageType imageType);
+		VkFormat GetFormat(TextureFormat format);
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;

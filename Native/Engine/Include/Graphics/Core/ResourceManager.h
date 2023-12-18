@@ -13,7 +13,7 @@ namespace Odyssey
 	class VulkanGraphicsPipeline;
 	class VulkanIndexBuffer;
 	class VulkanShaderModule;
-	class VulkanTexture;
+	class VulkanRenderTexture;
 	class VulkanVertexBuffer;
 	class VulkanCommandPool;
 	class VulkanCommandBuffer;
@@ -31,7 +31,8 @@ namespace Odyssey
 		static ResourceHandle<VulkanBuffer> AllocateBuffer(BufferType bufferType, uint32_t size);
 		static ResourceHandle<VulkanVertexBuffer> AllocateVertexBuffer(std::vector<VulkanVertex>& vertices);
 		static ResourceHandle<VulkanIndexBuffer> AllocateIndexBuffer(std::vector<uint32_t>& indices);
-		static ResourceHandle<VulkanTexture> AllocateTexture(uint32_t width, uint32_t height);
+		static ResourceHandle<VulkanRenderTexture> AllocateTexture(uint32_t width, uint32_t height);
+		static ResourceHandle<VulkanRenderTexture> AllocateRenderTexture(ResourceHandle<VulkanImage> imageHandle, TextureFormat format);
 		static ResourceHandle<VulkanShaderModule> AllocateShaderModule(ShaderType shaderType, const std::string& filename);
 		static ResourceHandle<VulkanGraphicsPipeline> AllocateGraphicsPipeline(const VulkanPipelineInfo& info);
 		static ResourceHandle<VulkanCommandPool> AllocateCommandPool();
@@ -39,14 +40,14 @@ namespace Odyssey
 		static ResourceHandle<VulkanDescriptorLayout> AllocateDescriptorLayout(DescriptorType type, ShaderStage shaderStag, uint32_t bindingIndex);
 		static ResourceHandle<VulkanDescriptorBuffer> AllocateDescriptorBuffer(ResourceHandle<VulkanDescriptorLayout> layout, uint32_t descriptorCount);
 		static ResourceHandle<VulkanImage> AllocateImage(const VulkanImageDescription& imageDescription);
-		static ResourceHandle<VulkanImage> AllocateImage(VkImage image, VkFormat format);
+		static ResourceHandle<VulkanImage> AllocateImage(VkImage image, uint32_t width, uint32_t height, VkFormat format);
 		static ResourceHandle<VulkanTextureSampler> AllocateSampler();
 
 	public: // Pure destruction
 		static void DestroyBuffer(ResourceHandle<VulkanBuffer> handle);
 		static void DestroyVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle);
 		static void DestroyIndexBuffer(ResourceHandle<VulkanIndexBuffer> handle);
-		static void DestroyTexture(ResourceHandle<VulkanTexture> handle);
+		static void DestroyTexture(ResourceHandle<VulkanRenderTexture> handle);
 		static void DestroyShader(ResourceHandle<VulkanShaderModule> handle);
 		static void DestroyGraphicsPipeline(ResourceHandle<VulkanGraphicsPipeline> handle);
 		static void DestroyCommandPool(ResourceHandle<VulkanCommandPool> handle);
@@ -63,7 +64,7 @@ namespace Odyssey
 		inline static std::shared_ptr<VulkanContext> s_Context = nullptr;
 		inline static DynamicList<VulkanVertexBuffer> s_VertexBuffers;
 		inline static DynamicList<VulkanIndexBuffer> s_IndexBuffers;
-		inline static DynamicList<VulkanTexture> s_Textures;
+		inline static DynamicList<VulkanRenderTexture> s_Textures;
 		inline static DynamicList<VulkanShaderModule> s_Shaders;
 		inline static DynamicList<VulkanGraphicsPipeline> s_GraphicsPipelines;
 		inline static DynamicList<VulkanBuffer> s_Buffers;

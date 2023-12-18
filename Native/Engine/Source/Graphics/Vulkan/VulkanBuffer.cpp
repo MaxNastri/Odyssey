@@ -42,7 +42,7 @@ namespace Odyssey
 		VkMemoryRequirements memoryRequirements;
 		vkGetBufferMemoryRequirements(m_Context->GetDeviceVK(), buffer, &memoryRequirements);
 
-		m_Size = memoryRequirements.size;
+		m_Size = (uint32_t)memoryRequirements.size;
 
 		VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 		

@@ -7,7 +7,7 @@
 #include "VulkanCommandPool.h"
 #include "Events.h"
 #include "VulkanContext.h"
-#include "VulkanTexture.h"
+#include "VulkanRenderTexture.h"
 #include "VulkanTextureSampler.h"
 
 namespace Odyssey
@@ -129,10 +129,10 @@ namespace Odyssey
 		}
 	}
 
-	uint64_t VulkanImgui::AddTexture(ResourceHandle<VulkanTexture> handle)
+	uint64_t VulkanImgui::AddTexture(ResourceHandle<VulkanRenderTexture> textureHandle, ResourceHandle<VulkanTextureSampler> samplerHandle)
 	{
-		VulkanTexture* texture = handle.Get();
-		VkSampler sampler = texture->GetSampler().Get()->GetSamplerVK();
+		VulkanRenderTexture* texture = textureHandle.Get();
+		VkSampler sampler = samplerHandle.Get()->GetSamplerVK();
 		VkImageView view = texture->GetImage().Get()->GetImageView();
 		VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		return reinterpret_cast<uint64_t>(ImGui_ImplVulkan_AddTexture(sampler, view, layout));

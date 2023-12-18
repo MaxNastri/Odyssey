@@ -3,7 +3,7 @@
 #include "VulkanContext.h"
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
-#include "VulkanTexture.h"
+#include "VulkanRenderTexture.h"
 #include "VulkanShaderModule.h"
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanBuffer.h"
@@ -42,11 +42,18 @@ namespace Odyssey
 		return ResourceHandle<VulkanIndexBuffer>(id, s_IndexBuffers[id].get());
 	}
 
-	ResourceHandle<VulkanTexture> ResourceManager::AllocateTexture(uint32_t width, uint32_t height)
+	ResourceHandle<VulkanRenderTexture> ResourceManager::AllocateTexture(uint32_t width, uint32_t height)
 	{
 		uint32_t id = s_Textures.Add(s_Context, width, height);
 		s_Textures[id]->SetID(id);
-		return ResourceHandle<VulkanTexture>(id, s_Textures[id].get());
+		return ResourceHandle<VulkanRenderTexture>(id, s_Textures[id].get());
+	}
+
+	ResourceHandle<VulkanRenderTexture> ResourceManager::AllocateRenderTexture(ResourceHandle<VulkanImage> imageHandle, TextureFormat format)
+	{
+		uint32_t id = s_Textures.Add(s_Context, imageHandle, format);
+		s_Textures[id]->SetID(id);
+		return ResourceHandle<VulkanRenderTexture>(id, s_Textures[id].get());
 	}
 
 	ResourceHandle<VulkanShaderModule> ResourceManager::AllocateShaderModule(ShaderType shaderType, const std::string& filename)
@@ -98,9 +105,9 @@ namespace Odyssey
 		return ResourceHandle<VulkanImage>(id, s_Images[id].get());
 	}
 
-	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(VkImage image, VkFormat format)
+	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(VkImage image, uint32_t width, uint32_t height, VkFormat format)
 	{
-		uint32_t id = s_Images.Add(s_Context, image, format);
+		uint32_t id = s_Images.Add(s_Context, image, width, height, format);
 		s_Images[id]->SetID(id);
 		return ResourceHandle<VulkanImage>(id, s_Images[id].get());
 	}
@@ -133,7 +140,7 @@ namespace Odyssey
 		s_IndexBuffers.Remove(handle.m_ID);
 	}
 
-	void ResourceManager::DestroyTexture(ResourceHandle<VulkanTexture> handle)
+	void ResourceManager::DestroyTexture(ResourceHandle<VulkanRenderTexture> handle)
 	{
 		uint32_t id = handle.m_ID;
 		auto func = [](uint32_t id)
@@ -210,11 +217,14 @@ namespace Odyssey
 
 	void ResourceManager::Flush()
 	{
-		for (int i = s_PendingDestroys.size() - 1; i >= 0 ; i--)
+		if (s_PendingDestroys.size() > 0)
 		{
-			s_PendingDestroys[i].Execute();
-		}
+			for (int32_t i = (int32_t)s_PendingDestroys.size() - 1; i >= 0; i--)
+			{
+				s_PendingDestroys[i].Execute();
+			}
 
-		s_PendingDestroys.clear();
+			s_PendingDestroys.clear();
+		}
 	}
 }
