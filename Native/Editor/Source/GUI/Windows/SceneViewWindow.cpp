@@ -25,7 +25,7 @@ namespace Odyssey
 	{
 		// Rendering stuff
 		m_SceneViewPass = std::make_shared<OpaquePass>();
-		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		// Create the render texture
 		CreateRenderTexture();
@@ -64,7 +64,7 @@ namespace Odyssey
 			return;
 
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
-		m_SceneViewPass->SetRenderTexture(m_RenderTexture);
+		m_SceneViewPass->SetColorRenderTexture(m_RenderTexture);
 
 		// Render gizmos
 		RenderGizmos();

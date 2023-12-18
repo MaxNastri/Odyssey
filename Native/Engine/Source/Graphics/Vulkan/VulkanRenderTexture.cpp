@@ -7,6 +7,9 @@
 #include "volk.h"
 #include "VulkanImage.h"
 
+#include "VulkanCommandPool.h"
+#include "VulkanCommandBuffer.h"
+
 namespace Odyssey
 {
 	//VulkanTexture::VulkanTexture(std::shared_ptr<VulkanContext> context, const std::string& filename)
@@ -80,9 +83,21 @@ namespace Odyssey
 		VulkanImageDescription imageDesc;
 		imageDesc.Width = width;
 		imageDesc.Height = height;
-		imageDesc.ImageType = ImageType::RenderTexture;
+		imageDesc.ImageType = TextureType::RenderTexture;
 
 		m_Image = ResourceManager::AllocateImage(imageDesc);
+
+		auto pool = context->GetCommandPool();
+		ResourceHandle<VulkanCommandBuffer> commandBufferHandle = pool.Get()->AllocateBuffer();
+
+		if (VulkanCommandBuffer* commandBuffer = commandBufferHandle.Get())
+		{
+			commandBuffer->BeginCommands();
+			commandBuffer->TransitionLayouts(m_Image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			commandBuffer->EndCommands();
+			commandBuffer->Flush();
+		}
+		pool.Get()->ReleaseBuffer(commandBufferHandle);
 	}
 
 	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height, TextureFormat format)
@@ -94,9 +109,21 @@ namespace Odyssey
 		VulkanImageDescription imageDesc;
 		imageDesc.Width = width;
 		imageDesc.Height = height;
-		imageDesc.ImageType = ImageType::RenderTexture;
 		imageDesc.Format = format;
+		imageDesc.ImageType = IsDepthTexture(format) ? TextureType::DepthTexture : TextureType::RenderTexture;
 		m_Image = ResourceManager::AllocateImage(imageDesc);
+
+		auto pool = context->GetCommandPool();
+		ResourceHandle<VulkanCommandBuffer> commandBufferHandle = pool.Get()->AllocateBuffer();
+
+		if (VulkanCommandBuffer* commandBuffer = commandBufferHandle.Get())
+		{
+			commandBuffer->BeginCommands();
+			commandBuffer->TransitionLayouts(m_Image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			commandBuffer->EndCommands();
+			commandBuffer->Flush();
+		}
+		pool.Get()->ReleaseBuffer(commandBufferHandle);
 	}
 
 	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanImage> image, TextureFormat format)
@@ -116,5 +143,11 @@ namespace Odyssey
 	{
 		if (VulkanImage* image = m_Image.Get())
 			image->SetData(data);
+	}
+
+	bool VulkanRenderTexture::IsDepthTexture(TextureFormat format)
+	{
+		return format == TextureFormat::D32_SFLOAT || format == TextureFormat::D32_SFLOAT_S8_UINT ||
+			format == TextureFormat::D24_UNORM_S8_UINT;
 	}
 }

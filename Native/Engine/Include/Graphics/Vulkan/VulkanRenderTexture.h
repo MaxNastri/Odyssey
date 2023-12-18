@@ -26,10 +26,12 @@ namespace Odyssey
 		uint32_t GetHeight() { return m_Height; }
 
 	private:
+		bool IsDepthTexture(TextureFormat format);
+
+	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		ResourceHandle<VulkanImage> m_Image;
 		ResourceHandle<VulkanBuffer> m_StagingBuffer;
 		uint32_t m_Width, m_Height;
-		// Sampler, view, layout
 	};
 }

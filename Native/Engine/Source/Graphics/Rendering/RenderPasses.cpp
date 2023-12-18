@@ -11,9 +11,14 @@
 
 namespace Odyssey
 {
-	void RenderPass::SetRenderTexture(ResourceHandle<VulkanRenderTexture> renderTarget)
+	void RenderPass::SetColorRenderTexture(ResourceHandle<VulkanRenderTexture> colorRT)
 	{
-		m_RenderTexture = renderTarget;
+		m_ColorRT = colorRT;
+	}
+
+	void RenderPass::SetDepthRenderTexture(ResourceHandle<VulkanRenderTexture> depthRT)
+	{
+		m_DepthRT = depthRT;
 	}
 
 	OpaquePass::OpaquePass()
@@ -25,16 +30,18 @@ namespace Odyssey
 	{
 		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
 
-		VulkanImage* renderTarget = nullptr;
+		VulkanImage* colorAttachment = nullptr;
 		uint32_t width = 0;
 		uint32_t height = 0;
 
 		// Extract the render target and width/height
-		if (VulkanRenderTexture* renderTexture = m_RenderTexture.Get())
+		if (VulkanRenderTexture* renderTexture = m_ColorRT.Get())
 		{
-			renderTarget = renderTexture->GetImage().Get();
+			colorAttachment = renderTexture->GetImage().Get();
 			width = renderTexture->GetWidth();
 			height = renderTexture->GetHeight();
+
+			commandBuffer->TransitionLayouts(renderTexture->GetImage(), m_BeginLayout);
 		}
 		else
 		{
@@ -50,15 +57,35 @@ namespace Odyssey
 		clearValue.color.float32[3] = m_ClearValue.a;
 
 		// Create the rendering attachment for the render target
-		VkRenderingAttachmentInfoKHR color_attachment_info{};
-		color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
-		color_attachment_info.pNext = VK_NULL_HANDLE;
-		color_attachment_info.imageView = renderTarget->GetImageView();
-		color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-		color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
-		color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		color_attachment_info.clearValue = clearValue;
+		std::vector<VkRenderingAttachmentInfoKHR> attachments;
+
+		{
+			VkRenderingAttachmentInfoKHR color_attachment_info{};
+			color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
+			color_attachment_info.pNext = VK_NULL_HANDLE;
+			color_attachment_info.imageView = colorAttachment->GetImageView();
+			color_attachment_info.imageLayout = colorAttachment->GetLayout();
+			color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
+			color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+			color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			color_attachment_info.clearValue = clearValue;
+
+			attachments.push_back(color_attachment_info);
+		}
+
+		if (m_DepthRT.IsValid())
+		{
+			VulkanImage* depthAttachment = m_DepthRT.Get()->GetImage().Get();
+			VkRenderingAttachmentInfoKHR depthAttachmentInfo{};
+			depthAttachmentInfo.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
+			depthAttachmentInfo.pNext = VK_NULL_HANDLE;
+			depthAttachmentInfo.imageView = depthAttachment->GetImageView();
+			depthAttachmentInfo.imageLayout = depthAttachment->GetLayout();
+			depthAttachmentInfo.resolveMode = VK_RESOLVE_MODE_NONE;
+			depthAttachmentInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+			depthAttachmentInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			depthAttachmentInfo.clearValue = clearValue;
+		}
 
 		// Rendering info
 		VkRenderingInfoKHR rendering_info = {};
@@ -69,9 +96,9 @@ namespace Odyssey
 		rendering_info.layerCount = 1;
 		rendering_info.viewMask = 0;
 		rendering_info.colorAttachmentCount = 1;
-		rendering_info.pColorAttachments = &color_attachment_info;
-		rendering_info.pDepthAttachment = VK_NULL_HANDLE;
-		rendering_info.pStencilAttachment = VK_NULL_HANDLE;
+		rendering_info.pColorAttachments = &attachments[0];
+		rendering_info.pDepthAttachment = attachments.size() > 1 ? &attachments[1] : VK_NULL_HANDLE;
+		rendering_info.pStencilAttachment = attachments.size() > 1 ? &attachments[1] : VK_NULL_HANDLE;
 
 		// Begin dynamic rendering
 		commandBuffer->BeginRendering(rendering_info);
@@ -143,14 +170,14 @@ namespace Odyssey
 		commandBuffer->EndRendering();
 
 		// Make sure the RT is valid
-		if (!m_RenderTexture.IsValid())
+		if (!m_ColorRT.IsValid())
 		{
 			Logger::LogError("(OpaquePass) Invalid render target for OpaquePass");
 			return;
 		}
 
 		// Transition the backbuffer layout for presenting
-		commandBuffer->TransitionLayouts(m_RenderTexture, m_OldLayout, m_NewLayout);
+		commandBuffer->TransitionLayouts(m_ColorRT, m_EndLayout);
 	}
 
 	void ImguiPass::BeginPass(RenderPassParams& params)
@@ -169,8 +196,8 @@ namespace Odyssey
 		VkRenderingAttachmentInfoKHR color_attachment_info{};
 		color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 		color_attachment_info.pNext = VK_NULL_HANDLE;
-		color_attachment_info.imageView = m_RenderTexture.Get()->GetImage().Get()->GetImageView();
-		color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+		color_attachment_info.imageView = m_ColorRT.Get()->GetImage().Get()->GetImageView();
+		color_attachment_info.imageLayout = m_ColorRT.Get()->GetImage().Get()->GetLayout();;
 		color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 		color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -225,7 +252,7 @@ namespace Odyssey
 		commandBuffer->EndRendering();
 
 		// Transition the backbuffer layout for presenting
-		commandBuffer->TransitionLayouts(m_RenderTexture, m_OldLayout, m_NewLayout);
+		commandBuffer->TransitionLayouts(m_ColorRT, m_EndLayout);
 	}
 
 	void ImguiPass::SetImguiState(std::shared_ptr<VulkanImgui> imgui)

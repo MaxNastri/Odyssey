@@ -70,7 +70,7 @@ namespace Odyssey
 			viewInfo.image = m_Image;
 			viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 			viewInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
-			viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			viewInfo.subresourceRange.aspectMask = IsDepthFormat(desc.Format) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
 			viewInfo.subresourceRange.levelCount = 1;
 			viewInfo.subresourceRange.layerCount = 1;
 
@@ -88,6 +88,7 @@ namespace Odyssey
 		m_Image = image;
 		m_Width = width;
 		m_Height = height;
+		imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 		// Image view
 		{
@@ -96,7 +97,7 @@ namespace Odyssey
 			viewInfo.image = image;
 			viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 			viewInfo.format = format;
-			viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			viewInfo.subresourceRange.aspectMask =  VK_IMAGE_ASPECT_COLOR_BIT;
 			viewInfo.subresourceRange.baseMipLevel = 0;
 			viewInfo.subresourceRange.levelCount = 1;
 			viewInfo.subresourceRange.baseArrayLayer = 0;
@@ -175,6 +176,21 @@ namespace Odyssey
 			srcStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+		{
+			barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			dstStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		}
 		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 		{
 			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -204,6 +220,13 @@ namespace Odyssey
 			srcStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			dstStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+		{
+			barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+			dstStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		}
 		else {
 			throw std::invalid_argument("unsupported layout transition!");
 		}
@@ -226,15 +249,17 @@ namespace Odyssey
 
 		throw std::runtime_error("failed to find suitable memory type!");
 	}
-	VkImageUsageFlags VulkanImage::GetUsage(ImageType imageType)
+	VkImageUsageFlags VulkanImage::GetUsage(TextureType imageType)
 	{
 		switch (imageType)
 		{
-			case Odyssey::ImageType::None:
-			case Odyssey::ImageType::Image2D:
+			case Odyssey::TextureType::None:
+			case Odyssey::TextureType::Image2D:
 				return VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-			case Odyssey::ImageType::RenderTexture:
+			case Odyssey::TextureType::RenderTexture:
 				return VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+			case TextureType::DepthTexture:
+				return VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 			default:
 				return 0;
 		}
@@ -252,5 +277,10 @@ namespace Odyssey
 				return VK_FORMAT_R8G8B8A8_UNORM;
 				break;
 		}
+	}
+	bool VulkanImage::IsDepthFormat(TextureFormat format)
+	{
+		return format == TextureFormat::D32_SFLOAT || format == TextureFormat::D32_SFLOAT_S8_UINT ||
+			format == TextureFormat::D24_UNORM_S8_UINT;
 	}
 }

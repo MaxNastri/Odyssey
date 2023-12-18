@@ -161,7 +161,7 @@ namespace Odyssey
 		m_CommandBuffers[s_FrameIndex].Get()->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
-		m_CommandBuffers[s_FrameIndex].Get()->TransitionLayouts(frame.GetRenderTarget(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		m_CommandBuffers[s_FrameIndex].Get()->TransitionLayouts(frame.GetRenderTarget(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		currentFrame = &frame;
 		return true;
@@ -192,7 +192,7 @@ namespace Odyssey
 			params.context = m_Context;
 			params.renderingData = m_RenderingData;
 
-			m_RenderPasses[1]->SetRenderTexture(frame->GetRenderTarget());
+			m_RenderPasses[1]->SetColorRenderTexture(frame->GetRenderTarget());
 
 			for (const auto& renderPass : m_RenderPasses)
 			{

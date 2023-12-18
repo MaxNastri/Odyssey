@@ -34,8 +34,8 @@ namespace Odyssey
 		void SetScissor(VkRect2D scissor);
 		void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
 		void DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance);
-		void TransitionLayouts(ResourceHandle<VulkanRenderTexture> rtHandle, VkImageLayout oldLayout, VkImageLayout newLayout);
-		void TransitionLayouts(ResourceHandle<VulkanImage> imageHandle, VkImageLayout oldLayout, VkImageLayout newLayout);
+		void TransitionLayouts(ResourceHandle<VulkanRenderTexture> rtHandle, VkImageLayout newLayout);
+		void TransitionLayouts(ResourceHandle<VulkanImage> imageHandle, VkImageLayout newLayout);
 		void CopyBufferToImage(ResourceHandle<VulkanBuffer> handle, ResourceHandle<VulkanImage> imageHandle, uint32_t width, uint32_t height);
 		void BindVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle);
 		void CopyBufferToBuffer(ResourceHandle<VulkanBuffer> srcBuffer, ResourceHandle<VulkanBuffer> dstBuffer, uint32_t dataSize);

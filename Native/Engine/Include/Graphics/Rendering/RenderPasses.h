@@ -30,15 +30,19 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) = 0;
 
 	public:
-		void SetRenderTexture(ResourceHandle<VulkanRenderTexture> renderTarget);
-		void SetLayouts(VkImageLayout oldLayout, VkImageLayout newLayout) { m_OldLayout = oldLayout; m_NewLayout = newLayout; }
+		void SetColorRenderTexture(ResourceHandle<VulkanRenderTexture> colorRT);
+		void SetDepthRenderTexture(ResourceHandle<VulkanRenderTexture> depthRT);
+		void SetLayouts(VkImageLayout beginLayout, VkImageLayout endLayout) { m_BeginLayout = beginLayout; m_EndLayout = endLayout; }
 		void SetClearValue(glm::vec4 clearValue) { m_ClearValue = clearValue; }
 
 	protected:
-		ResourceHandle<VulkanRenderTexture> m_RenderTexture;
+		ResourceHandle<VulkanRenderTexture> m_ColorRT;
+		ResourceHandle<VulkanRenderTexture> m_DepthRT;
 		glm::vec4 m_ClearValue;
-		VkImageLayout m_OldLayout;
-		VkImageLayout m_NewLayout;
+		// Starting layout
+		// Ending layout
+		VkImageLayout m_BeginLayout;
+		VkImageLayout m_EndLayout;
 	};
 
 	class OpaquePass : public RenderPass

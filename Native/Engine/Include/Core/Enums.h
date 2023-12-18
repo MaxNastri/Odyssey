@@ -27,11 +27,12 @@ namespace Odyssey
 		Vertex = 2,
 	};
 
-	enum class ImageType
+	enum class TextureType
 	{
 		None = 0,
 		Image2D = 1,
 		RenderTexture = 2,
+		DepthTexture = 3,
 	};
 
 	enum class TextureFormat
@@ -39,6 +40,9 @@ namespace Odyssey
 		None = 0,
 		R8G8B8A8_SRGB = 1,
 		R8G8B8A8_UNORM = 2,
+		D32_SFLOAT = 100,
+		D32_SFLOAT_S8_UINT = 101,
+		D24_UNORM_S8_UINT = 102,
 	};
 
 	enum class ImageTiling
