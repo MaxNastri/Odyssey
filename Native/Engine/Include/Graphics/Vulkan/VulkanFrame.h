@@ -17,19 +17,19 @@ namespace Odyssey
 	{
 	public:
 		VulkanFrame() = default;
-		VulkanFrame(std::shared_ptr<VulkanContext> context, std::shared_ptr<VulkanImage> renderTarget, VkFormat format);
+		VulkanFrame(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanImage> renderTarget, VkFormat format);
 
 	public:
 		void Destroy();
 		
 	public:
-		void SetRenderTarget(std::shared_ptr<VulkanImage> renderTarget, uint32_t imageIndex);
+		void SetRenderTarget(ResourceHandle<VulkanImage> renderTarget, uint32_t imageIndex);
 
 	public:
 		const VkSemaphore* GetImageAcquiredSemaphore() { return &imageAcquiredSemaphore; }
 		const VkSemaphore* GetRenderCompleteSemaphore() { return &renderCompleteSemaphore; }
 		VkFence GetFence() { return fence; }
-		VulkanImage* GetRenderTarget() { return m_RenderTarget.get(); }
+		ResourceHandle<VulkanImage> GetRenderTarget() { return m_RenderTarget; }
 		VkImage GetRenderTargetVK();
 		VkImageView GetRenderTargetViewVK();
 
@@ -39,7 +39,7 @@ namespace Odyssey
 
 	public:
 		std::shared_ptr<VulkanContext> m_Context;
-		std::shared_ptr<VulkanImage> m_RenderTarget;
+		ResourceHandle<VulkanImage> m_RenderTarget;
 		uint32_t m_ImageIndex;
 		VkFence fence = VK_NULL_HANDLE;
 	private:

@@ -7,6 +7,7 @@
 #include "Mesh.h"
 #include "GUIManager.h"
 #include "ModelLoader.h"
+#include "Scene.h"
 
 namespace Odyssey
 {
@@ -168,12 +169,17 @@ namespace Odyssey
 			{
 				if (ImGui::MenuItem("Spiderman"))
 				{
-					const std::filesystem::path path("Assets/Models/SpiderMan.fbx");
+					const std::filesystem::path path("Assets/Models/Car_Combined.fbx");
 					ModelLoader loader;
 					ModelAsset asset;
 					if (loader.LoadModel(path, asset))
 					{
-						asset.Mesh.Get()->SaveTo("Assets/Meshes/Spiderman.mesh");
+						GameObject* go = SceneManager::GetActiveScene()->GetGameObject(0);
+						if (MeshRenderer* mr = go->GetComponent<MeshRenderer>())
+						{
+							mr->SetMesh(asset.Mesh);
+						}
+						//asset.Mesh.Get()->SaveTo("Assets/Meshes/Car.mesh");
 					}
 				}
 				ImGui::EndMenu();

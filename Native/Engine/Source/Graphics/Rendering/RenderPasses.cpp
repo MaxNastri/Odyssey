@@ -17,7 +17,7 @@ namespace Odyssey
 		m_RenderTarget = renderTarget.Get()->GetImage();
 	}
 
-	void RenderPass::SetRenderTarget(VulkanImage* renderTarget)
+	void RenderPass::SetRenderTarget(ResourceHandle<VulkanImage> renderTarget)
 	{
 		m_RenderTarget = renderTarget;
 	}
@@ -36,10 +36,9 @@ namespace Odyssey
 		uint32_t height = 0;
 
 		// Extract the render target and width/height
-		if (m_RenderTexture.IsValid())
+		if (VulkanTexture* renderTexture = m_RenderTexture.Get())
 		{
-			VulkanTexture* renderTexture = m_RenderTexture.Get();
-			renderTarget = renderTexture->GetImage();
+			renderTarget = renderTexture->GetImage().Get();
 			width = renderTexture->GetWidth();
 			height = renderTexture->GetHeight();
 		}
@@ -157,13 +156,8 @@ namespace Odyssey
 		}
 
 		// Transition the backbuffer layout for presenting
-		VulkanImage* renderTarget = m_RenderTexture.Get()->GetImage();
+		VulkanImage* renderTarget = m_RenderTexture.Get()->GetImage().Get();
 		commandBuffer->TransitionLayouts(renderTarget, m_OldLayout, m_NewLayout);
-	}
-
-	void ImguiPass::SetRenderTarget(VulkanImage* renderTarget)
-	{
-		m_RenderTarget = renderTarget;
 	}
 
 	void ImguiPass::BeginPass(RenderPassParams& params)
@@ -182,7 +176,7 @@ namespace Odyssey
 		VkRenderingAttachmentInfoKHR color_attachment_info{};
 		color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 		color_attachment_info.pNext = VK_NULL_HANDLE;
-		color_attachment_info.imageView = m_RenderTarget->GetImageView();
+		color_attachment_info.imageView = m_RenderTarget.Get()->GetImageView();
 		color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
 		color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 		color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -238,7 +232,7 @@ namespace Odyssey
 		commandBuffer->EndRendering();
 
 		// Transition the backbuffer layout for presenting
-		commandBuffer->TransitionLayouts(m_RenderTarget, m_OldLayout, m_NewLayout);
+		commandBuffer->TransitionLayouts(m_RenderTarget.Get(), m_OldLayout, m_NewLayout);
 	}
 
 	void ImguiPass::SetImguiState(std::shared_ptr<VulkanImgui> imgui)

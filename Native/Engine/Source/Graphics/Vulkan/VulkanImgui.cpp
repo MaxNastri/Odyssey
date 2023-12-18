@@ -132,8 +132,8 @@ namespace Odyssey
 	uint64_t VulkanImgui::AddTexture(ResourceHandle<VulkanTexture> handle)
 	{
 		VulkanTexture* texture = handle.Get();
-		VkSampler sampler = texture->GetSampler()->GetSamplerVK();
-		VkImageView view = texture->GetImage()->GetImageView();
+		VkSampler sampler = texture->GetSampler().Get()->GetSamplerVK();
+		VkImageView view = texture->GetImage().Get()->GetImageView();
 		VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		return reinterpret_cast<uint64_t>(ImGui_ImplVulkan_AddTexture(sampler, view, layout));
 	}

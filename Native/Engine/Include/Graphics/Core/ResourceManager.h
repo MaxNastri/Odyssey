@@ -4,6 +4,7 @@
 #include "DynamicList.h"
 #include "ResourceHandle.h"
 #include "VulkanVertex.h"
+#include "VulkanImage.h"
 
 namespace Odyssey
 {
@@ -18,6 +19,8 @@ namespace Odyssey
 	class VulkanCommandBuffer;
 	class VulkanDescriptorBuffer;
 	class VulkanDescriptorLayout;
+	class VulkanImage;
+	class VulkanTextureSampler;
 
 	class ResourceManager
 	{
@@ -35,6 +38,9 @@ namespace Odyssey
 		static ResourceHandle<VulkanCommandBuffer> AllocateCommandBuffer(ResourceHandle<VulkanCommandPool> commandPool);
 		static ResourceHandle<VulkanDescriptorLayout> AllocateDescriptorLayout(DescriptorType type, ShaderStage shaderStag, uint32_t bindingIndex);
 		static ResourceHandle<VulkanDescriptorBuffer> AllocateDescriptorBuffer(ResourceHandle<VulkanDescriptorLayout> layout, uint32_t descriptorCount);
+		static ResourceHandle<VulkanImage> AllocateImage(const VulkanImageDescription& imageDescription);
+		static ResourceHandle<VulkanImage> AllocateImage(VkImage image, VkFormat format);
+		static ResourceHandle<VulkanTextureSampler> AllocateSampler();
 
 	public: // Pure destruction
 		static void DestroyBuffer(ResourceHandle<VulkanBuffer> handle);
@@ -47,6 +53,8 @@ namespace Odyssey
 		static void DestroyCommandBuffer(ResourceHandle<VulkanCommandBuffer> bufferHandle, ResourceHandle<VulkanCommandPool> poolHandle);
 		static void DestroyDescriptorLayout(ResourceHandle<VulkanDescriptorLayout> handle);
 		static void DestroyDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle);
+		static void DestroyImage(ResourceHandle<VulkanImage> handle);
+		static void DestroySampler(ResourceHandle<VulkanTextureSampler> handle);
 
 	public:
 		static void Flush();
@@ -63,9 +71,22 @@ namespace Odyssey
 		inline static DynamicList<VulkanCommandBuffer> s_CommandBuffers;
 		inline static DynamicList<VulkanDescriptorLayout> s_DescriptorLayouts;
 		inline static DynamicList<VulkanDescriptorBuffer> s_DescriptorBuffers;
+		inline static DynamicList<VulkanImage> s_Images;
+		inline static DynamicList<VulkanTextureSampler> s_Samplers;
 
 	private:
-		inline static std::vector<std::function<void(void)>> s_PendingDestroys;
+		struct ResourceDeallocation
+		{
+			uint32_t ID;
+			std::function<void(uint32_t)> Func;
+
+			void Execute()
+			{
+				Func(ID);
+			}
+		};
+
+		inline static std::vector<ResourceDeallocation> s_PendingDestroys;
 	};
 
 }

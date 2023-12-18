@@ -161,7 +161,7 @@ namespace Odyssey
 		m_CommandBuffers[s_FrameIndex].Get()->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
-		m_CommandBuffers[s_FrameIndex].Get()->TransitionLayouts(frame.GetRenderTarget(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		m_CommandBuffers[s_FrameIndex].Get()->TransitionLayouts(frame.GetRenderTarget().Get(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		currentFrame = &frame;
 		return true;
@@ -283,7 +283,7 @@ namespace Odyssey
 
 		// Create the frames
 		{
-			std::vector<std::shared_ptr<VulkanImage>> backbuffers = m_Swapchain->GetBackbuffers();
+			std::vector<ResourceHandle<VulkanImage>> backbuffers = m_Swapchain->GetBackbuffers();
 			uint32_t imageCount = m_Swapchain->GetImageCount();
 			m_Frames.resize(imageCount);
 

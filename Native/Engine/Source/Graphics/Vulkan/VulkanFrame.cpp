@@ -6,7 +6,7 @@
 
 namespace Odyssey
 {
-	VulkanFrame::VulkanFrame(std::shared_ptr<VulkanContext> context, std::shared_ptr<VulkanImage> renderTarget, VkFormat format)
+	VulkanFrame::VulkanFrame(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanImage> renderTarget, VkFormat format)
 	{
 		m_Context = context;
 		m_RenderTarget = renderTarget;
@@ -28,7 +28,7 @@ namespace Odyssey
 		renderCompleteSemaphore = VK_NULL_HANDLE;
 	}
 
-	void VulkanFrame::SetRenderTarget(std::shared_ptr<VulkanImage> renderTarget, uint32_t imageIndex)
+	void VulkanFrame::SetRenderTarget(ResourceHandle<VulkanImage> renderTarget, uint32_t imageIndex)
 	{
 		m_RenderTarget = renderTarget;
 		m_ImageIndex = imageIndex;
@@ -36,12 +36,12 @@ namespace Odyssey
 
 	VkImage VulkanFrame::GetRenderTargetVK()
 	{
-		return m_RenderTarget->GetImage();
+		return m_RenderTarget.Get()->GetImage();
 	}
 
 	VkImageView VulkanFrame::GetRenderTargetViewVK()
 	{
-		return m_RenderTarget->GetImageView();
+		return m_RenderTarget.Get()->GetImageView();
 	}
 
 	void VulkanFrame::CreateFence()

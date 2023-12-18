@@ -4,6 +4,7 @@
 #include "VulkanPhysicalDevice.h"
 #include "VulkanSurface.h"
 #include "VulkanImage.h"
+#include "ResourceManager.h"
 
 namespace Odyssey
 {
@@ -21,7 +22,7 @@ namespace Odyssey
         imageCount = 0;
 	}
 
-    std::vector<std::shared_ptr<VulkanImage>> VulkanSwapchain::GetBackbuffers()
+    std::vector<ResourceHandle<VulkanImage>> VulkanSwapchain::GetBackbuffers()
     {
         return backbuffers;
     }
@@ -105,7 +106,7 @@ namespace Odyssey
         backbuffers.resize(backbufferImages.size());
         for (uint16_t i = 0; i < backbuffers.size(); ++i)
         {
-            backbuffers[i] = std::make_shared<VulkanImage>(m_Context, backbufferImages[i], format);
+            backbuffers[i] = ResourceManager::AllocateImage(backbufferImages[i], format);
         }
     }
 

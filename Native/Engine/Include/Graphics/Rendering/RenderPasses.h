@@ -31,13 +31,13 @@ namespace Odyssey
 
 	public:
 		void SetRenderTexture(ResourceHandle<VulkanTexture> renderTarget);
-		void SetRenderTarget(VulkanImage* renderTarget);
+		void SetRenderTarget(ResourceHandle<VulkanImage> renderTarget);
 		void SetLayouts(VkImageLayout oldLayout, VkImageLayout newLayout) { m_OldLayout = oldLayout; m_NewLayout = newLayout; }
 		void SetClearValue(glm::vec4 clearValue) { m_ClearValue = clearValue; }
 
 	protected:
 		ResourceHandle<VulkanTexture> m_RenderTexture;
-		VulkanImage* m_RenderTarget;
+		ResourceHandle<VulkanImage> m_RenderTarget;
 		glm::vec4 m_ClearValue;
 		VkImageLayout m_OldLayout;
 		VkImageLayout m_NewLayout;
@@ -64,9 +64,6 @@ namespace Odyssey
 	{
 	public:
 		ImguiPass() = default;
-
-	public:
-		void SetRenderTarget(VulkanImage* renderTarget);
 
 	public:
 		virtual void BeginPass(RenderPassParams& params) override;

@@ -1,6 +1,7 @@
 #pragma once
 #include "Enums.h"
 #include "VulkanGlobals.h"
+#include "Resource.h"
 #include "ResourceHandle.h"
 
 VK_FWD_DECLARE(VkImage)
@@ -22,7 +23,7 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanBuffer;
 
-	class VulkanImage
+	class VulkanImage : public Resource
 	{
 	public:
 		VulkanImage(std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc);

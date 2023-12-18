@@ -12,14 +12,14 @@ namespace Odyssey
 	{
 		Assimp::Importer importer;
 
-		const aiScene* scene = importer.ReadFile(assetPath.string(), aiProcess_Triangulate | aiProcess_FlipWindingOrder);
+		const aiScene* scene = importer.ReadFile(assetPath.string(), aiProcess_FlipWindingOrder);
 
 		if (!scene)
 			return false;
 
 		ProcessNode(scene->mRootNode, scene);
 
-		outModel.Mesh = m_Meshes[2];
+		outModel.Mesh = m_Meshes[0];
 		return true;
 	}
 
@@ -54,6 +54,12 @@ namespace Odyssey
 			{
 				aiVector3D uv0 = importMesh->mTextureCoords[0][i];
 				vertex.m_UV0 = glm::vec2(uv0.x, uv0.y);
+			}
+
+			if (importMesh->mNormals)
+			{
+				aiVector3D normals = importMesh->mNormals[i];
+				vertex.m_Normal = glm::vec3(normals.x, normals.y, normals.z);
 			}
 
 			vertices[i] = vertex;

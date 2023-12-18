@@ -7,12 +7,12 @@
 #include "VulkanShaderModule.h"
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanBuffer.h"
-#include "Mesh.h"
-#include "Material.h"
 #include "VulkanCommandPool.h"
 #include "VulkanCommandPool.h"
 #include "VulkanDescriptorLayout.h"
 #include "VulkanDescriptorBuffer.h"
+#include "VulkanImage.h"
+#include "VulkanTextureSampler.h"
 
 namespace Odyssey
 {
@@ -91,6 +91,27 @@ namespace Odyssey
 		return ResourceHandle<VulkanDescriptorBuffer>(id, s_DescriptorBuffers[id].get());
 	}
 
+	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(const VulkanImageDescription& imageDescription)
+	{
+		uint32_t id = s_Images.Add(s_Context, imageDescription);
+		s_Images[id]->SetID(id);
+		return ResourceHandle<VulkanImage>(id, s_Images[id].get());
+	}
+
+	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(VkImage image, VkFormat format)
+	{
+		uint32_t id = s_Images.Add(s_Context, image, format);
+		s_Images[id]->SetID(id);
+		return ResourceHandle<VulkanImage>(id, s_Images[id].get());
+	}
+
+	ResourceHandle<VulkanTextureSampler> ResourceManager::AllocateSampler()
+	{
+		uint32_t id = s_Samplers.Add(s_Context);
+		s_Samplers[id]->SetID(id);
+		return ResourceHandle<VulkanTextureSampler>(id, s_Samplers[id].get());
+	}
+
 	void ResourceManager::DestroyBuffer(ResourceHandle<VulkanBuffer> handle)
 	{
 		s_Buffers[handle.m_ID]->Destroy();
@@ -115,13 +136,13 @@ namespace Odyssey
 	void ResourceManager::DestroyTexture(ResourceHandle<VulkanTexture> handle)
 	{
 		uint32_t id = handle.m_ID;
-		auto callback = [id]()
+		auto func = [](uint32_t id)
 			{
 				s_Textures[id]->Destroy();
 				s_Textures[id]->SetID(-1);
 				s_Textures.Remove(id);
 			};
-		s_PendingDestroys.push_back(callback);
+		s_PendingDestroys.push_back({ id, func });
 	}
 
 	void ResourceManager::DestroyShader(ResourceHandle<VulkanShaderModule> handle)
@@ -163,12 +184,37 @@ namespace Odyssey
 		s_DescriptorBuffers.Remove(handle.m_ID);
 	}
 
+	void ResourceManager::DestroyImage(ResourceHandle<VulkanImage> handle)
+	{
+		uint32_t id = handle.m_ID;
+		auto func = [](uint32_t id)
+			{
+				s_Images[id]->Destroy();
+				s_Images[id]->SetID(-1);
+				s_Images.Remove(id);
+			};
+		s_PendingDestroys.push_back({ id, func });
+	}
+
+	void ResourceManager::DestroySampler(ResourceHandle<VulkanTextureSampler> handle)
+	{
+		uint32_t id = handle.m_ID;
+		auto func = [](uint32_t id)
+			{
+				s_Samplers[id]->Destroy();
+				s_Samplers[id]->SetID(-1);
+				s_Samplers.Remove(id);
+			};
+		s_PendingDestroys.push_back({ id, func });
+	}
+
 	void ResourceManager::Flush()
 	{
-		for (const auto& func : s_PendingDestroys)
+		for (int i = s_PendingDestroys.size() - 1; i >= 0 ; i--)
 		{
-			func();
+			s_PendingDestroys[i].Execute();
 		}
+
 		s_PendingDestroys.clear();
 	}
 }

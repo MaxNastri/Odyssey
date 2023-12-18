@@ -4,6 +4,7 @@
 #include "VulkanBuffer.h"
 #include "VulkanCommandPool.h"
 #include "VulkanCommandBuffer.h"
+#include "ResourceManager.h"
 #include <Logger.h>
 #include "volk.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -84,18 +85,19 @@ namespace Odyssey
 		imageDesc.Height = height;
 		imageDesc.ImageType = ImageType::RenderTexture;
 
-		m_Image = std::make_unique<VulkanImage>(context, imageDesc);
-		m_Sampler = std::make_unique<VulkanTextureSampler>(context);
+		m_Image = ResourceManager::AllocateImage(imageDesc);
+		m_Sampler = ResourceManager::AllocateSampler();
 	}
 
 	void VulkanTexture::Destroy()
 	{
-		m_Image->Destroy();
-		m_Sampler->Destroy();
+		ResourceManager::DestroyImage(m_Image);
+		ResourceManager::DestroySampler(m_Sampler);
 	}
 
 	void VulkanTexture::SetData(const void* data)
 	{
-		m_Image->SetData(data);
+		if (VulkanImage* image = m_Image.Get())
+			image->SetData(data);
 	}
 }
