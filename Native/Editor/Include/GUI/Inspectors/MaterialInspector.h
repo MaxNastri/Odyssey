@@ -1,6 +1,7 @@
 #pragma once
 #include "Inspector.h"
 #include "AssetFieldDrawer.h"
+#include "StringDrawer.h"
 
 namespace Odyssey
 {
@@ -17,12 +18,17 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	private:
+		static void OnNameModified(Material* material, const std::string& name);
 		static void OnFragmentShaderModified(Material* material, const std::string& guid);
 		static void OnVertexShaderModified(Material* material, const std::string& guid);
 
 	private:
 		Material* m_Material;
+
+		StringDrawer m_NameDrawer;
+		ReadOnlyStringDrawer m_GUIDDrawer;
 		AssetFieldDrawer m_FragmentShaderDrawer;
 		AssetFieldDrawer m_VertexShaderDrawer;
+		bool m_Modified = false;
 	};
 }

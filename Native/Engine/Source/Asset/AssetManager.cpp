@@ -70,7 +70,7 @@ namespace Odyssey
 		material->SetFragmentShader(s_DefaultFragmentShader);
 
 		// Save to disk
-		material->Save(assetPath);
+		material->Save();
 
 		return AssetHandle<Material>(id, material);
 	}

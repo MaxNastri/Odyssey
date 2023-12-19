@@ -28,6 +28,7 @@ namespace Odyssey
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Asset"))
 			{
 				m_GUID = (const char*)payload->Data;
+				m_Modified = true;
 				m_OnValueModified(m_GUID);
 				Logger::LogInfo("(AssetFieldDrawer) Accepting D&D payload for mesh asset: " + m_GUID);
 			}

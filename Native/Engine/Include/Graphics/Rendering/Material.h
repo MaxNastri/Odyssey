@@ -13,8 +13,9 @@ namespace Odyssey
 		Material(const std::string& path);
 
 	public:
+		void Save();
+		void SaveTo(const std::string& path);
 		void Load(const std::string& path);
-		void Save(const std::string& path);
 
 	public:
 		AssetHandle<Shader> GetVertexShader() { return m_VertexShader; }

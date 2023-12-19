@@ -11,10 +11,11 @@ namespace Odyssey
 		void SetType(const std::string& type) { m_Type = type; }
 
 	public:
+		const std::string& GetGUID() { return m_GUID; }
+		const std::string& GetName() { return m_Name; }
 		std::string& GetAssetPath() { return m_AssetPath; }
 
 	public:
-		const std::string& GetGUID() { return m_GUID; }
 
 	protected:
 		std::string m_GUID;
