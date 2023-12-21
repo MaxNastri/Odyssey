@@ -64,13 +64,18 @@ namespace Odyssey
 		ObjectUniformData objectData;
 
 		// Descriptor buffer for per-scene data
-		ResourceHandle<VulkanDescriptorLayout> descriptorLayout;
+		ResourceHandle<VulkanDescriptorLayout> uboLayout;
 		ResourceHandle<VulkanBuffer> sceneUniformBuffer;
 		std::vector<ResourceHandle<VulkanBuffer>> perObjectUniformBuffers;
 		ResourceHandle<VulkanDescriptorBuffer> descriptorBuffer;
 
+		// Descriptor buffer for per-object sampler
+		ResourceHandle<VulkanDescriptorLayout> m_SamplerLayout;
+		ResourceHandle<VulkanBuffer> m_SamplerBuffer;
+		ResourceHandle<VulkanDescriptorBuffer> m_SamplerDescriptorBuffer;
+
 		std::vector<SetPass> setPasses;
 		uint32_t m_NextUniformBuffer = 0;
-		const uint32_t Max_Uniform_Buffers = 512;
+		const uint32_t Max_Uniform_Buffers = 128;
 	};
 }

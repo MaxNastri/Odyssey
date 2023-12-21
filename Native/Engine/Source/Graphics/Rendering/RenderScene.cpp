@@ -17,8 +17,11 @@ namespace Odyssey
 	RenderScene::RenderScene()
 	{
 		// Descriptor layout for the combined uniform buffers
-		descriptorLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		descriptorBuffer = ResourceManager::AllocateDescriptorBuffer(descriptorLayout, Max_Uniform_Buffers);
+		uboLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Uniform, ShaderStage::Vertex, 0);
+		descriptorBuffer = ResourceManager::AllocateDescriptorBuffer(uboLayout, Max_Uniform_Buffers);
+
+		m_SamplerLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Sampler, ShaderStage::Fragment, 1);
+		m_SamplerDescriptorBuffer = ResourceManager::AllocateDescriptorBuffer(m_SamplerLayout, 1);
 
 		// Scene uniform buffer
 		uint32_t sceneUniformSize = sizeof(sceneData);
@@ -46,7 +49,7 @@ namespace Odyssey
 
 	void RenderScene::Destroy()
 	{
-		ResourceManager::DestroyDescriptorLayout(descriptorLayout);
+		ResourceManager::DestroyDescriptorLayout(uboLayout);
 		ResourceManager::DestroyDescriptorBuffer(descriptorBuffer);
 		ResourceManager::DestroyBuffer(sceneUniformBuffer);
 	}
@@ -97,7 +100,7 @@ namespace Odyssey
 					{
 						setPasses.push_back(SetPass());
 						setPass = &(setPasses[setPasses.size() - 1]);
-						setPass->SetMaterial(renderer->GetMaterial(), descriptorLayout);
+						setPass->SetMaterial(renderer->GetMaterial(), uboLayout);
 					}
 
 					Mesh* mesh = renderer->GetMesh().Get();

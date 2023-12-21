@@ -151,12 +151,19 @@ namespace Odyssey
 
 			uint32_t descriptorIndex = 1;
 
-			for (auto& drawcall : setPass.drawcalls)
+			for (size_t i = 0; i < setPass.drawcalls.size(); i++)
 			{
-				// Bind the per-objectdescriptor buffer 
-				buffer_offset = descriptorIndex * renderScene->descriptorBuffer.Get()->GetSize();
+				Drawcall& drawcall = setPass.drawcalls[i];
+
+				// Bind the per-object descriptor buffer 
+				// Note: (i + 1) because slot 0 is held by the global scene ubo
+				buffer_offset = (i + 1) * renderScene->descriptorBuffer.Get()->GetSize();
 				commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 1, &buffer_index_ubo, &buffer_offset);
-				descriptorIndex++;
+
+				// Image (set 2)
+				//uint32_t bufferIndexImage = 1;
+				//buffer_offset = (i * renderScene->m_SamplerDescriptorBuffer.Get()->GetSize());
+				//commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 2, &buffer_index_ubo, &buffer_offset);
 
 				// Set the per-object descriptor buffer offset
 				commandBuffer->BindVertexBuffer(drawcall.VertexBuffer);

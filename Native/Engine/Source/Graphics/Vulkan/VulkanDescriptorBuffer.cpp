@@ -4,6 +4,8 @@
 #include "VulkanDescriptorLayout.h"
 #include "ResourceManager.h"
 #include "VulkanBuffer.h"
+#include "VulkanImage.h"
+#include "VulkanTextureSampler.h"
 
 namespace Odyssey
 {
@@ -67,6 +69,25 @@ namespace Odyssey
 		addressInfo.format = VK_FORMAT_UNDEFINED;
 
 		descriptorInfo.data.pUniformBuffer = &addressInfo;
+
+		char* descriptor = uniformDescriptorBuffer + (index * m_Size) + m_Offset;
+		vkGetDescriptorEXT(m_Context->GetDeviceVK(), &descriptorInfo, m_Properties.uniformBufferDescriptorSize, descriptor);
+	}
+
+	void VulkanDescriptorBuffer::SetTexture(ResourceHandle<VulkanImage> image, ResourceHandle<VulkanTextureSampler> sampler, uint32_t index)
+	{
+		// Get our mapped memory address
+		char* uniformDescriptorBuffer = (char*)m_Buffer.Get()->GetMappedMemory();
+
+		VkDescriptorGetInfoEXT descriptorInfo{ VK_STRUCTURE_TYPE_DESCRIPTOR_GET_INFO_EXT };
+		descriptorInfo.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
+		VkDescriptorImageInfo imageInfo{};
+		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		imageInfo.imageView = image.Get()->GetImageView();
+		imageInfo.sampler = sampler.Get()->GetSamplerVK();
+
+		descriptorInfo.data.pCombinedImageSampler = &imageInfo;
 
 		char* descriptor = uniformDescriptorBuffer + (index * m_Size) + m_Offset;
 		vkGetDescriptorEXT(m_Context->GetDeviceVK(), &descriptorInfo, m_Properties.uniformBufferDescriptorSize, descriptor);

@@ -10,7 +10,9 @@ namespace Odyssey
 {
 	class VulkanBuffer;
 	class VulkanContext;
+	class VulkanImage;
 	class VulkanDescriptorLayout;
+	class VulkanTextureSampler;
 
 	class VulkanDescriptorBuffer : public Resource
 	{
@@ -20,7 +22,8 @@ namespace Odyssey
 
 	public:
 		void SetUniformBuffer(ResourceHandle<VulkanBuffer> uniformBuffer, uint32_t index);
-		
+		void SetTexture(ResourceHandle<VulkanImage> image, ResourceHandle<VulkanTextureSampler> sampler, uint32_t index);
+
 	public:
 		ResourceHandle<VulkanBuffer> GetBuffer() { return m_Buffer; }
 		uint32_t GetSize() { return m_Size; }

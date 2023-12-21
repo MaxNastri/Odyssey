@@ -38,7 +38,7 @@ namespace Odyssey
 		static ResourceHandle<VulkanGraphicsPipeline> AllocateGraphicsPipeline(const VulkanPipelineInfo& info);
 		static ResourceHandle<VulkanCommandPool> AllocateCommandPool();
 		static ResourceHandle<VulkanCommandBuffer> AllocateCommandBuffer(ResourceHandle<VulkanCommandPool> commandPool);
-		static ResourceHandle<VulkanDescriptorLayout> AllocateDescriptorLayout(DescriptorType type, ShaderStage shaderStag, uint32_t bindingIndex);
+		static ResourceHandle<VulkanDescriptorLayout> AllocateDescriptorLayout(DescriptorType type, ShaderStage shaderStage, uint32_t bindingIndex);
 		static ResourceHandle<VulkanDescriptorBuffer> AllocateDescriptorBuffer(ResourceHandle<VulkanDescriptorLayout> layout, uint32_t descriptorCount);
 		static ResourceHandle<VulkanImage> AllocateImage(const VulkanImageDescription& imageDescription);
 		static ResourceHandle<VulkanImage> AllocateImage(VkImage image, uint32_t width, uint32_t height, VkFormat format);

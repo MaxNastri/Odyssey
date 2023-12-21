@@ -110,9 +110,14 @@ namespace Odyssey
 		for (auto& iter : std::filesystem::directory_iterator(m_CurrentPath))
 		{
 			if (iter.is_directory())
+			{
 				m_FoldersToDisplay.push_back(iter.path());
+			}
 			else if (iter.is_regular_file())
-				m_FilesToDisplay.push_back(iter.path());
+			{
+				if (iter.path().extension() != ".meta")
+					m_FilesToDisplay.push_back(iter.path());
+			}
 		}
 	}
 
