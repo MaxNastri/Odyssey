@@ -36,12 +36,6 @@ namespace Odyssey
 			scenes[activeScene].Get()->Save();
 	}
 
-	void SceneManager::SaveActiveSceneTo(const std::string& assetPath)
-	{
-		if (activeScene < scenes.size())
-			scenes[activeScene].Get()->SaveTo(assetPath);
-	}
-
 	Scene* SceneManager::GetActiveScene()
 	{
 		if (activeScene < scenes.size())
@@ -68,8 +62,8 @@ namespace Odyssey
 		{
 			if (onBuildFinished->success)
 			{
-				scenes[activeScene].Get()->SaveTo(tempSaveFilename);
-				scenes[activeScene].Get()->Clear();
+				//scenes[activeScene].Get()->SaveTo(tempSaveFilename);
+				//scenes[activeScene].Get()->Clear();
 			}
 		}
 	}
@@ -78,7 +72,7 @@ namespace Odyssey
 	{
 		if (activeScene < scenes.size())
 		{
-			scenes[activeScene].Get()->Load(tempSaveFilename);
+			//scenes[activeScene].Get()->Load(tempSaveFilename);
 			EventSystem::Dispatch<OnSceneLoaded>(scenes[activeScene].Get());
 		}
 	}

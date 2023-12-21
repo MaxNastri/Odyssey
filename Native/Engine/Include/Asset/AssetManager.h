@@ -19,16 +19,16 @@ namespace Odyssey
 	public:
 		static AssetHandle<Mesh> CreateMesh();
 	public:
-		static AssetHandle<Material> CreateMaterial(const std::string& assetPath);
-		static AssetHandle<Mesh> CreateMesh(const std::string& assetPath);
-		static AssetHandle<Shader> CreateShader(const std::string& assetPath);
-		static AssetHandle<Scene> CreateScene(const std::string& assetPath);
+		static AssetHandle<Material> CreateMaterial(const std::filesystem::path& assetPath);
+		static AssetHandle<Mesh> CreateMesh(const std::filesystem::path& assetPath);
+		static AssetHandle<Shader> CreateShader(const std::filesystem::path& assetPath);
+		static AssetHandle<Scene> CreateScene(const std::filesystem::path& assetPath);
 
 	public:
-		static AssetHandle<Material> LoadMaterial(const std::string& assetPath);
-		static AssetHandle<Mesh> LoadMesh(const std::string& assetPath);
-		static AssetHandle<Shader> LoadShader(const std::string& assetPath);
-		static AssetHandle<Scene> LoadScene(const std::string& assetPath);
+		static AssetHandle<Material> LoadMaterial(const std::filesystem::path& assetPath);
+		static AssetHandle<Mesh> LoadMesh(const std::filesystem::path& assetPath);
+		static AssetHandle<Shader> LoadShader(const std::filesystem::path& assetPath);
+		static AssetHandle<Scene> LoadScene(const std::filesystem::path& assetPath);
 
 	public:
 		static AssetHandle<Material> LoadMaterialByGUID(const std::string& guid);
@@ -43,10 +43,11 @@ namespace Odyssey
 		static void UnloadScene(AssetHandle<Scene> scene);
 
 	public:
-		static std::string PathToGUID(std::filesystem::path path);
+		static std::string PathToGUID(const std::filesystem::path& path);
 
 	private:
 		static std::string GenerateGUID();
+		static std::filesystem::path GenerateMetaPath(const std::filesystem::path& assetPath);
 
 	private:
 		inline static DynamicList<Mesh> s_Meshes;

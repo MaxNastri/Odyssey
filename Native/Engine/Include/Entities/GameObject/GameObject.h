@@ -6,7 +6,7 @@
 
 namespace Odyssey
 {
-	class GameObject : public Asset
+	class GameObject
 	{
 	public:
 		GameObject();

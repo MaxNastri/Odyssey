@@ -8,9 +8,10 @@
 
 namespace Odyssey
 {
-	Mesh::Mesh(const std::string& assetPath)
+	Mesh::Mesh(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath)
+		: Asset(assetPath, metaPath)
 	{
-		Load(assetPath);
+		LoadFromDisk(assetPath);
 
 		m_VertexBuffer = ResourceManager::AllocateVertexBuffer(m_Vertices);
 		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
@@ -18,21 +19,21 @@ namespace Odyssey
 
 	void Mesh::Save()
 	{
-		SaveTo(m_AssetPath);
+		SaveToDisk(m_AssetPath);
+		SaveMetadata();
 	}
 
-	void Mesh::SaveTo(const std::string& path)
+	void Mesh::Load()
+	{
+		LoadFromDisk(m_AssetPath);
+	}
+
+	void Mesh::SaveToDisk(const std::filesystem::path& path)
 	{
 		// Create a tree and root node
 		ryml::Tree tree;
 		ryml::NodeRef root = tree.rootref();
 		root |= ryml::MAP;
-
-		// Serialize the base asset data
-		root["m_GUID"] << m_GUID;
-		root["m_Name"] << m_Name;
-		root["m_AssetPath"] << path;
-		root["m_Type"] << m_Type;
 
 		// Serialize the mesh-specific data
 		root["m_VertexCount"] << m_VertexCount;
@@ -41,12 +42,12 @@ namespace Odyssey
 		root["m_IndexData"] << (m_IndexCount > 0 ? IndexDataToHex() : "");
 
 		// Save to disk
-		FILE* file2 = fopen(path.c_str(), "w+");
+		FILE* file2 = fopen(path.string().c_str(), "w+");
 		size_t len = ryml::emit_yaml(tree, tree.root_id(), file2);
 		fclose(file2);
 	}
 
-	void Mesh::Load(const std::string& assetPath)
+	void Mesh::LoadFromDisk(const std::filesystem::path& assetPath)
 	{
 		if (std::ifstream ifs{ assetPath })
 		{
@@ -54,12 +55,6 @@ namespace Odyssey
 			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
 			ryml::NodeRef node = tree.rootref();
-
-			// Deserialize the base asset data
-			node["m_GUID"] >> m_GUID;
-			node["m_Name"] >> m_Name;
-			node["m_AssetPath"] >> m_AssetPath;
-			node["m_Type"] >> m_Type;
 
 			// Deserialize the mesh-specific data
 			std::string vertexData;

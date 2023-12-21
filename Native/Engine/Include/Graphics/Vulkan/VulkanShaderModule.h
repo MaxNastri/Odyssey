@@ -12,7 +12,7 @@ namespace Odyssey
 	class VulkanShaderModule : public Resource
 	{
 	public:
-		VulkanShaderModule(std::shared_ptr<VulkanContext> context, ShaderType shaderType, const std::string& filename);
+		VulkanShaderModule(std::shared_ptr<VulkanContext> context, ShaderType shaderType, const std::filesystem::path& filename);
 		void Destroy();
 
 	public:
@@ -20,13 +20,13 @@ namespace Odyssey
 		ShaderType GetShaderType() { return m_ShaderType; }
 
 	private:
-		std::vector<char> ReadShaderCode(const std::string& filename);
+		std::vector<char> ReadShaderCode(const std::filesystem::path& filename);
 		void CreateShaderModule(std::vector<char> shaderCode);
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		VkShaderModule m_ShaderModule;
 		ShaderType m_ShaderType;
-		std::string m_Filename;
+		std::filesystem::path m_FilePath;
 	};
 }

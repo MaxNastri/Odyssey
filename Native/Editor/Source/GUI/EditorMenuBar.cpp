@@ -43,7 +43,7 @@ namespace Odyssey
 
 				if (!scenePath.empty())
 				{
-					SceneManager::SaveActiveSceneTo(scenePath);
+					//SceneManager::SaveActiveSceneTo(scenePath);
 				}
 			}
             ImGui::EndMenu();

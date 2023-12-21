@@ -5,14 +5,16 @@
 
 namespace Odyssey
 {
-	Shader::Shader(const std::string& assetPath)
+	Shader::Shader(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath)
+		: Asset(assetPath, metaPath)
 	{
-		Load(assetPath);
+		LoadFromDisk(assetPath);
+
 		if (!m_ModulePath.empty())
 			m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ModulePath);
 	}
 
-	void Shader::Load(const std::string& path)
+	void Shader::LoadFromDisk(const std::filesystem::path& path)
 	{
 		if (std::ifstream ifs{ path })
 		{
@@ -21,38 +23,38 @@ namespace Odyssey
 			ryml::NodeRef node = tree.rootref();
 
 			uint32_t shaderType = 0;
-
-			node["m_GUID"] >> m_GUID;
-			node["m_Name"] >> m_Name;
-			node["m_AssetPath"] >> m_AssetPath;
-			node["m_Type"] >> m_Type;
+			std::string modulePath;
 
 			node["m_ShaderType"] >> shaderType;
-			node["m_ModulePath"] >> m_ModulePath;
+			node["m_ModulePath"] >> modulePath;
+
 			m_ShaderType = (ShaderType)shaderType;
+			m_ModulePath = modulePath;
 		}
 	}
 
 	void Shader::Save()
 	{
-		SaveTo(m_AssetPath);
+		SaveMetadata();
+		SaveToDisk(m_AssetPath);
 	}
 
-	void Shader::SaveTo(const std::string& path)
+	void Shader::Load()
+	{
+		LoadMetadata();
+		LoadFromDisk(m_AssetPath);
+	}
+
+	void Shader::SaveToDisk(const std::filesystem::path& path)
 	{
 		ryml::Tree tree;
 		ryml::NodeRef root = tree.rootref();
 		root |= ryml::MAP;
 
-		root["m_GUID"] << m_GUID;
-		root["m_Name"] << m_Name;
-		root["m_AssetPath"] << m_AssetPath;
-		root["m_Type"] << m_Type;
-
 		root["m_ShaderType"] << (uint32_t)m_ShaderType;
-		root["m_ModulePath"] << m_ModulePath;
+		root["m_ModulePath"] << m_ModulePath.c_str();
 
-		FILE* file = fopen(path.c_str(), "w+");
+		FILE* file = fopen(path.string().c_str(), "w+");
 		size_t len = ryml::emit_yaml(tree, tree.root_id(), file);
 		fclose(file);
 	}

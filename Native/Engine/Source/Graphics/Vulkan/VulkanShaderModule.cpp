@@ -6,11 +6,11 @@
 
 namespace Odyssey
 {
-	VulkanShaderModule::VulkanShaderModule(std::shared_ptr<VulkanContext> context, ShaderType shaderType, const std::string& filename)
+	VulkanShaderModule::VulkanShaderModule(std::shared_ptr<VulkanContext> context, ShaderType shaderType, const std::filesystem::path& filename)
 	{
 		m_Context = context;
 		m_ShaderType = shaderType;
-		m_Filename = filename;
+		m_FilePath = filename;
 
 		std::vector<char> shaderCode = ReadShaderCode(filename);
 		CreateShaderModule(shaderCode);
@@ -21,7 +21,7 @@ namespace Odyssey
 		vkDestroyShaderModule(m_Context->GetDevice()->GetLogicalDevice(), m_ShaderModule, nullptr);
 	}
 
-	std::vector<char> VulkanShaderModule::ReadShaderCode(const std::string& filename)
+	std::vector<char> VulkanShaderModule::ReadShaderCode(const std::filesystem::path& filename)
 	{
 		std::vector<char> buffer;
 
@@ -29,7 +29,7 @@ namespace Odyssey
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);
 		if (!file.is_open())
 		{
-			Logger::LogError("[VulkanShader] Unable to open shader file: " + filename);
+			Logger::LogError("[VulkanShader] Unable to open shader file: " + filename.string());
 			return buffer;
 		}
 

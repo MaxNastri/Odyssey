@@ -1,6 +1,2 @@
-m_GUID: '25e6f648-9749-4769-9e84-7c40eeb7995d'
-m_Name: Red Material
-m_AssetPath: Assets/Materials/MyMaterial.mat
-m_Type: Material
 m_FragmentShader: '3fbc687a-c486-4f04-81a2-f455e2075f49'
 m_VertexShader: '88ecf36e-59d1-4d98-927c-88a2387a4cd3'

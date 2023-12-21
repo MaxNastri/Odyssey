@@ -128,7 +128,7 @@ namespace Odyssey
 			{
 				if (ImGui::MenuItem("Material"))
 				{
-					AssetManager::CreateMaterial("Assets/Materials/MyMaterial.mat");
+					AssetManager::CreateMaterial(std::filesystem::path("Assets/Materials/MyMaterial.mat"));
 				}
 				if (ImGui::BeginMenu("Mesh"))
 				{
@@ -137,7 +137,7 @@ namespace Odyssey
 						std::vector<VulkanVertex> vertices;
 						std::vector<uint32_t> indices;
 						GeometryUtil::ComputeBox(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), vertices, indices);
-						AssetHandle<Mesh> mesh = AssetManager::CreateMesh("Assets/Meshes/Cube.mesh");
+						AssetHandle<Mesh> mesh = AssetManager::CreateMesh(std::filesystem::path("Assets/Meshes/Cube.mesh"));
 						mesh.Get()->SetVertices(vertices);
 						mesh.Get()->SetIndices(indices);
 						mesh.Get()->Save();
@@ -147,7 +147,7 @@ namespace Odyssey
 						std::vector<VulkanVertex> vertices;
 						std::vector<uint32_t> indices;
 						GeometryUtil::ComputeSphere(1.0f, 50, vertices, indices);
-						AssetHandle<Mesh> mesh = AssetManager::CreateMesh("Assets/Meshes/Sphere.mesh");
+						AssetHandle<Mesh> mesh = AssetManager::CreateMesh(std::filesystem::path("Assets/Meshes/Sphere.mesh"));
 						mesh.Get()->SetVertices(vertices);
 						mesh.Get()->SetIndices(indices);
 						mesh.Get()->Save();
@@ -160,8 +160,8 @@ namespace Odyssey
 				}
 				if (ImGui::MenuItem("Shader"))
 				{
-					AssetHandle<Shader> shader = AssetManager::CreateShader("Assets/Shaders/Red_Frag.shader");
-					AssetHandle<Shader> shader2 = AssetManager::CreateShader("Assets/Shaders/Red_Vert.shader");
+					AssetHandle<Shader> shader = AssetManager::CreateShader(std::filesystem::path("Assets/Shaders/Red_Frag.shader"));
+					AssetHandle<Shader> shader2 = AssetManager::CreateShader(std::filesystem::path("Assets/Shaders/Red_Vert.shader"));
 				}
 				ImGui::EndMenu();
 			}

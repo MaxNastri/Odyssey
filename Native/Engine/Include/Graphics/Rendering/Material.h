@@ -10,12 +10,15 @@ namespace Odyssey
 	{
 	public:
 		Material() = default;
-		Material(const std::string& path);
+		Material(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath);
 
 	public:
 		void Save();
-		void SaveTo(const std::string& path);
-		void Load(const std::string& path);
+		void Load();
+
+	private:
+		void SaveToDisk(const std::filesystem::path& path);
+		void LoadFromDisk(const std::filesystem::path& path);
 
 	public:
 		AssetHandle<Shader> GetVertexShader() { return m_VertexShader; }

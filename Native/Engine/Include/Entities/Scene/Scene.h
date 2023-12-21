@@ -16,7 +16,7 @@ namespace Odyssey
 	{
 	public:
 		Scene();
-		Scene(const std::string& assetPath);
+		Scene(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath);
 		GameObject* CreateGameObject();
 		void DestroyGameObject(GameObject* gameObject);
 		void Clear();
@@ -29,9 +29,14 @@ namespace Odyssey
 		void Awake();
 		void Update();
 		void OnDestroy();
+
+	public:
 		void Save();
-		void SaveTo(const std::string& assetPath);
-		void Load(const std::string& assetPath);
+		void Load();
+
+	private:
+		void SaveToDisk(const std::filesystem::path& assetPath);
+		void LoadFromDisk(const std::filesystem::path& assetPath);
 
 	public:
 		Camera* GetMainCamera();
