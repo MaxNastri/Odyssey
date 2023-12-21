@@ -13,10 +13,10 @@ namespace Odyssey
         m_GameObject = gameObject;
         m_MeshRenderer = gameObject->GetComponent<MeshRenderer>();
 
-        m_MeshDrawer = AssetFieldDrawer("Mesh", m_MeshRenderer->GetMesh().Get()->GetGUID(),
+        m_MeshDrawer = AssetFieldDrawer("Mesh", m_MeshRenderer->GetMesh().Get()->GetGUID(), "Mesh",
             [gameObject](const std::string& guid) { OnMeshModified(gameObject, guid); });
 
-        m_MaterialDrawer = AssetFieldDrawer("Material", m_MeshRenderer->GetMaterial().Get()->GetGUID(),
+        m_MaterialDrawer = AssetFieldDrawer("Material", m_MeshRenderer->GetMaterial().Get()->GetGUID(), "Material",
             [gameObject](const std::string& guid) { OnMaterialModified(gameObject, guid); });
     }
 

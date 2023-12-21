@@ -26,10 +26,14 @@ namespace Odyssey
 						ryml::NodeRef node = tree.rootref();
 
 						std::string guid;
+						std::string type;
 						node["m_GUID"] >> guid;
+						node["m_Type"] >> type;
 
 						s_AssetDatabaseGUIDs[guid] = path;
 						s_AssetDatabasePaths[path] = guid;
+
+						s_AssetTypeToGUIDs[type].push_back(guid);
 					}
 				}
 			}
@@ -193,6 +197,15 @@ namespace Odyssey
 		// Load it and return a handle
 		std::filesystem::path path = s_AssetDatabaseGUIDs[guid];
 		return AssetManager::LoadShader(path.generic_string());
+	}
+
+	std::vector<std::string> AssetManager::GetAssetsOfType(const std::string& type)
+	{
+		// TODO: insert return statement here
+		if (s_AssetTypeToGUIDs.find(type) != s_AssetTypeToGUIDs.end())
+			return s_AssetTypeToGUIDs[type];
+
+		return std::vector<std::string>();
 	}
 
 	void AssetManager::UnloadScene(AssetHandle<Scene> scene)

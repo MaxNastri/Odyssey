@@ -1,14 +1,32 @@
 #include "AssetFieldDrawer.h"
 #include "imgui.h"
 #include "Logger.h"
+#include "AssetManager.h"
 
 namespace Odyssey
 {
-	AssetFieldDrawer::AssetFieldDrawer(const std::string& label, const std::string& guid, std::function<void(const std::string&)> callback)
+	AssetFieldDrawer::AssetFieldDrawer(const std::string& label, const std::string& guid, const std::string& assetType, std::function<void(const std::string&)> callback)
 	{
 		m_Label = label;
 		m_GUID = guid;
+		m_Type = assetType;
 		m_OnValueModified = callback;
+
+		if (!m_GUID.empty())
+		{
+			// Find this guid's selected 
+			std::vector<std::string> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
+			possibleGUIDs.insert(possibleGUIDs.begin(), "None");
+
+			for (uint32_t i = 0; i < possibleGUIDs.size(); i++)
+			{
+				if (possibleGUIDs[i] == m_GUID)
+				{
+					selectedIndex = i;
+					break;
+				}
+			}
+		}
 	}
 
 	void AssetFieldDrawer::Draw()
@@ -18,10 +36,31 @@ namespace Odyssey
 		ImGui::TableNextColumn();
 		ImGui::PushItemWidth(-0.01f);
 
-		if (ImGui::Selectable(m_GUID.c_str(), false))
+		std::vector<std::string> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
+		possibleGUIDs.insert(possibleGUIDs.begin(), "None");
+
+		ImGui::PushID((void*)this);
+		if (ImGui::BeginCombo("", possibleGUIDs[selectedIndex].c_str()))
 		{
-			// On value modified
+			for (int32_t i = 0; i < possibleGUIDs.size(); i++)
+			{
+				const bool isSelected = selectedIndex == i;
+
+				if (ImGui::Selectable(possibleGUIDs[i].c_str(), isSelected) && i != 0)
+				{
+					selectedIndex = i;
+					m_OnValueModified(possibleGUIDs[selectedIndex]);
+					m_Modified = true;
+				}
+
+				if (isSelected)
+				{
+					ImGui::SetItemDefaultFocus();
+				}
+			}
+			ImGui::EndCombo();
 		}
+		ImGui::PopID();
 
 		if (ImGui::BeginDragDropTarget())
 		{

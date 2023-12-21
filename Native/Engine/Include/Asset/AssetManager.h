@@ -37,6 +37,9 @@ namespace Odyssey
 		static AssetHandle<Scene> LoadSceneByGUID(const std::string& guid);
 
 	public:
+		static std::vector<std::string> GetAssetsOfType(const std::string& type);
+
+	public:
 		static void UnloadScene(AssetHandle<Scene> scene);
 
 	public:
@@ -56,7 +59,7 @@ namespace Odyssey
 		inline static std::unordered_map<std::string, std::filesystem::path> s_AssetDatabaseGUIDs;
 		inline static std::unordered_map<std::filesystem::path, std::string> s_AssetDatabasePaths;
 		inline static std::unordered_map<std::string, uint32_t> s_LoadedAssets;
-
+		inline static std::unordered_map<std::string, std::vector<std::string>> s_AssetTypeToGUIDs;
 		inline static AssetHandle<Shader> s_DefaultVertexShader;
 		inline static AssetHandle<Shader> s_DefaultFragmentShader;
 

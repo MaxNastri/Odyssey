@@ -18,10 +18,10 @@ namespace Odyssey
 
 		m_GUIDDrawer = ReadOnlyStringDrawer("GUID", m_Material->GetGUID());
 
-		m_FragmentShaderDrawer = AssetFieldDrawer("Fragment Shader", fragmentShaderGUID,
+		m_FragmentShaderDrawer = AssetFieldDrawer("Fragment Shader", fragmentShaderGUID, "Shader",
 			[material](const std::string& guid) { OnFragmentShaderModified(material, guid); });
 
-		m_VertexShaderDrawer = AssetFieldDrawer("Vertex Shader", vertexShaderGUID,
+		m_VertexShaderDrawer = AssetFieldDrawer("Vertex Shader", vertexShaderGUID, "Shader",
 			[material](const std::string& guid) { OnVertexShaderModified(material, guid); });
 	}
 
@@ -42,10 +42,10 @@ namespace Odyssey
 
 			m_GUIDDrawer = ReadOnlyStringDrawer("GUID", m_Material->GetGUID());
 
-			m_FragmentShaderDrawer = AssetFieldDrawer("Fragment Shader", fragmentShaderGUID,
+			m_FragmentShaderDrawer = AssetFieldDrawer("Fragment Shader", fragmentShaderGUID, "Shader",
 				[materialPtr](const std::string& guid) { OnFragmentShaderModified(materialPtr, guid); });
 
-			m_VertexShaderDrawer = AssetFieldDrawer("Vertex Shader", vertexShaderGUID,
+			m_VertexShaderDrawer = AssetFieldDrawer("Vertex Shader", vertexShaderGUID, "Shader",
 				[materialPtr](const std::string& guid) { OnVertexShaderModified(materialPtr, guid); });
 		}
 	}
