@@ -16,10 +16,10 @@ namespace Odyssey
 			positionDrawer = Vector3Drawer("Position", transform->m_Position,
 				[gameObject](glm::vec3 position) { OnPositionChanged(gameObject, position); });
 
-			rotationDrawer = Vector3Drawer("Rotation", transform->m_EulerRotation, 
+			rotationDrawer = Vector3Drawer("Rotation", transform->m_EulerRotation,
 				[gameObject](glm::vec3 rotation) { OnRotationChanged(gameObject, rotation); });
 
-			scaleDrawer = Vector3Drawer("Scale", transform->m_Scale, 
+			scaleDrawer = Vector3Drawer("Scale", transform->m_Scale,
 				[gameObject](glm::vec3 scale) { OnScaleChanged(gameObject, scale); });
 		}
 	}
@@ -28,16 +28,9 @@ namespace Odyssey
 	{
 		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			if (ImGui::BeginTable("TransformInspector", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
-			{
-				ImGui::TableSetupColumn("##A", 0, 0.4f);
-				positionDrawer.Draw();
-				ImGui::TableNextRow();
-				rotationDrawer.Draw();
-				ImGui::TableNextRow();
-				scaleDrawer.Draw();
-				ImGui::EndTable();
-			}
+			positionDrawer.Draw();
+			rotationDrawer.Draw();
+			scaleDrawer.Draw();
 		}
 
 		ImGui::Separator();
