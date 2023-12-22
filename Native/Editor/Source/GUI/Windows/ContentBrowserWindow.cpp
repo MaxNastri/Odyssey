@@ -8,6 +8,8 @@
 #include "GUIManager.h"
 #include "ModelLoader.h"
 #include "Scene.h"
+#include "Texture2D.h"
+#include "Material.h"
 
 namespace Odyssey
 {
@@ -185,6 +187,17 @@ namespace Odyssey
 							mr->SetMesh(asset.Mesh);
 						}
 						//asset.Mesh.Get()->SaveTo("Assets/Meshes/Car.mesh");
+					}
+				}
+				if (ImGui::MenuItem("Texture"))
+				{
+					const std::filesystem::path path("Assets/Textures/texture.jpg");
+					AssetHandle<Texture2D> texture = AssetManager::LoadTexture2D(path);
+
+					if (texture.IsValid())
+					{
+						GameObject* go = SceneManager::GetActiveScene()->GetGameObject(0);
+						go->GetComponent<MeshRenderer>()->GetMaterial().Get()->SetTexture(texture);
 					}
 				}
 				ImGui::EndMenu();

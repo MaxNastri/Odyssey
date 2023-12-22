@@ -4,10 +4,11 @@
 
 namespace Odyssey
 {
-	Vector3Drawer::Vector3Drawer(const std::string& propertyLabel, glm::vec3 vec3, std::function<void(glm::vec3)> callback)
+	Vector3Drawer::Vector3Drawer(const std::string& propertyLabel, glm::vec3 initialValue, glm::vec3 resetValue, std::function<void(glm::vec3)> callback)
 	{
 		m_Label = propertyLabel;
-		data = { vec3.x, vec3.y, vec3.z };
+		data = { initialValue.x, initialValue.y, initialValue.z };
+		m_ResetValue = resetValue;
 		onValueModified = callback;
 	}
 
@@ -32,11 +33,11 @@ namespace Odyssey
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
 			if (ImGui::Button("X", buttonSize))
 			{
-				data[0] = 0.0f;
+				data[0] = m_ResetValue.x;
 				m_Modified = true;
 			}
 			ImGui::SameLine();
-			m_Modified |= ImGui::DragFloat("##x", &data[0], 0.1f, 0.0f, 0.0f, "%.2f");
+			m_Modified |= ImGui::DragFloat("##x", &data[0], 0.1f, 0.0f, 0.0f, "%.4f");
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
 			ImGui::PopStyleColor(3);
@@ -48,10 +49,11 @@ namespace Odyssey
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
 			if (ImGui::Button("Y", buttonSize))
 			{
-				data[1] = 0.0f;
+				data[1] = m_ResetValue.y;
+				m_Modified = true;
 			}
 			ImGui::SameLine();
-			m_Modified |= ImGui::DragFloat("##y", &data[1], 0.1f, 0.0f, 0.0f, "%.2f");
+			m_Modified |= ImGui::DragFloat("##y", &data[1], 0.1f, 0.0f, 0.0f, "%.4f");
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
 			ImGui::PopStyleColor(3);
@@ -63,11 +65,11 @@ namespace Odyssey
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
 			if (ImGui::Button("Z", buttonSize))
 			{
-				data[2] = 0.0f;
+				data[2] = m_ResetValue.z;
 				m_Modified = true;
 			}
 			ImGui::SameLine();
-			m_Modified |= ImGui::DragFloat("##z", &data[2], 0.1f, 0.0f, 0.0f, "%.2f");
+			m_Modified |= ImGui::DragFloat("##z", &data[2], 0.1f, 0.0f, 0.0f, "%.4f");
 			ImGui::PopItemWidth();
 			ImGui::PopStyleColor(3);
 

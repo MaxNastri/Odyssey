@@ -3,6 +3,7 @@
 #include "Material.h"
 #include "Shader.h"
 #include "Scene.h"
+#include "Texture2D.h"
 #include "ryml.hpp"
 
 namespace Odyssey
@@ -165,6 +166,7 @@ namespace Odyssey
 
 	AssetHandle<Scene> AssetManager::LoadScene(const std::filesystem::path& assetPath)
 	{
+		//LoadTexture2D
 		// Push back a scene loaded from the asset path
 		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
 		uint32_t id = s_Scenes.Add(assetPath, metaPath);
@@ -174,6 +176,19 @@ namespace Odyssey
 		s_LoadedAssets[scene->GetGUID()] = id;
 
 		return AssetHandle<Scene>(id, scene);
+	}
+
+	AssetHandle<Texture2D> AssetManager::LoadTexture2D(const std::filesystem::path& assetPath)
+	{
+		// Push back a scene loaded from the asset path
+		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
+		uint32_t id = s_Textures.Add(assetPath, metaPath);
+		Texture2D* texture = s_Textures[id].get();
+
+		// Track the asset
+		s_LoadedAssets[texture->GetGUID()] = id;
+
+		return AssetHandle<Texture2D>(id, texture);
 	}
 
 	AssetHandle<Material> AssetManager::LoadMaterial(const std::filesystem::path& assetPath)

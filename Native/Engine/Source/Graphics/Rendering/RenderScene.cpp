@@ -11,6 +11,7 @@
 #include "VulkanIndexBuffer.h"
 #include "VulkanBuffer.h"
 #include "VulkanDescriptorBuffer.h"
+#include "Texture2D.h"
 
 namespace Odyssey
 {
@@ -18,9 +19,15 @@ namespace Odyssey
 	{
 		// Descriptor layout for the combined uniform buffers
 		uboLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		descriptorBuffer = ResourceManager::AllocateDescriptorBuffer(uboLayout, Max_Uniform_Buffers);
+		m_SamplerLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Sampler, ShaderStage::Fragment, 0);
 
-		m_SamplerLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Sampler, ShaderStage::Fragment, 1);
+		// Pushback 2 ubo layouts (1 scene, 1 per-object) and 1 sampler layout
+		m_Layouts.push_back(uboLayout);
+		m_Layouts.push_back(uboLayout);
+		m_Layouts.push_back(m_SamplerLayout);
+
+		// Allocate descriptor buffers
+		descriptorBuffer = ResourceManager::AllocateDescriptorBuffer(uboLayout, Max_Uniform_Buffers);
 		m_SamplerDescriptorBuffer = ResourceManager::AllocateDescriptorBuffer(m_SamplerLayout, 1);
 
 		// Scene uniform buffer
@@ -92,72 +99,54 @@ namespace Odyssey
 			{
 				if (Transform* transform = gameObject->GetComponent<Transform>())
 				{
-					SetPass* setPass = nullptr;
-					Drawcall drawcall;
+					// For now, 1 set pass per drawcall
+					setPasses.push_back(SetPass());
+					SetPass& setPass = setPasses[setPasses.size() - 1];
 
-					// Create the set pass, if its not already created
-					if (!SetPassCreated(renderer->GetMaterial(), setPass))
-					{
-						setPasses.push_back(SetPass());
-						setPass = &(setPasses[setPasses.size() - 1]);
-						setPass->SetMaterial(renderer->GetMaterial(), uboLayout);
-					}
-
-					Mesh* mesh = renderer->GetMesh().Get();
+					setPass.SetMaterial(renderer->GetMaterial(), m_Layouts);
 
 					// Create the drawcall data
-					drawcall.VertexBuffer = mesh->GetVertexBuffer();
-					drawcall.IndexBuffer = mesh->GetIndexBuffer();
-					drawcall.IndexCount = mesh->GetIndexCount();
-					drawcall.UniformBufferIndex = m_NextUniformBuffer++;
-					setPass->drawcalls.push_back(drawcall);
+					if (Mesh* mesh = renderer->GetMesh().Get())
+					{
+						Drawcall drawcall;
+						drawcall.VertexBuffer = mesh->GetVertexBuffer();
+						drawcall.IndexBuffer = mesh->GetIndexBuffer();
+						drawcall.IndexCount = mesh->GetIndexCount();
+						drawcall.UniformBufferIndex = m_NextUniformBuffer++;
+						setPass.drawcalls.push_back(drawcall);
 
-					// Update the per-object uniform buffer
-					uint32_t perObjectSize = sizeof(objectData);
-					objectData.world = transform->GetWorldMatrix();
-					perObjectUniformBuffers[drawcall.UniformBufferIndex].Get()->SetMemory(perObjectSize, &objectData);
+						// Update the per-object uniform buffer
+						uint32_t perObjectSize = sizeof(objectData);
+						objectData.world = transform->GetWorldMatrix();
+						perObjectUniformBuffers[drawcall.UniformBufferIndex].Get()->SetMemory(perObjectSize, &objectData);
+					}
 				}
 			}
 		}
 	}
 
-	bool RenderScene::SetPassCreated(AssetHandle<Material> material, SetPass* outSetPass)
+	SetPass::SetPass(AssetHandle<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts)
 	{
-		for (auto& setpass : setPasses)
-		{
-			Material* mat = material.Get();
-
-			if (setpass.vertexShaderID == mat->GetVertexShader().GetID() &&
-				setpass.fragmentShaderID == mat->GetFragmentShader().GetID())
-			{
-				outSetPass = &setpass;
-				return true;
-			}
-		}
-
-		return false;
+		SetMaterial(material, descriptorLayouts);
 	}
 
-	SetPass::SetPass(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout)
-	{
-		SetMaterial(material, descriptorLayout);
-	}
-
-	void SetPass::SetMaterial(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout)
+	void SetPass::SetMaterial(AssetHandle<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts)
 	{
 		// Allocate a graphics pipeline
-		std::vector<ResourceHandle<VulkanDescriptorLayout>> layouts{};
-		layouts.push_back(descriptorLayout);
-		layouts.push_back(descriptorLayout);
-
 		VulkanPipelineInfo info;
 		info.vertexShader = material.Get()->GetVertexShader().Get()->GetShaderModule();
 		info.fragmentShader = material.Get()->GetFragmentShader().Get()->GetShaderModule();
-		info.descriptorLayouts = layouts;
+		info.descriptorLayouts = descriptorLayouts;
 		pipeline = ResourceManager::AllocateGraphicsPipeline(info);
 
 		// Store the IDs
 		vertexShaderID = info.vertexShader.GetID();
 		fragmentShaderID = info.fragmentShader.GetID();
+
+		if (material.Get()->GetTexture().IsValid())
+		{
+			Texture = material.Get()->GetTexture().Get()->GetImage();
+			Sampler = material.Get()->GetTexture().Get()->GetSampler();
+		}
 	}
 }

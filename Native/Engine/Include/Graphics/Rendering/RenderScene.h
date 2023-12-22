@@ -14,6 +14,8 @@ namespace Odyssey
 	class VulkanDescriptorBuffer;
 	class VulkanBuffer;
 	class VulkanDescriptorLayout;
+	class VulkanImage;
+	class VulkanTextureSampler;
 
 	struct SceneUniformData
 	{
@@ -30,16 +32,18 @@ namespace Odyssey
 	{
 	public:
 		SetPass() = default;
-		SetPass(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout);
+		SetPass(AssetHandle<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts);
 
 	public:
-		void SetMaterial(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout);
+		void SetMaterial(AssetHandle<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts);
 
 	public:
 		ResourceHandle<VulkanGraphicsPipeline> pipeline;
 		std::vector<Drawcall> drawcalls;
-		uint32_t vertexShaderID = -1;
-		uint32_t fragmentShaderID = -1;
+		int32_t vertexShaderID = -1;
+		int32_t fragmentShaderID = -1;
+		ResourceHandle<VulkanImage> Texture;
+		ResourceHandle<VulkanTextureSampler> Sampler;
 	};
 
 	class RenderScene
@@ -56,7 +60,6 @@ namespace Odyssey
 
 	private:
 		void SetupDrawcalls(Scene* scene);
-		bool SetPassCreated(AssetHandle<Material> material, SetPass* outSetPass);
 
 	public:
 		// Data structs
@@ -73,6 +76,8 @@ namespace Odyssey
 		ResourceHandle<VulkanDescriptorLayout> m_SamplerLayout;
 		ResourceHandle<VulkanBuffer> m_SamplerBuffer;
 		ResourceHandle<VulkanDescriptorBuffer> m_SamplerDescriptorBuffer;
+
+		std::vector<ResourceHandle<VulkanDescriptorLayout>> m_Layouts;
 
 		std::vector<SetPass> setPasses;
 		uint32_t m_NextUniformBuffer = 0;

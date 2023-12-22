@@ -10,6 +10,7 @@ namespace Odyssey
 	class Mesh;
 	class Shader;
 	class Scene;
+	class Texture2D;
 
 	class AssetManager
 	{
@@ -29,6 +30,7 @@ namespace Odyssey
 		static AssetHandle<Mesh> LoadMesh(const std::filesystem::path& assetPath);
 		static AssetHandle<Shader> LoadShader(const std::filesystem::path& assetPath);
 		static AssetHandle<Scene> LoadScene(const std::filesystem::path& assetPath);
+		static AssetHandle<Texture2D> LoadTexture2D(const std::filesystem::path& assetPath);
 
 	public:
 		static AssetHandle<Material> LoadMaterialByGUID(const std::string& guid);
@@ -54,6 +56,7 @@ namespace Odyssey
 		inline static DynamicList<Shader> s_Shaders;
 		inline static DynamicList<Material> s_Materials;
 		inline static DynamicList<Scene> s_Scenes;
+		inline static DynamicList<Texture2D> s_Textures;
 		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
 
 		// Asset Database

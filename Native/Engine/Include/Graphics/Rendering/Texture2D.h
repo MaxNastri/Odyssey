@@ -7,6 +7,7 @@ namespace Odyssey
 {
 	class VulkanBuffer;
 	class VulkanImage;
+	class VulkanTextureSampler;
 
 	class Texture2D : public Asset
 	{
@@ -19,12 +20,20 @@ namespace Odyssey
 		void Save();
 		void Load();
 
+	public:
+		ResourceHandle<VulkanImage> GetImage() { return m_Image; }
+		ResourceHandle<VulkanTextureSampler> GetSampler() { return m_Sampler; }
+
+	public:
+		void SetSampler(ResourceHandle<VulkanTextureSampler> sampler) { m_Sampler = sampler; }
+
 	private:
 		void SaveToDisk(const std::filesystem::path& assetPath);
 		void LoadFromDisk(const std::filesystem::path& assetPath);
 
 	private:
 		ResourceHandle<VulkanImage> m_Image;
+		ResourceHandle<VulkanTextureSampler> m_Sampler;
 		uint32_t m_Width, m_Height;
 		TextureFormat m_Format;
 

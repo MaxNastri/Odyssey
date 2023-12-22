@@ -20,6 +20,8 @@ namespace Odyssey
 		m_Layout = layout;
 		m_Count = count;
 
+		bool isUniformBuffer = m_Layout.Get()->GetType() == DescriptorType::Uniform;
+
 		VkPhysicalDeviceDescriptorBufferPropertiesEXT descriptor_buffer_properties{};
 		VkPhysicalDeviceProperties2KHR device_properties{};
 
@@ -29,7 +31,11 @@ namespace Odyssey
 		vkGetPhysicalDeviceProperties2KHR(context->GetPhysicalDeviceVK(), &device_properties);
 
 		m_Properties.offsetAlignment = descriptor_buffer_properties.descriptorBufferOffsetAlignment;
-		m_Properties.uniformBufferDescriptorSize = descriptor_buffer_properties.uniformBufferDescriptorSize;
+
+		if (isUniformBuffer)
+			m_Properties.uniformBufferDescriptorSize = descriptor_buffer_properties.uniformBufferDescriptorSize;
+		else
+			m_Properties.uniformBufferDescriptorSize = descriptor_buffer_properties.samplerDescriptorSize;
 
 		VkDeviceSize size;
 		vkGetDescriptorSetLayoutSizeEXT(m_Context->GetDeviceVK(), m_Layout.Get()->GetHandle(), &size);
