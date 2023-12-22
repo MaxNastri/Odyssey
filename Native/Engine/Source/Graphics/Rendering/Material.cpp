@@ -1,5 +1,6 @@
 #include "Material.h"
 #include "Shader.h"
+#include "Texture2D.h"
 #include "AssetManager.h"
 #include "ryml.hpp"
 
@@ -36,8 +37,12 @@ namespace Odyssey
 		ryml::NodeRef root = tree.rootref();
 		root |= ryml::MAP;
 
-		root["m_FragmentShader"] << m_FragmentShader.Get()->GetGUID();
-		root["m_VertexShader"] << m_VertexShader.Get()->GetGUID();
+		if (Shader* fragmentShader = m_FragmentShader.Get())
+			root["m_FragmentShader"] << fragmentShader->GetGUID();
+		if (Shader* vertexShader = m_VertexShader.Get())
+			root["m_VertexShader"] << vertexShader->GetGUID();
+		if (Texture2D* texture = m_Texture.Get())
+			root["m_Texture"] << texture->GetGUID();
 
 		// Save to disk
 		FILE* file2 = fopen(assetPath.string().c_str(), "w+");
@@ -55,11 +60,18 @@ namespace Odyssey
 
 			std::string fragGUID;
 			std::string vertGUID;
+			std::string textureGUID;
+
 			node["m_FragmentShader"] >> fragGUID;
 			node["m_VertexShader"] >> vertGUID;
+			node["m_Texture"] >> textureGUID;
 
-			m_FragmentShader = AssetManager::LoadShaderByGUID(fragGUID);
-			m_VertexShader = AssetManager::LoadShaderByGUID(vertGUID);
+			if (!fragGUID.empty())
+				m_FragmentShader = AssetManager::LoadShaderByGUID(fragGUID);
+			if (!vertGUID.empty())
+				m_VertexShader = AssetManager::LoadShaderByGUID(vertGUID);
+			if (!textureGUID.empty())
+				m_Texture = AssetManager::LoadTexture2DByGUID(textureGUID);
 		}
 	}
 }

@@ -37,6 +37,7 @@ namespace Odyssey
 		static AssetHandle<Mesh> LoadMeshByGUID(const std::string& guid);
 		static AssetHandle<Shader> LoadShaderByGUID(const std::string& guid);
 		static AssetHandle<Scene> LoadSceneByGUID(const std::string& guid);
+		static AssetHandle<Texture2D> LoadTexture2DByGUID(const std::string& guid);
 
 	public:
 		static std::vector<std::string> GetAssetsOfType(const std::string& type);

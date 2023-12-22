@@ -197,7 +197,11 @@ namespace Odyssey
 					if (texture.IsValid())
 					{
 						GameObject* go = SceneManager::GetActiveScene()->GetGameObject(0);
-						go->GetComponent<MeshRenderer>()->GetMaterial().Get()->SetTexture(texture);
+						if (Material* material = go->GetComponent<MeshRenderer>()->GetMaterial().Get())
+						{
+							material->SetTexture(texture);
+							material->Save();
+						}
 					}
 				}
 				ImGui::EndMenu();

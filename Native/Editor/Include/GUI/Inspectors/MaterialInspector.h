@@ -21,6 +21,7 @@ namespace Odyssey
 		static void OnNameModified(Material* material, const std::string& name);
 		static void OnFragmentShaderModified(Material* material, const std::string& guid);
 		static void OnVertexShaderModified(Material* material, const std::string& guid);
+		static void OnTextureModified(Material* material, const std::string& guid);
 
 	private:
 		Material* m_Material;
@@ -29,6 +30,7 @@ namespace Odyssey
 		ReadOnlyStringDrawer m_GUIDDrawer;
 		AssetFieldDrawer m_FragmentShaderDrawer;
 		AssetFieldDrawer m_VertexShaderDrawer;
+		AssetFieldDrawer m_TextureDrawer;
 		bool m_Modified = false;
 	};
 }

@@ -1,6 +1,7 @@
 #include "MaterialInspector.h"
 #include "Material.h"
 #include "Shader.h"
+#include "Texture2D.h"
 #include "AssetManager.h"
 #include "imgui.h"
 
@@ -10,8 +11,18 @@ namespace Odyssey
 	{
 		m_Material = material;
 
-		std::string fragmentShaderGUID = m_Material->GetFragmentShader().Get()->GetGUID();
-		std::string vertexShaderGUID = m_Material->GetVertexShader().Get()->GetGUID();
+		std::string fragmentShaderGUID;
+		std::string vertexShaderGUID;
+		std::string textureGUID;
+
+		if (Shader* fragmentShader = m_Material->GetFragmentShader().Get())
+			fragmentShaderGUID = fragmentShader->GetGUID();
+
+		if (Shader* vertexShader = m_Material->GetVertexShader().Get())
+			vertexShaderGUID = vertexShader->GetGUID();
+
+		if (Texture2D* texture2D = m_Material->GetTexture().Get())
+			textureGUID = texture2D->GetGUID();
 
 		m_NameDrawer = StringDrawer("Name", m_Material->GetName(),
 			[material](const std::string& name) { OnNameModified(material, name); });
@@ -23,30 +34,45 @@ namespace Odyssey
 
 		m_VertexShaderDrawer = AssetFieldDrawer("Vertex Shader", vertexShaderGUID, "Shader",
 			[material](const std::string& guid) { OnVertexShaderModified(material, guid); });
+
+		m_TextureDrawer = AssetFieldDrawer("Texture", textureGUID, "Texture2D",
+			[material](const std::string& guid) { OnTextureModified(material, guid); });
 	}
 
 	MaterialInspector::MaterialInspector(const std::string& guid)
 	{
-		AssetHandle<Material> material = AssetManager::LoadMaterialByGUID(guid);
+		AssetHandle<Material> materialHandle = AssetManager::LoadMaterialByGUID(guid);
 
-		if (material.IsValid())
+		if (Material* material = materialHandle.Get())
 		{
-			Material* materialPtr = material.Get();
-			m_Material = material.Get();
+			m_Material = material;
 
-			std::string fragmentShaderGUID = m_Material->GetFragmentShader().Get()->GetGUID();
-			std::string vertexShaderGUID = m_Material->GetVertexShader().Get()->GetGUID();
+			std::string fragmentShaderGUID;
+			std::string vertexShaderGUID;
+			std::string textureGUID;
+
+			if (Shader* fragmentShader = m_Material->GetFragmentShader().Get())
+				fragmentShaderGUID = fragmentShader->GetGUID();
+
+			if (Shader* vertexShader = m_Material->GetVertexShader().Get())
+				vertexShaderGUID = vertexShader->GetGUID();
+
+			if (Texture2D* texture2D = m_Material->GetTexture().Get())
+				textureGUID = texture2D->GetGUID();
 
 			m_NameDrawer = StringDrawer("Name", m_Material->GetName(),
-				[materialPtr](const std::string& name) { OnNameModified(materialPtr, name); });
+				[material](const std::string& name) { OnNameModified(material, name); });
 
 			m_GUIDDrawer = ReadOnlyStringDrawer("GUID", m_Material->GetGUID());
 
 			m_FragmentShaderDrawer = AssetFieldDrawer("Fragment Shader", fragmentShaderGUID, "Shader",
-				[materialPtr](const std::string& guid) { OnFragmentShaderModified(materialPtr, guid); });
+				[material](const std::string& guid) { OnFragmentShaderModified(material, guid); });
 
 			m_VertexShaderDrawer = AssetFieldDrawer("Vertex Shader", vertexShaderGUID, "Shader",
-				[materialPtr](const std::string& guid) { OnVertexShaderModified(materialPtr, guid); });
+				[material](const std::string& guid) { OnVertexShaderModified(material, guid); });
+
+			m_TextureDrawer = AssetFieldDrawer("Texture", textureGUID, "Texture2D",
+				[material](const std::string& guid) { OnTextureModified(material, guid); });
 		}
 	}
 
@@ -62,6 +88,8 @@ namespace Odyssey
 			m_VertexShaderDrawer.Draw();
 			ImGui::TableNextRow();
 			m_FragmentShaderDrawer.Draw();
+			ImGui::TableNextRow();
+			m_TextureDrawer.Draw();
 			ImGui::TableNextRow();
 			ImGui::EndTable();
 			
@@ -100,5 +128,12 @@ namespace Odyssey
 
 		if (vertShader.IsValid())
 			material->SetVertexShader(vertShader);
+	}
+	void MaterialInspector::OnTextureModified(Material* material, const std::string& guid)
+	{
+		AssetHandle<Texture2D> texture = AssetManager::LoadTexture2DByGUID(guid);
+
+		if (texture.IsValid())
+			material->SetTexture(texture);
 	}
 }

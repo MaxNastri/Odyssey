@@ -216,6 +216,21 @@ namespace Odyssey
 		return AssetManager::LoadShader(path.generic_string());
 	}
 
+	AssetHandle<Texture2D> AssetManager::LoadTexture2DByGUID(const std::string& guid)
+	{
+		// Check if we have already loaded this asset
+		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
+		{
+			// Return a handle
+			uint32_t id = s_LoadedAssets[guid];
+			return AssetHandle<Texture2D>(id, s_Textures[id].get());
+		}
+
+		// Load it and return a handle
+		std::filesystem::path path = s_AssetDatabaseGUIDs[guid];
+		return AssetManager::LoadTexture2D(path.string());
+	}
+
 	std::vector<std::string> AssetManager::GetAssetsOfType(const std::string& type)
 	{
 		// TODO: insert return statement here
