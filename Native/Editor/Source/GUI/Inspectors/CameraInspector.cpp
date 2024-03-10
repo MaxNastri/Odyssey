@@ -32,8 +32,6 @@ namespace Odyssey
 				ImGui::EndTable();
 			}
 		}
-
-		ImGui::Separator();
 	}
 
 	void CameraInspector::OnFieldOfViewChanged(GameObject* gameObject, float fov)

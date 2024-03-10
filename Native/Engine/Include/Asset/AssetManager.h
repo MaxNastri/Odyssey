@@ -47,6 +47,7 @@ namespace Odyssey
 
 	public:
 		static std::string PathToGUID(const std::filesystem::path& path);
+		static std::string GUIDToName(const std::string& guid);
 
 	private:
 		static std::string GenerateGUID();
@@ -63,6 +64,7 @@ namespace Odyssey
 		// Asset Database
 		inline static std::unordered_map<std::string, std::filesystem::path> s_AssetDatabaseGUIDs;
 		inline static std::unordered_map<std::filesystem::path, std::string> s_AssetDatabasePaths;
+		inline static std::unordered_map<std::string, std::string> s_AssetDatabaseGUIDToName;
 		inline static std::unordered_map<std::string, uint32_t> s_LoadedAssets;
 		inline static std::unordered_map<std::string, std::vector<std::string>> s_AssetTypeToGUIDs;
 		inline static AssetHandle<Shader> s_DefaultVertexShader;

@@ -167,8 +167,6 @@ namespace Odyssey
 				}
 				if (ImGui::MenuItem("Shader"))
 				{
-					AssetHandle<Shader> shader = AssetManager::CreateShader(std::filesystem::path("Assets/Shaders/Red_Frag.shader"));
-					AssetHandle<Shader> shader2 = AssetManager::CreateShader(std::filesystem::path("Assets/Shaders/Red_Vert.shader"));
 				}
 				ImGui::EndMenu();
 			}

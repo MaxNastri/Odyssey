@@ -14,10 +14,10 @@ namespace Odyssey
 
 		if (!m_GUID.empty())
 		{
-			// Find this guid's selected 
 			std::vector<std::string> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
 			possibleGUIDs.insert(possibleGUIDs.begin(), "None");
 
+			// Find this guid's selected index
 			for (uint32_t i = 0; i < possibleGUIDs.size(); i++)
 			{
 				if (possibleGUIDs[i] == m_GUID)
@@ -40,13 +40,16 @@ namespace Odyssey
 		possibleGUIDs.insert(possibleGUIDs.begin(), "None");
 
 		ImGui::PushID((void*)this);
-		if (ImGui::BeginCombo("", possibleGUIDs[selectedIndex].c_str()))
+
+		std::string selectedDisplayName = selectedIndex != 0 ? AssetManager::GUIDToName(possibleGUIDs[selectedIndex]) : possibleGUIDs[selectedIndex];
+		if (ImGui::BeginCombo("##Empty", selectedDisplayName.c_str()))
 		{
 			for (int32_t i = 0; i < possibleGUIDs.size(); i++)
 			{
 				const bool isSelected = selectedIndex == i;
-
-				if (ImGui::Selectable(possibleGUIDs[i].c_str(), isSelected) && i != 0)
+				std::string displayName = i != 0 ? AssetManager::GUIDToName(possibleGUIDs[i]) : possibleGUIDs[i];
+				
+				if (ImGui::Selectable(displayName.c_str(), isSelected) && i != 0)
 				{
 					selectedIndex = i;
 					m_OnValueModified(possibleGUIDs[selectedIndex]);

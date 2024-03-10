@@ -42,7 +42,6 @@ namespace Odyssey
 			}
 		}
 
-		ImGui::Separator();
 	}
 
 	void UserScriptInspector::UpdateFields()

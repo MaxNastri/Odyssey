@@ -28,7 +28,9 @@ namespace Odyssey
 
 						std::string guid;
 						std::string type;
+						std::string name;
 						node["m_GUID"] >> guid;
+						node["m_Name"] >> name;
 						node["m_Type"] >> type;
 
 						std::filesystem::path assetPath = path.replace_extension("");
@@ -38,6 +40,11 @@ namespace Odyssey
 							s_AssetDatabaseGUIDs[guid] = assetPath;
 							s_AssetDatabasePaths[assetPath] = guid;
 							s_AssetTypeToGUIDs[type].push_back(guid);
+						}
+
+						if (!name.empty() && !guid.empty())
+						{
+							s_AssetDatabaseGUIDToName[guid] = name;
 						}
 					}
 				}
@@ -254,6 +261,14 @@ namespace Odyssey
 	std::string AssetManager::PathToGUID(const std::filesystem::path& path)
 	{
 		return s_AssetDatabasePaths[path];
+	}
+
+	std::string AssetManager::GUIDToName(const std::string& guid)
+	{
+		if (s_AssetDatabaseGUIDToName.find(guid) != s_AssetDatabaseGUIDToName.end())
+			return s_AssetDatabaseGUIDToName[guid];
+
+		return std::string();
 	}
 
 	AssetHandle<Material> AssetManager::LoadMaterialByGUID(const std::string& guid)

@@ -32,8 +32,7 @@ namespace Odyssey
 			rotationDrawer.Draw();
 			scaleDrawer.Draw();
 		}
-
-		ImGui::Separator();
+		ImGui::Spacing();
 	}
 
 	void TransformInspector::OnPositionChanged(GameObject* gameObject, glm::vec3 position)

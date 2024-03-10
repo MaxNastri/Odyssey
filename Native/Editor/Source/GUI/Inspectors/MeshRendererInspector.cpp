@@ -34,8 +34,6 @@ namespace Odyssey
                 ImGui::EndTable();
             }
         }
-
-        ImGui::Separator();
     }
     void MeshRendererInspector::OnMeshModified(GameObject* gameObject, const std::string& guid)
     {

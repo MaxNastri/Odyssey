@@ -37,6 +37,7 @@ namespace Odyssey
 
 	private:
 		static void OnFilesChanged(const NotificationSet& notificationSet);
+		static void SetDarkThemeColors();
 
 	private:
 		inline static EditorMenuBar s_MenuBar;
