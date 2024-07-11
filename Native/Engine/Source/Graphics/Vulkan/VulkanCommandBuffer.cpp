@@ -11,6 +11,8 @@
 #include "ResourceManager.h"
 #include "VulkanDescriptorBuffer.h"
 #include "VulkanRenderTexture.h"
+#include "VulkanDescriptorSet.h"
+#include "VulkanDescriptorLayout.h"
 
 namespace Odyssey
 {
@@ -219,5 +221,10 @@ namespace Odyssey
     void VulkanCommandBuffer::SetDescriptorBufferOffset(ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline, uint32_t setIndex, const uint32_t* bufferIndex, const VkDeviceSize* bufferOffset)
     {
         vkCmdSetDescriptorBufferOffsetsEXT(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.Get()->GetLayout(), setIndex, 1, bufferIndex, bufferOffset);
+    }
+
+    void VulkanCommandBuffer::BindDescriptorSet(ResourceHandle<VulkanDescriptorSet> descriptorSet, ResourceHandle<VulkanGraphicsPipeline> pipeline)
+    {
+        vkCmdBindDescriptorSets(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Get()->GetLayout(), 0, descriptorSet.Get()->GetCount(), descriptorSet.Get()->GetDescriptorSets().data(), 0, nullptr);
     }
 }

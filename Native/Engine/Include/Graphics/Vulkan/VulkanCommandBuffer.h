@@ -9,6 +9,8 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanCommandPool;
 	class VulkanDescriptorBuffer;
+	class VulkanDescriptorSet;
+	class VulkanDescriptorLayout;
 	class VulkanGraphicsPipeline;
 	class VulkanImage;
 	class VulkanIndexBuffer;
@@ -43,7 +45,7 @@ namespace Odyssey
 		void BindDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle);
 		void BindDescriptorBuffers(std::vector<ResourceHandle<VulkanDescriptorBuffer>> handles);
 		void SetDescriptorBufferOffset(ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline, uint32_t setIndex, const uint32_t* bufferIndex, const VkDeviceSize* bufferOffset);
-
+		void BindDescriptorSet(ResourceHandle<VulkanDescriptorSet> descriptorSet, ResourceHandle<VulkanGraphicsPipeline> pipeline);
 	public:
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
 		const VkCommandBuffer* GetCommandBufferRef() { return &m_CommandBuffer; }
