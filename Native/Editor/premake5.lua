@@ -53,7 +53,7 @@ project "Odyssey.Native.Editor"
 
     links {
         "Odyssey.Native.Engine.lib",
-        "assimp-vc143-mtd.lib"
+        "assimp-vc143-mt.lib"
     }
 
     filter { "configurations:Debug" }

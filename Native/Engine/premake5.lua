@@ -57,7 +57,7 @@ project "Odyssey.Native.Engine"
 
     links {
         "glfw3.lib",
-        "assimp-vc143-mtd.lib"
+        "assimp-vc143-mt.lib"
     }
 
     
@@ -66,9 +66,9 @@ project "Odyssey.Native.Engine"
 
     filter { "system:windows" }
         prebuildcommands {
-            '{COPY} "%{wks.location}/Vendor/assimp/bin/Debug/assimp-vc143-mtd.dll" "%{cfg.targetdir}"',
 			'{COPYFILE} "%{wks.location}/Vendor/glfw3/lib/glfw3.lib" "%{cfg.targetdir}"',
-			'{COPYFILE} "%{wks.location}/Vendor/assimp/bin/Debug/assimp-vc143-mtd.lib" "%{cfg.targetdir}"',
+            '{COPYFILE} "%{wks.location}/Vendor/assimp/bin/assimp-vc143-mtd.dll" "%{cfg.targetdir}"',
+			'{COPYFILE} "%{wks.location}/Vendor/assimp/lib/assimp-vc143-mt.lib" "%{cfg.targetdir}"',
         }
 		--postbuildcommands {
         --    '{COPYFILE} "%{wks.location}Vendor/Coral/Coral.Managed/Coral.Managed.runtimeconfig.json" "%{cfg.targetdir}"',
