@@ -46,6 +46,7 @@ namespace Odyssey
 		void BindDescriptorBuffers(std::vector<ResourceHandle<VulkanDescriptorBuffer>> handles);
 		void SetDescriptorBufferOffset(ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline, uint32_t setIndex, const uint32_t* bufferIndex, const VkDeviceSize* bufferOffset);
 		void BindDescriptorSet(ResourceHandle<VulkanDescriptorSet> descriptorSet, ResourceHandle<VulkanGraphicsPipeline> pipeline);
+		void PushDescriptorSet(ResourceHandle<VulkanBuffer> buffer, ResourceHandle<VulkanBuffer> buffer2, ResourceHandle<VulkanGraphicsPipeline> pipeline, uint32_t bindingIndex);
 	public:
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
 		const VkCommandBuffer* GetCommandBufferRef() { return &m_CommandBuffer; }

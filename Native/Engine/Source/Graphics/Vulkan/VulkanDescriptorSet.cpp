@@ -7,7 +7,7 @@
 
 namespace Odyssey
 {
-	VulkanDescriptorSet::VulkanDescriptorSet(std::shared_ptr<VulkanContext> context, DescriptorType descriptorType, ResourceHandle<VulkanDescriptorPool> pool, std::vector<ResourceHandle<VulkanDescriptorLayout>> layouts, uint32_t count)
+	VulkanDescriptorSet::VulkanDescriptorSet(std::shared_ptr<VulkanContext> context, DescriptorType descriptorType, ResourceHandle<VulkanDescriptorPool> pool, ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count)
 	{
 		m_Context = context;
 		m_Count = count;
@@ -19,22 +19,19 @@ namespace Odyssey
 		allocInfo.descriptorPool = pool.Get()->GetDescriptorPool();
 		allocInfo.descriptorSetCount = m_Count;
 
-		// Convert the layout handles into a list of pointers
+		// Convert the layout handle into a list of pointers
 		std::vector<VkDescriptorSetLayout> setLayouts;
-		for (ResourceHandle<VulkanDescriptorLayout> layout : layouts)
-		{
-			setLayouts.push_back(layout.Get()->GetHandle());
-		}
+		setLayouts.push_back(layout.Get()->GetHandle());
 		allocInfo.pSetLayouts = setLayouts.data();
 
-		m_DescriptorSets.resize(m_Count);		
+		m_DescriptorSets.resize(m_Count);
 		if (vkAllocateDescriptorSets(m_Context->GetDeviceVK(), &allocInfo, m_DescriptorSets.data()) != VK_SUCCESS)
 		{
 			Logger::LogError("[VulkanDescriptorSet] Failed to allocate descriptor sets.");
 		}
 	}
 
-	void VulkanDescriptorSet::SetBuffer(ResourceHandle<VulkanBuffer> buffer, uint32_t bindingIndex, uint32_t setIndex = 0)
+	/*void VulkanDescriptorSet::SetBuffer(ResourceHandle<VulkanBuffer> buffer, uint32_t bindingIndex, uint32_t setIndex = 0)
 	{
 		VkDescriptorBufferInfo bufferInfo{ };
 		bufferInfo.buffer = buffer.Get()->buffer;
@@ -55,5 +52,5 @@ namespace Odyssey
 		writeInfo.pTexelBufferView = nullptr;
 
 		vkUpdateDescriptorSets(m_Context->GetDeviceVK(), 1, &writeInfo, 0, nullptr);
-	}
+	}*/
 }

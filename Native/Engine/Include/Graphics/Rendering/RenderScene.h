@@ -11,7 +11,6 @@ namespace Odyssey
 	class Mesh;
 	class Scene;
 	class VulkanGraphicsPipeline;
-	class VulkanDescriptorBuffer;
 	class VulkanBuffer;
 	class VulkanDescriptorLayout;
 	class VulkanImage;
@@ -70,12 +69,10 @@ namespace Odyssey
 		ResourceHandle<VulkanDescriptorLayout> uboLayout;
 		ResourceHandle<VulkanBuffer> sceneUniformBuffer;
 		std::vector<ResourceHandle<VulkanBuffer>> perObjectUniformBuffers;
-		ResourceHandle<VulkanDescriptorBuffer> descriptorBuffer;
 
 		// Descriptor buffer for per-object sampler
 		ResourceHandle<VulkanDescriptorLayout> m_SamplerLayout;
 		ResourceHandle<VulkanBuffer> m_SamplerBuffer;
-		ResourceHandle<VulkanDescriptorBuffer> m_SamplerDescriptorBuffer;
 
 		std::vector<ResourceHandle<VulkanDescriptorLayout>> m_Layouts;
 

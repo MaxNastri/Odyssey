@@ -12,6 +12,7 @@
 #include "VulkanBuffer.h"
 #include "VulkanDescriptorBuffer.h"
 #include "Texture2D.h"
+#include "VulkanDescriptorPool.h"
 
 namespace Odyssey
 {
@@ -19,16 +20,11 @@ namespace Odyssey
 	{
 		// Descriptor layout for the combined uniform buffers
 		uboLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		m_SamplerLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Sampler, ShaderStage::Fragment, 0);
+		//m_SamplerLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Sampler, ShaderStage::Fragment, 0);
 
 		// Pushback 2 ubo layouts (1 scene, 1 per-object) and 1 sampler layout
 		m_Layouts.push_back(uboLayout);
-		m_Layouts.push_back(uboLayout);
-		m_Layouts.push_back(m_SamplerLayout);
-
-		// Allocate descriptor buffers
-		descriptorBuffer = ResourceManager::AllocateDescriptorBuffer(uboLayout, Max_Uniform_Buffers);
-		m_SamplerDescriptorBuffer = ResourceManager::AllocateDescriptorBuffer(m_SamplerLayout, 1);
+		//m_Layouts.push_back(m_SamplerLayout);
 
 		// Scene uniform buffer
 		uint32_t sceneUniformSize = sizeof(sceneData);
@@ -36,28 +32,22 @@ namespace Odyssey
 		sceneUniformBuffer.Get()->AllocateMemory();
 		sceneUniformBuffer.Get()->SetMemory(sceneUniformSize, &sceneData);
 
-		// Put the scene uniform buffer into the descriptor buffer [0]
-		descriptorBuffer.Get()->SetUniformBuffer(sceneUniformBuffer, 0);
-
 		// Per-object uniform buffers
 		uint32_t perObjectUniformSize = sizeof(objectData);
 
 		for (uint32_t i = 1; i < Max_Uniform_Buffers; i++)
 		{
+			// Allocate the UBO
 			ResourceHandle<VulkanBuffer> uniformBuffer = ResourceManager::AllocateBuffer(BufferType::Uniform, perObjectUniformSize);
 			uniformBuffer.Get()->AllocateMemory();
 			uniformBuffer.Get()->SetMemory(perObjectUniformSize, &objectData);
 			perObjectUniformBuffers.push_back(uniformBuffer);
-
-			// Put the per-object uniform buffer into the descriptor buffer [i]
-			descriptorBuffer.Get()->SetUniformBuffer(uniformBuffer, i);
 		}
 	}
 
 	void RenderScene::Destroy()
 	{
 		ResourceManager::DestroyDescriptorLayout(uboLayout);
-		ResourceManager::DestroyDescriptorBuffer(descriptorBuffer);
 		ResourceManager::DestroyBuffer(sceneUniformBuffer);
 	}
 

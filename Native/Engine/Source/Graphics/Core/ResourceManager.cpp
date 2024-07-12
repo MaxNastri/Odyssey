@@ -13,6 +13,8 @@
 #include "VulkanDescriptorBuffer.h"
 #include "VulkanImage.h"
 #include "VulkanTextureSampler.h"
+#include "VulkanDescriptorPool.h"
+#include "VulkanDescriptorSet.h"
 
 namespace Odyssey
 {
@@ -103,6 +105,20 @@ namespace Odyssey
 		uint32_t id = s_DescriptorBuffers.Add(s_Context, layout, descriptorCount);
 		s_DescriptorBuffers[id]->SetID(id);
 		return ResourceHandle<VulkanDescriptorBuffer>(id, s_DescriptorBuffers[id].get());
+	}
+
+	ResourceHandle<VulkanDescriptorPool> ResourceManager::AllocateDescriptorPool(DescriptorType poolType, uint32_t setCount, uint32_t maxSets)
+	{
+		uint32_t id = s_DescriptorPools.Add(s_Context, poolType, setCount, maxSets);
+		s_DescriptorPools[id]->SetID(id);
+		return ResourceHandle<VulkanDescriptorPool>(id, s_DescriptorPools[id].get());
+	}
+
+	ResourceHandle<VulkanDescriptorSet> ResourceManager::AllocateDescriptorSet(DescriptorType descriptorType, ResourceHandle<VulkanDescriptorPool> pool, ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count)
+	{
+		uint32_t id = s_DescriptorSets.Add(s_Context, descriptorType, pool, layout, count);
+		s_DescriptorSets[id]->SetID(id);
+		return ResourceHandle<VulkanDescriptorSet>(id, s_DescriptorSets[id].get());
 	}
 
 	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(const VulkanImageDescription& imageDescription)
@@ -218,6 +234,29 @@ namespace Odyssey
 				s_Samplers[id]->Destroy();
 				s_Samplers[id]->SetID(-1);
 				s_Samplers.Remove(id);
+			};
+		s_PendingDestroys.push_back({ id, func });
+	}
+
+	void ResourceManager::DestroyDescriptorPool(ResourceHandle<VulkanDescriptorPool> handle)
+	{
+		uint32_t id = handle.m_ID;
+		auto func = [](uint32_t id)
+			{
+				s_DescriptorPools[id]->Destroy();
+				s_DescriptorPools[id]->SetID(-1);
+				s_DescriptorPools.Remove(id);
+			};
+		s_PendingDestroys.push_back({ id, func });
+	}
+
+	void ResourceManager::DestroyDescriptorSet(ResourceHandle<VulkanDescriptorSet> handle)
+	{
+		uint32_t id = handle.m_ID;
+		auto func = [](uint32_t id)
+			{
+				s_DescriptorSets[id]->SetID(-1);
+				s_DescriptorSets.Remove(id);
 			};
 		s_PendingDestroys.push_back({ id, func });
 	}

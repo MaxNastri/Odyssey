@@ -227,4 +227,25 @@ namespace Odyssey
     {
         vkCmdBindDescriptorSets(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Get()->GetLayout(), 0, descriptorSet.Get()->GetCount(), descriptorSet.Get()->GetDescriptorSets().data(), 0, nullptr);
     }
+
+    void VulkanCommandBuffer::PushDescriptorSet(ResourceHandle<VulkanBuffer> buffer, ResourceHandle<VulkanBuffer> buffer2, ResourceHandle<VulkanGraphicsPipeline> pipeline, uint32_t bindingIndex)
+    {
+        std::array<VkWriteDescriptorSet, 2> writeDescriptorSets{};
+
+        // Scene matrices
+        writeDescriptorSets[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeDescriptorSets[0].dstSet = 0;
+        writeDescriptorSets[0].dstBinding = bindingIndex;
+        writeDescriptorSets[0].descriptorCount = 1;
+        writeDescriptorSets[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        writeDescriptorSets[0].pBufferInfo = &buffer.Get()->descriptor;
+
+        writeDescriptorSets[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeDescriptorSets[1].dstSet = 0;
+        writeDescriptorSets[1].dstBinding = 1;
+        writeDescriptorSets[1].descriptorCount = 1;
+        writeDescriptorSets[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        writeDescriptorSets[1].pBufferInfo = &buffer2.Get()->descriptor;
+        vkCmdPushDescriptorSetKHR(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Get()->GetLayout(), 0, writeDescriptorSets.size(), writeDescriptorSets.data());
+    }
 }

@@ -21,12 +21,14 @@ namespace Odyssey
 		void Destroy();
 
 	public:
-		
+		ResourceHandle<VulkanDescriptorSet> AllocateDescriptorSets(ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count);
+
 	public:
 		VkDescriptorPool GetDescriptorPool() { return m_DescriptorPool; }
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		VkDescriptorPool m_DescriptorPool;
+		DescriptorType m_DescriptorType;
 	};
 }

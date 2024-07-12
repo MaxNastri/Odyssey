@@ -72,6 +72,13 @@ namespace Odyssey
 		{
 			vkMapMemory(m_Context->GetDeviceVK(), bufferMemory, 0, m_Size, 0, &bufferMemoryMapped);
 		}
+
+		if (m_BufferType == BufferType::Uniform || m_BufferType == BufferType::DescriptorUniform)
+		{
+			descriptor.buffer = buffer;
+			descriptor.range = VK_WHOLE_SIZE;
+			descriptor.offset = 0;
+		}
 	}
 
 	void VulkanBuffer::SetMemory(VkDeviceSize size, const void* data)

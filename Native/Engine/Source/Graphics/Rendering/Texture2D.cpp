@@ -2,6 +2,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "ResourceManager.h"
+#include "VulkanTextureSampler.h"
 
 namespace Odyssey
 {
@@ -58,5 +59,9 @@ namespace Odyssey
 		m_Image.Get()->SetData(pixels);
 
 		m_Sampler = ResourceManager::AllocateSampler();
+
+		descriptor.imageView = m_Image.Get()->GetImageView();
+		descriptor.imageLayout = m_Image.Get()->GetLayout();
+		descriptor.sampler = m_Sampler.Get()->GetSamplerVK();
 	}
 }

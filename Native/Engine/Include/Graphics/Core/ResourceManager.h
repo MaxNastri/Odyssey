@@ -21,6 +21,8 @@ namespace Odyssey
 	class VulkanDescriptorLayout;
 	class VulkanImage;
 	class VulkanTextureSampler;
+	class VulkanDescriptorPool;
+	class VulkanDescriptorSet;
 
 	class ResourceManager
 	{
@@ -40,6 +42,8 @@ namespace Odyssey
 		static ResourceHandle<VulkanCommandBuffer> AllocateCommandBuffer(ResourceHandle<VulkanCommandPool> commandPool);
 		static ResourceHandle<VulkanDescriptorLayout> AllocateDescriptorLayout(DescriptorType type, ShaderStage shaderStage, uint32_t bindingIndex);
 		static ResourceHandle<VulkanDescriptorBuffer> AllocateDescriptorBuffer(ResourceHandle<VulkanDescriptorLayout> layout, uint32_t descriptorCount);
+		static ResourceHandle<VulkanDescriptorPool> AllocateDescriptorPool(DescriptorType poolType, uint32_t setCount, uint32_t maxSets);
+		static ResourceHandle<VulkanDescriptorSet> AllocateDescriptorSet(DescriptorType descriptorType, ResourceHandle<VulkanDescriptorPool> pool, ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count);
 		static ResourceHandle<VulkanImage> AllocateImage(const VulkanImageDescription& imageDescription);
 		static ResourceHandle<VulkanImage> AllocateImage(VkImage image, uint32_t width, uint32_t height, VkFormat format);
 		static ResourceHandle<VulkanTextureSampler> AllocateSampler();
@@ -57,6 +61,8 @@ namespace Odyssey
 		static void DestroyDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle);
 		static void DestroyImage(ResourceHandle<VulkanImage> handle);
 		static void DestroySampler(ResourceHandle<VulkanTextureSampler> handle);
+		static void DestroyDescriptorPool(ResourceHandle<VulkanDescriptorPool> handle);
+		static void DestroyDescriptorSet(ResourceHandle<VulkanDescriptorSet> handle);
 
 	public:
 		static void Flush();
@@ -75,7 +81,8 @@ namespace Odyssey
 		inline static DynamicList<VulkanDescriptorBuffer> s_DescriptorBuffers;
 		inline static DynamicList<VulkanImage> s_Images;
 		inline static DynamicList<VulkanTextureSampler> s_Samplers;
-
+		inline static DynamicList<VulkanDescriptorPool> s_DescriptorPools;
+		inline static DynamicList<VulkanDescriptorSet> s_DescriptorSets;
 	private:
 		struct ResourceDeallocation
 		{

@@ -7,6 +7,7 @@ namespace Odyssey
 	VulkanDescriptorPool::VulkanDescriptorPool(std::shared_ptr<VulkanContext> context, DescriptorType poolType, uint32_t descriptorCount, uint32_t maxSets)
 	{
 		m_Context = context;
+		m_DescriptorType = poolType;
 
 		// TODO: Util function
 		VkDescriptorType type = poolType == DescriptorType::Uniform ?
@@ -31,6 +32,11 @@ namespace Odyssey
 	void VulkanDescriptorPool::Destroy()
 	{
 		vkDestroyDescriptorPool(m_Context->GetDeviceVK(), m_DescriptorPool, nullptr);
+	}
+
+	ResourceHandle<VulkanDescriptorSet> VulkanDescriptorPool::AllocateDescriptorSets(ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count)
+	{
+		return ResourceHandle<VulkanDescriptorSet>();
 	}
 }
 

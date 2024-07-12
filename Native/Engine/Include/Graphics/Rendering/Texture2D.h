@@ -2,6 +2,7 @@
 #include "Asset.h"
 #include "Enums.h"
 #include "ResourceHandle.h"
+#include "VulkanGlobals.h"
 
 namespace Odyssey
 {
@@ -26,6 +27,7 @@ namespace Odyssey
 
 	public:
 		void SetSampler(ResourceHandle<VulkanTextureSampler> sampler) { m_Sampler = sampler; }
+		VkDescriptorImageInfo GetDescriptor() { return descriptor; }
 
 	private:
 		void SaveToDisk(const std::filesystem::path& assetPath);
@@ -34,6 +36,8 @@ namespace Odyssey
 	private:
 		ResourceHandle<VulkanImage> m_Image;
 		ResourceHandle<VulkanTextureSampler> m_Sampler;
+		// TODO: Move this implementation to a "VulkanTexture" class that stores vulkan image and sampler
+		VkDescriptorImageInfo descriptor;
 		uint32_t m_Width, m_Height;
 		TextureFormat m_Format;
 

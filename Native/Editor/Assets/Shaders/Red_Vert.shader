@@ -1,2 +1,2 @@
 m_ShaderType: 0
-m_ModulePath: 'Assets/Shaders/bin/red_vert.spv'
+m_ModulePath: 'Assets/Shaders/Compiled/red_vert.spv'

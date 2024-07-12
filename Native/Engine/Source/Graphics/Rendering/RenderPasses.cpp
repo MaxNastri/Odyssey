@@ -7,7 +7,6 @@
 #include "Drawcall.h"
 #include "RenderScene.h"
 #include "VulkanImgui.h"
-#include "VulkanDescriptorBuffer.h"
 
 namespace Odyssey
 {
@@ -136,9 +135,6 @@ namespace Odyssey
 		if (m_Camera)
 			renderScene->SetCameraData(m_Camera);
 
-		// Bind the scene descriptor buffer
-		commandBuffer->BindDescriptorBuffers({ renderScene->descriptorBuffer, renderScene->m_SamplerDescriptorBuffer });
-
 		for (auto& setPass : params.renderingData->renderScene->setPasses)
 		{
 			commandBuffer->BindPipeline(setPass.pipeline);
@@ -148,24 +144,25 @@ namespace Odyssey
 			uint32_t buffer_index_image = 1;
 			VkDeviceSize buffer_offset = 0;
 
-			commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 0, &buffer_index_ubo, &buffer_offset);
+			//commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 0, &buffer_index_ubo, &buffer_offset);
 
 			for (size_t i = 0; i < setPass.drawcalls.size(); i++)
 			{
 				Drawcall& drawcall = setPass.drawcalls[i];
+				commandBuffer->PushDescriptorSet(renderScene->sceneUniformBuffer, renderScene->perObjectUniformBuffers[i], setPass.pipeline, 0);
 
 				// Bind the per-object descriptor buffer 
 				// Note: (i + 1) because slot 0 is held by the global scene ubo
-				buffer_offset = (i + 1) * renderScene->descriptorBuffer.Get()->GetSize();
-				commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 1, &buffer_index_ubo, &buffer_offset);
+				//buffer_offset = (i + 1) * renderScene->descriptorBuffer.Get()->GetSize();
+				//commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 1, &buffer_index_ubo, &buffer_offset);
 
-				// Image (set 2)
-				uint32_t bufferIndexImage = 1;
-				buffer_offset = (i * renderScene->m_SamplerDescriptorBuffer.Get()->GetSize());
-				commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 2, &buffer_index_image, &buffer_offset);
+				//// Image (set 2)
+				//uint32_t bufferIndexImage = 1;
+				//buffer_offset = (i * renderScene->m_SamplerDescriptorBuffer.Get()->GetSize());
+				//commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 2, &buffer_index_image, &buffer_offset);
 
-				if (setPass.Texture.IsValid() && setPass.Sampler.IsValid())
-					renderScene->m_SamplerDescriptorBuffer.Get()->SetTexture(setPass.Texture, setPass.Sampler, 0);
+				//if (setPass.Texture.IsValid() && setPass.Sampler.IsValid())
+				//	renderScene->m_SamplerDescriptorBuffer.Get()->SetTexture(setPass.Texture, setPass.Sampler, 0);
 
 				// Set the per-object descriptor buffer offset
 				commandBuffer->BindVertexBuffer(drawcall.VertexBuffer);

@@ -24,6 +24,7 @@ namespace Odyssey
 		uint64_t GetAddress();
 		uint32_t GetSize() { return m_Size; }
 		uint8_t* GetMappedMemory() { return static_cast<uint8_t*>(bufferMemoryMapped); }
+		VkDescriptorBufferInfo GetDescriptor() { return descriptor; }
 
 	private:
 		uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
@@ -36,5 +37,6 @@ namespace Odyssey
 		BufferType m_BufferType;
 		uint32_t m_Size;
 		void* bufferMemoryMapped = nullptr;
+		VkDescriptorBufferInfo descriptor;
 	};
 }
