@@ -8,13 +8,13 @@ namespace Odyssey
 	class VulkanBuffer;
 	class VulkanContext;
 	class VulkanCommandPool;
-	class VulkanDescriptorBuffer;
 	class VulkanDescriptorSet;
 	class VulkanDescriptorLayout;
 	class VulkanGraphicsPipeline;
 	class VulkanImage;
 	class VulkanIndexBuffer;
 	class VulkanVertexBuffer;
+	class VulkanUniformBuffer;
 
 	class VulkanCommandBuffer : public Resource
 	{
@@ -42,11 +42,8 @@ namespace Odyssey
 		void BindVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle);
 		void CopyBufferToBuffer(ResourceHandle<VulkanBuffer> srcBuffer, ResourceHandle<VulkanBuffer> dstBuffer, uint32_t dataSize);
 		void BindIndexBuffer(ResourceHandle<VulkanIndexBuffer> handle);
-		void BindDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle);
-		void BindDescriptorBuffers(std::vector<ResourceHandle<VulkanDescriptorBuffer>> handles);
-		void SetDescriptorBufferOffset(ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline, uint32_t setIndex, const uint32_t* bufferIndex, const VkDeviceSize* bufferOffset);
 		void BindDescriptorSet(ResourceHandle<VulkanDescriptorSet> descriptorSet, ResourceHandle<VulkanGraphicsPipeline> pipeline);
-		void PushDescriptorSet(ResourceHandle<VulkanBuffer> buffer, ResourceHandle<VulkanBuffer> buffer2, ResourceHandle<VulkanGraphicsPipeline> pipeline, uint32_t bindingIndex);
+		void PushDescriptorSet(ResourceHandle<VulkanUniformBuffer> buffer, ResourceHandle<VulkanUniformBuffer> buffer2, ResourceHandle<VulkanGraphicsPipeline> pipeline);
 	public:
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
 		const VkCommandBuffer* GetCommandBufferRef() { return &m_CommandBuffer; }

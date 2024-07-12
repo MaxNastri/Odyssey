@@ -9,10 +9,10 @@
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
 #include "ResourceManager.h"
-#include "VulkanDescriptorBuffer.h"
 #include "VulkanRenderTexture.h"
 #include "VulkanDescriptorSet.h"
 #include "VulkanDescriptorLayout.h"
+#include "VulkanUniformBuffer.h"
 
 namespace Odyssey
 {
@@ -185,67 +185,19 @@ namespace Odyssey
         vkCmdBindIndexBuffer(m_CommandBuffer, handle.Get()->GetIndexBufferVK(), 0, VK_INDEX_TYPE_UINT32);
     }
 
-    void VulkanCommandBuffer::BindDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle)
-    {
-        std::vector<VkDescriptorBufferBindingInfoEXT> bindingInfos;
-
-        VulkanDescriptorBuffer* descriptorBuffer = handle.Get();
-        VkDescriptorBufferBindingInfoEXT bindingInfo{};
-        bindingInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT;
-        bindingInfo.address = descriptorBuffer->GetBuffer().Get()->GetAddress();
-        bindingInfo.usage = VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT;
-        bindingInfos.push_back(bindingInfo);
-
-        vkCmdBindDescriptorBuffersEXT(m_CommandBuffer, (uint32_t)bindingInfos.size(), bindingInfos.data());
-    }
-
-    void VulkanCommandBuffer::BindDescriptorBuffers(std::vector<ResourceHandle<VulkanDescriptorBuffer>> handles)
-    {
-        std::vector<VkDescriptorBufferBindingInfoEXT> bindingInfos;
-
-        uint32_t index = 0;
-
-        for (auto& handle : handles)
-        {
-            VulkanDescriptorBuffer* descriptorBuffer = handle.Get();
-            VkDescriptorBufferBindingInfoEXT bindingInfo{};
-            bindingInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT;
-            bindingInfo.address = descriptorBuffer->GetBuffer().Get()->GetAddress();
-            bindingInfo.usage = index == 0 ? VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT : VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT | VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT;
-            bindingInfos.push_back(bindingInfo);
-            index++;
-        }
-
-        vkCmdBindDescriptorBuffersEXT(m_CommandBuffer, (uint32_t)bindingInfos.size(), bindingInfos.data());
-    }
-    void VulkanCommandBuffer::SetDescriptorBufferOffset(ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline, uint32_t setIndex, const uint32_t* bufferIndex, const VkDeviceSize* bufferOffset)
-    {
-        vkCmdSetDescriptorBufferOffsetsEXT(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.Get()->GetLayout(), setIndex, 1, bufferIndex, bufferOffset);
-    }
-
     void VulkanCommandBuffer::BindDescriptorSet(ResourceHandle<VulkanDescriptorSet> descriptorSet, ResourceHandle<VulkanGraphicsPipeline> pipeline)
     {
         vkCmdBindDescriptorSets(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Get()->GetLayout(), 0, descriptorSet.Get()->GetCount(), descriptorSet.Get()->GetDescriptorSets().data(), 0, nullptr);
     }
 
-    void VulkanCommandBuffer::PushDescriptorSet(ResourceHandle<VulkanBuffer> buffer, ResourceHandle<VulkanBuffer> buffer2, ResourceHandle<VulkanGraphicsPipeline> pipeline, uint32_t bindingIndex)
+    void VulkanCommandBuffer::PushDescriptorSet(ResourceHandle<VulkanUniformBuffer> buffer, ResourceHandle<VulkanUniformBuffer> buffer2, ResourceHandle<VulkanGraphicsPipeline> pipeline)
     {
         std::array<VkWriteDescriptorSet, 2> writeDescriptorSets{};
 
         // Scene matrices
-        writeDescriptorSets[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        writeDescriptorSets[0].dstSet = 0;
-        writeDescriptorSets[0].dstBinding = bindingIndex;
-        writeDescriptorSets[0].descriptorCount = 1;
-        writeDescriptorSets[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        writeDescriptorSets[0].pBufferInfo = &buffer.Get()->descriptor;
+        writeDescriptorSets[0] = buffer.Get()->GetDescriptorInfo();
+        writeDescriptorSets[1] = buffer2.Get()->GetDescriptorInfo();
 
-        writeDescriptorSets[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        writeDescriptorSets[1].dstSet = 0;
-        writeDescriptorSets[1].dstBinding = 1;
-        writeDescriptorSets[1].descriptorCount = 1;
-        writeDescriptorSets[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        writeDescriptorSets[1].pBufferInfo = &buffer2.Get()->descriptor;
         vkCmdPushDescriptorSetKHR(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Get()->GetLayout(), 0, writeDescriptorSets.size(), writeDescriptorSets.data());
     }
 }

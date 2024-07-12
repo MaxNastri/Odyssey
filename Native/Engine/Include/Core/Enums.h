@@ -9,8 +9,6 @@ namespace Odyssey
 		Vertex = 2,
 		Index = 3,
 		Uniform = 4,
-		DescriptorUniform = 5,
-		DescriptorSampler = 6,
 	};
 
 	enum DescriptorType

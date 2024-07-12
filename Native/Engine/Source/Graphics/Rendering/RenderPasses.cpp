@@ -139,17 +139,10 @@ namespace Odyssey
 		{
 			commandBuffer->BindPipeline(setPass.pipeline);
 
-			// Set the scene descriptor buffer offset
-			uint32_t buffer_index_ubo = 0;
-			uint32_t buffer_index_image = 1;
-			VkDeviceSize buffer_offset = 0;
-
-			//commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 0, &buffer_index_ubo, &buffer_offset);
-
 			for (size_t i = 0; i < setPass.drawcalls.size(); i++)
 			{
 				Drawcall& drawcall = setPass.drawcalls[i];
-				commandBuffer->PushDescriptorSet(renderScene->sceneUniformBuffer, renderScene->perObjectUniformBuffers[i], setPass.pipeline, 0);
+				commandBuffer->PushDescriptorSet(renderScene->sceneUniformBuffer, renderScene->perObjectUniformBuffers[i], setPass.pipeline);
 
 				// Bind the per-object descriptor buffer 
 				// Note: (i + 1) because slot 0 is held by the global scene ubo

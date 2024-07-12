@@ -83,7 +83,7 @@ namespace Odyssey
 	void SceneViewWindow::CreateRenderTexture()
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
-		m_RenderTexture = ResourceManager::AllocateTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
+		m_RenderTexture = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
 		m_DepthRT = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
 		m_RTSampler = ResourceManager::AllocateSampler();
 
@@ -99,8 +99,8 @@ namespace Odyssey
 		if (m_RenderTexture.IsValid())
 		{
 			// Destroy the render texture
-			ResourceManager::DestroyTexture(m_RenderTexture);
-			ResourceManager::DestroyTexture(m_DepthRT);
+			ResourceManager::DestroyRenderTexture(m_RenderTexture);
+			ResourceManager::DestroyRenderTexture(m_DepthRT);
 			ResourceManager::DestroySampler(m_RTSampler);
 		}
 	}

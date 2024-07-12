@@ -54,7 +54,7 @@ namespace Odyssey
 		allocInfo.allocationSize = memoryRequirements.size;
 		allocInfo.memoryTypeIndex = FindMemoryType(m_Context->GetPhysicalDeviceVK(), memoryRequirements.memoryTypeBits, properties);
 		
-		if (m_BufferType == BufferType::Uniform || m_BufferType == BufferType::DescriptorUniform || m_BufferType == BufferType::DescriptorSampler)
+		if (m_BufferType == BufferType::Uniform)
 		{
 			memoryFlags.flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT;
 			allocInfo.pNext = &memoryFlags;
@@ -68,16 +68,9 @@ namespace Odyssey
 
 		vkBindBufferMemory(m_Context->GetDeviceVK(), buffer, bufferMemory, 0);
 
-		if (m_BufferType == BufferType::Uniform || m_BufferType == BufferType::DescriptorUniform || m_BufferType == BufferType::DescriptorSampler)
+		if (m_BufferType == BufferType::Uniform)
 		{
 			vkMapMemory(m_Context->GetDeviceVK(), bufferMemory, 0, m_Size, 0, &bufferMemoryMapped);
-		}
-
-		if (m_BufferType == BufferType::Uniform || m_BufferType == BufferType::DescriptorUniform)
-		{
-			descriptor.buffer = buffer;
-			descriptor.range = VK_WHOLE_SIZE;
-			descriptor.offset = 0;
 		}
 	}
 
@@ -147,10 +140,6 @@ namespace Odyssey
 				return VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 			case BufferType::Uniform:
 				return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-			case BufferType::DescriptorUniform:
-				return VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-			case BufferType::DescriptorSampler:
-				return VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT | VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 		}
 
 		return 0;

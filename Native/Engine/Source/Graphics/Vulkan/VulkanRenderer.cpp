@@ -17,7 +17,6 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Material.h"
-#include "VulkanDescriptorBuffer.h"
 #include <chrono>
 
 namespace Odyssey

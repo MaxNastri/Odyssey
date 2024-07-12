@@ -3,43 +3,32 @@
 #include "Enums.h"
 #include "ResourceHandle.h"
 #include "VulkanGlobals.h"
+#include "VulkanImage.h"
 
 namespace Odyssey
 {
 	class VulkanBuffer;
-	class VulkanImage;
-	class VulkanTextureSampler;
+	class VulkanTexture;
 
 	class Texture2D : public Asset
 	{
 	public:
 		Texture2D(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath);
 		Texture2D(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath, TextureFormat format);
-		Texture2D(uint32_t width, uint32_t height, TextureFormat format);
 
 	public:
 		void Save();
 		void Load();
 
 	public:
-		ResourceHandle<VulkanImage> GetImage() { return m_Image; }
-		ResourceHandle<VulkanTextureSampler> GetSampler() { return m_Sampler; }
-
-	public:
-		void SetSampler(ResourceHandle<VulkanTextureSampler> sampler) { m_Sampler = sampler; }
-		VkDescriptorImageInfo GetDescriptor() { return descriptor; }
+		ResourceHandle<VulkanTexture> GetTexture() { return m_Texture; }
 
 	private:
 		void SaveToDisk(const std::filesystem::path& assetPath);
 		void LoadFromDisk(const std::filesystem::path& assetPath);
 
 	private:
-		ResourceHandle<VulkanImage> m_Image;
-		ResourceHandle<VulkanTextureSampler> m_Sampler;
-		// TODO: Move this implementation to a "VulkanTexture" class that stores vulkan image and sampler
-		VkDescriptorImageInfo descriptor;
-		uint32_t m_Width, m_Height;
-		TextureFormat m_Format;
-
+		VulkanImageDescription m_TextureDescription;
+		ResourceHandle<VulkanTexture> m_Texture;
 	};
 }

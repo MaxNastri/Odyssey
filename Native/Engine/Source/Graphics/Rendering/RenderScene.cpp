@@ -9,8 +9,7 @@
 #include "ResourceManager.h"
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
-#include "VulkanBuffer.h"
-#include "VulkanDescriptorBuffer.h"
+#include "VulkanUniformBuffer.h"
 #include "Texture2D.h"
 #include "VulkanDescriptorPool.h"
 
@@ -28,7 +27,7 @@ namespace Odyssey
 
 		// Scene uniform buffer
 		uint32_t sceneUniformSize = sizeof(sceneData);
-		sceneUniformBuffer = ResourceManager::AllocateBuffer(BufferType::Uniform, sceneUniformSize);
+		sceneUniformBuffer = ResourceManager::AllocateUniformBuffer(BufferType::Uniform, 0, sceneUniformSize);
 		sceneUniformBuffer.Get()->AllocateMemory();
 		sceneUniformBuffer.Get()->SetMemory(sceneUniformSize, &sceneData);
 
@@ -38,7 +37,7 @@ namespace Odyssey
 		for (uint32_t i = 1; i < Max_Uniform_Buffers; i++)
 		{
 			// Allocate the UBO
-			ResourceHandle<VulkanBuffer> uniformBuffer = ResourceManager::AllocateBuffer(BufferType::Uniform, perObjectUniformSize);
+			ResourceHandle<VulkanUniformBuffer> uniformBuffer = ResourceManager::AllocateUniformBuffer(BufferType::Uniform, 1, perObjectUniformSize);
 			uniformBuffer.Get()->AllocateMemory();
 			uniformBuffer.Get()->SetMemory(perObjectUniformSize, &objectData);
 			perObjectUniformBuffers.push_back(uniformBuffer);
@@ -48,7 +47,7 @@ namespace Odyssey
 	void RenderScene::Destroy()
 	{
 		ResourceManager::DestroyDescriptorLayout(uboLayout);
-		ResourceManager::DestroyBuffer(sceneUniformBuffer);
+		ResourceManager::DestroyUniformBuffer(sceneUniformBuffer);
 	}
 
 	void RenderScene::ConvertScene(Scene* scene)
@@ -135,8 +134,7 @@ namespace Odyssey
 
 		if (material.Get()->GetTexture().IsValid())
 		{
-			Texture = material.Get()->GetTexture().Get()->GetImage();
-			Sampler = material.Get()->GetTexture().Get()->GetSampler();
+			Texture = material.Get()->GetTexture().Get()->GetTexture();
 		}
 	}
 }

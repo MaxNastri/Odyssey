@@ -11,10 +11,9 @@ namespace Odyssey
 	class Mesh;
 	class Scene;
 	class VulkanGraphicsPipeline;
-	class VulkanBuffer;
+	class VulkanUniformBuffer;
 	class VulkanDescriptorLayout;
-	class VulkanImage;
-	class VulkanTextureSampler;
+	class VulkanTexture;
 
 	struct SceneUniformData
 	{
@@ -41,8 +40,7 @@ namespace Odyssey
 		std::vector<Drawcall> drawcalls;
 		int32_t vertexShaderID = -1;
 		int32_t fragmentShaderID = -1;
-		ResourceHandle<VulkanImage> Texture;
-		ResourceHandle<VulkanTextureSampler> Sampler;
+		ResourceHandle<VulkanTexture> Texture;
 	};
 
 	class RenderScene
@@ -67,12 +65,11 @@ namespace Odyssey
 
 		// Descriptor buffer for per-scene data
 		ResourceHandle<VulkanDescriptorLayout> uboLayout;
-		ResourceHandle<VulkanBuffer> sceneUniformBuffer;
-		std::vector<ResourceHandle<VulkanBuffer>> perObjectUniformBuffers;
+		ResourceHandle<VulkanUniformBuffer> sceneUniformBuffer;
+		std::vector<ResourceHandle<VulkanUniformBuffer>> perObjectUniformBuffers;
 
 		// Descriptor buffer for per-object sampler
 		ResourceHandle<VulkanDescriptorLayout> m_SamplerLayout;
-		ResourceHandle<VulkanBuffer> m_SamplerBuffer;
 
 		std::vector<ResourceHandle<VulkanDescriptorLayout>> m_Layouts;
 
