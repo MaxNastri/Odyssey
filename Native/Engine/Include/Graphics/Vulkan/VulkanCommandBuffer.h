@@ -15,6 +15,7 @@ namespace Odyssey
 	class VulkanIndexBuffer;
 	class VulkanVertexBuffer;
 	class VulkanUniformBuffer;
+	class VulkanPushDescriptors;
 
 	class VulkanCommandBuffer : public Resource
 	{
@@ -43,7 +44,7 @@ namespace Odyssey
 		void CopyBufferToBuffer(ResourceHandle<VulkanBuffer> srcBuffer, ResourceHandle<VulkanBuffer> dstBuffer, uint32_t dataSize);
 		void BindIndexBuffer(ResourceHandle<VulkanIndexBuffer> handle);
 		void BindDescriptorSet(ResourceHandle<VulkanDescriptorSet> descriptorSet, ResourceHandle<VulkanGraphicsPipeline> pipeline);
-		void PushDescriptorSet(ResourceHandle<VulkanUniformBuffer> buffer, ResourceHandle<VulkanUniformBuffer> buffer2, ResourceHandle<VulkanGraphicsPipeline> pipeline);
+		void PushDescriptors(VulkanPushDescriptors* descriptors, ResourceHandle<VulkanGraphicsPipeline> pipeline);
 	public:
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
 		const VkCommandBuffer* GetCommandBufferRef() { return &m_CommandBuffer; }

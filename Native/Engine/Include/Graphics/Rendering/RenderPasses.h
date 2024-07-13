@@ -13,6 +13,7 @@ namespace Odyssey
 	class VulkanGraphicsPipeline;
 	class VulkanImgui;
 	class VulkanImage;
+	class VulkanPushDescriptors;
 	struct PerFrameRenderingData;
 
 	struct RenderPassParams
@@ -60,6 +61,7 @@ namespace Odyssey
 
 	private:
 		Camera* m_Camera = nullptr;
+		std::shared_ptr<VulkanPushDescriptors> pushDescriptors;
 	};
 
 	class ImguiPass : public RenderPass

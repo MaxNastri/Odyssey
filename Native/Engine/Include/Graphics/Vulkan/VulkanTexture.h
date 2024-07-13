@@ -17,11 +17,11 @@ namespace Odyssey
 	public:
 		ResourceHandle<VulkanImage> GetImage() { return m_Image; }
 		ResourceHandle<VulkanTextureSampler> GetSampler() { return m_Sampler; }
+		VkWriteDescriptorSet GetDescriptorInfo();
 
 	public:
 		void SetSampler(ResourceHandle<VulkanTextureSampler> sampler) { m_Sampler = sampler; }
-		VkDescriptorImageInfo GetDescriptor() { return descriptor; }
-
+		
 	private:
 		ResourceHandle<VulkanImage> m_Image;
 		ResourceHandle<VulkanTextureSampler> m_Sampler;

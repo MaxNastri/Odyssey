@@ -7,6 +7,8 @@
 #include "Drawcall.h"
 #include "RenderScene.h"
 #include "VulkanImgui.h"
+#include "VulkanPushDescriptors.h"
+#include "VulkanTexture.h"
 
 namespace Odyssey
 {
@@ -23,6 +25,7 @@ namespace Odyssey
 	OpaquePass::OpaquePass()
 	{
 		m_ClearValue = glm::vec4(0, 0, 0, 1);
+		pushDescriptors = std::make_shared<VulkanPushDescriptors>();
 	}
 
 	void OpaquePass::BeginPass(RenderPassParams& params)
@@ -141,23 +144,20 @@ namespace Odyssey
 
 			for (size_t i = 0; i < setPass.drawcalls.size(); i++)
 			{
-				Drawcall& drawcall = setPass.drawcalls[i];
-				commandBuffer->PushDescriptorSet(renderScene->sceneUniformBuffer, renderScene->perObjectUniformBuffers[i], setPass.pipeline);
+				// Prepare the push descriptor commands
+				pushDescriptors->Clear();
+				pushDescriptors->Add(renderScene->sceneUniformBuffer, 0);
+				pushDescriptors->Add(renderScene->perObjectUniformBuffers[i], 1);
+				if (setPass.Texture.IsValid())
+				{
+					pushDescriptors->Add(setPass.Texture, 2);
+				}
 
-				// Bind the per-object descriptor buffer 
-				// Note: (i + 1) because slot 0 is held by the global scene ubo
-				//buffer_offset = (i + 1) * renderScene->descriptorBuffer.Get()->GetSize();
-				//commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 1, &buffer_index_ubo, &buffer_offset);
-
-				//// Image (set 2)
-				//uint32_t bufferIndexImage = 1;
-				//buffer_offset = (i * renderScene->m_SamplerDescriptorBuffer.Get()->GetSize());
-				//commandBuffer->SetDescriptorBufferOffset(setPass.pipeline, 2, &buffer_index_image, &buffer_offset);
-
-				//if (setPass.Texture.IsValid() && setPass.Sampler.IsValid())
-				//	renderScene->m_SamplerDescriptorBuffer.Get()->SetTexture(setPass.Texture, setPass.Sampler, 0);
+				// Push the descriptors into the command buffer
+				commandBuffer->PushDescriptors(pushDescriptors.get(), setPass.pipeline);
 
 				// Set the per-object descriptor buffer offset
+				Drawcall& drawcall = setPass.drawcalls[i];
 				commandBuffer->BindVertexBuffer(drawcall.VertexBuffer);
 				commandBuffer->BindIndexBuffer(drawcall.IndexBuffer);
 				commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);

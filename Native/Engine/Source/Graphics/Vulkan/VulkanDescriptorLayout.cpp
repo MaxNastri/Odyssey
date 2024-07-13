@@ -59,7 +59,13 @@ namespace Odyssey
 		set_layout_binding2.binding = 1;
 		set_layout_binding2.descriptorCount = 1;
 
-		std::vector< VkDescriptorSetLayoutBinding> bindings = { set_layout_binding, set_layout_binding2 };
+		VkDescriptorSetLayoutBinding set_layout_binding3{};
+		set_layout_binding3.descriptorType = ConvertDescriptorType(DescriptorType::Sampler);
+		set_layout_binding3.stageFlags = ConvertShaderFlags(ShaderStage::Fragment);
+		set_layout_binding3.binding = 2;
+		set_layout_binding3.descriptorCount = 1;
+
+		std::vector< VkDescriptorSetLayoutBinding> bindings = { set_layout_binding, set_layout_binding2, set_layout_binding3 };
 
 		VkDescriptorSetLayoutCreateInfo descriptor_layout_create_info{};
 		descriptor_layout_create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
