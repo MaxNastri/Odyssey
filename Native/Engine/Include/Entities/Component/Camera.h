@@ -16,7 +16,9 @@ namespace Odyssey
 	public:
 		bool IsMainCamera() { return m_MainCamera; }
 		glm::mat4 GetProjection() { return m_Projection; }
+		glm::mat4 GetInverseProjection() { return m_InverseProjection; }
 		glm::mat4 GetInverseView();
+		glm::mat4 GetView();
 		float GetFieldOfView() { return m_FieldOfView; }
 		float GetNearClip() { return m_NearClip; }
 		float GetFarClip() { return m_FarClip; }
@@ -38,6 +40,8 @@ namespace Odyssey
 	private: // Non-serialized
 		Transform* m_Transform = nullptr;
 		glm::mat4 m_Projection;
+		glm::mat4 m_InverseProjection;
+		glm::mat4 m_View;
 		glm::mat4 m_InverseView;
 		float m_Width;
 		float m_Height;

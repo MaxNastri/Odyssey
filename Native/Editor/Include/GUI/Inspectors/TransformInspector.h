@@ -1,14 +1,13 @@
 #pragma once
-#include <GUIElement.h>
-#include <GameObject.h>
+#include "Inspector.h"
 #include "Vector3Drawer.h"
 #include "PropertyDrawer.h"
 
 namespace Odyssey
 {
-	class GUIElement;
+	class GameObject;
 
-	class TransformInspector : public GUIElement
+	class TransformInspector : public Inspector
 	{
 	public:
 		TransformInspector() = default;
@@ -18,7 +17,12 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	private:
-		GameObject* gameObject;
+		static void OnPositionChanged(GameObject* gameObject, glm::vec3 position);
+		static void OnRotationChanged(GameObject* gameObject, glm::vec3 rotation);
+		static void OnScaleChanged(GameObject* gameObject, glm::vec3 scale);
+
+	private:
+		GameObject* m_GameObject;
 		Vector3Drawer positionDrawer;
 		Vector3Drawer rotationDrawer;
 		Vector3Drawer scaleDrawer;

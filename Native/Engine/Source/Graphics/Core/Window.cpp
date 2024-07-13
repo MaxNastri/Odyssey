@@ -35,6 +35,12 @@ namespace Odyssey
 		int xpos, ypos;
 		glfwGetWindowPos(glfwHandle, &xpos, &ypos);
 		s_WindowPos = glm::vec2(xpos, ypos);
+
+		// Store the current DPI
+		float xScale, yScale;
+		glfwGetWindowContentScale(glfwHandle, &xScale, &yScale);
+
+		m_ContentScale = std::max(xScale, yScale);
 	}
 
 	bool Window::Update()

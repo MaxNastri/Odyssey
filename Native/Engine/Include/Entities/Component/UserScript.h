@@ -17,9 +17,12 @@ namespace Odyssey
 		virtual void Deserialize(ryml::ConstNodeRef node) override;
 
 	public:
-		void SetManagedInstance(Coral::ManagedObject instance);
 		Coral::Type GetType() { return managedInstance.GetType(); }
 		Coral::ManagedObject GetManagedObject() { return managedInstance; }
+		std::string GetManagedTypeName() { return m_ManagedType; }
+
+	public:
+		void SetManagedInstance(Coral::ManagedObject instance);
 		void SetManagedType(std::string_view managedClassName);
 
 	private: // yaml
@@ -29,6 +32,7 @@ namespace Odyssey
 		bool DeserializeNativeString(const std::string& fieldName, ryml::ConstNodeRef node);
 	private:
 		Coral::ManagedObject managedInstance;
+		std::string m_ManagedType;
 		CLASS_DECLARATION(UserScript);
 	};
 }

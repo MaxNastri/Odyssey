@@ -1,6 +1,5 @@
 #include "GameObject.h"
 #include "Component.h"
-#include "ComponentManager.h"
 
 namespace Odyssey
 {
@@ -12,7 +11,7 @@ namespace Odyssey
 		active = false;
 	}
 
-	GameObject::GameObject(uint32_t ID)
+	GameObject::GameObject(int32_t ID)
 	{
 		name = "GameObject";
 		id = ID;
@@ -27,7 +26,6 @@ namespace Odyssey
 		gameObjectNode["Type"] << Type;
 		gameObjectNode["Active"] << active;
 		gameObjectNode["ID"] << id;
-		gameObjectNode["m_GUID"] << m_GUID;
 
 		ryml::NodeRef componentsNode = gameObjectNode["Components"];
 		componentsNode |= ryml::SEQ;
@@ -46,7 +44,6 @@ namespace Odyssey
 		node["Name"] >> name;
 		node["Active"] >> active;
 		node["ID"] >> id;
-		node["m_GUID"] >> m_GUID;
 
 		ryml::NodeRef componentsNode = node["Components"];
 		assert(componentsNode.is_seq());

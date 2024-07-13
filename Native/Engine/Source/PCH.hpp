@@ -25,3 +25,4 @@
 
 #include "coreclr_delegates.h"
 #include "hostfxr.h"
+#include "Utils.h"

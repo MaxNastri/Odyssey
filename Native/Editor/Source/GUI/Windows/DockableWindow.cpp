@@ -58,10 +58,33 @@ namespace Odyssey
 		m_WindowResized = windowSize != m_WindowSize;
 		m_WindowSize = windowSize;
 
+		if (m_DebugEnabled)
+		{
+		}
+
 		// Cursor update
 		glm::vec2 cursorPos = Input::GetScreenSpaceMousePosition();
 		m_CursorInContentRegion = (cursorPos.x >= m_ContentRegionMin.x && cursorPos.x <= m_ContentRegionMax.x) &&
 			(cursorPos.y >= m_ContentRegionMin.y && cursorPos.y <= m_ContentRegionMax.y);
+
+		if (m_DebugEnabled)
+		{
+			auto drawList = ImGui::GetForegroundDrawList();
+
+			ImColor red = IM_COL32(255.0f, 0.0f, 0.0f, 255.0f);
+			ImColor green = IM_COL32(0.0f, 255.0f, 0.0f, 255.0f);
+			ImColor yellow = IM_COL32(255.0f, 255.0f, 0.0f, 255.0f);
+
+			ImVec2 cursor = ImVec2(cursorPos.x, cursorPos.y);
+			ImVec2 contentMin = ImVec2(m_ContentRegionMin.x, m_ContentRegionMin.y);
+			ImVec2 contentMax = ImVec2(m_ContentRegionMax.x, m_ContentRegionMax.y);
+
+			// Draw an outline around the content region in red
+			drawList->AddRect(contentMin, contentMax, yellow);
+
+			// Draw a circle around the cursor pos colored to whether itsi n the content region or not
+			drawList->AddCircle(cursor, 10.0f, m_CursorInContentRegion ? green : red);
+		}
 
 		// Fire the resize event if we have resized
 		if (m_WindowResized)

@@ -8,11 +8,14 @@ namespace Odyssey
 	class VulkanBuffer;
 	class VulkanContext;
 	class VulkanCommandPool;
-	class VulkanDescriptorBuffer;
+	class VulkanDescriptorSet;
+	class VulkanDescriptorLayout;
 	class VulkanGraphicsPipeline;
 	class VulkanImage;
 	class VulkanIndexBuffer;
 	class VulkanVertexBuffer;
+	class VulkanUniformBuffer;
+	class VulkanPushDescriptors;
 
 	class VulkanCommandBuffer : public Resource
 	{
@@ -24,6 +27,7 @@ namespace Odyssey
 		void BeginCommands();
 		void EndCommands();
 		void Reset();
+		void Flush();
 
 	public:
 		void BeginRendering(VkRenderingInfoKHR& renderingInfo);
@@ -33,15 +37,14 @@ namespace Odyssey
 		void SetScissor(VkRect2D scissor);
 		void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
 		void DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance);
-		void TransitionLayouts(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout);
-		void CopyBufferToImage(ResourceHandle<VulkanBuffer> handle, VulkanImage* image, uint32_t width, uint32_t height);
+		void TransitionLayouts(ResourceHandle<VulkanRenderTexture> rtHandle, VkImageLayout newLayout);
+		void TransitionLayouts(ResourceHandle<VulkanImage> imageHandle, VkImageLayout newLayout);
+		void CopyBufferToImage(ResourceHandle<VulkanBuffer> handle, ResourceHandle<VulkanImage> imageHandle, uint32_t width, uint32_t height);
 		void BindVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle);
 		void CopyBufferToBuffer(ResourceHandle<VulkanBuffer> srcBuffer, ResourceHandle<VulkanBuffer> dstBuffer, uint32_t dataSize);
 		void BindIndexBuffer(ResourceHandle<VulkanIndexBuffer> handle);
-		void BindDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle);
-		void BindDescriptorBuffers(std::vector<ResourceHandle<VulkanDescriptorBuffer>> handles);
-		void SetDescriptorBufferOffset(ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline, uint32_t setIndex, const uint32_t* bufferIndex, const VkDeviceSize* bufferOffset);
-
+		void BindDescriptorSet(ResourceHandle<VulkanDescriptorSet> descriptorSet, ResourceHandle<VulkanGraphicsPipeline> pipeline);
+		void PushDescriptors(VulkanPushDescriptors* descriptors, ResourceHandle<VulkanGraphicsPipeline> pipeline);
 	public:
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
 		const VkCommandBuffer* GetCommandBufferRef() { return &m_CommandBuffer; }

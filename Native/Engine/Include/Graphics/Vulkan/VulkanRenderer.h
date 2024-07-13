@@ -18,7 +18,7 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanFrame;
 	class VulkanIndexBuffer;
-	class VulkanTexture;
+	class VulkanRenderTexture;
 	class VulkanVertexBuffer;
 	class VulkanWindow;
 
@@ -37,6 +37,7 @@ namespace Odyssey
 		void AddRenderPass(std::shared_ptr<RenderPass> renderPass) { m_RenderPasses.push_back(renderPass); }
 	public:
 		std::shared_ptr<VulkanImgui> GetImGui() { return m_Imgui; }
+		std::shared_ptr<VulkanWindow> GetWindow() { return m_Window; }
 		static uint32_t GetFrameIndex() { return s_FrameIndex; }
 	private:
 		bool BeginFrame(VulkanFrame*& currentFrame);
@@ -72,5 +73,8 @@ namespace Odyssey
 		std::vector<VulkanFrame> m_Frames;
 		inline static uint32_t s_FrameIndex = 0;
 		inline static uint32_t s_PreviousFrame = 0;
+
+	private: // Const
+		const float DEFAULT_FONT_SIZE = 18.0f;
 	};
 }

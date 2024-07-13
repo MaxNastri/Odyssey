@@ -9,7 +9,11 @@
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
 #include "ResourceManager.h"
-#include "VulkanDescriptorBuffer.h"
+#include "VulkanRenderTexture.h"
+#include "VulkanDescriptorSet.h"
+#include "VulkanDescriptorLayout.h"
+#include "VulkanUniformBuffer.h"
+#include "VulkanPushDescriptors.h"
 
 namespace Odyssey
 {
@@ -61,6 +65,32 @@ namespace Odyssey
         vkResetCommandBuffer(m_CommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
     }
 
+    void VulkanCommandBuffer::Flush()
+    {
+        const uint64_t DEFAULT_FENCE_TIMEOUT = 100000000000;
+
+        VkSubmitInfo end_info = {};
+        end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        end_info.commandBufferCount = 1;
+        end_info.pCommandBuffers = &m_CommandBuffer;
+
+        // Create fence to ensure that the command buffer has finished executing
+        VkFenceCreateInfo fenceCreateInfo = {};
+        fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fenceCreateInfo.flags = 0;
+        VkFence fence;
+        VkResult err = vkCreateFence(m_Context->GetDeviceVK(), &fenceCreateInfo, nullptr, &fence);
+        check_vk_result(err);
+
+        err = vkQueueSubmit(m_Context->GetGraphicsQueueVK(), 1, &end_info, fence);
+        check_vk_result(err);
+
+        err = vkWaitForFences(m_Context->GetDeviceVK(), 1, &fence, VK_TRUE, DEFAULT_FENCE_TIMEOUT);
+        check_vk_result(err);
+
+        vkDestroyFence(m_Context->GetDeviceVK(), fence, nullptr);
+    }
+
     void VulkanCommandBuffer::BeginRendering(VkRenderingInfoKHR& renderingInfo)
     {
         vkCmdBeginRendering(m_CommandBuffer, &renderingInfo);
@@ -96,28 +126,45 @@ namespace Odyssey
         vkCmdDrawIndexed(m_CommandBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
     }
 
-    void VulkanCommandBuffer::TransitionLayouts(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout)
+    void VulkanCommandBuffer::TransitionLayouts(ResourceHandle<VulkanRenderTexture> renderTexture, VkImageLayout newLayout)
+    {
+        if (VulkanRenderTexture* rt = renderTexture.Get())
+        {
+            TransitionLayouts(rt->GetImage(), newLayout);
+        }
+    }
+
+    void VulkanCommandBuffer::TransitionLayouts(ResourceHandle<VulkanImage> imageHandle, VkImageLayout newLayout)
     {
         VkPipelineStageFlags srcStage;
         VkPipelineStageFlags dstStage;
-        VkImageMemoryBarrier barrier = VulkanImage::CreateMemoryBarrier(image, oldLayout, newLayout, srcStage, dstStage);
-        vkCmdPipelineBarrier(m_CommandBuffer, srcStage, dstStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+        if (VulkanImage* image = imageHandle.Get())
+        {
+            if (image->GetLayout() != newLayout)
+            {
+                VkImageMemoryBarrier barrier = VulkanImage::CreateMemoryBarrier(image, image->GetLayout(), newLayout, srcStage, dstStage);
+                vkCmdPipelineBarrier(m_CommandBuffer, srcStage, dstStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+                image->SetLayout(newLayout);
+            }
+        }
     }
 
-    void VulkanCommandBuffer::CopyBufferToImage(ResourceHandle<VulkanBuffer> handle, VulkanImage* image, uint32_t width, uint32_t height)
+    void VulkanCommandBuffer::CopyBufferToImage(ResourceHandle<VulkanBuffer> handle, ResourceHandle<VulkanImage> imageHandle, uint32_t width, uint32_t height)
     {
-        VkBufferImageCopy region{};
-        region.bufferOffset = 0;
-        region.bufferRowLength = 0;
-        region.bufferImageHeight = 0;
-        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        region.imageSubresource.mipLevel = 0;
-        region.imageSubresource.baseArrayLayer = 0;
-        region.imageSubresource.layerCount = 1;
-        region.imageOffset = { 0, 0, 0 };
-        region.imageExtent = { width, height, 1 };
+        if (VulkanImage* image = imageHandle.Get())
+        {
+            TransitionLayouts(imageHandle, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+            VkBufferImageCopy region{};
+            region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            region.imageSubresource.layerCount = 1;
+            region.imageOffset = { 0, 0, 0 };
+            region.imageExtent = { width, height, 1 };
 
-        vkCmdCopyBufferToImage(m_CommandBuffer, handle.Get()->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+            vkCmdCopyBufferToImage(m_CommandBuffer, handle.Get()->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+            TransitionLayouts(imageHandle, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        }
     }
     void VulkanCommandBuffer::BindVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle)
     {
@@ -139,38 +186,14 @@ namespace Odyssey
         vkCmdBindIndexBuffer(m_CommandBuffer, handle.Get()->GetIndexBufferVK(), 0, VK_INDEX_TYPE_UINT32);
     }
 
-    void VulkanCommandBuffer::BindDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle)
+    void VulkanCommandBuffer::BindDescriptorSet(ResourceHandle<VulkanDescriptorSet> descriptorSet, ResourceHandle<VulkanGraphicsPipeline> pipeline)
     {
-        std::vector<VkDescriptorBufferBindingInfoEXT> bindingInfos;
-
-        VulkanDescriptorBuffer* descriptorBuffer = handle.Get();
-        VkDescriptorBufferBindingInfoEXT bindingInfo{};
-        bindingInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT;
-        bindingInfo.address = descriptorBuffer->GetBuffer().Get()->GetAddress();
-        bindingInfo.usage = VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT;
-        bindingInfos.push_back(bindingInfo);
-
-        vkCmdBindDescriptorBuffersEXT(m_CommandBuffer, (uint32_t)bindingInfos.size(), bindingInfos.data());
+        vkCmdBindDescriptorSets(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Get()->GetLayout(), 0, descriptorSet.Get()->GetCount(), descriptorSet.Get()->GetDescriptorSets().data(), 0, nullptr);
     }
 
-    void VulkanCommandBuffer::BindDescriptorBuffers(std::vector<ResourceHandle<VulkanDescriptorBuffer>> handles)
+    void VulkanCommandBuffer::PushDescriptors(VulkanPushDescriptors* descriptors, ResourceHandle<VulkanGraphicsPipeline> pipeline)
     {
-        std::vector<VkDescriptorBufferBindingInfoEXT> bindingInfos;
-
-        for (auto& handle : handles)
-        {
-            VulkanDescriptorBuffer* descriptorBuffer = handle.Get();
-            VkDescriptorBufferBindingInfoEXT bindingInfo{};
-            bindingInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_BUFFER_BINDING_INFO_EXT;
-            bindingInfo.address = descriptorBuffer->GetBuffer().Get()->GetAddress();
-            bindingInfo.usage = VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT;
-            bindingInfos.push_back(bindingInfo);
-        }
-
-        vkCmdBindDescriptorBuffersEXT(m_CommandBuffer, (uint32_t)bindingInfos.size(), bindingInfos.data());
-    }
-    void VulkanCommandBuffer::SetDescriptorBufferOffset(ResourceHandle<VulkanGraphicsPipeline> graphicsPipeline, uint32_t setIndex, const uint32_t* bufferIndex, const VkDeviceSize* bufferOffset)
-    {
-        vkCmdSetDescriptorBufferOffsetsEXT(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.Get()->GetLayout(), setIndex, 1, bufferIndex, bufferOffset);
+        std::vector<VkWriteDescriptorSet> descriptorSets = descriptors->GetWriteDescriptors();
+        vkCmdPushDescriptorSetKHR(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Get()->GetLayout(), 0, descriptorSets.size(), descriptorSets.data());
     }
 }

@@ -110,6 +110,7 @@ namespace Odyssey
 	{
 		// TODO (MAX): Destroy any existing managed instance first
 		managedInstance = ScriptingManager::CreateManagedObject(managedClassName);
+		m_ManagedType = managedClassName;
 	}
 
 	bool UserScript::SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, ryml::NodeRef node)

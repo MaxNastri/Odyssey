@@ -1,5 +1,6 @@
 #pragma once
 #include "VulkanGlobals.h"
+#include "ResourceHandle.h"
 
 VK_FWD_DECLARE(VkSwapchainKHR)
 VK_FWD_DECLARE(VkDevice)
@@ -10,7 +11,7 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanDevice;
 	class VulkanSurface;
-	class VulkanImage;
+	class VulkanRenderTexture;
 
 	class VulkanSwapchain
 	{
@@ -20,7 +21,7 @@ namespace Odyssey
 
 	public:
 		uint32_t GetImageCount() { return imageCount; }
-		std::vector<std::shared_ptr<VulkanImage>> GetBackbuffers();
+		std::vector<ResourceHandle<VulkanRenderTexture>> GetBackbuffers();
 		VkSwapchainKHR GetVK() { return swapchain; }
 
 	private:
@@ -31,8 +32,9 @@ namespace Odyssey
 	public:
 		std::shared_ptr<VulkanContext> m_Context;
 		VkSwapchainKHR swapchain;
-		std::vector<std::shared_ptr<VulkanImage>> backbuffers;
+		std::vector<ResourceHandle<VulkanRenderTexture>> backbuffers;
 		uint32_t imageCount;
 		uint32_t minImageCount;
+		uint32_t m_Width, m_Height;
 	};
 }

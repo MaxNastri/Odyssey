@@ -8,11 +8,12 @@ namespace Odyssey
 	class Camera;
 	class VulkanContext;
 	class VulkanCommandBuffer;
-	class VulkanTexture;
+	class VulkanRenderTexture;
 	class VulkanShaderModule;
 	class VulkanGraphicsPipeline;
 	class VulkanImgui;
 	class VulkanImage;
+	class VulkanPushDescriptors;
 	struct PerFrameRenderingData;
 
 	struct RenderPassParams
@@ -30,17 +31,19 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) = 0;
 
 	public:
-		void SetRenderTexture(ResourceHandle<VulkanTexture> renderTarget);
-		void SetRenderTarget(VulkanImage* renderTarget);
-		void SetLayouts(VkImageLayout oldLayout, VkImageLayout newLayout) { m_OldLayout = oldLayout; m_NewLayout = newLayout; }
+		void SetColorRenderTexture(ResourceHandle<VulkanRenderTexture> colorRT);
+		void SetDepthRenderTexture(ResourceHandle<VulkanRenderTexture> depthRT);
+		void SetLayouts(VkImageLayout beginLayout, VkImageLayout endLayout) { m_BeginLayout = beginLayout; m_EndLayout = endLayout; }
 		void SetClearValue(glm::vec4 clearValue) { m_ClearValue = clearValue; }
 
 	protected:
-		ResourceHandle<VulkanTexture> m_RenderTexture;
-		VulkanImage* m_RenderTarget;
+		ResourceHandle<VulkanRenderTexture> m_ColorRT;
+		ResourceHandle<VulkanRenderTexture> m_DepthRT;
 		glm::vec4 m_ClearValue;
-		VkImageLayout m_OldLayout;
-		VkImageLayout m_NewLayout;
+		// Starting layout
+		// Ending layout
+		VkImageLayout m_BeginLayout;
+		VkImageLayout m_EndLayout;
 	};
 
 	class OpaquePass : public RenderPass
@@ -58,15 +61,13 @@ namespace Odyssey
 
 	private:
 		Camera* m_Camera = nullptr;
+		std::shared_ptr<VulkanPushDescriptors> pushDescriptors;
 	};
 
 	class ImguiPass : public RenderPass
 	{
 	public:
 		ImguiPass() = default;
-
-	public:
-		void SetRenderTarget(VulkanImage* renderTarget);
 
 	public:
 		virtual void BeginPass(RenderPassParams& params) override;

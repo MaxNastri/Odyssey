@@ -1,13 +1,15 @@
 #include "InspectorWindow.h"
-#include <ComponentManager.h>
-#include <Transform.h>
-#include <imgui.h>
+#include "Inspector.h"
+#include "GameObjectInspector.h"
+#include "MaterialInspector.h"
+#include "MeshRendererInspector.h"
+#include "imgui.h"
 
 namespace Odyssey
 {
-	InspectorWindow::InspectorWindow(GameObject* gameObject)
+	InspectorWindow::InspectorWindow(std::shared_ptr<Inspector> inspector)
 	{
-		SetGameObject(gameObject);
+		m_Inspector = inspector;
 	}
 
 	void InspectorWindow::Draw()
@@ -21,50 +23,29 @@ namespace Odyssey
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
 
-		for (auto& inspector : inspectors)
-		{
-			inspector->Draw();
-		}
-
-		for (auto& userScriptInspector : userScriptInspectors)
-		{
-			userScriptInspector.Draw();
-		}
+		if (m_Inspector)
+			m_Inspector->Draw();
+		
 		ImGui::PopStyleVar();
 		ImGui::End();
 	}
 
-	void InspectorWindow::SetGameObject(GameObject* gameObject)
+	void InspectorWindow::OnSelectionContextChanged(const GUISelection& context)
 	{
-		inspectors.clear();
-		userScriptInspectors.clear();
-
-		if (gameObject)
+		switch (context.Type)
 		{
-			if (ComponentManager::HasComponent<Transform>(gameObject->id))
-			{
-				inspectors.push_back(std::make_unique<TransformInspector>(gameObject));
-			}
-
-			if (ComponentManager::HasComponent<Camera>(gameObject->id))
-			{
-				inspectors.push_back(std::make_unique<CameraInspector>(gameObject));
-			}
-
-			std::vector<std::pair<std::string, UserScript*>> userScripts = ComponentManager::GetAllUserScripts(gameObject->id);
-
-			for (auto& [userScriptClassName, userScript] : userScripts)
-			{
-				userScriptInspectors.push_back(UserScriptInspector(gameObject, userScript, userScriptClassName));
-			}
-		}
-	}
-
-	void InspectorWindow::RefreshUserScripts()
-	{
-		for (auto& userScriptInspector : userScriptInspectors)
-		{
-			userScriptInspector.UpdateFields();
+			case GUISelection::SelectionType::None:
+				break;
+			case GUISelection::SelectionType::GameObject:
+				m_Inspector = std::make_shared<GameObjectInspector>(context.ID);
+				break;
+			case GUISelection::SelectionType::Material:
+				m_Inspector = std::make_shared<MaterialInspector>(context.guid);
+				break;
+			case GUISelection::SelectionType::Mesh:
+				break;
+			case GUISelection::SelectionType::Shader:
+				break;
 		}
 	}
 }

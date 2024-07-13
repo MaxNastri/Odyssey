@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "GameObject.h"
 #include "SceneManager.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
@@ -62,10 +63,11 @@ namespace Odyssey
 					{
 						node_clicked = id;
 
-						for (auto& callback : m_OnGameObjectSelected)
-						{
-							callback(gameObject->id);
-						}
+						GUISelection selection;
+						selection.Type = GUISelection::SelectionType::GameObject;
+						selection.ID = gameObject->id;
+
+						GUIManager::OnSelectionContextChanged(selection);
 					}
 				}
 			}

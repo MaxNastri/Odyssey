@@ -1,4 +1,7 @@
-Name: Scene
+m_GUID: 'a77ecccb-ca5d-4e87-832d-19acf6658b7c'
+m_Name: Scene
+m_AssetPath: 'D:\Git\Odyssey\Native\Editor\Assets\Scenes\scene.yaml'
+m_Type: Scene
 GameObjects:
   - Name: "Max's GameObject"
     Type: Odyssey.Entities.GameObject
@@ -7,12 +10,12 @@ GameObjects:
     m_GUID: ''
     Components:
       - Name: Odyssey.Entities.Transform
-        Position: 'x: 0 y: 0 z: 2'
+        Position: 'x: 0.72083634 y: 0 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Name: Odyssey.MeshRenderer
-        m_Mesh: '3e2d47b1-28c9-4269-98aa-492b6735b7d7'
-        m_Material: '2fbc687a-c486-4f04-81a2-f455e2075f49'
+        m_Mesh: 'a9bd3a9a-7c4d-4ad1-a410-ae328bf40f94'
+        m_Material: '25e6f648-9749-4769-9e84-7c40eeb7995d'
       - Name: Example.Managed.AnotherScript
         Fields: []
       - Name: Example.Managed.ExampleScript

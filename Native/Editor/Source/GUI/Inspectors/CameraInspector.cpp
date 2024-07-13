@@ -1,43 +1,19 @@
 #include "CameraInspector.h"
-#include <Camera.h>
-#include <ComponentManager.h>
+#include "GameObject.h"
+#include "Camera.h"
 #include <imgui.h>
 
 namespace Odyssey
 {
-	CameraInspector::CameraInspector(GameObject* go)
+	CameraInspector::CameraInspector(GameObject* gameObject)
 	{
-		m_GameObject = go;
+		m_GameObject = gameObject;
 
-		if (Camera* camera = ComponentManager::GetComponent<Camera>(m_GameObject->id))
+		if (Camera* camera = m_GameObject->GetComponent<Camera>())
 		{
-			std::function<void(float)> fovModified = [go](float fov)
-				{
-					if (Camera* camera = ComponentManager::GetComponent<Camera>(go->id))
-					{
-						camera->SetFieldOfView(fov);
-					}
-				};
-
-			std::function<void(float)> nearClipModified = [go](float nearClip)
-				{
-					if (Camera* camera = ComponentManager::GetComponent<Camera>(go->id))
-					{
-						camera->SetNearClip(nearClip);
-					}
-				};
-
-			std::function<void(float)> farClipModified = [go](float farClip)
-				{
-					if (Camera* camera = ComponentManager::GetComponent<Camera>(go->id))
-					{
-						camera->SetFarClip(farClip);
-					}
-				};
-
-			m_FieldOfViewDrawer = FloatDrawer("Field of View", camera->GetFieldOfView(), fovModified);
-			m_NearClipDrawer = FloatDrawer("Near Clip", camera->GetNearClip(), nearClipModified);
-			m_FarClipDrawer = FloatDrawer("Far Clip", camera->GetFarClip(), farClipModified);
+			m_FieldOfViewDrawer = FloatDrawer("Field of View", camera->GetFieldOfView(), [gameObject](float fov) { OnFieldOfViewChanged(gameObject, fov); });
+			m_NearClipDrawer = FloatDrawer("Near Clip", camera->GetNearClip(), [gameObject](float nearClip) { OnNearClipChanged(gameObject, nearClip); });
+			m_FarClipDrawer = FloatDrawer("Far Clip", camera->GetFarClip(), [gameObject](float farClip) { OnFarClipChanged(gameObject, farClip); });
 		}
 	}
 
@@ -56,7 +32,29 @@ namespace Odyssey
 				ImGui::EndTable();
 			}
 		}
+	}
 
-		ImGui::Separator();
+	void CameraInspector::OnFieldOfViewChanged(GameObject* gameObject, float fov)
+	{
+		if (Camera* camera = gameObject->GetComponent<Camera>())
+		{
+			camera->SetFieldOfView(fov);
+		}
+	}
+
+	void CameraInspector::OnNearClipChanged(GameObject* gameObject, float nearClip)
+	{
+		if (Camera* camera = gameObject->GetComponent<Camera>())
+		{
+			camera->SetNearClip(nearClip);
+		}
+	}
+
+	void CameraInspector::OnFarClipChanged(GameObject* gameObject, float farClip)
+	{
+		if (Camera* camera = gameObject->GetComponent<Camera>())
+		{
+			camera->SetFarClip(farClip);
+		}
 	}
 }

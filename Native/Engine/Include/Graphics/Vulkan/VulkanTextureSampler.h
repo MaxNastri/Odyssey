@@ -1,5 +1,6 @@
 #pragma once
 #include "VulkanGlobals.h"
+#include "Resource.h"
 
 VK_FWD_DECLARE(VkSampler)
 
@@ -7,7 +8,7 @@ namespace Odyssey
 {
 	class VulkanContext;
 
-	class VulkanTextureSampler
+	class VulkanTextureSampler : public Resource
 	{
 	public:
 		VulkanTextureSampler(std::shared_ptr<VulkanContext> context);

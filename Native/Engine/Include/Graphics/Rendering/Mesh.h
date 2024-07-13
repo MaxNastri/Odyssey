@@ -13,11 +13,15 @@ namespace Odyssey
 	{
 	public:
 		Mesh() = default;
-		Mesh(const std::string& assetPath);
+		Mesh(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath);
 
 	public:
-		void Save(const std::string& assetPath);
-		void Load(const std::string& assetPath);
+		void Save();
+		void Load();
+
+	private:
+		void SaveToDisk(const std::filesystem::path& assetPath);
+		void LoadFromDisk(const std::filesystem::path& assetPath);
 
 	private:
 		std::string VertexDataToHex();

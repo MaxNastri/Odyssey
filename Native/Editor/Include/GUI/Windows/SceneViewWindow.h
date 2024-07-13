@@ -6,9 +6,10 @@
 namespace Odyssey
 {
 	class Camera;
-	class Transform;
-	class VulkanTexture;
 	class OpaquePass;
+	class Transform;
+	class VulkanRenderTexture;
+	class VulkanTextureSampler;
 
 	class SceneViewWindow : public DockableWindow
 	{
@@ -23,11 +24,11 @@ namespace Odyssey
 
 	public:
 		std::shared_ptr<OpaquePass> GetRenderPass() { return m_SceneViewPass; }
-		void SetSelectedIndex(uint32_t selected) { m_SelectedObject = selected; }
+		void SetSelectedIndex(uint32_t selected) { m_SelectedObject = GameObject(selected); }
 
 	private:
-		void CreateRenderTexture(uint32_t index);
-		void DestroyRenderTexture(uint32_t index);
+		void CreateRenderTexture();
+		void DestroyRenderTexture();
 		void RenderGizmos();
 		void UpdateCameraController();
 		void UpdateGizmosInput();
@@ -42,10 +43,12 @@ namespace Odyssey
 	private: // Rendering stuff
 		std::shared_ptr<OpaquePass> m_SceneViewPass;
 		uint64_t m_RenderTextureID;
-		ResourceHandle<VulkanTexture> m_RenderTexture;
+		ResourceHandle<VulkanRenderTexture> m_RenderTexture;
+		ResourceHandle<VulkanRenderTexture> m_DepthRT;
+		ResourceHandle<VulkanTextureSampler> m_RTSampler;
 
 	private: // Gizmos
-		uint32_t m_SelectedObject;
+		GameObject m_SelectedObject;
 		uint32_t op = 7;
 	};
 }

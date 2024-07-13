@@ -42,9 +42,10 @@ namespace Odyssey
 		VkMemoryRequirements memoryRequirements;
 		vkGetBufferMemoryRequirements(m_Context->GetDeviceVK(), buffer, &memoryRequirements);
 
+		m_Size = (uint32_t)memoryRequirements.size;
+
 		VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 		
-
 		VkMemoryAllocateFlagsInfo memoryFlags{};
 		memoryFlags.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
 
@@ -53,7 +54,7 @@ namespace Odyssey
 		allocInfo.allocationSize = memoryRequirements.size;
 		allocInfo.memoryTypeIndex = FindMemoryType(m_Context->GetPhysicalDeviceVK(), memoryRequirements.memoryTypeBits, properties);
 		
-		if (m_BufferType == BufferType::Uniform || m_BufferType == BufferType::DescriptorUniform || m_BufferType == BufferType::DescriptorSampler)
+		if (m_BufferType == BufferType::Uniform)
 		{
 			memoryFlags.flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT;
 			allocInfo.pNext = &memoryFlags;
@@ -67,13 +68,13 @@ namespace Odyssey
 
 		vkBindBufferMemory(m_Context->GetDeviceVK(), buffer, bufferMemory, 0);
 
-		if (m_BufferType == BufferType::Uniform || m_BufferType == BufferType::DescriptorUniform || m_BufferType == BufferType::DescriptorSampler)
+		if (m_BufferType == BufferType::Uniform)
 		{
 			vkMapMemory(m_Context->GetDeviceVK(), bufferMemory, 0, m_Size, 0, &bufferMemoryMapped);
 		}
 	}
 
-	void VulkanBuffer::SetMemory(VkDeviceSize size, void* data)
+	void VulkanBuffer::SetMemory(VkDeviceSize size, const void* data)
 	{
 		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
 
@@ -84,8 +85,16 @@ namespace Odyssey
 		else
 		{
 			// Map, copy and unmap the buffer memory
-			vkMapMemory(device, bufferMemory, 0, size, 0, &bufferMemoryMapped);
+			VkResult err = vkMapMemory(device, bufferMemory, 0, m_Size, 0, &bufferMemoryMapped);
+
 			memcpy(bufferMemoryMapped, data, static_cast<size_t>(size));
+
+			VkMappedMemoryRange range[1] = {};
+			range[0].sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+			range[0].memory = bufferMemory;
+			range[0].size = m_Size;
+			err = vkFlushMappedMemoryRanges(device, 1, range);
+
 			vkUnmapMemory(device, bufferMemory);
 		}
 	}
@@ -131,10 +140,6 @@ namespace Odyssey
 				return VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 			case BufferType::Uniform:
 				return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-			case BufferType::DescriptorUniform:
-				return VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-			case BufferType::DescriptorSampler:
-				return VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT | VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 		}
 
 		return 0;

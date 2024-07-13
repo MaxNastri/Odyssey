@@ -1,4 +1,6 @@
 #include "SceneManager.h"
+#include "Scene.h"
+#include "AssetManager.h"
 #include <EventSystem.h>
 #include "Events.h"
 
@@ -14,38 +16,30 @@ namespace Odyssey
 	{
 		if (activeScene != -1)
 		{
-			scenes[activeScene]->OnDestroy();
-			scenes[activeScene]->Clear();
-			scenes[activeScene].reset();
+			scenes[activeScene].Get()->OnDestroy();
+			scenes[activeScene].Get()->Clear();
+
+			AssetManager::UnloadScene(scenes[activeScene]);
 		}
 
-		std::shared_ptr<Scene> scene = std::make_shared<Scene>();
-		scene->Deserialize(filename);
-		scenes.push_back(scene);
+		scenes.push_back(AssetManager::LoadScene(filename));
 
 		activeScene = (int)scenes.size() - 1;
 
 		// TODO: Send a copy of the scene, so the GUI manager can use the game objects to reload the inspectors
-		EventSystem::Dispatch<OnSceneLoaded>(scenes[activeScene].get());
+		EventSystem::Dispatch<OnSceneLoaded>(scenes[activeScene].Get());
 	}
 
-	void SceneManager::SaveActiveScene(const std::string& filename)
+	void SceneManager::SaveActiveScene()
 	{
-		scenes[activeScene]->Serialize(filename);
+		if (activeScene < scenes.size())
+			scenes[activeScene].Get()->Save();
 	}
 
 	Scene* SceneManager::GetActiveScene()
 	{
 		if (activeScene < scenes.size())
-			return scenes[activeScene].get();
-
-		return nullptr;
-	}
-
-	std::shared_ptr<Scene> SceneManager::GetActiveSceneRef()
-	{
-		if (activeScene < scenes.size())
-			return scenes[activeScene];
+			return scenes[activeScene].Get();
 
 		return nullptr;
 	}
@@ -53,13 +47,13 @@ namespace Odyssey
 	void SceneManager::Awake()
 	{
 		if (activeScene < scenes.size())
-			scenes[activeScene]->Awake();
+			scenes[activeScene].Get()->Awake();
 	}
 
 	void SceneManager::Update()
 	{
 		if (activeScene < scenes.size())
-			scenes[activeScene]->Update();
+			scenes[activeScene].Get()->Update();
 	}
 
 	void SceneManager::BuildFinished(OnBuildFinished* onBuildFinished)
@@ -68,8 +62,8 @@ namespace Odyssey
 		{
 			if (onBuildFinished->success)
 			{
-				scenes[activeScene]->Serialize(tempSaveFilename);
-				scenes[activeScene]->Clear();
+				//scenes[activeScene].Get()->SaveTo(tempSaveFilename);
+				//scenes[activeScene].Get()->Clear();
 			}
 		}
 	}
@@ -78,8 +72,8 @@ namespace Odyssey
 	{
 		if (activeScene < scenes.size())
 		{
-			scenes[activeScene]->Deserialize(tempSaveFilename);
-			EventSystem::Dispatch<OnSceneLoaded>(scenes[activeScene].get());
+			//scenes[activeScene].Get()->Load(tempSaveFilename);
+			EventSystem::Dispatch<OnSceneLoaded>(scenes[activeScene].Get());
 		}
 	}
 }

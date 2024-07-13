@@ -12,8 +12,8 @@ namespace Odyssey
 	class VulkanDevice;
 	class VulkanContext;
 	class GUIElement;
-	class VulkanTexture;
-
+	class VulkanRenderTexture;
+	class VulkanTextureSampler;
 
 	class VulkanImgui
 	{
@@ -40,11 +40,13 @@ namespace Odyssey
 		void PostRender();
 
 	public:
-		uint64_t AddTexture(ResourceHandle<VulkanTexture> handle);
+		uint64_t AddTexture(ResourceHandle<VulkanRenderTexture> textureHandle, ResourceHandle<VulkanTextureSampler> samplerHandle);
 		void RemoveTexture(uint64_t id);
+		void SetFont(std::filesystem::path fontFile, float fontSize);
 
 	private:
 		void CreateDescriptorPool();
+		void UploadFont();
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;

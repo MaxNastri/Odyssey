@@ -1,19 +1,25 @@
 #pragma once
-#include <GUIElement.h>
-#include <GameObject.h>
+#include "Inspector.h"
 #include "PropertyDrawer.h"
 #include "FloatDrawer.h"
 
 namespace Odyssey
 {
-	class CameraInspector : public GUIElement
+	class GameObject;
+
+	class CameraInspector : public Inspector
 	{
 	public:
 		CameraInspector() = default;
-		CameraInspector(GameObject* go);
+		CameraInspector(GameObject* gameObject);
 
 	public:
 		virtual void Draw() override;
+
+	private:
+		static void OnFieldOfViewChanged(GameObject* gameObject, float fov);
+		static void OnNearClipChanged(GameObject* gameObject, float nearClip);
+		static void OnFarClipChanged(GameObject* gameObject, float farClip);
 
 	private:
 		GameObject* m_GameObject;

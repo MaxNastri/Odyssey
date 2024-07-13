@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
 #include <unordered_set>
-#include <FileWatcher.h>
+#include "FileWatcher.h"
+#include "Paths.h"
 
 namespace Odyssey
 {
@@ -17,9 +18,6 @@ namespace Odyssey
 	private:
 		static void FileChangedEvent(int64_t id, const NotificationSet& notificationSet);
 		static void FileWatcherError(int64_t id);
-
-		static std::string ConvertWideToUtf8(const std::wstring& wstr);
-		static std::wstring ConvertUtf8ToWide(const std::string& str);
 
 	private:
 		static FileWatcher fileWatcher;

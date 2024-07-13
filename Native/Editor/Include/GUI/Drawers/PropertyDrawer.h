@@ -8,13 +8,14 @@ namespace Odyssey
 	{
 	public:
 		PropertyDrawer() = default;
-		PropertyDrawer(const std::string& label)
-			: label(label)
-		{
+		PropertyDrawer(const std::string& label) : m_Label(label) { }
 
-		}
+	public:
+		bool IsModified() { return m_Modified; }
+		void SetModified(bool modified) { m_Modified = modified; }
 
 	protected:
-		std::string label;
+		std::string m_Label;
+		bool m_Modified = false;
 	};
 }

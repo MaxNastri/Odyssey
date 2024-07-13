@@ -7,7 +7,7 @@
 #include "VulkanCommandPool.h"
 #include "Events.h"
 #include "VulkanContext.h"
-#include "VulkanTexture.h"
+#include "VulkanRenderTexture.h"
 #include "VulkanTextureSampler.h"
 
 namespace Odyssey
@@ -62,41 +62,6 @@ namespace Odyssey
 			return vkGetInstanceProcAddr(*(reinterpret_cast<VkInstance*>(vulkan_instance)), function_name);
 			}, &init_info.Instance);
 		ImGui_ImplVulkan_Init(&init_info, initInfo.renderPass);
-
-
-		// Upload Fonts
-		{
-			// Use any command queue
-			ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
-			ResourceHandle<VulkanCommandBuffer> bufferHandle = commandPool.Get()->AllocateBuffer();
-			VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
-
-			commandBuffer->BeginCommands();
-
-			ImGui_ImplVulkan_CreateFontsTexture(commandBuffer->GetCommandBuffer());
-
-			VkSubmitInfo submitInfo = {};
-			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-			submitInfo.commandBufferCount = 1;
-			submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
-
-			commandBuffer->EndCommands();
-
-			VkResult err = vkQueueSubmit(initInfo.queue, 1, &submitInfo, VK_NULL_HANDLE);
-
-			if (!check_vk_result(err))
-			{
-				Logger::LogError("(imgui 1)");
-			}
-
-			err = vkDeviceWaitIdle(initInfo.logicalDevice);
-			if (!check_vk_result(err))
-			{
-				Logger::LogError("(imgui 2)");
-			}
-
-			ImGui_ImplVulkan_DestroyFontUploadObjects();
-		}
 	}
 	void VulkanImgui::SubmitDraws()
 	{
@@ -129,18 +94,26 @@ namespace Odyssey
 		}
 	}
 
-	uint64_t VulkanImgui::AddTexture(ResourceHandle<VulkanTexture> handle)
+	uint64_t VulkanImgui::AddTexture(ResourceHandle<VulkanRenderTexture> textureHandle, ResourceHandle<VulkanTextureSampler> samplerHandle)
 	{
-		VulkanTexture* texture = handle.Get();
-		VkSampler sampler = texture->GetSampler()->GetSamplerVK();
-		VkImageView view = texture->GetImage()->GetImageView();
-		VkImageLayout layout = VK_IMAGE_LAYOUT_GENERAL;
+		VulkanRenderTexture* texture = textureHandle.Get();
+		VkSampler sampler = samplerHandle.Get()->GetSamplerVK();
+		VkImageView view = texture->GetImage().Get()->GetImageView();
+		VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		return reinterpret_cast<uint64_t>(ImGui_ImplVulkan_AddTexture(sampler, view, layout));
 	}
 
 	void VulkanImgui::RemoveTexture(uint64_t id)
 	{
 		ImGui_ImplVulkan_RemoveTexture(reinterpret_cast<VkDescriptorSet>(id));
+	}
+
+	void VulkanImgui::SetFont(std::filesystem::path fontFile, float fontSize)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.Fonts->AddFontFromFileTTF(fontFile.string().c_str(), fontSize);
+
+		UploadFont();
 	}
 
 	void VulkanImgui::CreateDescriptorPool()
@@ -172,5 +145,38 @@ namespace Odyssey
 		{
 			Logger::LogError("(imgui 3)");
 		}
+	}
+	void VulkanImgui::UploadFont()
+	{
+		// Use any command queue
+		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
+		ResourceHandle<VulkanCommandBuffer> bufferHandle = commandPool.Get()->AllocateBuffer();
+		VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
+
+		commandBuffer->BeginCommands();
+
+		ImGui_ImplVulkan_CreateFontsTexture(commandBuffer->GetCommandBuffer());
+
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
+
+		commandBuffer->EndCommands();
+		
+		VkResult err = vkQueueSubmit(m_Context->GetGraphicsQueueVK(), 1, &submitInfo, VK_NULL_HANDLE);
+
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(imgui 1)");
+		}
+
+		err = vkDeviceWaitIdle(m_Context->GetDeviceVK());
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(imgui 2)");
+		}
+
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
 }

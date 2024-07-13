@@ -11,9 +11,9 @@ namespace Odyssey
 	class Mesh;
 	class Scene;
 	class VulkanGraphicsPipeline;
-	class VulkanDescriptorBuffer;
-	class VulkanBuffer;
+	class VulkanUniformBuffer;
 	class VulkanDescriptorLayout;
+	class VulkanTexture;
 
 	struct SceneUniformData
 	{
@@ -30,16 +30,17 @@ namespace Odyssey
 	{
 	public:
 		SetPass() = default;
-		SetPass(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout);
+		SetPass(AssetHandle<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts);
 
 	public:
-		void SetMaterial(AssetHandle<Material> material, ResourceHandle<VulkanDescriptorLayout> descriptorLayout);
+		void SetMaterial(AssetHandle<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts);
 
 	public:
 		ResourceHandle<VulkanGraphicsPipeline> pipeline;
 		std::vector<Drawcall> drawcalls;
-		uint32_t vertexShaderID = -1;
-		uint32_t fragmentShaderID = -1;
+		int32_t vertexShaderID = -1;
+		int32_t fragmentShaderID = -1;
+		ResourceHandle<VulkanTexture> Texture;
 	};
 
 	class RenderScene
@@ -56,7 +57,6 @@ namespace Odyssey
 
 	private:
 		void SetupDrawcalls(Scene* scene);
-		bool SetPassCreated(AssetHandle<Material> material, SetPass* outSetPass);
 
 	public:
 		// Data structs
@@ -64,13 +64,17 @@ namespace Odyssey
 		ObjectUniformData objectData;
 
 		// Descriptor buffer for per-scene data
-		ResourceHandle<VulkanDescriptorLayout> descriptorLayout;
-		ResourceHandle<VulkanBuffer> sceneUniformBuffer;
-		std::vector<ResourceHandle<VulkanBuffer>> perObjectUniformBuffers;
-		ResourceHandle<VulkanDescriptorBuffer> descriptorBuffer;
+		ResourceHandle<VulkanDescriptorLayout> uboLayout;
+		ResourceHandle<VulkanUniformBuffer> sceneUniformBuffer;
+		std::vector<ResourceHandle<VulkanUniformBuffer>> perObjectUniformBuffers;
+
+		// Descriptor buffer for per-object sampler
+		ResourceHandle<VulkanDescriptorLayout> m_SamplerLayout;
+
+		std::vector<ResourceHandle<VulkanDescriptorLayout>> m_Layouts;
 
 		std::vector<SetPass> setPasses;
 		uint32_t m_NextUniformBuffer = 0;
-		const uint32_t Max_Uniform_Buffers = 512;
+		const uint32_t Max_Uniform_Buffers = 128;
 	};
 }

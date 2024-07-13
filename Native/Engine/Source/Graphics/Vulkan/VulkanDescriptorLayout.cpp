@@ -53,11 +53,25 @@ namespace Odyssey
 		set_layout_binding.binding = bindingIndex;
 		set_layout_binding.descriptorCount = 1;
 
+		VkDescriptorSetLayoutBinding set_layout_binding2{};
+		set_layout_binding2.descriptorType = ConvertDescriptorType(type);
+		set_layout_binding2.stageFlags = ConvertShaderFlags(shaderStage);
+		set_layout_binding2.binding = 1;
+		set_layout_binding2.descriptorCount = 1;
+
+		VkDescriptorSetLayoutBinding set_layout_binding3{};
+		set_layout_binding3.descriptorType = ConvertDescriptorType(DescriptorType::Sampler);
+		set_layout_binding3.stageFlags = ConvertShaderFlags(ShaderStage::Fragment);
+		set_layout_binding3.binding = 2;
+		set_layout_binding3.descriptorCount = 1;
+
+		std::vector< VkDescriptorSetLayoutBinding> bindings = { set_layout_binding, set_layout_binding2, set_layout_binding3 };
+
 		VkDescriptorSetLayoutCreateInfo descriptor_layout_create_info{};
 		descriptor_layout_create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		descriptor_layout_create_info.bindingCount = 1;
-		descriptor_layout_create_info.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT;
-		descriptor_layout_create_info.pBindings = &set_layout_binding;
+		descriptor_layout_create_info.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR;
+		descriptor_layout_create_info.bindingCount = bindings.size();
+		descriptor_layout_create_info.pBindings = bindings.data();
 
 		if (vkCreateDescriptorSetLayout(m_Context->GetDeviceVK(), &descriptor_layout_create_info, nullptr, &m_Layout) != VK_SUCCESS)
 		{

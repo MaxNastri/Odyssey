@@ -11,25 +11,25 @@ VK_FWD_DECLARE(VkSemaphore)
 namespace Odyssey
 {
 	class VulkanContext;
-	class VulkanImage;
+	class VulkanRenderTexture;
 
 	class VulkanFrame
 	{
 	public:
 		VulkanFrame() = default;
-		VulkanFrame(std::shared_ptr<VulkanContext> context, std::shared_ptr<VulkanImage> renderTarget, VkFormat format);
+		VulkanFrame(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanRenderTexture> renderTexture, VkFormat format);
 
 	public:
 		void Destroy();
 		
 	public:
-		void SetRenderTarget(std::shared_ptr<VulkanImage> renderTarget, uint32_t imageIndex);
+		void SetRenderTarget(ResourceHandle<VulkanRenderTexture> renderTexture, uint32_t imageIndex);
 
 	public:
 		const VkSemaphore* GetImageAcquiredSemaphore() { return &imageAcquiredSemaphore; }
 		const VkSemaphore* GetRenderCompleteSemaphore() { return &renderCompleteSemaphore; }
 		VkFence GetFence() { return fence; }
-		VulkanImage* GetRenderTarget() { return m_RenderTarget.get(); }
+		ResourceHandle<VulkanRenderTexture> GetRenderTarget() { return m_RenderTexture; }
 		VkImage GetRenderTargetVK();
 		VkImageView GetRenderTargetViewVK();
 
@@ -39,7 +39,7 @@ namespace Odyssey
 
 	public:
 		std::shared_ptr<VulkanContext> m_Context;
-		std::shared_ptr<VulkanImage> m_RenderTarget;
+		ResourceHandle<VulkanRenderTexture> m_RenderTexture;
 		uint32_t m_ImageIndex;
 		VkFence fence = VK_NULL_HANDLE;
 	private:

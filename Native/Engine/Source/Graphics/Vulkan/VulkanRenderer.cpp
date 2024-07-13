@@ -11,13 +11,12 @@
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
 #include "VulkanImage.h"
-#include "VulkanTexture.h"
+#include "VulkanRenderTexture.h"
 #include "ResourceManager.h"
 #include "PerFrameRenderingData.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Material.h"
-#include "VulkanDescriptorBuffer.h"
 #include <chrono>
 
 namespace Odyssey
@@ -34,6 +33,10 @@ namespace Odyssey
 		// IMGUI
 		VulkanImgui::InitInfo imguiInfo = CreateImguiInitInfo();
 		m_Imgui = std::make_shared<VulkanImgui>(m_Context, imguiInfo);
+
+		// Set the default font for IMGUI
+		float fontSize = std::floor(DEFAULT_FONT_SIZE * m_Window->GetWindow()->GetContentScale());
+		m_Imgui->SetFont("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
 
 		m_RenderingData = std::make_shared<PerFrameRenderingData>();
 
@@ -161,7 +164,7 @@ namespace Odyssey
 		m_CommandBuffers[s_FrameIndex].Get()->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
-		m_CommandBuffers[s_FrameIndex].Get()->TransitionLayouts(frame.GetRenderTarget(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		m_CommandBuffers[s_FrameIndex].Get()->TransitionLayouts(frame.GetRenderTarget(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		currentFrame = &frame;
 		return true;
@@ -192,7 +195,7 @@ namespace Odyssey
 			params.context = m_Context;
 			params.renderingData = m_RenderingData;
 
-			m_RenderPasses[1]->SetRenderTarget(frame->GetRenderTarget());
+			m_RenderPasses[1]->SetColorRenderTexture(frame->GetRenderTarget());
 
 			for (const auto& renderPass : m_RenderPasses)
 			{
@@ -283,7 +286,7 @@ namespace Odyssey
 
 		// Create the frames
 		{
-			std::vector<std::shared_ptr<VulkanImage>> backbuffers = m_Swapchain->GetBackbuffers();
+			std::vector<ResourceHandle<VulkanRenderTexture>> backbuffers = m_Swapchain->GetBackbuffers();
 			uint32_t imageCount = m_Swapchain->GetImageCount();
 			m_Frames.resize(imageCount);
 

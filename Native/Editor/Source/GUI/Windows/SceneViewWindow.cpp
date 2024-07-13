@@ -4,10 +4,9 @@
 #include "SceneManager.h"
 #include "Camera.h"
 #include "Transform.h"
-#include "ComponentManager.h"
 #include "ImGuizmo.h"
 #include "ResourceManager.h"
-#include "VulkanTexture.h"
+#include "VulkanRenderTexture.h"
 #include "VulkanRenderer.h"
 #include "VulkanImgui.h"
 #include "Application.h"
@@ -16,24 +15,26 @@
 
 namespace Odyssey
 {
+	namespace RayTracing
+	{
+	}
+
 	SceneViewWindow::SceneViewWindow()
 		: DockableWindow("Scene View",
-			glm::vec2(0,0), glm::vec2(500,500), glm::vec2(2,2))
+			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		// Rendering stuff
 		m_SceneViewPass = std::make_shared<OpaquePass>();
-		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
+		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		// Create the render texture
-		CreateRenderTexture(0);
+		CreateRenderTexture();
 
-		m_GameObject.id = UINT_MAX;
-
-		m_CameraTransform = ComponentManager::AddComponent<Transform>(m_GameObject.id);
+		m_GameObject.id = -3;
+		m_CameraTransform = m_GameObject.AddComponent<Transform>();
 		m_CameraTransform->SetGameObject(&m_GameObject);
 		m_CameraTransform->Awake();
-
-		m_Camera = ComponentManager::AddComponent<Camera>(m_GameObject.id);
+		m_Camera = m_GameObject.AddComponent<Camera>();
 		m_Camera->SetGameObject(&m_GameObject);
 		m_Camera->Awake();
 
@@ -42,8 +43,7 @@ namespace Odyssey
 
 	void SceneViewWindow::Destroy()
 	{
-		DestroyRenderTexture(0);
-		DestroyRenderTexture(1);
+		DestroyRenderTexture();
 	}
 
 	void SceneViewWindow::Update()
@@ -63,10 +63,9 @@ namespace Odyssey
 		if (!Begin())
 			return;
 
-		// Set the current RT as the scene view pass target
-		uint32_t frameIndex = VulkanRenderer::GetFrameIndex();
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
-		m_SceneViewPass->SetRenderTexture(m_RenderTexture);
+		m_SceneViewPass->SetColorRenderTexture(m_RenderTexture);
+		m_SceneViewPass->SetDepthRenderTexture(m_DepthRT);
 
 		// Render gizmos
 		RenderGizmos();
@@ -75,35 +74,34 @@ namespace Odyssey
 
 	void SceneViewWindow::OnWindowResize()
 	{
-		uint32_t frameIndex = VulkanRenderer::GetFrameIndex();
-		DestroyRenderTexture(frameIndex);
-		CreateRenderTexture(frameIndex);
+		DestroyRenderTexture();
+		CreateRenderTexture();
 		m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+
 	}
 
-	void SceneViewWindow::CreateRenderTexture(uint32_t index)
+	void SceneViewWindow::CreateRenderTexture()
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
-		m_RenderTexture = ResourceManager::AllocateTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
+		m_RenderTexture = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
+		m_DepthRT = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
+		m_RTSampler = ResourceManager::AllocateSampler();
 
 		// Create an IMGui texture handle
 		if (auto renderer = Application::GetRenderer())
 			if (auto imgui = renderer->GetImGui())
-				m_RenderTextureID = imgui->AddTexture(m_RenderTexture);
+				m_RenderTextureID = imgui->AddTexture(m_RenderTexture, m_RTSampler);
 	}
 
-	void SceneViewWindow::DestroyRenderTexture(uint32_t index)
+	void SceneViewWindow::DestroyRenderTexture()
 	{
 		// Destroy the existing render texture
 		if (m_RenderTexture.IsValid())
 		{
-			// Remove the imgui texture
-			if (auto renderer = Application::GetRenderer())
-				if (auto imgui = renderer->GetImGui())
-					//imgui->RemoveTexture(m_RenderTextureID[index]);
-
 			// Destroy the render texture
-					ResourceManager::DestroyTexture(m_RenderTexture);
+			ResourceManager::DestroyRenderTexture(m_RenderTexture);
+			ResourceManager::DestroyRenderTexture(m_DepthRT);
+			ResourceManager::DestroySampler(m_RTSampler);
 		}
 	}
 
@@ -111,7 +109,7 @@ namespace Odyssey
 	{
 		if (m_SelectedObject != std::numeric_limits<uint32_t>::max())
 		{
-			if (Transform* transform = ComponentManager::GetComponent<Transform>(m_SelectedObject))
+			if (Transform* transform = m_SelectedObject.GetComponent<Transform>())
 			{
 				ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 #include "GameObject.h"
+#include "Asset.h"
 
 namespace Odyssey
 {
@@ -11,24 +12,31 @@ namespace Odyssey
 	class Camera;
 	class Component;
 
-	class Scene
+	class Scene : public Asset
 	{
 	public:
 		Scene();
+		Scene(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath);
 		GameObject* CreateGameObject();
 		void DestroyGameObject(GameObject* gameObject);
 		void Clear();
 
 	public:
 		std::vector<std::shared_ptr<GameObject>>& GetGameObjects() { return gameObjects; }
-		GameObject* GetGameObject(uint32_t id);
+		GameObject* GetGameObject(int32_t id);
 
 	public:
 		void Awake();
 		void Update();
 		void OnDestroy();
-		void Serialize(const std::string& filename);
-		void Deserialize(const std::string& filename);
+
+	public:
+		void Save();
+		void Load();
+
+	private:
+		void SaveToDisk(const std::filesystem::path& assetPath);
+		void LoadFromDisk(const std::filesystem::path& assetPath);
 
 	public:
 		Camera* GetMainCamera();
@@ -38,10 +46,9 @@ namespace Odyssey
 
 	private:
 		friend class RenderScene;
-		std::string name;
 		std::vector<std::shared_ptr<GameObject>> gameObjects;
-		std::unordered_map<uint32_t, std::shared_ptr<GameObject>> gameObjectsByID;
-		uint32_t nextGameObjectID;
+		std::unordered_map<int32_t, std::shared_ptr<GameObject>> gameObjectsByID;
+		int32_t nextGameObjectID;
 		Camera* m_MainCamera = nullptr;
 
 	private:

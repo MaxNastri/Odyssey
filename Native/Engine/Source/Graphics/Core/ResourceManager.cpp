@@ -3,16 +3,19 @@
 #include "VulkanContext.h"
 #include "VulkanVertexBuffer.h"
 #include "VulkanIndexBuffer.h"
-#include "VulkanTexture.h"
+#include "VulkanRenderTexture.h"
 #include "VulkanShaderModule.h"
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanBuffer.h"
-#include "Mesh.h"
-#include "Material.h"
+#include "VulkanUniformBuffer.h"
 #include "VulkanCommandPool.h"
 #include "VulkanCommandPool.h"
 #include "VulkanDescriptorLayout.h"
-#include "VulkanDescriptorBuffer.h"
+#include "VulkanImage.h"
+#include "VulkanTextureSampler.h"
+#include "VulkanDescriptorPool.h"
+#include "VulkanDescriptorSet.h"
+#include "VulkanTexture.h"
 
 namespace Odyssey
 {
@@ -26,6 +29,14 @@ namespace Odyssey
 		uint32_t id = s_Buffers.Add(s_Context, bufferType, size);
 		s_Buffers[id]->SetID(id);
 		return ResourceHandle<VulkanBuffer>(id, s_Buffers[id].get());
+	}
+
+	ResourceHandle<VulkanUniformBuffer> ResourceManager::AllocateUniformBuffer(BufferType bufferType, uint32_t bindingIndex, uint32_t size)
+	{
+		//s_UniformBuffers
+		uint32_t id = s_UniformBuffers.Add(s_Context, bufferType, bindingIndex, size);
+		s_UniformBuffers[id]->SetID(id);
+		return ResourceHandle<VulkanUniformBuffer>(id, s_UniformBuffers[id].get());
 	}
 
 	ResourceHandle<VulkanVertexBuffer> ResourceManager::AllocateVertexBuffer(std::vector<VulkanVertex>& vertices)
@@ -42,14 +53,28 @@ namespace Odyssey
 		return ResourceHandle<VulkanIndexBuffer>(id, s_IndexBuffers[id].get());
 	}
 
-	ResourceHandle<VulkanTexture> ResourceManager::AllocateTexture(uint32_t width, uint32_t height)
+	ResourceHandle<VulkanRenderTexture> ResourceManager::AllocateRenderTexture(uint32_t width, uint32_t height)
 	{
-		uint32_t id = s_Textures.Add(s_Context, width, height);
-		s_Textures[id]->SetID(id);
-		return ResourceHandle<VulkanTexture>(id, s_Textures[id].get());
+		uint32_t id = s_RenderTextures.Add(s_Context, width, height);
+		s_RenderTextures[id]->SetID(id);
+		return ResourceHandle<VulkanRenderTexture>(id, s_RenderTextures[id].get());
 	}
 
-	ResourceHandle<VulkanShaderModule> ResourceManager::AllocateShaderModule(ShaderType shaderType, const std::string& filename)
+	ResourceHandle<VulkanRenderTexture> ResourceManager::AllocateRenderTexture(ResourceHandle<VulkanImage> imageHandle, TextureFormat format)
+	{
+		uint32_t id = s_RenderTextures.Add(s_Context, imageHandle, format);
+		s_RenderTextures[id]->SetID(id);
+		return ResourceHandle<VulkanRenderTexture>(id, s_RenderTextures[id].get());
+	}
+
+	ResourceHandle<VulkanRenderTexture> ResourceManager::AllocateRenderTexture(uint32_t width, uint32_t height, TextureFormat format)
+	{
+		uint32_t id = s_RenderTextures.Add(s_Context, width, height, format);
+		s_RenderTextures[id]->SetID(id);
+		return ResourceHandle<VulkanRenderTexture>(id, s_RenderTextures[id].get());
+	}
+
+	ResourceHandle<VulkanShaderModule> ResourceManager::AllocateShaderModule(ShaderType shaderType, const std::filesystem::path& filename)
 	{
 		uint32_t id = s_Shaders.Add(s_Context, shaderType, filename);
 		s_Shaders[id]->SetID(id);
@@ -84,11 +109,46 @@ namespace Odyssey
 		return ResourceHandle<VulkanDescriptorLayout>(id, s_DescriptorLayouts[id].get());
 	}
 
-	ResourceHandle<VulkanDescriptorBuffer> ResourceManager::AllocateDescriptorBuffer(ResourceHandle<VulkanDescriptorLayout> layout, uint32_t descriptorCount)
+	ResourceHandle<VulkanDescriptorPool> ResourceManager::AllocateDescriptorPool(DescriptorType poolType, uint32_t setCount, uint32_t maxSets)
 	{
-		uint32_t id = s_DescriptorBuffers.Add(s_Context, layout, descriptorCount);
-		s_DescriptorBuffers[id]->SetID(id);
-		return ResourceHandle<VulkanDescriptorBuffer>(id, s_DescriptorBuffers[id].get());
+		uint32_t id = s_DescriptorPools.Add(s_Context, poolType, setCount, maxSets);
+		s_DescriptorPools[id]->SetID(id);
+		return ResourceHandle<VulkanDescriptorPool>(id, s_DescriptorPools[id].get());
+	}
+
+	ResourceHandle<VulkanDescriptorSet> ResourceManager::AllocateDescriptorSet(DescriptorType descriptorType, ResourceHandle<VulkanDescriptorPool> pool, ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count)
+	{
+		uint32_t id = s_DescriptorSets.Add(s_Context, descriptorType, pool, layout, count);
+		s_DescriptorSets[id]->SetID(id);
+		return ResourceHandle<VulkanDescriptorSet>(id, s_DescriptorSets[id].get());
+	}
+
+	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(const VulkanImageDescription& imageDescription)
+	{
+		uint32_t id = s_Images.Add(s_Context, imageDescription);
+		s_Images[id]->SetID(id);
+		return ResourceHandle<VulkanImage>(id, s_Images[id].get());
+	}
+
+	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(VkImage image, uint32_t width, uint32_t height, VkFormat format)
+	{
+		uint32_t id = s_Images.Add(s_Context, image, width, height, format);
+		s_Images[id]->SetID(id);
+		return ResourceHandle<VulkanImage>(id, s_Images[id].get());
+	}
+
+	ResourceHandle<VulkanTextureSampler> ResourceManager::AllocateSampler()
+	{
+		uint32_t id = s_Samplers.Add(s_Context);
+		s_Samplers[id]->SetID(id);
+		return ResourceHandle<VulkanTextureSampler>(id, s_Samplers[id].get());
+	}
+
+	ResourceHandle<VulkanTexture> ResourceManager::AllocateTexture(VulkanImageDescription imageDesc, const void* pixelData)
+	{
+		uint32_t id = s_Textures.Add(imageDesc, pixelData);
+		s_Textures[id]->SetID(id);
+		return ResourceHandle<VulkanTexture>(id, s_Textures[id].get());
 	}
 
 	void ResourceManager::DestroyBuffer(ResourceHandle<VulkanBuffer> handle)
@@ -96,6 +156,18 @@ namespace Odyssey
 		s_Buffers[handle.m_ID]->Destroy();
 		s_Buffers[handle.m_ID]->SetID(-1);
 		s_Buffers.Remove(handle.m_ID);
+	}
+
+	void ResourceManager::DestroyUniformBuffer(ResourceHandle<VulkanUniformBuffer> handle)
+	{
+		uint32_t id = handle.m_ID;
+		auto func = [](uint32_t id)
+			{
+				s_UniformBuffers[id]->Destroy();
+				s_UniformBuffers[id]->SetID(-1);
+				s_UniformBuffers.Remove(id);
+			};
+		s_PendingDestroys.push_back({ id, func });
 	}
 
 	void ResourceManager::DestroyVertexBuffer(ResourceHandle<VulkanVertexBuffer> handle)
@@ -112,16 +184,16 @@ namespace Odyssey
 		s_IndexBuffers.Remove(handle.m_ID);
 	}
 
-	void ResourceManager::DestroyTexture(ResourceHandle<VulkanTexture> handle)
+	void ResourceManager::DestroyRenderTexture(ResourceHandle<VulkanRenderTexture> handle)
 	{
 		uint32_t id = handle.m_ID;
-		auto callback = [id]()
+		auto func = [](uint32_t id)
 			{
-				s_Textures[id]->Destroy();
-				s_Textures[id]->SetID(-1);
-				s_Textures.Remove(id);
+				s_RenderTextures[id]->Destroy();
+				s_RenderTextures[id]->SetID(-1);
+				s_RenderTextures.Remove(id);
 			};
-		s_PendingDestroys.push_back(callback);
+		s_PendingDestroys.push_back({ id, func });
 	}
 
 	void ResourceManager::DestroyShader(ResourceHandle<VulkanShaderModule> handle)
@@ -156,19 +228,63 @@ namespace Odyssey
 		s_DescriptorLayouts[handle.m_ID]->SetID(-1);
 		s_DescriptorLayouts.Remove(handle.m_ID);
 	}
-	void ResourceManager::DestroyDescriptorBuffer(ResourceHandle<VulkanDescriptorBuffer> handle)
+	void ResourceManager::DestroyImage(ResourceHandle<VulkanImage> handle)
 	{
-		s_DescriptorBuffers[handle.m_ID]->Destroy();
-		s_DescriptorBuffers[handle.m_ID]->SetID(-1);
-		s_DescriptorBuffers.Remove(handle.m_ID);
+		uint32_t id = handle.m_ID;
+		auto func = [](uint32_t id)
+			{
+				s_Images[id]->Destroy();
+				s_Images[id]->SetID(-1);
+				s_Images.Remove(id);
+			};
+		s_PendingDestroys.push_back({ id, func });
+	}
+
+	void ResourceManager::DestroySampler(ResourceHandle<VulkanTextureSampler> handle)
+	{
+		uint32_t id = handle.m_ID;
+		auto func = [](uint32_t id)
+			{
+				s_Samplers[id]->Destroy();
+				s_Samplers[id]->SetID(-1);
+				s_Samplers.Remove(id);
+			};
+		s_PendingDestroys.push_back({ id, func });
+	}
+
+	void ResourceManager::DestroyDescriptorPool(ResourceHandle<VulkanDescriptorPool> handle)
+	{
+		uint32_t id = handle.m_ID;
+		auto func = [](uint32_t id)
+			{
+				s_DescriptorPools[id]->Destroy();
+				s_DescriptorPools[id]->SetID(-1);
+				s_DescriptorPools.Remove(id);
+			};
+		s_PendingDestroys.push_back({ id, func });
+	}
+
+	void ResourceManager::DestroyDescriptorSet(ResourceHandle<VulkanDescriptorSet> handle)
+	{
+		uint32_t id = handle.m_ID;
+		auto func = [](uint32_t id)
+			{
+				s_DescriptorSets[id]->SetID(-1);
+				s_DescriptorSets.Remove(id);
+			};
+		s_PendingDestroys.push_back({ id, func });
 	}
 
 	void ResourceManager::Flush()
 	{
-		for (const auto& func : s_PendingDestroys)
+		if (s_PendingDestroys.size() > 0)
 		{
-			func();
+			for (int32_t i = (int32_t)s_PendingDestroys.size() - 1; i >= 0; i--)
+			{
+				s_PendingDestroys[i].Execute();
+			}
+
+			s_PendingDestroys.clear();
 		}
-		s_PendingDestroys.clear();
 	}
 }

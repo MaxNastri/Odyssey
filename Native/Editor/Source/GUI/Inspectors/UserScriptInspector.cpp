@@ -42,13 +42,12 @@ namespace Odyssey
 			}
 		}
 
-		ImGui::Separator();
 	}
 
 	void UserScriptInspector::UpdateFields()
 	{
 		drawers.clear();
-		if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptFullName))
+		if (UserScript* userScript = gameObject->GetUserScript(userScriptFullName))
 		{
 			InitializeDrawers(userScript);
 		}

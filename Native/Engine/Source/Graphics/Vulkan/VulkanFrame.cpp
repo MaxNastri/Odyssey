@@ -2,14 +2,15 @@
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
 #include "VulkanPhysicalDevice.h"
+#include "VulkanRenderTexture.h"
 #include "VulkanImage.h"
 
 namespace Odyssey
 {
-	VulkanFrame::VulkanFrame(std::shared_ptr<VulkanContext> context, std::shared_ptr<VulkanImage> renderTarget, VkFormat format)
+	VulkanFrame::VulkanFrame(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanRenderTexture> renderTarget, VkFormat format)
 	{
 		m_Context = context;
-		m_RenderTarget = renderTarget;
+		m_RenderTexture = renderTarget;
 
 		CreateFence();
 		CreateSempaphores();
@@ -28,20 +29,20 @@ namespace Odyssey
 		renderCompleteSemaphore = VK_NULL_HANDLE;
 	}
 
-	void VulkanFrame::SetRenderTarget(std::shared_ptr<VulkanImage> renderTarget, uint32_t imageIndex)
+	void VulkanFrame::SetRenderTarget(ResourceHandle<VulkanRenderTexture> renderTarget, uint32_t imageIndex)
 	{
-		m_RenderTarget = renderTarget;
+		m_RenderTexture = renderTarget;
 		m_ImageIndex = imageIndex;
 	}
 
 	VkImage VulkanFrame::GetRenderTargetVK()
 	{
-		return m_RenderTarget->GetImage();
+		return m_RenderTexture.Get()->GetImage().Get()->GetImage();
 	}
 
 	VkImageView VulkanFrame::GetRenderTargetViewVK()
 	{
-		return m_RenderTarget->GetImageView();
+		return m_RenderTexture.Get()->GetImage().Get()->GetImageView();
 	}
 
 	void VulkanFrame::CreateFence()

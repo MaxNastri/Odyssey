@@ -9,6 +9,8 @@ namespace Odyssey
 	class Material;
 	class Mesh;
 	class Shader;
+	class Scene;
+	class Texture2D;
 
 	class AssetManager
 	{
@@ -16,33 +18,55 @@ namespace Odyssey
 		static void CreateDatabase();
 
 	public:
-		static AssetHandle<Material> CreateMaterial(const std::string& assetPath);
-		static AssetHandle<Mesh> CreateMesh(const std::string& assetPath);
-		static AssetHandle<Shader> CreateShader(const std::string& assetPath);
+		static AssetHandle<Mesh> CreateMesh();
+	public:
+		static AssetHandle<Material> CreateMaterial(const std::filesystem::path& assetPath);
+		static AssetHandle<Mesh> CreateMesh(const std::filesystem::path& assetPath);
+		static AssetHandle<Shader> CreateShader(const std::filesystem::path& assetPath);
+		static AssetHandle<Scene> CreateScene(const std::filesystem::path& assetPath);
 
 	public:
-		static AssetHandle<Material> LoadMaterial(const std::string& assetPath);
-		static AssetHandle<Mesh> LoadMesh(const std::string& assetPath);
-		static AssetHandle<Shader> LoadShader(const std::string& assetPath);
+		static AssetHandle<Material> LoadMaterial(const std::filesystem::path& assetPath);
+		static AssetHandle<Mesh> LoadMesh(const std::filesystem::path& assetPath);
+		static AssetHandle<Shader> LoadShader(const std::filesystem::path& assetPath);
+		static AssetHandle<Scene> LoadScene(const std::filesystem::path& assetPath);
+		static AssetHandle<Texture2D> LoadTexture2D(const std::filesystem::path& assetPath);
 
 	public:
 		static AssetHandle<Material> LoadMaterialByGUID(const std::string& guid);
 		static AssetHandle<Mesh> LoadMeshByGUID(const std::string& guid);
 		static AssetHandle<Shader> LoadShaderByGUID(const std::string& guid);
+		static AssetHandle<Scene> LoadSceneByGUID(const std::string& guid);
+		static AssetHandle<Texture2D> LoadTexture2DByGUID(const std::string& guid);
+
+	public:
+		static std::vector<std::string> GetAssetsOfType(const std::string& type);
+
+	public:
+		static void UnloadScene(AssetHandle<Scene> scene);
+
+	public:
+		static std::string PathToGUID(const std::filesystem::path& path);
+		static std::string GUIDToName(const std::string& guid);
 
 	private:
 		static std::string GenerateGUID();
+		static std::filesystem::path GenerateMetaPath(const std::filesystem::path& assetPath);
 
 	private:
 		inline static DynamicList<Mesh> s_Meshes;
 		inline static DynamicList<Shader> s_Shaders;
 		inline static DynamicList<Material> s_Materials;
+		inline static DynamicList<Scene> s_Scenes;
+		inline static DynamicList<Texture2D> s_Textures;
 		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
 
 		// Asset Database
-		inline static std::unordered_map<std::string, std::filesystem::path> s_AssetDatabase;
+		inline static std::unordered_map<std::string, std::filesystem::path> s_AssetDatabaseGUIDs;
+		inline static std::unordered_map<std::filesystem::path, std::string> s_AssetDatabasePaths;
+		inline static std::unordered_map<std::string, std::string> s_AssetDatabaseGUIDToName;
 		inline static std::unordered_map<std::string, uint32_t> s_LoadedAssets;
-
+		inline static std::unordered_map<std::string, std::vector<std::string>> s_AssetTypeToGUIDs;
 		inline static AssetHandle<Shader> s_DefaultVertexShader;
 		inline static AssetHandle<Shader> s_DefaultFragmentShader;
 

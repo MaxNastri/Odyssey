@@ -3,14 +3,19 @@
 #include "imgui.h"
 #include "SceneManager.h"
 #include "AssetManager.h"
+#include "GeometryUtil.h"
+#include "Mesh.h"
+#include "GUIManager.h"
+#include "ModelLoader.h"
+#include "Scene.h"
+#include "Texture2D.h"
+#include "Material.h"
 
 namespace Odyssey
 {
-	static std::filesystem::path s_AssetsPath = "Assets";
-
 	ContentBrowserWindow::ContentBrowserWindow()
-		: DockableWindow("Content Browser", 
-			glm::vec2(0,0), glm::vec2(500,500), glm::vec2(2,2))
+		: DockableWindow("Content Browser",
+			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		m_CurrentPath = s_AssetsPath;
 		UpdatePaths();
@@ -18,7 +23,8 @@ namespace Odyssey
 
 	void ContentBrowserWindow::Destroy()
 	{
-		m_PathsToDisplay.clear();
+		m_FoldersToDisplay.clear();
+		m_FilesToDisplay.clear();
 	}
 
 	void ContentBrowserWindow::Update()
@@ -43,32 +49,51 @@ namespace Odyssey
 			}
 		}
 
-		for (auto& [path, isDirectory] : m_PathsToDisplay)
+		// Draw folders first
+		for (auto& path : m_FoldersToDisplay)
 		{
 			auto relativePath = std::filesystem::relative(path);
 			std::string filename = relativePath.filename().string();
 
-			if (isDirectory)
+			if (ImGui::Button(filename.c_str()))
+			{
+				m_CurrentPath = path;
+				m_UpdatePaths = true;
+			}
+		}
+
+		// Now files
+		for (auto& path : m_FilesToDisplay)
+		{
+			auto relativePath = std::filesystem::relative(path);
+			std::string filename = relativePath.filename().string();
+
+			if (relativePath.extension() == ".yaml")
 			{
 				if (ImGui::Button(filename.c_str()))
 				{
-					m_CurrentPath = path;
-					m_UpdatePaths = true;
+					const std::string& pathStr = path.string();
+
+					SceneManager::LoadScene(pathStr);
 				}
 			}
 			else
 			{
-				if (relativePath.extension() == ".yaml")
+				ImGui::PushID(filename.c_str());
+				if (ImGui::Selectable(filename.c_str()))
 				{
-					if (ImGui::Button(filename.c_str()))
-					{
-						SceneManager::LoadScene(path.string());
-					}
+					GUISelection selection;
+					selection.guid = AssetManager::PathToGUID(path);
+					selection.Type = GUISelection::SelectionType::Material;
+					GUIManager::OnSelectionContextChanged(selection);
 				}
-				else
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 				{
-					ImGui::Text("%s", filename.c_str());
+					std::string guid = AssetManager::PathToGUID(path);
+					ImGui::SetDragDropPayload("Asset", guid.c_str(), sizeof(guid));
+					ImGui::EndDragDropSource();
 				}
+				ImGui::PopID();
 			}
 		}
 
@@ -81,11 +106,20 @@ namespace Odyssey
 	void ContentBrowserWindow::UpdatePaths()
 	{
 		m_UpdatePaths = false;
-		m_PathsToDisplay.clear();
+		m_FilesToDisplay.clear();
+		m_FoldersToDisplay.clear();
 
 		for (auto& iter : std::filesystem::directory_iterator(m_CurrentPath))
 		{
-			m_PathsToDisplay.push_back(std::pair(iter.path(), iter.is_directory()));
+			if (iter.is_directory())
+			{
+				m_FoldersToDisplay.push_back(iter.path());
+			}
+			else if (iter.is_regular_file())
+			{
+				if (iter.path().extension() != ".meta")
+					m_FilesToDisplay.push_back(iter.path());
+			}
 		}
 	}
 
@@ -101,23 +135,75 @@ namespace Odyssey
 			{
 				if (ImGui::MenuItem("Material"))
 				{
-					AssetManager::CreateMaterial("Assets/Materials/MyMaterial.mat");
+					AssetManager::CreateMaterial(std::filesystem::path("Assets/Materials/MyMaterial.mat"));
 				}
-				else if (ImGui::MenuItem("Mesh"))
+				if (ImGui::BeginMenu("Mesh"))
 				{
-					
+					if (ImGui::MenuItem("Cube"))
+					{
+						std::vector<VulkanVertex> vertices;
+						std::vector<uint32_t> indices;
+						GeometryUtil::ComputeBox(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), vertices, indices);
+						AssetHandle<Mesh> mesh = AssetManager::CreateMesh(std::filesystem::path("Assets/Meshes/Cube.mesh"));
+						mesh.Get()->SetVertices(vertices);
+						mesh.Get()->SetIndices(indices);
+						mesh.Get()->Save();
+					}
+					if (ImGui::MenuItem("Sphere"))
+					{
+						std::vector<VulkanVertex> vertices;
+						std::vector<uint32_t> indices;
+						GeometryUtil::ComputeSphere(1.0f, 50, vertices, indices);
+						AssetHandle<Mesh> mesh = AssetManager::CreateMesh(std::filesystem::path("Assets/Meshes/Sphere.mesh"));
+						mesh.Get()->SetVertices(vertices);
+						mesh.Get()->SetIndices(indices);
+						mesh.Get()->Save();
+					}
+					ImGui::EndMenu();
 				}
-				else if (ImGui::MenuItem("Scene"))
+				if (ImGui::MenuItem("Scene"))
 				{
 
 				}
-				else if (ImGui::MenuItem("Shader"))
+				if (ImGui::MenuItem("Shader"))
 				{
-
 				}
 				ImGui::EndMenu();
 			}
+			if (ImGui::BeginMenu("Import"))
+			{
+				if (ImGui::MenuItem("Spiderman"))
+				{
+					const std::filesystem::path path("Assets/Models/Car_Combined.fbx");
+					ModelLoader loader;
+					ModelAsset asset;
+					if (loader.LoadModel(path, asset))
+					{
+						GameObject* go = SceneManager::GetActiveScene()->GetGameObject(0);
+						if (MeshRenderer* mr = go->GetComponent<MeshRenderer>())
+						{
+							mr->SetMesh(asset.Mesh);
+						}
+						//asset.Mesh.Get()->SaveTo("Assets/Meshes/Car.mesh");
+					}
+				}
+				if (ImGui::MenuItem("Texture"))
+				{
+					const std::filesystem::path path("Assets/Textures/texture.jpg");
+					AssetHandle<Texture2D> texture = AssetManager::LoadTexture2D(path);
 
+					if (texture.IsValid())
+					{
+						GameObject* go = SceneManager::GetActiveScene()->GetGameObject(0);
+						if (Material* material = go->GetComponent<MeshRenderer>()->GetMaterial().Get())
+						{
+							material->SetTexture(texture);
+							material->Save();
+						}
+					}
+				}
+				ImGui::EndMenu();
+			}
 			ImGui::EndPopup();
 		}
 	}

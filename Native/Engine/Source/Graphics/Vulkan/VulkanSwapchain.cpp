@@ -4,6 +4,7 @@
 #include "VulkanPhysicalDevice.h"
 #include "VulkanSurface.h"
 #include "VulkanImage.h"
+#include "ResourceManager.h"
 
 namespace Odyssey
 {
@@ -21,7 +22,7 @@ namespace Odyssey
         imageCount = 0;
 	}
 
-    std::vector<std::shared_ptr<VulkanImage>> VulkanSwapchain::GetBackbuffers()
+    std::vector<ResourceHandle<VulkanRenderTexture>> VulkanSwapchain::GetBackbuffers()
     {
         return backbuffers;
     }
@@ -37,8 +38,8 @@ namespace Odyssey
 		minImageCount = GetMinImageCount(surface->GetPresentMode());
         VkSurfaceFormatKHR surfaceFormat = surface->GetSurfaceFormat();
         VkSurfaceKHR vkSurface = surface->GetVK();
-        int width = surface->GetWidth();
-        int height = surface->GetHeight();
+        m_Width = surface->GetWidth();
+        m_Height = surface->GetHeight();
 
         VkSwapchainCreateInfoKHR info = {};
         info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -69,13 +70,13 @@ namespace Odyssey
 
         if (cap.currentExtent.width == 0xffffffff)
         {
-            info.imageExtent.width = width;
-            info.imageExtent.height = height;
+            info.imageExtent.width = m_Width;
+            info.imageExtent.height = m_Height;
         }
         else
         {
-            info.imageExtent.width = width = cap.currentExtent.width;
-            info.imageExtent.height = height = cap.currentExtent.height;
+            info.imageExtent.width = m_Width = cap.currentExtent.width;
+            info.imageExtent.height = m_Height = cap.currentExtent.height;
         }
 
         err = vkCreateSwapchainKHR(m_Context->GetDeviceVK(), &info, allocator, &swapchain);
@@ -91,6 +92,19 @@ namespace Odyssey
         }
 	}
 
+    TextureFormat GetTextureFormat(VkFormat format)
+    {
+        switch (format)
+        {
+            case VK_FORMAT_R8G8B8A8_SRGB:
+                return TextureFormat::R8G8B8A8_SRGB;
+            case VK_FORMAT_R8G8B8A8_UNORM:
+                return TextureFormat::R8G8B8A8_UNORM;
+            default:
+                return TextureFormat::R8G8B8A8_UNORM;
+        }
+    }
+
     void VulkanSwapchain::CreateSwapchainImages(VkFormat format)
     {
         // Get the swapchain backbuffers as raw vkimages
@@ -105,7 +119,8 @@ namespace Odyssey
         backbuffers.resize(backbufferImages.size());
         for (uint16_t i = 0; i < backbuffers.size(); ++i)
         {
-            backbuffers[i] = std::make_shared<VulkanImage>(m_Context, backbufferImages[i], format);
+            ResourceHandle<VulkanImage> image = ResourceManager::AllocateImage(backbufferImages[i], m_Width, m_Height, format);
+            backbuffers[i] = ResourceManager::AllocateRenderTexture(image, GetTextureFormat(format));
         }
     }
 

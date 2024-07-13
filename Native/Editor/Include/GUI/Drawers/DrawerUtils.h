@@ -17,7 +17,7 @@ namespace Odyssey
 	{
 		std::function<void(FieldType)> callback = [gameObject, userScriptClassName, fieldName](FieldType fieldValue)
 			{
-				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptClassName))
+				if (UserScript* userScript = gameObject->GetUserScript(userScriptClassName))
 				{
 					userScript->GetManagedObject().SetFieldValue<FieldType>(fieldName, fieldValue);
 				}
@@ -31,7 +31,7 @@ namespace Odyssey
 	{
 		std::function<void(bool)> callback = [gameObject, userScriptClassName, fieldName](bool fieldValue)
 			{
-				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptClassName))
+				if (UserScript* userScript = gameObject->GetUserScript(userScriptClassName))
 				{
 					userScript->GetManagedObject().SetFieldValue<uint32_t>(fieldName, fieldValue);
 				}
@@ -45,7 +45,7 @@ namespace Odyssey
 	{
 		std::function<void(float)> callback = [gameObject, userScriptClassName, fieldName](float fieldValue)
 			{
-				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptClassName))
+				if (UserScript* userScript = gameObject->GetUserScript(userScriptClassName))
 				{
 					userScript->GetManagedObject().SetFieldValue<float>(fieldName, fieldValue);
 				}
@@ -59,7 +59,7 @@ namespace Odyssey
 	{
 		std::function<void(double)> callback = [gameObject, userScriptClassName, fieldName](double fieldValue)
 			{
-				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptClassName))
+				if (UserScript* userScript = gameObject->GetUserScript(userScriptClassName))
 				{
 					userScript->GetManagedObject().SetFieldValue<double>(fieldName, fieldValue);
 				}
@@ -73,7 +73,7 @@ namespace Odyssey
 	{
 		std::function<void(std::string)> callback = [gameObject, userScriptClassName, fieldName](std::string fieldValue)
 			{
-				if (UserScript* userScript = ComponentManager::GetUserScript(gameObject->id, userScriptClassName))
+				if (UserScript* userScript = gameObject->GetUserScript(userScriptClassName))
 				{
 					Coral::ScopedString field = Coral::String::New(fieldValue);
 					userScript->GetManagedObject().SetFieldValue<Coral::String>(fieldName, field);

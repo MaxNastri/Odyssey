@@ -11,8 +11,18 @@ namespace Odyssey
 		awakeFunc = [](Component* component) { component->Awake(); };
 		updateFunc = [](Component* component) { component->Update(); };
 		onDestroyFunc = [](Component* component) { component->OnDestroy(); };
-		name = "Scene";
 		nextGameObjectID = 0;
+	}
+
+	Scene::Scene(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath)
+		: Asset(assetPath, metaPath)
+	{
+		awakeFunc = [](Component* component) { component->Awake(); };
+		updateFunc = [](Component* component) { component->Update(); };
+		onDestroyFunc = [](Component* component) { component->OnDestroy(); };
+		nextGameObjectID = 0;
+
+		LoadFromDisk(assetPath);
 	}
 
 	GameObject* Scene::CreateGameObject()
@@ -52,7 +62,7 @@ namespace Odyssey
 		m_MainCamera = nullptr;
 	}
 
-	GameObject* Scene::GetGameObject(uint32_t id)
+	GameObject* Scene::GetGameObject(int32_t id)
 	{
 		if (gameObjectsByID.find(id) != gameObjectsByID.end())
 		{
@@ -87,13 +97,23 @@ namespace Odyssey
 		}
 	}
 
-	void Scene::Serialize(const std::string& filename)
+	void Scene::Save()
+	{
+		SaveMetadata();
+		SaveToDisk(m_AssetPath);
+	}
+
+	void Scene::Load()
+	{
+		LoadMetadata();
+		LoadFromDisk(m_AssetPath);
+	}
+
+	void Scene::SaveToDisk(const std::filesystem::path& assetPath)
 	{
 		ryml::Tree tree;
 		ryml::NodeRef root = tree.rootref();
 		root |= ryml::MAP;
-
-		root["Name"] << name;
 
 		ryml::NodeRef gameObjectsNode = root["GameObjects"];
 		gameObjectsNode |= ryml::SEQ;
@@ -103,20 +123,18 @@ namespace Odyssey
 			gameObject->Serialize(gameObjectsNode);
 		}
 
-		FILE* file2 = fopen(filename.c_str(), "w+");
+		FILE* file2 = fopen(assetPath.string().c_str(), "w+");
 		size_t len = ryml::emit_yaml(tree, tree.root_id(), file2);
 		fclose(file2);
 	}
 
-	void Scene::Deserialize(const std::string& filename)
+	void Scene::LoadFromDisk(const std::filesystem::path& assetPath)
 	{
-		if (std::ifstream ifs{ filename })
+		if (std::ifstream ifs{ assetPath })
 		{
 			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
 			ryml::NodeRef root = tree.rootref();
-
-			root["Name"] >> name;
 
 			ryml::NodeRef gameObjectsNode = root["GameObjects"];
 
@@ -147,7 +165,7 @@ namespace Odyssey
 	{
 		for (auto& gameObject : gameObjects)
 		{
-			if (Camera* camera = ComponentManager::GetComponent<Camera>(gameObject->id))
+			if (Camera* camera = gameObject->GetComponent<Camera>())
 			{
 				if (camera->IsMainCamera())
 					m_MainCamera = camera;

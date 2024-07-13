@@ -1,97 +1,29 @@
 #include "VulkanTexture.h"
-#include "VulkanContext.h"
-#include "VulkanDevice.h"
-#include "VulkanBuffer.h"
-#include "VulkanCommandPool.h"
-#include "VulkanCommandBuffer.h"
-#include <Logger.h>
-#include "volk.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include "ResourceManager.h"
+#include "VulkanTextureSampler.h"
 
 namespace Odyssey
 {
-	VulkanTexture::VulkanTexture(std::shared_ptr<VulkanContext> context, const std::string& filename)
+	VulkanTexture::VulkanTexture(VulkanImageDescription description, const void* pixelData)
 	{
-		m_Context = context;
-		m_Sampler = std::make_unique<VulkanTextureSampler>(context);
+		m_Image = ResourceManager::AllocateImage(description);
+		m_Image.Get()->SetData(pixelData);
 
-		// Load the texture via stb
-		int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		m_Sampler = ResourceManager::AllocateSampler();
 
-		if (!pixels)
-		{
-			Logger::LogError("[VulkanTexture] Unable to load texture file " + filename);
-			return;
-		}
-
-		// Create a staging buffer to copy the pixel data into vulkanized memory
-		uint32_t imageSize = (uint32_t)(texWidth * texHeight * 4);
-		ResourceHandle<VulkanBuffer> stagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, imageSize);
-		stagingBuffer.Get()->SetMemory(imageSize, pixels);
-
-		// Now that we have transfered the memory, free the original pixel data
-		stbi_image_free(pixels);
-
-		m_Width = texWidth;
-		m_Height = texHeight;
-
-		VulkanImageDescription imageDesc;
-		imageDesc.Width = texWidth;
-		imageDesc.Height = texHeight;
-		m_Image = std::make_unique<VulkanImage>(context, imageDesc);
-
-		ResourceHandle<VulkanCommandPool> poolHandle = m_Context->GetCommandPool();
-		ResourceHandle<VulkanCommandBuffer> bufferHandle = poolHandle.Get()->AllocateBuffer();
-		VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
-
-		// Transition layouts so we can transfer data
-		{
-			commandBuffer->BeginCommands();
-			commandBuffer->TransitionLayouts(m_Image.get(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-			commandBuffer->EndCommands();
-
-			m_Context->SubmitCommandBuffer(bufferHandle);
-		}
-		
-		// Set the data from the staging buffer
-		m_Image->SetData(stagingBuffer, texWidth, texHeight);
-		
-		// Reset the command buffer
-		commandBuffer->Reset();
-
-		// Transition layouts into a gpu-read-only format
-		{
-			commandBuffer->BeginCommands();
-			commandBuffer->TransitionLayouts(m_Image.get(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-			commandBuffer->EndCommands();
-
-			m_Context->SubmitCommandBuffer(bufferHandle);
-		}
-
-		poolHandle.Get()->ReleaseBuffer(bufferHandle);
-		ResourceManager::DestroyBuffer(stagingBuffer);
+		descriptor.imageView = m_Image.Get()->GetImageView();
+		descriptor.imageLayout = m_Image.Get()->GetLayout();
+		descriptor.sampler = m_Sampler.Get()->GetSamplerVK();
 	}
-
-	VulkanTexture::VulkanTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height)
+	VkWriteDescriptorSet VulkanTexture::GetDescriptorInfo()
 	{
-		m_Context = context;
-		m_Width = width;
-		m_Height = height;
-
-		VulkanImageDescription imageDesc;
-		imageDesc.Width = width;
-		imageDesc.Height = height;
-		imageDesc.ImageType = ImageType::RenderTexture;
-
-		m_Image = std::make_unique<VulkanImage>(context, imageDesc);
-		m_Sampler = std::make_unique<VulkanTextureSampler>(context);
-	}
-
-	void VulkanTexture::Destroy()
-	{
-		m_Image->Destroy();
-		m_Sampler->Destroy();
+		VkWriteDescriptorSet writeSet{};
+		writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		writeSet.dstSet = 0;
+		writeSet.dstBinding = 2;
+		writeSet.descriptorCount = 1;
+		writeSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		writeSet.pImageInfo = &descriptor;
+		return writeSet;
 	}
 }
