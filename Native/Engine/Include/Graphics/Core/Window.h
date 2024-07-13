@@ -17,9 +17,11 @@ namespace Odyssey
 	public:
 		GLFWwindow* GetWindowHandle() { return glfwHandle; }
 		void GetFrameBufferSize(int& x, int& y);
-		void SetSize(uint32_t width, uint32_t height);
-
+		float GetContentScale() { return m_ContentScale; }
 		static glm::vec2 GetWindowPos() { return s_WindowPos; }
+
+	public:
+		void SetSize(uint32_t width, uint32_t height);
 
 	private:
 		static void ErrorCallback(int error, const char* description);
@@ -35,5 +37,6 @@ namespace Odyssey
 		uint32_t m_Width, m_Height;
 		inline static glm::vec2 s_WindowPos;
 		std::string title;
+		float m_ContentScale;
 	};
 }

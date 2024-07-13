@@ -27,8 +27,6 @@ namespace Odyssey
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
-		io.Fonts->AddFontFromFileTTF("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", 18.0f);
-
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
 		//ImGui::StyleColorsLight();
@@ -64,41 +62,6 @@ namespace Odyssey
 			return vkGetInstanceProcAddr(*(reinterpret_cast<VkInstance*>(vulkan_instance)), function_name);
 			}, &init_info.Instance);
 		ImGui_ImplVulkan_Init(&init_info, initInfo.renderPass);
-
-
-		// Upload Fonts
-		{
-			// Use any command queue
-			ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
-			ResourceHandle<VulkanCommandBuffer> bufferHandle = commandPool.Get()->AllocateBuffer();
-			VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
-
-			commandBuffer->BeginCommands();
-
-			ImGui_ImplVulkan_CreateFontsTexture(commandBuffer->GetCommandBuffer());
-
-			VkSubmitInfo submitInfo = {};
-			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-			submitInfo.commandBufferCount = 1;
-			submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
-
-			commandBuffer->EndCommands();
-
-			VkResult err = vkQueueSubmit(initInfo.queue, 1, &submitInfo, VK_NULL_HANDLE);
-
-			if (!check_vk_result(err))
-			{
-				Logger::LogError("(imgui 1)");
-			}
-
-			err = vkDeviceWaitIdle(initInfo.logicalDevice);
-			if (!check_vk_result(err))
-			{
-				Logger::LogError("(imgui 2)");
-			}
-
-			ImGui_ImplVulkan_DestroyFontUploadObjects();
-		}
 	}
 	void VulkanImgui::SubmitDraws()
 	{
@@ -145,6 +108,14 @@ namespace Odyssey
 		ImGui_ImplVulkan_RemoveTexture(reinterpret_cast<VkDescriptorSet>(id));
 	}
 
+	void VulkanImgui::SetFont(std::filesystem::path fontFile, float fontSize)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		io.Fonts->AddFontFromFileTTF(fontFile.string().c_str(), fontSize);
+
+		UploadFont();
+	}
+
 	void VulkanImgui::CreateDescriptorPool()
 	{
 		VkDescriptorPoolSize pool_sizes[] = {
@@ -174,5 +145,38 @@ namespace Odyssey
 		{
 			Logger::LogError("(imgui 3)");
 		}
+	}
+	void VulkanImgui::UploadFont()
+	{
+		// Use any command queue
+		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
+		ResourceHandle<VulkanCommandBuffer> bufferHandle = commandPool.Get()->AllocateBuffer();
+		VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
+
+		commandBuffer->BeginCommands();
+
+		ImGui_ImplVulkan_CreateFontsTexture(commandBuffer->GetCommandBuffer());
+
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
+
+		commandBuffer->EndCommands();
+		
+		VkResult err = vkQueueSubmit(m_Context->GetGraphicsQueueVK(), 1, &submitInfo, VK_NULL_HANDLE);
+
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(imgui 1)");
+		}
+
+		err = vkDeviceWaitIdle(m_Context->GetDeviceVK());
+		if (!check_vk_result(err))
+		{
+			Logger::LogError("(imgui 2)");
+		}
+
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
 }

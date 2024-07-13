@@ -73,5 +73,8 @@ namespace Odyssey
 		std::vector<VulkanFrame> m_Frames;
 		inline static uint32_t s_FrameIndex = 0;
 		inline static uint32_t s_PreviousFrame = 0;
+
+	private: // Const
+		const float DEFAULT_FONT_SIZE = 18.0f;
 	};
 }

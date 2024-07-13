@@ -34,6 +34,10 @@ namespace Odyssey
 		VulkanImgui::InitInfo imguiInfo = CreateImguiInitInfo();
 		m_Imgui = std::make_shared<VulkanImgui>(m_Context, imguiInfo);
 
+		// Set the default font for IMGUI
+		float fontSize = std::floor(DEFAULT_FONT_SIZE * m_Window->GetWindow()->GetContentScale());
+		m_Imgui->SetFont("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
+
 		m_RenderingData = std::make_shared<PerFrameRenderingData>();
 
 		// Drawing
