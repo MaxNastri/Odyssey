@@ -28,12 +28,12 @@ namespace Odyssey
 	GameObject* Scene::CreateGameObject()
 	{
 		// Create a new game object
-		uint32_t id = nextGameObjectID++;
-		std::shared_ptr<GameObject> gameObject = std::make_shared<GameObject>(id);
+		GameObject* gameObject = CreateEmptyGameObject();
 
-		gameObjects.push_back(gameObject);
-		gameObjectsByID[id] = gameObject;
-		return gameObject.get();
+		// Automatically add a transform component for new game objects
+		gameObject->AddComponent<Transform>();
+
+		return gameObject;
 	}
 
 	void Scene::DestroyGameObject(GameObject* gameObject)
@@ -109,6 +109,18 @@ namespace Odyssey
 		LoadFromDisk(m_AssetPath);
 	}
 
+	GameObject* Scene::CreateEmptyGameObject()
+	{
+		// Create a new game object
+		uint32_t id = nextGameObjectID++;
+		std::shared_ptr<GameObject> gameObject = std::make_shared<GameObject>(id);
+
+		gameObjects.push_back(gameObject);
+		gameObjectsByID[id] = gameObject;
+
+		return gameObject.get();
+	}
+
 	void Scene::SaveToDisk(const std::filesystem::path& assetPath)
 	{
 		ryml::Tree tree;
@@ -143,7 +155,7 @@ namespace Odyssey
 
 			for (size_t i = 0; i < gameObjectsNode.num_children(); i++)
 			{
-				GameObject* gameObject = CreateGameObject();
+				GameObject* gameObject = CreateEmptyGameObject();
 				ryml::NodeRef child = gameObjectsNode.child(i);
 				gameObject->Deserialize(child);
 			}

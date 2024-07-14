@@ -1,11 +1,11 @@
 #pragma once
-#include "GUIElement.h"
+#include "DockableWindow.h"
 
 namespace Odyssey
 {
 	class Scene;
 
-	class SceneHierarchyWindow : public GUIElement
+	class SceneHierarchyWindow : public DockableWindow
 	{
 	public:
 		SceneHierarchyWindow();
@@ -16,6 +16,12 @@ namespace Odyssey
 	public:
 		void OnGameObjectSelected(std::function<void(int32_t)> callback) { m_OnGameObjectSelected.push_back(callback); }
 		void OnSceneChanged();
+
+	private:
+		void HandleContextMenu();
+
+	private: // Context menu
+		bool m_ContextMenuOpen = false;
 
 	private:
 		bool m_Open = true;

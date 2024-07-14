@@ -35,6 +35,7 @@ namespace Odyssey
 		void Load();
 
 	private:
+		GameObject* CreateEmptyGameObject();
 		void SaveToDisk(const std::filesystem::path& assetPath);
 		void LoadFromDisk(const std::filesystem::path& assetPath);
 
