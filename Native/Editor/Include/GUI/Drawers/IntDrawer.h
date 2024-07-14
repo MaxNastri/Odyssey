@@ -23,7 +23,7 @@ namespace Odyssey
 			ImGui::TextUnformatted(m_Label.data());
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(-0.01f);
-			if (ImGui::InputScalar("##scalar", dataType, &data))
+			if (ImGui::InputScalar(m_Label.data(), dataType, &data))
 			{
 				valueUpdatedCallback(data);
 			}

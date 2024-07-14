@@ -31,7 +31,7 @@ namespace Odyssey
 		{
 			if (ImGui::BeginTable("##UserScriptInspector", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 			{
-				ImGui::TableSetupColumn("##B", 0, 0.4f);
+				ImGui::TableSetupColumn(displayName.c_str(), ImGuiTableColumnFlags_WidthFixed, ImGui::GetContentRegionAvail().x * 0.7);
 
 				for (const auto& drawer : drawers)
 				{

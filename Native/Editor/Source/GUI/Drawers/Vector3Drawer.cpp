@@ -37,7 +37,7 @@ namespace Odyssey
 				m_Modified = true;
 			}
 			ImGui::SameLine();
-			m_Modified |= ImGui::DragFloat("##x", &data[0], 0.1f, 0.0f, 0.0f, "%.4f");
+			m_Modified |= ImGui::DragFloat("##x", &data[0], 0.1f, 0.0f, 0.0f, "%.3f");
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
 			ImGui::PopStyleColor(3);
@@ -53,7 +53,7 @@ namespace Odyssey
 				m_Modified = true;
 			}
 			ImGui::SameLine();
-			m_Modified |= ImGui::DragFloat("##y", &data[1], 0.1f, 0.0f, 0.0f, "%.4f");
+			m_Modified |= ImGui::DragFloat("##y", &data[1], 0.1f, 0.0f, 0.0f, "%.3f");
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
 			ImGui::PopStyleColor(3);
@@ -69,7 +69,7 @@ namespace Odyssey
 				m_Modified = true;
 			}
 			ImGui::SameLine();
-			m_Modified |= ImGui::DragFloat("##z", &data[2], 0.1f, 0.0f, 0.0f, "%.4f");
+			m_Modified |= ImGui::DragFloat("##z", &data[2], 0.1f, 0.0f, 0.0f, "%.3f");
 			ImGui::PopItemWidth();
 			ImGui::PopStyleColor(3);
 
@@ -78,7 +78,6 @@ namespace Odyssey
 		ImGui::PopStyleVar();
 		ImGui::Columns(1);
 		ImGui::PopID();
-
 
 		if (m_Modified)
 		{

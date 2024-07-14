@@ -12,9 +12,9 @@ namespace Odyssey
 
 	void FloatDrawer::Draw()
 	{
-		ImGui::TableNextColumn();
+		ImGui::TableSetColumnIndex(0);
 		ImGui::TextUnformatted(m_Label.data());
-		ImGui::TableNextColumn();
+		ImGui::TableSetColumnIndex(1);
 		ImGui::PushItemWidth(-0.01f);
 		if (ImGui::InputFloat(m_Label.data(), &data, step, stepFast))
 		{
