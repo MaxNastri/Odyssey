@@ -3,6 +3,7 @@
 #include "TransformInspector.h"
 #include "CameraInspector.h"
 #include "UserScriptInspector.h"
+#include "StringDrawer.h"
 
 namespace Odyssey
 {
@@ -25,5 +26,6 @@ namespace Odyssey
 	private:
 		std::vector<std::unique_ptr<Inspector>> m_Inspectors;
 		std::vector<UserScriptInspector> userScriptInspectors;
+		StringDrawer m_NameDrawer;
 	};
 }

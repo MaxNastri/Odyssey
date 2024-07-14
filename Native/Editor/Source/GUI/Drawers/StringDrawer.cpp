@@ -4,7 +4,7 @@
 
 namespace Odyssey
 {
-	StringDrawer::StringDrawer(const std::string& propertyLabel, std::string initialValue, std::function<void(std::string)> callback)
+	StringDrawer::StringDrawer(const std::string& propertyLabel, std::string initialValue, std::function<void(std::string&)> callback)
 		: PropertyDrawer(propertyLabel)
 	{
 		data = initialValue;
@@ -17,7 +17,7 @@ namespace Odyssey
 		ImGui::TextUnformatted(m_Label.data());
 		ImGui::TableNextColumn();
 		ImGui::PushItemWidth(-0.01f);
-		if (ImGui::InputText("##string", &data))
+		if (ImGui::InputText(m_Label.data(), &data))
 		{
 			m_Modified = true;
 			valueUpdatedCallback(data);
