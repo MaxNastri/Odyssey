@@ -3,6 +3,7 @@
 #include "VulkanDevice.h"
 #include <Logger.h>
 #include "volk.h"
+#include <shaderc/shaderc.hpp>
 
 namespace Odyssey
 {

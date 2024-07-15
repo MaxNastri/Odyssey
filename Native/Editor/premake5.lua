@@ -53,7 +53,8 @@ project "Odyssey.Native.Editor"
 
     links {
         "Odyssey.Native.Engine.lib",
-        "assimp-vc143-mt.lib"
+        "assimp-vc143-mt.lib",
+        "shaderc_combined.lib"
     }
 
     filter { "configurations:Debug" }

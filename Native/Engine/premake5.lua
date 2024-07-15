@@ -57,7 +57,8 @@ project "Odyssey.Native.Engine"
 
     links {
         "glfw3.lib",
-        "assimp-vc143-mt.lib"
+        "assimp-vc143-mt.lib",
+        "shaderc_combined.lib"
     }
 
     
