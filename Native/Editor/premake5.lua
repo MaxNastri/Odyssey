@@ -49,12 +49,18 @@ project "Odyssey.Native.Editor"
 
     libdirs {
         "%{cfg.targetdir}",
+        "%{wks.location}/Vendor/Vulkan/Lib/"
     }
 
     links {
         "Odyssey.Native.Engine.lib",
         "assimp-vc143-mt.lib",
-        "shaderc_combined.lib"
+        "shaderc_combined.lib",
+        "spirv-cross-core.lib",
+        "spirv-cross-glsl.lib",
+        "spirv-cross-hlsl.lib",
+        "spirv-cross-reflect.lib",
+        "spirv-cross-util.lib"
     }
 
     filter { "configurations:Debug" }
