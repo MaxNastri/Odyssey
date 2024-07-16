@@ -8,6 +8,8 @@
 #include <VulkanRenderer.h>
 #include "OdysseyTime.h"
 #include "Random.h"
+#include "ShaderCompiler.h"
+#include "EditorContext.h"
 
 namespace Odyssey
 {
@@ -40,6 +42,9 @@ namespace Odyssey
 
 		// We're off an running
 		running = true;
+
+		ShaderCompiler* compiler = EditorContext::GetInstance()->GetShaderCompiler();
+		compiler->Compile("Frag", ShaderType::Fragment, "C:/Git/Odyssey/Native/Editor/Assets/Shaders/glsl/red.frag.glsl");
 	}
 
 	void Application::Run()
