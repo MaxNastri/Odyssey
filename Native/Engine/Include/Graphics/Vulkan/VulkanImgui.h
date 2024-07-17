@@ -38,7 +38,7 @@ namespace Odyssey
 		void SubmitDraws();
 		void Render(VkCommandBuffer commandBuffer);
 		void PostRender();
-
+		void SetDrawGUIListener(std::function<void(void)> listener) { m_DrawGUIListener = listener; }
 	public:
 		uint64_t AddTexture(ResourceHandle<VulkanRenderTexture> textureHandle, ResourceHandle<VulkanTextureSampler> samplerHandle);
 		void RemoveTexture(uint64_t id);
@@ -52,5 +52,6 @@ namespace Odyssey
 		std::shared_ptr<VulkanContext> m_Context;
 		std::map<int64_t, VkDescriptorSet> m_RenderTextures;
 		VkDescriptorPool descriptorPool;
+		std::function<void(void)> m_DrawGUIListener;
 	};
 }

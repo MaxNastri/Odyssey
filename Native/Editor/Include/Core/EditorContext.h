@@ -1,5 +1,6 @@
 #pragma once
 #include "ShaderCompiler.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
@@ -18,8 +19,10 @@ namespace Odyssey
 
 	public:
 		ShaderCompiler* GetShaderCompiler() { return m_ShaderCompiler.get(); }
+		GUIManager* GetGUIManager() { return m_GUIManager.get(); }
 
 	private:
 		std::unique_ptr<ShaderCompiler> m_ShaderCompiler;
+		std::unique_ptr<GUIManager> m_GUIManager;
 	};
 }

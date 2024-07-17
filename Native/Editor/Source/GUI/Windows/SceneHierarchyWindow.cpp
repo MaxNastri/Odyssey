@@ -5,6 +5,7 @@
 #include "SceneManager.h"
 #include "GUIManager.h"
 #include "Input.h"
+#include "EditorContext.h"
 
 namespace Odyssey
 {
@@ -65,7 +66,7 @@ namespace Odyssey
 						selection.Type = GUISelection::SelectionType::GameObject;
 						selection.ID = gameObject->id;
 
-						GUIManager::OnSelectionContextChanged(selection);
+						EditorContext::GetInstance()->GetGUIManager()->OnSelectionContextChanged(selection);
 					}
 				}
 			}

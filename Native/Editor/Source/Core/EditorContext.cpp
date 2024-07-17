@@ -7,6 +7,7 @@ namespace Odyssey
 		ShaderCompiler::Options shaderOptions;
 		shaderOptions.Optimize = false;
 		m_ShaderCompiler = std::make_unique<ShaderCompiler>(shaderOptions);
+		m_GUIManager = std::make_unique<GUIManager>();
 	}
 
 	EditorContext* EditorContext::GetInstance()

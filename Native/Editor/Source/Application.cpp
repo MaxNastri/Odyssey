@@ -26,13 +26,13 @@ namespace Odyssey
 
 		// Create the renderer
 		renderer = std::make_shared<VulkanRenderer>();
-
+		auto drawListener = EditorContext::GetInstance()->GetGUIManager()->GetDrawGUIListener();
+		renderer->GetImGui()->SetDrawGUIListener(drawListener);
 		AssetManager::CreateDatabase();
 
 		// Start listening for events
 		ScriptCompiler::ListenForEvents();
 		SceneManager::ListenForEvents();
-		GUIManager::Initialize();
 
 		// Build the user assembly
 		ScriptCompiler::BuildUserAssembly();
@@ -67,7 +67,7 @@ namespace Odyssey
 				// Process any changes made to the user's managed dll
 				ScriptCompiler::Process();
 
-				GUIManager::Update();
+				EditorContext::GetInstance()->GetGUIManager()->Update();
 				SceneManager::Update();
 
 				if (!renderer->Update())
@@ -88,15 +88,17 @@ namespace Odyssey
 
 	void Application::SetupEditorGUI()
 	{
-		GUIManager::CreateInspectorWindow(nullptr);
-		GUIManager::CreateSceneHierarchyWindow();
-		GUIManager::CreateSceneViewWindow();
-		GUIManager::CreateContentBrowserWindow();
+		GUIManager* guiManager = EditorContext::GetInstance()->GetGUIManager();
+		guiManager->CreateInspectorWindow(nullptr);
+		guiManager->CreateSceneHierarchyWindow();
+		guiManager->CreateSceneViewWindow();
+		guiManager->CreateContentBrowserWindow();
 	}
 
 	void Application::CreateRenderPasses()
 	{
-		renderer->AddRenderPass(GUIManager::GetSceneViewWindow(0).GetRenderPass());
-		renderer->AddRenderPass(GUIManager::GetRenderPass());
+		GUIManager* guiManager = EditorContext::GetInstance()->GetGUIManager();
+		renderer->AddRenderPass(guiManager->GetSceneViewWindow(0).GetRenderPass());
+		renderer->AddRenderPass(guiManager->GetRenderPass());
 	}
 }

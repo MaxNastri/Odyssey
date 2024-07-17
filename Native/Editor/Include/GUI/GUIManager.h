@@ -17,38 +17,40 @@ namespace Odyssey
 	class GUIManager
 	{
 	public:
-		static void Initialize();
-		static void CreateInspectorWindow(GameObject* gameObject);
-		static void CreateSceneHierarchyWindow();
-		static void CreateSceneViewWindow();
-		static void CreateContentBrowserWindow();
-		static void CreateRayTracingWindow();
+		GUIManager();
 
 	public:
-		static void Update();
-		static void OnRender(OnGUIRenderEvent* guiRenderEvent);
-		static void SceneLoaded(OnSceneLoaded* sceneLoadedEvent);
-		static void OnGameObjectSelected(int32_t id);
-		static void OnSelectionContextChanged(const GUISelection& context);
+		void CreateInspectorWindow(GameObject* gameObject);
+		void CreateSceneHierarchyWindow();
+		void CreateSceneViewWindow();
+		void CreateContentBrowserWindow();
+		void CreateRayTracingWindow();
 
 	public:
-		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
-		static SceneViewWindow& GetSceneViewWindow(uint32_t index) { return sceneViewWindows[index]; }
+		void Update();
+		void DrawGUI();
+		void SceneLoaded(OnSceneLoaded* sceneLoadedEvent);
+		void OnGameObjectSelected(int32_t id);
+		void OnSelectionContextChanged(const GUISelection& context);
+		std::function<void(void)> GetDrawGUIListener();
+	public:
+		std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
+		SceneViewWindow& GetSceneViewWindow(uint32_t index) { return sceneViewWindows[index]; }
 
 	private:
-		static void OnFilesChanged(const NotificationSet& notificationSet);
-		static void SetDarkThemeColors();
+		void OnFilesChanged(const NotificationSet& notificationSet);
+		void SetDarkThemeColors();
 
 	private:
-		inline static EditorMenuBar s_MenuBar;
+		EditorMenuBar s_MenuBar;
 
 		// Windows
-		inline static std::vector<InspectorWindow> inspectorWindows;
-		inline static std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
-		inline static std::vector<SceneViewWindow> sceneViewWindows;
-		inline static std::vector<ContentBrowserWindow> contentBrowserWindows;
-		inline static std::vector<RayTracingWindow> s_RayTracingWindows;
-		inline static int32_t selectedObject = -1;
-		inline static std::shared_ptr<ImguiPass> m_GUIPass;
+		std::vector<InspectorWindow> inspectorWindows;
+		std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
+		std::vector<SceneViewWindow> sceneViewWindows;
+		std::vector<ContentBrowserWindow> contentBrowserWindows;
+		std::vector<RayTracingWindow> s_RayTracingWindows;
+		int32_t selectedObject = -1;
+		std::shared_ptr<ImguiPass> m_GUIPass;
 	};
 }

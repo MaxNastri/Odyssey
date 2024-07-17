@@ -56,11 +56,6 @@ namespace Odyssey
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Ray Tracing"))
-		{
-			GUIManager::CreateRayTracingWindow();
-			ImGui::EndMenu();
-		}
 		if (m_ShowDemoWindow)
 		{
 			ImGui::ShowDemoWindow(&m_ShowDemoWindow);

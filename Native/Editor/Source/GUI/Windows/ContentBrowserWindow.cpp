@@ -10,6 +10,7 @@
 #include "Scene.h"
 #include "Texture2D.h"
 #include "Material.h"
+#include "EditorContext.h"
 
 namespace Odyssey
 {
@@ -85,7 +86,7 @@ namespace Odyssey
 					GUISelection selection;
 					selection.guid = AssetManager::PathToGUID(path);
 					selection.Type = GUISelection::SelectionType::Material;
-					GUIManager::OnSelectionContextChanged(selection);
+					EditorContext::GetInstance()->GetGUIManager()->OnSelectionContextChanged(selection);
 				}
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 				{
