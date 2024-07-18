@@ -26,7 +26,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanBuffer> ResourceManager::AllocateBuffer(BufferType bufferType, uint32_t size)
 	{
-		uint32_t id = s_Buffers.Add(s_Context, bufferType, size);
+		uint32_t id = s_Buffers.Add<VulkanBuffer>(s_Context, bufferType, size);
 		s_Buffers[id]->SetID(id);
 		return ResourceHandle<VulkanBuffer>(id, s_Buffers[id].get());
 	}
@@ -34,119 +34,119 @@ namespace Odyssey
 	ResourceHandle<VulkanUniformBuffer> ResourceManager::AllocateUniformBuffer(BufferType bufferType, uint32_t bindingIndex, uint32_t size)
 	{
 		//s_UniformBuffers
-		uint32_t id = s_UniformBuffers.Add(s_Context, bufferType, bindingIndex, size);
+		uint32_t id = s_UniformBuffers.Add<VulkanUniformBuffer>(s_Context, bufferType, bindingIndex, size);
 		s_UniformBuffers[id]->SetID(id);
 		return ResourceHandle<VulkanUniformBuffer>(id, s_UniformBuffers[id].get());
 	}
 
 	ResourceHandle<VulkanVertexBuffer> ResourceManager::AllocateVertexBuffer(std::vector<VulkanVertex>& vertices)
 	{
-		uint32_t id = s_VertexBuffers.Add(s_Context, vertices);
+		uint32_t id = s_VertexBuffers.Add<VulkanVertexBuffer>(s_Context, vertices);
 		s_VertexBuffers[id]->SetID(id);
 		return ResourceHandle<VulkanVertexBuffer>(id, s_VertexBuffers[id].get());
 	}
 
 	ResourceHandle<VulkanIndexBuffer> ResourceManager::AllocateIndexBuffer(std::vector<uint32_t>& indices)
 	{
-		uint32_t id = s_IndexBuffers.Add(s_Context, indices);
+		uint32_t id = s_IndexBuffers.Add<VulkanIndexBuffer>(s_Context, indices);
 		s_IndexBuffers[id]->SetID(id);
 		return ResourceHandle<VulkanIndexBuffer>(id, s_IndexBuffers[id].get());
 	}
 
 	ResourceHandle<VulkanRenderTexture> ResourceManager::AllocateRenderTexture(uint32_t width, uint32_t height)
 	{
-		uint32_t id = s_RenderTextures.Add(s_Context, width, height);
+		uint32_t id = s_RenderTextures.Add<VulkanRenderTexture>(s_Context, width, height);
 		s_RenderTextures[id]->SetID(id);
 		return ResourceHandle<VulkanRenderTexture>(id, s_RenderTextures[id].get());
 	}
 
 	ResourceHandle<VulkanRenderTexture> ResourceManager::AllocateRenderTexture(ResourceHandle<VulkanImage> imageHandle, TextureFormat format)
 	{
-		uint32_t id = s_RenderTextures.Add(s_Context, imageHandle, format);
+		uint32_t id = s_RenderTextures.Add<VulkanRenderTexture>(s_Context, imageHandle, format);
 		s_RenderTextures[id]->SetID(id);
 		return ResourceHandle<VulkanRenderTexture>(id, s_RenderTextures[id].get());
 	}
 
 	ResourceHandle<VulkanRenderTexture> ResourceManager::AllocateRenderTexture(uint32_t width, uint32_t height, TextureFormat format)
 	{
-		uint32_t id = s_RenderTextures.Add(s_Context, width, height, format);
+		uint32_t id = s_RenderTextures.Add<VulkanRenderTexture>(s_Context, width, height, format);
 		s_RenderTextures[id]->SetID(id);
 		return ResourceHandle<VulkanRenderTexture>(id, s_RenderTextures[id].get());
 	}
 
 	ResourceHandle<VulkanShaderModule> ResourceManager::AllocateShaderModule(ShaderType shaderType, const std::filesystem::path& filename)
 	{
-		uint32_t id = s_Shaders.Add(s_Context, shaderType, filename);
+		uint32_t id = s_Shaders.Add<VulkanShaderModule>(s_Context, shaderType, filename);
 		s_Shaders[id]->SetID(id);
 		return ResourceHandle<VulkanShaderModule>(id, s_Shaders[id].get());
 	}
 
 	ResourceHandle<VulkanGraphicsPipeline> ResourceManager::AllocateGraphicsPipeline(const VulkanPipelineInfo& info)
 	{
-		uint32_t id = s_GraphicsPipelines.Add(s_Context, info);
+		uint32_t id = s_GraphicsPipelines.Add<VulkanGraphicsPipeline>(s_Context, info);
 		s_GraphicsPipelines[id]->SetID(id);
 		return ResourceHandle<VulkanGraphicsPipeline>(id, s_GraphicsPipelines[id].get());
 	}
 
 	ResourceHandle<VulkanCommandPool> ResourceManager::AllocateCommandPool()
 	{
-		uint32_t id = s_CommandPools.Add(s_Context);
+		uint32_t id = s_CommandPools.Add<VulkanCommandPool>(s_Context);
 		s_CommandPools[id]->SetID(id);
 		return ResourceHandle<VulkanCommandPool>(id, s_CommandPools[id].get());
 	}
 
 	ResourceHandle<VulkanCommandBuffer> ResourceManager::AllocateCommandBuffer(ResourceHandle<VulkanCommandPool> commandPool)
 	{
-		uint32_t id = s_CommandBuffers.Add(s_Context, commandPool);
+		uint32_t id = s_CommandBuffers.Add<VulkanCommandBuffer>(s_Context, commandPool);
 		s_CommandBuffers[id]->SetID(id);
 		return ResourceHandle<VulkanCommandBuffer>(id, s_CommandBuffers[id].get());
 	}
 
 	ResourceHandle<VulkanDescriptorLayout> ResourceManager::AllocateDescriptorLayout(DescriptorType type, ShaderStage shaderStage, uint32_t bindingIndex)
 	{
-		uint32_t id = s_DescriptorLayouts.Add(s_Context, type, shaderStage, bindingIndex);
+		uint32_t id = s_DescriptorLayouts.Add<VulkanDescriptorLayout>(s_Context, type, shaderStage, bindingIndex);
 		s_DescriptorLayouts[id]->SetID(id);
 		return ResourceHandle<VulkanDescriptorLayout>(id, s_DescriptorLayouts[id].get());
 	}
 
 	ResourceHandle<VulkanDescriptorPool> ResourceManager::AllocateDescriptorPool(DescriptorType poolType, uint32_t setCount, uint32_t maxSets)
 	{
-		uint32_t id = s_DescriptorPools.Add(s_Context, poolType, setCount, maxSets);
+		uint32_t id = s_DescriptorPools.Add<VulkanDescriptorPool>(s_Context, poolType, setCount, maxSets);
 		s_DescriptorPools[id]->SetID(id);
 		return ResourceHandle<VulkanDescriptorPool>(id, s_DescriptorPools[id].get());
 	}
 
 	ResourceHandle<VulkanDescriptorSet> ResourceManager::AllocateDescriptorSet(DescriptorType descriptorType, ResourceHandle<VulkanDescriptorPool> pool, ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count)
 	{
-		uint32_t id = s_DescriptorSets.Add(s_Context, descriptorType, pool, layout, count);
+		uint32_t id = s_DescriptorSets.Add<VulkanDescriptorSet>(s_Context, descriptorType, pool, layout, count);
 		s_DescriptorSets[id]->SetID(id);
 		return ResourceHandle<VulkanDescriptorSet>(id, s_DescriptorSets[id].get());
 	}
 
 	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(const VulkanImageDescription& imageDescription)
 	{
-		uint32_t id = s_Images.Add(s_Context, imageDescription);
+		uint32_t id = s_Images.Add<VulkanImage>(s_Context, imageDescription);
 		s_Images[id]->SetID(id);
 		return ResourceHandle<VulkanImage>(id, s_Images[id].get());
 	}
 
 	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(VkImage image, uint32_t width, uint32_t height, VkFormat format)
 	{
-		uint32_t id = s_Images.Add(s_Context, image, width, height, format);
+		uint32_t id = s_Images.Add<VulkanImage>(s_Context, image, width, height, format);
 		s_Images[id]->SetID(id);
 		return ResourceHandle<VulkanImage>(id, s_Images[id].get());
 	}
 
 	ResourceHandle<VulkanTextureSampler> ResourceManager::AllocateSampler()
 	{
-		uint32_t id = s_Samplers.Add(s_Context);
+		uint32_t id = s_Samplers.Add<VulkanTextureSampler>(s_Context);
 		s_Samplers[id]->SetID(id);
 		return ResourceHandle<VulkanTextureSampler>(id, s_Samplers[id].get());
 	}
 
 	ResourceHandle<VulkanTexture> ResourceManager::AllocateTexture(VulkanImageDescription imageDesc, const void* pixelData)
 	{
-		uint32_t id = s_Textures.Add(imageDesc, pixelData);
+		uint32_t id = s_Textures.Add<VulkanTexture>(imageDesc, pixelData);
 		s_Textures[id]->SetID(id);
 		return ResourceHandle<VulkanTexture>(id, s_Textures[id].get());
 	}

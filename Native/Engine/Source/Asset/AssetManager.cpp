@@ -51,23 +51,23 @@ namespace Odyssey
 	AssetHandle<Mesh> AssetManager::CreateMesh()
 	{
 		// Push back an empty mesh
-		uint32_t id = s_Meshes.Add();
-		Mesh* mesh = s_Meshes[id].get();
+		size_t id = s_Assets.Add<Mesh>();
+		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
 
 		// Set asset data
 		mesh->SetGUID(GenerateGUID());
 		mesh->SetName("Default");
 		mesh->SetType("Mesh");
 
-		return AssetHandle<Mesh>(id, mesh);
+		return AssetHandle<Mesh>(id, mesh.get());
 	}
 
 	AssetHandle<Material> AssetManager::CreateMaterial(const std::filesystem::path& assetPath)
 	{
 		// Push back an empty material
 		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		uint32_t id = s_Materials.Add(assetPath, metaPath);
-		Material* material = s_Materials[id].get();
+		size_t id = s_Assets.Add<Material>(assetPath, metaPath);
+		std::shared_ptr<Material > material = s_Assets.Get<Material>(id);
 
 		// Set asset data
 		material->SetGUID(GenerateGUID());
@@ -81,15 +81,15 @@ namespace Odyssey
 		// Save to disk
 		material->Save();
 
-		return AssetHandle<Material>(id, material);
+		return AssetHandle<Material>(id, material.get());
 	}
 
 	AssetHandle<Mesh> AssetManager::CreateMesh(const std::filesystem::path& assetPath)
 	{
 		// Push back an empty mesh
 		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		uint32_t id = s_Meshes.Add(assetPath, metaPath);
-		Mesh* mesh = s_Meshes[id].get();
+		size_t id = s_Assets.Add<Mesh>(assetPath, metaPath);
+		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
 
 		// Set asset data
 		mesh->SetGUID(GenerateGUID());
@@ -99,15 +99,15 @@ namespace Odyssey
 		// Save to disk
 		mesh->Save();
 
-		return AssetHandle<Mesh>(id, mesh);
+		return AssetHandle<Mesh>(id, mesh.get());
 	}
 
 	AssetHandle<Shader> AssetManager::CreateShader(const std::filesystem::path& assetPath)
 	{
 		// Push back an empty mesh
 		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		uint32_t id = s_Shaders.Add(assetPath, metaPath);
-		Shader* shader = s_Shaders[id].get();
+		size_t id = s_Assets.Add<Shader>(assetPath, metaPath);
+		std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
 
 		// Set asset data
 		shader->SetGUID(GenerateGUID());
@@ -117,15 +117,15 @@ namespace Odyssey
 		// Save to disk
 		shader->Save();
 
-		return AssetHandle<Shader>(id, shader);
+		return AssetHandle<Shader>(id, shader.get());
 	}
 
 	AssetHandle<Scene> AssetManager::CreateScene(const std::filesystem::path& assetPath)
 	{
 		// Push back an empty mesh
 		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		uint32_t id = s_Scenes.Add(assetPath, metaPath);
-		Scene* scene = s_Scenes[id].get();
+		size_t id = s_Assets.Add<Scene>(assetPath, metaPath);
+		std::shared_ptr<Scene> scene = s_Assets.Get<Scene>(id);
 
 		// Set asset data
 		scene->SetGUID(GenerateGUID());
@@ -135,70 +135,69 @@ namespace Odyssey
 		// Save to disk
 		scene->Save();
 
-		return AssetHandle<Scene>(id, scene);
+		return AssetHandle<Scene>(id, scene.get());
 	}
 
 	AssetHandle<Mesh> Odyssey::AssetManager::LoadMesh(const std::filesystem::path& assetPath)
 	{
 		// Push back a mesh loaded from the asset path
 		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		uint32_t id = s_Meshes.Add(assetPath, metaPath);
-		Mesh* mesh = s_Meshes[id].get();
+		size_t id = s_Assets.Add<Mesh>(assetPath, metaPath);
+		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
 
 		// Track the asset
 		s_LoadedAssets[mesh->GetGUID()] = id;
 
-		return AssetHandle<Mesh>(id, mesh);
+		return AssetHandle<Mesh>(id, mesh.get());
 	}
 
 	AssetHandle<Shader> AssetManager::LoadShader(const std::filesystem::path& assetPath)
 	{
 		// Push back a shader loaded from the asset path
 		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		uint32_t id = s_Shaders.Add(assetPath, metaPath);
-		Shader* shader = s_Shaders[id].get();
+		size_t id = s_Assets.Add<Shader>(assetPath, metaPath);
+		std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
 
 		// Track the asset
 		s_LoadedAssets[shader->GetGUID()] = id;
 
-		return AssetHandle<Shader>(id, shader);
+		return AssetHandle<Shader>(id, shader.get());
 	}
 
 	AssetHandle<Scene> AssetManager::LoadScene(const std::filesystem::path& assetPath)
 	{
-		//LoadTexture2D
 		// Push back a scene loaded from the asset path
 		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		uint32_t id = s_Scenes.Add(assetPath, metaPath);
-		Scene* scene = s_Scenes[id].get();
+		size_t id = s_Assets.Add<Scene>(assetPath, metaPath);
+		std::shared_ptr<Scene> scene = s_Assets.Get<Scene>(id);
 
 		// Track the asset
 		s_LoadedAssets[scene->GetGUID()] = id;
 
-		return AssetHandle<Scene>(id, scene);
+		return AssetHandle<Scene>(id, scene.get());
 	}
 
 	AssetHandle<Texture2D> AssetManager::LoadTexture2D(const std::filesystem::path& assetPath)
 	{
 		// Push back a scene loaded from the asset path
 		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		uint32_t id = s_Textures.Add(assetPath, metaPath);
-		Texture2D* texture = s_Textures[id].get();
+		size_t id = s_Assets.Add<Texture2D>(assetPath, metaPath);
+		std::shared_ptr<Texture2D> texture = s_Assets.Get<Texture2D>(id);
 
 		// Track the asset
 		s_LoadedAssets[texture->GetGUID()] = id;
 
-		return AssetHandle<Texture2D>(id, texture);
+		return AssetHandle<Texture2D>(id, texture.get());
 	}
 
 	AssetHandle<Material> AssetManager::LoadMaterial(const std::filesystem::path& assetPath)
 	{
 		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		uint32_t id = s_Materials.Add(assetPath, metaPath);
-		Material* material = s_Materials[id].get();
+		size_t id = s_Assets.Add<Material>(assetPath, metaPath);
+		std::shared_ptr<Material> material = s_Assets.Get<Material>(id);
 		s_LoadedAssets[material->GetGUID()] = id;
 
-		return AssetHandle<Material>(id, material);
+		return AssetHandle<Material>(id, material.get());
 	}
 
 	AssetHandle<Shader> AssetManager::LoadShaderByGUID(const std::string& guid)
@@ -208,7 +207,8 @@ namespace Odyssey
 		{
 			// Return a handle
 			uint32_t id = s_LoadedAssets[guid];
-			return AssetHandle<Shader>(id, s_Shaders[id].get());
+			std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
+			return AssetHandle<Shader>(id, shader.get());
 		}
 
 		// Load it and return a handle
@@ -223,7 +223,8 @@ namespace Odyssey
 		{
 			// Return a handle
 			uint32_t id = s_LoadedAssets[guid];
-			return AssetHandle<Texture2D>(id, s_Textures[id].get());
+			std::shared_ptr<Texture2D> texture = s_Assets.Get<Texture2D>(id);
+			return AssetHandle<Texture2D>(id, texture.get());
 		}
 
 		// Load it and return a handle
@@ -243,7 +244,7 @@ namespace Odyssey
 		{
 			s_LoadedAssets.erase(guid);
 		}
-		s_Scenes.Remove(scene.m_ID);
+		s_Assets.Remove(scene.m_ID);
 		scene.Reset();
 	}
 
@@ -264,7 +265,8 @@ namespace Odyssey
 		{
 			// Return a handle
 			uint32_t id = s_LoadedAssets[guid];
-			return AssetHandle<Material>(id, s_Materials[id].get());
+			std::shared_ptr<Material> material = s_Assets.Get<Material>(id);
+			return AssetHandle<Material>(id, material.get());
 		}
 
 		// Load it and return a handle
@@ -279,7 +281,8 @@ namespace Odyssey
 		{
 			// Return a handle
 			uint32_t id = s_LoadedAssets[guid];
-			return AssetHandle<Mesh>(id, s_Meshes[id].get());
+			std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
+			return AssetHandle<Mesh>(id, mesh.get());
 		}
 
 		// Load it and return a handle

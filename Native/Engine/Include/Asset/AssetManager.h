@@ -7,6 +7,7 @@
 
 namespace Odyssey
 {
+	class Asset;
 	class Material;
 	class Mesh;
 	class Shader;
@@ -55,11 +56,7 @@ namespace Odyssey
 		static std::filesystem::path GenerateMetaPath(const std::filesystem::path& assetPath);
 
 	private:
-		inline static DynamicList<Mesh> s_Meshes;
-		inline static DynamicList<Shader> s_Shaders;
-		inline static DynamicList<Material> s_Materials;
-		inline static DynamicList<Scene> s_Scenes;
-		inline static DynamicList<Texture2D> s_Textures;
+		inline static DynamicList<Asset> s_Assets;
 		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
 
 		inline static std::unordered_map<std::string, uint32_t> s_LoadedAssets;
