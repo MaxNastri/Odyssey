@@ -8,6 +8,7 @@
 
 namespace Odyssey
 {
+	class Resource;
 	class VulkanBuffer;
 	class VulkanUniformBuffer;
 	class VulkanContext;
@@ -46,7 +47,7 @@ namespace Odyssey
 		static ResourceHandle<VulkanDescriptorPool> AllocateDescriptorPool(DescriptorType poolType, uint32_t setCount, uint32_t maxSets);
 		static ResourceHandle<VulkanDescriptorSet> AllocateDescriptorSet(DescriptorType descriptorType, ResourceHandle<VulkanDescriptorPool> pool, ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count);
 		static ResourceHandle<VulkanImage> AllocateImage(const VulkanImageDescription& imageDescription);
-		static ResourceHandle<VulkanImage> AllocateImage(VkImage image, uint32_t width, uint32_t height, VkFormat format);
+		static ResourceHandle<VulkanImage> AllocateImage(VkImage vkImage, uint32_t width, uint32_t height, VkFormat format);
 		static ResourceHandle<VulkanTextureSampler> AllocateSampler();
 		static ResourceHandle<VulkanTexture> AllocateTexture(VulkanImageDescription imageDesc, const void* pixelData);
 
@@ -72,21 +73,7 @@ namespace Odyssey
 
 	private: // Vulkan members
 		inline static std::shared_ptr<VulkanContext> s_Context = nullptr;
-		inline static DynamicList<VulkanVertexBuffer> s_VertexBuffers;
-		inline static DynamicList<VulkanIndexBuffer> s_IndexBuffers;
-		inline static DynamicList<VulkanRenderTexture> s_RenderTextures;
-		inline static DynamicList<VulkanShaderModule> s_Shaders;
-		inline static DynamicList<VulkanGraphicsPipeline> s_GraphicsPipelines;
-		inline static DynamicList<VulkanBuffer> s_Buffers;
-		inline static DynamicList<VulkanUniformBuffer> s_UniformBuffers;
-		inline static DynamicList<VulkanCommandPool> s_CommandPools;
-		inline static DynamicList<VulkanCommandBuffer> s_CommandBuffers;
-		inline static DynamicList<VulkanDescriptorLayout> s_DescriptorLayouts;
-		inline static DynamicList<VulkanImage> s_Images;
-		inline static DynamicList<VulkanTextureSampler> s_Samplers;
-		inline static DynamicList<VulkanDescriptorPool> s_DescriptorPools;
-		inline static DynamicList<VulkanDescriptorSet> s_DescriptorSets;
-		inline static DynamicList<VulkanTexture> s_Textures;
+		inline static DynamicList<Resource> s_Resources;
 
 	private:
 		struct ResourceDeallocation
