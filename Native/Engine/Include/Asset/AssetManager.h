@@ -3,6 +3,7 @@
 #include "AssetHandle.h"
 #include "DynamicList.h"
 #include "Enums.h"
+#include "AssetDatabase.h"
 
 namespace Odyssey
 {
@@ -61,12 +62,9 @@ namespace Odyssey
 		inline static DynamicList<Texture2D> s_Textures;
 		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
 
-		// Asset Database
-		inline static std::unordered_map<std::string, std::filesystem::path> s_AssetDatabaseGUIDs;
-		inline static std::unordered_map<std::filesystem::path, std::string> s_AssetDatabasePaths;
-		inline static std::unordered_map<std::string, std::string> s_AssetDatabaseGUIDToName;
 		inline static std::unordered_map<std::string, uint32_t> s_LoadedAssets;
-		inline static std::unordered_map<std::string, std::vector<std::string>> s_AssetTypeToGUIDs;
+		inline static AssetDatabase m_AssetDatabase;
+
 		inline static AssetHandle<Shader> s_DefaultVertexShader;
 		inline static AssetHandle<Shader> s_DefaultFragmentShader;
 

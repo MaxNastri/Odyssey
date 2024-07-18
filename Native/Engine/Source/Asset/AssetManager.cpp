@@ -37,14 +37,7 @@ namespace Odyssey
 
 						if (std::filesystem::exists(assetPath))
 						{
-							s_AssetDatabaseGUIDs[guid] = assetPath;
-							s_AssetDatabasePaths[assetPath] = guid;
-							s_AssetTypeToGUIDs[type].push_back(guid);
-						}
-
-						if (!name.empty() && !guid.empty())
-						{
-							s_AssetDatabaseGUIDToName[guid] = name;
+							m_AssetDatabase.AddAsset(guid, assetPath, name, type);
 						}
 					}
 				}
@@ -219,7 +212,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabaseGUIDs[guid];
+		std::filesystem::path path = m_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadShader(path.generic_string());
 	}
 
@@ -234,17 +227,13 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabaseGUIDs[guid];
+		std::filesystem::path path = m_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadTexture2D(path.string());
 	}
 
 	std::vector<std::string> AssetManager::GetAssetsOfType(const std::string& type)
 	{
-		// TODO: insert return statement here
-		if (s_AssetTypeToGUIDs.find(type) != s_AssetTypeToGUIDs.end())
-			return s_AssetTypeToGUIDs[type];
-
-		return std::vector<std::string>();
+		return m_AssetDatabase.GetGUIDsOfAssetType(type);
 	}
 
 	void AssetManager::UnloadScene(AssetHandle<Scene> scene)
@@ -260,15 +249,12 @@ namespace Odyssey
 
 	std::string AssetManager::PathToGUID(const std::filesystem::path& path)
 	{
-		return s_AssetDatabasePaths[path];
+		return m_AssetDatabase.AssetPathToGUID(path);
 	}
 
 	std::string AssetManager::GUIDToName(const std::string& guid)
 	{
-		if (s_AssetDatabaseGUIDToName.find(guid) != s_AssetDatabaseGUIDToName.end())
-			return s_AssetDatabaseGUIDToName[guid];
-
-		return std::string();
+		return m_AssetDatabase.GUIDToAssetName(guid);
 	}
 
 	AssetHandle<Material> AssetManager::LoadMaterialByGUID(const std::string& guid)
@@ -282,7 +268,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabaseGUIDs[guid];
+		std::filesystem::path path = m_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadMaterial(path.generic_string());
 	}
 
@@ -297,7 +283,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabaseGUIDs[guid];
+		std::filesystem::path path = m_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadMesh(path.generic_string());
 	}
 
