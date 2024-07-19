@@ -47,7 +47,7 @@ namespace Odyssey
 		static ResourceHandle<VulkanDescriptorPool> AllocateDescriptorPool(DescriptorType poolType, uint32_t setCount, uint32_t maxSets);
 		static ResourceHandle<VulkanDescriptorSet> AllocateDescriptorSet(DescriptorType descriptorType, ResourceHandle<VulkanDescriptorPool> pool, ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count);
 		static ResourceHandle<VulkanImage> AllocateImage(const VulkanImageDescription& imageDescription);
-		static ResourceHandle<VulkanImage> AllocateImage(VkImage vkImage, uint32_t width, uint32_t height, VkFormat format);
+		static ResourceHandle<VulkanImage> AllocateImage(VkImage vkImage, uint32_t width, uint32_t height, uint32_t channels, VkFormat format);
 		static ResourceHandle<VulkanTextureSampler> AllocateSampler();
 		static ResourceHandle<VulkanTexture> AllocateTexture(VulkanImageDescription imageDesc, const void* pixelData);
 

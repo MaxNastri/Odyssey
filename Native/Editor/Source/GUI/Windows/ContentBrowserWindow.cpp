@@ -69,7 +69,7 @@ namespace Odyssey
 			auto relativePath = std::filesystem::relative(path);
 			std::string filename = relativePath.filename().string();
 
-			if (relativePath.extension() == ".yaml")
+			if (relativePath.extension() == ".scene")
 			{
 				if (ImGui::Button(filename.c_str()))
 				{

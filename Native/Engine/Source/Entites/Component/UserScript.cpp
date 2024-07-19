@@ -28,20 +28,18 @@ namespace Odyssey
 		managedInstance.InvokeMethod("Void OnDestroy()");
 	}
 
-	void UserScript::Serialize(ryml::NodeRef& node)
+	void UserScript::Serialize(SerializationNode& node)
 	{
 		const Coral::Type& type = managedInstance.GetType();
 		std::string fqManagedName = type.GetFullName();
-
-		ryml::NodeRef componentNode = node.append_child();
-		componentNode |= ryml::MAP;
-
-		componentNode["Name"] << fqManagedName;
-
 		std::vector<Coral::FieldInfo> fields = type.GetFields();
 
-		ryml::NodeRef fieldsNode = componentNode["Fields"];
-		fieldsNode = ryml::SEQ;
+		SerializationNode componentNode = node.AppendChild();
+		componentNode.SetMap();
+		componentNode.WriteData("Name", fqManagedName);
+
+		SerializationNode fieldsNode = componentNode.CreateSequenceNode("Fields");
+
 		for (auto& field : fields)
 		{
 			std::string fieldName = field.GetName();
@@ -60,25 +58,25 @@ namespace Odyssey
 		}
 	}
 
-	void UserScript::Deserialize(ryml::ConstNodeRef node)
+	void UserScript::Deserialize(SerializationNode& node)
 	{
 		const Coral::Type& type = managedInstance.GetType();
 		std::vector<Coral::FieldInfo> fields = type.GetFields();
 
-		ryml::ConstNodeRef fieldsNode = node["Fields"];
-		assert(fieldsNode.is_seq());
+		SerializationNode fieldsNode = node.GetNode("Fields");
+		assert(fieldsNode.IsSequence());
 
-		if (fieldsNode.has_children())
+		if (fieldsNode.HasChildren())
 		{
-			for (size_t i = 0; i < fieldsNode.num_children(); i++)
+			for (size_t i = 0; i < fieldsNode.ChildCount(); i++)
 			{
-				ryml::ConstNodeRef fieldNode = fieldsNode.child(i);
-				assert(fieldNode.is_map());
+				SerializationNode fieldNode = fieldsNode.GetChild(i);
+				assert(fieldNode.IsMap());
 
 				std::string fieldName;
 				std::string managedType;
-				fieldNode["Name"] >> fieldName;
-				fieldNode["ManagedType"] >> managedType;
+				fieldNode.ReadData("Name", fieldName);
+				fieldNode.ReadData("ManagedType", managedType);
 
 				// Make sure the field still exists on deserialization
 				for (auto& field : fields)
@@ -92,7 +90,7 @@ namespace Odyssey
 						else
 						{
 							uint32_t managedTypeInt;
-							fieldNode["ManagedType"] >> managedTypeInt;
+							fieldNode.ReadData("ManagedType", managedTypeInt);
 							DeserializeNativeType((Coral::ManagedType)managedTypeInt, fieldName, fieldNode);
 						}
 					}
@@ -113,80 +111,80 @@ namespace Odyssey
 		m_ManagedType = managedClassName;
 	}
 
-	bool UserScript::SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, ryml::NodeRef node)
+	bool UserScript::SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, SerializationNode& node)
 	{
 		bool nativeTypeFound = false;
 
-		ryml::NodeRef fieldNode = node.append_child();
-		fieldNode |= ryml::MAP;
-		fieldNode["Name"] << fieldName;
-		fieldNode["ManagedType"] << (uint32_t)managedType;
+		SerializationNode fieldNode = node.AppendChild();
+		fieldNode.SetMap();
+		fieldNode.WriteData("Name", fieldName);
+		fieldNode.WriteData("ManagedType", (uint32_t)managedType);
 
 		if (managedType == Coral::ManagedType::Byte)
 		{
 			uint8_t val = managedInstance.GetFieldValue<uint8_t>(fieldName);
-			fieldNode["Value"] << val;
+			fieldNode.WriteData("Value", val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::UShort)
 		{
 			uint16_t val = managedInstance.GetFieldValue<uint16_t>(fieldName);
-			fieldNode["Value"] << val;
+			fieldNode.WriteData("Value", val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::UInt)
 		{
 			uint32_t val = managedInstance.GetFieldValue<uint32_t>(fieldName);
-			fieldNode["Value"] << val;
+			fieldNode.WriteData("Value", val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::ULong)
 		{
 			uint64_t val = managedInstance.GetFieldValue<uint64_t>(fieldName);
-			fieldNode["Value"] << val;
+			fieldNode.WriteData("Value", val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::SByte)
 		{
 			char8_t val = managedInstance.GetFieldValue<char8_t>(fieldName);
-			fieldNode["Value"] << val;
+			fieldNode.WriteData("Value", val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Short)
 		{
 			int16_t val = managedInstance.GetFieldValue<int16_t>(fieldName);
-			fieldNode["Value"] << val;
+			fieldNode.WriteData("Value", val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Int)
 		{
 			int32_t val = managedInstance.GetFieldValue<int32_t>(fieldName);
-			fieldNode["Value"] << val;
+			fieldNode.WriteData("Value", val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Long)
 		{
 			int64_t val = managedInstance.GetFieldValue<int64_t>(fieldName);
-			fieldNode["Value"] << val;
+			fieldNode.WriteData("Value", val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Float)
 		{
 			float val = managedInstance.GetFieldValue<float>(fieldName);
-			fieldNode["Value"] << val;
+			fieldNode.WriteData("Value", val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Double)
 		{
 			double val = managedInstance.GetFieldValue<double>(fieldName);
-			fieldNode["Value"] << val;
+			fieldNode.WriteData("Value", val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Bool)
 		{
 			// NOTE: We case to an int32_t (4 bytes) because bools in c# are treated as 4 bytes instead of 1.
 			bool val = managedInstance.GetFieldValue<int32_t>(fieldName);
-			fieldNode["Value"] << val;
+			fieldNode.WriteData("Value", val);
 			nativeTypeFound = true;
 		}
 
@@ -205,84 +203,84 @@ namespace Odyssey
 		return true;
 	}
 
-	bool UserScript::DeserializeNativeType(const Coral::ManagedType& managedType, const std::string& fieldName, ryml::ConstNodeRef node)
+	bool UserScript::DeserializeNativeType(const Coral::ManagedType& managedType, const std::string& fieldName, SerializationNode& node)
 	{
 		bool nativeTypeFound = false;
 
 		if (managedType == Coral::ManagedType::Byte)
 		{
 			uint8_t val;
-			node["Value"] >> val;
+			node.ReadData("Value", val);
 			managedInstance.SetFieldValue<uint8_t>(fieldName, val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::UShort)
 		{
 			uint16_t val;
-			node["Value"] >> val;
+			node.ReadData("Value", val);
 			managedInstance.SetFieldValue<uint16_t>(fieldName, val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::UInt)
 		{
 			uint32_t val;
-			node["Value"] >> val;
+			node.ReadData("Value", val);
 			managedInstance.SetFieldValue<uint32_t>(fieldName, val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::ULong)
 		{
 			uint64_t val;
-			node["Value"] >> val;
+			node.ReadData("Value", val);
 			managedInstance.SetFieldValue<uint64_t>(fieldName, val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::SByte)
 		{
 			char8_t val;
-			node["Value"] >> val;
+			node.ReadData("Value", val);
 			managedInstance.SetFieldValue<char8_t>(fieldName, val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Short)
 		{
 			int16_t val;
-			node["Value"] >> val;
+			node.ReadData("Value", val);
 			managedInstance.SetFieldValue<int16_t>(fieldName, val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Int)
 		{
 			int32_t val;
-			node["Value"] >> val;
+			node.ReadData("Value", val);
 			managedInstance.SetFieldValue<int32_t>(fieldName, val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Long)
 		{
 			int64_t val;
-			node["Value"] >> val;
+			node.ReadData("Value", val);
 			managedInstance.SetFieldValue<int64_t>(fieldName, val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Float)
 		{
 			float val;
-			node["Value"] >> val;
+			node.ReadData("Value", val);
 			managedInstance.SetFieldValue<float>(fieldName, val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Double)
 		{
 			double val;
-			node["Value"] >> val;
+			node.ReadData("Value", val);
 			managedInstance.SetFieldValue<double>(fieldName, val);
 			nativeTypeFound = true;
 		}
 		else if (managedType == Coral::ManagedType::Bool)
 		{
 			bool val;
-			node["Value"] >> val;
+			node.ReadData("Value", val);
 			// NOTE: We case to an int32_t (4 bytes) because bools in c# are treated as 4 bytes instead of 1.
 			managedInstance.SetFieldValue<int32_t>(fieldName, val);
 			nativeTypeFound = true;
@@ -291,10 +289,11 @@ namespace Odyssey
 		return nativeTypeFound;
 	}
 
-	bool UserScript::DeserializeNativeString(const std::string& fieldName, ryml::ConstNodeRef node)
+	bool UserScript::DeserializeNativeString(const std::string& fieldName, SerializationNode& node)
 	{
 		std::string nodeValue;
-		node["Value"] >> nodeValue;
+		node.ReadData("Value", nodeValue);
+
 		Coral::ScopedString fieldValue = Coral::String::New(nodeValue);
 		managedInstance.SetFieldValue<Coral::String>(fieldName, fieldValue);
 		return true;

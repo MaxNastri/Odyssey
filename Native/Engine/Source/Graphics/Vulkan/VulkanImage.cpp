@@ -15,6 +15,7 @@ namespace Odyssey
 		m_Context = context;
 		m_Width = desc.Width;
 		m_Height = desc.Height;
+		m_Channels = desc.Channels;
 		isDepth = desc.ImageType == TextureType::DepthTexture;
 
 		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
@@ -83,12 +84,13 @@ namespace Odyssey
 		}
 	}
 
-	VulkanImage::VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, VkFormat format)
+	VulkanImage::VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, uint32_t channels, VkFormat format)
 	{
 		m_Context = context;
 		m_Image = image;
 		m_Width = width;
 		m_Height = height;
+		m_Channels = channels;
 		isDepth = false;
 
 		imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -129,11 +131,11 @@ namespace Odyssey
 	{
 		if (!m_StagingBuffer.IsValid())
 		{
-			m_StagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, m_Width * m_Height * 4);
+			m_StagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, m_Width * m_Height * m_Channels);
 			m_StagingBuffer.Get()->AllocateMemory();
 		}
 
-		m_StagingBuffer.Get()->SetMemory(m_Width * m_Height * 4, data);
+		m_StagingBuffer.Get()->SetMemory(m_Width * m_Height * m_Channels, data);
 
 
 		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
@@ -294,6 +296,8 @@ namespace Odyssey
 		switch (format)
 		{
 			case TextureFormat::None:
+			case TextureFormat::R8G8B8_UNORM:
+				return VK_FORMAT_R8G8B8_SRGB;
 			case TextureFormat::R8G8B8A8_SRGB:
 				return VK_FORMAT_R8G8B8A8_SRGB;
 			case TextureFormat::R8G8B8A8_UNORM:

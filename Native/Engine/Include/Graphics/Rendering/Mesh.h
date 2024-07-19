@@ -13,7 +13,7 @@ namespace Odyssey
 	{
 	public:
 		Mesh() = default;
-		Mesh(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath);
+		Mesh(const std::filesystem::path& assetPath);
 
 	public:
 		void Save();

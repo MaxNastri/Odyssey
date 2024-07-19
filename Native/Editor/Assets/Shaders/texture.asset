@@ -1,0 +1,5 @@
+m_GUID: '2fbc687a-c486-4f04-81a2-f455e2075f41'
+m_Name: Texture
+m_Type: Shader
+m_ShaderType: 1
+m_ModulePath: Assets/Shaders/Compiled/texture.spv

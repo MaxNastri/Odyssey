@@ -4,7 +4,7 @@
 #include "Shader.h"
 #include "Scene.h"
 #include "Texture2D.h"
-#include "ryml.hpp"
+#include "AssetSerializer.h"
 
 namespace Odyssey
 {
@@ -14,31 +14,25 @@ namespace Odyssey
 		{
 			if (dirEntry.is_regular_file())
 			{
-				auto path = dirEntry.path();
-				auto extension = path.extension();
+				auto assetPath = dirEntry.path();
+				auto extension = assetPath.extension();
 
-				if (extension == ".meta")
+				if (extension == ".asset" || extension == ".scene")
 				{
-					// Open the file as yaml
-					if (std::ifstream ifs{ path })
+					AssetDeserializer deserializer(assetPath);
+					if (deserializer.IsValid())
 					{
-						std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-						ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
-						ryml::NodeRef node = tree.rootref();
+						SerializationNode root = deserializer.GetRoot();
 
+						// TODO (MAX): Refactor this into the asset class?
 						std::string guid;
 						std::string type;
 						std::string name;
-						node["m_GUID"] >> guid;
-						node["m_Name"] >> name;
-						node["m_Type"] >> type;
+						root.ReadData("m_GUID", guid);
+						root.ReadData("m_Type", type);
+						root.ReadData("m_Name", name);
 
-						std::filesystem::path assetPath = path.replace_extension("");
-
-						if (std::filesystem::exists(assetPath))
-						{
-							m_AssetDatabase.AddAsset(guid, assetPath, name, type);
-						}
+						m_AssetDatabase.AddAsset(guid, assetPath, name, type);
 					}
 				}
 			}
@@ -65,8 +59,7 @@ namespace Odyssey
 	AssetHandle<Material> AssetManager::CreateMaterial(const std::filesystem::path& assetPath)
 	{
 		// Push back an empty material
-		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		size_t id = s_Assets.Add<Material>(assetPath, metaPath);
+		size_t id = s_Assets.Add<Material>(assetPath);
 		std::shared_ptr<Material > material = s_Assets.Get<Material>(id);
 
 		// Set asset data
@@ -87,8 +80,7 @@ namespace Odyssey
 	AssetHandle<Mesh> AssetManager::CreateMesh(const std::filesystem::path& assetPath)
 	{
 		// Push back an empty mesh
-		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		size_t id = s_Assets.Add<Mesh>(assetPath, metaPath);
+		size_t id = s_Assets.Add<Mesh>(assetPath);
 		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
 
 		// Set asset data
@@ -105,8 +97,7 @@ namespace Odyssey
 	AssetHandle<Shader> AssetManager::CreateShader(const std::filesystem::path& assetPath)
 	{
 		// Push back an empty mesh
-		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		size_t id = s_Assets.Add<Shader>(assetPath, metaPath);
+		size_t id = s_Assets.Add<Shader>(assetPath);
 		std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
 
 		// Set asset data
@@ -123,8 +114,7 @@ namespace Odyssey
 	AssetHandle<Scene> AssetManager::CreateScene(const std::filesystem::path& assetPath)
 	{
 		// Push back an empty mesh
-		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		size_t id = s_Assets.Add<Scene>(assetPath, metaPath);
+		size_t id = s_Assets.Add<Scene>(assetPath);
 		std::shared_ptr<Scene> scene = s_Assets.Get<Scene>(id);
 
 		// Set asset data
@@ -141,8 +131,7 @@ namespace Odyssey
 	AssetHandle<Mesh> Odyssey::AssetManager::LoadMesh(const std::filesystem::path& assetPath)
 	{
 		// Push back a mesh loaded from the asset path
-		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		size_t id = s_Assets.Add<Mesh>(assetPath, metaPath);
+		size_t id = s_Assets.Add<Mesh>(assetPath);
 		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
 
 		// Track the asset
@@ -154,8 +143,7 @@ namespace Odyssey
 	AssetHandle<Shader> AssetManager::LoadShader(const std::filesystem::path& assetPath)
 	{
 		// Push back a shader loaded from the asset path
-		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		size_t id = s_Assets.Add<Shader>(assetPath, metaPath);
+		size_t id = s_Assets.Add<Shader>(assetPath);
 		std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
 
 		// Track the asset
@@ -167,8 +155,7 @@ namespace Odyssey
 	AssetHandle<Scene> AssetManager::LoadScene(const std::filesystem::path& assetPath)
 	{
 		// Push back a scene loaded from the asset path
-		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		size_t id = s_Assets.Add<Scene>(assetPath, metaPath);
+		size_t id = s_Assets.Add<Scene>(assetPath);
 		std::shared_ptr<Scene> scene = s_Assets.Get<Scene>(id);
 
 		// Track the asset
@@ -180,8 +167,7 @@ namespace Odyssey
 	AssetHandle<Texture2D> AssetManager::LoadTexture2D(const std::filesystem::path& assetPath)
 	{
 		// Push back a scene loaded from the asset path
-		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		size_t id = s_Assets.Add<Texture2D>(assetPath, metaPath);
+		size_t id = s_Assets.Add<Texture2D>(assetPath);
 		std::shared_ptr<Texture2D> texture = s_Assets.Get<Texture2D>(id);
 
 		// Track the asset
@@ -192,8 +178,7 @@ namespace Odyssey
 
 	AssetHandle<Material> AssetManager::LoadMaterial(const std::filesystem::path& assetPath)
 	{
-		std::filesystem::path metaPath = AssetManager::GenerateMetaPath(assetPath);
-		size_t id = s_Assets.Add<Material>(assetPath, metaPath);
+		size_t id = s_Assets.Add<Material>(assetPath);
 		std::shared_ptr<Material> material = s_Assets.Get<Material>(id);
 		s_LoadedAssets[material->GetGUID()] = id;
 
@@ -293,12 +278,5 @@ namespace Odyssey
 	std::string AssetManager::GenerateGUID()
 	{
 		return s_GUIDGenerator.getUUID().str();
-	}
-
-	std::filesystem::path AssetManager::GenerateMetaPath(const std::filesystem::path& assetPath)
-	{
-		std::filesystem::path metaPath = assetPath;
-		metaPath += ".meta";
-		return metaPath;
 	}
 }

@@ -119,7 +119,7 @@ namespace Odyssey
         backbuffers.resize(backbufferImages.size());
         for (uint16_t i = 0; i < backbuffers.size(); ++i)
         {
-            ResourceHandle<VulkanImage> image = ResourceManager::AllocateImage(backbufferImages[i], m_Width, m_Height, format);
+            ResourceHandle<VulkanImage> image = ResourceManager::AllocateImage(backbufferImages[i], m_Width, m_Height, 4, format);
             backbuffers[i] = ResourceManager::AllocateRenderTexture(image, GetTextureFormat(format));
         }
     }

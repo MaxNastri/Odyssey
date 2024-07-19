@@ -53,7 +53,6 @@ namespace Odyssey
 
 	private:
 		static std::string GenerateGUID();
-		static std::filesystem::path GenerateMetaPath(const std::filesystem::path& assetPath);
 
 	private:
 		inline static DynamicList<Asset> s_Assets;

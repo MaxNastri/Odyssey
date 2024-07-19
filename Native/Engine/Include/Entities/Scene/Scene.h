@@ -16,7 +16,7 @@ namespace Odyssey
 	{
 	public:
 		Scene();
-		Scene(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath);
+		Scene(const std::filesystem::path& assetPath);
 		GameObject* CreateGameObject();
 		void DestroyGameObject(GameObject* gameObject);
 		void Clear();

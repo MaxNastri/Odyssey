@@ -13,8 +13,8 @@ namespace Odyssey
 		virtual void Awake() override;
 		virtual void Update() override;
 		virtual void OnDestroy() override;
-        virtual void Serialize(ryml::NodeRef& node) override;
-        virtual void Deserialize(ryml::ConstNodeRef node) override;
+        virtual void Serialize(SerializationNode& node) override;
+        virtual void Deserialize(SerializationNode& node) override;
 
     public:
         void AddPosition(glm::vec3 pos);

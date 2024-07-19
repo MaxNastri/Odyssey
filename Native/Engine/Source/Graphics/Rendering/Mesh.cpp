@@ -5,11 +5,12 @@
 #include <sstream>
 #include <string>
 #include "Stopwatch.h"
+#include "AssetSerializer.h"
 
 namespace Odyssey
 {
-	Mesh::Mesh(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath)
-		: Asset(assetPath, metaPath)
+	Mesh::Mesh(const std::filesystem::path& assetPath)
+		: Asset(assetPath)
 	{
 		LoadFromDisk(assetPath);
 
@@ -20,7 +21,6 @@ namespace Odyssey
 	void Mesh::Save()
 	{
 		SaveToDisk(m_AssetPath);
-		SaveMetadata();
 	}
 
 	void Mesh::Load()
@@ -30,39 +30,36 @@ namespace Odyssey
 
 	void Mesh::SaveToDisk(const std::filesystem::path& path)
 	{
-		// Create a tree and root node
-		ryml::Tree tree;
-		ryml::NodeRef root = tree.rootref();
-		root |= ryml::MAP;
+		AssetSerializer serializer;
+		SerializationNode root = serializer.GetRoot();
 
-		// Serialize the mesh-specific data
-		root["m_VertexCount"] << m_VertexCount;
-		root["m_VertexData"] << (m_VertexCount > 0 ? VertexDataToHex() : "");
-		root["m_IndexCount"] << m_IndexCount;
-		root["m_IndexData"] << (m_IndexCount > 0 ? IndexDataToHex() : "");
+		// Serialize the asset metadata first
+		SerializeMetadata(serializer);
 
-		// Save to disk
-		FILE* file2 = fopen(path.string().c_str(), "w+");
-		size_t len = ryml::emit_yaml(tree, tree.root_id(), file2);
-		fclose(file2);
+		std::string vertexData = m_VertexCount > 0 ? VertexDataToHex() : "";
+		std::string indexData = m_IndexCount > 0 ? IndexDataToHex() : "";
+
+		root.WriteData("m_VertexCount", m_VertexCount);
+		root.WriteData("m_VertexData", vertexData);
+		root.WriteData("m_IndexCount", m_IndexCount);
+		root.WriteData("m_IndexData", indexData);
+
+		serializer.WriteToDisk(path);
 	}
 
 	void Mesh::LoadFromDisk(const std::filesystem::path& assetPath)
 	{
-		if (std::ifstream ifs{ assetPath })
+		AssetDeserializer deserializer(assetPath);
+		if (deserializer.IsValid())
 		{
-			// Create the yaml root node
-			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
-			ryml::NodeRef node = tree.rootref();
+			SerializationNode root = deserializer.GetRoot();
 
-			// Deserialize the mesh-specific data
 			std::string vertexData;
 			std::string indexData;
-			node["m_VertexCount"] >> m_VertexCount;
-			node["m_VertexData"] >> vertexData;
-			node["m_IndexCount"] >> m_IndexCount;
-			node["m_IndexData"] >> indexData;
+			root.ReadData("m_VertexCount", m_VertexCount);
+			root.ReadData("m_VertexData", vertexData);
+			root.ReadData("m_IndexCount", m_IndexCount);
+			root.ReadData("m_IndexData", indexData);
 
 			// Convert the vertex/index data from hex into real values
 			if (m_VertexCount > 0 && vertexData != "")

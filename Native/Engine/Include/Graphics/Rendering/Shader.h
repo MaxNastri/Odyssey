@@ -11,7 +11,7 @@ namespace Odyssey
 	{
 	public:
 		Shader() = default;
-		Shader(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath);
+		Shader(const std::filesystem::path& assetPath);
 
 	public:
 		ResourceHandle<VulkanShaderModule> GetShaderModule() { return m_ShaderModule; }

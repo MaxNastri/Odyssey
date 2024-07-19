@@ -159,9 +159,9 @@ namespace Odyssey
 		return ResourceHandle<VulkanImage>(id, image.get());
 	}
 
-	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(VkImage vkImage, uint32_t width, uint32_t height, VkFormat format)
+	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(VkImage vkImage, uint32_t width, uint32_t height, uint32_t channels, VkFormat format)
 	{
-		uint32_t id = s_Resources.Add<VulkanImage>(s_Context, vkImage, width, height, format);
+		uint32_t id = s_Resources.Add<VulkanImage>(s_Context, vkImage, width, height, channels, format);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanImage> image = s_Resources.Get<VulkanImage>(id);

@@ -18,24 +18,23 @@ namespace Odyssey
 		CalculateProjection();
 	}
 
-	void Camera::Serialize(ryml::NodeRef& node)
+	void Camera::Serialize(SerializationNode& node)
 	{
-		ryml::NodeRef componentNode = node.append_child();
-		componentNode |= ryml::MAP;
-
-		componentNode["Name"] << Camera::Type;
-		componentNode["Field of View"] << m_FieldOfView;
-		componentNode["Near Clip"] << m_NearClip;
-		componentNode["Far Clip"] << m_FarClip;
-		componentNode["Main Camera"] << m_MainCamera;
+		SerializationNode componentNode = node.AppendChild();
+		componentNode.SetMap();
+		componentNode.WriteData("Name", Camera::Type);
+		componentNode.WriteData("Field of View", m_FieldOfView);
+		componentNode.WriteData("Near Clip", m_NearClip);
+		componentNode.WriteData("Far Clip", m_FarClip);
+		componentNode.WriteData("Main Camera", m_MainCamera);
 	}
 
-	void Camera::Deserialize(ryml::ConstNodeRef node)
+	void Camera::Deserialize(SerializationNode& node)
 	{
-		node["Field of View"] >> m_FieldOfView;
-		node["Near Clip"] >> m_NearClip;
-		node["Far Clip"] >> m_FarClip;
-		node["Main Camera"] >> m_MainCamera;
+		node.ReadData("Field of View", m_FieldOfView);
+		node.ReadData("Near Clip", m_NearClip);
+		node.ReadData("Far Clip", m_FarClip);
+		node.ReadData("Main Camera", m_MainCamera);
 
 		m_Width = 1000;
 		m_Height = 1000;

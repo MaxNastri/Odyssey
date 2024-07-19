@@ -18,17 +18,16 @@ namespace Odyssey
 		active = true;
 	}
 
-	void GameObject::Serialize(ryml::NodeRef& node)
+	void GameObject::Serialize(SerializationNode& node)
 	{
-		ryml::NodeRef gameObjectNode = node.append_child();
-		gameObjectNode |= ryml::MAP;
-		gameObjectNode["Name"] << name;
-		gameObjectNode["Type"] << Type;
-		gameObjectNode["Active"] << active;
-		gameObjectNode["ID"] << id;
+		SerializationNode gameObjectNode = node.AppendChild();
+		gameObjectNode.SetMap();
+		gameObjectNode.WriteData("Name", name);
+		gameObjectNode.WriteData("Type", Type);
+		gameObjectNode.WriteData("Active", active);
+		gameObjectNode.WriteData("ID", id);
 
-		ryml::NodeRef componentsNode = gameObjectNode["Components"];
-		componentsNode |= ryml::SEQ;
+		SerializationNode componentsNode = gameObjectNode.CreateSequenceNode("Components");
 
 		auto serializeComponent = [&componentsNode](Component* component)
 			{
@@ -38,26 +37,26 @@ namespace Odyssey
 		ComponentManager::ExecuteOnGameObjectComponents(id, serializeComponent);
 	}
 
-	void GameObject::Deserialize(ryml::NodeRef& node)
+	void GameObject::Deserialize(SerializationNode& node)
 	{
-		assert(node.is_map());
-		node["Name"] >> name;
-		node["Active"] >> active;
-		node["ID"] >> id;
+		assert(node.IsMap());
+		node.ReadData("Name", name);
+		node.ReadData("Active", active);
+		node.ReadData("ID", id);
 
-		ryml::NodeRef componentsNode = node["Components"];
-		assert(componentsNode.is_seq());
-		assert(componentsNode.has_children());
+		SerializationNode componentsNode = node.GetNode("Components");
+		assert(componentsNode.IsSequence());
+		assert(componentsNode.HasChildren());
 
-		for (size_t i = 0; i < componentsNode.num_children(); ++i)
+		for (size_t i = 0; i < componentsNode.ChildCount(); ++i)
 		{
-			ryml::ConstNodeRef componentNode = componentsNode.child(i);
-			assert(componentNode.is_map());
+			SerializationNode componentNode = componentsNode.GetChild(i);
+			assert(componentNode.IsMap());
 
 			std::string componentType;
-			componentNode["Name"] >> componentType;
+			componentNode.ReadData("Name", componentType);
 			
-			if (componentNode.has_child("Fields"))
+			if (componentNode.HasChild("Fields"))
 			{
 				UserScript* userScript = ComponentManager::AddUserScript(id, componentType);
 				userScript->SetGameObject(this);

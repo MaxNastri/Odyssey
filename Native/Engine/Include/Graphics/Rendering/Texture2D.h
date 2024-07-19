@@ -13,8 +13,8 @@ namespace Odyssey
 	class Texture2D : public Asset
 	{
 	public:
-		Texture2D(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath);
-		Texture2D(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath, TextureFormat format);
+		Texture2D(const std::filesystem::path& assetPath);
+		Texture2D(const std::filesystem::path& assetPath, TextureFormat format);
 
 	public:
 		void Save();
@@ -26,9 +26,12 @@ namespace Odyssey
 	private:
 		void SaveToDisk(const std::filesystem::path& assetPath);
 		void LoadFromDisk(const std::filesystem::path& assetPath);
+		std::string PixelDataToHex();
+		void HexToPixelData(const std::string& hexData, uint32_t dataSize);
 
 	private:
 		VulkanImageDescription m_TextureDescription;
 		ResourceHandle<VulkanTexture> m_Texture;
+		std::vector<unsigned char> m_PixelBuffer;
 	};
 }

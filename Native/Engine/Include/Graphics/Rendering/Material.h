@@ -11,7 +11,7 @@ namespace Odyssey
 	{
 	public:
 		Material() = default;
-		Material(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath);
+		Material(const std::filesystem::path& assetPath);
 
 	public:
 		void Save();

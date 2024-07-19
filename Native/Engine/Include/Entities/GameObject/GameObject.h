@@ -2,7 +2,7 @@
 #include "Asset.h"
 #include "Globals.h"
 #include "ComponentManager.h"
-#include <ryml.hpp>
+#include "AssetSerializer.h"
 
 namespace Odyssey
 {
@@ -16,8 +16,8 @@ namespace Odyssey
 		bool operator==(const GameObject& other) { return id == other.id; }
 
 	public:
-		void Serialize(ryml::NodeRef& node);
-		void Deserialize(ryml::NodeRef& node);
+		void Serialize(SerializationNode& node);
+		void Deserialize(SerializationNode& node);
 
 	public:
 		template<typename T, typename... Args>
