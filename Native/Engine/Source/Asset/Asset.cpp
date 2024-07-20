@@ -3,6 +3,11 @@
 
 namespace Odyssey
 {
+	SourceAsset::SourceAsset(const std::filesystem::path& sourcePath)
+	{
+		m_SourcePath = sourcePath;
+	}
+
 	Asset::Asset(const std::filesystem::path& assetPath)
 	{
 		m_AssetPath = assetPath;

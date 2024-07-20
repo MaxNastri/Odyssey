@@ -3,6 +3,30 @@
 
 namespace Odyssey
 {
+	class SourceAsset
+	{
+	public:
+		SourceAsset() = default;
+		SourceAsset(const std::filesystem::path& sourcePath);
+
+	public:
+		const std::string& GetGUID() { return m_GUID; }
+		const std::string& GetName() { return m_Name; }
+		const std::string& GetType() { return m_Type; }
+		std::filesystem::path& GetPath() { return m_SourcePath; }
+
+	public:
+		void SetGUID(const std::string& guid) { m_GUID = guid; }
+		void SetName(const std::string& name) { m_Name = name; }
+		void SetType(const std::string& type) { m_Type = type; }
+
+	protected: // Serialized
+		std::string m_GUID;
+		std::string m_Name;
+		std::string m_Type;
+		std::filesystem::path m_SourcePath;
+	};
+
 	class Asset
 	{
 	public:

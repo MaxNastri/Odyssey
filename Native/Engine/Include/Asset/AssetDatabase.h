@@ -2,11 +2,6 @@
 
 namespace Odyssey
 {
-	struct SourceAssetDatabase
-	{
-
-	};
-
 	class AssetDatabase
 	{
 	public:
@@ -15,6 +10,7 @@ namespace Odyssey
 	public:
 		void AddAsset(const std::string& guid, const std::filesystem::path& path, const std::string& assetName, const std::string& assetType);
 	public:
+		bool Contains(const std::string& guid);
 		std::filesystem::path GUIDToAssetPath(const std::string& guid);
 		std::string GUIDToAssetName(const std::string& guid);
 		std::string GUIDToAssetType(const std::string& guid);

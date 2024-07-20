@@ -10,31 +10,42 @@ namespace Odyssey
 {
 	void AssetManager::CreateDatabase()
 	{
+		// Scan for Assets
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("Assets"))
 		{
-			if (dirEntry.is_regular_file())
+			auto assetPath = dirEntry.path();
+			auto extension = assetPath.extension();
+
+			if (dirEntry.is_regular_file() &&
+				(extension == s_AssetExtension || extension == s_SceneExtension))
 			{
-				auto assetPath = dirEntry.path();
-				auto extension = assetPath.extension();
-
-				if (extension == ".asset" || extension == ".scene")
+				AssetDeserializer deserializer(assetPath);
+				if (deserializer.IsValid())
 				{
-					AssetDeserializer deserializer(assetPath);
-					if (deserializer.IsValid())
-					{
-						SerializationNode root = deserializer.GetRoot();
+					SerializationNode root = deserializer.GetRoot();
 
-						// TODO (MAX): Refactor this into the asset class?
-						std::string guid;
-						std::string type;
-						std::string name;
-						root.ReadData("m_GUID", guid);
-						root.ReadData("m_Type", type);
-						root.ReadData("m_Name", name);
-
-						m_AssetDatabase.AddAsset(guid, assetPath, name, type);
-					}
+					std::string guid, type, name;
+					root.ReadData("m_GUID", guid);
+					root.ReadData("m_Type", type);
+					root.ReadData("m_Name", name);
+					s_AssetDatabase.AddAsset(guid, assetPath, name, type);
 				}
+			}
+		}
+
+		// Scan for Source Assets
+		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("Source"))
+		{
+			auto assetPath = dirEntry.path();
+			std::string extension = assetPath.extension().string();
+
+			if (dirEntry.is_regular_file() && s_SourceAssetExtensionsToType.contains(extension))
+			{
+				// Convert the filename into a string
+				std::string guid = GenerateGUID();
+				std::string name = assetPath.filename().replace_extension("").string();
+				std::string type = s_SourceAssetExtensionsToType[extension];
+				s_SourceAssetDatabase.AddAsset(guid, assetPath, name, type);
 			}
 		}
 
@@ -197,7 +208,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = m_AssetDatabase.GUIDToAssetPath(guid);
+		std::filesystem::path path = s_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadShader(path.generic_string());
 	}
 
@@ -213,13 +224,13 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = m_AssetDatabase.GUIDToAssetPath(guid);
+		std::filesystem::path path = s_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadTexture2D(path.string());
 	}
 
 	std::vector<std::string> AssetManager::GetAssetsOfType(const std::string& type)
 	{
-		return m_AssetDatabase.GetGUIDsOfAssetType(type);
+		return s_AssetDatabase.GetGUIDsOfAssetType(type);
 	}
 
 	void AssetManager::UnloadScene(AssetHandle<Scene> scene)
@@ -235,17 +246,17 @@ namespace Odyssey
 
 	std::string AssetManager::PathToGUID(const std::filesystem::path& path)
 	{
-		return m_AssetDatabase.AssetPathToGUID(path);
+		return s_AssetDatabase.AssetPathToGUID(path);
 	}
 
 	std::string AssetManager::GUIDToName(const std::string& guid)
 	{
-		return m_AssetDatabase.GUIDToAssetName(guid);
+		return s_AssetDatabase.GUIDToAssetName(guid);
 	}
 
 	std::string AssetManager::GUIDToAssetType(const std::string& guid)
 	{
-		return m_AssetDatabase.GUIDToAssetType(guid);
+		return s_AssetDatabase.GUIDToAssetType(guid);
 	}
 
 	AssetHandle<Material> AssetManager::LoadMaterialByGUID(const std::string& guid)
@@ -260,7 +271,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = m_AssetDatabase.GUIDToAssetPath(guid);
+		std::filesystem::path path = s_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadMaterial(path.generic_string());
 	}
 
@@ -276,12 +287,17 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = m_AssetDatabase.GUIDToAssetPath(guid);
+		std::filesystem::path path = s_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadMesh(path.generic_string());
 	}
 
 	std::string AssetManager::GenerateGUID()
 	{
-		return s_GUIDGenerator.getUUID().str();
+		std::string guid = s_GUIDGenerator.getUUID().str();
+		while (s_AssetDatabase.Contains(guid) || s_SourceAssetDatabase.Contains(guid))
+		{
+			guid = s_GUIDGenerator.getUUID().str();
+		}
+		return guid;
 	}
 }

@@ -56,15 +56,27 @@ namespace Odyssey
 		static std::string GenerateGUID();
 
 	private:
+		inline static AssetDatabase s_AssetDatabase;
+		inline static AssetDatabase s_SourceAssetDatabase;
 		inline static DynamicList<Asset> s_Assets;
-		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
-
 		inline static std::unordered_map<std::string, uint32_t> s_LoadedAssets;
-		inline static AssetDatabase m_AssetDatabase;
+		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
 
 		inline static AssetHandle<Shader> s_DefaultVertexShader;
 		inline static AssetHandle<Shader> s_DefaultFragmentShader;
 
+	private: // Const
+		inline static std::string s_AssetExtension = ".asset";
+		inline static std::string s_SceneExtension = ".scene";
+		inline static std::map<std::string, std::string> s_SourceAssetExtensionsToType =
+		{
+			{".glsl", "SourceShader"},
+			{".hlsl", "SourceShader"},
+			{".fbx", "SourceMesh"},
+			{".gltf", "SourceMesh"},
+			{".png", "SourceTexture"},
+			{".jpg", "SourceTexture"},
+		};
 		inline static std::string s_DefaultVertexShaderPath = "Assets/Shaders/Vert.shader";
 		inline static std::string s_DefaultFragmentShaderPath = "Assets/Shaders/Frag.shader";
 	};
