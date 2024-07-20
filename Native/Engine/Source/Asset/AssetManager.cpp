@@ -4,8 +4,8 @@
 #include "Shader.h"
 #include "Scene.h"
 #include "Texture2D.h"
+#include "SourceShader.h"
 #include "AssetSerializer.h"
-
 namespace Odyssey
 {
 	void AssetManager::CreateDatabase()
@@ -13,6 +13,9 @@ namespace Odyssey
 		// Scan for Assets
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("Assets"))
 		{
+			auto rel = std::filesystem::relative(dirEntry, "Assets/Source");
+			if (!rel.empty() && rel.native()[0] != '.')
+				continue;
 			auto assetPath = dirEntry.path();
 			auto extension = assetPath.extension();
 
@@ -34,7 +37,7 @@ namespace Odyssey
 		}
 
 		// Scan for Source Assets
-		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("Source"))
+		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("Assets/Source"))
 		{
 			auto assetPath = dirEntry.path();
 			std::string extension = assetPath.extension().string();
@@ -53,25 +56,11 @@ namespace Odyssey
 		s_DefaultFragmentShader = LoadShader(s_DefaultFragmentShaderPath);
 	}
 
-	AssetHandle<Mesh> AssetManager::CreateMesh()
-	{
-		// Push back an empty mesh
-		size_t id = s_Assets.Add<Mesh>();
-		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
-
-		// Set asset data
-		mesh->SetGUID(GenerateGUID());
-		mesh->SetName("Default");
-		mesh->SetType("Mesh");
-
-		return AssetHandle<Mesh>(id, mesh.get());
-	}
-
 	AssetHandle<Material> AssetManager::CreateMaterial(const std::filesystem::path& assetPath)
 	{
 		// Push back an empty material
 		size_t id = s_Assets.Add<Material>(assetPath);
-		std::shared_ptr<Material > material = s_Assets.Get<Material>(id);
+		std::shared_ptr<Material> material = s_Assets.Get<Material>(id);
 
 		// Set asset data
 		material->SetGUID(GenerateGUID());
@@ -86,6 +75,20 @@ namespace Odyssey
 		material->Save();
 
 		return AssetHandle<Material>(id, material.get());
+	}
+
+	AssetHandle<Mesh> AssetManager::CreateMesh()
+	{
+		// Push back an empty mesh
+		size_t id = s_Assets.Add<Mesh>();
+		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
+
+		// Set asset data
+		mesh->SetGUID(GenerateGUID());
+		mesh->SetName("Default");
+		mesh->SetType("Mesh");
+
+		return AssetHandle<Mesh>(id, mesh.get());
 	}
 
 	AssetHandle<Mesh> AssetManager::CreateMesh(const std::filesystem::path& assetPath)
@@ -137,6 +140,29 @@ namespace Odyssey
 		scene->Save();
 
 		return AssetHandle<Scene>(id, scene.get());
+	}
+
+	AssetHandle<SourceShader> AssetManager::LoadSourceShader(const std::string& guid)
+	{
+		if (!guid.empty() && s_LoadedSourceAssets.contains(guid))
+		{
+			uint32_t id = s_LoadedSourceAssets[guid];
+			std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
+			return AssetHandle<SourceShader>(id, shader.get());
+		}
+
+		std::filesystem::path sourcePath = s_SourceAssetDatabase.GUIDToAssetPath(guid);
+		size_t id = s_SourceAssets.Add<SourceShader>(sourcePath);
+		std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
+
+		// Track the source asset as loaded
+		s_LoadedSourceAssets[guid] = id;
+
+		shader->SetGUID(guid);
+		shader->SetName(s_SourceAssetDatabase.GUIDToAssetName(guid));
+		shader->SetType(s_SourceAssetDatabase.GUIDToAssetType(guid));
+
+		return AssetHandle<SourceShader>(id, shader.get());
 	}
 
 	AssetHandle<Mesh> Odyssey::AssetManager::LoadMesh(const std::filesystem::path& assetPath)
@@ -246,17 +272,41 @@ namespace Odyssey
 
 	std::string AssetManager::PathToGUID(const std::filesystem::path& path)
 	{
-		return s_AssetDatabase.AssetPathToGUID(path);
+		// Start with the asset database
+		if (s_AssetDatabase.Contains(path))
+			return s_AssetDatabase.AssetPathToGUID(path);
+
+		//  Maybe its in the source asset database
+		if (s_SourceAssetDatabase.Contains(path))
+			return s_SourceAssetDatabase.AssetPathToGUID(path);
+
+		return std::string();
 	}
 
 	std::string AssetManager::GUIDToName(const std::string& guid)
 	{
-		return s_AssetDatabase.GUIDToAssetName(guid);
+		// Start with the asset database
+		if (s_AssetDatabase.Contains(guid))
+			return s_AssetDatabase.GUIDToAssetName(guid);
+
+		//  Maybe its in the source asset database
+		if (s_SourceAssetDatabase.Contains(guid))
+			return s_SourceAssetDatabase.GUIDToAssetName(guid);
+
+		return std::string();
 	}
 
 	std::string AssetManager::GUIDToAssetType(const std::string& guid)
 	{
-		return s_AssetDatabase.GUIDToAssetType(guid);
+		// Start with the asset database
+		if (s_AssetDatabase.Contains(guid))
+			return s_AssetDatabase.GUIDToAssetType(guid);
+
+		//  Maybe its in the source asset database
+		if (s_SourceAssetDatabase.Contains(guid))
+			return s_SourceAssetDatabase.GUIDToAssetType(guid);
+
+		return std::string();
 	}
 
 	AssetHandle<Material> AssetManager::LoadMaterialByGUID(const std::string& guid)

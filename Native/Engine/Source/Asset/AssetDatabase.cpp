@@ -19,6 +19,11 @@ namespace Odyssey
 		return m_GUIDToMetadata.contains(guid);
 	}
 
+	bool AssetDatabase::Contains(const std::filesystem::path& path)
+	{
+		return m_AssetPathToGUID.contains(path);
+	}
+
 	std::filesystem::path AssetDatabase::GUIDToAssetPath(const std::string& guid)
 	{
 		if (m_GUIDToMetadata.contains(guid))

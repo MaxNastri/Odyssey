@@ -19,13 +19,18 @@ namespace Odyssey
 	public:
 		virtual void Draw() override
 		{
-			ImGui::TableNextColumn();
-			ImGui::TextUnformatted(m_Label.data());
-			ImGui::TableNextColumn();
-			ImGui::PushItemWidth(-0.01f);
-			if (ImGui::InputScalar(m_Label.data(), dataType, &data))
+			if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 			{
-				valueUpdatedCallback(data);
+				ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
+				ImGui::TableNextColumn();
+				ImGui::TextUnformatted(m_Label.data());
+				ImGui::TableNextColumn();
+				ImGui::PushItemWidth(-0.01f);
+				if (ImGui::InputScalar(m_Label.data(), dataType, &data))
+				{
+					valueUpdatedCallback(data);
+				}
+				ImGui::EndTable();
 			}
 		}
 

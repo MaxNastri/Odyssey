@@ -211,8 +211,8 @@ namespace Odyssey
 		{
 			// TODO: Use the asset manager to parse source file types
 			GUISelection selection;
-			selection.GUID = "";
-			selection.Type = "Shader";
+			selection.GUID = AssetManager::PathToGUID(sourcePath);
+			selection.Type = AssetManager::GUIDToAssetType(selection.GUID);
 			selection.FilePath = sourcePath;
 			EditorContext::GetInstance()->GetGUIManager()->OnSelectionContextChanged(selection);
 		}

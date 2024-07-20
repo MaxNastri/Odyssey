@@ -39,7 +39,7 @@ namespace Odyssey
 			m_Inspector = std::make_shared<GameObjectInspector>(context.ID);
 		else if (context.Type == "Material")
 			m_Inspector = std::make_shared<MaterialInspector>(context.GUID);
-		else if (context.Type == "Shader")
-			m_Inspector = std::make_shared<SourceShaderInspector>(context.FilePath);
+		else if (context.Type == "SourceShader")
+			m_Inspector = std::make_shared<SourceShaderInspector>(context.GUID);
 	}
 }

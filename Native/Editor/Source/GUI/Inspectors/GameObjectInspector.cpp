@@ -29,12 +29,7 @@ namespace Odyssey
 
 		if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			if (ImGui::BeginTable("GameObjectTable", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
-			{
-				ImGui::TableSetupColumn("##GameObjectTable", ImGuiTableColumnFlags_WidthFixed, ImGui::GetContentRegionAvail().x * 0.3);
-				m_NameDrawer.Draw();
-				ImGui::EndTable();
-			}
+			m_NameDrawer.Draw();
 		}
 
 		ImGui::Spacing();
@@ -57,7 +52,7 @@ namespace Odyssey
 
 		if (gameObject)
 		{
-			m_NameDrawer = StringDrawer("Name", gameObject->name, 
+			m_NameDrawer = StringDrawer("Name", gameObject->name,
 				[gameObject](std::string& name) { gameObject->name = name; });
 
 			if (gameObject->HasComponent<Transform>())

@@ -12,13 +12,18 @@ namespace Odyssey
 
 	void DoubleDrawer::Draw()
 	{
-		ImGui::TableNextColumn();
-		ImGui::TextUnformatted(m_Label.data());
-		ImGui::TableNextColumn();
-		ImGui::PushItemWidth(-0.01f);
-		if (ImGui::InputDouble(m_Label.data(), &value, step, stepFast))
+		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 		{
-			valueUpdatedCallback(value);
+			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(m_Label.data());
+			ImGui::TableNextColumn();
+			ImGui::PushItemWidth(-0.01f);
+			if (ImGui::InputDouble(m_Label.data(), &value, step, stepFast))
+			{
+				valueUpdatedCallback(value);
+			}
+			ImGui::EndTable();
 		}
 	}
 }

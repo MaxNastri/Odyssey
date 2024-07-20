@@ -1,6 +1,5 @@
 #pragma once
-#include <GUIElement.h>
-#include <string>
+#include "GUIElement.h"
 
 namespace Odyssey
 {
@@ -13,9 +12,11 @@ namespace Odyssey
 	public:
 		bool IsModified() { return m_Modified; }
 		void SetModified(bool modified) { m_Modified = modified; }
+		void SetLabelWidth(float width) { m_LabelWidth = width; }
 
 	protected:
 		std::string m_Label;
+		float m_LabelWidth = 0.5f;
 		bool m_Modified = false;
 	};
 }

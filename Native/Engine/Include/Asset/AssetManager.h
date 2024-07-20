@@ -14,18 +14,25 @@ namespace Odyssey
 	class Scene;
 	class Texture2D;
 
+	class SourceAsset;
+	class SourceShader;
+
 	class AssetManager
 	{
 	public:
 		static void CreateDatabase();
 
 	public:
-		static AssetHandle<Mesh> CreateMesh();
+		//static AssetHandle<SourceShader> CreateSourceShader(const std::filesystem::path& sourcePath);
 	public:
 		static AssetHandle<Material> CreateMaterial(const std::filesystem::path& assetPath);
+		static AssetHandle<Mesh> CreateMesh();
 		static AssetHandle<Mesh> CreateMesh(const std::filesystem::path& assetPath);
 		static AssetHandle<Shader> CreateShader(const std::filesystem::path& assetPath);
 		static AssetHandle<Scene> CreateScene(const std::filesystem::path& assetPath);
+
+	public:
+		static AssetHandle<SourceShader> LoadSourceShader(const std::string& guid);
 
 	public:
 		static AssetHandle<Material> LoadMaterial(const std::filesystem::path& assetPath);
@@ -55,13 +62,18 @@ namespace Odyssey
 	private:
 		static std::string GenerateGUID();
 
-	private:
+	private: // Assets
 		inline static AssetDatabase s_AssetDatabase;
-		inline static AssetDatabase s_SourceAssetDatabase;
 		inline static DynamicList<Asset> s_Assets;
-		inline static std::unordered_map<std::string, uint32_t> s_LoadedAssets;
-		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
+		inline static std::map<std::string, uint32_t> s_LoadedAssets;
 
+	private: // Source Assets
+		inline static AssetDatabase s_SourceAssetDatabase;
+		inline static DynamicList<SourceAsset> s_SourceAssets;
+		inline static std::map<std::string, uint32_t> s_LoadedSourceAssets;
+
+	private:
+		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
 		inline static AssetHandle<Shader> s_DefaultVertexShader;
 		inline static AssetHandle<Shader> s_DefaultFragmentShader;
 
