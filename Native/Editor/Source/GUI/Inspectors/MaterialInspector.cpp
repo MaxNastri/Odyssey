@@ -27,7 +27,7 @@ namespace Odyssey
 		m_NameDrawer = StringDrawer("Name", m_Material->GetName(),
 			[material](const std::string& name) { OnNameModified(material, name); });
 
-		m_GUIDDrawer = ReadOnlyStringDrawer("GUID", m_Material->GetGUID());
+		m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID(), nullptr, true);
 
 		m_FragmentShaderDrawer = AssetFieldDrawer("Fragment Shader", fragmentShaderGUID, "Shader",
 			[material](const std::string& guid) { OnFragmentShaderModified(material, guid); });
@@ -63,7 +63,7 @@ namespace Odyssey
 			m_NameDrawer = StringDrawer("Name", m_Material->GetName(),
 				[material](const std::string& name) { OnNameModified(material, name); });
 
-			m_GUIDDrawer = ReadOnlyStringDrawer("GUID", m_Material->GetGUID());
+			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID(), nullptr, true);
 
 			m_FragmentShaderDrawer = AssetFieldDrawer("Fragment Shader", fragmentShaderGUID, "Shader",
 				[material](const std::string& guid) { OnFragmentShaderModified(material, guid); });

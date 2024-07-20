@@ -27,7 +27,7 @@ namespace Odyssey
 		Material* m_Material;
 
 		StringDrawer m_NameDrawer;
-		ReadOnlyStringDrawer m_GUIDDrawer;
+		StringDrawer m_GUIDDrawer;
 		AssetFieldDrawer m_FragmentShaderDrawer;
 		AssetFieldDrawer m_VertexShaderDrawer;
 		AssetFieldDrawer m_TextureDrawer;
