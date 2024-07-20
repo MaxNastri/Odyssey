@@ -3,7 +3,7 @@
 
 namespace Odyssey
 {
-	CLASS_DEFINITION(Odyssey.Entities, GameObject);
+	CLASS_DEFINITION(Odyssey, GameObject);
 	GameObject::GameObject()
 	{
 		name = "GameObject";

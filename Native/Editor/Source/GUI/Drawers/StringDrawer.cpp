@@ -27,7 +27,7 @@ namespace Odyssey
 	ReadOnlyStringDrawer::ReadOnlyStringDrawer(const std::string& propertyLabel, std::string initialValue)
 	{
 		m_Label = propertyLabel;
-		data = initialValue;
+		m_Data = initialValue;
 	}
 
 	void ReadOnlyStringDrawer::Draw()
@@ -36,6 +36,6 @@ namespace Odyssey
 		ImGui::TextUnformatted(m_Label.data());
 		ImGui::TableNextColumn();
 		ImGui::PushItemWidth(-0.01f);
-		ImGui::TextUnformatted(data.data());
+		ImGui::TextUnformatted(m_Data.data());
 	}
 }

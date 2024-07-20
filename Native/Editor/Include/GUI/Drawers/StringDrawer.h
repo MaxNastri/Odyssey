@@ -12,8 +12,11 @@ namespace Odyssey
 	public:
 		virtual void Draw() override;
 
+	public:
+		void SetData(std::string data) { m_Data = data; }
+
 	private:
-		std::string data;
+		std::string m_Data;
 	};
 	class StringDrawer : public PropertyDrawer
 	{

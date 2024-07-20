@@ -163,6 +163,7 @@ namespace Odyssey
 	{
 		for (auto& contentBrowserWindow : contentBrowserWindows)
 		{
+			// TODO: Move the listener into the content browser
 			contentBrowserWindow.UpdatePaths();
 		}
 	}

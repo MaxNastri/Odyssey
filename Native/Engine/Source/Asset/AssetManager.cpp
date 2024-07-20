@@ -243,6 +243,11 @@ namespace Odyssey
 		return m_AssetDatabase.GUIDToAssetName(guid);
 	}
 
+	std::string AssetManager::GUIDToAssetType(const std::string& guid)
+	{
+		return m_AssetDatabase.GUIDToAssetType(guid);
+	}
+
 	AssetHandle<Material> AssetManager::LoadMaterialByGUID(const std::string& guid)
 	{
 		// Check if we have already loaded this asset

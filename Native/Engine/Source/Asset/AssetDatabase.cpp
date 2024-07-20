@@ -4,10 +4,9 @@ namespace Odyssey
 {
 	void AssetDatabase::AddAsset(const std::string& guid, const std::filesystem::path& path, const std::string& assetName, const std::string& assetType)
 	{
-		if (!m_GUIDToAssetPath.contains(guid))
-			m_GUIDToAssetPath[guid] = path;
-		if (!m_GUIDToAssetName.contains(guid))
-			m_GUIDToAssetName[guid] = assetName;
+		if (!m_GUIDToMetadata.contains(guid))
+			m_GUIDToMetadata[guid] = AssetMetadata(path, assetName, assetType);
+
 		if (!m_AssetPathToGUID.contains(path))
 			m_AssetPathToGUID[path] = guid;
 
@@ -17,16 +16,24 @@ namespace Odyssey
 
 	std::filesystem::path AssetDatabase::GUIDToAssetPath(const std::string& guid)
 	{
-		if (m_GUIDToAssetPath.contains(guid))
-			return m_GUIDToAssetPath[guid];
+		if (m_GUIDToMetadata.contains(guid))
+			return m_GUIDToMetadata[guid].AssetPath;
 
 		return std::filesystem::path();
 	}
 
 	std::string AssetDatabase::GUIDToAssetName(const std::string& guid)
 	{
-		if (m_GUIDToAssetName.contains(guid))
-			return m_GUIDToAssetName[guid];
+		if (m_GUIDToMetadata.contains(guid))
+			return m_GUIDToMetadata[guid].AssetName;
+
+		return std::string();
+	}
+
+	std::string AssetDatabase::GUIDToAssetType(const std::string& guid)
+	{
+		if (m_GUIDToMetadata.contains(guid))
+			return m_GUIDToMetadata[guid].AssetType;
 
 		return std::string();
 	}

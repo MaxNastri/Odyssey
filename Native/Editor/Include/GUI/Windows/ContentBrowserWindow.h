@@ -21,12 +21,16 @@ namespace Odyssey
 
 	private:
 		void HandleContextMenu();
+		void DrawSceneAsset(const std::filesystem::path& assetPath);
+		void DrawSourceAsset(const std::filesystem::path& sourcePath);
+		void DrawAsset(const std::filesystem::path& assetPath);
 
 	private: // Pathing
 		bool m_UpdatePaths = true;
 		std::filesystem::path m_CurrentPath;
 		std::vector<std::filesystem::path> m_FoldersToDisplay;
 		std::vector<std::filesystem::path> m_FilesToDisplay;
+
 	private: // Context menu
 		bool m_ContextMenuOpen = false;
 

@@ -50,6 +50,7 @@ namespace Odyssey
 	public:
 		static std::string PathToGUID(const std::filesystem::path& path);
 		static std::string GUIDToName(const std::string& guid);
+		static std::string GUIDToAssetType(const std::string& guid);
 
 	private:
 		static std::string GenerateGUID();

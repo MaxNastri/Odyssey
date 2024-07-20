@@ -11,7 +11,7 @@ namespace Odyssey
 		m_Options = options;
 	}
 
-	void ShaderCompiler::Compile(std::string_view shaderName, ShaderType shaderType, std::filesystem::path shaderPath)
+	bool ShaderCompiler::Compile(std::string_view shaderName, ShaderType shaderType, std::filesystem::path shaderPath)
 	{
 		// HLSL Shader
 		shaderc::Compiler compiler;
@@ -30,7 +30,7 @@ namespace Odyssey
 		else
 		{
 			Logger::LogError("[ShaderCompiler] Invalid shader file format detected: " + shaderPath.extension().string());
-			return;
+			return false;
 		}
 
 		if (m_Options.Optimize)
@@ -41,7 +41,7 @@ namespace Odyssey
 		if (fileContents.size() == 0)
 		{
 			Logger::LogError("[ShaderCompiler] Failed to compile shader: " + shaderPath.string());
-			return;
+			return false;
 		}
 		auto type = shaderType == ShaderType::Vertex ? shaderc_vertex_shader : shaderc_fragment_shader;
 
@@ -53,10 +53,11 @@ namespace Odyssey
 		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
 		{
 			Logger::LogError("[ShaderCompiler] Failed to compile shader: " + shaderPath.string());
-			return;
+			return false;
 		}
 
 		std::vector<uint32_t> shaderBinary(result.begin(), result.end());
+		return true;
 	}
 	std::vector<char> ShaderCompiler::ReadShaderFile(std::filesystem::path& path)
 	{

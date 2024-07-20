@@ -81,9 +81,9 @@ namespace Odyssey
 		if (ImGui::BeginTable("MaterialInspector", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 		{
 			ImGui::TableSetupColumn("##A", 0, 0.4f);
-			m_NameDrawer.Draw();
-			ImGui::TableNextRow();
 			m_GUIDDrawer.Draw();
+			ImGui::TableNextRow();
+			m_NameDrawer.Draw();
 			ImGui::TableNextRow();
 			m_VertexShaderDrawer.Draw();
 			ImGui::TableNextRow();

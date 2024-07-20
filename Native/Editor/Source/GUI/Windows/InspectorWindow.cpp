@@ -4,6 +4,7 @@
 #include "MaterialInspector.h"
 #include "MeshRendererInspector.h"
 #include "imgui.h"
+#include "SourceShaderInspector.h"
 
 namespace Odyssey
 {
@@ -32,20 +33,13 @@ namespace Odyssey
 
 	void InspectorWindow::OnSelectionContextChanged(const GUISelection& context)
 	{
-		switch (context.Type)
-		{
-			case GUISelection::SelectionType::None:
-				break;
-			case GUISelection::SelectionType::GameObject:
-				m_Inspector = std::make_shared<GameObjectInspector>(context.ID);
-				break;
-			case GUISelection::SelectionType::Material:
-				m_Inspector = std::make_shared<MaterialInspector>(context.guid);
-				break;
-			case GUISelection::SelectionType::Mesh:
-				break;
-			case GUISelection::SelectionType::Shader:
-				break;
-		}
+		// TODO: Convert this to use ClassName::Type
+		// Components/GameObject are setup like this but not assets
+		if (context.Type == GameObject::Type)
+			m_Inspector = std::make_shared<GameObjectInspector>(context.ID);
+		else if (context.Type == "Material")
+			m_Inspector = std::make_shared<MaterialInspector>(context.GUID);
+		else if (context.Type == "Shader")
+			m_Inspector = std::make_shared<SourceShaderInspector>(context.FilePath);
 	}
 }

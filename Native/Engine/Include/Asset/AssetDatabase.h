@@ -17,13 +17,19 @@ namespace Odyssey
 	public:
 		std::filesystem::path GUIDToAssetPath(const std::string& guid);
 		std::string GUIDToAssetName(const std::string& guid);
+		std::string GUIDToAssetType(const std::string& guid);
 		std::string AssetPathToGUID(const std::filesystem::path& assetPath);
 		std::vector<std::string> GetGUIDsOfAssetType(const std::string& assetType);
 	private:
-		// [GUID, AssetPath]
-		std::map<std::string, std::filesystem::path> m_GUIDToAssetPath;
-		// [GUID, AssetName]
-		std::map<std::string, std::string> m_GUIDToAssetName;
+		struct AssetMetadata
+		{
+		public:
+			std::filesystem::path AssetPath;
+			std::string AssetName;
+			std::string AssetType;
+		};
+		// [GUID, AssetMetadata]
+		std::map<std::string, AssetMetadata> m_GUIDToMetadata;
 		// [AssetPath, GUID]
 		std::map<std::filesystem::path, std::string> m_AssetPathToGUID;
 		// [AssetType, List<GUID>]

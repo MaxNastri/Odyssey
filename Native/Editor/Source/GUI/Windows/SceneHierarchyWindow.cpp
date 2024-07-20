@@ -63,7 +63,7 @@ namespace Odyssey
 						nodeClicked = selectionID;
 
 						GUISelection selection;
-						selection.Type = GUISelection::SelectionType::GameObject;
+						selection.Type = GameObject::Type;
 						selection.ID = gameObject->id;
 
 						EditorContext::GetInstance()->GetGUIManager()->OnSelectionContextChanged(selection);

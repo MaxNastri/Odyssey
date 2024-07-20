@@ -3,7 +3,7 @@ m_Name: Scene
 m_Type: Scene
 GameObjects:
   - Name: "Max's GameObject"
-    Type: Odyssey.Entities.GameObject
+    Type: Odyssey.GameObject
     Active: 1
     ID: 0
     Components:

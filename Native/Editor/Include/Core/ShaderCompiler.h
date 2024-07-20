@@ -22,7 +22,7 @@ namespace Odyssey
 		ShaderCompiler(Options options);
 
 	public:
-		void Compile(std::string_view shaderName, ShaderType shaderType, std::filesystem::path shader);
+		bool Compile(std::string_view shaderName, ShaderType shaderType, std::filesystem::path shader);
 
 	private:
 		std::vector<char> ReadShaderFile(std::filesystem::path& path);
