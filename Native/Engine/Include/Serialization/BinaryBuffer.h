@@ -18,9 +18,9 @@ namespace Odyssey
 		std::vector<T> Convert()
 		{
 			size_t objSize = sizeof(T);
-			std::vector<T> buffer(objSize * m_Data.size());
-
 			size_t elements = m_Size / objSize;
+
+			std::vector<T> buffer(objSize * elements);
 
 			for (size_t i = 0; i < elements; i++)
 			{
