@@ -4,6 +4,7 @@
 #include "DynamicList.h"
 #include "Enums.h"
 #include "AssetDatabase.h"
+#include "BinaryCache.h"
 
 namespace Odyssey
 {
@@ -49,6 +50,11 @@ namespace Odyssey
 		static AssetHandle<Texture2D> LoadTexture2DByGUID(const std::string& guid);
 
 	public:
+		static BinaryCache& GetBinaryCache() { return s_BinaryCache; }
+		static BinaryBuffer LoadBinaryAsset(const std::string& guid);
+		static std::string CreateBinaryAsset(BinaryBuffer& buffer);
+
+	public:
 		static std::vector<std::string> GetAssetsOfType(const std::string& type);
 
 	public:
@@ -71,6 +77,9 @@ namespace Odyssey
 		inline static AssetDatabase s_SourceAssetDatabase;
 		inline static DynamicList<SourceAsset> s_SourceAssets;
 		inline static std::map<std::string, uint32_t> s_LoadedSourceAssets;
+
+	private: // Binary Assets
+		inline static BinaryCache s_BinaryCache;
 
 	private:
 		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;

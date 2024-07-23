@@ -4,6 +4,7 @@
 #include <Logger.h>
 #include "volk.h"
 #include <shaderc/shaderc.hpp>
+#include "AssetManager.h"
 
 namespace Odyssey
 {
@@ -13,7 +14,24 @@ namespace Odyssey
 		m_ShaderType = shaderType;
 		m_FilePath = filename;
 
-		std::vector<char> shaderCode = ReadShaderCode(filename);
+
+		static int test = 0;
+		BinaryCache& cache = AssetManager::GetBinaryCache();
+
+		std::vector<char> shaderCode;
+
+		if (test == 0)
+		{
+			BinaryBuffer buffer = AssetManager::LoadBinaryAsset("391c76b0-2660-4d85-9df5-01b510ccae79");
+			shaderCode = buffer.Convert<char>();
+			test++;
+		}
+		else
+		{
+			BinaryBuffer buffer = AssetManager::LoadBinaryAsset("d0da0f89-1327-4626-81e3-8e913e98065d");
+			shaderCode = buffer.Convert<char>();
+		}
+		
 		CreateShaderModule(shaderCode);
 	}
 

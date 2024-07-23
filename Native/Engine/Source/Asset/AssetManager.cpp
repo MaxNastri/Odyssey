@@ -10,6 +10,7 @@ namespace Odyssey
 {
 	void AssetManager::CreateDatabase()
 	{
+		s_BinaryCache = BinaryCache();
 		// Scan for Assets
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("Assets"))
 		{
@@ -252,6 +253,18 @@ namespace Odyssey
 		// Load it and return a handle
 		std::filesystem::path path = s_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadTexture2D(path.string());
+	}
+
+	BinaryBuffer AssetManager::LoadBinaryAsset(const std::string& guid)
+	{
+		return s_BinaryCache.LoadBinaryData(guid);
+	}
+
+	std::string AssetManager::CreateBinaryAsset(BinaryBuffer& buffer)
+	{
+		std::string guid = GenerateGUID();
+		s_BinaryCache.SaveBinaryData(guid, buffer);
+		return guid;
 	}
 
 	std::vector<std::string> AssetManager::GetAssetsOfType(const std::string& type)
