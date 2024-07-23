@@ -20,7 +20,7 @@ namespace Odyssey
 			size_t objSize = sizeof(T);
 			size_t elements = m_Size / objSize;
 
-			std::vector<T> buffer(objSize * elements);
+			std::vector<T> buffer(elements);
 
 			for (size_t i = 0; i < elements; i++)
 			{
