@@ -8,6 +8,8 @@ project "Odyssey.Native.Engine"
     
     architecture "x86_64"
     
+    flags { "NoPCH", "MultiProcessorCompile" }
+    
     pchheader "PCH.hpp"
     pchsource "Source/PCH.cpp"
 
@@ -69,7 +71,6 @@ project "Odyssey.Native.Engine"
 
     
 	filter "files:Source/**.c"
-	flags { "NoPCH" }
 
     filter { "system:windows" }
         prebuildcommands {

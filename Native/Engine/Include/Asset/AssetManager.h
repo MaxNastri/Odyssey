@@ -24,7 +24,7 @@ namespace Odyssey
 		static void CreateDatabase();
 
 	public:
-		//static AssetHandle<SourceShader> CreateSourceShader(const std::filesystem::path& sourcePath);
+		static AssetHandle<SourceShader> CreateSourceShader(const std::filesystem::path& sourcePath);
 	public:
 		static AssetHandle<Material> CreateMaterial(const std::filesystem::path& assetPath);
 		static AssetHandle<Mesh> CreateMesh();
@@ -67,6 +67,7 @@ namespace Odyssey
 
 	private:
 		static std::string GenerateGUID();
+		static void ScanForSourceAssets();
 
 	private: // Assets
 		inline static AssetDatabase s_AssetDatabase;
@@ -89,6 +90,8 @@ namespace Odyssey
 	private: // Const
 		inline static std::string s_AssetExtension = ".asset";
 		inline static std::string s_SceneExtension = ".scene";
+		inline static std::string s_MetaFileExtension = ".meta";
+
 		inline static std::map<std::string, std::string> s_SourceAssetExtensionsToType =
 		{
 			{".glsl", "SourceShader"},
@@ -98,6 +101,7 @@ namespace Odyssey
 			{".png", "SourceTexture"},
 			{".jpg", "SourceTexture"},
 		};
+
 		inline static std::string s_DefaultVertexShaderPath = "Assets/Shaders/Vert.shader";
 		inline static std::string s_DefaultFragmentShaderPath = "Assets/Shaders/Frag.shader";
 	};

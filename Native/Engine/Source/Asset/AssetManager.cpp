@@ -11,50 +11,33 @@ namespace Odyssey
 	void AssetManager::CreateDatabase()
 	{
 		s_BinaryCache = BinaryCache();
+
 		// Scan for Assets
-		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("Assets"))
-		{
-			auto rel = std::filesystem::relative(dirEntry, "Assets/Source");
-			if (!rel.empty() && rel.native()[0] != '.')
-				continue;
-			auto assetPath = dirEntry.path();
-			auto extension = assetPath.extension();
-
-			if (dirEntry.is_regular_file() &&
-				(extension == s_AssetExtension || extension == s_SceneExtension))
-			{
-				AssetDeserializer deserializer(assetPath);
-				if (deserializer.IsValid())
-				{
-					SerializationNode root = deserializer.GetRoot();
-
-					std::string guid, type, name;
-					root.ReadData("m_GUID", guid);
-					root.ReadData("m_Type", type);
-					root.ReadData("m_Name", name);
-					s_AssetDatabase.AddAsset(guid, assetPath, name, type);
-				}
-			}
-		}
+		AssetDatabase::SearchOptions assetSearch;
+		assetSearch.Root = "Assets";
+		assetSearch.ExclusionPaths = { };
+		assetSearch.Extensions = { s_AssetExtension, s_SceneExtension };
+		s_AssetDatabase.ScanForAssets(assetSearch);
 
 		// Scan for Source Assets
-		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("Assets/Source"))
-		{
-			auto assetPath = dirEntry.path();
-			std::string extension = assetPath.extension().string();
-
-			if (dirEntry.is_regular_file() && s_SourceAssetExtensionsToType.contains(extension))
-			{
-				// Convert the filename into a string
-				std::string guid = GenerateGUID();
-				std::string name = assetPath.filename().replace_extension("").string();
-				std::string type = s_SourceAssetExtensionsToType[extension];
-				s_SourceAssetDatabase.AddAsset(guid, assetPath, name, type);
-			}
-		}
+		ScanForSourceAssets();
 
 		s_DefaultVertexShader = LoadShader(s_DefaultVertexShaderPath);
 		s_DefaultFragmentShader = LoadShader(s_DefaultFragmentShaderPath);
+	}
+
+	AssetHandle<SourceShader> AssetManager::CreateSourceShader(const std::filesystem::path& sourcePath)
+	{
+		size_t id = s_SourceAssets.Add<SourceShader>(sourcePath);
+		std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
+
+		// Set asset data and serialize the metafile
+		shader->SetGUID(GenerateGUID());
+		shader->SetName("Default");
+		shader->SetType("Shader");
+		shader->SerializeMetadata();
+
+		return AssetHandle<SourceShader>(id, shader.get());
 	}
 
 	AssetHandle<Material> AssetManager::CreateMaterial(const std::filesystem::path& assetPath)
@@ -362,5 +345,50 @@ namespace Odyssey
 			guid = s_GUIDGenerator.getUUID().str();
 		}
 		return guid;
+	}
+
+	void AssetManager::ScanForSourceAssets()
+	{
+		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("Assets"))
+		{
+			auto assetPath = dirEntry.path();
+			auto extension = assetPath.extension().string();
+			auto metaPath = assetPath;
+			metaPath = metaPath.replace_extension(s_MetaFileExtension);
+
+			// Check if the file extension is a valid source asset
+			// And the source asset does not have a metafile
+			if (dirEntry.is_regular_file() && s_SourceAssetExtensionsToType.contains(extension))
+			{
+				if (std::filesystem::exists(metaPath))
+				{
+					// Deserialize the meta file
+					// Add the asset to the database with the source file extension
+					if (AssetDeserializer deserializer = AssetDeserializer(metaPath))
+					{
+						SourceAsset sourceAsset = SourceAsset::CreateFromMetafile(metaPath);
+
+						if (sourceAsset.HasMetadata())
+						{
+							s_SourceAssetDatabase.AddAsset(sourceAsset.GetGUID(), sourceAsset.GetPath(), sourceAsset.GetName(), sourceAsset.GetType());
+						}
+					}
+				}
+				else
+				{
+					std::string guid = GenerateGUID();
+					std::string name = assetPath.filename().replace_extension("").string();
+					std::string type = s_SourceAssetExtensionsToType[extension];
+
+					// Create a temporary source asset so we can serialize the metadata
+					SourceAsset asset(assetPath);
+					asset.SetMetadata(guid, name, type);
+					asset.SerializeMetadata();
+
+					// Add the source asset to the database
+					s_SourceAssetDatabase.AddAsset(guid, assetPath, name, type);
+				}
+			}
+		}
 	}
 }

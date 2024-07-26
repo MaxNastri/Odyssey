@@ -1,0 +1,4 @@
+m_GUID: '1878f9cb-e837-4608-a3c6-324276bb0aa5'
+m_Name: shader_frag
+m_Type: SourceShader
+m_SourceExtension: .glsl

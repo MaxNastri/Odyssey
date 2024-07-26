@@ -51,7 +51,8 @@ namespace Odyssey
 		template<typename T>
 		void ReadData(ryml::csubstr name, T& data)
 		{
-			m_Node[name] >> data;
+			if (m_Node[name].has_val())
+				m_Node[name] >> data;
 		}
 
 		void SetMap() { m_Node |= ryml::MAP; }
@@ -73,13 +74,15 @@ namespace Odyssey
 	{
 	public:
 		AssetDeserializer() = default;
+		operator bool() { return IsValid(); }
+
 		AssetDeserializer(const std::filesystem::path& assetPath)
 		{
 			if (std::ifstream stream{ assetPath })
 			{
 				// Create the yaml root node
 				std::string data((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
-				
+
 				m_Tree = ryml::parse_in_arena(ryml::to_csubstr(data));
 				m_RootRef = m_Tree.rootref();
 				m_RootNode = SerializationNode("Root", m_RootRef);

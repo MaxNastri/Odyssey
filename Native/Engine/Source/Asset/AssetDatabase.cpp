@@ -1,4 +1,5 @@
 #include "AssetDatabase.h"
+#include "AssetSerializer.h"
 
 namespace Odyssey
 {
@@ -12,6 +13,58 @@ namespace Odyssey
 
 		// No contains check since we are storing multiple guids per asset type
 		m_AssetTypeToGUIDs[assetType].push_back(guid);
+	}
+
+	void AssetDatabase::ScanForAssets(SearchOptions& searchOptions)
+	{
+		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(searchOptions.Root))
+		{
+			bool excluded = false;
+
+			if (!searchOptions.ExclusionPaths.empty())
+			{
+				// Check if this path matches anything in the exclusion list
+				for (const auto& path : searchOptions.ExclusionPaths)
+				{
+					auto pathCompare = std::filesystem::relative(dirEntry, path);
+					if (!pathCompare.empty() && pathCompare.native()[0] != '.')
+					{
+						excluded = true;
+						break;
+					}
+				}
+			}
+
+			// Skip if this path should be excluded
+			if (excluded)
+				continue;
+
+			auto path = dirEntry.path();
+			auto extension = path.extension();
+
+			if (dirEntry.is_regular_file())
+			{
+				for (const auto& searchExt : searchOptions.Extensions)
+				{
+					// Check if this is a valid extension
+					if (extension == searchExt)
+					{
+						AssetDeserializer deserializer(path);
+						if (deserializer.IsValid())
+						{
+							SerializationNode root = deserializer.GetRoot();
+
+							// Deserialize the asset's metadata
+							std::string guid, type, name;
+							root.ReadData("m_GUID", guid);
+							root.ReadData("m_Type", type);
+							root.ReadData("m_Name", name);
+							AddAsset(guid, path, name, type);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	bool AssetDatabase::Contains(const std::string& guid)
