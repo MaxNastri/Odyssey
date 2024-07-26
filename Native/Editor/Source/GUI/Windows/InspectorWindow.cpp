@@ -1,10 +1,11 @@
 #include "InspectorWindow.h"
+#include "imgui.h"
 #include "Inspector.h"
 #include "GameObjectInspector.h"
 #include "MaterialInspector.h"
 #include "MeshRendererInspector.h"
-#include "imgui.h"
 #include "SourceShaderInspector.h"
+#include "ShaderInspector.h"
 
 namespace Odyssey
 {
@@ -41,5 +42,7 @@ namespace Odyssey
 			m_Inspector = std::make_shared<MaterialInspector>(context.GUID);
 		else if (context.Type == "SourceShader")
 			m_Inspector = std::make_shared<SourceShaderInspector>(context.GUID);
+		else if (context.Type == "Shader")
+			m_Inspector = std::make_shared<ShaderInspector>(context.GUID);
 	}
 }

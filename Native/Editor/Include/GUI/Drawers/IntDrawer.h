@@ -9,12 +9,13 @@ namespace Odyssey
 	{
 	public:
 		IntDrawer() = default;
-		IntDrawer(const std::string& propertyLabel, T initialValue, std::function<void(T)> callback)
+		IntDrawer(const std::string& propertyLabel, T initialValue, std::function<void(T)> callback, bool readOnly = false)
 			: PropertyDrawer(propertyLabel)
 		{
 			data = initialValue;
 			valueUpdatedCallback = callback;
 			dataType = GetDataType();
+			m_ReadOnly = readOnly;
 		}
 
 	public:
@@ -27,10 +28,16 @@ namespace Odyssey
 				ImGui::TextUnformatted(m_Label.data());
 				ImGui::TableNextColumn();
 				ImGui::PushItemWidth(-0.01f);
+				if (m_ReadOnly)
+					ImGui::BeginDisabled();
+
 				if (ImGui::InputScalar(m_Label.data(), dataType, &data))
 				{
 					valueUpdatedCallback(data);
 				}
+
+				if (m_ReadOnly)
+					ImGui::EndDisabled();
 				ImGui::EndTable();
 			}
 		}
@@ -66,5 +73,6 @@ namespace Odyssey
 		uint32_t step = 0;
 		uint32_t stepFast = 0;
 		T data;
+		bool m_ReadOnly = false;
 	};
 }

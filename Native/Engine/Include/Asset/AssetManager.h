@@ -55,7 +55,7 @@ namespace Odyssey
 		static std::string CreateBinaryAsset(BinaryBuffer& buffer);
 
 	public:
-		static std::vector<std::string> GetAssetsOfType(const std::string& type);
+		static std::vector<std::string> GetAssetsOfType(const std::string& assetType);
 
 	public:
 		static void UnloadScene(AssetHandle<Scene> scene);

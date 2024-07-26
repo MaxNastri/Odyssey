@@ -81,9 +81,11 @@ namespace Odyssey
 	void Asset::SerializeMetadata(AssetSerializer& serializer)
 	{
 		SerializationNode& root = serializer.GetRoot();
-		root.WriteData("m_GUID", m_GUID.c_str());
-		root.WriteData("m_Name", m_Name.c_str());
-		root.WriteData("m_Type", m_Type.c_str());
+		root.WriteData("m_SourceAsset", m_SourceAsset);
+		root.WriteData("m_GUID", m_GUID);
+		root.WriteData("m_GUID", m_GUID);
+		root.WriteData("m_Name", m_Name);
+		root.WriteData("m_Type", m_Type);
 	}
 
 	void Asset::Load()
@@ -92,6 +94,7 @@ namespace Odyssey
 		if (deserializer.IsValid())
 		{
 			SerializationNode root = deserializer.GetRoot();
+			root.ReadData("m_SourceAsset", m_SourceAsset);
 			root.ReadData("m_GUID", m_GUID);
 			root.ReadData("m_Name", m_Name);
 			root.ReadData("m_Type", m_Type);

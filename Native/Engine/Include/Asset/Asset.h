@@ -33,6 +33,7 @@ namespace Odyssey
 		std::string m_GUID;
 		std::string m_Name;
 		std::string m_Type;
+		std::string m_SourceGUID;
 		std::string m_SourceExtension;
 		std::filesystem::path m_SourcePath;
 		std::filesystem::path m_MetaFilePath;
@@ -49,12 +50,14 @@ namespace Odyssey
 		void Load();
 
 	public:
+		const std::string& GetSoureAsset() { return m_SourceAsset; }
 		const std::string& GetGUID() { return m_GUID; }
 		const std::string& GetName() { return m_Name; }
 		const std::string& GetType() { return m_Type; }
 		std::filesystem::path& GetAssetPath() { return m_AssetPath; }
 
 	public:
+		void SetSourceAsset(const std::string& guid) { m_SourceAsset = guid; }
 		void SetGUID(const std::string& guid) { m_GUID = guid; }
 		void SetName(const std::string& name) { m_Name = name; }
 		void SetType(const std::string& type) { m_Type = type; }
@@ -63,6 +66,7 @@ namespace Odyssey
 		std::filesystem::path m_AssetPath;
 
 	protected: // Serialized
+		std::string m_SourceAsset;
 		std::string m_GUID;
 		std::string m_Name;
 		std::string m_Type;

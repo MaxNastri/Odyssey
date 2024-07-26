@@ -18,6 +18,8 @@ namespace Odyssey
 
 	public:
 		ResourceHandle<VulkanShaderModule> GetShaderModule() { return m_ShaderModule; }
+		const std::string& GetShaderCodeGUID() { return m_ShaderCodeGUID; }
+		ShaderType GetShaderType() { return m_ShaderType; }
 
 	public:
 		void Save();

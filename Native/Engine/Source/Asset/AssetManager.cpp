@@ -250,9 +250,14 @@ namespace Odyssey
 		return guid;
 	}
 
-	std::vector<std::string> AssetManager::GetAssetsOfType(const std::string& type)
+	std::vector<std::string> AssetManager::GetAssetsOfType(const std::string& assetType)
 	{
-		return s_AssetDatabase.GetGUIDsOfAssetType(type);
+		std::vector<std::string> assets = s_AssetDatabase.GetGUIDsOfAssetType(assetType);
+		
+		if (assets.empty())
+			assets = s_SourceAssetDatabase.GetGUIDsOfAssetType(assetType);
+		
+		return assets;
 	}
 
 	void AssetManager::UnloadScene(AssetHandle<Scene> scene)
