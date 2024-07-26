@@ -3,6 +3,7 @@
 #include "VulkanGlobals.h"
 #include "Resource.h"
 #include "ResourceHandle.h"
+#include "BinaryBuffer.h"
 
 VK_FWD_DECLARE(VkImage)
 VK_FWD_DECLARE(VkDeviceMemory)
@@ -33,7 +34,7 @@ namespace Odyssey
 		void Destroy();
 
 	public:
-		void SetData(const void* data);
+		void SetData(BinaryBuffer& buffer);
 		void SetLayout(VkImageLayout layout) { imageLayout = layout; }
 	public:
 		static VkImageMemoryBarrier CreateMemoryBarrier(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage);

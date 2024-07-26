@@ -127,7 +127,7 @@ namespace Odyssey
 		imageMemory = VK_NULL_HANDLE;
 	}
 
-	void VulkanImage::SetData(const void* data)
+	void VulkanImage::SetData(BinaryBuffer& buffer)
 	{
 		if (!m_StagingBuffer.IsValid())
 		{
@@ -135,7 +135,7 @@ namespace Odyssey
 			m_StagingBuffer.Get()->AllocateMemory();
 		}
 
-		m_StagingBuffer.Get()->SetMemory(m_Width * m_Height * m_Channels, data);
+		m_StagingBuffer.Get()->SetMemory(m_Width * m_Height * m_Channels, buffer.GetData().data());
 
 
 		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();

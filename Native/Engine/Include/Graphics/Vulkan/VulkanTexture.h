@@ -3,6 +3,7 @@
 #include "Resource.h"
 #include "ResourceHandle.h"
 #include "VulkanImage.h"
+#include "BinaryBuffer.h"
 
 namespace Odyssey
 {
@@ -12,7 +13,7 @@ namespace Odyssey
 	{
 	public:
 		VulkanTexture() = default;
-		VulkanTexture(VulkanImageDescription description, const void* pixelData);
+		VulkanTexture(VulkanImageDescription description, BinaryBuffer& buffer);
 
 	public:
 		ResourceHandle<VulkanImage> GetImage() { return m_Image; }

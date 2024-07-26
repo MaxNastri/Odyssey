@@ -177,9 +177,9 @@ namespace Odyssey
 		return ResourceHandle<VulkanTextureSampler>(id, sampler.get());
 	}
 
-	ResourceHandle<VulkanTexture> ResourceManager::AllocateTexture(VulkanImageDescription imageDesc, const void* pixelData)
+	ResourceHandle<VulkanTexture> ResourceManager::AllocateTexture(VulkanImageDescription imageDesc, BinaryBuffer& buffer)
 	{
-		uint32_t id = s_Resources.Add<VulkanTexture>(imageDesc, pixelData);
+		uint32_t id = s_Resources.Add<VulkanTexture>(imageDesc, buffer);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanTexture> texture = s_Resources.Get<VulkanTexture>(id);

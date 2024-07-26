@@ -142,10 +142,10 @@ namespace Odyssey
 		ResourceManager::DestroyImage(m_Image);
 	}
 
-	void VulkanRenderTexture::SetData(const void* data)
+	void VulkanRenderTexture::SetData(BinaryBuffer& buffer)
 	{
 		if (VulkanImage* image = m_Image.Get())
-			image->SetData(data);
+			image->SetData(buffer);
 	}
 
 	bool VulkanRenderTexture::IsDepthTexture(TextureFormat format)

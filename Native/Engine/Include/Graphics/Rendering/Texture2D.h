@@ -26,12 +26,10 @@ namespace Odyssey
 	private:
 		void SaveToDisk(const std::filesystem::path& assetPath);
 		void LoadFromDisk(const std::filesystem::path& assetPath);
-		std::string PixelDataToHex();
-		void HexToPixelData(const std::string& hexData, uint32_t dataSize);
-
+		
 	private:
 		VulkanImageDescription m_TextureDescription;
 		ResourceHandle<VulkanTexture> m_Texture;
-		std::vector<unsigned char> m_PixelBuffer;
+		std::string m_PixelDataGUID;
 	};
 }

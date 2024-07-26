@@ -50,7 +50,7 @@ namespace Odyssey
 		static ResourceHandle<VulkanImage> AllocateImage(const VulkanImageDescription& imageDescription);
 		static ResourceHandle<VulkanImage> AllocateImage(VkImage vkImage, uint32_t width, uint32_t height, uint32_t channels, VkFormat format);
 		static ResourceHandle<VulkanTextureSampler> AllocateSampler();
-		static ResourceHandle<VulkanTexture> AllocateTexture(VulkanImageDescription imageDesc, const void* pixelData);
+		static ResourceHandle<VulkanTexture> AllocateTexture(VulkanImageDescription imageDesc, BinaryBuffer& buffer);
 
 	public: // Pure destruction
 		static void DestroyBuffer(ResourceHandle<VulkanBuffer> handle);
