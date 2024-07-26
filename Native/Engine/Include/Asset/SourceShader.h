@@ -1,5 +1,7 @@
 #pragma once
 #include "Asset.h"
+#include "BinaryBuffer.h"
+#include "Enums.h"
 
 namespace Odyssey
 {
@@ -11,10 +13,12 @@ namespace Odyssey
 
 	public:
 		bool Compile();
+		bool Compile(BinaryBuffer& codeBuffer);
 
 	public:
 		const std::string& GetShaderLanguage() { return m_ShaderLanguage; }
 		bool IsCompiled() { return m_Compiled; }
+		void SetShaderType(ShaderType shaderType) { m_ShaderType = shaderType; }
 
 	private:
 		std::string ReadShaderFile(const std::filesystem::path& path);
@@ -23,7 +27,7 @@ namespace Odyssey
 		std::string m_ShaderName;
 		std::string m_ShaderLanguage;
 		std::string m_ShaderCode;
-		std::vector<uint32_t> m_ByteCode;
+		ShaderType m_ShaderType;
 		bool m_Compiled = false;
 	};
 }

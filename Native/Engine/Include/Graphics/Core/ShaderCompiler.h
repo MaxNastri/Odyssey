@@ -1,5 +1,6 @@
 #pragma once
 #include "Enums.h"
+#include "BinaryBuffer.h"
 
 namespace Odyssey
 {
@@ -29,7 +30,7 @@ namespace Odyssey
 		};
 
 	public:
-		static bool Compile(const CompilerSettings settings, std::vector<uint32_t>& outByteCode);
+		static bool Compile(const CompilerSettings settings, BinaryBuffer& codeBuffer);
 
 	private:
 		inline static std::string HLSL_EXTENSION = ".hlsl";

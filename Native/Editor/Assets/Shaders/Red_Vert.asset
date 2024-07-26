@@ -2,4 +2,4 @@ m_GUID: '88ecf36e-59d1-4d98-927c-88a2387a4cd3'
 m_Name: RedVert
 m_Type: Shader
 m_ShaderType: 0
-m_ModulePath: 'Assets/Shaders/Compiled/red_vert.spv'
+m_ShaderCode: 'e3b6fce7-e65c-411c-a44f-350c9fd3947d'

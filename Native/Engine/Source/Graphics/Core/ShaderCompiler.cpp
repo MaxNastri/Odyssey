@@ -6,7 +6,7 @@
 
 namespace Odyssey
 {
-	bool ShaderCompiler::Compile(const CompilerSettings settings, std::vector<uint32_t>& outByteCode)
+	bool ShaderCompiler::Compile(const CompilerSettings settings, BinaryBuffer& codeBuffer)
 	{
 		// HLSL Shader
 		shaderc::Compiler compiler;
@@ -41,8 +41,7 @@ namespace Odyssey
 		}
 
 		// Store the bytecode in the out parameter and return success
-		outByteCode.clear();
-		outByteCode = std::vector(result.begin(), result.end());
+		codeBuffer.WriteData(std::vector(result.begin(), result.end()));
 		return true;
 	}
 }

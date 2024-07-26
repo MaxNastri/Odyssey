@@ -2,4 +2,4 @@ m_GUID: '3fbc687a-c486-4f04-81a2-f455e2075f49'
 m_Name: Frag
 m_Type: Shader
 m_ShaderType: 1
-m_ModulePath: Assets/Shaders/Compiled/frag.spv
+m_ShaderCode: 'bde0bee6-4421-4b55-84c1-01ae9eb442ca'

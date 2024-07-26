@@ -13,14 +13,20 @@ namespace Odyssey
 
 	bool SourceShader::Compile()
 	{
+		BinaryBuffer tempBuffer;
+		return Compile(tempBuffer);
+	}
+
+	bool SourceShader::Compile(BinaryBuffer& codeBuffer)
+	{
 		ShaderCompiler::CompilerSettings options;
 		options.ShaderName = m_Name;
 		options.ShaderLanguage = m_ShaderLanguage == "hlsl" ? ShaderLanguage::HLSL : ShaderLanguage::GLSL;
-		options.ShaderType = ShaderType::Vertex;
+		options.ShaderType = m_ShaderType;
 		options.ShaderCode = m_ShaderCode;
 		options.Optimize = false;
 
-		return ShaderCompiler::Compile(options, m_ByteCode);
+		return ShaderCompiler::Compile(options, codeBuffer);
 	}
 
 	std::string SourceShader::ReadShaderFile(const std::filesystem::path& path)

@@ -8,6 +8,7 @@ namespace Odyssey
 	class IntDrawer : public PropertyDrawer
 	{
 	public:
+		IntDrawer() = default;
 		IntDrawer(const std::string& propertyLabel, T initialValue, std::function<void(T)> callback)
 			: PropertyDrawer(propertyLabel)
 		{

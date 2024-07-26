@@ -2,6 +2,8 @@
 #include "VulkanShaderModule.h"
 #include "ResourceManager.h"
 #include "AssetSerializer.h"
+#include "AssetManager.h"
+#include "SourceShader.h"
 
 namespace Odyssey
 {
@@ -10,8 +12,8 @@ namespace Odyssey
 	{
 		LoadFromDisk(assetPath);
 
-		if (!m_ModulePath.empty())
-			m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ModulePath);
+		if (m_ShaderCodeBuffer)
+			m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ShaderCodeBuffer);
 	}
 
 	void Shader::LoadFromDisk(const std::filesystem::path& assetPath)
@@ -25,11 +27,13 @@ namespace Odyssey
 			std::string modulePath;
 
 			root.ReadData("m_ShaderType", shaderType);
-			root.ReadData("m_ModulePath", modulePath);
-
 			m_ShaderType = (ShaderType)shaderType;
-			m_ModulePath = modulePath;
 
+			root.ReadData("m_ShaderCode", m_ShaderCodeGUID);
+			if (!m_ShaderCodeGUID.empty())
+			{
+				m_ShaderCodeBuffer = AssetManager::LoadBinaryAsset(m_ShaderCodeGUID);
+			}
 		}
 	}
 
@@ -50,9 +54,9 @@ namespace Odyssey
 
 		// Serialize metadata first
 		SerializeMetadata(serializer);
-
 		root.WriteData("m_ShaderType", (uint32_t)m_ShaderType);
-		root.WriteData("m_ModulePath", m_ModulePath.c_str());
+		root.WriteData("m_ShaderCode", m_ShaderCodeGUID);
+
 		serializer.WriteToDisk(path);
 	}
 }

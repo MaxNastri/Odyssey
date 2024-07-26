@@ -87,9 +87,9 @@ namespace Odyssey
 		return ResourceHandle<VulkanRenderTexture>(id, texture.get());
 	}
 
-	ResourceHandle<VulkanShaderModule> ResourceManager::AllocateShaderModule(ShaderType shaderType, const std::filesystem::path& filename)
+	ResourceHandle<VulkanShaderModule> ResourceManager::AllocateShaderModule(ShaderType shaderType, BinaryBuffer& codeBuffer)
 	{
-		uint32_t id = s_Resources.Add<VulkanShaderModule>(s_Context, shaderType, filename);
+		uint32_t id = s_Resources.Add<VulkanShaderModule>(s_Context, shaderType, codeBuffer);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanShaderModule> shaderModule = s_Resources.Get<VulkanShaderModule>(id);

@@ -2,10 +2,13 @@
 #include "Asset.h"
 #include "ResourceHandle.h"
 #include "Enums.h"
+#include "AssetHandle.h"
+#include "BinaryBuffer.h"
 
 namespace Odyssey
 {
 	class VulkanShaderModule;
+	class SourceShader;
 
 	class Shader : public Asset
 	{
@@ -26,7 +29,8 @@ namespace Odyssey
 
 	private:
 		ShaderType m_ShaderType;
-		std::filesystem::path m_ModulePath;
+		std::string m_ShaderCodeGUID;
+		BinaryBuffer m_ShaderCodeBuffer;
 		ResourceHandle<VulkanShaderModule> m_ShaderModule;
 	};
 }

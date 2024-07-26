@@ -5,6 +5,7 @@
 #include "ResourceHandle.h"
 #include "VulkanVertex.h"
 #include "VulkanImage.h"
+#include "BinaryBuffer.h"
 
 namespace Odyssey
 {
@@ -39,7 +40,7 @@ namespace Odyssey
 		static ResourceHandle<VulkanRenderTexture> AllocateRenderTexture(uint32_t width, uint32_t height);
 		static ResourceHandle<VulkanRenderTexture> AllocateRenderTexture(ResourceHandle<VulkanImage> imageHandle, TextureFormat format);
 		static ResourceHandle<VulkanRenderTexture> AllocateRenderTexture(uint32_t width, uint32_t height, TextureFormat format);
-		static ResourceHandle<VulkanShaderModule> AllocateShaderModule(ShaderType shaderType, const std::filesystem::path& filename);
+		static ResourceHandle<VulkanShaderModule> AllocateShaderModule(ShaderType shaderType, BinaryBuffer& codeBuffer);
 		static ResourceHandle<VulkanGraphicsPipeline> AllocateGraphicsPipeline(const VulkanPipelineInfo& info);
 		static ResourceHandle<VulkanCommandPool> AllocateCommandPool();
 		static ResourceHandle<VulkanCommandBuffer> AllocateCommandBuffer(ResourceHandle<VulkanCommandPool> commandPool);
