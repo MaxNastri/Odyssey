@@ -11,7 +11,7 @@ project "Odyssey.Native.Editor"
     
     architecture "x86_64"
     
-    flags { "NoPCH", "MultiProcessorCompile" }
+    flags { "MultiProcessorCompile" }
     
     pchheader "PCH.hpp"
     pchsource "Source/PCH.cpp"

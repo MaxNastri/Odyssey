@@ -1,4 +1,4 @@
-#include "TextureInspector.h"
+#include "Texture2DInspector.h"
 #include "AssetManager.h"
 #include "Texture2D.h"
 
@@ -14,7 +14,7 @@ namespace Odyssey
 			m_NameDrawer = StringDrawer("Name", texture->GetName(),
 				[this](const std::string& name) { OnNameChanged(name); });
 			m_TypeDrawer = StringDrawer("Type", texture->GetType(), nullptr, true);
-			m_PixelDataGUID = StringDrawer("Pixel Data", std::string(), nullptr, true);
+			m_PixelDataGUID = StringDrawer("Pixel Data", texture->GetPixelBufferGUID(), nullptr, true);
 			m_SourceAssetDrawer = AssetFieldDrawer("Source Asset", texture->GetSoureAsset(), "SourceTexture",
 				[this](const std::string& asset) { OnSourceAssetchanged(asset); });
 		}

@@ -22,6 +22,7 @@ namespace Odyssey
 
 	public:
 		ResourceHandle<VulkanTexture> GetTexture() { return m_Texture; }
+		std::string GetPixelBufferGUID() { return m_PixelBufferGUID; }
 
 	private:
 		void SaveToDisk(const std::filesystem::path& assetPath);
@@ -30,6 +31,6 @@ namespace Odyssey
 	private:
 		VulkanImageDescription m_TextureDescription;
 		ResourceHandle<VulkanTexture> m_Texture;
-		std::string m_PixelDataGUID;
+		std::string m_PixelBufferGUID;
 	};
 }

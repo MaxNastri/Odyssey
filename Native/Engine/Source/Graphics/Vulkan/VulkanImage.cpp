@@ -131,11 +131,11 @@ namespace Odyssey
 	{
 		if (!m_StagingBuffer.IsValid())
 		{
-			m_StagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, m_Width * m_Height * m_Channels);
+			m_StagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, buffer.GetSize());
 			m_StagingBuffer.Get()->AllocateMemory();
 		}
 
-		m_StagingBuffer.Get()->SetMemory(m_Width * m_Height * m_Channels, buffer.GetData().data());
+		m_StagingBuffer.Get()->SetMemory(buffer.GetSize(), buffer.GetData().data());
 
 
 		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();

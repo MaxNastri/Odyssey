@@ -38,7 +38,7 @@ namespace Odyssey
 
 		root.WriteData("m_Width", m_TextureDescription.Width);
 		root.WriteData("m_Height", m_TextureDescription.Height);
-		root.WriteData("m_PixelDataGUID", m_PixelDataGUID);
+		root.WriteData("m_PixelBufferGUID", m_PixelBufferGUID);
 
 		serializer.WriteToDisk(assetPath);
 	}
@@ -52,12 +52,12 @@ namespace Odyssey
 
 			root.ReadData("m_Width", m_TextureDescription.Width);
 			root.ReadData("m_Height", m_TextureDescription.Height);
-			root.ReadData("m_PixelDataGUID", m_PixelDataGUID);
+			root.ReadData("m_PixelBufferGUID", m_PixelBufferGUID);
 
 			m_TextureDescription.Channels = 4;
 			m_TextureDescription.Format = TextureFormat::R8G8B8A8_UNORM;
 
-			BinaryBuffer pixelBuffer = AssetManager::LoadBinaryAsset(m_PixelDataGUID);
+			BinaryBuffer pixelBuffer = AssetManager::LoadBinaryAsset(m_PixelBufferGUID);
 			m_Texture = ResourceManager::AllocateTexture(m_TextureDescription, pixelBuffer);
 		}
 	}

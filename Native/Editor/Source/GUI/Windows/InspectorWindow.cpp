@@ -7,7 +7,7 @@
 #include "SourceShaderInspector.h"
 #include "ShaderInspector.h"
 #include "MeshInspector.h"
-#include "TextureInspector.h"
+#include "Texture2DInspector.h"
 
 namespace Odyssey
 {
