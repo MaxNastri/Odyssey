@@ -48,22 +48,20 @@ namespace Odyssey
 		{
 			SerializationNode root = deserializer.GetRoot();
 
-			std::string vertexDataGUID;
-			std::string indexDataGUID;
 			root.ReadData("m_VertexCount", m_VertexCount);
-			root.ReadData("m_VertexData", vertexDataGUID);
+			root.ReadData("m_VertexData", m_VerticesGUID);
 			root.ReadData("m_IndexCount", m_IndexCount);
-			root.ReadData("m_IndexData", indexDataGUID);
+			root.ReadData("m_IndexData", m_IndicesGUID);
 
 			// Convert the vertex/index data from hex into real values
-			if (m_VertexCount > 0 && vertexDataGUID != "")
+			if (m_VertexCount > 0 && m_VerticesGUID != "")
 			{
-				BinaryBuffer buffer = AssetManager::LoadBinaryAsset(vertexDataGUID);
+				BinaryBuffer buffer = AssetManager::LoadBinaryAsset(m_VerticesGUID);
 				m_Vertices = buffer.Convert<VulkanVertex>();
 			}
-			if (m_IndexCount > 0 && indexDataGUID != "")
+			if (m_IndexCount > 0 && m_IndicesGUID != "")
 			{
-				BinaryBuffer buffer = AssetManager::LoadBinaryAsset(indexDataGUID);
+				BinaryBuffer buffer = AssetManager::LoadBinaryAsset(m_IndicesGUID);
 				m_Indices = buffer.Convert<uint32_t>();
 			}
 		}

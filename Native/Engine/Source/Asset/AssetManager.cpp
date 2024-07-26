@@ -339,7 +339,7 @@ namespace Odyssey
 
 		// Load it and return a handle
 		std::filesystem::path path = s_AssetDatabase.GUIDToAssetPath(guid);
-		return AssetManager::LoadMesh(path.generic_string());
+		return AssetManager::LoadMesh(path);
 	}
 
 	std::string AssetManager::GenerateGUID()

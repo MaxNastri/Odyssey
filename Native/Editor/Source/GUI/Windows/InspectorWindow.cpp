@@ -6,6 +6,7 @@
 #include "MeshRendererInspector.h"
 #include "SourceShaderInspector.h"
 #include "ShaderInspector.h"
+#include "MeshInspector.h"
 
 namespace Odyssey
 {
@@ -44,5 +45,7 @@ namespace Odyssey
 			m_Inspector = std::make_shared<SourceShaderInspector>(context.GUID);
 		else if (context.Type == "Shader")
 			m_Inspector = std::make_shared<ShaderInspector>(context.GUID);
+		else if (context.Type == "Mesh")
+			m_Inspector = std::make_shared<MeshInspector>(context.GUID);
 	}
 }

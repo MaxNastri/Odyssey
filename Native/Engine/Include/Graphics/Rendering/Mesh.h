@@ -27,6 +27,7 @@ namespace Odyssey
 		ResourceHandle<VulkanVertexBuffer> GetVertexBuffer() { return m_VertexBuffer; }
 		ResourceHandle<VulkanIndexBuffer> GetIndexBuffer() { return m_IndexBuffer; }
 		uint32_t GetIndexCount() { return m_IndexCount; }
+		uint32_t GetVertexCount() { return m_VertexCount; }
 
 	public:
 		void SetVertices(std::vector<VulkanVertex>& vertices);
