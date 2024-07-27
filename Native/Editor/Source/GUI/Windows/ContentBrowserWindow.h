@@ -27,14 +27,12 @@ namespace Odyssey
 
 	private: // Pathing
 		bool m_UpdatePaths = true;
+		std::filesystem::path m_AssetsPath;
 		std::filesystem::path m_CurrentPath;
 		std::vector<std::filesystem::path> m_FoldersToDisplay;
 		std::vector<std::filesystem::path> m_FilesToDisplay;
 
 	private: // Context menu
 		bool m_ContextMenuOpen = false;
-
-	private: // Statics
-		inline static std::filesystem::path s_AssetsPath = "Assets";
 	};
 }

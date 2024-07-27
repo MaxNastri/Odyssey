@@ -6,24 +6,23 @@
 #include "Texture2D.h"
 #include "SourceShader.h"
 #include "AssetSerializer.h"
+
 namespace Odyssey
 {
-	void AssetManager::CreateDatabase()
+	void AssetManager::CreateDatabase(const std::filesystem::path& assetsDirectory, const std::filesystem::path& cacheDirectory)
 	{
-		s_BinaryCache = BinaryCache();
+		s_AssetsDirectory = assetsDirectory;
+		s_BinaryCache = BinaryCache(cacheDirectory);
 
 		// Scan for Assets
 		AssetDatabase::SearchOptions assetSearch;
-		assetSearch.Root = "Assets";
+		assetSearch.Root = s_AssetsDirectory;
 		assetSearch.ExclusionPaths = { };
 		assetSearch.Extensions = { s_AssetExtension, s_SceneExtension };
 		s_AssetDatabase.ScanForAssets(assetSearch);
 
 		// Scan for Source Assets
 		ScanForSourceAssets();
-
-		s_DefaultVertexShader = LoadShader(s_DefaultVertexShaderPath);
-		s_DefaultFragmentShader = LoadShader(s_DefaultFragmentShaderPath);
 	}
 
 	AssetHandle<SourceShader> AssetManager::CreateSourceShader(const std::filesystem::path& sourcePath)
@@ -50,10 +49,6 @@ namespace Odyssey
 		material->SetGUID(GenerateGUID());
 		material->SetName("Default");
 		material->SetType("Material");
-
-		// Assign default shaders
-		material->SetVertexShader(s_DefaultVertexShader);
-		material->SetFragmentShader(s_DefaultFragmentShader);
 
 		// Save to disk
 		material->Save();
@@ -354,7 +349,7 @@ namespace Odyssey
 
 	void AssetManager::ScanForSourceAssets()
 	{
-		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("Assets"))
+		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(s_AssetsDirectory))
 		{
 			auto assetPath = dirEntry.path();
 			auto extension = assetPath.extension().string();

@@ -5,10 +5,11 @@
 #include "ScriptingManager.h"
 #include "GUIManager.h"
 #include "SceneManager.h"
-#include <VulkanRenderer.h>
+#include "VulkanRenderer.h"
 #include "OdysseyTime.h"
 #include "Random.h"
 #include "ShaderCompiler.h"
+#include "ProjectManager.h"
 
 namespace Odyssey
 {
@@ -19,6 +20,9 @@ namespace Odyssey
 		ScriptingManager::Initialize();
 		Random::Initialize();
 
+		ProjectSettings settings("ExampleProject", "C:/Git/Odyssey/Managed");
+		ProjectManager::CreateNewProject(settings);
+
 		// Track the manage project folder for any file changes
 		FileManager::Initialize();
 		FileManager::TrackFolder(Paths::Relative::ManagedProjectSource);
@@ -28,7 +32,8 @@ namespace Odyssey
 		renderer = std::make_shared<VulkanRenderer>();
 		renderer->GetImGui()->SetDrawGUIListener(GUIManager::DrawGUI);
 		GUIManager::Initialize();
-		AssetManager::CreateDatabase();
+
+		AssetManager::CreateDatabase(ProjectManager::GetAssetsDirectory(), ProjectManager::GetCacheDirectory());
 
 		// Start listening for events
 		ScriptCompiler::ListenForEvents();

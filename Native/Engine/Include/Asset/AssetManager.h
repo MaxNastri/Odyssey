@@ -21,7 +21,7 @@ namespace Odyssey
 	class AssetManager
 	{
 	public:
-		static void CreateDatabase();
+		static void CreateDatabase(const std::filesystem::path& assetsDirectory, const std::filesystem::path& cacheDirectory);
 
 	public:
 		static AssetHandle<SourceShader> CreateSourceShader(const std::filesystem::path& sourcePath);
@@ -70,6 +70,7 @@ namespace Odyssey
 		static void ScanForSourceAssets();
 
 	private: // Assets
+		inline static std::filesystem::path s_AssetsDirectory;
 		inline static AssetDatabase s_AssetDatabase;
 		inline static DynamicList<Asset> s_Assets;
 		inline static std::map<std::string, uint32_t> s_LoadedAssets;
@@ -82,10 +83,8 @@ namespace Odyssey
 	private: // Binary Assets
 		inline static BinaryCache s_BinaryCache;
 
-	private:
+	private: // UUID
 		inline static UUIDv4::UUIDGenerator<std::mt19937_64> s_GUIDGenerator;
-		inline static AssetHandle<Shader> s_DefaultVertexShader;
-		inline static AssetHandle<Shader> s_DefaultFragmentShader;
 
 	private: // Const
 		inline static std::string s_AssetExtension = ".asset";
@@ -101,8 +100,5 @@ namespace Odyssey
 			{".png", "SourceTexture"},
 			{".jpg", "SourceTexture"},
 		};
-
-		inline static std::string s_DefaultVertexShaderPath = "Assets/Shaders/Vert.shader";
-		inline static std::string s_DefaultFragmentShaderPath = "Assets/Shaders/Frag.shader";
 	};
 }

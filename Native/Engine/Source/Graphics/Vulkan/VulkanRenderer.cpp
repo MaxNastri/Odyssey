@@ -36,7 +36,7 @@ namespace Odyssey
 
 		// Set the default font for IMGUI
 		float fontSize = std::floor(DEFAULT_FONT_SIZE * m_Window->GetWindow()->GetContentScale());
-		m_Imgui->SetFont("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
+		m_Imgui->SetFont("Resources/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
 
 		m_RenderingData = std::make_shared<PerFrameRenderingData>();
 

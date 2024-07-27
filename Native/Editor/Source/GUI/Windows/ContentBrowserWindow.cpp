@@ -10,6 +10,7 @@
 #include "Scene.h"
 #include "Texture2D.h"
 #include "Material.h"
+#include "ProjectManager.h"
 
 namespace Odyssey
 {
@@ -17,7 +18,8 @@ namespace Odyssey
 		: DockableWindow("Content Browser",
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
-		m_CurrentPath = s_AssetsPath;
+		m_AssetsPath = ProjectManager::GetAssetsDirectory();
+		m_CurrentPath = m_AssetsPath;
 		UpdatePaths();
 	}
 
@@ -40,7 +42,7 @@ namespace Odyssey
 		if (!Begin())
 			return;
 
-		if (m_CurrentPath != s_AssetsPath)
+		if (m_CurrentPath != m_AssetsPath)
 		{
 			if (ImGui::Button("<-"))
 			{

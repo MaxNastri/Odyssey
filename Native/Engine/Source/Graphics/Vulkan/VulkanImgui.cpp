@@ -114,7 +114,6 @@ namespace Odyssey
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.Fonts->AddFontFromFileTTF(fontFile.string().c_str(), fontSize);
-
 		UploadFont();
 	}
 
