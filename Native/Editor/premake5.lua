@@ -23,11 +23,6 @@ project "Odyssey.Native.Editor"
     filter { }
 
     files {
-        "Include/**.h",
-        "Include/**.inl",
-        "Include/**.cpp",
-        "Include/**.hpp",
-        "Include/**.hlsl",
         "Source/**.h",
         "Source/**.inl",
         "Source/**.cpp",
@@ -45,8 +40,8 @@ project "Odyssey.Native.Editor"
     }
     
     includedirs {
-        "Include",
-        "Include/**",
+        "Source",
+        "Source/**",
     }
 
     libdirs {

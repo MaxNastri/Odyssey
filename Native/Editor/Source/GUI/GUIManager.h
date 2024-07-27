@@ -1,0 +1,55 @@
+#pragma once
+#include "EditorEnums.h"
+#include "GameObject.h"
+#include "InspectorWindow.h"
+#include "SceneHierarchyWindow.h"
+#include "SceneViewWindow.h"
+#include "ContentBrowserWindow.h"
+#include "RayTracingWindow.h"
+#include "EditorMenuBar.h"
+
+namespace Odyssey
+{
+	struct OnGUIRenderEvent;
+	struct OnSceneLoaded;
+	class ImguiPass;
+
+	class GUIManager
+	{
+	public:
+		static void Initialize();
+
+	public:
+		static void CreateInspectorWindow(GameObject* gameObject);
+		static void CreateSceneHierarchyWindow();
+		static void CreateSceneViewWindow();
+		static void CreateContentBrowserWindow();
+		static void CreateRayTracingWindow();
+
+	public:
+		static void Update();
+		static void DrawGUI();
+		static void SceneLoaded(OnSceneLoaded* sceneLoadedEvent);
+		static void OnGameObjectSelected(int32_t id);
+		static void OnSelectionContextChanged(const GUISelection& context);
+	public:
+		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
+		static SceneViewWindow& GetSceneViewWindow(uint32_t index) { return sceneViewWindows[index]; }
+
+	private:
+		static void OnFilesChanged(const NotificationSet& notificationSet);
+		static void SetDarkThemeColors();
+
+	private:
+		inline static EditorMenuBar s_MenuBar;
+
+		// Windows
+		inline static std::vector<InspectorWindow> inspectorWindows;
+		inline static std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
+		inline static std::vector<SceneViewWindow> sceneViewWindows;
+		inline static std::vector<ContentBrowserWindow> contentBrowserWindows;
+		inline static std::vector<RayTracingWindow> s_RayTracingWindows;
+		inline static int32_t selectedObject = -1;
+		inline static std::shared_ptr<ImguiPass> m_GUIPass;
+	};
+}

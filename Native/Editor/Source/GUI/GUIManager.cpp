@@ -14,13 +14,10 @@
 
 namespace Odyssey
 {
-	GUIManager::GUIManager()
+	void GUIManager::Initialize()
 	{
-		auto onSceneLoaded = [this](OnSceneLoaded* evnt) { SceneLoaded(evnt); };
-		auto onFilesChanged = [this](const NotificationSet& notifs) { OnFilesChanged(notifs); };
-
-		EventSystem::Listen<OnSceneLoaded>(onSceneLoaded);
-		FileManager::AddFilesChangedCallback(onFilesChanged);
+		EventSystem::Listen<OnSceneLoaded>(SceneLoaded);
+		FileManager::AddFilesChangedCallback(OnFilesChanged);
 
 		m_GUIPass = std::make_shared<ImguiPass>();
 		m_GUIPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
@@ -38,8 +35,7 @@ namespace Odyssey
 	{
 		sceneHierarchyWindows.push_back(SceneHierarchyWindow());
 
-		auto onGameObjectSelected = [this](int32_t id) { OnGameObjectSelected(id); };
-		sceneHierarchyWindows[sceneHierarchyWindows.size() - 1].OnGameObjectSelected(onGameObjectSelected);
+		sceneHierarchyWindows[sceneHierarchyWindows.size() - 1].OnGameObjectSelected(OnGameObjectSelected);
 	}
 
 	void GUIManager::CreateSceneViewWindow()
@@ -152,11 +148,6 @@ namespace Odyssey
 		{
 			window.OnSelectionContextChanged(context);
 		}
-	}
-
-	std::function<void(void)> GUIManager::GetDrawGUIListener()
-	{
-		return [this]() { DrawGUI(); };
 	}
 
 	void GUIManager::OnFilesChanged(const NotificationSet& notificationSet)

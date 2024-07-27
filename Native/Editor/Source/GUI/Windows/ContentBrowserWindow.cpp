@@ -10,7 +10,6 @@
 #include "Scene.h"
 #include "Texture2D.h"
 #include "Material.h"
-#include "EditorContext.h"
 
 namespace Odyssey
 {
@@ -214,7 +213,7 @@ namespace Odyssey
 			selection.GUID = AssetManager::PathToGUID(sourcePath);
 			selection.Type = AssetManager::GUIDToAssetType(selection.GUID);
 			selection.FilePath = sourcePath;
-			EditorContext::GetInstance()->GetGUIManager()->OnSelectionContextChanged(selection);
+			GUIManager::OnSelectionContextChanged(selection);
 		}
 		ImGui::PopID();
 	}
@@ -229,7 +228,7 @@ namespace Odyssey
 			GUISelection selection;
 			selection.GUID = AssetManager::PathToGUID(assetPath);
 			selection.Type = AssetManager::GUIDToAssetType(selection.GUID);
-			EditorContext::GetInstance()->GetGUIManager()->OnSelectionContextChanged(selection);
+			GUIManager::OnSelectionContextChanged(selection);
 		}
 
 		// Allow for this asset to be a potential draw/drop payload
