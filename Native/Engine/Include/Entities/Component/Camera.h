@@ -10,8 +10,8 @@ namespace Odyssey
 	{
 	public:
 		virtual void Awake() override;
-		virtual void Serialize(ryml::NodeRef& node) override;
-		virtual void Deserialize(ryml::ConstNodeRef node) override;
+		virtual void Serialize(SerializationNode& node) override;
+		virtual void Deserialize(SerializationNode& node) override;
 
 	public:
 		bool IsMainCamera() { return m_MainCamera; }

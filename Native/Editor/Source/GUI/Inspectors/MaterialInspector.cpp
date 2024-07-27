@@ -27,7 +27,7 @@ namespace Odyssey
 		m_NameDrawer = StringDrawer("Name", m_Material->GetName(),
 			[material](const std::string& name) { OnNameModified(material, name); });
 
-		m_GUIDDrawer = ReadOnlyStringDrawer("GUID", m_Material->GetGUID());
+		m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID(), nullptr, true);
 
 		m_FragmentShaderDrawer = AssetFieldDrawer("Fragment Shader", fragmentShaderGUID, "Shader",
 			[material](const std::string& guid) { OnFragmentShaderModified(material, guid); });
@@ -63,7 +63,7 @@ namespace Odyssey
 			m_NameDrawer = StringDrawer("Name", m_Material->GetName(),
 				[material](const std::string& name) { OnNameModified(material, name); });
 
-			m_GUIDDrawer = ReadOnlyStringDrawer("GUID", m_Material->GetGUID());
+			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID(), nullptr, true);
 
 			m_FragmentShaderDrawer = AssetFieldDrawer("Fragment Shader", fragmentShaderGUID, "Shader",
 				[material](const std::string& guid) { OnFragmentShaderModified(material, guid); });
@@ -78,32 +78,22 @@ namespace Odyssey
 
 	void MaterialInspector::Draw()
 	{
-		if (ImGui::BeginTable("MaterialInspector", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
-		{
-			ImGui::TableSetupColumn("##A", 0, 0.4f);
-			m_NameDrawer.Draw();
-			ImGui::TableNextRow();
-			m_GUIDDrawer.Draw();
-			ImGui::TableNextRow();
-			m_VertexShaderDrawer.Draw();
-			ImGui::TableNextRow();
-			m_FragmentShaderDrawer.Draw();
-			ImGui::TableNextRow();
-			m_TextureDrawer.Draw();
-			ImGui::TableNextRow();
-			ImGui::EndTable();
-			
-			bool modified = m_NameDrawer.IsModified() || m_VertexShaderDrawer.IsModified() || m_FragmentShaderDrawer.IsModified();
+		m_GUIDDrawer.Draw();
+		m_NameDrawer.Draw();
+		m_VertexShaderDrawer.Draw();
+		m_FragmentShaderDrawer.Draw();
+		m_TextureDrawer.Draw();
 
-			if (modified)
+		bool modified = m_NameDrawer.IsModified() || m_VertexShaderDrawer.IsModified() || m_FragmentShaderDrawer.IsModified();
+
+		if (modified)
+		{
+			if (ImGui::Button("Save"))
 			{
-				if (ImGui::Button("Save"))
-				{
-					m_Material->Save();
-					m_NameDrawer.SetModified(false);
-					m_VertexShaderDrawer.SetModified(false);
-					m_FragmentShaderDrawer.SetModified(false);
-				}
+				m_Material->Save();
+				m_NameDrawer.SetModified(false);
+				m_VertexShaderDrawer.SetModified(false);
+				m_FragmentShaderDrawer.SetModified(false);
 			}
 		}
 	}

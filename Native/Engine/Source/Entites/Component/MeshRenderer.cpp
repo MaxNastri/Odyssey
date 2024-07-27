@@ -13,23 +13,22 @@ namespace Odyssey
 		m_Material = material;
 	}
 
-	void MeshRenderer::Serialize(ryml::NodeRef& node)
+	void MeshRenderer::Serialize(SerializationNode& node)
 	{
-		ryml::NodeRef componentNode = node.append_child();
-		componentNode |= ryml::MAP;
-		
-		componentNode["Name"] << MeshRenderer::Type;
-		componentNode["m_Mesh"] << m_Mesh.Get()->GetGUID();
-		componentNode["m_Material"] << m_Material.Get()->GetGUID();
+		SerializationNode componentNode = node.AppendChild();
+		componentNode.SetMap();
+		componentNode.WriteData("Name", MeshRenderer::Type);
+		componentNode.WriteData("m_Mesh", m_Mesh.Get()->GetGUID());
+		componentNode.WriteData("m_Material", m_Material.Get()->GetGUID());
 	}
 
-	void MeshRenderer::Deserialize(ryml::ConstNodeRef node)
+	void MeshRenderer::Deserialize(SerializationNode& node)
 	{
 		std::string meshGUID;;
 		std::string materialGUID;
 
-		node["m_Mesh"] >> meshGUID;
-		node["m_Material"] >> materialGUID;
+		node.ReadData("m_Mesh", meshGUID);
+		node.ReadData("m_Material", materialGUID);
 
 		m_Material = AssetManager::LoadMaterialByGUID(materialGUID);
 		m_Mesh = AssetManager::LoadMeshByGUID(meshGUID);

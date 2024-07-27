@@ -1,6 +1,6 @@
 #pragma once
 #include "Globals.h"
-#include "ryml.hpp"
+#include "AssetSerializer.h"
 
 namespace Odyssey
 {
@@ -14,8 +14,8 @@ namespace Odyssey
 		virtual void Awake() { }
 		virtual void Update() { }
 		virtual void OnDestroy() { }
-		virtual void Serialize(ryml::NodeRef& node) { }
-		virtual void Deserialize(ryml::ConstNodeRef node) { }
+		virtual void Serialize(SerializationNode& node) { }
+		virtual void Deserialize(SerializationNode& node) { }
 
 	public:
 		void SetGameObject(GameObject* go)

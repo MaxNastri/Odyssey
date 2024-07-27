@@ -65,35 +65,18 @@ namespace Odyssey
 		// Now files
 		for (auto& path : m_FilesToDisplay)
 		{
-			auto relativePath = std::filesystem::relative(path);
-			std::string filename = relativePath.filename().string();
-
-			if (relativePath.extension() == ".yaml")
+			if (path.extension() == ".scene")
 			{
-				if (ImGui::Button(filename.c_str()))
-				{
-					const std::string& pathStr = path.string();
-
-					SceneManager::LoadScene(pathStr);
-				}
+				// Scene path
+				DrawSceneAsset(path);
 			}
-			else
+			else if (path.extension() == ".glsl") // Source asset lane
 			{
-				ImGui::PushID(filename.c_str());
-				if (ImGui::Selectable(filename.c_str()))
-				{
-					GUISelection selection;
-					selection.guid = AssetManager::PathToGUID(path);
-					selection.Type = GUISelection::SelectionType::Material;
-					GUIManager::OnSelectionContextChanged(selection);
-				}
-				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-				{
-					std::string guid = AssetManager::PathToGUID(path);
-					ImGui::SetDragDropPayload("Asset", guid.c_str(), sizeof(guid));
-					ImGui::EndDragDropSource();
-				}
-				ImGui::PopID();
+				DrawSourceAsset(path);
+			}
+			else // Asset lane
+			{
+				DrawAsset(path);
 			}
 		}
 
@@ -206,5 +189,56 @@ namespace Odyssey
 			}
 			ImGui::EndPopup();
 		}
+	}
+	
+	void ContentBrowserWindow::DrawSceneAsset(const std::filesystem::path& assetPath)
+	{
+		std::string filename = assetPath.filename().string();
+
+		if (ImGui::Button(filename.c_str()))
+		{
+			SceneManager::LoadScene(assetPath.string());
+		}
+	}
+
+	void ContentBrowserWindow::DrawSourceAsset(const std::filesystem::path& sourcePath)
+	{
+		std::string filename = sourcePath.filename().string();
+		ImGui::PushID(filename.c_str());
+
+		if (ImGui::Selectable(filename.c_str()))
+		{
+			// TODO: Use the asset manager to parse source file types
+			GUISelection selection;
+			selection.GUID = AssetManager::PathToGUID(sourcePath);
+			selection.Type = AssetManager::GUIDToAssetType(selection.GUID);
+			selection.FilePath = sourcePath;
+			GUIManager::OnSelectionContextChanged(selection);
+		}
+		ImGui::PopID();
+	}
+	void ContentBrowserWindow::DrawAsset(const std::filesystem::path& assetPath)
+	{
+		std::string filename = assetPath.filename().string();
+
+		ImGui::PushID(filename.c_str());
+
+		if (ImGui::Selectable(filename.c_str()))
+		{
+			GUISelection selection;
+			selection.GUID = AssetManager::PathToGUID(assetPath);
+			selection.Type = AssetManager::GUIDToAssetType(selection.GUID);
+			GUIManager::OnSelectionContextChanged(selection);
+		}
+
+		// Allow for this asset to be a potential draw/drop payload
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+		{
+			std::string guid = AssetManager::PathToGUID(assetPath);
+			ImGui::SetDragDropPayload("Asset", guid.c_str(), sizeof(guid));
+			ImGui::EndDragDropSource();
+		}
+
+		ImGui::PopID();
 	}
 }

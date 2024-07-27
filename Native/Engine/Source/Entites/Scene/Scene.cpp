@@ -2,7 +2,7 @@
 #include "ComponentManager.h"
 #include <fstream>
 #include <string>
-#include <Yaml.h>
+#include "AssetSerializer.h"
 
 namespace Odyssey
 {
@@ -14,8 +14,8 @@ namespace Odyssey
 		nextGameObjectID = 0;
 	}
 
-	Scene::Scene(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath)
-		: Asset(assetPath, metaPath)
+	Scene::Scene(const std::filesystem::path& assetPath)
+		: Asset(assetPath)
 	{
 		awakeFunc = [](Component* component) { component->Awake(); };
 		updateFunc = [](Component* component) { component->Update(); };
@@ -28,12 +28,12 @@ namespace Odyssey
 	GameObject* Scene::CreateGameObject()
 	{
 		// Create a new game object
-		uint32_t id = nextGameObjectID++;
-		std::shared_ptr<GameObject> gameObject = std::make_shared<GameObject>(id);
+		GameObject* gameObject = CreateEmptyGameObject();
 
-		gameObjects.push_back(gameObject);
-		gameObjectsByID[id] = gameObject;
-		return gameObject.get();
+		// Automatically add a transform component for new game objects
+		gameObject->AddComponent<Transform>();
+
+		return gameObject;
 	}
 
 	void Scene::DestroyGameObject(GameObject* gameObject)
@@ -99,58 +99,63 @@ namespace Odyssey
 
 	void Scene::Save()
 	{
-		SaveMetadata();
 		SaveToDisk(m_AssetPath);
 	}
 
 	void Scene::Load()
 	{
-		LoadMetadata();
 		LoadFromDisk(m_AssetPath);
+	}
+
+	GameObject* Scene::CreateEmptyGameObject()
+	{
+		// Create a new game object
+		uint32_t id = nextGameObjectID++;
+		std::shared_ptr<GameObject> gameObject = std::make_shared<GameObject>(id);
+
+		gameObjects.push_back(gameObject);
+		gameObjectsByID[id] = gameObject;
+
+		return gameObject.get();
 	}
 
 	void Scene::SaveToDisk(const std::filesystem::path& assetPath)
 	{
-		ryml::Tree tree;
-		ryml::NodeRef root = tree.rootref();
-		root |= ryml::MAP;
+		AssetSerializer serializer;
+		SerializationNode root = serializer.GetRoot();
 
-		ryml::NodeRef gameObjectsNode = root["GameObjects"];
-		gameObjectsNode |= ryml::SEQ;
+		// Serialize the metadata first
+		SerializeMetadata(serializer);
+
+		SerializationNode gameObjectsNode = root.CreateSequenceNode("GameObjects");
 
 		for (auto& gameObject : gameObjects)
 		{
 			gameObject->Serialize(gameObjectsNode);
 		}
 
-		FILE* file2 = fopen(assetPath.string().c_str(), "w+");
-		size_t len = ryml::emit_yaml(tree, tree.root_id(), file2);
-		fclose(file2);
+		serializer.WriteToDisk(assetPath);
 	}
 
 	void Scene::LoadFromDisk(const std::filesystem::path& assetPath)
 	{
-		if (std::ifstream ifs{ assetPath })
+		AssetDeserializer deserializer(assetPath);
+
+		if (deserializer.IsValid())
 		{
-			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
-			ryml::NodeRef root = tree.rootref();
+			SerializationNode root = deserializer.GetRoot();
+			SerializationNode gameObjectsNode = root.GetNode("GameObjects");
 
-			ryml::NodeRef gameObjectsNode = root["GameObjects"];
+			assert(gameObjectsNode.IsSequence());
+			assert(gameObjectsNode.HasChildren());
 
-			assert(gameObjectsNode.is_seq());
-			assert(gameObjectsNode.has_children());
-
-			for (size_t i = 0; i < gameObjectsNode.num_children(); i++)
+			for (size_t i = 0; i < gameObjectsNode.ChildCount(); i++)
 			{
-				GameObject* gameObject = CreateGameObject();
-				ryml::NodeRef child = gameObjectsNode.child(i);
+				GameObject* gameObject = CreateEmptyGameObject();
+				SerializationNode child = gameObjectsNode.GetChild(i);
 				gameObject->Deserialize(child);
 			}
 		}
-		else
-			std::cout << "Cannot open file\n";
-
 	}
 
 	Camera* Scene::GetMainCamera()

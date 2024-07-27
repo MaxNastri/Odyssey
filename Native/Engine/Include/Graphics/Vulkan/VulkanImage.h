@@ -3,6 +3,7 @@
 #include "VulkanGlobals.h"
 #include "Resource.h"
 #include "ResourceHandle.h"
+#include "BinaryBuffer.h"
 
 VK_FWD_DECLARE(VkImage)
 VK_FWD_DECLARE(VkDeviceMemory)
@@ -15,6 +16,7 @@ namespace Odyssey
 		TextureFormat Format = TextureFormat::R8G8B8A8_UNORM;
 		uint32_t Width = 1;
 		uint32_t Height = 1;
+		uint32_t Channels = 3;
 		uint32_t Depth = 1;
 		uint32_t MipLevels = 1;
 		uint32_t ArrayLayers = 1;
@@ -28,11 +30,11 @@ namespace Odyssey
 	{
 	public:
 		VulkanImage(std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc);
-		VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, VkFormat format);
+		VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, uint32_t channels, VkFormat format);
 		void Destroy();
 
 	public:
-		void SetData(const void* data);
+		void SetData(BinaryBuffer& buffer);
 		void SetLayout(VkImageLayout layout) { imageLayout = layout; }
 	public:
 		static VkImageMemoryBarrier CreateMemoryBarrier(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage);
@@ -56,7 +58,7 @@ namespace Odyssey
 		VkImageView imageView;
 		VkImageLayout imageLayout;
 		VkDeviceMemory imageMemory;
-		uint32_t m_Width, m_Height;
+		uint32_t m_Width, m_Height, m_Channels;
 		ResourceHandle<VulkanBuffer> m_StagingBuffer;
 		bool isDepth = false;
 	};

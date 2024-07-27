@@ -13,7 +13,7 @@ namespace Odyssey
 	{
 	public:
 		Mesh() = default;
-		Mesh(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath);
+		Mesh(const std::filesystem::path& assetPath);
 
 	public:
 		void Save();
@@ -23,27 +23,26 @@ namespace Odyssey
 		void SaveToDisk(const std::filesystem::path& assetPath);
 		void LoadFromDisk(const std::filesystem::path& assetPath);
 
-	private:
-		std::string VertexDataToHex();
-		void HexToVertexData(const std::string& hexData, uint32_t vertexCount);
-		std::string IndexDataToHex();
-		void HexToIndexData(const std::string& hexData, uint32_t indexCount);
-
 	public:
 		ResourceHandle<VulkanVertexBuffer> GetVertexBuffer() { return m_VertexBuffer; }
 		ResourceHandle<VulkanIndexBuffer> GetIndexBuffer() { return m_IndexBuffer; }
 		uint32_t GetIndexCount() { return m_IndexCount; }
+		uint32_t GetVertexCount() { return m_VertexCount; }
 
 	public:
 		void SetVertices(std::vector<VulkanVertex>& vertices);
 		void SetIndices(std::vector<uint32_t>& indices);
 
-	private:
-		std::vector<VulkanVertex> m_Vertices;
-		std::vector<uint32_t> m_Indices;
+	private: // Vertices
+		std::string m_VerticesGUID;
 		uint32_t m_VertexCount;
-		uint32_t m_IndexCount;
+		std::vector<VulkanVertex> m_Vertices;
 		ResourceHandle<VulkanVertexBuffer> m_VertexBuffer;
+
+	private: // Indices
+		std::string m_IndicesGUID;
+		uint32_t m_IndexCount;
+		std::vector<uint32_t> m_Indices;
 		ResourceHandle<VulkanIndexBuffer> m_IndexBuffer;
 	};
 }

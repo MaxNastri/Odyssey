@@ -29,17 +29,8 @@ namespace Odyssey
 	{
 		if (ImGui::CollapsingHeader(displayName.c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			if (ImGui::BeginTable("##UserScriptInspector", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
-			{
-				ImGui::TableSetupColumn("##B", 0, 0.4f);
-
-				for (const auto& drawer : drawers)
-				{
-					drawer->Draw();
-					ImGui::TableNextRow();
-				}
-				ImGui::EndTable();
-			}
+			for (const auto& drawer : drawers)
+				drawer->Draw();
 		}
 
 	}
@@ -84,72 +75,72 @@ namespace Odyssey
 	{
 		switch (managedType)
 		{
-			case Coral::ManagedType::SByte:
-			{
-				char8_t intialValue = userObject.GetFieldValue<char8_t>(fieldName);
-				AddIntDrawer<char8_t>(gameObject, className, fieldName, intialValue, drawers);
-				break;
-			}
-			case Coral::ManagedType::Byte:
-			{
-				uint8_t intialValue = userObject.GetFieldValue<uint8_t>(fieldName);
-				AddIntDrawer<uint8_t>(gameObject, className, fieldName, intialValue, drawers);
-				break;
-			}
-			case Coral::ManagedType::Short:
-			{
-				int16_t intialValue = userObject.GetFieldValue<uint16_t>(fieldName);
-				AddIntDrawer<int16_t>(gameObject, className, fieldName, intialValue, drawers);
-				break;
-			}
-			case Coral::ManagedType::UShort:
-			{
-				uint16_t intialValue = userObject.GetFieldValue<uint16_t>(fieldName);
-				AddIntDrawer<uint16_t>(gameObject, className, fieldName, intialValue, drawers);
-				break;
-			}
-			case Coral::ManagedType::UInt:
-			{
-				uint32_t intialValue = userObject.GetFieldValue<uint32_t>(fieldName);
-				AddIntDrawer<uint32_t>(gameObject, className, fieldName, intialValue, drawers);
-				break;
-			}
-			case Coral::ManagedType::Long:
-			{
-				uint64_t intialValue = userObject.GetFieldValue<uint64_t>(fieldName);
-				AddIntDrawer<uint64_t>(gameObject, className, fieldName, intialValue, drawers);
-				break;
-			}
-			case Coral::ManagedType::ULong:
-			{
-				uint64_t intialValue = userObject.GetFieldValue<uint64_t>(fieldName);
-				AddIntDrawer<uint64_t>(gameObject, className, fieldName, intialValue, drawers);
-				break;
-			}
-			case Coral::ManagedType::Int:
-			{
-				int32_t intialValue = userObject.GetFieldValue<int32_t>(fieldName);
-				AddIntDrawer<int32_t>(gameObject, className, fieldName, intialValue, drawers);
-				break;
-			}
-			case Coral::ManagedType::Bool:
-			{
-				bool initialValue = userObject.GetFieldValue<uint32_t>(fieldName);
-				AddBoolDrawer(gameObject, className, fieldName, initialValue, drawers);
-				break;
-			}
-			case Coral::ManagedType::Double:
-			{
-				double intialValue = userObject.GetFieldValue<double>(fieldName);
-				AddDoubleDrawer(gameObject, className, fieldName, intialValue, drawers);
-				break;
-			}
-			case Coral::ManagedType::Float:
-			{
-				float intialValue = userObject.GetFieldValue<float>(fieldName);
-				AddFloatDrawer(gameObject, className, fieldName, intialValue, drawers);
-				break;
-			}
+		case Coral::ManagedType::SByte:
+		{
+			char8_t intialValue = userObject.GetFieldValue<char8_t>(fieldName);
+			AddIntDrawer<char8_t>(gameObject, className, fieldName, intialValue, drawers);
+			break;
+		}
+		case Coral::ManagedType::Byte:
+		{
+			uint8_t intialValue = userObject.GetFieldValue<uint8_t>(fieldName);
+			AddIntDrawer<uint8_t>(gameObject, className, fieldName, intialValue, drawers);
+			break;
+		}
+		case Coral::ManagedType::Short:
+		{
+			int16_t intialValue = userObject.GetFieldValue<uint16_t>(fieldName);
+			AddIntDrawer<int16_t>(gameObject, className, fieldName, intialValue, drawers);
+			break;
+		}
+		case Coral::ManagedType::UShort:
+		{
+			uint16_t intialValue = userObject.GetFieldValue<uint16_t>(fieldName);
+			AddIntDrawer<uint16_t>(gameObject, className, fieldName, intialValue, drawers);
+			break;
+		}
+		case Coral::ManagedType::UInt:
+		{
+			uint32_t intialValue = userObject.GetFieldValue<uint32_t>(fieldName);
+			AddIntDrawer<uint32_t>(gameObject, className, fieldName, intialValue, drawers);
+			break;
+		}
+		case Coral::ManagedType::Long:
+		{
+			uint64_t intialValue = userObject.GetFieldValue<uint64_t>(fieldName);
+			AddIntDrawer<uint64_t>(gameObject, className, fieldName, intialValue, drawers);
+			break;
+		}
+		case Coral::ManagedType::ULong:
+		{
+			uint64_t intialValue = userObject.GetFieldValue<uint64_t>(fieldName);
+			AddIntDrawer<uint64_t>(gameObject, className, fieldName, intialValue, drawers);
+			break;
+		}
+		case Coral::ManagedType::Int:
+		{
+			int32_t intialValue = userObject.GetFieldValue<int32_t>(fieldName);
+			AddIntDrawer<int32_t>(gameObject, className, fieldName, intialValue, drawers);
+			break;
+		}
+		case Coral::ManagedType::Bool:
+		{
+			bool initialValue = userObject.GetFieldValue<uint32_t>(fieldName);
+			AddBoolDrawer(gameObject, className, fieldName, initialValue, drawers);
+			break;
+		}
+		case Coral::ManagedType::Double:
+		{
+			double intialValue = userObject.GetFieldValue<double>(fieldName);
+			AddDoubleDrawer(gameObject, className, fieldName, intialValue, drawers);
+			break;
+		}
+		case Coral::ManagedType::Float:
+		{
+			float intialValue = userObject.GetFieldValue<float>(fieldName);
+			AddFloatDrawer(gameObject, className, fieldName, intialValue, drawers);
+			break;
+		}
 		}
 	}
 

@@ -4,10 +4,10 @@
 
 namespace Odyssey
 {
-	VulkanTexture::VulkanTexture(VulkanImageDescription description, const void* pixelData)
+	VulkanTexture::VulkanTexture(VulkanImageDescription description, BinaryBuffer& buffer)
 	{
 		m_Image = ResourceManager::AllocateImage(description);
-		m_Image.Get()->SetData(pixelData);
+		m_Image.Get()->SetData(buffer);
 
 		m_Sampler = ResourceManager::AllocateSampler();
 

@@ -11,6 +11,8 @@ project "Odyssey.Native.Editor"
     
     architecture "x86_64"
     
+    flags { "MultiProcessorCompile" }
+    
     pchheader "PCH.hpp"
     pchsource "Source/PCH.cpp"
 
@@ -21,11 +23,6 @@ project "Odyssey.Native.Editor"
     filter { }
 
     files {
-        "Include/**.h",
-        "Include/**.inl",
-        "Include/**.cpp",
-        "Include/**.hpp",
-        "Include/**.hlsl",
         "Source/**.h",
         "Source/**.inl",
         "Source/**.cpp",
@@ -43,17 +40,24 @@ project "Odyssey.Native.Editor"
     }
     
     includedirs {
-        "Include",
-        "Include/**",
+        "Source",
+        "Source/**",
     }
 
     libdirs {
         "%{cfg.targetdir}",
+        "%{wks.location}/Vendor/Vulkan/Lib/"
     }
 
     links {
         "Odyssey.Native.Engine.lib",
-        "assimp-vc143-mt.lib"
+        "assimp-vc143-mt.lib",
+        "shaderc_combined.lib",
+        "spirv-cross-core.lib",
+        "spirv-cross-glsl.lib",
+        "spirv-cross-hlsl.lib",
+        "spirv-cross-reflect.lib",
+        "spirv-cross-util.lib"
     }
 
     filter { "configurations:Debug" }

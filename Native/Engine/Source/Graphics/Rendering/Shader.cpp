@@ -1,61 +1,62 @@
 #include "Shader.h"
-#include "ryml.hpp"
 #include "VulkanShaderModule.h"
 #include "ResourceManager.h"
+#include "AssetSerializer.h"
+#include "AssetManager.h"
+#include "SourceShader.h"
 
 namespace Odyssey
 {
-	Shader::Shader(const std::filesystem::path& assetPath, const std::filesystem::path& metaPath)
-		: Asset(assetPath, metaPath)
+	Shader::Shader(const std::filesystem::path& assetPath)
+		: Asset(assetPath)
 	{
 		LoadFromDisk(assetPath);
 
-		if (!m_ModulePath.empty())
-			m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ModulePath);
+		if (m_ShaderCodeBuffer)
+			m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ShaderCodeBuffer);
 	}
 
-	void Shader::LoadFromDisk(const std::filesystem::path& path)
+	void Shader::LoadFromDisk(const std::filesystem::path& assetPath)
 	{
-		if (std::ifstream ifs{ path })
+		AssetDeserializer deserializer(assetPath);
+		if (deserializer.IsValid())
 		{
-			std::string data((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-			ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(data));
-			ryml::NodeRef node = tree.rootref();
+			SerializationNode root = deserializer.GetRoot();
 
 			uint32_t shaderType = 0;
 			std::string modulePath;
 
-			node["m_ShaderType"] >> shaderType;
-			node["m_ModulePath"] >> modulePath;
-
+			root.ReadData("m_ShaderType", shaderType);
 			m_ShaderType = (ShaderType)shaderType;
-			m_ModulePath = modulePath;
+
+			root.ReadData("m_ShaderCode", m_ShaderCodeGUID);
+			if (!m_ShaderCodeGUID.empty())
+			{
+				m_ShaderCodeBuffer = AssetManager::LoadBinaryAsset(m_ShaderCodeGUID);
+			}
 		}
 	}
 
 	void Shader::Save()
 	{
-		SaveMetadata();
 		SaveToDisk(m_AssetPath);
 	}
 
 	void Shader::Load()
 	{
-		LoadMetadata();
 		LoadFromDisk(m_AssetPath);
 	}
 
 	void Shader::SaveToDisk(const std::filesystem::path& path)
 	{
-		ryml::Tree tree;
-		ryml::NodeRef root = tree.rootref();
-		root |= ryml::MAP;
+		AssetSerializer serializer;
+		SerializationNode root = serializer.GetRoot();
 
-		root["m_ShaderType"] << (uint32_t)m_ShaderType;
-		root["m_ModulePath"] << m_ModulePath.c_str();
+		// Serialize metadata first
+		SerializeMetadata(serializer);
+		root.WriteData("m_ShaderType", (uint32_t)m_ShaderType);
+		root.WriteData("m_ShaderCode", m_ShaderCodeGUID);
 
-		FILE* file = fopen(path.string().c_str(), "w+");
-		size_t len = ryml::emit_yaml(tree, tree.root_id(), file);
-		fclose(file);
+		serializer.WriteToDisk(path);
 	}
 }

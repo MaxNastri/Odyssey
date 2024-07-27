@@ -15,8 +15,8 @@ namespace Odyssey
 		MeshRenderer(AssetHandle<Mesh> mesh, AssetHandle<Material> material);
 
 	public:
-		virtual void Serialize(ryml::NodeRef& node) override;
-		virtual void Deserialize(ryml::ConstNodeRef node) override;
+		virtual void Serialize(SerializationNode& node) override;
+		virtual void Deserialize(SerializationNode& node) override;
 
 	public:
 		void SetMesh(AssetHandle<Mesh> mesh);

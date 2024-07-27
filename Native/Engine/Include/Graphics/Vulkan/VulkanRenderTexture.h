@@ -18,7 +18,7 @@ namespace Odyssey
 		void Destroy();
 
 	public:
-		void SetData(const void* data);
+		void SetData(BinaryBuffer& buffer);
 
 	public:
 		ResourceHandle<VulkanImage> GetImage() { return m_Image; }

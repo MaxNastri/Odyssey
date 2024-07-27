@@ -2,6 +2,7 @@
 #include "MeshRendererInspector.h"
 #include "SceneManager.h"
 #include "Scene.h"
+#include "imgui.h"
 
 namespace Odyssey
 {
@@ -23,6 +24,16 @@ namespace Odyssey
 
 	void GameObjectInspector::Draw()
 	{
+		if (m_Inspectors.size() == 0)
+			return;
+
+		if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			m_NameDrawer.Draw();
+		}
+
+		ImGui::Spacing();
+
 		for (auto& inspector : m_Inspectors)
 		{
 			inspector->Draw();
@@ -41,6 +52,9 @@ namespace Odyssey
 
 		if (gameObject)
 		{
+			m_NameDrawer = StringDrawer("Name", gameObject->name,
+				[gameObject](std::string& name) { gameObject->name = name; });
+
 			if (gameObject->HasComponent<Transform>())
 			{
 				m_Inspectors.push_back(std::make_unique<TransformInspector>(gameObject));

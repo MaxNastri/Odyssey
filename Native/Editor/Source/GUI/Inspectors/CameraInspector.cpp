@@ -21,16 +21,9 @@ namespace Odyssey
 	{
 		if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			if (ImGui::BeginTable("CameraInspector", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
-			{
-				ImGui::TableSetupColumn("##A", 0, 0.4f);
-				m_FieldOfViewDrawer.Draw();
-				ImGui::TableNextRow();
-				m_NearClipDrawer.Draw();
-				ImGui::TableNextRow();
-				m_FarClipDrawer.Draw();
-				ImGui::EndTable();
-			}
+			m_FieldOfViewDrawer.Draw();
+			m_NearClipDrawer.Draw();
+			m_FarClipDrawer.Draw();
 		}
 	}
 

@@ -8,6 +8,8 @@ project "Odyssey.Native.Engine"
     
     architecture "x86_64"
     
+    flags { "NoPCH", "MultiProcessorCompile" }
+    
     pchheader "PCH.hpp"
     pchsource "Source/PCH.cpp"
 
@@ -53,16 +55,22 @@ project "Odyssey.Native.Engine"
 
     libdirs {
         "%{cfg.targetdir}",
+        "%{wks.location}/Vendor/Vulkan/Lib/"
     }
 
     links {
         "glfw3.lib",
-        "assimp-vc143-mt.lib"
+        "assimp-vc143-mt.lib",
+        "shaderc_combined.lib",
+        "spirv-cross-core.lib",
+        "spirv-cross-glsl.lib",
+        "spirv-cross-hlsl.lib",
+        "spirv-cross-reflect.lib",
+        "spirv-cross-util.lib"
     }
 
     
 	filter "files:Source/**.c"
-	flags { "NoPCH" }
 
     filter { "system:windows" }
         prebuildcommands {

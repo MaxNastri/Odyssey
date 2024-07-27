@@ -70,7 +70,9 @@ namespace Odyssey
 		ImGui::NewFrame();
 		ImGuizmo::BeginFrame();
 
-		EventSystem::Dispatch<OnGUIRenderEvent>();
+		// Invoke the draw listener callback
+		if (m_DrawGUIListener)
+			m_DrawGUIListener();
 	}
 
 	void VulkanImgui::Render(VkCommandBuffer commandBuffer)

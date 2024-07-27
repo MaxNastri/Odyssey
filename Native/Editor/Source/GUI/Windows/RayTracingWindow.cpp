@@ -81,7 +81,9 @@ namespace Odyssey
 					});
 			});
 
-		m_RenderTexture.Get()->SetData(m_ImageData.data());
+		BinaryBuffer buffer;
+		buffer.WriteData(m_ImageData);
+		m_RenderTexture.Get()->SetData(buffer);
 		std::string dt = std::to_string(Time::DeltaTime());
 		ImGui::Text(dt.c_str());
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));

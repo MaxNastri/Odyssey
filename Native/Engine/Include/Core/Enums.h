@@ -38,6 +38,7 @@ namespace Odyssey
 		None = 0,
 		R8G8B8A8_SRGB = 1,
 		R8G8B8A8_UNORM = 2,
+		R8G8B8_UNORM = 3,
 		D32_SFLOAT = 100,
 		D32_SFLOAT_S8_UINT = 101,
 		D24_UNORM_S8_UINT = 102,

@@ -16,9 +16,8 @@ namespace Odyssey
 {
 	void GUIManager::Initialize()
 	{
-		EventSystem::Listen<OnSceneLoaded>(GUIManager::SceneLoaded);
-		EventSystem::Listen<OnGUIRenderEvent>(GUIManager::OnRender);
-		FileManager::AddFilesChangedCallback(GUIManager::OnFilesChanged);
+		EventSystem::Listen<OnSceneLoaded>(SceneLoaded);
+		FileManager::AddFilesChangedCallback(OnFilesChanged);
 
 		m_GUIPass = std::make_shared<ImguiPass>();
 		m_GUIPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
@@ -35,6 +34,7 @@ namespace Odyssey
 	void GUIManager::CreateSceneHierarchyWindow()
 	{
 		sceneHierarchyWindows.push_back(SceneHierarchyWindow());
+
 		sceneHierarchyWindows[sceneHierarchyWindows.size() - 1].OnGameObjectSelected(OnGameObjectSelected);
 	}
 
@@ -83,7 +83,7 @@ namespace Odyssey
 		}
 	}
 
-	void GUIManager::OnRender(OnGUIRenderEvent* guiRenderEvent)
+	void GUIManager::DrawGUI()
 	{
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
@@ -154,6 +154,7 @@ namespace Odyssey
 	{
 		for (auto& contentBrowserWindow : contentBrowserWindows)
 		{
+			// TODO: Move the listener into the content browser
 			contentBrowserWindow.UpdatePaths();
 		}
 	}

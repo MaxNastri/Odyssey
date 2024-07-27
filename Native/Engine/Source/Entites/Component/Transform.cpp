@@ -244,22 +244,21 @@ namespace Odyssey
 		m_Dirty = true;
 	}
 
-	void Transform::Serialize(ryml::NodeRef& node)
+	void Transform::Serialize(SerializationNode& node)
 	{
-		ryml::NodeRef componentNode = node.append_child();
-		componentNode |= ryml::MAP;
-
-		componentNode["Name"] << Transform::Type;
-		componentNode["Position"] << m_Position;
-		componentNode["Rotation"] << m_EulerRotation;
-		componentNode["Scale"] << m_Scale;
+		SerializationNode componentNode = node.AppendChild();
+		componentNode.SetMap();
+		componentNode.WriteData("Name", Transform::Type);
+		componentNode.WriteData("Position", m_Position);
+		componentNode.WriteData("Rotation", m_EulerRotation);
+		componentNode.WriteData("Scale", m_Scale);
 	}
 
-	void Transform::Deserialize(ryml::ConstNodeRef node)
+	void Transform::Deserialize(SerializationNode& node)
 	{
-		node["Position"] >> m_Position;
-		node["Rotation"] >> m_EulerRotation;
-		node["Scale"] >> m_Scale;
+		node.ReadData("Position", m_Position);
+		node.ReadData("Rotation", m_EulerRotation);
+		node.ReadData("Scale", m_Scale);
 
 		// TODO: This is a hack to set the quat rotation on deserialization
 		// Just serialize out the quat instead

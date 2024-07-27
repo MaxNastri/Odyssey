@@ -18073,6 +18073,7 @@ ImGuiID ImGui::DockSpace(ImGuiID id, const ImVec2& size_arg, ImGuiDockNodeFlags 
     if (size.y <= 0.0f)
         size.y = ImMax(content_avail.y + size.y, 4.0f);
     IM_ASSERT(size.x > 0.0f && size.y > 0.0f);
+    size.x = std::fmaxf(size.x, 400);
 
     node->Pos = window->DC.CursorPos;
     node->Size = node->SizeRef = size;

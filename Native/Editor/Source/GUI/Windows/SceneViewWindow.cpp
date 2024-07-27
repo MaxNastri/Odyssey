@@ -15,10 +15,6 @@
 
 namespace Odyssey
 {
-	namespace RayTracing
-	{
-	}
-
 	SceneViewWindow::SceneViewWindow()
 		: DockableWindow("Scene View",
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
