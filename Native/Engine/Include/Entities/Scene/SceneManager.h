@@ -10,12 +10,9 @@ namespace Odyssey
 	class SceneManager
 	{
 	public:
-		static void ListenForEvents();
-
+		static void Initialize();
 		static void LoadScene(const std::string& assetPath);
 		static void SaveActiveScene();
-		static void SaveActiveSceneTo(const std::string& assetPath);
-
 		static Scene* GetActiveScene();
 
 	public:
@@ -29,6 +26,8 @@ namespace Odyssey
 	private:
 		inline static std::vector<AssetHandle<Scene>> scenes;
 		inline static int activeScene = -1;
+		inline static std::filesystem::path m_TempDirectory;
+		inline static std::filesystem::path s_TempFilename = "tmps.scene";
 		inline static const std::string tempSaveFilename = "Assets/Scenes/tmps.yaml";
 
 	};

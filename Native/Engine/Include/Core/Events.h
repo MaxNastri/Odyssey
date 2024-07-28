@@ -1,6 +1,7 @@
 #pragma once
 #include "EventSystem.h"
 #include "FileWatcherHandle.h"
+#include "Globals.h"
 
 namespace Odyssey
 {

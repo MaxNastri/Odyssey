@@ -3,6 +3,7 @@
 
 namespace Odyssey
 {
+	// Enums
 	namespace Globals
 	{
 #pragma region Macros

@@ -5,6 +5,8 @@
 #include "VulkanWindow.h"
 #include "SceneManager.h"
 #include "GUIManager.h"
+#include "EventSystem.h"
+#include "EditorEvents.h"
 
 namespace Odyssey
 {
@@ -20,10 +22,10 @@ namespace Odyssey
 			ImGui::EndMainMenuBar();
 			return;
 		}
-        if (ImGui::BeginMenu("File"))
-        {
-            if (ImGui::MenuItem("Open"))
-            {
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Open"))
+			{
 				void* window = Application::GetRenderer()->GetWindow()->GetNativeWindow();
 				std::string scenePath = FileDialogs::OpenFile(window, "Odyssey Scene (*.yaml)\0*.yaml\0");
 
@@ -31,10 +33,10 @@ namespace Odyssey
 				{
 					SceneManager::LoadScene(scenePath);
 				}
-            }
+			}
 			if (ImGui::MenuItem("Save"))
 			{
-					SceneManager::SaveActiveScene();
+				SceneManager::SaveActiveScene();
 			}
 			if (ImGui::MenuItem("Save As..."))
 			{
@@ -46,8 +48,17 @@ namespace Odyssey
 					//SceneManager::SaveActiveSceneTo(scenePath);
 				}
 			}
-            ImGui::EndMenu();
-        }
+
+			if (ImGui::MenuItem("Enter Playmode"))
+			{
+				EventSystem::Dispatch<PlaymodeStateChangedEvent>(PlaymodeState::EnterPlaymode);
+			}
+			else if (ImGui::MenuItem("Exit Playmode"))
+			{
+				EventSystem::Dispatch<PlaymodeStateChangedEvent>(PlaymodeState::ExitPlaymode);
+			}
+			ImGui::EndMenu();
+		}
 		if (ImGui::BeginMenu("Imgui"))
 		{
 			if (ImGui::MenuItem("Display Demo Window"))

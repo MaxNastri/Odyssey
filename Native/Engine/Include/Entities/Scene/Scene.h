@@ -29,6 +29,7 @@ namespace Odyssey
 		void OnDestroy();
 
 	public:
+		void SaveTo(const std::filesystem::path& savePath);
 		void Save();
 		void Load();
 

@@ -1,12 +1,12 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "AssetManager.h"
-#include <EventSystem.h>
+#include "EventSystem.h"
 #include "Events.h"
 
 namespace Odyssey
 {
-	void SceneManager::ListenForEvents()
+	void SceneManager::Initialize()
 	{
 		EventSystem::Listen<OnBuildFinished>(SceneManager::BuildFinished);
 		EventSystem::Listen<OnAssembliesReloaded>(SceneManager::AssembliesReloaded);

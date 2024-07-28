@@ -97,6 +97,11 @@ namespace Odyssey
 		}
 	}
 
+	void Scene::SaveTo(const std::filesystem::path& savePath)
+	{
+		SaveToDisk(savePath);
+	}
+
 	void Scene::Save()
 	{
 		SaveToDisk(m_AssetPath);

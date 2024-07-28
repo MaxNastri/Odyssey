@@ -20,6 +20,7 @@ namespace Odyssey
 	public:
 		const std::filesystem::path& GetAssetsDirectory() { return m_FullAssetsDirectory; }
 		const std::filesystem::path& GetCacheDirectory() { return m_FullCacheDirectory; }
+		const std::filesystem::path& GetTempDirectory() { return m_FullTempDirectory; }
 		const std::filesystem::path& GetLogsDirectory() { return m_FullLogsDirectory; }
 		const std::filesystem::path& GetScriptsDirectory() { return m_FullScriptsDirectory; }
 		const std::filesystem::path& GetScriptsProjectPath() { return m_FullScriptsProjectPath; }
@@ -28,6 +29,7 @@ namespace Odyssey
 		std::string m_ProjectName;
 		std::filesystem::path m_AssetsDirectory;
 		std::filesystem::path m_CacheDirectory;
+		std::filesystem::path m_TempDirectory;
 		std::filesystem::path m_LogsDirectory;
 		std::filesystem::path m_ScriptsDirectory;
 		std::filesystem::path m_ScriptsProjectPath;
@@ -35,6 +37,7 @@ namespace Odyssey
 	private: // Generated
 		std::filesystem::path m_FullAssetsDirectory;
 		std::filesystem::path m_FullCacheDirectory;
+		std::filesystem::path m_FullTempDirectory;
 		std::filesystem::path m_FullLogsDirectory;
 		std::filesystem::path m_FullScriptsDirectory;
 		std::filesystem::path m_FullScriptsProjectPath;

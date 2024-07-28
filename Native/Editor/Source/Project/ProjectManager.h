@@ -15,14 +15,12 @@ namespace Odyssey
 		static const std::filesystem::path& GetCacheDirectory() { return m_Settings.GetCacheDirectory(); }
 		static const std::filesystem::path& GetLogsDirectory() { return m_Settings.GetLogsDirectory(); }
 		static const std::filesystem::path& GetUserScriptsProject() { return m_Settings.GetScriptsProjectPath(); }
+		static const std::filesystem::path& GetTempDirectory() { return m_Settings.GetTempDirectory(); }
 
 	private:
 		inline static ProjectSettings m_Settings;
 
 	private:
-		static constexpr std::string_view ASSETS_DIRECTORY = "Assets";
-		static constexpr std::string_view CACHE_DIRECTORY = "Cache";
-		static constexpr std::string_view LOGS_DIRECTORY = "Logs";
 		static constexpr std::string_view TEMPLATE_DIRECTORY = "Resources/ProjectTemplate";
 		static constexpr std::string_view TEMPLATE_PREMAKE = "premake5.lua";
 		static constexpr std::string_view TEMPLATE_PROJ_GEN = "Win-GenProjects.bat";

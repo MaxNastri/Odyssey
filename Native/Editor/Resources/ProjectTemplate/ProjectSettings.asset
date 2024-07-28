@@ -1,6 +1,7 @@
 m_ProjectName: %ProjectName%
 m_AssetsDirectory: 'Assets'
 m_CacheDirectory: 'Cache'
+m_TempDirectory: 'Cache/Temp'
 m_LogsDirectory: 'Logs'
 m_ScriptsDirectory: 'Assets/Scripts'
 m_ScriptsProjectPath: 'Assets/Scripts/%ProjectName%.csproj'

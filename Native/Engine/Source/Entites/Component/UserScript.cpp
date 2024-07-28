@@ -37,7 +37,6 @@ namespace Odyssey
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
 		componentNode.WriteData("Name", fqManagedName);
-
 		SerializationNode fieldsNode = componentNode.CreateSequenceNode("Fields");
 
 		for (auto& field : fields)

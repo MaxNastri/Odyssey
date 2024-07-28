@@ -41,13 +41,16 @@ namespace Odyssey
 		compilerSettings.UserScriptsProject = ProjectManager::GetUserScriptsProject();
 		ScriptCompiler::Initialize(compilerSettings);
 
-		SceneManager::ListenForEvents();
+		SceneManager::Initialize();
 
 		// Build the user assembly
 		ScriptCompiler::BuildUserAssembly();
 
 		SetupEditorGUI();
 		CreateRenderPasses();
+
+		auto listener = [this](PlaymodeStateChangedEvent* event) { OnPlaymodeStateChanged(event); };
+		EventSystem::Listen<PlaymodeStateChangedEvent>(listener);
 
 		// We're off an running
 		running = true;
@@ -104,5 +107,26 @@ namespace Odyssey
 	{
 		renderer->AddRenderPass(GUIManager::GetSceneViewWindow(0).GetRenderPass());
 		renderer->AddRenderPass(GUIManager::GetRenderPass());
+	}
+	void Application::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event)
+	{
+		switch (event->State)
+		{
+		case PlaymodeState::EnterPlaymode:
+		{
+			Scene* activeScene = SceneManager::GetActiveScene();
+			auto tempPath = ProjectManager::GetTempDirectory() / TEMP_SCENE_FILE;
+			activeScene->SaveTo(tempPath);
+			break;
+		}
+		case PlaymodeState::ExitPlaymode:
+		{
+			auto tempPath = ProjectManager::GetTempDirectory() / TEMP_SCENE_FILE;
+			SceneManager::LoadScene(tempPath.string());
+			break;
+		}
+		default:
+			break;
+		}
 	}
 }

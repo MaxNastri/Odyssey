@@ -34,12 +34,12 @@ namespace Odyssey
 		gameObjectNode.WriteData("ID", id);
 
 		SerializationNode componentsNode = gameObjectNode.CreateSequenceNode("Components");
-
+		
 		auto serializeComponent = [&componentsNode](Component* component)
 			{
 				component->Serialize(componentsNode);
 			};
-
+		
 		m_Scene->GetComponentRegistry()->ExecuteOnGameObjectComponents(id, serializeComponent);
 	}
 

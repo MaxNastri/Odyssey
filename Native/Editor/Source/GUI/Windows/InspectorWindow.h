@@ -17,6 +17,7 @@ namespace Odyssey
 
 	public:
 		virtual void OnSelectionContextChanged(const GUISelection& context) override;
+		void ClearSelection();
 
 	private:
 		std::shared_ptr<Inspector> m_Inspector;
