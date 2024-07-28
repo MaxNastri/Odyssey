@@ -1,9 +1,7 @@
 #include "TransformInspector.h"
 #include "GameObject.h"
-#include <Transform.h>
-#include <ComponentManager.h>
-#include <imgui.h>
-#include <glm.h>
+#include "Transform.h"
+#include "imgui.h"
 
 namespace Odyssey
 {

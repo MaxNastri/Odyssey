@@ -32,6 +32,10 @@ namespace Odyssey
 		{
 			for (auto gameObject : m_Scene->GetGameObjects())
 			{
+				// Don't display hidden game objects
+				if (gameObject->m_IsHidden)
+					continue;
+
 				bool hasChildren = false;
 				const bool isSelected = (selectionMask & (1 << selectionID)) != 0;
 				ImGuiTreeNodeFlags nodeFlags = baseFlags;

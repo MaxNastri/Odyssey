@@ -52,7 +52,6 @@ namespace Odyssey
 				ostream << str;
 				ostream.close();
 			}
-
 		}
 
 		// Load the project settings
@@ -61,5 +60,17 @@ namespace Odyssey
 		// Run the batch file to generate the VS project
 		auto batchFile = projectDirectory / TEMPLATE_PROJ_GEN;
 		system(batchFile.string().c_str());
+	}
+	void ProjectManager::LoadProject(const std::filesystem::path& projectDirectory)
+	{
+		auto projectSettingsPath = projectDirectory / "ProjectSettings.asset";
+
+		if (!std::filesystem::exists(projectSettingsPath))
+		{
+			Logger::LogError("[ProjectManager] Could not find project settings at " + projectSettingsPath.string());
+			return;
+		}
+
+		m_Settings = ProjectSettings(projectSettingsPath);
 	}
 }

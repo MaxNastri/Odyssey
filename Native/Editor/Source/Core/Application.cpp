@@ -11,6 +11,7 @@
 #include "ShaderCompiler.h"
 #include "ProjectManager.h"
 #include "Globals.h"
+
 namespace Odyssey
 {
 	Application::Application()
@@ -20,7 +21,7 @@ namespace Odyssey
 		ScriptingManager::Initialize();
 		Random::Initialize();
 
-		ProjectManager::CreateNewProject("ExampleProject", "C:/Git/Odyssey/Managed/ExampleProject");
+		ProjectManager::LoadProject("C:/Git/Odyssey/Managed/ExampleProject");
 
 		// Track the manage project folder for any file changes
 		FileManager::Initialize();

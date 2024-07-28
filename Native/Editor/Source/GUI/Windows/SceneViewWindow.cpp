@@ -25,16 +25,6 @@ namespace Odyssey
 
 		// Create the render texture
 		CreateRenderTexture();
-
-		m_GameObject.id = -3;
-		m_CameraTransform = m_GameObject.AddComponent<Transform>();
-		m_CameraTransform->SetGameObject(&m_GameObject);
-		m_CameraTransform->Awake();
-		m_Camera = m_GameObject.AddComponent<Camera>();
-		m_Camera->SetGameObject(&m_GameObject);
-		m_Camera->Awake();
-
-		m_SceneViewPass->SetCamera(m_Camera);
 	}
 
 	void SceneViewWindow::Destroy()
@@ -72,8 +62,26 @@ namespace Odyssey
 	{
 		DestroyRenderTexture();
 		CreateRenderTexture();
-		m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+		if (m_Camera)
+			m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+	}
 
+	void SceneViewWindow::OnSceneChanged()
+	{
+		// Create a new game object and mark it as hidden
+		if (Scene* activeScene = SceneManager::GetActiveScene())
+		{
+			m_GameObject = activeScene->CreateGameObject();
+			m_GameObject->m_IsHidden = true;
+
+			// Add a transform and camera
+			m_CameraTransform = m_GameObject->GetComponent<Transform>();
+			m_CameraTransform->Awake();
+			m_Camera = m_GameObject->AddComponent<Camera>();
+			m_Camera->Awake();
+			m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+			m_SceneViewPass->SetCamera(m_Camera);
+		}
 	}
 
 	void SceneViewWindow::CreateRenderTexture()
@@ -103,9 +111,9 @@ namespace Odyssey
 
 	void SceneViewWindow::RenderGizmos()
 	{
-		if (m_SelectedObject != std::numeric_limits<uint32_t>::max())
+		if (m_SelectedObject)
 		{
-			if (Transform* transform = m_SelectedObject.GetComponent<Transform>())
+			if (Transform* transform = m_SelectedObject->GetComponent<Transform>())
 			{
 				ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 

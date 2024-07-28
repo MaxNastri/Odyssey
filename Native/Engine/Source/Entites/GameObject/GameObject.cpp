@@ -4,6 +4,7 @@
 namespace Odyssey
 {
 	CLASS_DEFINITION(Odyssey, GameObject);
+
 	GameObject::GameObject()
 	{
 		name = "GameObject";
@@ -11,15 +12,20 @@ namespace Odyssey
 		active = false;
 	}
 
-	GameObject::GameObject(int32_t ID)
+	GameObject::GameObject(Scene* scene, int32_t ID)
 	{
 		name = "GameObject";
 		id = ID;
+		m_Scene = scene;
 		active = true;
 	}
 
 	void GameObject::Serialize(SerializationNode& node)
 	{
+		// Skip hidden game objects
+		if (m_IsHidden)
+			return;
+
 		SerializationNode gameObjectNode = node.AppendChild();
 		gameObjectNode.SetMap();
 		gameObjectNode.WriteData("Name", name);
@@ -34,7 +40,7 @@ namespace Odyssey
 				component->Serialize(componentsNode);
 			};
 
-		ComponentManager::ExecuteOnGameObjectComponents(id, serializeComponent);
+		m_Scene->GetComponentRegistry()->ExecuteOnGameObjectComponents(id, serializeComponent);
 	}
 
 	void GameObject::Deserialize(SerializationNode& node)
@@ -58,17 +64,26 @@ namespace Odyssey
 			
 			if (componentNode.HasChild("Fields"))
 			{
-				UserScript* userScript = ComponentManager::AddUserScript(id, componentType);
+				UserScript* userScript = m_Scene->GetComponentRegistry()->AddUserScript(id, componentType);
 				userScript->SetGameObject(this);
 				userScript->Deserialize(componentNode);
 			}
 			else
 			{
-				Component* component = ComponentManager::AddComponentByName(id, componentType);
+				Component* component = m_Scene->GetComponentRegistry()->AddComponentByName(id, componentType);
 				component->SetGameObject(this);
 				component->Deserialize(componentNode);
 			}
 		}
 
+	}
+	std::vector<UserScript*> GameObject::GetUserScripts()
+	{
+		return m_Scene->GetComponentRegistry()->GetAllUserScripts(id);
+	}
+
+	UserScript* GameObject::GetUserScript(const std::string& managedName)
+	{
+		return m_Scene->GetComponentRegistry()->GetUserScript(id, managedName);
 	}
 }

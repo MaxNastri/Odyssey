@@ -1,16 +1,13 @@
 #pragma once
-#include <functional>
-#include <string>
-#include <unordered_map>
-#include <vector>
-#include "GameObject.h"
 #include "Asset.h"
+#include "ComponentRegistry.h"
 
 namespace Odyssey
 {
 	// FWD Declarations
 	class Camera;
 	class Component;
+	class GameObject;
 
 	class Scene : public Asset
 	{
@@ -24,6 +21,7 @@ namespace Odyssey
 	public:
 		std::vector<std::shared_ptr<GameObject>>& GetGameObjects() { return gameObjects; }
 		GameObject* GetGameObject(int32_t id);
+		ComponentRegistry* GetComponentRegistry() { return m_ComponentRegistry.get(); }
 
 	public:
 		void Awake();
@@ -51,6 +49,7 @@ namespace Odyssey
 		std::unordered_map<int32_t, std::shared_ptr<GameObject>> gameObjectsByID;
 		int32_t nextGameObjectID;
 		Camera* m_MainCamera = nullptr;
+		std::unique_ptr<ComponentRegistry> m_ComponentRegistry;
 
 	private:
 		std::function<void(Component*)> awakeFunc;

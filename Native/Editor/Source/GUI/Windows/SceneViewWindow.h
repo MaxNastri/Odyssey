@@ -24,7 +24,8 @@ namespace Odyssey
 
 	public:
 		std::shared_ptr<OpaquePass> GetRenderPass() { return m_SceneViewPass; }
-		void SetSelectedIndex(uint32_t selected) { m_SelectedObject = GameObject(selected); }
+		void SetSelectedGameObject(GameObject* gameObject) { m_SelectedObject = gameObject; }
+		void OnSceneChanged();
 
 	private:
 		void CreateRenderTexture();
@@ -34,9 +35,9 @@ namespace Odyssey
 		void UpdateGizmosInput();
 
 	private: // Camera stuff
-		GameObject m_GameObject;
-		Transform* m_CameraTransform;
-		Camera* m_Camera;
+		GameObject* m_GameObject = nullptr;
+		Transform* m_CameraTransform = nullptr;
+		Camera* m_Camera = nullptr;
 
 		bool m_CameraControllerInUse = false;
 
@@ -48,7 +49,7 @@ namespace Odyssey
 		ResourceHandle<VulkanTextureSampler> m_RTSampler;
 
 	private: // Gizmos
-		GameObject m_SelectedObject;
+		GameObject* m_SelectedObject = nullptr;
 		uint32_t op = 7;
 	};
 }

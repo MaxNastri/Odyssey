@@ -12,6 +12,7 @@
 #include "VulkanUniformBuffer.h"
 #include "Texture2D.h"
 #include "VulkanDescriptorPool.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {

@@ -4,9 +4,8 @@
 #include "BoolDrawer.h"
 #include "IntDrawer.h"
 #include "StringDrawer.h"
-#include <UserScript.h>
-#include <ComponentManager.h>
-#include <imgui.h>
+#include "UserScript.h"
+#include "imgui.h"
 #include "DrawerUtils.h"
 
 namespace Odyssey
@@ -32,7 +31,6 @@ namespace Odyssey
 			for (const auto& drawer : drawers)
 				drawer->Draw();
 		}
-
 	}
 
 	void UserScriptInspector::UpdateFields()

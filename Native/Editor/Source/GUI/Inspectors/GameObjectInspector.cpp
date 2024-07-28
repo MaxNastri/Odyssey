@@ -70,7 +70,7 @@ namespace Odyssey
 				m_Inspectors.push_back(std::make_unique<MeshRendererInspector>(gameObject));
 			}
 
-			std::vector<UserScript*> userScripts = ComponentManager::GetAllUserScripts(gameObject->id);
+			std::vector<UserScript*> userScripts = gameObject->GetUserScripts();
 
 			for (UserScript* userScript : userScripts)
 			{

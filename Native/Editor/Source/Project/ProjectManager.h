@@ -7,7 +7,8 @@ namespace Odyssey
 	{
 	public:
 		static void CreateNewProject(const std::string& projectName, const std::filesystem::path& projectDirectory);
-		
+		static void LoadProject(const std::filesystem::path& projectDirectory);
+
 	public:
 		static const std::filesystem::path& GetProjectDirectory() { return m_Settings.GetProjectDirectory(); }
 		static const std::filesystem::path& GetAssetsDirectory() { return m_Settings.GetAssetsDirectory(); }

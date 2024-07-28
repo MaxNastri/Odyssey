@@ -122,6 +122,11 @@ namespace Odyssey
 			sceneHierarchyWindow.OnSceneChanged();
 		}
 
+		for (auto& sceneViewWindow : sceneViewWindows)
+		{
+			sceneViewWindow.OnSceneChanged();
+		}
+
 		for (auto& inspectorWindow : inspectorWindows)
 		{
 			inspectorWindow.Reload();
@@ -137,7 +142,7 @@ namespace Odyssey
 
 		for (auto& sceneViewWindow : sceneViewWindows)
 		{
-			sceneViewWindow.SetSelectedIndex(gameObject->id);
+			sceneViewWindow.SetSelectedGameObject(gameObject);
 		}
 	}
 

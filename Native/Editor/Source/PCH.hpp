@@ -16,6 +16,8 @@
 #include <iostream>
 #include <random>
 #include <chrono>
+#include <queue>
+#include <typeindex>
 
 #ifdef _WIN32
 	#define NOMINMAX
