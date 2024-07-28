@@ -10,7 +10,7 @@
 #include "Random.h"
 #include "ShaderCompiler.h"
 #include "ProjectManager.h"
-
+#include "Globals.h"
 namespace Odyssey
 {
 	Application::Application()
@@ -20,13 +20,11 @@ namespace Odyssey
 		ScriptingManager::Initialize();
 		Random::Initialize();
 
-		ProjectSettings settings("ExampleProject", "C:/Git/Odyssey/Managed");
-		ProjectManager::CreateNewProject(settings);
+		ProjectManager::CreateNewProject("ExampleProject", "C:/Git/Odyssey/Managed/ExampleProject");
 
 		// Track the manage project folder for any file changes
 		FileManager::Initialize();
-		FileManager::TrackFolder(Paths::Relative::ManagedProjectSource);
-
+		FileManager::TrackFolder(ProjectManager::GetAssetsDirectory().string());
 
 		// Create the renderer
 		renderer = std::make_shared<VulkanRenderer>();
@@ -36,7 +34,12 @@ namespace Odyssey
 		AssetManager::CreateDatabase(ProjectManager::GetAssetsDirectory(), ProjectManager::GetCacheDirectory());
 
 		// Start listening for events
-		ScriptCompiler::ListenForEvents();
+		ScriptCompiler::Settings compilerSettings;
+		compilerSettings.ApplicationPath = Globals::GetApplicationPath();
+		compilerSettings.CacheDirectory = ProjectManager::GetCacheDirectory();
+		compilerSettings.UserScriptsProject = ProjectManager::GetUserScriptsProject();
+		ScriptCompiler::Initialize(compilerSettings);
+
 		SceneManager::ListenForEvents();
 
 		// Build the user assembly

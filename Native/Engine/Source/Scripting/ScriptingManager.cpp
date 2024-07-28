@@ -1,7 +1,7 @@
 #include "ScriptingManager.h"
-#include "Paths.h"
 #include <Logger.h>
 #include "Events.h"
+#include "Globals.h"
 
 namespace Odyssey
 {
@@ -19,7 +19,7 @@ namespace Odyssey
 	void ScriptingManager::Initialize()
 	{
 		// Initialize Coral
-		std::filesystem::path appPath = Paths::Absolute::GetApplicationPath();
+		std::filesystem::path appPath = Globals::GetApplicationPath();
 		std::string coralDir = appPath.string();
 		hostSettings =
 		{
@@ -36,7 +36,7 @@ namespace Odyssey
 		userAssemblyContext = hostInstance.CreateAssemblyLoadContext("UserScripts");
 
 		// Load the assembly
-		std::filesystem::path appPath = Paths::Absolute::GetApplicationPath();
+		std::filesystem::path appPath = Globals::GetApplicationPath();
 		std::filesystem::path assemblyPath = appPath / UserAssemblyFilename;
 		userAssembly = userAssemblyContext.LoadAssembly(assemblyPath.string());
 	}

@@ -21,7 +21,7 @@ namespace Odyssey
 
 	public:
 		static std::shared_ptr<VulkanRenderer> GetRenderer() { return renderer; }
-
+		
 	private:
 		void SetupEditorGUI();
 		void CreateRenderPasses();

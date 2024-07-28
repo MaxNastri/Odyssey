@@ -1,15 +1,22 @@
 #include "ScriptCompiler.h"
-#include "Paths.h"
-#include <Logger.h>
 #include <Windows.h>
-#include <EventSystem.h>
+#include "Logger.h"
+#include "EventSystem.h"
 #include "Events.h"
-#include <ScriptingManager.h>
+#include "ScriptingManager.h"
+#include <locale>
+#include <codecvt>
 
 namespace Odyssey
 {
-	void ScriptCompiler::ListenForEvents()
+	void ScriptCompiler::Initialize(Settings compilerSettings)
 	{
+		m_Settings = compilerSettings;
+
+		m_UserAssembliesDirectory = m_Settings.CacheDirectory / USER_ASSEMBLIES_DIRECTORY;
+		if (!std::filesystem::exists(m_UserAssembliesDirectory))
+			std::filesystem::create_directories(m_UserAssembliesDirectory);
+
 		EventSystem::Listen<OnUserFilesModified>(ScriptCompiler::UserFilesModified);
 	}
 
@@ -21,12 +28,11 @@ namespace Odyssey
 			return false;
 		}
 
-		const char* projectPath = Paths::Relative::ExampleManagedProject;
 
 		std::wstring buildCommand = L" build \"" +
-			std::filesystem::absolute(projectPath).wstring() +
+			m_Settings.UserScriptsProject.wstring() +
 			L"\" -c Debug --no-self-contained " +
-			L"-o \"./tmp_build/\" -r \"win-x64\"";
+			L"-o \"" + m_UserAssembliesDirectory.wstring() + L"\" -r \"win-x64\"";
 
 		bool success = BuildAssemblies(buildCommand);
 		EventSystem::Dispatch<OnBuildFinished>(success);
@@ -116,8 +122,11 @@ namespace Odyssey
 		if (exitCode == 0)
 		{
 			// Copy out files
-			std::filesystem::path targetPath = Paths::Absolute::GetApplicationPath() / "Odyssey.Managed.Example.dll";
-			std::filesystem::copy("./tmp_build/Odyssey.Managed.Example.dll", targetPath,
+			std::filesystem::path assemblyFilename = m_Settings.UserScriptsProject.filename().replace_extension(".dll");
+			std::filesystem::path outputPath = m_Settings.ApplicationPath / assemblyFilename;
+			std::filesystem::path cachePath = m_UserAssembliesDirectory / assemblyFilename;
+
+			std::filesystem::copy(cachePath, outputPath,
 				std::filesystem::copy_options::overwrite_existing);
 			return true;
 		}
@@ -135,7 +144,10 @@ namespace Odyssey
 		{
 			for (const auto& changedFile : fileSavedEvent->changedFileSet)
 			{
-				if (changedFile.second != FileNotifcations::RenamedNew &&
+				std::filesystem::path path(changedFile.first);
+
+				if (path.extension() == ".cs" &&
+					changedFile.second != FileNotifcations::RenamedNew &&
 					changedFile.second != FileNotifcations::RenamedOld)
 				{
 					shouldRebuild = true;

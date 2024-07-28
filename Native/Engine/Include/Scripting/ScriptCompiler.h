@@ -7,7 +7,16 @@ namespace Odyssey
 	class ScriptCompiler
 	{
 	public:
-		static void ListenForEvents();
+		struct Settings
+		{
+		public:
+			std::filesystem::path CacheDirectory;
+			std::filesystem::path UserScriptsProject;
+			std::filesystem::path ApplicationPath;
+		};
+
+	public:
+		static void Initialize(Settings compilerOptions);
 
 	public:
 		static bool BuildUserAssembly();
@@ -23,5 +32,8 @@ namespace Odyssey
 	private:
 		inline static bool buildInProgress = false;
 		inline static bool shouldRebuild = false;
+		inline static std::filesystem::path m_UserAssembliesDirectory;
+		inline static Settings m_Settings;
+		static constexpr std::string_view USER_ASSEMBLIES_DIRECTORY = "UserAssemblies";
 	};
 }

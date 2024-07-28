@@ -1,6 +1,6 @@
-m_ProjectName: ExampleProject
+m_ProjectName: %ProjectName%
 m_AssetsDirectory: 'Assets'
 m_CacheDirectory: 'Cache'
 m_LogsDirectory: 'Logs'
 m_ScriptsDirectory: 'Assets/Scripts'
-m_ScriptsProjectPath: 'Assets/Scripts/ExampleProject.csproj'
+m_ScriptsProjectPath: 'Assets/Scripts/%ProjectName%.csproj'

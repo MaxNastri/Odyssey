@@ -1,50 +1,65 @@
 #include "ProjectManager.h"
 #include "Logger.h"
+#include <fstream>
+#include "Globals.h"
 
 namespace Odyssey
 {
-	void ProjectManager::CreateNewProject(ProjectSettings projectSettings)
+	void ProjectManager::CreateNewProject(const std::string& projectName, const std::filesystem::path& projectDirectory)
 	{
-		SetProject(projectSettings);
-		GeneratePaths();
+		// Copy the template files into the project directory
+		std::filesystem::copy(TEMPLATE_DIRECTORY, projectDirectory, std::filesystem::copy_options::recursive);
 
-		if (!std::filesystem::exists(m_AssetsDirectory))
-			std::filesystem::create_directories(m_AssetsDirectory);
+		auto premakePath = projectDirectory / "premake5.lua";
+		auto projectSettingsPath = projectDirectory / "ProjectSettings.asset";
 
-		if (!std::filesystem::exists(m_CacheDirectory))
-			std::filesystem::create_directories(m_CacheDirectory);
+		// Premake
+		{
+			std::ifstream stream(premakePath);
+			if (stream.is_open())
+			{
+				// Read the premake file into a buffer
+				std::stringstream ss;
+				ss << stream.rdbuf();
+				stream.close();
 
-		if (!std::filesystem::exists(m_LogsDirectory))
-			std::filesystem::create_directories(m_LogsDirectory);
+				// Replace the template placeholder text with the project name
+				std::string premakeString = ss.str();
+				Globals::ReplaceString(premakeString, "%ProjectName%", projectName);
 
-		m_Settings.Save();
-	}
+				std::ofstream ostream(projectDirectory / "premake5.lua");
+				ostream << premakeString;
+				ostream.close();
+			}
+		}
 
-	void ProjectManager::SetProject(ProjectSettings projectSettings)
-	{
-		m_Settings = projectSettings;
-		GeneratePaths();
-	}
+		// Project file
+		{
+			std::ifstream stream(projectSettingsPath);
+			if (stream.is_open())
+			{
+				// Read the project file into a buffer
+				std::stringstream ss;
+				ss << stream.rdbuf();
+				stream.close();
 
-	void ProjectManager::GeneratePaths()
-	{
-		// Get the path of the project settings
-		auto settingsPath = m_Settings.GetPath();
+				// Replace the template placeholder text with the project name
+				std::string str = ss.str();
+				Globals::ReplaceString(str, "%ProjectName%", projectName);
 
-		// Build the paths for key directories based on the project settings path
-		m_ProjectDirectory = settingsPath.parent_path();
-		m_AssetsDirectory = m_ProjectDirectory / ASSETS_DIRECTORY;
-		m_CacheDirectory = m_ProjectDirectory / CACHE_DIRECTORY;
-		m_LogsDirectory = m_ProjectDirectory / LOGS_DIRECTORY;
+				// Write it back
+				std::ofstream ostream(projectSettingsPath);
+				ostream << str;
+				ostream.close();
+			}
 
-		if (!std::filesystem::exists(m_AssetsDirectory))
-			Logger::LogError("[ProjectManager] Could not locate asset directory: " + m_AssetsDirectory.string());
+		}
 
-		if (!std::filesystem::exists(m_CacheDirectory))
-			Logger::LogError("[ProjectManager] Could not locate cache directory: " + m_CacheDirectory.string());
+		// Load the project settings
+		m_Settings = ProjectSettings(projectSettingsPath);
 
-		if (!std::filesystem::exists(m_LogsDirectory))
-			Logger::LogError("[ProjectManager] Could not locate logs directory: " + m_LogsDirectory.string());
-
+		// Run the batch file to generate the VS project
+		auto batchFile = projectDirectory / TEMPLATE_PROJ_GEN;
+		system(batchFile.string().c_str());
 	}
 }

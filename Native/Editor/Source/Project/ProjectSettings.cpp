@@ -5,18 +5,15 @@ namespace Odyssey
 {
 	ProjectSettings::ProjectSettings(const std::string& projectName, const std::filesystem::path& projectDirectory)
 	{
-		ProjectName = projectName;
+		m_ProjectName = projectName;
 		m_Path = projectDirectory / projectName / "ProjectSettings.asset";
-
-		Save();
+		m_ProjectDirectory = projectDirectory;
 	}
 
 	ProjectSettings::ProjectSettings(const std::filesystem::path& settingsPath)
 	{
-		if (std::filesystem::is_directory(settingsPath))
-			m_Path = settingsPath / "ProjectSetings.asset";
-		else
-			m_Path = settingsPath;
+		m_Path = settingsPath;
+		m_ProjectDirectory = m_Path.parent_path();
 		Load();
 	}
 
@@ -32,7 +29,12 @@ namespace Odyssey
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
 
-		root.WriteData("ProjectName", ProjectName);
+		root.WriteData("m_ProjectName", m_ProjectName);
+		root.WriteData("m_AssetsDirectory", m_AssetsDirectory.string());
+		root.WriteData("m_CacheDirectory", m_CacheDirectory.string());
+		root.WriteData("m_LogsDirectory", m_LogsDirectory.string());
+		root.WriteData("m_ScriptsDirectory", m_ScriptsDirectory.string());
+		root.WriteData("m_ScriptsProjectPath", m_ScriptsProjectPath.string());
 		serializer.WriteToDisk(m_Path);
 	}
 
@@ -44,7 +46,39 @@ namespace Odyssey
 		if (AssetDeserializer file = AssetDeserializer(m_Path))
 		{
 			SerializationNode root = file.GetRoot();
-			root.ReadData("ProjectName", ProjectName);
+
+			// ryml doesn't like serializating paths
+			std::string assetsDirectory;
+			std::string cacheDirectory;
+			std::string logsDirectory;
+			std::string scriptsDirectory;
+			std::string scriptsProjectPath;
+
+			root.ReadData("m_ProjectName", m_ProjectName);
+			root.ReadData("m_AssetsDirectory", assetsDirectory);
+			root.ReadData("m_CacheDirectory", cacheDirectory);
+			root.ReadData("m_LogsDirectory", logsDirectory);
+			root.ReadData("m_ScriptsDirectory", scriptsDirectory);
+			root.ReadData("m_ScriptsProjectPath", scriptsProjectPath);
+
+			// Convert them back into paths
+			m_AssetsDirectory = assetsDirectory;
+			m_CacheDirectory = cacheDirectory;
+			m_LogsDirectory = logsDirectory;
+			m_ScriptsDirectory = scriptsDirectory;
+			m_ScriptsProjectPath = scriptsProjectPath;
+
+			// Generate paths including the project directory
+			m_FullAssetsDirectory = m_ProjectDirectory / m_AssetsDirectory;
+			m_FullCacheDirectory = m_ProjectDirectory / m_CacheDirectory;
+			m_FullLogsDirectory = m_ProjectDirectory / m_LogsDirectory;
+			m_FullScriptsDirectory = m_ProjectDirectory / m_ScriptsDirectory;
+			m_FullScriptsProjectPath = m_ProjectDirectory / m_ScriptsProjectPath;
+
+			std::filesystem::create_directories(m_FullAssetsDirectory);
+			std::filesystem::create_directories(m_FullCacheDirectory);
+			std::filesystem::create_directories(m_FullLogsDirectory);
+			std::filesystem::create_directories(m_FullScriptsDirectory);
 		}
 	}
 }
