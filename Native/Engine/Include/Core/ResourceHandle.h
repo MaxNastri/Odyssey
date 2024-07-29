@@ -22,6 +22,9 @@ namespace Odyssey
 		}
 
 	public:
+		operator bool() { return IsValid(); }
+
+	public:
 		T* Get() { return m_Ptr; }
 		int32_t GetID() { return m_ID; }
 		bool IsValid() { return m_ID != -1; }

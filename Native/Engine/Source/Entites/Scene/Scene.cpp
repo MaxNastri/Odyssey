@@ -175,10 +175,13 @@ namespace Odyssey
 	{
 		for (auto& gameObject : gameObjects)
 		{
-			if (Camera* camera = gameObject->GetComponent<Camera>())
+			if (!gameObject->m_IsHidden)
 			{
-				if (camera->IsMainCamera())
-					m_MainCamera = camera;
+				if (Camera* camera = gameObject->GetComponent<Camera>())
+				{
+					if (camera->IsMainCamera())
+						m_MainCamera = camera;
+				}
 			}
 		}
 	}
