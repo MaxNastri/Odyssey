@@ -1,3 +1,4 @@
+m_SourceAsset: 
 m_GUID: 'a77ecccb-ca5d-4e87-832d-19acf6658b7c'
 m_Name: Scene
 m_Type: Scene
@@ -31,7 +32,7 @@ GameObjects:
             ManagedType: 5
             Value: -1
   - Name: "Max's Other GameObject"
-    Type: Odyssey.Entities.GameObject
+    Type: Odyssey.GameObject
     Active: 1
     ID: 1
     Components:
@@ -40,7 +41,7 @@ GameObjects:
         Rotation: 'x: 45 y: 45 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Name: Odyssey.Camera
-        Field of View: 90.0
+        Field of View: 45
         Near Clip: 0.1
-        Far Clip: 1000.0
-        Main Camera: true
+        Far Clip: 1000
+        Main Camera: 1

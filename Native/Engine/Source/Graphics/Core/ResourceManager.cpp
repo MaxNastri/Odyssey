@@ -295,17 +295,15 @@ namespace Odyssey
 	}
 	void ResourceManager::DestroyImage(ResourceHandle<VulkanImage> handle)
 	{
+		// TODO: Fix this with render command queue
 		uint32_t id = handle.m_ID;
-		auto func = [](uint32_t id)
-			{
 				if (std::shared_ptr<VulkanImage> image = s_Resources.Get<VulkanImage>(id))
 				{
 					image->Destroy();
 					image->SetID(-1);
 					s_Resources.Remove(id);
 				}
-			};
-		s_PendingDestroys.push_back({ id, func });
+		//s_PendingDestroys.push_back({ id, func });
 	}
 
 	void ResourceManager::DestroySampler(ResourceHandle<VulkanTextureSampler> handle)

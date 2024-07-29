@@ -80,5 +80,11 @@ namespace Odyssey
 			ResourceManager::DestroyRenderTexture(m_DepthRT);
 		if (m_RTSampler)
 			ResourceManager::DestroySampler(m_RTSampler);
+
+		// Create an IMGui texture handle
+		// TODO: Fix this with render command queue
+		//if (auto renderer = Application::GetRenderer())
+		//	if (auto imgui = renderer->GetImGui())
+		//		imgui->RemoveTexture(m_RenderTextureID);
 	}
 }
