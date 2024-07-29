@@ -135,10 +135,16 @@ namespace Odyssey
 		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
 
-		if (m_Camera)
-			renderScene->SetCameraData(m_Camera);
+		uint32_t cameraIndex = RenderScene::MAX_CAMERAS;
 
-		if (m_Camera || renderScene->HasMainCamera())
+		// Set either the camera override or the scene's main camera
+		if (m_Camera)
+			cameraIndex = renderScene->SetCameraData(m_Camera);
+		else if (renderScene->HasMainCamera())
+			cameraIndex = renderScene->SetCameraData(renderScene->m_MainCamera);
+
+		// Check for a valid camera data index
+		if (cameraIndex < RenderScene::MAX_CAMERAS)
 		{
 			for (auto& setPass : params.renderingData->renderScene->setPasses)
 			{
@@ -148,7 +154,7 @@ namespace Odyssey
 				{
 					// Prepare the push descriptor commands
 					pushDescriptors->Clear();
-					pushDescriptors->Add(renderScene->sceneUniformBuffer, 0);
+					pushDescriptors->Add(renderScene->cameraDataBuffers[cameraIndex], 0);
 					pushDescriptors->Add(renderScene->perObjectUniformBuffers[i], 1);
 					if (setPass.Texture.IsValid())
 					{

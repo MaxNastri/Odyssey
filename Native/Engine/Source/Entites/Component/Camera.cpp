@@ -52,6 +52,7 @@ namespace Odyssey
 		if (m_Transform == nullptr)
 			m_Transform = gameObject->GetComponent<Transform>();
 
+		m_Transform->SetScale(1, 1, 1);
 		m_View = m_Transform->GetWorldMatrix();
 		return m_View;
 	}
@@ -59,16 +60,19 @@ namespace Odyssey
 	void Camera::SetFieldOfView(float fov)
 	{
 		m_FieldOfView = fov;
+		CalculateProjection();
 	}
 
 	void Camera::SetNearClip(float nearClip)
 	{
 		m_NearClip = nearClip;
+		CalculateProjection();
 	}
 
 	void Camera::SetFarClip(float farClip)
 	{
 		m_FarClip = farClip;
+		CalculateProjection();
 	}
 
 	void Camera::SetViewportSize(float width, float height)
@@ -90,10 +94,7 @@ namespace Odyssey
 
 	void Camera::CalculateInverseView()
 	{
-		if (m_Transform == nullptr)
-			m_Transform = gameObject->GetComponent<Transform>();
-
-		m_View = m_Transform->GetWorldMatrix();
+		m_View = GetView();
 		m_InverseView = glm::inverse(m_View);
 	}
 }

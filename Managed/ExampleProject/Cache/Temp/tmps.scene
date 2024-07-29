@@ -37,6 +37,11 @@ GameObjects:
     ID: 1
     Components:
       - Name: Odyssey.Entities.Transform
-        Position: 'x: -1 y: 2 z: -2'
-        Rotation: 'x: 45 y: 45 z: 0'
+        Position: 'x: -1 y: 2 z: -2.4'
+        Rotation: 'x: 24.6 y: 20.7 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
+      - Name: Odyssey.Camera
+        Field of View: 45
+        Near Clip: 0.1
+        Far Clip: 1000
+        Main Camera: 1

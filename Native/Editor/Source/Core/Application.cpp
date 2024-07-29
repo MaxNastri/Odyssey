@@ -106,8 +106,8 @@ namespace Odyssey
 
 	void Application::CreateRenderPasses()
 	{
-		renderer->AddRenderPass(GUIManager::GetSceneViewWindow(0).GetRenderPass());
-		renderer->AddRenderPass(GUIManager::GetGameViewWindow(0).GetRenderPass());
+		renderer->AddRenderPass(GUIManager::GetSceneViewWindow(0)->GetRenderPass());
+		renderer->AddRenderPass(GUIManager::GetGameViewWindow(0)->GetRenderPass());
 		renderer->AddRenderPass(GUIManager::GetRenderPass());
 	}
 	void Application::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event)

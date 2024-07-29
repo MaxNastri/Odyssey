@@ -15,7 +15,7 @@ namespace Odyssey
 	class VulkanDescriptorLayout;
 	class VulkanTexture;
 
-	struct SceneUniformData
+	struct CameraUniformData
 	{
 		glm::mat4 inverseView;
 		glm::mat4 proj;
@@ -53,21 +53,21 @@ namespace Odyssey
 		void ConvertScene(Scene* scene);
 		void ClearSceneData();
 
-		void SetCameraData(Camera* camera);
-		bool HasMainCamera() { return m_MainCameraSet; }
+		uint32_t SetCameraData(Camera* camera);
+		bool HasMainCamera() { return m_MainCamera != nullptr; }
 
 	private:
 		void SetupDrawcalls(Scene* scene);
 
 	public:
 		// Data structs
-		SceneUniformData sceneData;
+		CameraUniformData cameraData;
 		ObjectUniformData objectData;
-		bool m_MainCameraSet = false;
+		Camera* m_MainCamera = nullptr;
 
 		// Descriptor buffer for per-scene data
 		ResourceHandle<VulkanDescriptorLayout> uboLayout;
-		ResourceHandle<VulkanUniformBuffer> sceneUniformBuffer;
+		std::vector<ResourceHandle<VulkanUniformBuffer>> cameraDataBuffers;
 		std::vector<ResourceHandle<VulkanUniformBuffer>> perObjectUniformBuffers;
 
 		// Descriptor buffer for per-object sampler
@@ -77,6 +77,8 @@ namespace Odyssey
 
 		std::vector<SetPass> setPasses;
 		uint32_t m_NextUniformBuffer = 0;
+		uint32_t m_NextCameraBuffer = 0;
 		const uint32_t Max_Uniform_Buffers = 128;
+		inline static constexpr uint32_t MAX_CAMERAS = 4;
 	};
 }

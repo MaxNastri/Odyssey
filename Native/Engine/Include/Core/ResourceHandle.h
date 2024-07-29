@@ -23,6 +23,7 @@ namespace Odyssey
 
 	public:
 		operator bool() { return IsValid(); }
+		T* operator ->() { return m_Ptr; }
 
 	public:
 		T* Get() { return m_Ptr; }

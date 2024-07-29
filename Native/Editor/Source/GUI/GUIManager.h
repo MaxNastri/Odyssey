@@ -36,8 +36,8 @@ namespace Odyssey
 		static void OnSelectionContextChanged(const GUISelection& context);
 	public:
 		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
-		static SceneViewWindow& GetSceneViewWindow(uint32_t index) { return sceneViewWindows[index]; }
-		static GameViewWindow& GetGameViewWindow(uint32_t index) { return gameViewWindows[index]; }
+		static SceneViewWindow* GetSceneViewWindow(uint32_t index) { return sceneViewWindows[index].get(); }
+		static GameViewWindow* GetGameViewWindow(uint32_t index) { return gameViewWindows[index].get(); }
 
 	private:
 		static void OnFilesChanged(const NotificationSet& notificationSet);
@@ -47,12 +47,12 @@ namespace Odyssey
 		inline static EditorMenuBar s_MenuBar;
 
 		// Windows
-		inline static std::vector<InspectorWindow> inspectorWindows;
-		inline static std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
-		inline static std::vector<SceneViewWindow> sceneViewWindows;
-		inline static std::vector<GameViewWindow> gameViewWindows;
-		inline static std::vector<ContentBrowserWindow> contentBrowserWindows;
-		inline static std::vector<RayTracingWindow> s_RayTracingWindows;
+		inline static std::vector<std::shared_ptr<InspectorWindow>> inspectorWindows;
+		inline static std::vector<std::shared_ptr<SceneHierarchyWindow>> sceneHierarchyWindows;
+		inline static std::vector<std::shared_ptr<SceneViewWindow>> sceneViewWindows;
+		inline static std::vector<std::shared_ptr<GameViewWindow>> gameViewWindows;
+		inline static std::vector<std::shared_ptr<ContentBrowserWindow>> contentBrowserWindows;
+		inline static std::vector<std::shared_ptr<RayTracingWindow>> s_RayTracingWindows;
 		inline static int32_t selectedObject = -1;
 		inline static std::shared_ptr<ImguiPass> m_GUIPass;
 	};

@@ -28,34 +28,34 @@ namespace Odyssey
 
 	void GUIManager::CreateInspectorWindow(GameObject* gameObject)
 	{
-		inspectorWindows.push_back(InspectorWindow(std::make_shared<GameObjectInspector>(gameObject)));
+		inspectorWindows.push_back(std::make_shared<InspectorWindow>(std::make_shared<GameObjectInspector>(gameObject)));
 	}
 
 	void GUIManager::CreateSceneHierarchyWindow()
 	{
-		sceneHierarchyWindows.push_back(SceneHierarchyWindow());
+		sceneHierarchyWindows.push_back(std::make_shared<SceneHierarchyWindow>());
 
-		sceneHierarchyWindows[sceneHierarchyWindows.size() - 1].OnGameObjectSelected(OnGameObjectSelected);
+		sceneHierarchyWindows[sceneHierarchyWindows.size() - 1]->OnGameObjectSelected(OnGameObjectSelected);
 	}
 
 	void GUIManager::CreateSceneViewWindow()
 	{
-		sceneViewWindows.push_back(SceneViewWindow());
+		sceneViewWindows.push_back(std::make_shared<SceneViewWindow>());
 	}
 
 	void GUIManager::CreateGameViewWindow()
 	{
-		gameViewWindows.push_back(GameViewWindow());
+		gameViewWindows.push_back(std::make_shared<GameViewWindow>());
 	}
 
 	void GUIManager::CreateContentBrowserWindow()
 	{
-		contentBrowserWindows.push_back(ContentBrowserWindow());
+		contentBrowserWindows.push_back(std::make_shared<ContentBrowserWindow>());
 	}
 
 	void GUIManager::CreateRayTracingWindow()
 	{
-		s_RayTracingWindows.push_back(RayTracingWindow());
+		s_RayTracingWindows.push_back(std::make_shared<RayTracingWindow>());
 	}
 
 	void GUIManager::Update()
@@ -64,32 +64,32 @@ namespace Odyssey
 
 		for (auto& inspectorWindow : inspectorWindows)
 		{
-			inspectorWindow.Update();
+			inspectorWindow->Update();
 		}
 
 		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
 		{
-			sceneHierarchyWindow.Update();
+			sceneHierarchyWindow->Update();
 		}
 
 		for (auto& sceneViewWindow : sceneViewWindows)
 		{
-			sceneViewWindow.Update();
+			sceneViewWindow->Update();
 		}
 
 		for (auto& gameViewWindow : gameViewWindows)
 		{
-			gameViewWindow.Update();
+			gameViewWindow->Update();
 		}
 
 		for (auto& contentBrowserWindow : contentBrowserWindows)
 		{
-			contentBrowserWindow.Update();
+			contentBrowserWindow->Update();
 		}
 
 		for (auto& rayTracingWindow : s_RayTracingWindows)
 		{
-			rayTracingWindow.Update();
+			rayTracingWindow->Update();
 		}
 	}
 
@@ -101,32 +101,32 @@ namespace Odyssey
 
 		for (auto& inspectorWindow : inspectorWindows)
 		{
-			inspectorWindow.Draw();
+			inspectorWindow->Draw();
 		}
 
 		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
 		{
-			sceneHierarchyWindow.Draw();
+			sceneHierarchyWindow->Draw();
 		}
 
 		for (auto& sceneViewWindow : sceneViewWindows)
 		{
-			sceneViewWindow.Draw();
+			sceneViewWindow->Draw();
 		}
 
 		for (auto& gameViewWindow : gameViewWindows)
 		{
-			gameViewWindow.Draw();
+			gameViewWindow->Draw();
 		}
 
 		for (auto& contentBrowserWindow : contentBrowserWindows)
 		{
-			contentBrowserWindow.Draw();
+			contentBrowserWindow->Draw();
 		}
 
 		for (auto& rayTracingWindow : s_RayTracingWindows)
 		{
-			rayTracingWindow.Draw();
+			rayTracingWindow->Draw();
 		}
 	}
 
@@ -134,17 +134,17 @@ namespace Odyssey
 	{
 		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
 		{
-			sceneHierarchyWindow.OnSceneChanged();
+			sceneHierarchyWindow->OnSceneChanged();
 		}
 
 		for (auto& sceneViewWindow : sceneViewWindows)
 		{
-			sceneViewWindow.OnSceneChanged();
+			sceneViewWindow->OnSceneChanged();
 		}
 
 		for (auto& inspectorWindow : inspectorWindows)
 		{
-			inspectorWindow.Reload();
+			inspectorWindow->Reload();
 		}
 	}
 
@@ -157,7 +157,7 @@ namespace Odyssey
 
 		for (auto& sceneViewWindow : sceneViewWindows)
 		{
-			sceneViewWindow.SetSelectedGameObject(gameObject);
+			sceneViewWindow->SetSelectedGameObject(gameObject);
 		}
 	}
 
@@ -166,7 +166,7 @@ namespace Odyssey
 		// foreach window, invoke event
 		for (auto& window : inspectorWindows)
 		{
-			window.OnSelectionContextChanged(context);
+			window->OnSelectionContextChanged(context);
 		}
 	}
 
@@ -175,7 +175,7 @@ namespace Odyssey
 		for (auto& contentBrowserWindow : contentBrowserWindows)
 		{
 			// TODO: Move the listener into the content browser
-			contentBrowserWindow.UpdatePaths();
+			contentBrowserWindow->UpdatePaths();
 		}
 	}
 	void GUIManager::SetDarkThemeColors()
