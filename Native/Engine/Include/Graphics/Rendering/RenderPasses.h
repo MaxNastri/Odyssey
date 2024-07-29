@@ -18,9 +18,11 @@ namespace Odyssey
 
 	struct RenderPassParams
 	{
+	public:
 		std::shared_ptr<VulkanContext> context;
 		std::shared_ptr<PerFrameRenderingData> renderingData;
 		ResourceHandle<VulkanCommandBuffer> commandBuffer;
+		ResourceHandle<VulkanRenderTexture> FrameRT;
 	};
 
 	class RenderPass

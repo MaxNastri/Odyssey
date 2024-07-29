@@ -193,6 +193,9 @@ namespace Odyssey
 		uint32_t width = params.renderingData->width;
 		uint32_t height = params.renderingData->height;
 
+		// If we don't have a valid RT set, use the back buffer
+		auto renderTarget = m_ColorRT.IsValid() ? m_ColorRT : params.FrameRT;
+
 		VkClearValue clearValue;
 		clearValue.color.float32[0] = m_ClearValue.r;
 		clearValue.color.float32[1] = m_ClearValue.g;
@@ -202,8 +205,8 @@ namespace Odyssey
 		VkRenderingAttachmentInfoKHR color_attachment_info{};
 		color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 		color_attachment_info.pNext = VK_NULL_HANDLE;
-		color_attachment_info.imageView = m_ColorRT.Get()->GetImage().Get()->GetImageView();
-		color_attachment_info.imageLayout = m_ColorRT.Get()->GetImage().Get()->GetLayout();;
+		color_attachment_info.imageView = renderTarget.Get()->GetImage().Get()->GetImageView();
+		color_attachment_info.imageLayout = renderTarget.Get()->GetImage().Get()->GetLayout();;
 		color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 		color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -257,8 +260,11 @@ namespace Odyssey
 		// End dynamic rendering
 		commandBuffer->EndRendering();
 
+		// If we don't have a valid RT set, use the back buffer
+		auto renderTarget = m_ColorRT.IsValid() ? m_ColorRT : params.FrameRT;
+		
 		// Transition the backbuffer layout for presenting
-		commandBuffer->TransitionLayouts(m_ColorRT, m_EndLayout);
+		commandBuffer->TransitionLayouts(renderTarget, m_EndLayout);
 	}
 
 	void ImguiPass::SetImguiState(std::shared_ptr<VulkanImgui> imgui)

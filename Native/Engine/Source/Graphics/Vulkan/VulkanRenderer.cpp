@@ -194,8 +194,7 @@ namespace Odyssey
 			params.commandBuffer = m_CommandBuffers[s_FrameIndex];
 			params.context = m_Context;
 			params.renderingData = m_RenderingData;
-
-			m_RenderPasses[2]->SetColorRenderTexture(frame->GetRenderTarget());
+			params.FrameRT = frame->GetRenderTarget();
 
 			for (const auto& renderPass : m_RenderPasses)
 			{
