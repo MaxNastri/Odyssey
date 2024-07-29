@@ -50,7 +50,7 @@ namespace Odyssey
 			return;
 
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
-		m_SceneViewPass->SetColorRenderTexture(m_RenderTexture);
+		m_SceneViewPass->SetColorRenderTexture(m_ColorRT);
 		m_SceneViewPass->SetDepthRenderTexture(m_DepthRT);
 
 		// Render gizmos
@@ -78,6 +78,7 @@ namespace Odyssey
 			m_CameraTransform = m_GameObject->GetComponent<Transform>();
 			m_CameraTransform->Awake();
 			m_Camera = m_GameObject->AddComponent<Camera>();
+			m_Camera->SetMainCamera(false);
 			m_Camera->Awake();
 			m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
 			m_SceneViewPass->SetCamera(m_Camera);
@@ -87,23 +88,23 @@ namespace Odyssey
 	void SceneViewWindow::CreateRenderTexture()
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
-		m_RenderTexture = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
+		m_ColorRT = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
 		m_DepthRT = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
 		m_RTSampler = ResourceManager::AllocateSampler();
 
 		// Create an IMGui texture handle
 		if (auto renderer = Application::GetRenderer())
 			if (auto imgui = renderer->GetImGui())
-				m_RenderTextureID = imgui->AddTexture(m_RenderTexture, m_RTSampler);
+				m_RenderTextureID = imgui->AddTexture(m_ColorRT, m_RTSampler);
 	}
 
 	void SceneViewWindow::DestroyRenderTexture()
 	{
 		// Destroy the existing render texture
-		if (m_RenderTexture.IsValid())
+		if (m_ColorRT.IsValid())
 		{
 			// Destroy the render texture
-			ResourceManager::DestroyRenderTexture(m_RenderTexture);
+			ResourceManager::DestroyRenderTexture(m_ColorRT);
 			ResourceManager::DestroyRenderTexture(m_DepthRT);
 			ResourceManager::DestroySampler(m_RTSampler);
 		}

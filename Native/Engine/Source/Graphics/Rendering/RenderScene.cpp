@@ -57,6 +57,7 @@ namespace Odyssey
 		if (Camera* mainCamera = scene->GetMainCamera())
 		{
 			SetCameraData(mainCamera);
+			m_MainCameraSet = true;
 		}
 		SetupDrawcalls(scene);
 	}
@@ -70,6 +71,7 @@ namespace Odyssey
 
 		setPasses.clear();
 		m_NextUniformBuffer = 0;
+		m_MainCameraSet = false;
 	}
 
 	void RenderScene::SetCameraData(Camera* camera)

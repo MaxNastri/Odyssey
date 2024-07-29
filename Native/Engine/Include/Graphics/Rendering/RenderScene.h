@@ -54,6 +54,7 @@ namespace Odyssey
 		void ClearSceneData();
 
 		void SetCameraData(Camera* camera);
+		bool HasMainCamera() { return m_MainCameraSet; }
 
 	private:
 		void SetupDrawcalls(Scene* scene);
@@ -62,6 +63,7 @@ namespace Odyssey
 		// Data structs
 		SceneUniformData sceneData;
 		ObjectUniformData objectData;
+		bool m_MainCameraSet = false;
 
 		// Descriptor buffer for per-scene data
 		ResourceHandle<VulkanDescriptorLayout> uboLayout;

@@ -16,7 +16,7 @@ namespace Odyssey
 {
 	void GUIManager::Initialize()
 	{
-		EventSystem::Listen<OnSceneLoaded>(SceneLoaded);
+		EventSystem::Listen<SceneLoadedEvent>(SceneLoaded);
 		FileManager::AddFilesChangedCallback(OnFilesChanged);
 
 		m_GUIPass = std::make_shared<ImguiPass>();
@@ -41,6 +41,11 @@ namespace Odyssey
 	void GUIManager::CreateSceneViewWindow()
 	{
 		sceneViewWindows.push_back(SceneViewWindow());
+	}
+
+	void GUIManager::CreateGameViewWindow()
+	{
+		gameViewWindows.push_back(GameViewWindow());
 	}
 
 	void GUIManager::CreateContentBrowserWindow()
@@ -70,6 +75,11 @@ namespace Odyssey
 		for (auto& sceneViewWindow : sceneViewWindows)
 		{
 			sceneViewWindow.Update();
+		}
+
+		for (auto& gameViewWindow : gameViewWindows)
+		{
+			gameViewWindow.Update();
 		}
 
 		for (auto& contentBrowserWindow : contentBrowserWindows)
@@ -104,6 +114,11 @@ namespace Odyssey
 			sceneViewWindow.Draw();
 		}
 
+		for (auto& gameViewWindow : gameViewWindows)
+		{
+			gameViewWindow.Draw();
+		}
+
 		for (auto& contentBrowserWindow : contentBrowserWindows)
 		{
 			contentBrowserWindow.Draw();
@@ -115,7 +130,7 @@ namespace Odyssey
 		}
 	}
 
-	void GUIManager::SceneLoaded(OnSceneLoaded* sceneLoadedEvent)
+	void GUIManager::SceneLoaded(SceneLoadedEvent* sceneLoadedEvent)
 	{
 		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
 		{

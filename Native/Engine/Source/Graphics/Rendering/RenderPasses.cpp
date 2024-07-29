@@ -138,29 +138,32 @@ namespace Odyssey
 		if (m_Camera)
 			renderScene->SetCameraData(m_Camera);
 
-		for (auto& setPass : params.renderingData->renderScene->setPasses)
+		if (m_Camera || renderScene->HasMainCamera())
 		{
-			commandBuffer->BindPipeline(setPass.pipeline);
-
-			for (size_t i = 0; i < setPass.drawcalls.size(); i++)
+			for (auto& setPass : params.renderingData->renderScene->setPasses)
 			{
-				// Prepare the push descriptor commands
-				pushDescriptors->Clear();
-				pushDescriptors->Add(renderScene->sceneUniformBuffer, 0);
-				pushDescriptors->Add(renderScene->perObjectUniformBuffers[i], 1);
-				if (setPass.Texture.IsValid())
+				commandBuffer->BindPipeline(setPass.pipeline);
+
+				for (size_t i = 0; i < setPass.drawcalls.size(); i++)
 				{
-					pushDescriptors->Add(setPass.Texture, 2);
+					// Prepare the push descriptor commands
+					pushDescriptors->Clear();
+					pushDescriptors->Add(renderScene->sceneUniformBuffer, 0);
+					pushDescriptors->Add(renderScene->perObjectUniformBuffers[i], 1);
+					if (setPass.Texture.IsValid())
+					{
+						pushDescriptors->Add(setPass.Texture, 2);
+					}
+
+					// Push the descriptors into the command buffer
+					commandBuffer->PushDescriptors(pushDescriptors.get(), setPass.pipeline);
+
+					// Set the per-object descriptor buffer offset
+					Drawcall& drawcall = setPass.drawcalls[i];
+					commandBuffer->BindVertexBuffer(drawcall.VertexBuffer);
+					commandBuffer->BindIndexBuffer(drawcall.IndexBuffer);
+					commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);
 				}
-
-				// Push the descriptors into the command buffer
-				commandBuffer->PushDescriptors(pushDescriptors.get(), setPass.pipeline);
-
-				// Set the per-object descriptor buffer offset
-				Drawcall& drawcall = setPass.drawcalls[i];
-				commandBuffer->BindVertexBuffer(drawcall.VertexBuffer);
-				commandBuffer->BindIndexBuffer(drawcall.IndexBuffer);
-				commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);
 			}
 		}
 	}

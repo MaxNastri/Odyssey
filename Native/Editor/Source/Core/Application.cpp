@@ -100,12 +100,14 @@ namespace Odyssey
 		GUIManager::CreateInspectorWindow(nullptr);
 		GUIManager::CreateSceneHierarchyWindow();
 		GUIManager::CreateSceneViewWindow();
+		GUIManager::CreateGameViewWindow();
 		GUIManager::CreateContentBrowserWindow();
 	}
 
 	void Application::CreateRenderPasses()
 	{
 		renderer->AddRenderPass(GUIManager::GetSceneViewWindow(0).GetRenderPass());
+		renderer->AddRenderPass(GUIManager::GetGameViewWindow(0).GetRenderPass());
 		renderer->AddRenderPass(GUIManager::GetRenderPass());
 	}
 	void Application::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event)

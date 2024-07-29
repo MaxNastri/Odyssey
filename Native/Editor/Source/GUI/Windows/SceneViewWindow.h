@@ -44,7 +44,7 @@ namespace Odyssey
 	private: // Rendering stuff
 		std::shared_ptr<OpaquePass> m_SceneViewPass;
 		uint64_t m_RenderTextureID;
-		ResourceHandle<VulkanRenderTexture> m_RenderTexture;
+		ResourceHandle<VulkanRenderTexture> m_ColorRT;
 		ResourceHandle<VulkanRenderTexture> m_DepthRT;
 		ResourceHandle<VulkanTextureSampler> m_RTSampler;
 

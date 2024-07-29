@@ -52,10 +52,10 @@ namespace Odyssey
 
 	class Scene;
 
-	struct OnSceneLoaded : public Event
+	struct SceneLoadedEvent : public Event
 	{
 	public:
-		OnSceneLoaded(Scene* scene)
+		SceneLoadedEvent(Scene* scene)
 		{
 			loadedScene = scene;
 		}

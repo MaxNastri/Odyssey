@@ -27,7 +27,7 @@ namespace Odyssey
 		activeScene = (int)scenes.size() - 1;
 
 		// TODO: Send a copy of the scene, so the GUI manager can use the game objects to reload the inspectors
-		EventSystem::Dispatch<OnSceneLoaded>(scenes[activeScene].Get());
+		EventSystem::Dispatch<SceneLoadedEvent>(scenes[activeScene].Get());
 	}
 
 	void SceneManager::SaveActiveScene()
@@ -73,7 +73,7 @@ namespace Odyssey
 		if (activeScene < scenes.size())
 		{
 			//scenes[activeScene].Get()->Load(tempSaveFilename);
-			EventSystem::Dispatch<OnSceneLoaded>(scenes[activeScene].Get());
+			EventSystem::Dispatch<SceneLoadedEvent>(scenes[activeScene].Get());
 		}
 	}
 }
