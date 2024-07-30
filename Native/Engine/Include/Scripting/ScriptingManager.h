@@ -16,11 +16,12 @@ namespace Odyssey
 	public:
 		static Coral::ManagedObject CreateManagedObject(std::string_view fqManagedClassName);
 	private:
-		static Coral::HostInstance hostInstance;
-		static Coral::HostSettings hostSettings;
-		static Coral::AssemblyLoadContext userAssemblyContext;
-		static Coral::ManagedAssembly userAssembly;
-		static std::vector<Coral::ManagedObject> managedObjects;
+		inline static Coral::HostInstance hostInstance;
+		inline static Coral::HostSettings hostSettings;
+		inline static Coral::AssemblyLoadContext userAssemblyContext;
+		inline static Coral::ManagedAssembly userAssembly;
+		inline static std::vector<Coral::ManagedObject> managedObjects;
+		inline static bool s_UserAssembliesLoaded = false;
 	private:
 		inline static const std::string UserAssemblyFilename = "Odyssey.Managed.Example.dll";
 	};

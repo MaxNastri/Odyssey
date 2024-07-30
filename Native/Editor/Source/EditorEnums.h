@@ -7,7 +7,8 @@ namespace Odyssey
 	{
 		None = 0,
 		EnterPlaymode = 1,
-		ExitPlaymode = 2,
+		PausePlaymode = 2,
+		ExitPlaymode = 3,
 	};
 
 	struct GUISelection

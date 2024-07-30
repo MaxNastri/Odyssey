@@ -14,7 +14,7 @@
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
     <OutputPath>..\..\Build\Debug\</OutputPath>
-    <IntermediateOutputPath>..\..\Intermediates\Debug\Debug\Coral.Managed\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\Intermediates\Debug\</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,7 +26,7 @@
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
     <OutputPath>..\..\Build\Release\</OutputPath>
-    <IntermediateOutputPath>..\..\Intermediates\Release\Release\Coral.Managed\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\Intermediates\Release\</IntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -72,4 +72,7 @@
       <Link>Vendor\Coral\Coral.Managed\Source\UniqueList.cs</Link>
     </Compile>
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy /B /Y "$(SolutionDir)Vendor\Coral\Coral.Managed\Coral.Managed.runtimeconfig.json" "..\..\Build\Debug"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

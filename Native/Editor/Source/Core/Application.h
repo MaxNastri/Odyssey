@@ -31,6 +31,7 @@ namespace Odyssey
 	private:
 		bool running;
 		bool allowRecompile = true;
+		bool m_UpdateScripts = false;
 		float m_TimeSinceLastUpdate = 0.0f;
 		inline static std::shared_ptr<VulkanRenderer> renderer = nullptr;
 

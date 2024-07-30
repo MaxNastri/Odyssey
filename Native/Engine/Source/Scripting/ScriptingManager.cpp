@@ -2,15 +2,10 @@
 #include <Logger.h>
 #include "Events.h"
 #include "Globals.h"
+#include "ScriptCompiler.h"
 
 namespace Odyssey
 {
-	Coral::HostInstance ScriptingManager::hostInstance;
-	Coral::HostSettings ScriptingManager::hostSettings;
-	Coral::AssemblyLoadContext ScriptingManager::userAssemblyContext;
-	Coral::ManagedAssembly ScriptingManager::userAssembly;
-	std::vector<Coral::ManagedObject> ScriptingManager::managedObjects;
-
 	void ExceptionCallback(std::string_view exception)
 	{
 		Logger::LogError(exception.data());
@@ -27,29 +22,34 @@ namespace Odyssey
 			.ExceptionCallback = ExceptionCallback
 		};
 		hostInstance.Initialize(hostSettings);
-
-		LoadUserAssemblies();
 	}
 
 	void ScriptingManager::LoadUserAssemblies()
 	{
-		userAssemblyContext = hostInstance.CreateAssemblyLoadContext("UserScripts");
+		if (!s_UserAssembliesLoaded)
+		{
+			userAssemblyContext = hostInstance.CreateAssemblyLoadContext("UserScripts");
 
-		// Load the assembly
-		std::filesystem::path appPath = Globals::GetApplicationPath();
-		std::filesystem::path assemblyPath = appPath / UserAssemblyFilename;
-		userAssembly = userAssemblyContext.LoadAssembly(assemblyPath.string());
+			// Load the assembly
+			auto userAssemblyPath = ScriptCompiler::GetUserAssemblyPath();
+			userAssembly = userAssemblyContext.LoadAssembly(userAssemblyPath.string());
+			s_UserAssembliesLoaded = true;
+		}
 	}
 
 	void ScriptingManager::UnloadUserAssemblies()
 	{
-		for (Coral::ManagedObject& object : managedObjects)
+		if (s_UserAssembliesLoaded)
 		{
-			object.Destroy();
-		}
-		managedObjects.clear();
+			for (Coral::ManagedObject& object : managedObjects)
+			{
+				object.Destroy();
+			}
+			managedObjects.clear();
 
-		hostInstance.UnloadAssemblyLoadContext(userAssemblyContext);
+			hostInstance.UnloadAssemblyLoadContext(userAssemblyContext);
+			s_UserAssembliesLoaded = false;
+		}
 	}
 
 	void ScriptingManager::ReloadUserAssemblies()

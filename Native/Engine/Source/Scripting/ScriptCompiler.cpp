@@ -13,7 +13,11 @@ namespace Odyssey
 	{
 		m_Settings = compilerSettings;
 
+		// Construct the necessary assembly paths
 		m_UserAssembliesDirectory = m_Settings.CacheDirectory / USER_ASSEMBLIES_DIRECTORY;
+		m_UserAssemblyFilename = m_Settings.UserScriptsProject.filename().replace_extension(".dll");
+		m_UserAssemblyPath = m_UserAssembliesDirectory / m_UserAssemblyFilename;
+		
 		if (!std::filesystem::exists(m_UserAssembliesDirectory))
 			std::filesystem::create_directories(m_UserAssembliesDirectory);
 
@@ -122,11 +126,8 @@ namespace Odyssey
 		if (exitCode == 0)
 		{
 			// Copy out files
-			std::filesystem::path assemblyFilename = m_Settings.UserScriptsProject.filename().replace_extension(".dll");
-			std::filesystem::path outputPath = m_Settings.ApplicationPath / assemblyFilename;
-			std::filesystem::path cachePath = m_UserAssembliesDirectory / assemblyFilename;
-
-			std::filesystem::copy(cachePath, outputPath,
+			std::filesystem::path outputPath = m_Settings.ApplicationPath / m_UserAssemblyFilename;
+			std::filesystem::copy(m_UserAssemblyPath, outputPath,
 				std::filesystem::copy_options::overwrite_existing);
 			return true;
 		}

@@ -45,6 +45,7 @@ namespace Odyssey
 
 		// Build the user assembly
 		ScriptCompiler::BuildUserAssembly();
+		ScriptingManager::LoadUserAssemblies();
 
 		SetupEditorGUI();
 		CreateRenderPasses();
@@ -77,7 +78,10 @@ namespace Odyssey
 				ScriptCompiler::Process();
 
 				GUIManager::Update();
-				SceneManager::Update();
+
+				// Only update the scene if we are updating scripts (playmode)
+				if (m_UpdateScripts)
+					SceneManager::Update();
 
 				if (!renderer->Update())
 				{
@@ -119,12 +123,19 @@ namespace Odyssey
 			Scene* activeScene = SceneManager::GetActiveScene();
 			auto tempPath = ProjectManager::GetTempDirectory() / TEMP_SCENE_FILE;
 			activeScene->SaveTo(tempPath);
+			m_UpdateScripts = false;
+			break;
+		}
+		case PlaymodeState::PausePlaymode:
+		{
+			m_UpdateScripts = true;
 			break;
 		}
 		case PlaymodeState::ExitPlaymode:
 		{
 			auto tempPath = ProjectManager::GetTempDirectory() / TEMP_SCENE_FILE;
 			SceneManager::LoadScene(tempPath.string());
+			m_UpdateScripts = false;
 			break;
 		}
 		default:
