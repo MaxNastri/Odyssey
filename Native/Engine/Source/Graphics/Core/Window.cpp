@@ -22,6 +22,9 @@ namespace Odyssey
 
 		// Tip: By default glfw targets an OpenGL context. We include this line to clear the API setting of OpenGL
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		
+		// Start the window maximized
+		glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
 		// Create the glfw window and store the glfw + windows handles
 		glfwHandle = glfwCreateWindow(m_Width, m_Height, title.c_str(), nullptr, nullptr);

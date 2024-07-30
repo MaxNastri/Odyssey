@@ -19,7 +19,11 @@ namespace Odyssey
 	void EditorActionsBar::Draw()
 	{
 		ImGuiWindowClass window_class;
-		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+		window_class.DockNodeFlagsOverrideSet = 
+			ImGuiDockNodeFlags_NoTabBar | 
+			ImGuiDockNodeFlags_NoDockingSplit | 
+			ImGuiDockNodeFlags_NoResize;
+		
 		ImGui::SetNextWindowClass(&window_class);
 
 		if (ImGui::Begin("Editor Actions Bar", &m_WindowOpen, m_WindowFlags))
