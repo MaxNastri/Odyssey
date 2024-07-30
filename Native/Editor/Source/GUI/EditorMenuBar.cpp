@@ -49,14 +49,6 @@ namespace Odyssey
 				}
 			}
 
-			if (ImGui::MenuItem("Enter Playmode"))
-			{
-				EventSystem::Dispatch<PlaymodeStateChangedEvent>(PlaymodeState::EnterPlaymode);
-			}
-			else if (ImGui::MenuItem("Exit Playmode"))
-			{
-				EventSystem::Dispatch<PlaymodeStateChangedEvent>(PlaymodeState::ExitPlaymode);
-			}
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Imgui"))

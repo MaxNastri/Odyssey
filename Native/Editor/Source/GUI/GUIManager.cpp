@@ -11,6 +11,7 @@
 #include "Application.h"
 #include "RayTracingWindow.h"
 #include "GameObjectInspector.h"
+#include "imgui_internal.h"
 
 namespace Odyssey
 {
@@ -61,6 +62,7 @@ namespace Odyssey
 	void GUIManager::Update()
 	{
 		s_MenuBar.Update();
+		s_ActionsBar.Update();
 
 		for (auto& inspectorWindow : inspectorWindows)
 		{
@@ -95,9 +97,14 @@ namespace Odyssey
 
 	void GUIManager::DrawGUI()
 	{
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+		uint32_t flags = 0;
+		flags |= ImGuiDockNodeFlags_NoWindowMenuButton;
+		flags |= ImGuiDockNodeFlags_NoCloseButton;
+
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), flags);
 
 		s_MenuBar.Draw();
+		s_ActionsBar.Draw();
 
 		for (auto& inspectorWindow : inspectorWindows)
 		{

@@ -8,6 +8,7 @@
 #include "ContentBrowserWindow.h"
 #include "RayTracingWindow.h"
 #include "EditorMenuBar.h"
+#include "EditorActionsBar.h"
 
 namespace Odyssey
 {
@@ -45,6 +46,7 @@ namespace Odyssey
 
 	private:
 		inline static EditorMenuBar s_MenuBar;
+		inline static EditorActionsBar s_ActionsBar;
 
 		// Windows
 		inline static std::vector<std::shared_ptr<InspectorWindow>> inspectorWindows;
