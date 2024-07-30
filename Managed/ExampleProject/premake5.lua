@@ -5,7 +5,7 @@ workspace "ExampleProject"
     configurations { "Debug", "Release"}
 
 group "Odyssey"
-
+    include "../Runtime" 
 group ""
 
 project "ExampleProject"
@@ -21,6 +21,8 @@ project "ExampleProject"
     files  {
         "Assets/Scripts/**.cs", 
     }
+    
+    links { "Coral.Managed" }
 
     filter "configurations:Debug"
         optimize "Off"

@@ -3,9 +3,9 @@ FileVersion = 1.0
 workspace "%ProjectName%"
     startproject "%ProjectName%"
     configurations { "Debug", "Release"}
-
+    
 group "Odyssey"
-
+    include "../Runtime" 
 group ""
 
 project "%ProjectName%"
@@ -21,6 +21,8 @@ project "%ProjectName%"
     files  {
         "Assets/Scripts/**.cs", 
     }
+
+    links { "Coral.Managed" }
 
     filter "configurations:Debug"
         optimize "Off"

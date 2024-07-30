@@ -34,4 +34,10 @@
   <ItemGroup>
     <Compile Include="Source\main.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Runtime\Coral.Managed.csproj">
+      <Project>{11178401-7DD7-FF37-4612-49B5B2914414}</Project>
+      <Name>Coral.Managed</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
