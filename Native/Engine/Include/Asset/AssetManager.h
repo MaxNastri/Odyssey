@@ -73,12 +73,12 @@ namespace Odyssey
 		inline static std::filesystem::path s_AssetsDirectory;
 		inline static AssetDatabase s_AssetDatabase;
 		inline static DynamicList<Asset> s_Assets;
-		inline static std::map<std::string, uint32_t> s_LoadedAssets;
+		inline static std::map<std::string, uint64_t> s_LoadedAssets;
 
 	private: // Source Assets
 		inline static AssetDatabase s_SourceAssetDatabase;
 		inline static DynamicList<SourceAsset> s_SourceAssets;
-		inline static std::map<std::string, uint32_t> s_LoadedSourceAssets;
+		inline static std::map<std::string, uint64_t> s_LoadedSourceAssets;
 
 	private: // Binary Assets
 		inline static BinaryCache s_BinaryCache;

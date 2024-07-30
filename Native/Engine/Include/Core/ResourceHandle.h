@@ -1,5 +1,4 @@
 #pragma once
-#include <limits>
 
 namespace Odyssey
 {
@@ -15,7 +14,7 @@ namespace Odyssey
 			m_Ptr = nullptr;
 		}
 
-		ResourceHandle(int32_t id, T* ptr)
+		ResourceHandle(uint64_t id, T* ptr)
 		{
 			m_ID = id;
 			m_Ptr = ptr;
@@ -27,12 +26,12 @@ namespace Odyssey
 
 	public:
 		T* Get() { return m_Ptr; }
-		int32_t GetID() { return m_ID; }
-		bool IsValid() { return m_ID != -1; }
+		uint64_t GetID() { return m_ID; }
+		bool IsValid() { return m_ID != (uint64_t)(-1); }
 
 	private:
 		friend class ResourceManager;
-		int32_t m_ID = -1;
+		uint64_t m_ID = (uint64_t)(-1);
 		T* m_Ptr = nullptr;
 	};
 }

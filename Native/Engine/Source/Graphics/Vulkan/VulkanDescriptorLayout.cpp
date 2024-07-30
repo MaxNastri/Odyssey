@@ -70,7 +70,7 @@ namespace Odyssey
 		VkDescriptorSetLayoutCreateInfo descriptor_layout_create_info{};
 		descriptor_layout_create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 		descriptor_layout_create_info.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR;
-		descriptor_layout_create_info.bindingCount = bindings.size();
+		descriptor_layout_create_info.bindingCount = (uint32_t)(bindings.size());
 		descriptor_layout_create_info.pBindings = bindings.data();
 
 		if (vkCreateDescriptorSetLayout(m_Context->GetDeviceVK(), &descriptor_layout_create_info, nullptr, &m_Layout) != VK_SUCCESS)

@@ -125,7 +125,7 @@ namespace Odyssey
 	{
 		if (!guid.empty() && s_LoadedSourceAssets.contains(guid))
 		{
-			uint32_t id = s_LoadedSourceAssets[guid];
+			uint64_t id = s_LoadedSourceAssets[guid];
 			std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
 			return AssetHandle<SourceShader>(id, shader.get());
 		}
@@ -207,7 +207,7 @@ namespace Odyssey
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
 		{
 			// Return a handle
-			uint32_t id = s_LoadedAssets[guid];
+			uint64_t id = s_LoadedAssets[guid];
 			std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
 			return AssetHandle<Shader>(id, shader.get());
 		}
@@ -223,7 +223,7 @@ namespace Odyssey
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
 		{
 			// Return a handle
-			uint32_t id = s_LoadedAssets[guid];
+			uint64_t id = s_LoadedAssets[guid];
 			std::shared_ptr<Texture2D> texture = s_Assets.Get<Texture2D>(id);
 			return AssetHandle<Texture2D>(id, texture.get());
 		}
@@ -311,7 +311,7 @@ namespace Odyssey
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
 		{
 			// Return a handle
-			uint32_t id = s_LoadedAssets[guid];
+			uint64_t id = s_LoadedAssets[guid];
 			std::shared_ptr<Material> material = s_Assets.Get<Material>(id);
 			return AssetHandle<Material>(id, material.get());
 		}
@@ -327,7 +327,7 @@ namespace Odyssey
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
 		{
 			// Return a handle
-			uint32_t id = s_LoadedAssets[guid];
+			uint64_t id = s_LoadedAssets[guid];
 			std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
 			return AssetHandle<Mesh>(id, mesh.get());
 		}

@@ -38,8 +38,8 @@ namespace Odyssey
 	public:
 		ResourceHandle<VulkanGraphicsPipeline> pipeline;
 		std::vector<Drawcall> drawcalls;
-		int32_t vertexShaderID = -1;
-		int32_t fragmentShaderID = -1;
+		uint64_t vertexShaderID = (uint64_t)(-1);
+		uint64_t fragmentShaderID = (uint64_t)(-1);
 		ResourceHandle<VulkanTexture> Texture;
 	};
 

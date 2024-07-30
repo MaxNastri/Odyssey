@@ -194,6 +194,6 @@ namespace Odyssey
     void VulkanCommandBuffer::PushDescriptors(VulkanPushDescriptors* descriptors, ResourceHandle<VulkanGraphicsPipeline> pipeline)
     {
         std::vector<VkWriteDescriptorSet> descriptorSets = descriptors->GetWriteDescriptors();
-        vkCmdPushDescriptorSetKHR(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Get()->GetLayout(), 0, descriptorSets.size(), descriptorSets.data());
+        vkCmdPushDescriptorSetKHR(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.Get()->GetLayout(), 0, (uint32_t)(descriptorSets.size()), descriptorSets.data());
     }
 }
