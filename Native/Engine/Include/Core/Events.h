@@ -1,6 +1,5 @@
 #pragma once
 #include "EventSystem.h"
-#include "FileWatcherHandle.h"
 #include "Globals.h"
 
 namespace Odyssey
@@ -35,17 +34,6 @@ namespace Odyssey
 		}
 
 		bool success = false;
-	};
-
-	struct OnUserFilesModified : public Event
-	{
-	public:
-		OnUserFilesModified(const NotificationSet& notificationSet)
-		{
-			changedFileSet = notificationSet;
-		}
-
-		NotificationSet changedFileSet;
 	};
 
 #pragma endregion

@@ -1,5 +1,5 @@
 #include "Application.h"
-#include "FileManager.h"
+#include "FileTracker.h"
 #include "AssetManager.h"
 #include "ScriptCompiler.h"
 #include "ScriptingManager.h"
@@ -24,8 +24,7 @@ namespace Odyssey
 		ProjectManager::LoadProject("C:/Git/Odyssey/Managed/ExampleProject");
 
 		// Track the manage project folder for any file changes
-		FileManager::Initialize();
-		FileManager::TrackFolder(ProjectManager::GetAssetsDirectory().string());
+		FileTracker::Init();
 
 		// Create the renderer
 		renderer = std::make_shared<VulkanRenderer>();

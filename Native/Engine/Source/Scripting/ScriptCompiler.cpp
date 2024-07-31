@@ -1,11 +1,8 @@
 #include "ScriptCompiler.h"
-#include <Windows.h>
 #include "Logger.h"
 #include "EventSystem.h"
 #include "Events.h"
 #include "ScriptingManager.h"
-#include <locale>
-#include <codecvt>
 
 namespace Odyssey
 {
@@ -21,7 +18,12 @@ namespace Odyssey
 		if (!std::filesystem::exists(m_UserAssembliesDirectory))
 			std::filesystem::create_directories(m_UserAssembliesDirectory);
 
-		EventSystem::Listen<OnUserFilesModified>(ScriptCompiler::UserFilesModified);
+		TrackingOptions options;
+		options.Direrctory = m_Settings.UserScriptsDirectory;
+		options.Extensions = { ".cs" };
+		options.Recursive = true;
+		options.Callback = OnFileAction;
+		m_FileTracker = std::make_unique<FileTracker>(options);
 	}
 
 	bool ScriptCompiler::BuildUserAssembly()
@@ -139,22 +141,8 @@ namespace Odyssey
 		}
 	}
 
-	void ScriptCompiler::UserFilesModified(OnUserFilesModified* fileSavedEvent)
+	void ScriptCompiler::OnFileAction(const std::filesystem::path& filename, FileActionType fileAction)
 	{
-		if (!buildInProgress)
-		{
-			for (const auto& changedFile : fileSavedEvent->changedFileSet)
-			{
-				std::filesystem::path path(changedFile.first);
-
-				if (path.extension() == ".cs" &&
-					changedFile.second != FileNotifcations::RenamedNew &&
-					changedFile.second != FileNotifcations::RenamedOld)
-				{
-					shouldRebuild = true;
-					break;
-				}
-			}
-		}
+		shouldRebuild = !buildInProgress && fileAction != FileActionType::None;
 	}
 }

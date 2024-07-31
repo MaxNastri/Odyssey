@@ -1,0 +1,44 @@
+#include "FileTracker.h"
+
+namespace Odyssey
+{
+	FileTracker::FileTracker(TrackingOptions options)
+	{
+		m_Options = options;
+		m_ID = s_FileWatcher.addWatch(m_Options.Direrctory.string(), this, options.Recursive);
+	}
+
+	FileTracker::~FileTracker()
+	{
+		s_FileWatcher.removeWatch(m_ID);
+	}
+
+	void FileTracker::Init()
+	{
+		s_FileWatcher.watch();
+	}
+
+	void FileTracker::handleFileAction(efsw::FileAction& fileAction)
+	{
+		// Check if the file extension is contained in the filter list
+		// Note: Initial value is set to true when no extension filter is set
+		bool extensionMatch = m_Options.Extensions.size() == 0;
+		bool isDirectory = std::filesystem::is_directory(fileAction.Filename);
+
+		if (!isDirectory)
+		{
+			auto fileExt = fileAction.Filename.extension();
+			for (size_t i = 0; i < m_Options.Extensions.size(); i++)
+			{
+				if (fileExt == m_Options.Extensions[i])
+				{
+					extensionMatch = true;
+					break;
+				}
+			}
+		}
+
+		if (m_Options.Callback && (isDirectory || extensionMatch))
+			m_Options.Callback(fileAction.Filename, (FileActionType)fileAction.Action);
+	}
+}

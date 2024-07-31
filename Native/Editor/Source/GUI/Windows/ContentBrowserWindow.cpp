@@ -20,6 +20,15 @@ namespace Odyssey
 	{
 		m_AssetsPath = ProjectManager::GetAssetsDirectory();
 		m_CurrentPath = m_AssetsPath;
+		
+		TrackingOptions options;
+		options.Direrctory = m_AssetsPath;
+		options.Extensions = { ".asset", ".glsl", ".meta" };
+		options.Recursive = true;
+		options.Callback = [this](const std::filesystem::path& filePath, FileActionType fileAction)
+			{ OnFileAction(filePath, fileAction); };
+		m_FileTracker = std::make_unique<FileTracker>(options);
+
 		UpdatePaths();
 	}
 
@@ -27,14 +36,6 @@ namespace Odyssey
 	{
 		m_FoldersToDisplay.clear();
 		m_FilesToDisplay.clear();
-	}
-
-	void ContentBrowserWindow::Update()
-	{
-		if (m_UpdatePaths)
-		{
-			UpdatePaths();
-		}
 	}
 
 	void ContentBrowserWindow::Draw()
@@ -85,6 +86,8 @@ namespace Odyssey
 		if (m_CursorInContentRegion)
 			HandleContextMenu();
 
+		if (m_UpdatePaths)
+			UpdatePaths();
 		End();
 	}
 
@@ -242,5 +245,10 @@ namespace Odyssey
 		}
 
 		ImGui::PopID();
+	}
+
+	void ContentBrowserWindow::OnFileAction(const std::filesystem::path& filePath, FileActionType fileAction)
+	{
+		UpdatePaths();
 	}
 }

@@ -37,6 +37,7 @@ project "Odyssey.Native.Editor"
         "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**",
         "%{wks.location}/Vendor/Vulkan/Include/",
         "%{wks.location}/Vendor/assimp/include/",
+        "%{wks.location}/Vendor/efsw/include/efsw",
     }
     
     includedirs {
@@ -46,7 +47,8 @@ project "Odyssey.Native.Editor"
 
     libdirs {
         "%{cfg.targetdir}",
-        "%{wks.location}/Vendor/Vulkan/Lib/"
+        "%{wks.location}/Vendor/Vulkan/Lib/",
+        "%{wks.location}/Vendor/efsw/lib/",
     }
 
     links {
@@ -57,7 +59,8 @@ project "Odyssey.Native.Editor"
         "spirv-cross-glsl.lib",
         "spirv-cross-hlsl.lib",
         "spirv-cross-reflect.lib",
-        "spirv-cross-util.lib"
+        "spirv-cross-util.lib",
+        "efsw-static-debug.lib",
     }
 
     filter { "configurations:Debug" }

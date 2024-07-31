@@ -1,6 +1,5 @@
 #pragma once
 #include <EventSystem.h>
-#include <FileWatcherHandle.h>
 #include <Scene.h>
 #include "EditorEnums.h"
 

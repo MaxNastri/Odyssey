@@ -18,8 +18,7 @@ namespace Odyssey
 	void GUIManager::Initialize()
 	{
 		EventSystem::Listen<SceneLoadedEvent>(SceneLoaded);
-		FileManager::AddFilesChangedCallback(OnFilesChanged);
-
+		
 		m_GUIPass = std::make_shared<ImguiPass>();
 		m_GUIPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 		m_GUIPass->SetImguiState(Application::GetRenderer()->GetImGui());
@@ -177,14 +176,6 @@ namespace Odyssey
 		}
 	}
 
-	void GUIManager::OnFilesChanged(const NotificationSet& notificationSet)
-	{
-		for (auto& contentBrowserWindow : contentBrowserWindows)
-		{
-			// TODO: Move the listener into the content browser
-			contentBrowserWindow->UpdatePaths();
-		}
-	}
 	void GUIManager::SetDarkThemeColors()
 	{
 		auto& colors = ImGui::GetStyle().Colors;

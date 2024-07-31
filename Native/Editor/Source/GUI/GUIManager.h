@@ -41,7 +41,6 @@ namespace Odyssey
 		static GameViewWindow* GetGameViewWindow(uint32_t index) { return gameViewWindows[index].get(); }
 
 	private:
-		static void OnFilesChanged(const NotificationSet& notificationSet);
 		static void SetDarkThemeColors();
 
 	private:

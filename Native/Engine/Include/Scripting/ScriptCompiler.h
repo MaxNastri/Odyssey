@@ -1,6 +1,5 @@
 #pragma once
-#include <Windows.h>
-#include "Events.h"
+#include "FileTracker.h"
 
 namespace Odyssey
 {
@@ -11,6 +10,7 @@ namespace Odyssey
 		{
 		public:
 			std::filesystem::path CacheDirectory;
+			std::filesystem::path UserScriptsDirectory;
 			std::filesystem::path UserScriptsProject;
 			std::filesystem::path ApplicationPath;
 		};
@@ -26,9 +26,7 @@ namespace Odyssey
 	private:
 		static bool BuildAssemblies(std::wstring buildCommand);
 		static bool WaitForBuildComplete(PROCESS_INFORMATION pi);
-
-	private:
-		static void UserFilesModified(OnUserFilesModified* fileSavedEvent);
+		static void OnFileAction(const std::filesystem::path& filename, FileActionType fileAction);
 
 	private:
 		inline static bool buildInProgress = false;
@@ -37,6 +35,7 @@ namespace Odyssey
 		inline static std::filesystem::path m_UserAssemblyPath;
 		inline static std::filesystem::path m_UserAssemblyFilename;
 		inline static Settings m_Settings;
+		inline static std::unique_ptr<FileTracker> m_FileTracker;
 		static constexpr std::string_view USER_ASSEMBLIES_DIRECTORY = "UserAssemblies";
 	};
 }

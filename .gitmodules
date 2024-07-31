@@ -2,3 +2,6 @@
 	path = Vendor/Coral
 	url = https://github.com/StudioCherno/Coral.git
 	branch = main
+[submodule "Vendor/efsw"]
+	path = Vendor/efsw
+	url = https://github.com/Kold011/efsw.git

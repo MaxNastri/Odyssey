@@ -51,11 +51,13 @@ project "Odyssey.Native.Engine"
         "%{wks.location}/Vendor/glfw3/",
         "%{wks.location}/Vendor/Vulkan/Include/",
         "%{wks.location}/Vendor/assimp/include/",
+        "%{wks.location}/Vendor/efsw/include/efsw",
     }
 
     libdirs {
         "%{cfg.targetdir}",
-        "%{wks.location}/Vendor/Vulkan/Lib/"
+        "%{wks.location}/Vendor/Vulkan/Lib/",
+        "%{wks.location}/Vendor/efsw/lib/",
     }
 
     links {
@@ -66,7 +68,8 @@ project "Odyssey.Native.Engine"
         "spirv-cross-glsl.lib",
         "spirv-cross-hlsl.lib",
         "spirv-cross-reflect.lib",
-        "spirv-cross-util.lib"
+        "spirv-cross-util.lib",
+        "efsw-static-debug.lib",
     }
 
     
