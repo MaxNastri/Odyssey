@@ -1,16 +1,7 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <filesystem>
-#include <chrono>
-#include <functional>
-#include <ranges>
-
-#include <ScriptingManager.h>
-#include "Application.h"
+#include "Editor.h"
 
 int main(int argc, char** argv)
 {
-	Odyssey::Application editor;
+	Odyssey::Editor editor;
 	editor.Run();
 }

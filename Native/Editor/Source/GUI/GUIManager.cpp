@@ -8,7 +8,7 @@
 #include "ImGuizmo.h"
 #include "Camera.h"
 #include "RenderPasses.h"
-#include "Application.h"
+#include "Editor.h"
 #include "RayTracingWindow.h"
 #include "GameObjectInspector.h"
 #include "imgui_internal.h"
@@ -21,7 +21,7 @@ namespace Odyssey
 		
 		m_GUIPass = std::make_shared<ImguiPass>();
 		m_GUIPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-		m_GUIPass->SetImguiState(Application::GetRenderer()->GetImGui());
+		m_GUIPass->SetImguiState(Editor::GetRenderer()->GetImGui());
 
 		GUIManager::SetDarkThemeColors();
 	}

@@ -32,7 +32,7 @@ namespace Odyssey
 		void handleFileAction(efsw::FileAction& fileAction) override;		
 
 	private:
-		friend class Application;
+		friend class Editor;
 		static void Init();
 
 	private:

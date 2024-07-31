@@ -9,7 +9,7 @@
 #include "VulkanRenderTexture.h"
 #include "VulkanRenderer.h"
 #include "VulkanImgui.h"
-#include "Application.h"
+#include "Editor.h"
 #include "RenderPasses.h"
 #include "Input.h"
 
@@ -93,7 +93,7 @@ namespace Odyssey
 		m_RTSampler = ResourceManager::AllocateSampler();
 
 		// Create an IMGui texture handle
-		if (auto renderer = Application::GetRenderer())
+		if (auto renderer = Editor::GetRenderer())
 			if (auto imgui = renderer->GetImGui())
 				m_RenderTextureID = imgui->AddTexture(m_ColorRT, m_RTSampler);
 	}

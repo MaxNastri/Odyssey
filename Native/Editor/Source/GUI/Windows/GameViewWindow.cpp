@@ -3,7 +3,7 @@
 #include "EventSystem.h"
 #include "imgui.h"
 #include "ResourceManager.h"
-#include "Application.h"
+#include "Editor.h"
 #include "Camera.h"
 
 namespace Odyssey
@@ -67,7 +67,7 @@ namespace Odyssey
 		m_RTSampler = ResourceManager::AllocateSampler();
 
 		// Create an IMGui texture handle
-		if (auto renderer = Application::GetRenderer())
+		if (auto renderer = Editor::GetRenderer())
 			if (auto imgui = renderer->GetImGui())
 				m_RenderTextureID = imgui->AddTexture(m_ColorRT, m_RTSampler);
 	}

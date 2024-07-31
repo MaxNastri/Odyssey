@@ -1,7 +1,7 @@
 #include "EditorMenuBar.h"
 #include "imgui.h"
 #include "FileDialogs.h"
-#include "Application.h"
+#include "Editor.h"
 #include "VulkanWindow.h"
 #include "SceneManager.h"
 #include "GUIManager.h"
@@ -26,7 +26,7 @@ namespace Odyssey
 		{
 			if (ImGui::MenuItem("Open"))
 			{
-				void* window = Application::GetRenderer()->GetWindow()->GetNativeWindow();
+				void* window = Editor::GetRenderer()->GetWindow()->GetNativeWindow();
 				std::string scenePath = FileDialogs::OpenFile(window, "Odyssey Scene (*.yaml)\0*.yaml\0");
 
 				if (!scenePath.empty())
@@ -40,7 +40,7 @@ namespace Odyssey
 			}
 			if (ImGui::MenuItem("Save As..."))
 			{
-				void* window = Application::GetRenderer()->GetWindow()->GetNativeWindow();
+				void* window = Editor::GetRenderer()->GetWindow()->GetNativeWindow();
 				std::string scenePath = FileDialogs::SaveFile(window, "Odyssey Scene (*.yaml)\0*.yaml\0");
 
 				if (!scenePath.empty())

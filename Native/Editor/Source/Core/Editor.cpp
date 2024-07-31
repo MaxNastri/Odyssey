@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "Editor.h"
 #include "FileTracker.h"
 #include "AssetManager.h"
 #include "ScriptingManager.h"
@@ -13,7 +13,7 @@
 
 namespace Odyssey
 {
-	Application::Application()
+	Editor::Editor()
 	{
 		// Its important we initialize scripting first due to a bug with VS2022
 		// With native debugging enabled, our breakpoints wont work before we init scripting
@@ -51,7 +51,7 @@ namespace Odyssey
 		running = true;
 	}
 
-	void Application::Run()
+	void Editor::Run()
 	{
 		running = true;
 
@@ -88,12 +88,12 @@ namespace Odyssey
 		renderer->Destroy();
 	}
 
-	void Application::Exit()
+	void Editor::Exit()
 	{
 		running = false;
 	}
 
-	void Application::SetupEditorGUI()
+	void Editor::SetupEditorGUI()
 	{
 		GUIManager::CreateInspectorWindow(nullptr);
 		GUIManager::CreateSceneHierarchyWindow();
@@ -102,14 +102,14 @@ namespace Odyssey
 		GUIManager::CreateContentBrowserWindow();
 	}
 
-	void Application::CreateRenderPasses()
+	void Editor::CreateRenderPasses()
 	{
 		renderer->AddRenderPass(GUIManager::GetSceneViewWindow(0)->GetRenderPass());
 		renderer->AddRenderPass(GUIManager::GetGameViewWindow(0)->GetRenderPass());
 		renderer->AddRenderPass(GUIManager::GetRenderPass());
 	}
 
-	void Application::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event)
+	void Editor::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event)
 	{
 		switch (event->State)
 		{

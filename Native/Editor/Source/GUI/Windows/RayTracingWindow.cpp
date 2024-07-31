@@ -1,5 +1,5 @@
 #include "RayTracingWindow.h"
-#include "Application.h"
+#include "Editor.h"
 #include "ResourceManager.h"
 #include "VulkanRenderTexture.h"
 #include "imgui.h"
@@ -280,7 +280,7 @@ namespace Odyssey
 		m_RTSampler = ResourceManager::AllocateSampler();
 
 		// Create an IMGui texture handle
-		if (auto renderer = Application::GetRenderer())
+		if (auto renderer = Editor::GetRenderer())
 			if (auto imgui = renderer->GetImGui())
 				m_RenderTextureID = imgui->AddTexture(m_RenderTexture, m_RTSampler);
 	}

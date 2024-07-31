@@ -6,10 +6,10 @@
 
 namespace Odyssey
 {
-	class Application
+	class Editor
 	{
 	public:
-		Application();
+		Editor();
 		void Run();
 		void Exit();
 
