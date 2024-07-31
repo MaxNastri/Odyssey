@@ -1,7 +1,6 @@
 #include "Application.h"
 #include "FileTracker.h"
 #include "AssetManager.h"
-#include "ScriptCompiler.h"
 #include "ScriptingManager.h"
 #include "GUIManager.h"
 #include "SceneManager.h"
@@ -34,17 +33,12 @@ namespace Odyssey
 		AssetManager::CreateDatabase(ProjectManager::GetAssetsDirectory(), ProjectManager::GetCacheDirectory());
 
 		// Start listening for events
-		ScriptCompiler::Settings compilerSettings;
-		compilerSettings.ApplicationPath = Globals::GetApplicationPath();
-		compilerSettings.CacheDirectory = ProjectManager::GetCacheDirectory();
-		compilerSettings.UserScriptsProject = ProjectManager::GetUserScriptsProject();
-		ScriptCompiler::Initialize(compilerSettings);
-
 		SceneManager::Initialize();
 
 		// Build the user assembly
-		ScriptCompiler::BuildUserAssembly();
-		ScriptingManager::LoadUserAssemblies();
+		m_ScriptCompiler = std::make_unique<ScriptCompiler>();
+		m_ScriptCompiler->BuildUserAssembly();
+		ScriptingManager::LoadUserAssemblies(m_ScriptCompiler->GetUserAssemblyPath());
 
 		SetupEditorGUI();
 		CreateRenderPasses();
@@ -74,7 +68,7 @@ namespace Odyssey
 				m_TimeSinceLastUpdate = 0.0f;
 
 				// Process any changes made to the user's managed dll
-				ScriptCompiler::Process();
+				m_ScriptCompiler->Process();
 
 				GUIManager::Update();
 
@@ -113,6 +107,7 @@ namespace Odyssey
 		renderer->AddRenderPass(GUIManager::GetGameViewWindow(0)->GetRenderPass());
 		renderer->AddRenderPass(GUIManager::GetRenderPass());
 	}
+
 	void Application::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event)
 	{
 		switch (event->State)

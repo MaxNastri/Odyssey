@@ -9,33 +9,33 @@ namespace Odyssey
 		struct Settings
 		{
 		public:
-			std::filesystem::path CacheDirectory;
-			std::filesystem::path UserScriptsDirectory;
-			std::filesystem::path UserScriptsProject;
-			std::filesystem::path ApplicationPath;
+			Path CacheDirectory;
+			Path UserScriptsDirectory;
+			Path UserScriptsProject;
+			Path ApplicationPath;
 		};
 
 	public:
-		static void Initialize(Settings compilerOptions);
+		ScriptCompiler();
 
 	public:
-		static bool BuildUserAssembly();
-		static bool Process();
-		static const std::filesystem::path& GetUserAssemblyPath() { return m_UserAssemblyPath; }
+		bool BuildUserAssembly();
+		bool Process();
+		const Path& GetUserAssemblyPath() { return m_UserAssemblyPath; }
 
 	private:
-		static bool BuildAssemblies(std::wstring buildCommand);
-		static bool WaitForBuildComplete(PROCESS_INFORMATION pi);
-		static void OnFileAction(const std::filesystem::path& filename, FileActionType fileAction);
+		bool BuildAssemblies(std::wstring buildCommand);
+		bool WaitForBuildComplete(PROCESS_INFORMATION pi);
+		void OnFileAction(const Path& filename, FileActionType fileAction);
 
 	private:
-		inline static bool buildInProgress = false;
-		inline static bool shouldRebuild = false;
-		inline static std::filesystem::path m_UserAssembliesDirectory;
-		inline static std::filesystem::path m_UserAssemblyPath;
-		inline static std::filesystem::path m_UserAssemblyFilename;
-		inline static Settings m_Settings;
-		inline static std::unique_ptr<FileTracker> m_FileTracker;
+		bool buildInProgress = false;
+		bool shouldRebuild = false;
+		Path m_UserAssembliesDirectory;
+		Path m_UserAssemblyPath;
+		Path m_UserAssemblyFilename;
+		Settings m_Settings;
+		std::unique_ptr<FileTracker> m_FileTracker;
 		static constexpr std::string_view USER_ASSEMBLIES_DIRECTORY = "UserAssemblies";
 	};
 }

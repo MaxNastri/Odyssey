@@ -18,6 +18,7 @@ namespace Odyssey
 		std::filesystem::path Direrctory;
 		std::vector<std::filesystem::path> Extensions;
 		bool Recursive = false;
+		bool IncludeDirectoryChanges = false;
 		std::function<void(const std::filesystem::path, FileActionType)> Callback = nullptr;
 	};
 

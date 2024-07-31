@@ -3,18 +3,22 @@
 #include "EventSystem.h"
 #include "Events.h"
 #include "ScriptingManager.h"
+#include "ProjectManager.h"
 
 namespace Odyssey
 {
-	void ScriptCompiler::Initialize(Settings compilerSettings)
+	ScriptCompiler::ScriptCompiler()
 	{
-		m_Settings = compilerSettings;
+		m_Settings.ApplicationPath = Globals::GetApplicationPath();
+		m_Settings.CacheDirectory = ProjectManager::GetCacheDirectory();
+		m_Settings.UserScriptsDirectory = ProjectManager::GetUserScriptsDirectory();
+		m_Settings.UserScriptsProject = ProjectManager::GetUserScriptsProject();
 
 		// Construct the necessary assembly paths
 		m_UserAssembliesDirectory = m_Settings.CacheDirectory / USER_ASSEMBLIES_DIRECTORY;
 		m_UserAssemblyFilename = m_Settings.UserScriptsProject.filename().replace_extension(".dll");
 		m_UserAssemblyPath = m_UserAssembliesDirectory / m_UserAssemblyFilename;
-		
+
 		if (!std::filesystem::exists(m_UserAssembliesDirectory))
 			std::filesystem::create_directories(m_UserAssembliesDirectory);
 
@@ -22,7 +26,8 @@ namespace Odyssey
 		options.Direrctory = m_Settings.UserScriptsDirectory;
 		options.Extensions = { ".cs" };
 		options.Recursive = true;
-		options.Callback = OnFileAction;
+		options.Callback = [this](const Path& path, FileActionType fileAction)
+			{ OnFileAction(path, fileAction); };
 		m_FileTracker = std::make_unique<FileTracker>(options);
 	}
 
@@ -33,7 +38,6 @@ namespace Odyssey
 			Logger::LogError("Cannot compile while a build is in progress.");
 			return false;
 		}
-
 
 		std::wstring buildCommand = L" build \"" +
 			m_Settings.UserScriptsProject.wstring() +
@@ -141,7 +145,7 @@ namespace Odyssey
 		}
 	}
 
-	void ScriptCompiler::OnFileAction(const std::filesystem::path& filename, FileActionType fileAction)
+	void ScriptCompiler::OnFileAction(const Path& filename, FileActionType fileAction)
 	{
 		shouldRebuild = !buildInProgress && fileAction != FileActionType::None;
 	}

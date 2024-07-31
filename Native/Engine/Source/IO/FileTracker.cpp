@@ -25,6 +25,10 @@ namespace Odyssey
 		bool extensionMatch = m_Options.Extensions.size() == 0;
 		bool isDirectory = std::filesystem::is_directory(fileAction.Filename);
 
+		// Early out for directories if we don't set the specific flag
+		if (isDirectory && !m_Options.IncludeDirectoryChanges)
+			return;
+
 		if (!isDirectory)
 		{
 			auto fileExt = fileAction.Filename.extension();

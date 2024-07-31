@@ -24,15 +24,16 @@ namespace Odyssey
 		hostInstance.Initialize(hostSettings);
 	}
 
-	void ScriptingManager::LoadUserAssemblies()
+	void ScriptingManager::LoadUserAssemblies(const Path& userAssemblyPath)
 	{
+		s_UserAssemblyPath = userAssemblyPath;
+
 		if (!s_UserAssembliesLoaded)
 		{
 			userAssemblyContext = hostInstance.CreateAssemblyLoadContext("UserScripts");
 
 			// Load the assembly
-			auto userAssemblyPath = ScriptCompiler::GetUserAssemblyPath();
-			userAssembly = userAssemblyContext.LoadAssembly(userAssemblyPath.string());
+			userAssembly = userAssemblyContext.LoadAssembly(s_UserAssemblyPath.string());
 			s_UserAssembliesLoaded = true;
 		}
 	}
@@ -55,7 +56,7 @@ namespace Odyssey
 	void ScriptingManager::ReloadUserAssemblies()
 	{
 		UnloadUserAssemblies();
-		LoadUserAssemblies();
+		LoadUserAssemblies(s_UserAssemblyPath);
 		EventSystem::Dispatch<OnAssembliesReloaded>();
 	}
 

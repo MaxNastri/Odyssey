@@ -14,6 +14,7 @@ namespace Odyssey
 		static const std::filesystem::path& GetAssetsDirectory() { return m_Settings.GetAssetsDirectory(); }
 		static const std::filesystem::path& GetCacheDirectory() { return m_Settings.GetCacheDirectory(); }
 		static const std::filesystem::path& GetLogsDirectory() { return m_Settings.GetLogsDirectory(); }
+		static const std::filesystem::path& GetUserScriptsDirectory() { return m_Settings.GetScriptsDirectory(); }
 		static const std::filesystem::path& GetUserScriptsProject() { return m_Settings.GetScriptsProjectPath(); }
 		static const std::filesystem::path& GetTempDirectory() { return m_Settings.GetTempDirectory(); }
 

@@ -9,7 +9,7 @@ namespace Odyssey
 	{
 	public:
 		static void Initialize();
-		static void LoadUserAssemblies();
+		static void LoadUserAssemblies(const Path& userAssemblyPath);
 		static void UnloadUserAssemblies();
 		static void ReloadUserAssemblies();
 
@@ -22,6 +22,7 @@ namespace Odyssey
 		inline static Coral::ManagedAssembly userAssembly;
 		inline static std::vector<Coral::ManagedObject> managedObjects;
 		inline static bool s_UserAssembliesLoaded = false;
+		inline static Path s_UserAssemblyPath;
 	private:
 		inline static const std::string UserAssemblyFilename = "Odyssey.Managed.Example.dll";
 	};

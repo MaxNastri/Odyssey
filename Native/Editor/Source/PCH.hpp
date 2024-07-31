@@ -24,3 +24,5 @@
 	#include <Windows.h>
 #endif
 #include "volk.h"
+
+using Path = std::filesystem::path;

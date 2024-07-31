@@ -25,6 +25,7 @@ namespace Odyssey
 		options.Direrctory = m_AssetsPath;
 		options.Extensions = { ".asset", ".glsl", ".meta" };
 		options.Recursive = true;
+		options.IncludeDirectoryChanges = true;
 		options.Callback = [this](const std::filesystem::path& filePath, FileActionType fileAction)
 			{ OnFileAction(filePath, fileAction); };
 		m_FileTracker = std::make_unique<FileTracker>(options);

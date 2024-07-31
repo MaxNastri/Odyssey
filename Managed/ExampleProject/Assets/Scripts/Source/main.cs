@@ -3,7 +3,6 @@ using Odyssey.Managed.Core;
 
 namespace Example.Managed
 {
-
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class CustomAttribute : Attribute
     {

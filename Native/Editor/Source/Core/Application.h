@@ -2,14 +2,7 @@
 #include <VulkanRenderer.h>
 #include <Stopwatch.h>
 #include "EditorEvents.h"
-
-using namespace Odyssey;
-using namespace Odyssey;
-
-namespace Odyssey
-{
-	class GUIElement;
-}
+#include "ScriptCompiler.h"
 
 namespace Odyssey
 {
@@ -34,7 +27,7 @@ namespace Odyssey
 		bool m_UpdateScripts = false;
 		float m_TimeSinceLastUpdate = 0.0f;
 		inline static std::shared_ptr<VulkanRenderer> renderer = nullptr;
-
+		std::unique_ptr<ScriptCompiler> m_ScriptCompiler;
 		const float MaxFPS = 1.0f / 144.0f;
 		inline static constexpr std::string_view TEMP_SCENE_FILE = "tmps.scene";
 	};
