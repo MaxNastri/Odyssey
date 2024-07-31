@@ -1,16 +1,13 @@
 #include "ContentBrowserWindow.h"
-#include "Input.h"
 #include "imgui.h"
+#include "Input.h"
 #include "SceneManager.h"
 #include "AssetManager.h"
-#include "GeometryUtil.h"
-#include "Mesh.h"
-#include "GUIManager.h"
-#include "ModelLoader.h"
+#include "GameObject.h"
 #include "Scene.h"
-#include "Texture2D.h"
-#include "Material.h"
 #include "ProjectManager.h"
+#include "EventSystem.h"
+#include "EditorEvents.h"
 
 namespace Odyssey
 {
@@ -126,30 +123,6 @@ namespace Odyssey
 				{
 					AssetManager::CreateMaterial(std::filesystem::path("Assets/Materials/MyMaterial.mat"));
 				}
-				if (ImGui::BeginMenu("Mesh"))
-				{
-					if (ImGui::MenuItem("Cube"))
-					{
-						std::vector<VulkanVertex> vertices;
-						std::vector<uint32_t> indices;
-						GeometryUtil::ComputeBox(glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), vertices, indices);
-						AssetHandle<Mesh> mesh = AssetManager::CreateMesh(std::filesystem::path("Assets/Meshes/Cube.mesh"));
-						mesh.Get()->SetVertices(vertices);
-						mesh.Get()->SetIndices(indices);
-						mesh.Get()->Save();
-					}
-					if (ImGui::MenuItem("Sphere"))
-					{
-						std::vector<VulkanVertex> vertices;
-						std::vector<uint32_t> indices;
-						GeometryUtil::ComputeSphere(1.0f, 50, vertices, indices);
-						AssetHandle<Mesh> mesh = AssetManager::CreateMesh(std::filesystem::path("Assets/Meshes/Sphere.mesh"));
-						mesh.Get()->SetVertices(vertices);
-						mesh.Get()->SetIndices(indices);
-						mesh.Get()->Save();
-					}
-					ImGui::EndMenu();
-				}
 				if (ImGui::MenuItem("Scene"))
 				{
 
@@ -161,36 +134,6 @@ namespace Odyssey
 			}
 			if (ImGui::BeginMenu("Import"))
 			{
-				if (ImGui::MenuItem("Spiderman"))
-				{
-					const std::filesystem::path path("Assets/Models/Car_Combined.fbx");
-					ModelLoader loader;
-					ModelAsset asset;
-					if (loader.LoadModel(path, asset))
-					{
-						GameObject* go = SceneManager::GetActiveScene()->GetGameObject(0);
-						if (MeshRenderer* mr = go->GetComponent<MeshRenderer>())
-						{
-							mr->SetMesh(asset.Mesh);
-						}
-						//asset.Mesh.Get()->SaveTo("Assets/Meshes/Car.mesh");
-					}
-				}
-				if (ImGui::MenuItem("Texture"))
-				{
-					const std::filesystem::path path("Assets/Textures/texture.jpg");
-					AssetHandle<Texture2D> texture = AssetManager::LoadTexture2D(path);
-
-					if (texture.IsValid())
-					{
-						GameObject* go = SceneManager::GetActiveScene()->GetGameObject(0);
-						if (Material* material = go->GetComponent<MeshRenderer>()->GetMaterial().Get())
-						{
-							material->SetTexture(texture);
-							material->Save();
-						}
-					}
-				}
 				ImGui::EndMenu();
 			}
 			ImGui::EndPopup();
@@ -219,7 +162,7 @@ namespace Odyssey
 			selection.GUID = AssetManager::PathToGUID(sourcePath);
 			selection.Type = AssetManager::GUIDToAssetType(selection.GUID);
 			selection.FilePath = sourcePath;
-			GUIManager::OnSelectionContextChanged(selection);
+			EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
 		}
 		ImGui::PopID();
 	}
@@ -234,7 +177,7 @@ namespace Odyssey
 			GUISelection selection;
 			selection.GUID = AssetManager::PathToGUID(assetPath);
 			selection.Type = AssetManager::GUIDToAssetType(selection.GUID);
-			GUIManager::OnSelectionContextChanged(selection);
+			EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
 		}
 
 		// Allow for this asset to be a potential draw/drop payload

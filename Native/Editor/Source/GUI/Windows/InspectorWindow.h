@@ -5,6 +5,8 @@
 namespace Odyssey
 {
 	class Inspector;
+	struct IEventListener;
+	struct GUISelectionChangedEvent;
 
 	class InspectorWindow : public DockableWindow
 	{
@@ -16,11 +18,12 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	public:
-		virtual void OnSelectionContextChanged(const GUISelection& context) override;
+		void OnGUISelectionChanged(GUISelectionChangedEvent* event);
 		void ClearSelection();
 
 	private:
 		std::shared_ptr<Inspector> m_Inspector;
+		std::shared_ptr<IEventListener> m_EventListener;
 		bool open = true;
 	};
 }

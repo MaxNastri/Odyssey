@@ -37,8 +37,9 @@ namespace Odyssey
 
 		// Build the user assembly
 		m_ScriptCompiler = std::make_unique<ScriptCompiler>();
+		ScriptingManager::SetUserAssembliesPath(m_ScriptCompiler->GetUserAssemblyPath());
 		m_ScriptCompiler->BuildUserAssembly();
-		ScriptingManager::LoadUserAssemblies(m_ScriptCompiler->GetUserAssemblyPath());
+		ScriptingManager::LoadUserAssemblies();
 
 		SetupEditorGUI();
 		CreateRenderPasses();

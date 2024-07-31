@@ -1,5 +1,5 @@
 #include "GUIManager.h"
-#include <EventSystem.h>
+#include "EventSystem.h"
 #include "EditorEvents.h"
 #include <Events.h>
 #include "SceneManager.h"
@@ -164,15 +164,6 @@ namespace Odyssey
 		for (auto& sceneViewWindow : sceneViewWindows)
 		{
 			sceneViewWindow->SetSelectedGameObject(gameObject);
-		}
-	}
-
-	void GUIManager::OnSelectionContextChanged(const GUISelection& context)
-	{
-		// foreach window, invoke event
-		for (auto& window : inspectorWindows)
-		{
-			window->OnSelectionContextChanged(context);
 		}
 	}
 

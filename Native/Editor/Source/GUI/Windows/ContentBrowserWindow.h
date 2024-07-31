@@ -1,6 +1,5 @@
 #pragma once
 #include "DockableWindow.h"
-#include "glm.h"
 #include "FileTracker.h"
 
 namespace Odyssey

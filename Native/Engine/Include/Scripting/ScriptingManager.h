@@ -1,7 +1,6 @@
 #pragma once
 #include <HostInstance.hpp>
 #include "ManagedObject.hpp"
-#include <EventSystem.h>
 
 namespace Odyssey
 {
@@ -9,9 +8,10 @@ namespace Odyssey
 	{
 	public:
 		static void Initialize();
-		static void LoadUserAssemblies(const Path& userAssemblyPath);
+		static void LoadUserAssemblies();
 		static void UnloadUserAssemblies();
 		static void ReloadUserAssemblies();
+		static void SetUserAssembliesPath(const Path& userAssemblyPath) { s_UserAssemblyPath = userAssemblyPath; }
 
 	public:
 		static Coral::ManagedObject CreateManagedObject(std::string_view fqManagedClassName);

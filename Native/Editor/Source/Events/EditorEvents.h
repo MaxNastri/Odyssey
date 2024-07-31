@@ -15,4 +15,15 @@ namespace Odyssey
 
 		PlaymodeState State;
 	};
+
+	struct GUISelectionChangedEvent : public Event
+	{
+	public:
+		GUISelectionChangedEvent(const GUISelection& selection)
+		{
+			Selection = selection;
+		}
+
+		GUISelection Selection;
+	};
 }

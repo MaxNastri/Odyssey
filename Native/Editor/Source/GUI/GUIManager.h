@@ -34,7 +34,6 @@ namespace Odyssey
 		static void DrawGUI();
 		static void SceneLoaded(SceneLoadedEvent* sceneLoadedEvent);
 		static void OnGameObjectSelected(int32_t id);
-		static void OnSelectionContextChanged(const GUISelection& context);
 	public:
 		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
 		static SceneViewWindow* GetSceneViewWindow(uint32_t index) { return sceneViewWindows[index].get(); }
