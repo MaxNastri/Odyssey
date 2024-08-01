@@ -3,17 +3,12 @@
 #include "EventSystem.h"
 #include "Events.h"
 #include "ScriptingManager.h"
-#include "ProjectManager.h"
 
 namespace Odyssey
 {
-	ScriptCompiler::ScriptCompiler()
+	ScriptCompiler::ScriptCompiler(const Settings& settings)
+		: m_Settings(settings)
 	{
-		m_Settings.ApplicationPath = Globals::GetApplicationPath();
-		m_Settings.CacheDirectory = ProjectManager::GetCacheDirectory();
-		m_Settings.UserScriptsDirectory = ProjectManager::GetUserScriptsDirectory();
-		m_Settings.UserScriptsProject = ProjectManager::GetUserScriptsProject();
-
 		// Construct the necessary assembly paths
 		m_UserAssembliesDirectory = m_Settings.CacheDirectory / USER_ASSEMBLIES_DIRECTORY;
 		m_UserAssemblyFilename = m_Settings.UserScriptsProject.filename().replace_extension(".dll");

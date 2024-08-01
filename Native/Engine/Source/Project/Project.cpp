@@ -1,11 +1,15 @@
-#include "ProjectManager.h"
-#include "Logger.h"
-#include <fstream>
+#include "Project.h"
 #include "Globals.h"
 
 namespace Odyssey
 {
-	void ProjectManager::CreateNewProject(const std::string& projectName, const std::filesystem::path& projectDirectory)
+	Project::Project(const ProjectSettings& projectSettings)
+		: m_ProjectSettings(projectSettings)
+	{
+
+	}
+
+	void Project::CreateNewProject(const std::string& projectName, const Path& projectDirectory)
 	{
 		// Copy the template files into the project directory
 		std::filesystem::copy(TEMPLATE_DIRECTORY, projectDirectory, std::filesystem::copy_options::recursive);
@@ -54,16 +58,17 @@ namespace Odyssey
 			}
 		}
 
-		// Load the project settings
-		m_Settings = ProjectSettings(projectSettingsPath);
-
 		// Run the batch file to generate the VS project
 		auto batchFile = projectDirectory / TEMPLATE_PROJ_GEN;
 		system(batchFile.string().c_str());
+
+		// Set the new project as our active
+		SetActive(ProjectSettings(projectSettingsPath));
 	}
-	void ProjectManager::LoadProject(const std::filesystem::path& projectDirectory)
+
+	void Project::LoadProject(const Path& projectDirectory)
 	{
-		auto projectSettingsPath = projectDirectory / "ProjectSettings.asset";
+		Path projectSettingsPath = projectDirectory / "ProjectSettings.asset";
 
 		if (!std::filesystem::exists(projectSettingsPath))
 		{
@@ -71,6 +76,15 @@ namespace Odyssey
 			return;
 		}
 
-		m_Settings = ProjectSettings(projectSettingsPath);
+		SetActive(ProjectSettings(projectSettingsPath));
+	}
+
+	void Project::SetActive(const ProjectSettings& projectSettings)
+	{
+		s_ActiveProject = std::make_unique<Project>(projectSettings);
+	}
+	std::shared_ptr<Project> Project::GetActive()
+	{
+		return s_ActiveProject;
 	}
 }

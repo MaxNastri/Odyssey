@@ -8,8 +8,7 @@
 #include "OdysseyTime.h"
 #include "Random.h"
 #include "ShaderCompiler.h"
-#include "ProjectManager.h"
-#include "Globals.h"
+#include "Project.h"
 
 namespace Odyssey
 {
@@ -20,7 +19,7 @@ namespace Odyssey
 		ScriptingManager::Initialize();
 		Random::Initialize();
 
-		ProjectManager::LoadProject("C:/Git/Odyssey/Managed/ExampleProject");
+		Project::LoadProject("C:/Git/Odyssey/Managed/ExampleProject");
 
 		// Track the manage project folder for any file changes
 		FileTracker::Init();
@@ -30,13 +29,19 @@ namespace Odyssey
 		renderer->GetImGui()->SetDrawGUIListener(GUIManager::DrawGUI);
 		GUIManager::Initialize();
 
-		AssetManager::CreateDatabase(ProjectManager::GetAssetsDirectory(), ProjectManager::GetCacheDirectory());
+		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveCacheDirectory());
 
 		// Start listening for events
 		SceneManager::Initialize();
 
 		// Build the user assembly
-		m_ScriptCompiler = std::make_unique<ScriptCompiler>();
+		ScriptCompiler::Settings settings;
+		settings.ApplicationPath = Globals::GetApplicationPath();
+		settings.CacheDirectory = Project::GetActiveCacheDirectory();
+		settings.UserScriptsDirectory = Project::GetActiveUserScriptsDirectory();
+		settings.UserScriptsProject = Project::GetActiveUserScriptsProject();
+		m_ScriptCompiler = std::make_unique<ScriptCompiler>(settings);
+
 		ScriptingManager::SetUserAssembliesPath(m_ScriptCompiler->GetUserAssemblyPath());
 		m_ScriptCompiler->BuildUserAssembly();
 		ScriptingManager::LoadUserAssemblies();
@@ -116,7 +121,7 @@ namespace Odyssey
 		case PlaymodeState::EnterPlaymode:
 		{
 			Scene* activeScene = SceneManager::GetActiveScene();
-			auto tempPath = ProjectManager::GetTempDirectory() / TEMP_SCENE_FILE;
+			Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
 			activeScene->SaveTo(tempPath);
 			m_UpdateScripts = false;
 			break;
@@ -128,7 +133,7 @@ namespace Odyssey
 		}
 		case PlaymodeState::ExitPlaymode:
 		{
-			auto tempPath = ProjectManager::GetTempDirectory() / TEMP_SCENE_FILE;
+			Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
 			SceneManager::LoadScene(tempPath.string());
 			m_UpdateScripts = false;
 			break;

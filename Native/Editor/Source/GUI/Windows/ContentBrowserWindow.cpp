@@ -5,7 +5,7 @@
 #include "AssetManager.h"
 #include "GameObject.h"
 #include "Scene.h"
-#include "ProjectManager.h"
+#include "Project.h"
 #include "EventSystem.h"
 #include "EditorEvents.h"
 
@@ -15,7 +15,7 @@ namespace Odyssey
 		: DockableWindow("Content Browser",
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
-		m_AssetsPath = ProjectManager::GetAssetsDirectory();
+		m_AssetsPath = Project::GetActiveAssetsDirectory();
 		m_CurrentPath = m_AssetsPath;
 		
 		TrackingOptions options;

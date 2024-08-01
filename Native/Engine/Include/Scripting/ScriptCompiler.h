@@ -16,7 +16,7 @@ namespace Odyssey
 		};
 
 	public:
-		ScriptCompiler();
+		ScriptCompiler(const Settings& settings);
 
 	public:
 		bool BuildUserAssembly();
