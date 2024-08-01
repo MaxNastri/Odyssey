@@ -15,6 +15,8 @@ namespace Odyssey
 			glm::vec2(0, 0), glm::vec2(400, 450), glm::vec2(2, 2))
 	{
 		m_Scene = SceneManager::GetActiveScene();
+		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
+			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
 	}
 
 	void SceneHierarchyWindow::Draw()
@@ -90,9 +92,9 @@ namespace Odyssey
 		End();
 	}
 	
-	void SceneHierarchyWindow::OnSceneChanged()
+	void SceneHierarchyWindow::OnSceneLoaded(SceneLoadedEvent* event)
 	{
-		m_Scene = SceneManager::GetActiveScene();
+		m_Scene = event->loadedScene;
 	}
 
 	void SceneHierarchyWindow::HandleContextMenu()

@@ -1,9 +1,11 @@
 #pragma once
 #include "DockableWindow.h"
+#include "EventSystem.h"
 
 namespace Odyssey
 {
 	class Scene;
+	struct SceneLoadedEvent;
 
 	class SceneHierarchyWindow : public DockableWindow
 	{
@@ -15,7 +17,7 @@ namespace Odyssey
 
 	public:
 		void OnGameObjectSelected(std::function<void(int32_t)> callback) { m_OnGameObjectSelected.push_back(callback); }
-		void OnSceneChanged();
+		void OnSceneLoaded(SceneLoadedEvent* event);
 
 	private:
 		void HandleContextMenu();
@@ -24,9 +26,9 @@ namespace Odyssey
 		bool m_ContextMenuOpen = false;
 
 	private:
-		bool m_Open = true;
-		bool m_NewObjectSelected = false;
 		Scene* m_Scene;
+		std::shared_ptr<IEventListener> m_SceneLoadedListener;
+		bool m_NewObjectSelected = false;
 		std::vector<std::function<void(int32_t)>> m_OnGameObjectSelected;
 	};
 }

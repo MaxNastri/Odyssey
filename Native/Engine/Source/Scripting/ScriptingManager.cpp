@@ -22,8 +22,6 @@ namespace Odyssey
 			.ExceptionCallback = ExceptionCallback
 		};
 		hostInstance.Initialize(hostSettings);
-
-
 	}
 
 	void ScriptingManager::LoadUserAssemblies()

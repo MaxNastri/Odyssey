@@ -17,8 +17,6 @@ namespace Odyssey
 {
 	void GUIManager::Initialize()
 	{
-		EventSystem::Listen<SceneLoadedEvent>(SceneLoaded);
-		
 		m_GUIPass = std::make_shared<ImguiPass>();
 		m_GUIPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 		m_GUIPass->SetImguiState(Editor::GetRenderer()->GetImGui());
@@ -28,34 +26,31 @@ namespace Odyssey
 
 	void GUIManager::CreateInspectorWindow(GameObject* gameObject)
 	{
-		inspectorWindows.push_back(std::make_shared<InspectorWindow>(std::make_shared<GameObjectInspector>(gameObject)));
+		s_Windows.push_back(std::make_shared<InspectorWindow>(std::make_shared<GameObjectInspector>(gameObject)));
 	}
 
 	void GUIManager::CreateSceneHierarchyWindow()
 	{
-		sceneHierarchyWindows.push_back(std::make_shared<SceneHierarchyWindow>());
-
-		sceneHierarchyWindows[sceneHierarchyWindows.size() - 1]->OnGameObjectSelected(OnGameObjectSelected);
+		s_Windows.push_back(std::make_shared<SceneHierarchyWindow>());
 	}
 
 	void GUIManager::CreateSceneViewWindow()
 	{
-		sceneViewWindows.push_back(std::make_shared<SceneViewWindow>());
+		auto sceneView = std::make_shared<SceneViewWindow>();
+		s_SceneViews.push_back(sceneView);
+		s_Windows.push_back(sceneView);
 	}
 
 	void GUIManager::CreateGameViewWindow()
 	{
-		gameViewWindows.push_back(std::make_shared<GameViewWindow>());
+		auto gameView = std::make_shared<GameViewWindow>();
+		s_GameViews.push_back(gameView);
+		s_Windows.push_back(gameView);
 	}
 
 	void GUIManager::CreateContentBrowserWindow()
 	{
-		contentBrowserWindows.push_back(std::make_shared<ContentBrowserWindow>());
-	}
-
-	void GUIManager::CreateRayTracingWindow()
-	{
-		s_RayTracingWindows.push_back(std::make_shared<RayTracingWindow>());
+		s_Windows.push_back(std::make_shared<ContentBrowserWindow>());
 	}
 
 	void GUIManager::Update()
@@ -63,34 +58,9 @@ namespace Odyssey
 		s_MenuBar.Update();
 		s_ActionsBar.Update();
 
-		for (auto& inspectorWindow : inspectorWindows)
+		for (auto& window : s_Windows)
 		{
-			inspectorWindow->Update();
-		}
-
-		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
-		{
-			sceneHierarchyWindow->Update();
-		}
-
-		for (auto& sceneViewWindow : sceneViewWindows)
-		{
-			sceneViewWindow->Update();
-		}
-
-		for (auto& gameViewWindow : gameViewWindows)
-		{
-			gameViewWindow->Update();
-		}
-
-		for (auto& contentBrowserWindow : contentBrowserWindows)
-		{
-			contentBrowserWindow->Update();
-		}
-
-		for (auto& rayTracingWindow : s_RayTracingWindows)
-		{
-			rayTracingWindow->Update();
+			window->Update();
 		}
 	}
 
@@ -105,65 +75,9 @@ namespace Odyssey
 		s_MenuBar.Draw();
 		s_ActionsBar.Draw();
 
-		for (auto& inspectorWindow : inspectorWindows)
+		for (auto& window : s_Windows)
 		{
-			inspectorWindow->Draw();
-		}
-
-		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
-		{
-			sceneHierarchyWindow->Draw();
-		}
-
-		for (auto& sceneViewWindow : sceneViewWindows)
-		{
-			sceneViewWindow->Draw();
-		}
-
-		for (auto& gameViewWindow : gameViewWindows)
-		{
-			gameViewWindow->Draw();
-		}
-
-		for (auto& contentBrowserWindow : contentBrowserWindows)
-		{
-			contentBrowserWindow->Draw();
-		}
-
-		for (auto& rayTracingWindow : s_RayTracingWindows)
-		{
-			rayTracingWindow->Draw();
-		}
-	}
-
-	void GUIManager::SceneLoaded(SceneLoadedEvent* sceneLoadedEvent)
-	{
-		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
-		{
-			sceneHierarchyWindow->OnSceneChanged();
-		}
-
-		for (auto& sceneViewWindow : sceneViewWindows)
-		{
-			sceneViewWindow->OnSceneChanged();
-		}
-
-		for (auto& inspectorWindow : inspectorWindows)
-		{
-			inspectorWindow->Reload();
-		}
-	}
-
-	void GUIManager::OnGameObjectSelected(int32_t id)
-	{
-		selectedObject = id;
-
-		Scene* scene = SceneManager::GetActiveScene();
-		GameObject* gameObject = scene->GetGameObject(id);
-
-		for (auto& sceneViewWindow : sceneViewWindows)
-		{
-			sceneViewWindow->SetSelectedGameObject(gameObject);
+			window->Draw();
 		}
 	}
 

@@ -9,13 +9,18 @@
 #include "ShaderInspector.h"
 #include "MeshInspector.h"
 #include "Texture2DInspector.h"
+#include "Events.h"
+
 namespace Odyssey
 {
 	InspectorWindow::InspectorWindow(std::shared_ptr<Inspector> inspector)
 	{
 		m_Inspector = inspector;
-		auto onSelectionChanged = [this](GUISelectionChangedEvent* event) { OnGUISelectionChanged(event); };
-		m_EventListener = EventSystem::Listen<GUISelectionChangedEvent>(onSelectionChanged);
+		m_selectionChangedListener = EventSystem::Listen<GUISelectionChangedEvent>
+			([this](GUISelectionChangedEvent* event) { OnGUISelectionChanged(event); });
+
+		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
+			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
 	}
 
 	void InspectorWindow::Draw()
@@ -54,5 +59,10 @@ namespace Odyssey
 			m_Inspector = std::make_shared<MeshInspector>(selection.GUID);
 		else if (selection.Type == "Texture2D")
 			m_Inspector = std::make_shared<TextureInspector>(selection.GUID);
+	}
+
+	void InspectorWindow::OnSceneLoaded(SceneLoadedEvent* event)
+	{
+		// todo: clear selection
 	}
 }

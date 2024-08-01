@@ -25,10 +25,18 @@ namespace Odyssey
 
 		// Create the render texture
 		CreateRenderTexture();
+
+		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
+			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
 	}
 
 	void SceneViewWindow::Destroy()
 	{
+		if (m_SceneLoadedListener)
+		{
+			EventSystem::RemoveListener<SceneLoadedEvent>(m_SceneLoadedListener);
+			m_SceneLoadedListener = nullptr;
+		}
 		DestroyRenderTexture();
 	}
 
@@ -66,10 +74,10 @@ namespace Odyssey
 			m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
 	}
 
-	void SceneViewWindow::OnSceneChanged()
+	void SceneViewWindow::OnSceneLoaded(SceneLoadedEvent* event)
 	{
 		// Create a new game object and mark it as hidden
-		if (Scene* activeScene = SceneManager::GetActiveScene())
+		if (Scene* activeScene = event->loadedScene)
 		{
 			m_GameObject = activeScene->CreateGameObject();
 			m_GameObject->m_IsHidden = true;

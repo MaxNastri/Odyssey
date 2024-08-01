@@ -18,6 +18,7 @@ namespace Odyssey
 		// With native debugging enabled, our breakpoints wont work before we init scripting
 		ScriptingManager::Initialize();
 		Random::Initialize();
+		FileTracker::Init();
 
 		// Register for event listeners
 		m_BuildCompleteListener = EventSystem::Listen<BuildCompleteEvent>
@@ -28,18 +29,12 @@ namespace Odyssey
 		// Load the default project
 		Project::LoadProject("C:/Git/Odyssey/Managed/ExampleProject");
 
-		// Track the manage project folder for any file changes
-		FileTracker::Init();
-
 		// Create the renderer
 		renderer = std::make_shared<VulkanRenderer>();
 		renderer->GetImGui()->SetDrawGUIListener(GUIManager::DrawGUI);
 		GUIManager::Initialize();
 
 		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveCacheDirectory());
-
-		// Start listening for events
-		SceneManager::Initialize();
 
 		// Build the user assembly
 		ScriptCompiler::Settings settings;

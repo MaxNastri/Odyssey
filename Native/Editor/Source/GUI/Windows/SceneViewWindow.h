@@ -2,6 +2,8 @@
 #include "DockableWindow.h"
 #include "ResourceHandle.h"
 #include "GameObject.h"
+#include "Events.h"
+#include "EventSystem.h"
 
 namespace Odyssey
 {
@@ -25,7 +27,7 @@ namespace Odyssey
 	public:
 		std::shared_ptr<OpaquePass> GetRenderPass() { return m_SceneViewPass; }
 		void SetSelectedGameObject(GameObject* gameObject) { m_SelectedObject = gameObject; }
-		void OnSceneChanged();
+		void OnSceneLoaded(SceneLoadedEvent* event);
 
 	private:
 		void CreateRenderTexture();
@@ -34,11 +36,13 @@ namespace Odyssey
 		void UpdateCameraController();
 		void UpdateGizmosInput();
 
+	private: // Event listener
+		std::shared_ptr<IEventListener> m_SceneLoadedListener;
+
 	private: // Camera stuff
 		GameObject* m_GameObject = nullptr;
 		Transform* m_CameraTransform = nullptr;
 		Camera* m_Camera = nullptr;
-
 		bool m_CameraControllerInUse = false;
 
 	private: // Rendering stuff

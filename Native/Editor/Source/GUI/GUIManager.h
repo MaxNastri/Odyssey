@@ -27,17 +27,15 @@ namespace Odyssey
 		static void CreateSceneViewWindow();
 		static void CreateGameViewWindow();
 		static void CreateContentBrowserWindow();
-		static void CreateRayTracingWindow();
 
 	public:
 		static void Update();
 		static void DrawGUI();
-		static void SceneLoaded(SceneLoadedEvent* sceneLoadedEvent);
-		static void OnGameObjectSelected(int32_t id);
+
 	public:
 		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
-		static SceneViewWindow* GetSceneViewWindow(uint32_t index) { return sceneViewWindows[index].get(); }
-		static GameViewWindow* GetGameViewWindow(uint32_t index) { return gameViewWindows[index].get(); }
+		static std::shared_ptr<SceneViewWindow> GetSceneViewWindow(uint32_t index) { return s_SceneViews[index]; }
+		static std::shared_ptr<GameViewWindow> GetGameViewWindow(uint32_t index) { return s_GameViews[index]; }
 
 	private:
 		static void SetDarkThemeColors();
@@ -47,12 +45,9 @@ namespace Odyssey
 		inline static EditorActionsBar s_ActionsBar;
 
 		// Windows
-		inline static std::vector<std::shared_ptr<InspectorWindow>> inspectorWindows;
-		inline static std::vector<std::shared_ptr<SceneHierarchyWindow>> sceneHierarchyWindows;
-		inline static std::vector<std::shared_ptr<SceneViewWindow>> sceneViewWindows;
-		inline static std::vector<std::shared_ptr<GameViewWindow>> gameViewWindows;
-		inline static std::vector<std::shared_ptr<ContentBrowserWindow>> contentBrowserWindows;
-		inline static std::vector<std::shared_ptr<RayTracingWindow>> s_RayTracingWindows;
+		inline static std::vector<std::shared_ptr<DockableWindow>> s_Windows;
+		inline static std::vector<std::shared_ptr<SceneViewWindow>> s_SceneViews;
+		inline static std::vector<std::shared_ptr<GameViewWindow>> s_GameViews;
 		inline static int32_t selectedObject = -1;
 		inline static std::shared_ptr<ImguiPass> m_GUIPass;
 	};
