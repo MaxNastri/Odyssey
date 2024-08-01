@@ -19,7 +19,7 @@ namespace Example.Managed
 
         public override void Update()
         {
-            //Console.WriteLine($"IAmAlive: {this.IAmAlive}, MyName: {this.MyName}, Speed = {this.speed}, Movement: {this.movement}");
+            Console.WriteLine($"MyName: {this.MyName}, Speed = {this.speed}, Movement: {this.movement}");
         }
     }
 

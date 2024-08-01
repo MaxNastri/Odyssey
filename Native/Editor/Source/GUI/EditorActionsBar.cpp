@@ -47,8 +47,9 @@ namespace Odyssey
 
 			ImGui::SameLine();
 			
-			ImGui::Button("||", button_size);
-			
+			if (ImGui::Button("||", button_size))
+				EventSystem::Dispatch<PlaymodeStateChangedEvent>(PlaymodeState::PausePlaymode);
+
 			ImGui::SameLine();
 
 			if (ImGui::Button("Stop", button_size))
