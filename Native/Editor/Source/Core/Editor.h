@@ -3,9 +3,12 @@
 #include <Stopwatch.h>
 #include "EditorEvents.h"
 #include "ScriptCompiler.h"
+#include "EventSystem.h"
 
 namespace Odyssey
 {
+	struct BuildCompleteEvent;
+
 	class Editor
 	{
 	public:
@@ -20,7 +23,8 @@ namespace Odyssey
 		void SetupEditorGUI();
 		void CreateRenderPasses();
 		void OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event);
-
+		void OnBuildComplete(BuildCompleteEvent* event);
+			
 	private:
 		bool running;
 		bool allowRecompile = true;
@@ -28,6 +32,11 @@ namespace Odyssey
 		float m_TimeSinceLastUpdate = 0.0f;
 		inline static std::shared_ptr<VulkanRenderer> renderer = nullptr;
 		std::unique_ptr<ScriptCompiler> m_ScriptCompiler;
+
+	private:
+		std::shared_ptr<IEventListener> m_BuildCompleteListener;
+		std::shared_ptr<IEventListener> m_PlaymodeStateListener;
+	private:
 		const float MaxFPS = 1.0f / 144.0f;
 		inline static constexpr std::string_view TEMP_SCENE_FILE = "tmps.scene";
 	};

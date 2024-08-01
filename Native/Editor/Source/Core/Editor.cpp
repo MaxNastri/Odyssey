@@ -19,6 +19,13 @@ namespace Odyssey
 		ScriptingManager::Initialize();
 		Random::Initialize();
 
+		// Register for event listeners
+		m_BuildCompleteListener = EventSystem::Listen<BuildCompleteEvent>
+			([this](BuildCompleteEvent* event) { OnBuildComplete(event); });
+		m_PlaymodeStateListener = EventSystem::Listen<PlaymodeStateChangedEvent>
+			([this](PlaymodeStateChangedEvent* event) { OnPlaymodeStateChanged(event); });
+		
+		// Load the default project
 		Project::LoadProject("C:/Git/Odyssey/Managed/ExampleProject");
 
 		// Track the manage project folder for any file changes
@@ -44,13 +51,9 @@ namespace Odyssey
 
 		ScriptingManager::SetUserAssembliesPath(m_ScriptCompiler->GetUserAssemblyPath());
 		m_ScriptCompiler->BuildUserAssembly();
-		ScriptingManager::LoadUserAssemblies();
 
 		SetupEditorGUI();
 		CreateRenderPasses();
-
-		auto listener = [this](PlaymodeStateChangedEvent* event) { OnPlaymodeStateChanged(event); };
-		EventSystem::Listen<PlaymodeStateChangedEvent>(listener);
 
 		// We're off an running
 		running = true;
@@ -140,6 +143,13 @@ namespace Odyssey
 		}
 		default:
 			break;
+		}
+	}
+	void Editor::OnBuildComplete(BuildCompleteEvent* event)
+	{
+		if (event->success)
+		{
+			ScriptingManager::ReloadUserAssemblies();
 		}
 	}
 }

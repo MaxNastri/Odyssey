@@ -40,7 +40,7 @@ namespace Odyssey
 			L"-o \"" + m_UserAssembliesDirectory.wstring() + L"\" -r \"win-x64\"";
 
 		bool success = BuildAssemblies(buildCommand);
-		EventSystem::Dispatch<OnBuildFinished>(success);
+		EventSystem::Dispatch<BuildCompleteEvent>(success);
 
 		if (success)
 		{

@@ -3,7 +3,7 @@
 
 namespace Odyssey
 {
-	struct OnBuildFinished;
+	struct BuildCompleteEvent;
 	struct OnAssembliesReloaded;
 	class Scene;
 
@@ -20,7 +20,7 @@ namespace Odyssey
 		static void Update();
 
 	private:
-		static void BuildFinished(OnBuildFinished* onBuildFinished);
+		static void BuildFinished(BuildCompleteEvent* onBuildFinished);
 		static void AssembliesReloaded(OnAssembliesReloaded* reloadedEvent);
 
 	private:

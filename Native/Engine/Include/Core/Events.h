@@ -25,10 +25,10 @@ namespace Odyssey
 
 	};
 
-	struct OnBuildFinished : public Event
+	struct BuildCompleteEvent : public Event
 	{
 	public:
-		OnBuildFinished(bool succeeded)
+		BuildCompleteEvent(bool succeeded)
 		{
 			success = succeeded;
 		}

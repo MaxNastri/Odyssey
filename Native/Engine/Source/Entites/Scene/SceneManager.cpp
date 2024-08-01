@@ -8,8 +8,6 @@ namespace Odyssey
 {
 	void SceneManager::Initialize()
 	{
-		EventSystem::Listen<OnBuildFinished>(SceneManager::BuildFinished);
-		EventSystem::Listen<OnAssembliesReloaded>(SceneManager::AssembliesReloaded);
 	}
 
 	void SceneManager::LoadScene(const std::string& filename)
@@ -56,7 +54,7 @@ namespace Odyssey
 			scenes[activeScene].Get()->Update();
 	}
 
-	void SceneManager::BuildFinished(OnBuildFinished* onBuildFinished)
+	void SceneManager::BuildFinished(BuildCompleteEvent* onBuildFinished)
 	{
 		if (activeScene < scenes.size())
 		{
