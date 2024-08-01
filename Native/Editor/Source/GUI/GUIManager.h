@@ -4,14 +4,16 @@
 #include "InspectorWindow.h"
 #include "SceneHierarchyWindow.h"
 #include "SceneViewWindow.h"
+#include "GameViewWindow.h"
 #include "ContentBrowserWindow.h"
 #include "RayTracingWindow.h"
 #include "EditorMenuBar.h"
+#include "EditorActionsBar.h"
 
 namespace Odyssey
 {
 	struct OnGUIRenderEvent;
-	struct OnSceneLoaded;
+	struct SceneLoadedEvent;
 	class ImguiPass;
 
 	class GUIManager
@@ -23,32 +25,29 @@ namespace Odyssey
 		static void CreateInspectorWindow(GameObject* gameObject);
 		static void CreateSceneHierarchyWindow();
 		static void CreateSceneViewWindow();
+		static void CreateGameViewWindow();
 		static void CreateContentBrowserWindow();
-		static void CreateRayTracingWindow();
 
 	public:
 		static void Update();
 		static void DrawGUI();
-		static void SceneLoaded(OnSceneLoaded* sceneLoadedEvent);
-		static void OnGameObjectSelected(int32_t id);
-		static void OnSelectionContextChanged(const GUISelection& context);
+
 	public:
 		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
-		static SceneViewWindow& GetSceneViewWindow(uint32_t index) { return sceneViewWindows[index]; }
+		static std::shared_ptr<SceneViewWindow> GetSceneViewWindow(uint32_t index) { return s_SceneViews[index]; }
+		static std::shared_ptr<GameViewWindow> GetGameViewWindow(uint32_t index) { return s_GameViews[index]; }
 
 	private:
-		static void OnFilesChanged(const NotificationSet& notificationSet);
 		static void SetDarkThemeColors();
 
 	private:
 		inline static EditorMenuBar s_MenuBar;
+		inline static EditorActionsBar s_ActionsBar;
 
 		// Windows
-		inline static std::vector<InspectorWindow> inspectorWindows;
-		inline static std::vector<SceneHierarchyWindow> sceneHierarchyWindows;
-		inline static std::vector<SceneViewWindow> sceneViewWindows;
-		inline static std::vector<ContentBrowserWindow> contentBrowserWindows;
-		inline static std::vector<RayTracingWindow> s_RayTracingWindows;
+		inline static std::vector<std::shared_ptr<DockableWindow>> s_Windows;
+		inline static std::vector<std::shared_ptr<SceneViewWindow>> s_SceneViews;
+		inline static std::vector<std::shared_ptr<GameViewWindow>> s_GameViews;
 		inline static int32_t selectedObject = -1;
 		inline static std::shared_ptr<ImguiPass> m_GUIPass;
 	};

@@ -26,6 +26,7 @@ namespace Odyssey
 		void SetNearClip(float nearClip);
 		void SetFarClip(float farClip);
 		void SetViewportSize(float width, float height);
+		void SetMainCamera(bool mainCamera) { m_MainCamera = mainCamera; }
 
 	private:
 		void CalculateProjection();

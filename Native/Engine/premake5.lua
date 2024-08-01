@@ -51,11 +51,13 @@ project "Odyssey.Native.Engine"
         "%{wks.location}/Vendor/glfw3/",
         "%{wks.location}/Vendor/Vulkan/Include/",
         "%{wks.location}/Vendor/assimp/include/",
+        "%{wks.location}/Vendor/efsw/include/efsw",
     }
 
     libdirs {
         "%{cfg.targetdir}",
-        "%{wks.location}/Vendor/Vulkan/Lib/"
+        "%{wks.location}/Vendor/Vulkan/Lib/",
+        "%{wks.location}/Vendor/efsw/lib/",
     }
 
     links {
@@ -66,7 +68,8 @@ project "Odyssey.Native.Engine"
         "spirv-cross-glsl.lib",
         "spirv-cross-hlsl.lib",
         "spirv-cross-reflect.lib",
-        "spirv-cross-util.lib"
+        "spirv-cross-util.lib",
+        "efsw-static-debug.lib",
     }
 
     
@@ -75,12 +78,9 @@ project "Odyssey.Native.Engine"
     filter { "system:windows" }
         prebuildcommands {
 			'{COPYFILE} "%{wks.location}/Vendor/glfw3/lib/glfw3.lib" "%{cfg.targetdir}"',
-            '{COPYFILE} "%{wks.location}/Vendor/assimp/bin/assimp-vc143-mtd.dll" "%{cfg.targetdir}"',
+            '{COPYFILE} "%{wks.location}/Vendor/assimp/bin/assimp-vc143-mt.dll" "%{cfg.targetdir}"',
 			'{COPYFILE} "%{wks.location}/Vendor/assimp/lib/assimp-vc143-mt.lib" "%{cfg.targetdir}"',
         }
-		--postbuildcommands {
-        --    '{COPYFILE} "%{wks.location}Vendor/Coral/Coral.Managed/Coral.Managed.runtimeconfig.json" "%{cfg.targetdir}"',
-		--}
 	filter {}
 
     defines {

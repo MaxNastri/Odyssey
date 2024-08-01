@@ -1,8 +1,6 @@
 #include "Scene.h"
-#include "ComponentManager.h"
-#include <fstream>
-#include <string>
 #include "AssetSerializer.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
@@ -12,6 +10,7 @@ namespace Odyssey
 		updateFunc = [](Component* component) { component->Update(); };
 		onDestroyFunc = [](Component* component) { component->OnDestroy(); };
 		nextGameObjectID = 0;
+		m_ComponentRegistry = std::make_unique<ComponentRegistry>();
 	}
 
 	Scene::Scene(const std::filesystem::path& assetPath)
@@ -21,6 +20,7 @@ namespace Odyssey
 		updateFunc = [](Component* component) { component->Update(); };
 		onDestroyFunc = [](Component* component) { component->OnDestroy(); };
 		nextGameObjectID = 0;
+		m_ComponentRegistry = std::make_unique<ComponentRegistry>();
 
 		LoadFromDisk(assetPath);
 	}
@@ -38,7 +38,7 @@ namespace Odyssey
 
 	void Scene::DestroyGameObject(GameObject* gameObject)
 	{
-		ComponentManager::RemoveGameObject(gameObject->id);
+		m_ComponentRegistry->RemoveGameObject(gameObject->id);
 		for (int i = 0; i < gameObjects.size(); i++)
 		{
 			if (gameObjects[i]->id == gameObject->id)
@@ -53,7 +53,7 @@ namespace Odyssey
 	{
 		for (auto& gameObject : gameObjects)
 		{
-			ComponentManager::RemoveGameObject(gameObject->id);
+			m_ComponentRegistry->RemoveGameObject(gameObject->id);
 		}
 
 		gameObjects.clear();
@@ -77,7 +77,7 @@ namespace Odyssey
 	{
 		for (const auto& gameObject : gameObjects)
 		{
-			ComponentManager::ExecuteOnGameObjectComponents(gameObject->id, awakeFunc);
+			m_ComponentRegistry->ExecuteOnGameObjectComponents(gameObject->id, awakeFunc);
 		}
 	}
 
@@ -85,7 +85,7 @@ namespace Odyssey
 	{
 		for (const auto& gameObject : gameObjects)
 		{
-			ComponentManager::ExecuteOnGameObjectComponents(gameObject->id, updateFunc);
+			m_ComponentRegistry->ExecuteOnGameObjectComponents(gameObject->id, updateFunc);
 		}
 	}
 
@@ -93,8 +93,13 @@ namespace Odyssey
 	{
 		for (const auto& gameObject : gameObjects)
 		{
-			ComponentManager::ExecuteOnGameObjectComponents(gameObject->id, onDestroyFunc);
+			m_ComponentRegistry->ExecuteOnGameObjectComponents(gameObject->id, onDestroyFunc);
 		}
+	}
+
+	void Scene::SaveTo(const std::filesystem::path& savePath)
+	{
+		SaveToDisk(savePath);
 	}
 
 	void Scene::Save()
@@ -111,7 +116,7 @@ namespace Odyssey
 	{
 		// Create a new game object
 		uint32_t id = nextGameObjectID++;
-		std::shared_ptr<GameObject> gameObject = std::make_shared<GameObject>(id);
+		std::shared_ptr<GameObject> gameObject = std::make_shared<GameObject>(this, id);
 
 		gameObjects.push_back(gameObject);
 		gameObjectsByID[id] = gameObject;
@@ -170,10 +175,13 @@ namespace Odyssey
 	{
 		for (auto& gameObject : gameObjects)
 		{
-			if (Camera* camera = gameObject->GetComponent<Camera>())
+			if (!gameObject->m_IsHidden)
 			{
-				if (camera->IsMainCamera())
-					m_MainCamera = camera;
+				if (Camera* camera = gameObject->GetComponent<Camera>())
+				{
+					if (camera->IsMainCamera())
+						m_MainCamera = camera;
+				}
 			}
 		}
 	}

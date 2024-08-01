@@ -5,6 +5,8 @@
 #include "SceneManager.h"
 #include "GUIManager.h"
 #include "Input.h"
+#include "EventSystem.h"
+#include "EditorEvents.h"
 
 namespace Odyssey
 {
@@ -13,6 +15,8 @@ namespace Odyssey
 			glm::vec2(0, 0), glm::vec2(400, 450), glm::vec2(2, 2))
 	{
 		m_Scene = SceneManager::GetActiveScene();
+		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
+			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
 	}
 
 	void SceneHierarchyWindow::Draw()
@@ -32,6 +36,10 @@ namespace Odyssey
 		{
 			for (auto gameObject : m_Scene->GetGameObjects())
 			{
+				// Don't display hidden game objects
+				if (gameObject->m_IsHidden)
+					continue;
+
 				bool hasChildren = false;
 				const bool isSelected = (selectionMask & (1 << selectionID)) != 0;
 				ImGuiTreeNodeFlags nodeFlags = baseFlags;
@@ -64,8 +72,7 @@ namespace Odyssey
 						GUISelection selection;
 						selection.Type = GameObject::Type;
 						selection.ID = gameObject->id;
-
-						GUIManager::OnSelectionContextChanged(selection);
+						EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
 					}
 				}
 			}
@@ -85,9 +92,9 @@ namespace Odyssey
 		End();
 	}
 	
-	void SceneHierarchyWindow::OnSceneChanged()
+	void SceneHierarchyWindow::OnSceneLoaded(SceneLoadedEvent* event)
 	{
-		m_Scene = SceneManager::GetActiveScene();
+		m_Scene = event->loadedScene;
 	}
 
 	void SceneHierarchyWindow::HandleContextMenu()

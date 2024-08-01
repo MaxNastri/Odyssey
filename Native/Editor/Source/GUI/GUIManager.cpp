@@ -1,5 +1,5 @@
 #include "GUIManager.h"
-#include <EventSystem.h>
+#include "EventSystem.h"
 #include "EditorEvents.h"
 #include <Events.h>
 #include "SceneManager.h"
@@ -8,156 +8,75 @@
 #include "ImGuizmo.h"
 #include "Camera.h"
 #include "RenderPasses.h"
-#include "Application.h"
+#include "Editor.h"
 #include "RayTracingWindow.h"
 #include "GameObjectInspector.h"
+#include "imgui_internal.h"
 
 namespace Odyssey
 {
 	void GUIManager::Initialize()
 	{
-		EventSystem::Listen<OnSceneLoaded>(SceneLoaded);
-		FileManager::AddFilesChangedCallback(OnFilesChanged);
-
-		m_GUIPass = std::make_shared<ImguiPass>();
-		m_GUIPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-		m_GUIPass->SetImguiState(Application::GetRenderer()->GetImGui());
-
 		GUIManager::SetDarkThemeColors();
 	}
 
 	void GUIManager::CreateInspectorWindow(GameObject* gameObject)
 	{
-		inspectorWindows.push_back(InspectorWindow(std::make_shared<GameObjectInspector>(gameObject)));
+		s_Windows.push_back(std::make_shared<InspectorWindow>(std::make_shared<GameObjectInspector>(gameObject)));
 	}
 
 	void GUIManager::CreateSceneHierarchyWindow()
 	{
-		sceneHierarchyWindows.push_back(SceneHierarchyWindow());
-
-		sceneHierarchyWindows[sceneHierarchyWindows.size() - 1].OnGameObjectSelected(OnGameObjectSelected);
+		s_Windows.push_back(std::make_shared<SceneHierarchyWindow>());
 	}
 
 	void GUIManager::CreateSceneViewWindow()
 	{
-		sceneViewWindows.push_back(SceneViewWindow());
+		auto sceneView = std::make_shared<SceneViewWindow>();
+		s_SceneViews.push_back(sceneView);
+		s_Windows.push_back(sceneView);
+	}
+
+	void GUIManager::CreateGameViewWindow()
+	{
+		auto gameView = std::make_shared<GameViewWindow>();
+		s_GameViews.push_back(gameView);
+		s_Windows.push_back(gameView);
 	}
 
 	void GUIManager::CreateContentBrowserWindow()
 	{
-		contentBrowserWindows.push_back(ContentBrowserWindow());
-	}
-
-	void GUIManager::CreateRayTracingWindow()
-	{
-		s_RayTracingWindows.push_back(RayTracingWindow());
+		s_Windows.push_back(std::make_shared<ContentBrowserWindow>());
 	}
 
 	void GUIManager::Update()
 	{
 		s_MenuBar.Update();
+		s_ActionsBar.Update();
 
-		for (auto& inspectorWindow : inspectorWindows)
+		for (auto& window : s_Windows)
 		{
-			inspectorWindow.Update();
-		}
-
-		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
-		{
-			sceneHierarchyWindow.Update();
-		}
-
-		for (auto& sceneViewWindow : sceneViewWindows)
-		{
-			sceneViewWindow.Update();
-		}
-
-		for (auto& contentBrowserWindow : contentBrowserWindows)
-		{
-			contentBrowserWindow.Update();
-		}
-
-		for (auto& rayTracingWindow : s_RayTracingWindows)
-		{
-			rayTracingWindow.Update();
+			window->Update();
 		}
 	}
 
 	void GUIManager::DrawGUI()
 	{
-		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+		uint32_t flags = 0;
+		flags |= ImGuiDockNodeFlags_NoWindowMenuButton;
+		flags |= ImGuiDockNodeFlags_NoCloseButton;
+
+		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), flags);
 
 		s_MenuBar.Draw();
+		s_ActionsBar.Draw();
 
-		for (auto& inspectorWindow : inspectorWindows)
+		for (auto& window : s_Windows)
 		{
-			inspectorWindow.Draw();
-		}
-
-		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
-		{
-			sceneHierarchyWindow.Draw();
-		}
-
-		for (auto& sceneViewWindow : sceneViewWindows)
-		{
-			sceneViewWindow.Draw();
-		}
-
-		for (auto& contentBrowserWindow : contentBrowserWindows)
-		{
-			contentBrowserWindow.Draw();
-		}
-
-		for (auto& rayTracingWindow : s_RayTracingWindows)
-		{
-			rayTracingWindow.Draw();
+			window->Draw();
 		}
 	}
 
-	void GUIManager::SceneLoaded(OnSceneLoaded* sceneLoadedEvent)
-	{
-		for (auto& sceneHierarchyWindow : sceneHierarchyWindows)
-		{
-			sceneHierarchyWindow.OnSceneChanged();
-		}
-
-		for (auto& inspectorWindow : inspectorWindows)
-		{
-			inspectorWindow.Reload();
-		}
-	}
-
-	void GUIManager::OnGameObjectSelected(int32_t id)
-	{
-		selectedObject = id;
-
-		Scene* scene = SceneManager::GetActiveScene();
-		GameObject* gameObject = scene->GetGameObject(id);
-
-		for (auto& sceneViewWindow : sceneViewWindows)
-		{
-			sceneViewWindow.SetSelectedIndex(gameObject->id);
-		}
-	}
-
-	void GUIManager::OnSelectionContextChanged(const GUISelection& context)
-	{
-		// foreach window, invoke event
-		for (auto& window : inspectorWindows)
-		{
-			window.OnSelectionContextChanged(context);
-		}
-	}
-
-	void GUIManager::OnFilesChanged(const NotificationSet& notificationSet)
-	{
-		for (auto& contentBrowserWindow : contentBrowserWindows)
-		{
-			// TODO: Move the listener into the content browser
-			contentBrowserWindow.UpdatePaths();
-		}
-	}
 	void GUIManager::SetDarkThemeColors()
 	{
 		auto& colors = ImGui::GetStyle().Colors;

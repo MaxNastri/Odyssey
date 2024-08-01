@@ -1,16 +1,29 @@
 #include "ScriptCompiler.h"
-#include "Paths.h"
-#include <Logger.h>
-#include <Windows.h>
-#include <EventSystem.h>
+#include "Logger.h"
+#include "EventSystem.h"
 #include "Events.h"
-#include <ScriptingManager.h>
+#include "ScriptingManager.h"
 
 namespace Odyssey
 {
-	void ScriptCompiler::ListenForEvents()
+	ScriptCompiler::ScriptCompiler(const Settings& settings)
+		: m_Settings(settings)
 	{
-		EventSystem::Listen<OnUserFilesModified>(ScriptCompiler::UserFilesModified);
+		// Construct the necessary assembly paths
+		m_UserAssembliesDirectory = m_Settings.CacheDirectory / USER_ASSEMBLIES_DIRECTORY;
+		m_UserAssemblyFilename = m_Settings.UserScriptsProject.filename().replace_extension(".dll");
+		m_UserAssemblyPath = m_UserAssembliesDirectory / m_UserAssemblyFilename;
+
+		if (!std::filesystem::exists(m_UserAssembliesDirectory))
+			std::filesystem::create_directories(m_UserAssembliesDirectory);
+
+		TrackingOptions options;
+		options.Direrctory = m_Settings.UserScriptsDirectory;
+		options.Extensions = { ".cs" };
+		options.Recursive = true;
+		options.Callback = [this](const Path& path, FileActionType fileAction)
+			{ OnFileAction(path, fileAction); };
+		m_FileTracker = std::make_unique<FileTracker>(options);
 	}
 
 	bool ScriptCompiler::BuildUserAssembly()
@@ -21,15 +34,13 @@ namespace Odyssey
 			return false;
 		}
 
-		const char* projectPath = Paths::Relative::ExampleManagedProject;
-
 		std::wstring buildCommand = L" build \"" +
-			std::filesystem::absolute(projectPath).wstring() +
+			m_Settings.UserScriptsProject.wstring() +
 			L"\" -c Debug --no-self-contained " +
-			L"-o \"./tmp_build/\" -r \"win-x64\"";
+			L"-o \"" + m_UserAssembliesDirectory.wstring() + L"\" -r \"win-x64\"";
 
 		bool success = BuildAssemblies(buildCommand);
-		EventSystem::Dispatch<OnBuildFinished>(success);
+		EventSystem::Dispatch<BuildCompleteEvent>(success);
 
 		if (success)
 		{
@@ -116,8 +127,8 @@ namespace Odyssey
 		if (exitCode == 0)
 		{
 			// Copy out files
-			std::filesystem::path targetPath = Paths::Absolute::GetApplicationPath() / "Odyssey.Managed.Example.dll";
-			std::filesystem::copy("./tmp_build/Odyssey.Managed.Example.dll", targetPath,
+			std::filesystem::path outputPath = m_Settings.ApplicationPath / m_UserAssemblyFilename;
+			std::filesystem::copy(m_UserAssemblyPath, outputPath,
 				std::filesystem::copy_options::overwrite_existing);
 			return true;
 		}
@@ -129,19 +140,8 @@ namespace Odyssey
 		}
 	}
 
-	void ScriptCompiler::UserFilesModified(OnUserFilesModified* fileSavedEvent)
+	void ScriptCompiler::OnFileAction(const Path& filename, FileActionType fileAction)
 	{
-		if (!buildInProgress)
-		{
-			for (const auto& changedFile : fileSavedEvent->changedFileSet)
-			{
-				if (changedFile.second != FileNotifcations::RenamedNew &&
-					changedFile.second != FileNotifcations::RenamedOld)
-				{
-					shouldRebuild = true;
-					break;
-				}
-			}
-		}
+		shouldRebuild = !buildInProgress && fileAction != FileActionType::None;
 	}
 }

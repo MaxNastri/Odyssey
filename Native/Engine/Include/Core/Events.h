@@ -1,6 +1,6 @@
 #pragma once
 #include "EventSystem.h"
-#include "FileWatcherHandle.h"
+#include "Globals.h"
 
 namespace Odyssey
 {
@@ -25,10 +25,10 @@ namespace Odyssey
 
 	};
 
-	struct OnBuildFinished : public Event
+	struct BuildCompleteEvent : public Event
 	{
 	public:
-		OnBuildFinished(bool succeeded)
+		BuildCompleteEvent(bool succeeded)
 		{
 			success = succeeded;
 		}
@@ -36,25 +36,14 @@ namespace Odyssey
 		bool success = false;
 	};
 
-	struct OnUserFilesModified : public Event
-	{
-	public:
-		OnUserFilesModified(const NotificationSet& notificationSet)
-		{
-			changedFileSet = notificationSet;
-		}
-
-		NotificationSet changedFileSet;
-	};
-
 #pragma endregion
 
 	class Scene;
 
-	struct OnSceneLoaded : public Event
+	struct SceneLoadedEvent : public Event
 	{
 	public:
-		OnSceneLoaded(Scene* scene)
+		SceneLoadedEvent(Scene* scene)
 		{
 			loadedScene = scene;
 		}

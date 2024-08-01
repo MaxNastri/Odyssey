@@ -20,17 +20,11 @@ namespace Odyssey
 			return { "Child", m_Node.append_child() };
 		}
 
-		SerializationNode& CreateSequenceNode(const std::string& nodeName)
+		SerializationNode CreateSequenceNode(ryml::csubstr nodeName)
 		{
-			if (m_Sequences.contains(nodeName))
-				return m_Sequences[nodeName];
-
-			ryml::NodeRef nodeRef = m_Node[nodeName.c_str()];
+			ryml::NodeRef nodeRef = m_Node[nodeName];
 			nodeRef |= ryml::SEQ;
-			SerializationNode node{ nodeName, nodeRef };
-
-			m_Sequences[nodeName] = node;
-			return m_Sequences[nodeName];
+			return SerializationNode(std::string(nodeName.data()), nodeRef);
 		}
 
 		SerializationNode GetNode(const std::string& nodeName)

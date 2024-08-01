@@ -36,7 +36,7 @@ namespace Odyssey
 
 		// Set the default font for IMGUI
 		float fontSize = std::floor(DEFAULT_FONT_SIZE * m_Window->GetWindow()->GetContentScale());
-		m_Imgui->SetFont("Assets/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
+		m_Imgui->SetFont("Resources/Fonts/OpenSans/OpenSans-Regular.ttf", fontSize);
 
 		m_RenderingData = std::make_shared<PerFrameRenderingData>();
 
@@ -124,6 +124,13 @@ namespace Odyssey
 		return true;
 	}
 
+	void VulkanRenderer::AddImguiPass()
+	{
+		m_IMGUIPass = std::make_shared<ImguiPass>();
+		m_IMGUIPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+		m_IMGUIPass->SetImguiState(m_Imgui);
+	}
+
 	bool VulkanRenderer::BeginFrame(VulkanFrame*& currentFrame)
 	{
 		VkDevice vkDevice = m_Context->GetDevice()->GetLogicalDevice();
@@ -194,14 +201,21 @@ namespace Odyssey
 			params.commandBuffer = m_CommandBuffers[s_FrameIndex];
 			params.context = m_Context;
 			params.renderingData = m_RenderingData;
-
-			m_RenderPasses[1]->SetColorRenderTexture(frame->GetRenderTarget());
+			params.FrameRT = frame->GetRenderTarget();
 
 			for (const auto& renderPass : m_RenderPasses)
 			{
 				renderPass->BeginPass(params);
 				renderPass->Execute(params);
 				renderPass->EndPass(params);
+			}
+
+			// IMGUI always renders last
+			if (m_IMGUIPass)
+			{
+				m_IMGUIPass->BeginPass(params);
+				m_IMGUIPass->Execute(params);
+				m_IMGUIPass->EndPass(params);
 			}
 
 			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;

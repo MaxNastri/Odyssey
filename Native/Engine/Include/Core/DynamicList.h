@@ -34,14 +34,14 @@ namespace Odyssey
 			return nullptr;
 		}
 
-		std::shared_ptr<Base> operator[](int index)
+		std::shared_ptr<Base> operator[](size_t index)
 		{
 			return m_Data[index];
 		}
 
 	public:
 		template<typename T, typename... Args>
-		uint32_t Add(Args... params)
+		uint64_t Add(Args... params)
 		{
 			if (m_FreeIndices.size() == 0)
 				Resize();

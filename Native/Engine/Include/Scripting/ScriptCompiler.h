@@ -1,27 +1,41 @@
 #pragma once
-#include <Windows.h>
-#include "Events.h"
+#include "FileTracker.h"
 
 namespace Odyssey
 {
 	class ScriptCompiler
 	{
 	public:
-		static void ListenForEvents();
+		struct Settings
+		{
+		public:
+			Path CacheDirectory;
+			Path UserScriptsDirectory;
+			Path UserScriptsProject;
+			Path ApplicationPath;
+		};
 
 	public:
-		static bool BuildUserAssembly();
-		static bool Process();
+		ScriptCompiler(const Settings& settings);
+
+	public:
+		bool BuildUserAssembly();
+		bool Process();
+		const Path& GetUserAssemblyPath() { return m_UserAssemblyPath; }
 
 	private:
-		static bool BuildAssemblies(std::wstring buildCommand);
-		static bool WaitForBuildComplete(PROCESS_INFORMATION pi);
+		bool BuildAssemblies(std::wstring buildCommand);
+		bool WaitForBuildComplete(PROCESS_INFORMATION pi);
+		void OnFileAction(const Path& filename, FileActionType fileAction);
 
 	private:
-		static void UserFilesModified(OnUserFilesModified* fileSavedEvent);
-
-	private:
-		inline static bool buildInProgress = false;
-		inline static bool shouldRebuild = false;
+		bool buildInProgress = false;
+		bool shouldRebuild = false;
+		Path m_UserAssembliesDirectory;
+		Path m_UserAssemblyPath;
+		Path m_UserAssemblyFilename;
+		Settings m_Settings;
+		std::unique_ptr<FileTracker> m_FileTracker;
+		static constexpr std::string_view USER_ASSEMBLIES_DIRECTORY = "UserAssemblies";
 	};
 }

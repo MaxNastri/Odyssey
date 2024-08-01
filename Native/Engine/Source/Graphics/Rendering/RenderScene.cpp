@@ -12,6 +12,7 @@
 #include "VulkanUniformBuffer.h"
 #include "Texture2D.h"
 #include "VulkanDescriptorPool.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
@@ -19,17 +20,19 @@ namespace Odyssey
 	{
 		// Descriptor layout for the combined uniform buffers
 		uboLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		//m_SamplerLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Sampler, ShaderStage::Fragment, 0);
-
-		// Pushback 2 ubo layouts (1 scene, 1 per-object) and 1 sampler layout
 		m_Layouts.push_back(uboLayout);
-		//m_Layouts.push_back(m_SamplerLayout);
 
-		// Scene uniform buffer
-		uint32_t sceneUniformSize = sizeof(sceneData);
-		sceneUniformBuffer = ResourceManager::AllocateUniformBuffer(BufferType::Uniform, 0, sceneUniformSize);
-		sceneUniformBuffer.Get()->AllocateMemory();
-		sceneUniformBuffer.Get()->SetMemory(sceneUniformSize, &sceneData);
+		// Camera uniform buffer
+		uint32_t cameraDataSize = sizeof(cameraData);
+
+		for (uint32_t i = 1; i < MAX_CAMERAS; i++)
+		{
+			// Allocate the UBO
+			ResourceHandle<VulkanUniformBuffer> uniformBuffer = ResourceManager::AllocateUniformBuffer(BufferType::Uniform, 0, cameraDataSize);
+			uniformBuffer.Get()->AllocateMemory();
+			uniformBuffer.Get()->SetMemory(cameraDataSize, &cameraData);
+			cameraDataBuffers.push_back(uniformBuffer);
+		}
 
 		// Per-object uniform buffers
 		uint32_t perObjectUniformSize = sizeof(objectData);
@@ -47,15 +50,22 @@ namespace Odyssey
 	void RenderScene::Destroy()
 	{
 		ResourceManager::DestroyDescriptorLayout(uboLayout);
-		ResourceManager::DestroyUniformBuffer(sceneUniformBuffer);
+		for (auto& buffer : cameraDataBuffers)
+		{
+			ResourceManager::DestroyUniformBuffer(buffer);
+		}
+		for (auto& buffer : perObjectUniformBuffers)
+		{
+			ResourceManager::DestroyUniformBuffer(buffer);
+		}
 	}
 
 	void RenderScene::ConvertScene(Scene* scene)
 	{
 		ClearSceneData();
-		if (Camera* mainCamera = scene->GetMainCamera())
+		if (m_MainCamera = scene->GetMainCamera())
 		{
-			SetCameraData(mainCamera);
+			SetCameraData(m_MainCamera);
 		}
 		SetupDrawcalls(scene);
 	}
@@ -69,15 +79,21 @@ namespace Odyssey
 
 		setPasses.clear();
 		m_NextUniformBuffer = 0;
+		m_NextCameraBuffer = 0;
+		m_MainCamera = nullptr;
 	}
 
-	void RenderScene::SetCameraData(Camera* camera)
+	uint32_t RenderScene::SetCameraData(Camera* camera)
 	{
-		sceneData.inverseView = camera->GetInverseView();
-		sceneData.proj = camera->GetProjection();
+		cameraData.inverseView = camera->GetInverseView();
+		cameraData.proj = camera->GetProjection();
 
-		uint32_t sceneUniformSize = sizeof(sceneData);
-		sceneUniformBuffer.Get()->SetMemory(sceneUniformSize, &sceneData);
+		uint32_t index = m_NextCameraBuffer;
+		uint32_t sceneUniformSize = sizeof(cameraData);
+		cameraDataBuffers[m_NextCameraBuffer]->SetMemory(sceneUniformSize, &cameraData);
+		
+		m_NextCameraBuffer++;
+		return index;
 	}
 
 	void RenderScene::SetupDrawcalls(Scene* scene)

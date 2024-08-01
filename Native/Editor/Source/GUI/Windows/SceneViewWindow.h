@@ -2,6 +2,8 @@
 #include "DockableWindow.h"
 #include "ResourceHandle.h"
 #include "GameObject.h"
+#include "Events.h"
+#include "EventSystem.h"
 
 namespace Odyssey
 {
@@ -24,7 +26,8 @@ namespace Odyssey
 
 	public:
 		std::shared_ptr<OpaquePass> GetRenderPass() { return m_SceneViewPass; }
-		void SetSelectedIndex(uint32_t selected) { m_SelectedObject = GameObject(selected); }
+		void SetSelectedGameObject(GameObject* gameObject) { m_SelectedObject = gameObject; }
+		void OnSceneLoaded(SceneLoadedEvent* event);
 
 	private:
 		void CreateRenderTexture();
@@ -33,22 +36,24 @@ namespace Odyssey
 		void UpdateCameraController();
 		void UpdateGizmosInput();
 
-	private: // Camera stuff
-		GameObject m_GameObject;
-		Transform* m_CameraTransform;
-		Camera* m_Camera;
+	private: // Event listener
+		std::shared_ptr<IEventListener> m_SceneLoadedListener;
 
+	private: // Camera stuff
+		GameObject* m_GameObject = nullptr;
+		Transform* m_CameraTransform = nullptr;
+		Camera* m_Camera = nullptr;
 		bool m_CameraControllerInUse = false;
 
 	private: // Rendering stuff
 		std::shared_ptr<OpaquePass> m_SceneViewPass;
 		uint64_t m_RenderTextureID;
-		ResourceHandle<VulkanRenderTexture> m_RenderTexture;
+		ResourceHandle<VulkanRenderTexture> m_ColorRT;
 		ResourceHandle<VulkanRenderTexture> m_DepthRT;
 		ResourceHandle<VulkanTextureSampler> m_RTSampler;
 
 	private: // Gizmos
-		GameObject m_SelectedObject;
+		GameObject* m_SelectedObject = nullptr;
 		uint32_t op = 7;
 	};
 }

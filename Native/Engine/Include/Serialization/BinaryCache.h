@@ -6,7 +6,8 @@ namespace Odyssey
 	class BinaryCache
 	{
 	public:
-		BinaryCache();
+		BinaryCache() = default;
+		BinaryCache(const std::filesystem::path& cacheDirectory);
 
 	public:
 		BinaryBuffer LoadBinaryData(const std::string& guid);
@@ -18,6 +19,7 @@ namespace Odyssey
 		std::filesystem::path GenerateAssetPath(const std::string& guid);
 
 	private:
+		std::filesystem::path m_Path;
 		std::map<std::string, std::filesystem::path> m_GUIDToPath;
 		std::map<std::filesystem::path, std::string> m_PathToGUID;
 	};

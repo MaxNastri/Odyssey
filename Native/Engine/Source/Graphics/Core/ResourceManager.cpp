@@ -24,9 +24,9 @@ namespace Odyssey
 		s_Context = context;
 	}
 
-	ResourceHandle<VulkanBuffer> ResourceManager::AllocateBuffer(BufferType bufferType, uint32_t size)
+	ResourceHandle<VulkanBuffer> ResourceManager::AllocateBuffer(BufferType bufferType, size_t size)
 	{
-		uint32_t id = s_Resources.Add<VulkanBuffer>(s_Context, bufferType, size);
+		uint64_t id = s_Resources.Add<VulkanBuffer>(s_Context, bufferType, size);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanBuffer> buffer = s_Resources.Get<VulkanBuffer>(id);
@@ -35,7 +35,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanUniformBuffer> ResourceManager::AllocateUniformBuffer(BufferType bufferType, uint32_t bindingIndex, uint32_t size)
 	{
-		uint32_t id = s_Resources.Add<VulkanUniformBuffer>(s_Context, bufferType, bindingIndex, size);
+		uint64_t id = s_Resources.Add<VulkanUniformBuffer>(s_Context, bufferType, bindingIndex, size);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanUniformBuffer> buffer = s_Resources.Get<VulkanUniformBuffer>(id);
@@ -44,7 +44,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanVertexBuffer> ResourceManager::AllocateVertexBuffer(std::vector<VulkanVertex>& vertices)
 	{
-		uint32_t id = s_Resources.Add<VulkanVertexBuffer>(s_Context, vertices);
+		uint64_t id = s_Resources.Add<VulkanVertexBuffer>(s_Context, vertices);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanVertexBuffer> buffer = s_Resources.Get<VulkanVertexBuffer>(id);
@@ -53,7 +53,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanIndexBuffer> ResourceManager::AllocateIndexBuffer(std::vector<uint32_t>& indices)
 	{
-		uint32_t id = s_Resources.Add<VulkanIndexBuffer>(s_Context, indices);
+		uint64_t id = s_Resources.Add<VulkanIndexBuffer>(s_Context, indices);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanIndexBuffer> buffer = s_Resources.Get<VulkanIndexBuffer>(id);
@@ -62,7 +62,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanRenderTexture> ResourceManager::AllocateRenderTexture(uint32_t width, uint32_t height)
 	{
-		uint32_t id = s_Resources.Add<VulkanRenderTexture>(s_Context, width, height);
+		uint64_t id = s_Resources.Add<VulkanRenderTexture>(s_Context, width, height);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanRenderTexture> texture = s_Resources.Get<VulkanRenderTexture>(id);
@@ -71,7 +71,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanRenderTexture> ResourceManager::AllocateRenderTexture(ResourceHandle<VulkanImage> imageHandle, TextureFormat format)
 	{
-		uint32_t id = s_Resources.Add<VulkanRenderTexture>(s_Context, imageHandle, format);
+		uint64_t id = s_Resources.Add<VulkanRenderTexture>(s_Context, imageHandle, format);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanRenderTexture> texture = s_Resources.Get<VulkanRenderTexture>(id);
@@ -80,7 +80,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanRenderTexture> ResourceManager::AllocateRenderTexture(uint32_t width, uint32_t height, TextureFormat format)
 	{
-		uint32_t id = s_Resources.Add<VulkanRenderTexture>(s_Context, width, height, format);
+		uint64_t id = s_Resources.Add<VulkanRenderTexture>(s_Context, width, height, format);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanRenderTexture> texture = s_Resources.Get<VulkanRenderTexture>(id);
@@ -89,7 +89,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanShaderModule> ResourceManager::AllocateShaderModule(ShaderType shaderType, BinaryBuffer& codeBuffer)
 	{
-		uint32_t id = s_Resources.Add<VulkanShaderModule>(s_Context, shaderType, codeBuffer);
+		uint64_t id = s_Resources.Add<VulkanShaderModule>(s_Context, shaderType, codeBuffer);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanShaderModule> shaderModule = s_Resources.Get<VulkanShaderModule>(id);
@@ -98,7 +98,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanGraphicsPipeline> ResourceManager::AllocateGraphicsPipeline(const VulkanPipelineInfo& info)
 	{
-		uint32_t id = s_Resources.Add<VulkanGraphicsPipeline>(s_Context, info);
+		uint64_t id = s_Resources.Add<VulkanGraphicsPipeline>(s_Context, info);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanGraphicsPipeline> pipeline = s_Resources.Get<VulkanGraphicsPipeline>(id);
@@ -107,7 +107,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanCommandPool> ResourceManager::AllocateCommandPool()
 	{
-		uint32_t id = s_Resources.Add<VulkanCommandPool>(s_Context);
+		uint64_t id = s_Resources.Add<VulkanCommandPool>(s_Context);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanCommandPool> pool = s_Resources.Get<VulkanCommandPool>(id);
@@ -116,7 +116,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanCommandBuffer> ResourceManager::AllocateCommandBuffer(ResourceHandle<VulkanCommandPool> commandPool)
 	{
-		uint32_t id = s_Resources.Add<VulkanCommandBuffer>(s_Context, commandPool);
+		uint64_t id = s_Resources.Add<VulkanCommandBuffer>(s_Context, commandPool);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanCommandBuffer> buffer = s_Resources.Get<VulkanCommandBuffer>(id);
@@ -125,7 +125,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanDescriptorLayout> ResourceManager::AllocateDescriptorLayout(DescriptorType type, ShaderStage shaderStage, uint32_t bindingIndex)
 	{
-		uint32_t id = s_Resources.Add<VulkanDescriptorLayout>(s_Context, type, shaderStage, bindingIndex);
+		uint64_t id = s_Resources.Add<VulkanDescriptorLayout>(s_Context, type, shaderStage, bindingIndex);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanDescriptorLayout> layout = s_Resources.Get<VulkanDescriptorLayout>(id);
@@ -134,7 +134,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanDescriptorPool> ResourceManager::AllocateDescriptorPool(DescriptorType poolType, uint32_t setCount, uint32_t maxSets)
 	{
-		uint32_t id = s_Resources.Add<VulkanDescriptorPool>(s_Context, poolType, setCount, maxSets);
+		uint64_t id = s_Resources.Add<VulkanDescriptorPool>(s_Context, poolType, setCount, maxSets);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanDescriptorPool> pool = s_Resources.Get<VulkanDescriptorPool>(id);
@@ -143,7 +143,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanDescriptorSet> ResourceManager::AllocateDescriptorSet(DescriptorType descriptorType, ResourceHandle<VulkanDescriptorPool> pool, ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count)
 	{
-		uint32_t id = s_Resources.Add<VulkanDescriptorSet>(s_Context, descriptorType, pool, layout, count);
+		uint64_t id = s_Resources.Add<VulkanDescriptorSet>(s_Context, descriptorType, pool, layout, count);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanDescriptorSet> descriptorSet = s_Resources.Get<VulkanDescriptorSet>(id);
@@ -152,7 +152,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(const VulkanImageDescription& imageDescription)
 	{
-		uint32_t id = s_Resources.Add<VulkanImage>(s_Context, imageDescription);
+		uint64_t id = s_Resources.Add<VulkanImage>(s_Context, imageDescription);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanImage> image = s_Resources.Get<VulkanImage>(id);
@@ -161,7 +161,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanImage> ResourceManager::AllocateImage(VkImage vkImage, uint32_t width, uint32_t height, uint32_t channels, VkFormat format)
 	{
-		uint32_t id = s_Resources.Add<VulkanImage>(s_Context, vkImage, width, height, channels, format);
+		uint64_t id = s_Resources.Add<VulkanImage>(s_Context, vkImage, width, height, channels, format);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanImage> image = s_Resources.Get<VulkanImage>(id);
@@ -170,7 +170,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanTextureSampler> ResourceManager::AllocateSampler()
 	{
-		uint32_t id = s_Resources.Add<VulkanTextureSampler>(s_Context);
+		uint64_t id = s_Resources.Add<VulkanTextureSampler>(s_Context);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanTextureSampler> sampler = s_Resources.Get<VulkanTextureSampler>(id);
@@ -179,7 +179,7 @@ namespace Odyssey
 
 	ResourceHandle<VulkanTexture> ResourceManager::AllocateTexture(VulkanImageDescription imageDesc, BinaryBuffer& buffer)
 	{
-		uint32_t id = s_Resources.Add<VulkanTexture>(imageDesc, buffer);
+		uint64_t id = s_Resources.Add<VulkanTexture>(imageDesc, buffer);
 		s_Resources[id]->SetID(id);
 
 		std::shared_ptr<VulkanTexture> texture = s_Resources.Get<VulkanTexture>(id);
@@ -198,8 +198,8 @@ namespace Odyssey
 
 	void ResourceManager::DestroyUniformBuffer(ResourceHandle<VulkanUniformBuffer> handle)
 	{
-		uint32_t id = handle.m_ID;
-		auto func = [](uint32_t id)
+		uint64_t id = handle.m_ID;
+		auto func = [](uint64_t id)
 			{
 				if (std::shared_ptr<VulkanUniformBuffer> buffer = s_Resources.Get<VulkanUniformBuffer>(id))
 				{
@@ -233,8 +233,8 @@ namespace Odyssey
 
 	void ResourceManager::DestroyRenderTexture(ResourceHandle<VulkanRenderTexture> handle)
 	{
-		uint32_t id = handle.m_ID;
-		auto func = [](uint32_t id)
+		uint64_t id = handle.m_ID;
+		auto func = [](uint64_t id)
 			{
 				if (std::shared_ptr<VulkanRenderTexture> renderTexture = s_Resources.Get<VulkanRenderTexture>(id))
 				{
@@ -295,23 +295,21 @@ namespace Odyssey
 	}
 	void ResourceManager::DestroyImage(ResourceHandle<VulkanImage> handle)
 	{
-		uint32_t id = handle.m_ID;
-		auto func = [](uint32_t id)
-			{
+		// TODO: Fix this with render command queue
+		uint64_t id = handle.m_ID;
 				if (std::shared_ptr<VulkanImage> image = s_Resources.Get<VulkanImage>(id))
 				{
 					image->Destroy();
 					image->SetID(-1);
 					s_Resources.Remove(id);
 				}
-			};
-		s_PendingDestroys.push_back({ id, func });
+		//s_PendingDestroys.push_back({ id, func });
 	}
 
 	void ResourceManager::DestroySampler(ResourceHandle<VulkanTextureSampler> handle)
 	{
-		uint32_t id = handle.m_ID;
-		auto func = [](uint32_t id)
+		uint64_t id = handle.m_ID;
+		auto func = [](uint64_t id)
 			{
 				if (std::shared_ptr<VulkanTextureSampler> sampler = s_Resources.Get<VulkanTextureSampler>(id))
 				{
@@ -325,8 +323,8 @@ namespace Odyssey
 
 	void ResourceManager::DestroyDescriptorPool(ResourceHandle<VulkanDescriptorPool> handle)
 	{
-		uint32_t id = handle.m_ID;
-		auto func = [](uint32_t id)
+		uint64_t id = handle.m_ID;
+		auto func = [](uint64_t id)
 			{
 				if (std::shared_ptr<VulkanDescriptorPool> pool = s_Resources.Get<VulkanDescriptorPool>(id))
 				{
@@ -340,8 +338,8 @@ namespace Odyssey
 
 	void ResourceManager::DestroyDescriptorSet(ResourceHandle<VulkanDescriptorSet> handle)
 	{
-		uint32_t id = handle.m_ID;
-		auto func = [](uint32_t id)
+		uint64_t id = handle.m_ID;
+		auto func = [](uint64_t id)
 			{
 				if (std::shared_ptr<VulkanDescriptorSet> descriptorSet = s_Resources.Get<VulkanDescriptorSet>(id))
 				{

@@ -6,5 +6,4 @@ workspace "Odyssey-Managed"
 
     group "Core"
     include "Managed/Runtime"
-    include "Managed/Example"
     group ""

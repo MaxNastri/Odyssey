@@ -26,3 +26,6 @@
 #include "coreclr_delegates.h"
 #include "hostfxr.h"
 #include "Utils.h"
+#include "Globals.h"
+
+using Path = std::filesystem::path;

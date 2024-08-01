@@ -6,24 +6,23 @@
 #include "Texture2D.h"
 #include "SourceShader.h"
 #include "AssetSerializer.h"
+
 namespace Odyssey
 {
-	void AssetManager::CreateDatabase()
+	void AssetManager::CreateDatabase(const std::filesystem::path& assetsDirectory, const std::filesystem::path& cacheDirectory)
 	{
-		s_BinaryCache = BinaryCache();
+		s_AssetsDirectory = assetsDirectory;
+		s_BinaryCache = BinaryCache(cacheDirectory);
 
 		// Scan for Assets
 		AssetDatabase::SearchOptions assetSearch;
-		assetSearch.Root = "Assets";
+		assetSearch.Root = s_AssetsDirectory;
 		assetSearch.ExclusionPaths = { };
 		assetSearch.Extensions = { s_AssetExtension, s_SceneExtension };
 		s_AssetDatabase.ScanForAssets(assetSearch);
 
 		// Scan for Source Assets
 		ScanForSourceAssets();
-
-		s_DefaultVertexShader = LoadShader(s_DefaultVertexShaderPath);
-		s_DefaultFragmentShader = LoadShader(s_DefaultFragmentShaderPath);
 	}
 
 	AssetHandle<SourceShader> AssetManager::CreateSourceShader(const std::filesystem::path& sourcePath)
@@ -50,10 +49,6 @@ namespace Odyssey
 		material->SetGUID(GenerateGUID());
 		material->SetName("Default");
 		material->SetType("Material");
-
-		// Assign default shaders
-		material->SetVertexShader(s_DefaultVertexShader);
-		material->SetFragmentShader(s_DefaultFragmentShader);
 
 		// Save to disk
 		material->Save();
@@ -130,7 +125,7 @@ namespace Odyssey
 	{
 		if (!guid.empty() && s_LoadedSourceAssets.contains(guid))
 		{
-			uint32_t id = s_LoadedSourceAssets[guid];
+			uint64_t id = s_LoadedSourceAssets[guid];
 			std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
 			return AssetHandle<SourceShader>(id, shader.get());
 		}
@@ -212,7 +207,7 @@ namespace Odyssey
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
 		{
 			// Return a handle
-			uint32_t id = s_LoadedAssets[guid];
+			uint64_t id = s_LoadedAssets[guid];
 			std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
 			return AssetHandle<Shader>(id, shader.get());
 		}
@@ -228,7 +223,7 @@ namespace Odyssey
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
 		{
 			// Return a handle
-			uint32_t id = s_LoadedAssets[guid];
+			uint64_t id = s_LoadedAssets[guid];
 			std::shared_ptr<Texture2D> texture = s_Assets.Get<Texture2D>(id);
 			return AssetHandle<Texture2D>(id, texture.get());
 		}
@@ -316,7 +311,7 @@ namespace Odyssey
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
 		{
 			// Return a handle
-			uint32_t id = s_LoadedAssets[guid];
+			uint64_t id = s_LoadedAssets[guid];
 			std::shared_ptr<Material> material = s_Assets.Get<Material>(id);
 			return AssetHandle<Material>(id, material.get());
 		}
@@ -332,7 +327,7 @@ namespace Odyssey
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
 		{
 			// Return a handle
-			uint32_t id = s_LoadedAssets[guid];
+			uint64_t id = s_LoadedAssets[guid];
 			std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
 			return AssetHandle<Mesh>(id, mesh.get());
 		}
@@ -354,7 +349,7 @@ namespace Odyssey
 
 	void AssetManager::ScanForSourceAssets()
 	{
-		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("Assets"))
+		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(s_AssetsDirectory))
 		{
 			auto assetPath = dirEntry.path();
 			auto extension = assetPath.extension().string();

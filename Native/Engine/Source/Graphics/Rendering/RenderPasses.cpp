@@ -135,32 +135,41 @@ namespace Odyssey
 		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
 
+		uint32_t cameraIndex = RenderScene::MAX_CAMERAS;
+
+		// Set either the camera override or the scene's main camera
 		if (m_Camera)
-			renderScene->SetCameraData(m_Camera);
+			cameraIndex = renderScene->SetCameraData(m_Camera);
+		else if (renderScene->HasMainCamera())
+			cameraIndex = renderScene->SetCameraData(renderScene->m_MainCamera);
 
-		for (auto& setPass : params.renderingData->renderScene->setPasses)
+		// Check for a valid camera data index
+		if (cameraIndex < RenderScene::MAX_CAMERAS)
 		{
-			commandBuffer->BindPipeline(setPass.pipeline);
-
-			for (size_t i = 0; i < setPass.drawcalls.size(); i++)
+			for (auto& setPass : params.renderingData->renderScene->setPasses)
 			{
-				// Prepare the push descriptor commands
-				pushDescriptors->Clear();
-				pushDescriptors->Add(renderScene->sceneUniformBuffer, 0);
-				pushDescriptors->Add(renderScene->perObjectUniformBuffers[i], 1);
-				if (setPass.Texture.IsValid())
+				commandBuffer->BindPipeline(setPass.pipeline);
+
+				for (size_t i = 0; i < setPass.drawcalls.size(); i++)
 				{
-					pushDescriptors->Add(setPass.Texture, 2);
+					// Prepare the push descriptor commands
+					pushDescriptors->Clear();
+					pushDescriptors->Add(renderScene->cameraDataBuffers[cameraIndex], 0);
+					pushDescriptors->Add(renderScene->perObjectUniformBuffers[i], 1);
+					if (setPass.Texture.IsValid())
+					{
+						pushDescriptors->Add(setPass.Texture, 2);
+					}
+
+					// Push the descriptors into the command buffer
+					commandBuffer->PushDescriptors(pushDescriptors.get(), setPass.pipeline);
+
+					// Set the per-object descriptor buffer offset
+					Drawcall& drawcall = setPass.drawcalls[i];
+					commandBuffer->BindVertexBuffer(drawcall.VertexBuffer);
+					commandBuffer->BindIndexBuffer(drawcall.IndexBuffer);
+					commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);
 				}
-
-				// Push the descriptors into the command buffer
-				commandBuffer->PushDescriptors(pushDescriptors.get(), setPass.pipeline);
-
-				// Set the per-object descriptor buffer offset
-				Drawcall& drawcall = setPass.drawcalls[i];
-				commandBuffer->BindVertexBuffer(drawcall.VertexBuffer);
-				commandBuffer->BindIndexBuffer(drawcall.IndexBuffer);
-				commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);
 			}
 		}
 	}
@@ -190,6 +199,9 @@ namespace Odyssey
 		uint32_t width = params.renderingData->width;
 		uint32_t height = params.renderingData->height;
 
+		// If we don't have a valid RT set, use the back buffer
+		auto renderTarget = m_ColorRT.IsValid() ? m_ColorRT : params.FrameRT;
+
 		VkClearValue clearValue;
 		clearValue.color.float32[0] = m_ClearValue.r;
 		clearValue.color.float32[1] = m_ClearValue.g;
@@ -199,8 +211,8 @@ namespace Odyssey
 		VkRenderingAttachmentInfoKHR color_attachment_info{};
 		color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 		color_attachment_info.pNext = VK_NULL_HANDLE;
-		color_attachment_info.imageView = m_ColorRT.Get()->GetImage().Get()->GetImageView();
-		color_attachment_info.imageLayout = m_ColorRT.Get()->GetImage().Get()->GetLayout();;
+		color_attachment_info.imageView = renderTarget.Get()->GetImage().Get()->GetImageView();
+		color_attachment_info.imageLayout = renderTarget.Get()->GetImage().Get()->GetLayout();;
 		color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 		color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -254,8 +266,11 @@ namespace Odyssey
 		// End dynamic rendering
 		commandBuffer->EndRendering();
 
+		// If we don't have a valid RT set, use the back buffer
+		auto renderTarget = m_ColorRT.IsValid() ? m_ColorRT : params.FrameRT;
+		
 		// Transition the backbuffer layout for presenting
-		commandBuffer->TransitionLayouts(m_ColorRT, m_EndLayout);
+		commandBuffer->TransitionLayouts(renderTarget, m_EndLayout);
 	}
 
 	void ImguiPass::SetImguiState(std::shared_ptr<VulkanImgui> imgui)

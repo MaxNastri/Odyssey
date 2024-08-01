@@ -3,6 +3,14 @@
 
 namespace Odyssey
 {
+	enum class PlaymodeState
+	{
+		None = 0,
+		EnterPlaymode = 1,
+		PausePlaymode = 2,
+		ExitPlaymode = 3,
+	};
+
 	struct GUISelection
 	{
 	public:

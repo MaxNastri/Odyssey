@@ -33,7 +33,7 @@ namespace Odyssey
 		static void Initialize(std::shared_ptr<VulkanContext> context);
 
 	public: // Vulkan allocations
-		static ResourceHandle<VulkanBuffer> AllocateBuffer(BufferType bufferType, uint32_t size);
+		static ResourceHandle<VulkanBuffer> AllocateBuffer(BufferType bufferType, size_t size);
 		static ResourceHandle<VulkanUniformBuffer> AllocateUniformBuffer(BufferType bufferType, uint32_t bindingIndex, uint32_t size);
 		static ResourceHandle<VulkanVertexBuffer> AllocateVertexBuffer(std::vector<VulkanVertex>& vertices);
 		static ResourceHandle<VulkanIndexBuffer> AllocateIndexBuffer(std::vector<uint32_t>& indices);
@@ -79,8 +79,8 @@ namespace Odyssey
 	private:
 		struct ResourceDeallocation
 		{
-			uint32_t ID;
-			std::function<void(uint32_t)> Func;
+			uint64_t ID;
+			std::function<void(uint64_t)> Func;
 
 			void Execute()
 			{

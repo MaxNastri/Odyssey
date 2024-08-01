@@ -1,4 +1,4 @@
-include "../CSExtensions.lua"
+include "CSExtensions.lua"
 
 project "Coral.Managed"
     language "C#"
@@ -6,13 +6,16 @@ project "Coral.Managed"
     kind "SharedLib"
 	clr "Unsafe"
 
-    -- Don't specify architecture here. (see https://github.com/premake/premake-core/issues/1758)
+    targetdir "%{wks.location}/Build/%{cfg.buildcfg}"
+    objdir "%{wks.location}/Intermediates/%{cfg.buildcfg}"
 
+    -- Don't specify architecture here. (see https://github.com/premake/premake-core/issues/1758)
     propertytags {
         { "AppendTargetFrameworkToOutputPath", "false" },
         { "Nullable", "enable" },
     }
 
+    
     disablewarnings {
         "CS8500"
     }
@@ -21,3 +24,4 @@ project "Coral.Managed"
         "Source/**.cs",
         "%{wks.location}/Vendor/Coral/Coral.Managed/Source/**.cs",
     }
+        

@@ -3,12 +3,15 @@
 
 namespace Odyssey
 {
-	BinaryCache::BinaryCache()
+	BinaryCache::BinaryCache(const std::filesystem::path& cacheDirectory)
 	{
-		if (!std::filesystem::exists("BinaryCache"))
-			std::filesystem::create_directories("BinaryCache");
+		m_Path = cacheDirectory / "BinaryAssets";
+
+		if (!std::filesystem::exists(m_Path))
+			std::filesystem::create_directories(m_Path);
+
 		// Init the database
-		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator("BinaryCache"))
+		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(m_Path))
 		{
 			auto assetPath = dirEntry.path();
 			auto extension = assetPath.extension();
@@ -89,6 +92,6 @@ namespace Odyssey
 
 	std::filesystem::path BinaryCache::GenerateAssetPath(const std::string& guid)
 	{
-		return "BinaryCache/" + guid + ".asset";
+		return m_Path / std::string(guid + ".asset");
 	}
 }

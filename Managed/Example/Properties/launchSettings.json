@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Odyssey.Managed.Example": {
-      "commandName": "Project",
-      "nativeDebugging": true
-    }
-  }
-}

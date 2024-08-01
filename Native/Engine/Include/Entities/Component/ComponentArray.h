@@ -1,10 +1,6 @@
 #pragma once
-#include <array>
-#include <unordered_map>
-#include <queue>
 #include "Component.h"
-#include <Logger.h>
-#include <string>
+#include "Logger.h"
 
 #ifndef MAX_GAME_OBJECTS
 #define MAX_GAME_OBJECTS 5000
@@ -23,6 +19,7 @@ namespace Odyssey
 
 	protected:
 		friend class ComponentManager;
+		friend class ComponentRegistry;
 		std::array<std::unique_ptr<Component>, MAX_GAME_OBJECTS> componentData;
 	};
 
