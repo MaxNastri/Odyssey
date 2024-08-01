@@ -113,12 +113,12 @@ namespace Odyssey
 			Scene* activeScene = SceneManager::GetActiveScene();
 			Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
 			activeScene->SaveTo(tempPath);
-			m_UpdateScripts = false;
+			m_UpdateScripts = true;
 			break;
 		}
 		case PlaymodeState::PausePlaymode:
 		{
-			m_UpdateScripts = true;
+			m_UpdateScripts = false;
 			break;
 		}
 		case PlaymodeState::ExitPlaymode:

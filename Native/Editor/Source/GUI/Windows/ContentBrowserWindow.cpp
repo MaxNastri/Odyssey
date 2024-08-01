@@ -51,10 +51,9 @@ namespace Odyssey
 		}
 
 		// Draw folders first
-		for (auto& path : m_FoldersToDisplay)
+		for (auto path : m_FoldersToDisplay)
 		{
-			auto relativePath = std::filesystem::relative(path);
-			std::string filename = relativePath.filename().string();
+			std::string filename = path.filename().string();
 
 			if (ImGui::Button(filename.c_str()))
 			{
