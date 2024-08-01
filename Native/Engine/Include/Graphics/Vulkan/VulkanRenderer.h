@@ -35,6 +35,8 @@ namespace Odyssey
 
 	public:
 		void AddRenderPass(std::shared_ptr<RenderPass> renderPass) { m_RenderPasses.push_back(renderPass); }
+		void AddImguiPass();
+
 	public:
 		std::shared_ptr<VulkanImgui> GetImGui() { return m_Imgui; }
 		std::shared_ptr<VulkanWindow> GetWindow() { return m_Window; }
@@ -59,7 +61,7 @@ namespace Odyssey
 	private: // Draws
 		std::vector<std::shared_ptr<RenderScene>> m_RenderScenes;
 		std::vector<std::shared_ptr<RenderPass>> m_RenderPasses;
-
+		std::shared_ptr<ImguiPass> m_IMGUIPass;
 		std::shared_ptr<PerFrameRenderingData> m_RenderingData;
 
 	private: // IMGUI

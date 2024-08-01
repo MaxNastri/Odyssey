@@ -9,6 +9,7 @@
 #include "Random.h"
 #include "OdysseyTime.h"
 #include <execution>
+#include "Renderer.h"
 
 namespace Odyssey
 {
@@ -278,11 +279,7 @@ namespace Odyssey
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
 		m_RenderTexture = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
 		m_RTSampler = ResourceManager::AllocateSampler();
-
-		// Create an IMGui texture handle
-		if (auto renderer = Editor::GetRenderer())
-			if (auto imgui = renderer->GetImGui())
-				m_RenderTextureID = imgui->AddTexture(m_RenderTexture, m_RTSampler);
+		m_RenderTextureID = Renderer::AddImguiTexture(m_RenderTexture, m_RTSampler);
 	}
 
 	void RayTracingWindow::DestroyRenderTexture()

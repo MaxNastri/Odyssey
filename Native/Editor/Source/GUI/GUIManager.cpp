@@ -17,10 +17,6 @@ namespace Odyssey
 {
 	void GUIManager::Initialize()
 	{
-		m_GUIPass = std::make_shared<ImguiPass>();
-		m_GUIPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-		m_GUIPass->SetImguiState(Editor::GetRenderer()->GetImGui());
-
 		GUIManager::SetDarkThemeColors();
 	}
 

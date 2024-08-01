@@ -16,12 +16,8 @@ namespace Odyssey
 		void Run();
 		void Exit();
 
-	public:
-		static std::shared_ptr<VulkanRenderer> GetRenderer() { return renderer; }
-		
 	private:
 		void SetupEditorGUI();
-		void CreateRenderPasses();
 
 	private: // Events
 		void OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event);
@@ -33,7 +29,6 @@ namespace Odyssey
 		float m_TimeSinceLastUpdate = 0.0f;
 
 	private:
-		inline static std::shared_ptr<VulkanRenderer> renderer = nullptr;
 		std::unique_ptr<ScriptCompiler> m_ScriptCompiler;
 
 	private:

@@ -12,6 +12,7 @@
 #include "Editor.h"
 #include "RenderPasses.h"
 #include "Input.h"
+#include "Renderer.h"
 
 namespace Odyssey
 {
@@ -22,6 +23,7 @@ namespace Odyssey
 		// Rendering stuff
 		m_SceneViewPass = std::make_shared<OpaquePass>();
 		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		Renderer::PushRenderPass(m_SceneViewPass);
 
 		// Create the render texture
 		CreateRenderTexture();
@@ -99,11 +101,7 @@ namespace Odyssey
 		m_ColorRT = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
 		m_DepthRT = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
 		m_RTSampler = ResourceManager::AllocateSampler();
-
-		// Create an IMGui texture handle
-		if (auto renderer = Editor::GetRenderer())
-			if (auto imgui = renderer->GetImGui())
-				m_RenderTextureID = imgui->AddTexture(m_ColorRT, m_RTSampler);
+		m_RenderTextureID = Renderer::AddImguiTexture(m_ColorRT, m_RTSampler);
 	}
 
 	void SceneViewWindow::DestroyRenderTexture()

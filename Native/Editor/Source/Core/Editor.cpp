@@ -9,6 +9,7 @@
 #include "Random.h"
 #include "ShaderCompiler.h"
 #include "Project.h"
+#include "Renderer.h"
 
 namespace Odyssey
 {
@@ -30,8 +31,10 @@ namespace Odyssey
 		Project::LoadProject("C:/Git/Odyssey/Managed/ExampleProject");
 
 		// Create the renderer
-		renderer = std::make_shared<VulkanRenderer>();
-		renderer->GetImGui()->SetDrawGUIListener(GUIManager::DrawGUI);
+		RendererConfig config;
+		config.EnableIMGUI = true;
+		Renderer::Init(config);
+		Renderer::SetDrawGUIListener(GUIManager::DrawGUI);
 		GUIManager::Initialize();
 
 		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveCacheDirectory());
@@ -48,7 +51,6 @@ namespace Odyssey
 		m_ScriptCompiler->BuildUserAssembly();
 
 		SetupEditorGUI();
-		CreateRenderPasses();
 
 		// We're off an running
 		running = true;
@@ -80,15 +82,12 @@ namespace Odyssey
 				if (m_UpdateScripts)
 					SceneManager::Update();
 
-				if (!renderer->Update())
-				{
-					running = false;
-				}
-
-				renderer->Render();
+				running = Renderer::Update();
+				Renderer::Render();
 			}
 		}
-		renderer->Destroy();
+
+		Renderer::Destroy();
 	}
 
 	void Editor::Exit()
@@ -103,13 +102,6 @@ namespace Odyssey
 		GUIManager::CreateSceneViewWindow();
 		GUIManager::CreateGameViewWindow();
 		GUIManager::CreateContentBrowserWindow();
-	}
-
-	void Editor::CreateRenderPasses()
-	{
-		renderer->AddRenderPass(GUIManager::GetSceneViewWindow(0)->GetRenderPass());
-		renderer->AddRenderPass(GUIManager::GetGameViewWindow(0)->GetRenderPass());
-		renderer->AddRenderPass(GUIManager::GetRenderPass());
 	}
 
 	void Editor::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event)
