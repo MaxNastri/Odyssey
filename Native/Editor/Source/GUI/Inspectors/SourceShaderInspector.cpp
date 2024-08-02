@@ -7,7 +7,7 @@
 
 namespace Odyssey
 {
-	SourceShaderInspector::SourceShaderInspector(const std::string& guid)
+	SourceShaderInspector::SourceShaderInspector(GUID guid)
 	{
 		m_Shader = AssetManager::LoadSourceShader(guid);
 

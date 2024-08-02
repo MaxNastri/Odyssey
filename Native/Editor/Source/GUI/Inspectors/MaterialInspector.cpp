@@ -11,9 +11,9 @@ namespace Odyssey
 	{
 		m_Material = material;
 
-		std::string fragmentShaderGUID;
-		std::string vertexShaderGUID;
-		std::string textureGUID;
+		GUID fragmentShaderGUID;
+		GUID vertexShaderGUID;
+		GUID textureGUID;
 
 		if (Shader* fragmentShader = m_Material->GetFragmentShader().Get())
 			fragmentShaderGUID = fragmentShader->GetGUID();
@@ -27,19 +27,19 @@ namespace Odyssey
 		m_NameDrawer = StringDrawer("Name", m_Material->GetName(),
 			[material](const std::string& name) { OnNameModified(material, name); });
 
-		m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID(), nullptr, true);
+		m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), nullptr, true);
 
 		m_FragmentShaderDrawer = AssetFieldDrawer("Fragment Shader", fragmentShaderGUID, "Shader",
-			[material](const std::string& guid) { OnFragmentShaderModified(material, guid); });
+			[material](GUID guid) { OnFragmentShaderModified(material, guid); });
 
 		m_VertexShaderDrawer = AssetFieldDrawer("Vertex Shader", vertexShaderGUID, "Shader",
-			[material](const std::string& guid) { OnVertexShaderModified(material, guid); });
+			[material](GUID guid) { OnVertexShaderModified(material, guid); });
 
 		m_TextureDrawer = AssetFieldDrawer("Texture", textureGUID, "Texture2D",
-			[material](const std::string& guid) { OnTextureModified(material, guid); });
+			[material](GUID guid) { OnTextureModified(material, guid); });
 	}
 
-	MaterialInspector::MaterialInspector(const std::string& guid)
+	MaterialInspector::MaterialInspector(GUID guid)
 	{
 		AssetHandle<Material> materialHandle = AssetManager::LoadMaterialByGUID(guid);
 
@@ -47,9 +47,9 @@ namespace Odyssey
 		{
 			m_Material = material;
 
-			std::string fragmentShaderGUID;
-			std::string vertexShaderGUID;
-			std::string textureGUID;
+			GUID fragmentShaderGUID;
+			GUID vertexShaderGUID;
+			GUID textureGUID;
 
 			if (Shader* fragmentShader = m_Material->GetFragmentShader().Get())
 				fragmentShaderGUID = fragmentShader->GetGUID();
@@ -63,16 +63,16 @@ namespace Odyssey
 			m_NameDrawer = StringDrawer("Name", m_Material->GetName(),
 				[material](const std::string& name) { OnNameModified(material, name); });
 
-			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID(), nullptr, true);
+			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), nullptr, true);
 
 			m_FragmentShaderDrawer = AssetFieldDrawer("Fragment Shader", fragmentShaderGUID, "Shader",
-				[material](const std::string& guid) { OnFragmentShaderModified(material, guid); });
+				[material](GUID guid) { OnFragmentShaderModified(material, guid); });
 
 			m_VertexShaderDrawer = AssetFieldDrawer("Vertex Shader", vertexShaderGUID, "Shader",
-				[material](const std::string& guid) { OnVertexShaderModified(material, guid); });
+				[material](GUID guid) { OnVertexShaderModified(material, guid); });
 
 			m_TextureDrawer = AssetFieldDrawer("Texture", textureGUID, "Texture2D",
-				[material](const std::string& guid) { OnTextureModified(material, guid); });
+				[material](GUID guid) { OnTextureModified(material, guid); });
 		}
 	}
 
@@ -104,7 +104,7 @@ namespace Odyssey
 			material->SetName(name);
 	}
 
-	void MaterialInspector::OnFragmentShaderModified(Material* material, const std::string& guid)
+	void MaterialInspector::OnFragmentShaderModified(Material* material, GUID guid)
 	{
 		AssetHandle<Shader> fragShader = AssetManager::LoadShaderByGUID(guid);
 
@@ -112,14 +112,14 @@ namespace Odyssey
 			material->SetFragmentShader(fragShader);
 	}
 
-	void MaterialInspector::OnVertexShaderModified(Material* material, const std::string& guid)
+	void MaterialInspector::OnVertexShaderModified(Material* material, GUID guid)
 	{
 		AssetHandle<Shader> vertShader = AssetManager::LoadShaderByGUID(guid);
 
 		if (vertShader.IsValid())
 			material->SetVertexShader(vertShader);
 	}
-	void MaterialInspector::OnTextureModified(Material* material, const std::string& guid)
+	void MaterialInspector::OnTextureModified(Material* material, GUID guid)
 	{
 		AssetHandle<Texture2D> texture = AssetManager::LoadTexture2DByGUID(guid);
 

@@ -2,6 +2,7 @@
 #include "Asset.h"
 #include "entt.hpp"
 #include "GameObject.h"
+#include "GUID.h"
 
 namespace Odyssey
 {
@@ -17,7 +18,7 @@ namespace Odyssey
 
 	public:
 		GameObject CreateGameObject();
-		GameObject GetGameObject(const std::string& guid) { return m_GUIDToGameObject[guid]; }
+		GameObject GetGameObject(GUID guid) { return m_GUIDToGameObject[guid]; }
 
 		void DestroyGameObject(const GameObject& gameObject);
 		void Clear();
@@ -48,7 +49,7 @@ namespace Odyssey
 		friend class GameObject;
 		Camera* m_MainCamera = nullptr;
 		entt::registry m_Registry;
-		std::map<std::string, GameObject> m_GUIDToGameObject;
+		std::map<GUID, GameObject> m_GUIDToGameObject;
 	};
 }
 

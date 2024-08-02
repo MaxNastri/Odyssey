@@ -33,7 +33,7 @@ namespace Odyssey
 		SerializationNode gameObjectNode = node.AppendChild();
 		gameObjectNode.SetMap();
 		gameObjectNode.WriteData("Name", idComponent.Name);
-		gameObjectNode.WriteData("GUID", idComponent.GUID);
+		gameObjectNode.WriteData("GUID", idComponent.GUID.CRef());
 		gameObjectNode.WriteData("Type", Type);
 
 		SerializationNode componentsNode = gameObjectNode.CreateSequenceNode("Components");
@@ -57,7 +57,7 @@ namespace Odyssey
 
 		IDComponent& idComponent = AddComponent<IDComponent>();
 		node.ReadData("Name", idComponent.Name);
-		node.ReadData("GUID", idComponent.GUID);
+		node.ReadData("GUID", idComponent.GUID.Ref());
 
 		SerializationNode componentsNode = node.GetNode("Components");
 		assert(componentsNode.IsSequence());
@@ -98,7 +98,7 @@ namespace Odyssey
 		return GetComponent<IDComponent>().Name;
 	}
 
-	const std::string& GameObject::GetGUID()
+	GUID GameObject::GetGUID()
 	{
 		return GetComponent<IDComponent>().GUID;
 	}
@@ -108,7 +108,7 @@ namespace Odyssey
 		GetComponent<IDComponent>().Name = name;
 	}
 
-	void GameObject::SetGUID(const std::string& guid)
+	void GameObject::SetGUID(GUID guid)
 	{
 		GetComponent<IDComponent>().GUID = guid;
 	}

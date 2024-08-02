@@ -23,7 +23,7 @@ namespace Odyssey
 		options.Extensions = { ".asset", ".glsl", ".meta" };
 		options.Recursive = true;
 		options.IncludeDirectoryChanges = true;
-		options.Callback = [this](const std::filesystem::path& filePath, FileActionType fileAction)
+		options.Callback = [this](const Path& filePath, FileActionType fileAction)
 			{ OnFileAction(filePath, fileAction); };
 		m_FileTracker = std::make_unique<FileTracker>(options);
 
@@ -120,7 +120,7 @@ namespace Odyssey
 			{
 				if (ImGui::MenuItem("Material"))
 				{
-					AssetManager::CreateMaterial(std::filesystem::path("Assets/Materials/MyMaterial.mat"));
+					AssetManager::CreateMaterial(Path("Assets/Materials/MyMaterial.mat"));
 				}
 				if (ImGui::MenuItem("Scene"))
 				{
@@ -139,7 +139,7 @@ namespace Odyssey
 		}
 	}
 	
-	void ContentBrowserWindow::DrawSceneAsset(const std::filesystem::path& assetPath)
+	void ContentBrowserWindow::DrawSceneAsset(const Path& assetPath)
 	{
 		std::string filename = assetPath.filename().string();
 
@@ -149,7 +149,7 @@ namespace Odyssey
 		}
 	}
 
-	void ContentBrowserWindow::DrawSourceAsset(const std::filesystem::path& sourcePath)
+	void ContentBrowserWindow::DrawSourceAsset(const Path& sourcePath)
 	{
 		std::string filename = sourcePath.filename().string();
 		ImGui::PushID(filename.c_str());
@@ -164,7 +164,7 @@ namespace Odyssey
 		}
 		ImGui::PopID();
 	}
-	void ContentBrowserWindow::DrawAsset(const std::filesystem::path& assetPath)
+	void ContentBrowserWindow::DrawAsset(const Path& assetPath)
 	{
 		std::string filename = assetPath.filename().string();
 
@@ -181,15 +181,15 @@ namespace Odyssey
 		// Allow for this asset to be a potential draw/drop payload
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 		{
-			std::string guid = AssetManager::PathToGUID(assetPath);
-			ImGui::SetDragDropPayload("Asset", guid.c_str(), sizeof(guid));
+			GUID guid = AssetManager::PathToGUID(assetPath);
+			ImGui::SetDragDropPayload("Asset", guid.String().c_str(), sizeof(guid));
 			ImGui::EndDragDropSource();
 		}
 
 		ImGui::PopID();
 	}
 
-	void ContentBrowserWindow::OnFileAction(const std::filesystem::path& filePath, FileActionType fileAction)
+	void ContentBrowserWindow::OnFileAction(const Path& filePath, FileActionType fileAction)
 	{
 		UpdatePaths();
 	}

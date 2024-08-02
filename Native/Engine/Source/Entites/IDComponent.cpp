@@ -9,12 +9,12 @@ namespace Odyssey
 	{
 	}
 
-	IDComponent::IDComponent(const GameObject& gameObject, const std::string& guid)
+	IDComponent::IDComponent(const GameObject& gameObject, Odyssey::GUID guid)
 		: m_GameObject(gameObject), GUID(guid)
 	{
 	}
 
-	IDComponent::IDComponent(const GameObject& gameObject, const std::string& guid, const std::string& name)
+	IDComponent::IDComponent(const GameObject& gameObject, Odyssey::GUID guid, const std::string& name)
 		: m_GameObject(gameObject), GUID(guid), Name(name)
 	{
 	}

@@ -9,7 +9,7 @@
 
 namespace Odyssey
 {
-	void AssetManager::CreateDatabase(const std::filesystem::path& assetsDirectory, const std::filesystem::path& cacheDirectory)
+	void AssetManager::CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory)
 	{
 		s_AssetsDirectory = assetsDirectory;
 		s_BinaryCache = BinaryCache(cacheDirectory);
@@ -25,13 +25,12 @@ namespace Odyssey
 		ScanForSourceAssets();
 	}
 
-	AssetHandle<SourceShader> AssetManager::CreateSourceShader(const std::filesystem::path& sourcePath)
+	AssetHandle<SourceShader> AssetManager::CreateSourceShader(const Path& sourcePath)
 	{
 		size_t id = s_SourceAssets.Add<SourceShader>(sourcePath);
 		std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
 
 		// Set asset data and serialize the metafile
-		shader->SetGUID(GenerateGUID());
 		shader->SetName("Default");
 		shader->SetType("Shader");
 		shader->SerializeMetadata();
@@ -39,14 +38,13 @@ namespace Odyssey
 		return AssetHandle<SourceShader>(id, shader.get());
 	}
 
-	AssetHandle<Material> AssetManager::CreateMaterial(const std::filesystem::path& assetPath)
+	AssetHandle<Material> AssetManager::CreateMaterial(const Path& assetPath)
 	{
 		// Push back an empty material
 		size_t id = s_Assets.Add<Material>(assetPath);
 		std::shared_ptr<Material> material = s_Assets.Get<Material>(id);
 
 		// Set asset data
-		material->SetGUID(GenerateGUID());
 		material->SetName("Default");
 		material->SetType("Material");
 
@@ -63,21 +61,19 @@ namespace Odyssey
 		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
 
 		// Set asset data
-		mesh->SetGUID(GenerateGUID());
 		mesh->SetName("Default");
 		mesh->SetType("Mesh");
 
 		return AssetHandle<Mesh>(id, mesh.get());
 	}
 
-	AssetHandle<Mesh> AssetManager::CreateMesh(const std::filesystem::path& assetPath)
+	AssetHandle<Mesh> AssetManager::CreateMesh(const Path& assetPath)
 	{
 		// Push back an empty mesh
 		size_t id = s_Assets.Add<Mesh>(assetPath);
 		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
 
 		// Set asset data
-		mesh->SetGUID(GenerateGUID());
 		mesh->SetName("Default");
 		mesh->SetType("Mesh");
 
@@ -87,14 +83,13 @@ namespace Odyssey
 		return AssetHandle<Mesh>(id, mesh.get());
 	}
 
-	AssetHandle<Shader> AssetManager::CreateShader(const std::filesystem::path& assetPath)
+	AssetHandle<Shader> AssetManager::CreateShader(const Path& assetPath)
 	{
 		// Push back an empty mesh
 		size_t id = s_Assets.Add<Shader>(assetPath);
 		std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
 
 		// Set asset data
-		shader->SetGUID(GenerateGUID());
 		shader->SetName("Default");
 		shader->SetType("Shader");
 
@@ -104,14 +99,13 @@ namespace Odyssey
 		return AssetHandle<Shader>(id, shader.get());
 	}
 
-	AssetHandle<Scene> AssetManager::CreateScene(const std::filesystem::path& assetPath)
+	AssetHandle<Scene> AssetManager::CreateScene(const Path& assetPath)
 	{
 		// Push back an empty mesh
 		size_t id = s_Assets.Add<Scene>(assetPath);
 		std::shared_ptr<Scene> scene = s_Assets.Get<Scene>(id);
 
 		// Set asset data
-		scene->SetGUID(GenerateGUID());
 		scene->SetName("Scene");
 		scene->SetType("Scene");
 
@@ -121,16 +115,16 @@ namespace Odyssey
 		return AssetHandle<Scene>(id, scene.get());
 	}
 
-	AssetHandle<SourceShader> AssetManager::LoadSourceShader(const std::string& guid)
+	AssetHandle<SourceShader> AssetManager::LoadSourceShader(GUID guid)
 	{
-		if (!guid.empty() && s_LoadedSourceAssets.contains(guid))
+		if (s_LoadedSourceAssets.contains(guid))
 		{
 			uint64_t id = s_LoadedSourceAssets[guid];
 			std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
 			return AssetHandle<SourceShader>(id, shader.get());
 		}
 
-		std::filesystem::path sourcePath = s_SourceAssetDatabase.GUIDToAssetPath(guid);
+		Path sourcePath = s_SourceAssetDatabase.GUIDToAssetPath(guid);
 		size_t id = s_SourceAssets.Add<SourceShader>(sourcePath);
 		std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
 
@@ -144,7 +138,7 @@ namespace Odyssey
 		return AssetHandle<SourceShader>(id, shader.get());
 	}
 
-	AssetHandle<Mesh> Odyssey::AssetManager::LoadMesh(const std::filesystem::path& assetPath)
+	AssetHandle<Mesh> AssetManager::LoadMesh(const Path& assetPath)
 	{
 		// Push back a mesh loaded from the asset path
 		size_t id = s_Assets.Add<Mesh>(assetPath);
@@ -156,7 +150,7 @@ namespace Odyssey
 		return AssetHandle<Mesh>(id, mesh.get());
 	}
 
-	AssetHandle<Shader> AssetManager::LoadShader(const std::filesystem::path& assetPath)
+	AssetHandle<Shader> AssetManager::LoadShader(const Path& assetPath)
 	{
 		// Push back a shader loaded from the asset path
 		size_t id = s_Assets.Add<Shader>(assetPath);
@@ -168,7 +162,7 @@ namespace Odyssey
 		return AssetHandle<Shader>(id, shader.get());
 	}
 
-	AssetHandle<Scene> AssetManager::LoadScene(const std::filesystem::path& assetPath)
+	AssetHandle<Scene> AssetManager::LoadScene(const Path& assetPath)
 	{
 		// Push back a scene loaded from the asset path
 		size_t id = s_Assets.Add<Scene>(assetPath);
@@ -180,7 +174,7 @@ namespace Odyssey
 		return AssetHandle<Scene>(id, scene.get());
 	}
 
-	AssetHandle<Texture2D> AssetManager::LoadTexture2D(const std::filesystem::path& assetPath)
+	AssetHandle<Texture2D> AssetManager::LoadTexture2D(const Path& assetPath)
 	{
 		// Push back a scene loaded from the asset path
 		size_t id = s_Assets.Add<Texture2D>(assetPath);
@@ -192,7 +186,7 @@ namespace Odyssey
 		return AssetHandle<Texture2D>(id, texture.get());
 	}
 
-	AssetHandle<Material> AssetManager::LoadMaterial(const std::filesystem::path& assetPath)
+	AssetHandle<Material> AssetManager::LoadMaterial(const Path& assetPath)
 	{
 		size_t id = s_Assets.Add<Material>(assetPath);
 		std::shared_ptr<Material> material = s_Assets.Get<Material>(id);
@@ -201,7 +195,7 @@ namespace Odyssey
 		return AssetHandle<Material>(id, material.get());
 	}
 
-	AssetHandle<Shader> AssetManager::LoadShaderByGUID(const std::string& guid)
+	AssetHandle<Shader> AssetManager::LoadShaderByGUID(GUID guid)
 	{
 		// Check if we have already loaded this asset
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
@@ -213,11 +207,11 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabase.GUIDToAssetPath(guid);
+		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadShader(path.generic_string());
 	}
 
-	AssetHandle<Texture2D> AssetManager::LoadTexture2DByGUID(const std::string& guid)
+	AssetHandle<Texture2D> AssetManager::LoadTexture2DByGUID(GUID guid)
 	{
 		// Check if we have already loaded this asset
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
@@ -229,25 +223,25 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabase.GUIDToAssetPath(guid);
+		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadTexture2D(path.string());
 	}
 
-	BinaryBuffer AssetManager::LoadBinaryAsset(const std::string& guid)
+	BinaryBuffer AssetManager::LoadBinaryAsset(GUID guid)
 	{
 		return s_BinaryCache.LoadBinaryData(guid);
 	}
 
-	std::string AssetManager::CreateBinaryAsset(BinaryBuffer& buffer)
+	GUID AssetManager::CreateBinaryAsset(BinaryBuffer& buffer)
 	{
-		std::string guid = GenerateGUID();
+		GUID guid;
 		s_BinaryCache.SaveBinaryData(guid, buffer);
 		return guid;
 	}
 
-	std::vector<std::string> AssetManager::GetAssetsOfType(const std::string& assetType)
+	std::vector<GUID> AssetManager::GetAssetsOfType(const std::string& assetType)
 	{
-		std::vector<std::string> assets = s_AssetDatabase.GetGUIDsOfAssetType(assetType);
+		std::vector<GUID> assets = s_AssetDatabase.GetGUIDsOfAssetType(assetType);
 		
 		if (assets.empty())
 			assets = s_SourceAssetDatabase.GetGUIDsOfAssetType(assetType);
@@ -257,7 +251,7 @@ namespace Odyssey
 
 	void AssetManager::UnloadScene(AssetHandle<Scene> scene)
 	{
-		const std::string& guid = scene.Get()->GetGUID();
+		GUID guid = scene.Get()->GetGUID();
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
 		{
 			s_LoadedAssets.erase(guid);
@@ -266,7 +260,7 @@ namespace Odyssey
 		scene.Reset();
 	}
 
-	std::string AssetManager::PathToGUID(const std::filesystem::path& path)
+	GUID AssetManager::PathToGUID(const Path& path)
 	{
 		// Start with the asset database
 		if (s_AssetDatabase.Contains(path))
@@ -276,10 +270,10 @@ namespace Odyssey
 		if (s_SourceAssetDatabase.Contains(path))
 			return s_SourceAssetDatabase.AssetPathToGUID(path);
 
-		return std::string();
+		return GUID::Empty();
 	}
 
-	std::string AssetManager::GUIDToName(const std::string& guid)
+	std::string AssetManager::GUIDToName(GUID guid)
 	{
 		// Start with the asset database
 		if (s_AssetDatabase.Contains(guid))
@@ -292,7 +286,7 @@ namespace Odyssey
 		return std::string();
 	}
 
-	std::string AssetManager::GUIDToAssetType(const std::string& guid)
+	std::string AssetManager::GUIDToAssetType(GUID guid)
 	{
 		// Start with the asset database
 		if (s_AssetDatabase.Contains(guid))
@@ -305,7 +299,7 @@ namespace Odyssey
 		return std::string();
 	}
 
-	AssetHandle<Material> AssetManager::LoadMaterialByGUID(const std::string& guid)
+	AssetHandle<Material> AssetManager::LoadMaterialByGUID(GUID guid)
 	{
 		// Check if we have already loaded this asset
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
@@ -317,11 +311,11 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabase.GUIDToAssetPath(guid);
+		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadMaterial(path.generic_string());
 	}
 
-	AssetHandle<Mesh> AssetManager::LoadMeshByGUID(const std::string& guid)
+	AssetHandle<Mesh> AssetManager::LoadMeshByGUID(GUID guid)
 	{
 		// Check if we have already loaded this asset
 		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
@@ -333,18 +327,8 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		std::filesystem::path path = s_AssetDatabase.GUIDToAssetPath(guid);
+		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
 		return AssetManager::LoadMesh(path);
-	}
-
-	std::string AssetManager::GenerateGUID()
-	{
-		std::string guid = s_GUIDGenerator.getUUID().str();
-		while (s_AssetDatabase.Contains(guid) || s_SourceAssetDatabase.Contains(guid))
-		{
-			guid = s_GUIDGenerator.getUUID().str();
-		}
-		return guid;
 	}
 
 	void AssetManager::ScanForSourceAssets()
@@ -376,17 +360,16 @@ namespace Odyssey
 				}
 				else
 				{
-					std::string guid = GenerateGUID();
 					std::string name = assetPath.filename().replace_extension("").string();
 					std::string type = s_SourceAssetExtensionsToType[extension];
 
 					// Create a temporary source asset so we can serialize the metadata
 					SourceAsset asset(assetPath);
-					asset.SetMetadata(guid, name, type);
+					asset.SetMetadata(GUID(), name, type);
 					asset.SerializeMetadata();
 
 					// Add the source asset to the database
-					s_SourceAssetDatabase.AddAsset(guid, assetPath, name, type);
+					s_SourceAssetDatabase.AddAsset(asset.GetGUID(), assetPath, name, type);
 				}
 			}
 		}

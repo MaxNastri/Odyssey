@@ -1,6 +1,7 @@
 #pragma once
 #include "AssetSerializer.h"
 #include "GameObject.h"
+#include "GUID.h"
 
 namespace Odyssey
 {
@@ -9,11 +10,11 @@ namespace Odyssey
 	public:
 		IDComponent() = default;
 		IDComponent(const GameObject& gameObject);
-		IDComponent(const GameObject& gameObject, const std::string& guid);
-		IDComponent(const GameObject& gameObject, const std::string& guid, const std::string& name);
+		IDComponent(const GameObject& gameObject, GUID guid);
+		IDComponent(const GameObject& gameObject, GUID guid, const std::string& name);
 
 	public:
-		std::string GUID;
+		GUID GUID;
 		std::string Name;
 
 	private:

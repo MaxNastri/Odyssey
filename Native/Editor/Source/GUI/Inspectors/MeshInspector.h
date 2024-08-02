@@ -12,14 +12,14 @@ namespace Odyssey
 	{
 	public:
 		MeshInspector() = default;
-		MeshInspector(const std::string& guid);
+		MeshInspector(GUID guid);
 
 	public:
 		virtual void Draw() override;
 
 	private:
 		void OnNameChanged(const std::string& name);
-		void OnSourceAssetChanged(const std::string& guid);
+		void OnSourceAssetChanged(GUID sourceGUID);
 
 	private:
 		AssetHandle<Mesh> m_Mesh;

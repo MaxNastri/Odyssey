@@ -22,8 +22,7 @@ namespace Odyssey
 				if (LoadBinaryData(assetPath))
 				{
 					// We use the filename as the guid
-					auto guid = assetPath.filename().replace_extension("").string();
-
+					GUID guid = assetPath.filename().replace_extension("").string();
 					if (!m_GUIDToPath.contains(guid))
 					{
 						m_GUIDToPath[guid] = assetPath;
@@ -33,7 +32,7 @@ namespace Odyssey
 			}
 		}
 	}
-	BinaryBuffer BinaryCache::LoadBinaryData(const std::string& guid)
+	BinaryBuffer BinaryCache::LoadBinaryData(GUID guid)
 	{
 		if (m_GUIDToPath.contains(guid))
 			return LoadBinaryData(m_GUIDToPath[guid]);
@@ -62,7 +61,7 @@ namespace Odyssey
 		file.close();
 	}
 
-	void BinaryCache::SaveBinaryData(const std::string& guid, BinaryBuffer& buffer)
+	void BinaryCache::SaveBinaryData(GUID& guid, BinaryBuffer& buffer)
 	{
 		SaveBinaryData(GenerateAssetPath(guid), buffer);
 	}
@@ -90,7 +89,7 @@ namespace Odyssey
 		return BinaryBuffer(buffer, bufferSize);
 	}
 
-	std::filesystem::path BinaryCache::GenerateAssetPath(const std::string& guid)
+	std::filesystem::path BinaryCache::GenerateAssetPath(GUID guid)
 	{
 		return m_Path / std::string(guid + ".asset");
 	}

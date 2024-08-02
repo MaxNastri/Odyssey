@@ -1,5 +1,6 @@
 #pragma once
 #include "AssetSerializer.h"
+#include "GUID.h"
 
 namespace Odyssey
 {
@@ -7,33 +8,33 @@ namespace Odyssey
 	{
 	public:
 		SourceAsset() = default;
-		SourceAsset(const std::filesystem::path& sourcePath);
+		SourceAsset(const Path& sourcePath);
 
 	public:
-		static SourceAsset CreateFromMetafile(const std::filesystem::path& metaPath);
+		static SourceAsset CreateFromMetafile(const Path& metaPath);
 
 	public:
 		void SerializeMetadata();
 		void DeserializeMetadata();
 
 	public:
-		const std::string& GetGUID() { return m_GUID; }
+		GUID GetGUID() { return m_GUID; }
 		const std::string& GetName() { return m_Name; }
 		const std::string& GetType() { return m_Type; }
 		std::filesystem::path& GetPath() { return m_SourcePath; }
 		bool HasMetadata();
 
 	public:
-		void SetMetadata(const std::string& guid, const std::string& name, const std::string& type);
-		void SetGUID(const std::string& guid) { m_GUID = guid; }
+		void SetMetadata(GUID guid, const std::string& name, const std::string& type);
+		void SetGUID(GUID guid) { m_GUID = guid; }
 		void SetName(const std::string& name) { m_Name = name; }
 		void SetType(const std::string& type) { m_Type = type; }
 
 	protected: // Serialized
-		std::string m_GUID;
+		GUID m_GUID;
 		std::string m_Name;
 		std::string m_Type;
-		std::string m_SourceGUID;
+		std::string m_SourceAsset;
 		std::string m_SourceExtension;
 		std::filesystem::path m_SourcePath;
 		std::filesystem::path m_MetaFilePath;
@@ -43,31 +44,31 @@ namespace Odyssey
 	{
 	public:
 		Asset() = default;
-		Asset(const std::filesystem::path& assetPath);
+		Asset(const Path& assetPath);
 
 	public:
 		void SerializeMetadata(AssetSerializer& serializer);
 		void Load();
 
 	public:
-		const std::string& GetSoureAsset() { return m_SourceAsset; }
-		const std::string& GetGUID() { return m_GUID; }
+		GUID GetSoureAsset() { return m_SourceAsset; }
+		GUID GetGUID() { return m_GUID; }
 		const std::string& GetName() { return m_Name; }
 		const std::string& GetType() { return m_Type; }
-		std::filesystem::path& GetAssetPath() { return m_AssetPath; }
+		Path& GetAssetPath() { return m_AssetPath; }
 
 	public:
-		void SetSourceAsset(const std::string& guid) { m_SourceAsset = guid; }
-		void SetGUID(const std::string& guid) { m_GUID = guid; }
+		void SetSourceAsset(GUID& guid) { m_SourceAsset = guid; }
+		void SetGUID(GUID& guid) { m_GUID = guid; }
 		void SetName(const std::string& name) { m_Name = name; }
 		void SetType(const std::string& type) { m_Type = type; }
 
 	protected: // Non-serialized
-		std::filesystem::path m_AssetPath;
+		Path m_AssetPath;
 
 	protected: // Serialized
-		std::string m_SourceAsset;
-		std::string m_GUID;
+		GUID m_SourceAsset;
+		GUID m_GUID;
 		std::string m_Name;
 		std::string m_Type;
 	};

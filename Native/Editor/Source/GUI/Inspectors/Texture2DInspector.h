@@ -12,14 +12,14 @@ namespace Odyssey
 	{
 	public:
 		TextureInspector() = default;
-		TextureInspector(const std::string& guid);
+		TextureInspector(GUID guid);
 
 	public:
 		virtual void Draw() override;
 
 	private:
 		void OnNameChanged(const std::string& name);
-		void OnSourceAssetchanged(const std::string& asset);
+		void OnSourceAssetchanged(GUID sourceGUID);
 
 	private:
 		AssetHandle<Texture2D> m_Texture;

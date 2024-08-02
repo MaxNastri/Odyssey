@@ -1,4 +1,5 @@
 #pragma once
+#include "GUID.h"
 
 namespace Odyssey
 {
@@ -15,18 +16,18 @@ namespace Odyssey
 		AssetDatabase() = default;
 
 	public:
-		void AddAsset(const std::string& guid, const std::filesystem::path& path, const std::string& assetName, const std::string& assetType);
+		void AddAsset(GUID guid, const std::filesystem::path& path, const std::string& assetName, const std::string& assetType);
 		void ScanForAssets(SearchOptions& searchOptions);
 		void PruneUnlinkedAssets();
 
 	public:
-		bool Contains(const std::string& guid);
+		bool Contains(GUID& guid);
 		bool Contains(const std::filesystem::path& path);
-		std::filesystem::path GUIDToAssetPath(const std::string& guid);
-		std::string GUIDToAssetName(const std::string& guid);
-		std::string GUIDToAssetType(const std::string& guid);
-		std::string AssetPathToGUID(const std::filesystem::path& assetPath);
-		std::vector<std::string> GetGUIDsOfAssetType(const std::string& assetType);
+		std::filesystem::path GUIDToAssetPath(GUID guid);
+		std::string GUIDToAssetName(GUID guid);
+		std::string GUIDToAssetType(GUID guid);
+		GUID AssetPathToGUID(const std::filesystem::path& assetPath);
+		std::vector<GUID> GetGUIDsOfAssetType(const std::string& assetType);
 	
 	private:
 		struct AssetMetadata
@@ -39,11 +40,11 @@ namespace Odyssey
 
 	private:
 		// [GUID, AssetMetadata]
-		std::map<std::string, AssetMetadata> m_GUIDToMetadata;
+		std::map<GUID, AssetMetadata> m_GUIDToMetadata;
 		// [AssetPath, GUID]
-		std::map<std::filesystem::path, std::string> m_AssetPathToGUID;
+		std::map<std::filesystem::path, GUID> m_AssetPathToGUID;
 		// [AssetType, List<GUID>]
-		std::map<std::string, std::vector<std::string>> m_AssetTypeToGUIDs;
+		std::map<std::string, std::vector<GUID>> m_AssetTypeToGUIDs;
 
 	};
 }

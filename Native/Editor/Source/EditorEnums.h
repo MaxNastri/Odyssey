@@ -1,5 +1,5 @@
 #pragma once
-#include <string>
+#include "GUID.h"
 
 namespace Odyssey
 {
@@ -14,7 +14,7 @@ namespace Odyssey
 	struct GUISelection
 	{
 	public:
-		std::string GUID;
+		GUID GUID;
 		std::string Type;
 		std::filesystem::path FilePath;
 	};

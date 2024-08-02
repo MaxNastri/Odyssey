@@ -4,6 +4,7 @@
 #include "CameraInspector.h"
 #include "UserScriptInspector.h"
 #include "StringDrawer.h"
+#include "GUID.h"
 
 namespace Odyssey
 {
@@ -13,8 +14,7 @@ namespace Odyssey
 	{
 	public:
 		GameObjectInspector() = default;
-		GameObjectInspector(const std::string& guid);
-		GameObjectInspector(uint32_t gameObjectID);
+		GameObjectInspector(GUID guid);
 
 	public:
 		virtual void Draw() override;

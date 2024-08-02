@@ -1,5 +1,6 @@
 #pragma once
 #include "BinaryBuffer.h"
+#include "GUID.h"
 
 namespace Odyssey
 {
@@ -10,17 +11,17 @@ namespace Odyssey
 		BinaryCache(const std::filesystem::path& cacheDirectory);
 
 	public:
-		BinaryBuffer LoadBinaryData(const std::string& guid);
-		void SaveBinaryData(const std::string& guid, BinaryBuffer& buffer);
+		BinaryBuffer LoadBinaryData(GUID guid);
+		void SaveBinaryData(GUID& guid, BinaryBuffer& buffer);
 		void SaveBinaryData(const std::filesystem::path& assetPath, BinaryBuffer& buffer);
 
 	private:
 		BinaryBuffer LoadBinaryData(const std::filesystem::path& path);
-		std::filesystem::path GenerateAssetPath(const std::string& guid);
+		std::filesystem::path GenerateAssetPath(GUID guid);
 
 	private:
 		std::filesystem::path m_Path;
-		std::map<std::string, std::filesystem::path> m_GUIDToPath;
-		std::map<std::filesystem::path, std::string> m_PathToGUID;
+		std::map<GUID, std::filesystem::path> m_GUIDToPath;
+		std::map<std::filesystem::path, GUID> m_PathToGUID;
 	};
 }

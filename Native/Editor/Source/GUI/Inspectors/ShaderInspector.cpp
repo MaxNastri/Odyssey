@@ -4,20 +4,20 @@
 
 namespace Odyssey
 {
-	ShaderInspector::ShaderInspector(const std::string& guid)
+	ShaderInspector::ShaderInspector(GUID guid)
 	{
 		m_Shader = AssetManager::LoadShaderByGUID(guid);
 
 		if (auto shader = m_Shader.Get())
 		{
-			m_GUIDDrawer = StringDrawer("GUID", shader->GetGUID(), nullptr, true);
+			m_GUIDDrawer = StringDrawer("GUID", shader->GetGUID().String(), nullptr, true);
 			m_NameDrawer = StringDrawer("Name", shader->GetName(), 
 				[this](const std::string& name) { OnNameChanged(name); });
 			m_TypeDrawer = StringDrawer("Type", shader->GetType(), nullptr, true);
 			m_ShaderCodeDrawer = StringDrawer("Shader Code", shader->GetShaderCodeGUID(), nullptr, true);
 			m_ShaderTypeDrawer = IntDrawer<uint32_t>("Shader Type", (uint32_t)shader->GetShaderType(), nullptr, true);
 			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", shader->GetSoureAsset(), "SourceShader",
-				[this](const std::string& asset) { OnSourceAssetChanged(asset); });
+				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
 		}
 	}
 
@@ -38,11 +38,11 @@ namespace Odyssey
 			shader->Save();
 		}
 	}
-	void ShaderInspector::OnSourceAssetChanged(const std::string& asset)
+	void ShaderInspector::OnSourceAssetChanged(GUID sourceGUID)
 	{
 		if (auto shader = m_Shader.Get())
 		{
-			shader->SetSourceAsset(asset);
+			shader->SetSourceAsset(sourceGUID);
 			shader->Save();
 		}
 	}

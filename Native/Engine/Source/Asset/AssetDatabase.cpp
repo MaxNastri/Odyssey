@@ -3,7 +3,7 @@
 
 namespace Odyssey
 {
-	void AssetDatabase::AddAsset(const std::string& guid, const std::filesystem::path& path, const std::string& assetName, const std::string& assetType)
+	void AssetDatabase::AddAsset(GUID guid, const std::filesystem::path& path, const std::string& assetName, const std::string& assetType)
 	{
 		if (!m_GUIDToMetadata.contains(guid))
 			m_GUIDToMetadata[guid] = AssetMetadata(path, assetName, assetType);
@@ -55,8 +55,9 @@ namespace Odyssey
 							SerializationNode root = deserializer.GetRoot();
 
 							// Deserialize the asset's metadata
-							std::string guid, type, name;
-							root.ReadData("m_GUID", guid);
+							GUID guid;
+							std::string type, name;
+							root.ReadData("m_GUID", guid.Ref());
 							root.ReadData("m_Type", type);
 							root.ReadData("m_Name", name);
 							AddAsset(guid, path, name, type);
@@ -67,7 +68,7 @@ namespace Odyssey
 		}
 	}
 
-	bool AssetDatabase::Contains(const std::string& guid)
+	bool AssetDatabase::Contains(GUID& guid)
 	{
 		return m_GUIDToMetadata.contains(guid);
 	}
@@ -77,7 +78,7 @@ namespace Odyssey
 		return m_AssetPathToGUID.contains(path);
 	}
 
-	std::filesystem::path AssetDatabase::GUIDToAssetPath(const std::string& guid)
+	std::filesystem::path AssetDatabase::GUIDToAssetPath(GUID guid)
 	{
 		if (m_GUIDToMetadata.contains(guid))
 			return m_GUIDToMetadata[guid].AssetPath;
@@ -85,7 +86,7 @@ namespace Odyssey
 		return std::filesystem::path();
 	}
 
-	std::string AssetDatabase::GUIDToAssetName(const std::string& guid)
+	std::string AssetDatabase::GUIDToAssetName(GUID guid)
 	{
 		if (m_GUIDToMetadata.contains(guid))
 			return m_GUIDToMetadata[guid].AssetName;
@@ -93,7 +94,7 @@ namespace Odyssey
 		return std::string();
 	}
 
-	std::string AssetDatabase::GUIDToAssetType(const std::string& guid)
+	std::string AssetDatabase::GUIDToAssetType(GUID guid)
 	{
 		if (m_GUIDToMetadata.contains(guid))
 			return m_GUIDToMetadata[guid].AssetType;
@@ -101,19 +102,19 @@ namespace Odyssey
 		return std::string();
 	}
 
-	std::string AssetDatabase::AssetPathToGUID(const std::filesystem::path& assetPath)
+	GUID AssetDatabase::AssetPathToGUID(const std::filesystem::path& assetPath)
 	{
 		if (m_AssetPathToGUID.contains(assetPath))
 			return m_AssetPathToGUID[assetPath];
 
-		return std::string();
+		return GUID::Empty();
 	}
 
-	std::vector<std::string> AssetDatabase::GetGUIDsOfAssetType(const std::string& assetType)
+	std::vector<GUID> AssetDatabase::GetGUIDsOfAssetType(const std::string& assetType)
 	{
 		if (m_AssetTypeToGUIDs.contains(assetType))
 			return m_AssetTypeToGUIDs[assetType];
 
-		return std::vector<std::string>();
+		return std::vector<GUID>();
 	}
 }

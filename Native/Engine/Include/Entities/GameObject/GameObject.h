@@ -25,9 +25,9 @@ namespace Odyssey
 
 	public:
 		const std::string& GetName();
-		const std::string& GetGUID();
+		GUID GetGUID();
 		void SetName(const std::string& name);
-		void SetGUID(const std::string& guid);
+		void SetGUID(GUID guid);
 
 	public:
 		template<typename T, typename... Args>

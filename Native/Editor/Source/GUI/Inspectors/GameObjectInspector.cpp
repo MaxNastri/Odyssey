@@ -10,19 +10,10 @@
 
 namespace Odyssey
 {
-	GameObjectInspector::GameObjectInspector(const std::string& guid)
+	GameObjectInspector::GameObjectInspector(GUID guid)
 	{
 		GameObject gameObject = SceneManager::GetActiveScene()->GetGameObject(guid);
 		SetGameObject(gameObject);
-	}
-
-	GameObjectInspector::GameObjectInspector(uint32_t gameObjectID)
-	{
-		if (Scene* scene = SceneManager::GetActiveScene())
-		{
-			GameObject gameObject = GameObject(scene, gameObjectID);
-			SetGameObject(gameObject);
-		}
 	}
 
 	void GameObjectInspector::Draw()

@@ -15,10 +15,10 @@ namespace Odyssey
 		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 		{
 			m_MeshDrawer = AssetFieldDrawer("Mesh", meshRenderer->GetMesh().Get()->GetGUID(), "Mesh",
-				[this](const std::string& guid) { OnMeshModified(guid); });
+				[this](GUID guid) { OnMeshModified(guid); });
 
 			m_MaterialDrawer = AssetFieldDrawer("Material", meshRenderer->GetMaterial().Get()->GetGUID(), "Material",
-				[this](const std::string& guid) { OnMaterialModified(guid); });
+				[this](GUID guid) { OnMaterialModified(guid); });
 		}
 	}
 
@@ -30,7 +30,7 @@ namespace Odyssey
 			m_MaterialDrawer.Draw();
 		}
 	}
-	void MeshRendererInspector::OnMeshModified(const std::string& guid)
+	void MeshRendererInspector::OnMeshModified(GUID guid)
 	{
 		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 		{
@@ -38,7 +38,7 @@ namespace Odyssey
 		}
 	}
 
-	void MeshRendererInspector::OnMaterialModified( const std::string& guid)
+	void MeshRendererInspector::OnMaterialModified(GUID guid)
 	{
 		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 		{

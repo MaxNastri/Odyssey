@@ -5,26 +5,23 @@
 
 namespace Odyssey
 {
-	AssetFieldDrawer::AssetFieldDrawer(const std::string& label, const std::string& guid, const std::string& assetType, std::function<void(const std::string&)> callback)
+	AssetFieldDrawer::AssetFieldDrawer(const std::string& label, GUID guid, const std::string& assetType, std::function<void(GUID)> callback)
 	{
 		m_Label = label;
 		m_GUID = guid;
 		m_Type = assetType;
 		m_OnValueModified = callback;
 
-		if (!m_GUID.empty())
-		{
-			std::vector<std::string> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
-			possibleGUIDs.insert(possibleGUIDs.begin(), "None");
+		std::vector<GUID> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
+		possibleGUIDs.insert(possibleGUIDs.begin(), 0);
 
-			// Find this guid's selected index
-			for (uint32_t i = 0; i < possibleGUIDs.size(); i++)
+		// Find this guid's selected index
+		for (uint32_t i = 0; i < possibleGUIDs.size(); i++)
+		{
+			if (possibleGUIDs[i] == m_GUID)
 			{
-				if (possibleGUIDs[i] == m_GUID)
-				{
-					selectedIndex = i;
-					break;
-				}
+				selectedIndex = i;
+				break;
 			}
 		}
 	}
@@ -39,18 +36,18 @@ namespace Odyssey
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(-0.01f);
 
-			std::vector<std::string> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
-			possibleGUIDs.insert(possibleGUIDs.begin(), "None");
+			std::vector<GUID> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
+			possibleGUIDs.insert(possibleGUIDs.begin(), 0);
 
 			ImGui::PushID((void*)this);
 
-			std::string selectedDisplayName = selectedIndex != 0 ? AssetManager::GUIDToName(possibleGUIDs[selectedIndex]) : possibleGUIDs[selectedIndex];
+			std::string selectedDisplayName = selectedIndex != 0 ? AssetManager::GUIDToName(possibleGUIDs[selectedIndex]) : "None";
 			if (ImGui::BeginCombo("##Empty", selectedDisplayName.c_str()))
 			{
 				for (int32_t i = 0; i < possibleGUIDs.size(); i++)
 				{
 					const bool isSelected = selectedIndex == i;
-					std::string displayName = i != 0 ? AssetManager::GUIDToName(possibleGUIDs[i]) : possibleGUIDs[i];
+					std::string displayName = i != 0 ? AssetManager::GUIDToName(possibleGUIDs[i]) : "None";
 
 					if (ImGui::Selectable(displayName.c_str(), isSelected) && i != 0)
 					{
@@ -73,7 +70,8 @@ namespace Odyssey
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Asset"))
 				{
-					m_GUID = (const char*)payload->Data;
+					std::string guid((const char*)payload->Data);
+					m_GUID = GUID(guid);
 					m_Modified = true;
 					m_OnValueModified(m_GUID);
 					Logger::LogInfo("(AssetFieldDrawer) Accepting D&D payload for mesh asset: " + m_GUID);

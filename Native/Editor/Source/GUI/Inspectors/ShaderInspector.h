@@ -13,14 +13,14 @@ namespace Odyssey
 	{
 	public:
 		ShaderInspector() = default;
-		ShaderInspector(const std::string& guid);
+		ShaderInspector(GUID guid);
 
 	public:
 		virtual void Draw() override;
 
 	private:
 		void OnNameChanged(const std::string& name);
-		void OnSourceAssetChanged(const std::string& asset);
+		void OnSourceAssetChanged(GUID sourceGUID);
 
 	private:
 		AssetHandle<Shader> m_Shader;

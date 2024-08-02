@@ -2,6 +2,7 @@
 #include "Inspector.h"
 #include "AssetFieldDrawer.h"
 #include "StringDrawer.h"
+#include "GUID.h"
 
 namespace Odyssey
 {
@@ -12,16 +13,16 @@ namespace Odyssey
 	public:
 		MaterialInspector() = default;
 		MaterialInspector(Material* material);
-		MaterialInspector(const std::string& guid);
+		MaterialInspector(GUID guid);
 
 	public:
 		virtual void Draw() override;
 
 	private:
 		static void OnNameModified(Material* material, const std::string& name);
-		static void OnFragmentShaderModified(Material* material, const std::string& guid);
-		static void OnVertexShaderModified(Material* material, const std::string& guid);
-		static void OnTextureModified(Material* material, const std::string& guid);
+		static void OnFragmentShaderModified(Material* material, GUID guid);
+		static void OnVertexShaderModified(Material* material, GUID guid);
+		static void OnTextureModified(Material* material, GUID guid);
 
 	private:
 		Material* m_Material;

@@ -18,8 +18,8 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	private:
-		void OnMeshModified(const std::string& guid);
-		void OnMaterialModified(const std::string& guid);
+		void OnMeshModified(GUID guid);
+		void OnMaterialModified(GUID guid);
 
 	private:
 		GameObject m_GameObject;

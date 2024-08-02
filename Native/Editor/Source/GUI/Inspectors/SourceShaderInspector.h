@@ -13,7 +13,7 @@ namespace Odyssey
 	{
 	public:
 		SourceShaderInspector() = default;
-		SourceShaderInspector(const std::string& guid);
+		SourceShaderInspector(GUID guid);
 
 	public:
 		virtual void Draw() override;

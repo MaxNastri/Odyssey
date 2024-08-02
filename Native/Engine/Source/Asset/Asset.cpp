@@ -3,7 +3,7 @@
 
 namespace Odyssey
 {
-	SourceAsset::SourceAsset(const std::filesystem::path& sourcePath)
+	SourceAsset::SourceAsset(const Path& sourcePath)
 	{
 		m_SourcePath = sourcePath;
 		m_MetaFilePath = sourcePath;
@@ -12,7 +12,7 @@ namespace Odyssey
 		DeserializeMetadata();
 	}
 
-	SourceAsset SourceAsset::CreateFromMetafile(const std::filesystem::path& metaPath)
+	SourceAsset SourceAsset::CreateFromMetafile(const Path& metaPath)
 	{
 		if (metaPath.extension() != ".meta")
 			return SourceAsset();
@@ -37,7 +37,7 @@ namespace Odyssey
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
 
-		root.WriteData("m_GUID", m_GUID);
+		root.WriteData("m_GUID", m_GUID.CRef());
 		root.WriteData("m_Name", m_Name);
 		root.WriteData("m_Type", m_Type);
 		root.WriteData("m_SourceExtension", m_SourceExtension);
@@ -53,7 +53,7 @@ namespace Odyssey
 		if (AssetDeserializer deserializer = AssetDeserializer(m_MetaFilePath))
 		{
 			SerializationNode root = deserializer.GetRoot();
-			root.ReadData("m_GUID", m_GUID);
+			root.ReadData("m_GUID", m_GUID.Ref());
 			root.ReadData("m_Name", m_Name);
 			root.ReadData("m_Type", m_Type);
 			root.ReadData("m_SourceExtension", m_SourceExtension);
@@ -62,17 +62,17 @@ namespace Odyssey
 
 	bool SourceAsset::HasMetadata()
 	{
-		return !m_GUID.empty() && !m_Name.empty() && !m_Type.empty() && !m_SourceExtension.empty();
+		return m_GUID != 0 && !m_Name.empty() && !m_Type.empty() && !m_SourceExtension.empty();
 	}
 
-	void SourceAsset::SetMetadata(const std::string& guid, const std::string& name, const std::string& type)
+	void SourceAsset::SetMetadata(GUID guid, const std::string& name, const std::string& type)
 	{
 		m_GUID = guid;
 		m_Name = name;
 		m_Type = type;
 	}
 
-	Asset::Asset(const std::filesystem::path& assetPath)
+	Asset::Asset(const Path& assetPath)
 	{
 		m_AssetPath = assetPath;
 		Load();
@@ -81,9 +81,8 @@ namespace Odyssey
 	void Asset::SerializeMetadata(AssetSerializer& serializer)
 	{
 		SerializationNode& root = serializer.GetRoot();
-		root.WriteData("m_SourceAsset", m_SourceAsset);
-		root.WriteData("m_GUID", m_GUID);
-		root.WriteData("m_GUID", m_GUID);
+		root.WriteData("m_SourceAsset", m_SourceAsset.CRef());
+		root.WriteData("m_GUID", m_GUID.CRef());
 		root.WriteData("m_Name", m_Name);
 		root.WriteData("m_Type", m_Type);
 	}
@@ -94,8 +93,8 @@ namespace Odyssey
 		if (deserializer.IsValid())
 		{
 			SerializationNode root = deserializer.GetRoot();
-			root.ReadData("m_SourceAsset", m_SourceAsset);
-			root.ReadData("m_GUID", m_GUID);
+			root.ReadData("m_SourceAsset", m_SourceAsset.Ref());
+			root.ReadData("m_GUID", m_GUID.Ref());
 			root.ReadData("m_Name", m_Name);
 			root.ReadData("m_Type", m_Type);
 		}
