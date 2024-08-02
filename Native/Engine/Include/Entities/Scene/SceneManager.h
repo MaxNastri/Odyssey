@@ -23,7 +23,7 @@ namespace Odyssey
 		static void AssembliesReloaded(OnAssembliesReloaded* reloadedEvent);
 
 	private:
-		inline static std::vector<AssetHandle<Scene>> scenes;
+		inline static std::vector<std::shared_ptr<Scene>> scenes;
 		inline static int activeScene = -1;
 		inline static std::filesystem::path m_TempDirectory;
 		inline static std::filesystem::path s_TempFilename = "tmps.scene";

@@ -10,30 +10,29 @@ namespace Odyssey
 	{
 		if (activeScene != -1)
 		{
-			scenes[activeScene].Get()->OnDestroy();
-			scenes[activeScene].Get()->Clear();
+			scenes[activeScene]->OnDestroy();
+			scenes[activeScene]->Clear();
 
-			AssetManager::UnloadScene(scenes[activeScene]);
 		}
 
-		scenes.push_back(AssetManager::LoadScene(filename));
+		scenes.push_back(std::make_shared<Scene>(filename));
 
 		activeScene = (int)scenes.size() - 1;
 
 		// TODO: Send a copy of the scene, so the GUI manager can use the game objects to reload the inspectors
-		EventSystem::Dispatch<SceneLoadedEvent>(scenes[activeScene].Get());
+		EventSystem::Dispatch<SceneLoadedEvent>(scenes[activeScene].get());
 	}
 
 	void SceneManager::SaveActiveScene()
 	{
 		if (activeScene < scenes.size())
-			scenes[activeScene].Get()->Save();
+			scenes[activeScene]->Save();
 	}
 
 	Scene* SceneManager::GetActiveScene()
 	{
 		if (activeScene < scenes.size())
-			return scenes[activeScene].Get();
+			return scenes[activeScene].get();
 
 		return nullptr;
 	}
@@ -41,13 +40,13 @@ namespace Odyssey
 	void SceneManager::Awake()
 	{
 		if (activeScene < scenes.size())
-			scenes[activeScene].Get()->Awake();
+			scenes[activeScene]->Awake();
 	}
 
 	void SceneManager::Update()
 	{
 		if (activeScene < scenes.size())
-			scenes[activeScene].Get()->Update();
+			scenes[activeScene]->Update();
 	}
 
 	void SceneManager::BuildFinished(BuildCompleteEvent* onBuildFinished)
@@ -67,7 +66,7 @@ namespace Odyssey
 		if (activeScene < scenes.size())
 		{
 			//scenes[activeScene].Get()->Load(tempSaveFilename);
-			EventSystem::Dispatch<SceneLoadedEvent>(scenes[activeScene].Get());
+			EventSystem::Dispatch<SceneLoadedEvent>(scenes[activeScene].get());
 		}
 	}
 }

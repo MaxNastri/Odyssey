@@ -18,7 +18,7 @@ namespace Odyssey
 		AssetDatabase::SearchOptions assetSearch;
 		assetSearch.Root = s_AssetsDirectory;
 		assetSearch.ExclusionPaths = { };
-		assetSearch.Extensions = { s_AssetExtension, s_SceneExtension };
+		assetSearch.Extensions = { s_AssetExtension };
 		s_AssetDatabase.ScanForAssets(assetSearch);
 
 		// Scan for Source Assets
@@ -99,22 +99,6 @@ namespace Odyssey
 		return AssetHandle<Shader>(id, shader.get());
 	}
 
-	AssetHandle<Scene> AssetManager::CreateScene(const Path& assetPath)
-	{
-		// Push back an empty mesh
-		size_t id = s_Assets.Add<Scene>(assetPath);
-		std::shared_ptr<Scene> scene = s_Assets.Get<Scene>(id);
-
-		// Set asset data
-		scene->SetName("Scene");
-		scene->SetType("Scene");
-
-		// Save to disk
-		scene->Save();
-
-		return AssetHandle<Scene>(id, scene.get());
-	}
-
 	AssetHandle<SourceShader> AssetManager::LoadSourceShader(GUID guid)
 	{
 		if (s_LoadedSourceAssets.contains(guid))
@@ -160,18 +144,6 @@ namespace Odyssey
 		s_LoadedAssets[shader->GetGUID()] = id;
 
 		return AssetHandle<Shader>(id, shader.get());
-	}
-
-	AssetHandle<Scene> AssetManager::LoadScene(const Path& assetPath)
-	{
-		// Push back a scene loaded from the asset path
-		size_t id = s_Assets.Add<Scene>(assetPath);
-		std::shared_ptr<Scene> scene = s_Assets.Get<Scene>(id);
-
-		// Track the asset
-		s_LoadedAssets[scene->GetGUID()] = id;
-
-		return AssetHandle<Scene>(id, scene.get());
 	}
 
 	AssetHandle<Texture2D> AssetManager::LoadTexture2D(const Path& assetPath)
@@ -247,17 +219,6 @@ namespace Odyssey
 			assets = s_SourceAssetDatabase.GetGUIDsOfAssetType(assetType);
 		
 		return assets;
-	}
-
-	void AssetManager::UnloadScene(AssetHandle<Scene> scene)
-	{
-		GUID guid = scene.Get()->GetGUID();
-		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
-		{
-			s_LoadedAssets.erase(guid);
-		}
-		s_Assets.Remove(scene.m_ID);
-		scene.Reset();
 	}
 
 	GUID AssetManager::PathToGUID(const Path& path)

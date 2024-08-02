@@ -14,9 +14,9 @@ namespace Odyssey
 	}
 
 	Scene::Scene(const std::filesystem::path& assetPath)
-		: Asset(assetPath)
+		: m_Path(assetPath)
 	{
-		LoadFromDisk(assetPath);
+		LoadFromDisk(m_Path);
 	}
 
 	GameObject Scene::CreateGameObject()
@@ -83,12 +83,12 @@ namespace Odyssey
 
 	void Scene::Save()
 	{
-		SaveToDisk(m_AssetPath);
+		SaveToDisk(m_Path);
 	}
 
 	void Scene::Load()
 	{
-		LoadFromDisk(m_AssetPath);
+		LoadFromDisk(m_Path);
 	}
 
 	void Scene::SaveToDisk(const std::filesystem::path& assetPath)
@@ -96,8 +96,8 @@ namespace Odyssey
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
 
-		// Serialize the metadata first
-		SerializeMetadata(serializer);
+		root.WriteData("Scene", m_Name);
+		root.WriteData("GUID", m_GUID);
 
 		SerializationNode gameObjectsNode = root.CreateSequenceNode("GameObjects");
 
@@ -118,6 +118,9 @@ namespace Odyssey
 		{
 			SerializationNode root = deserializer.GetRoot();
 			SerializationNode gameObjectsNode = root.GetNode("GameObjects");
+
+			root.ReadData("Scene", m_Name);
+			root.ReadData("GUID", m_GUID.Ref());
 
 			assert(gameObjectsNode.IsSequence());
 			assert(gameObjectsNode.HasChildren());

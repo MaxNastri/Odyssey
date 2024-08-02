@@ -10,7 +10,7 @@ namespace Odyssey
 	class Component;
 	class GameObject;
 
-	class Scene : public Asset
+	class Scene
 	{
 	public:
 		Scene();
@@ -33,6 +33,9 @@ namespace Odyssey
 		void Save();
 		void Load();
 
+	public:
+		GUID GetGUID() { return m_GUID; }
+
 	private:
 		void SaveToDisk(const std::filesystem::path& assetPath);
 		void LoadFromDisk(const std::filesystem::path& assetPath);
@@ -43,6 +46,11 @@ namespace Odyssey
 		{
 			return m_Registry.view<Components...>();
 		}
+
+	private: // Serialized
+		GUID m_GUID;
+		std::string m_Name;
+		Path m_Path;
 
 	private:
 		friend class RenderScene;

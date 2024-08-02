@@ -30,7 +30,6 @@ namespace Odyssey
 		static AssetHandle<Mesh> CreateMesh();
 		static AssetHandle<Mesh> CreateMesh(const Path& assetPath);
 		static AssetHandle<Shader> CreateShader(const Path& assetPath);
-		static AssetHandle<Scene> CreateScene(const Path& assetPath);
 
 	public:
 		static AssetHandle<SourceShader> LoadSourceShader(GUID guid);
@@ -39,14 +38,12 @@ namespace Odyssey
 		static AssetHandle<Material> LoadMaterial(const Path& assetPath);
 		static AssetHandle<Mesh> LoadMesh(const Path& assetPath);
 		static AssetHandle<Shader> LoadShader(const Path& assetPath);
-		static AssetHandle<Scene> LoadScene(const Path& assetPath);
 		static AssetHandle<Texture2D> LoadTexture2D(const Path& assetPath);
 
 	public:
 		static AssetHandle<Material> LoadMaterialByGUID(GUID guid);
 		static AssetHandle<Mesh> LoadMeshByGUID(GUID guid);
 		static AssetHandle<Shader> LoadShaderByGUID(GUID guid);
-		static AssetHandle<Scene> LoadSceneByGUID(GUID guid);
 		static AssetHandle<Texture2D> LoadTexture2DByGUID(GUID guid);
 
 	public:
@@ -56,9 +53,6 @@ namespace Odyssey
 
 	public:
 		static std::vector<GUID> GetAssetsOfType(const std::string& assetType);
-
-	public:
-		static void UnloadScene(AssetHandle<Scene> scene);
 
 	public:
 		static GUID PathToGUID(const Path& path);
@@ -84,7 +78,6 @@ namespace Odyssey
 
 	private: // Const
 		inline static std::string s_AssetExtension = ".asset";
-		inline static std::string s_SceneExtension = ".scene";
 		inline static std::string s_MetaFileExtension = ".meta";
 
 		inline static std::map<std::string, std::string> s_SourceAssetExtensionsToType =
