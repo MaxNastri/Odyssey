@@ -38,6 +38,7 @@ project "Odyssey.Native.Editor"
         "%{wks.location}/Vendor/Vulkan/Include/",
         "%{wks.location}/Vendor/assimp/include/",
         "%{wks.location}/Vendor/efsw/include/efsw",
+        "%{wks.location}/Vendor/entt/include/",
     }
     
     includedirs {
@@ -63,6 +64,10 @@ project "Odyssey.Native.Editor"
         "efsw-static-debug.lib",
     }
 
+    filter "action:vs*"
+        linkoptions { "/ignore:4098", "/ignore:4099" } -- NOTE(Peter): Disable no PDB found warning
+        disablewarnings { "4068" } -- Disable "Unknown #pragma mark warning"
+        
     filter { "configurations:Debug" }
         runtime "Debug"
 		symbols "On"

@@ -52,6 +52,7 @@ project "Odyssey.Native.Engine"
         "%{wks.location}/Vendor/Vulkan/Include/",
         "%{wks.location}/Vendor/assimp/include/",
         "%{wks.location}/Vendor/efsw/include/efsw",
+        "%{wks.location}/Vendor/entt/include/",
     }
 
     libdirs {
@@ -92,6 +93,10 @@ project "Odyssey.Native.Engine"
         "IMGUI_DEFINE_MATH_OPERATORS",
     }
 
+    filter "action:vs*"
+        linkoptions { "/ignore:4099" } -- NOTE(Peter): Disable no PDB found warning
+        disablewarnings { "4068" } -- Disable "Unknown #pragma mark warning"
+        
     filter { "system:windows" }
 		defines { "CORAL_WINDOWS" }
 
