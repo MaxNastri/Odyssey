@@ -5,28 +5,15 @@
 
 namespace Odyssey
 {
-	CLASS_DEFINITION(Odyssey.Entities, Transform);
+	CLASS_DEFINITION(Odyssey, Transform);
 
-	Transform::Transform()
+	Transform::Transform(const GameObject& gameObject)
+		: m_GameObject(gameObject)
 	{
 		m_Position = glm::vec3(0, 0, 0);
 		m_EulerRotation = glm::vec3(0, 0, 0);
 		m_Rotation = glm::quat(1, 0, 0, 0);
 		m_Scale = glm::vec3(1, 1, 1);
-	}
-
-	void Transform::Awake()
-	{
-	}
-
-	void Transform::Update()
-	{
-
-	}
-
-	void Transform::OnDestroy()
-	{
-
 	}
 
 	void Transform::AddPosition(glm::vec3 pos)
@@ -248,7 +235,7 @@ namespace Odyssey
 	{
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
-		componentNode.WriteData("Name", Transform::Type);
+		componentNode.WriteData("Type", Transform::Type);
 		componentNode.WriteData("Position", m_Position);
 		componentNode.WriteData("Rotation", m_EulerRotation);
 		componentNode.WriteData("Scale", m_Scale);

@@ -1,74 +1,62 @@
 #pragma once
 #include "Globals.h"
 #include "Asset.h"
-#include "Scene.h"
 #include "AssetSerializer.h"
+#include "entt.hpp"
 
 namespace Odyssey
 {
+	class Scene;
+
 	class GameObject
 	{
 	public:
 		GameObject();
-		GameObject(Scene* m_Scene, int32_t ID);
+		GameObject(Scene* scene, entt::entity entity);
+		GameObject(Scene* scene, uint32_t id);
 
 	public:
-		bool operator==(const GameObject& other) { return id == other.id; }
-		operator bool() { return id != -1; }
+		operator entt::entity() const { return m_Entity; }
+		operator bool() const { return m_Scene; }
 
 	public:
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 
 	public:
-		std::vector<UserScript*> GetUserScripts();
-		UserScript* GetUserScript(const std::string& managedName);
+		const std::string& GetName();
+		const std::string& GetGUID();
+		void SetName(const std::string& name);
+		void SetGUID(const std::string& guid);
 
 	public:
 		template<typename T, typename... Args>
-		T* AddComponent(Args&&... params)
-		{
-			auto component = m_Scene->GetComponentRegistry()->AddComponent<T>(id, params...);
-			component->SetGameObject(this);
-			return component;
-		}
-
-		template<typename... Args>
-		UserScript* AddUserScript(const std::string& managedName, Args&&... params)
-		{
-			auto userScript = m_Scene->GetComponentRegistry()->AddUserScript(id, managedName, params...);
-			userScript->SetGameObject(this);
-			return userScript;
-		}
+		T& AddComponent(Args&&... params);
 
 		template<typename T>
-		void RemoveComponent()
-		{
-			m_Scene->GetComponentRegistry()->RemoveComponent<T>(id);
-		}
+		T& GetComponent();
 
 		template<typename T>
-		T* GetComponent()
-		{
-			return m_Scene->GetComponentRegistry()->GetComponent<T>(id);
-		}
-		
+		const T& GetComponent() const;
+
 		template<typename T>
-		bool HasComponent()
-		{
-			return m_Scene->GetComponentRegistry()->HasComponent<T>(id);
-		}
+		T* TryGetComponent();
+
+		template<typename T>
+		const T* TryGetComponent() const;
+
+		template<typename... T>
+		bool HasComponent();
+
+		template<typename T>
+		void RemoveComponent();
 
 	public:
 		CLASS_DECLARATION(GameObject);
 
-	public: // Serialized
-		bool active = true;
-		int32_t id = -1;
-		std::string name;
-		bool m_IsHidden = false;
-
 	private: // Non-serialized
-		Scene* m_Scene;
+		entt::entity m_Entity;
+		Scene* m_Scene = nullptr;
+		bool m_IsHidden = false;
 	};
 }

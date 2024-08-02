@@ -2,23 +2,26 @@
 #include "MeshRendererInspector.h"
 #include "SceneManager.h"
 #include "Scene.h"
+#include "Transform.h"
+#include "Camera.h"
+#include "MeshRenderer.h"
+#include "ScriptComponent.h"
 #include "imgui.h"
 
 namespace Odyssey
 {
-	GameObjectInspector::GameObjectInspector(GameObject* gameObject)
+	GameObjectInspector::GameObjectInspector(const std::string& guid)
 	{
+		GameObject gameObject = SceneManager::GetActiveScene()->GetGameObject(guid);
 		SetGameObject(gameObject);
 	}
 
-	GameObjectInspector::GameObjectInspector(int32_t gameObjectID)
+	GameObjectInspector::GameObjectInspector(uint32_t gameObjectID)
 	{
 		if (Scene* scene = SceneManager::GetActiveScene())
 		{
-			if (GameObject* gameObject = scene->GetGameObject(gameObjectID))
-			{
-				SetGameObject(gameObject);
-			}
+			GameObject gameObject = GameObject(scene, gameObjectID);
+			SetGameObject(gameObject);
 		}
 	}
 
@@ -45,37 +48,32 @@ namespace Odyssey
 		}
 	}
 
-	void GameObjectInspector::SetGameObject(GameObject* gameObject)
+	void GameObjectInspector::SetGameObject(GameObject& gameObject)
 	{
 		m_Inspectors.clear();
 		userScriptInspectors.clear();
 
-		if (gameObject)
+		m_NameDrawer = StringDrawer("Name", gameObject.GetName(),
+			[&gameObject](std::string& name) { gameObject.SetName(name); });
+
+		if (gameObject.HasComponent<Transform>())
 		{
-			m_NameDrawer = StringDrawer("Name", gameObject->name,
-				[gameObject](std::string& name) { gameObject->name = name; });
+			m_Inspectors.push_back(std::make_unique<TransformInspector>(gameObject));
+		}
 
-			if (gameObject->HasComponent<Transform>())
-			{
-				m_Inspectors.push_back(std::make_unique<TransformInspector>(gameObject));
-			}
+		if (gameObject.HasComponent<Camera>())
+		{
+			m_Inspectors.push_back(std::make_unique<CameraInspector>(gameObject));
+		}
 
-			if (gameObject->HasComponent<Camera>())
-			{
-				m_Inspectors.push_back(std::make_unique<CameraInspector>(gameObject));
-			}
+		if (gameObject.HasComponent<MeshRenderer>())
+		{
+			m_Inspectors.push_back(std::make_unique<MeshRendererInspector>(gameObject));
+		}
 
-			if (gameObject->HasComponent<MeshRenderer>())
-			{
-				m_Inspectors.push_back(std::make_unique<MeshRendererInspector>(gameObject));
-			}
-
-			std::vector<UserScript*> userScripts = gameObject->GetUserScripts();
-
-			for (UserScript* userScript : userScripts)
-			{
-				userScriptInspectors.push_back(UserScriptInspector(gameObject, userScript, userScript->GetManagedTypeName()));
-			}
+		if (gameObject.HasComponent<ScriptComponent>())
+		{
+			m_Inspectors.push_back(std::make_unique<UserScriptInspector>(gameObject));
 		}
 	}
 

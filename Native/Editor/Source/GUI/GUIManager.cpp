@@ -20,9 +20,9 @@ namespace Odyssey
 		GUIManager::SetDarkThemeColors();
 	}
 
-	void GUIManager::CreateInspectorWindow(GameObject* gameObject)
+	void GUIManager::CreateInspectorWindow()
 	{
-		s_Windows.push_back(std::make_shared<InspectorWindow>(std::make_shared<GameObjectInspector>(gameObject)));
+		s_Windows.push_back(std::make_shared<InspectorWindow>(std::make_shared<GameObjectInspector>()));
 	}
 
 	void GUIManager::CreateSceneHierarchyWindow()

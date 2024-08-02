@@ -1,17 +1,19 @@
 #pragma once
-#include "Component.h"
-#include "glm.h"
+#include "AssetSerializer.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
 	class Transform;
 
-	class Camera : public Component
+	class Camera
 	{
 	public:
-		virtual void Awake() override;
-		virtual void Serialize(SerializationNode& node) override;
-		virtual void Deserialize(SerializationNode& node) override;
+		Camera() = default;
+		Camera(const GameObject& gameObject);
+		void Awake();
+		void Serialize(SerializationNode& node);
+		void Deserialize(SerializationNode& node);
 
 	public:
 		bool IsMainCamera() { return m_MainCamera; }
@@ -39,7 +41,7 @@ namespace Odyssey
 		bool m_MainCamera = true;
 
 	private: // Non-serialized
-		Transform* m_Transform = nullptr;
+		GameObject m_GameObject;
 		glm::mat4 m_Projection;
 		glm::mat4 m_InverseProjection;
 		glm::mat4 m_View;

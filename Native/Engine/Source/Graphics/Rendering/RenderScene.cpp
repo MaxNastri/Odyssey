@@ -63,10 +63,20 @@ namespace Odyssey
 	void RenderScene::ConvertScene(Scene* scene)
 	{
 		ClearSceneData();
-		if (m_MainCamera = scene->GetMainCamera())
+		
+		// Search the scene for the main camera
+		for (auto entity : scene->GetAllEntitiesWith<Camera>())
 		{
-			SetCameraData(m_MainCamera);
+			GameObject gameObject = GameObject(scene, entity);
+			Camera& camera = gameObject.GetComponent<Camera>();
+
+			if (camera.IsMainCamera())
+			{
+				m_MainCamera = &camera;
+				SetCameraData(m_MainCamera);
+			}
 		}
+
 		SetupDrawcalls(scene);
 	}
 
@@ -98,34 +108,32 @@ namespace Odyssey
 
 	void RenderScene::SetupDrawcalls(Scene* scene)
 	{
-		for (auto& gameObject : scene->gameObjects)
+		for (auto entity : scene->GetAllEntitiesWith<MeshRenderer, Transform>())
 		{
-			if (MeshRenderer* renderer = gameObject->GetComponent<MeshRenderer>())
+			GameObject gameObject = GameObject(scene, entity);
+			MeshRenderer& meshRenderer = gameObject.GetComponent<MeshRenderer>();
+			Transform& transform = gameObject.GetComponent<Transform>();
+
+			// For now, 1 set pass per drawcall
+			setPasses.push_back(SetPass());
+			SetPass& setPass = setPasses[setPasses.size() - 1];
+
+			setPass.SetMaterial(meshRenderer.GetMaterial(), m_Layouts);
+
+			// Create the drawcall data
+			if (Mesh* mesh = meshRenderer.GetMesh().Get())
 			{
-				if (Transform* transform = gameObject->GetComponent<Transform>())
-				{
-					// For now, 1 set pass per drawcall
-					setPasses.push_back(SetPass());
-					SetPass& setPass = setPasses[setPasses.size() - 1];
+				Drawcall drawcall;
+				drawcall.VertexBuffer = mesh->GetVertexBuffer();
+				drawcall.IndexBuffer = mesh->GetIndexBuffer();
+				drawcall.IndexCount = mesh->GetIndexCount();
+				drawcall.UniformBufferIndex = m_NextUniformBuffer++;
+				setPass.drawcalls.push_back(drawcall);
 
-					setPass.SetMaterial(renderer->GetMaterial(), m_Layouts);
-
-					// Create the drawcall data
-					if (Mesh* mesh = renderer->GetMesh().Get())
-					{
-						Drawcall drawcall;
-						drawcall.VertexBuffer = mesh->GetVertexBuffer();
-						drawcall.IndexBuffer = mesh->GetIndexBuffer();
-						drawcall.IndexCount = mesh->GetIndexCount();
-						drawcall.UniformBufferIndex = m_NextUniformBuffer++;
-						setPass.drawcalls.push_back(drawcall);
-
-						// Update the per-object uniform buffer
-						uint32_t perObjectSize = sizeof(objectData);
-						objectData.world = transform->GetWorldMatrix();
-						perObjectUniformBuffers[drawcall.UniformBufferIndex].Get()->SetMemory(perObjectSize, &objectData);
-					}
-				}
+				// Update the per-object uniform buffer
+				uint32_t perObjectSize = sizeof(objectData);
+				objectData.world = transform.GetWorldMatrix();
+				perObjectUniformBuffers[drawcall.UniformBufferIndex].Get()->SetMemory(perObjectSize, &objectData);
 			}
 		}
 	}

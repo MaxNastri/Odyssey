@@ -1,22 +1,24 @@
 #pragma once
-#include "Component.h"
 #include "ResourceHandle.h"
 #include "AssetHandle.h"
+#include "AssetSerializer.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
 	class Material;
 	class Mesh;
 
-	class MeshRenderer : public Component
+	class MeshRenderer
 	{
 	public:
 		MeshRenderer() = default;
+		MeshRenderer(const GameObject& gameObject);
 		MeshRenderer(AssetHandle<Mesh> mesh, AssetHandle<Material> material);
 
 	public:
-		virtual void Serialize(SerializationNode& node) override;
-		virtual void Deserialize(SerializationNode& node) override;
+		void Serialize(SerializationNode& node);
+		void Deserialize(SerializationNode& node);
 
 	public:
 		void SetMesh(AssetHandle<Mesh> mesh);
@@ -27,6 +29,7 @@ namespace Odyssey
 		AssetHandle<Material> GetMaterial() { return m_Material; }
 
 	private:
+		GameObject m_GameObject;
 		AssetHandle<Mesh> m_Mesh;
 		AssetHandle<Material> m_Material;
 		CLASS_DECLARATION(MeshRenderer);

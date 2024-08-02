@@ -13,14 +13,14 @@ namespace Odyssey
 	{
 	public:
 		GameObjectInspector() = default;
-		GameObjectInspector(GameObject* gameObject);
-		GameObjectInspector(int32_t gameObjectID);
+		GameObjectInspector(const std::string& guid);
+		GameObjectInspector(uint32_t gameObjectID);
 
 	public:
 		virtual void Draw() override;
 
 	public:
-		void SetGameObject(GameObject* gameObject);
+		void SetGameObject(GameObject& gameObject);
 		void RefreshUserScripts();
 
 	private:

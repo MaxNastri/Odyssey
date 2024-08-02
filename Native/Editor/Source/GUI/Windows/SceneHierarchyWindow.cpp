@@ -7,6 +7,7 @@
 #include "Input.h"
 #include "EventSystem.h"
 #include "EditorEvents.h"
+#include "IDComponent.h"
 
 namespace Odyssey
 {
@@ -34,11 +35,14 @@ namespace Odyssey
 
 		if (m_Scene)
 		{
-			for (auto gameObject : m_Scene->GetGameObjects())
+			for (auto entity : m_Scene->GetAllEntitiesWith<IDComponent>())
 			{
+				GameObject gameObject = GameObject(m_Scene, entity);
+
 				// Don't display hidden game objects
-				if (gameObject->m_IsHidden)
-					continue;
+				// TODO: Re-add hidden functionality
+				//if (gameObject->m_IsHidden)
+				//	continue;
 
 				bool hasChildren = false;
 				const bool isSelected = (selectionMask & (1 << selectionID)) != 0;
@@ -47,7 +51,7 @@ namespace Odyssey
 				if (hasChildren)
 				{
 					// Draw as tree node
-					bool open = ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject->name.c_str());
+					bool open = ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject.GetName().c_str());
 
 					if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 						nodeClicked = selectionID;
@@ -63,7 +67,7 @@ namespace Odyssey
 				{
 					// Draw as tree leaf
 					nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-					ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject->name.c_str());
+					ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject.GetName().c_str());
 
 					if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 					{
@@ -71,7 +75,7 @@ namespace Odyssey
 
 						GUISelection selection;
 						selection.Type = GameObject::Type;
-						selection.ID = gameObject->id;
+						selection.GUID = gameObject.GetGUID();
 						EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
 					}
 				}
@@ -108,7 +112,7 @@ namespace Odyssey
 			{
 				if (ImGui::MenuItem("GameObject"))
 				{
-					GameObject* created = m_Scene->CreateGameObject();
+					m_Scene->CreateGameObject();
 				}
 				ImGui::EndMenu();
 			}

@@ -156,7 +156,6 @@ namespace Odyssey
 
 		if (ImGui::Selectable(filename.c_str()))
 		{
-			// TODO: Use the asset manager to parse source file types
 			GUISelection selection;
 			selection.GUID = AssetManager::PathToGUID(sourcePath);
 			selection.Type = AssetManager::GUIDToAssetType(selection.GUID);

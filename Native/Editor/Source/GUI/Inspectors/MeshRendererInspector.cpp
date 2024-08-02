@@ -8,16 +8,18 @@
 
 namespace Odyssey
 {
-	MeshRendererInspector::MeshRendererInspector(GameObject* gameObject)
+	MeshRendererInspector::MeshRendererInspector(GameObject& gameObject)
 	{
 		m_GameObject = gameObject;
-		m_MeshRenderer = gameObject->GetComponent<MeshRenderer>();
 
-		m_MeshDrawer = AssetFieldDrawer("Mesh", m_MeshRenderer->GetMesh().Get()->GetGUID(), "Mesh",
-			[gameObject](const std::string& guid) { OnMeshModified(gameObject, guid); });
+		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
+		{
+			m_MeshDrawer = AssetFieldDrawer("Mesh", meshRenderer->GetMesh().Get()->GetGUID(), "Mesh",
+				[this](const std::string& guid) { OnMeshModified(guid); });
 
-		m_MaterialDrawer = AssetFieldDrawer("Material", m_MeshRenderer->GetMaterial().Get()->GetGUID(), "Material",
-			[gameObject](const std::string& guid) { OnMaterialModified(gameObject, guid); });
+			m_MaterialDrawer = AssetFieldDrawer("Material", meshRenderer->GetMaterial().Get()->GetGUID(), "Material",
+				[this](const std::string& guid) { OnMaterialModified(guid); });
+		}
 	}
 
 	void MeshRendererInspector::Draw()
@@ -28,17 +30,17 @@ namespace Odyssey
 			m_MaterialDrawer.Draw();
 		}
 	}
-	void MeshRendererInspector::OnMeshModified(GameObject* gameObject, const std::string& guid)
+	void MeshRendererInspector::OnMeshModified(const std::string& guid)
 	{
-		if (MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>())
+		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 		{
 			meshRenderer->SetMesh(AssetManager::LoadMeshByGUID(guid));
 		}
 	}
 
-	void MeshRendererInspector::OnMaterialModified(GameObject* gameObject, const std::string& guid)
+	void MeshRendererInspector::OnMaterialModified( const std::string& guid)
 	{
-		if (MeshRenderer* meshRenderer = gameObject->GetComponent<MeshRenderer>())
+		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 		{
 			meshRenderer->SetMaterial(AssetManager::LoadMaterialByGUID(guid));
 		}

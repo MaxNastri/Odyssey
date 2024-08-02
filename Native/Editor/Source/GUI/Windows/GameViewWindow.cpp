@@ -58,8 +58,13 @@ namespace Odyssey
 
 	void GameViewWindow::OnSceneLoaded(SceneLoadedEvent* event)
 	{
-		if (m_MainCamera = event->loadedScene->GetMainCamera())
-			m_MainCamera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+		for (auto entity : event->loadedScene->GetAllEntitiesWith<Camera>())
+		{
+			GameObject gameObject = GameObject(event->loadedScene, entity);
+			Camera& camera = gameObject.GetComponent<Camera>();
+			if (camera.IsMainCamera())
+				camera.SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+		}
 	}
 
 	void GameViewWindow::CreateRenderTexture()

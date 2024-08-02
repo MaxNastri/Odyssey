@@ -1,20 +1,18 @@
 #pragma once
-#include "Component.h"
-#include <glm.h>
+#include "AssetSerializer.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
-	class Transform : public Component
+	class Transform
 	{
     public:
-        Transform();
+        Transform() = default;
+        Transform(const GameObject& gameObject);
 
 	public:
-		virtual void Awake() override;
-		virtual void Update() override;
-		virtual void OnDestroy() override;
-        virtual void Serialize(SerializationNode& node) override;
-        virtual void Deserialize(SerializationNode& node) override;
+        void Serialize(SerializationNode& node);
+        void Deserialize(SerializationNode& node);
 
     public:
         void AddPosition(glm::vec3 pos);
@@ -49,6 +47,7 @@ namespace Odyssey
         void Reset();
 
 	public:
+        GameObject m_GameObject;
 		glm::vec3 m_Position;
 		glm::vec3 m_EulerRotation;
         glm::quat m_Rotation;

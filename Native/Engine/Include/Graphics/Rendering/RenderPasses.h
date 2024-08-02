@@ -1,7 +1,7 @@
 #pragma once
 #include "ResourceHandle.h"
-#include "glm.h"
 #include "VulkanGlobals.h"
+#include "Camera.h"
 
 namespace Odyssey
 {

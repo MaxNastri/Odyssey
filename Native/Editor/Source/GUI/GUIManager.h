@@ -22,7 +22,7 @@ namespace Odyssey
 		static void Initialize();
 
 	public:
-		static void CreateInspectorWindow(GameObject* gameObject);
+		static void CreateInspectorWindow();
 		static void CreateSceneHierarchyWindow();
 		static void CreateSceneViewWindow();
 		static void CreateGameViewWindow();

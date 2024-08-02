@@ -7,6 +7,11 @@ namespace Odyssey
 {
 	CLASS_DEFINITION(Odyssey, MeshRenderer);
 
+	MeshRenderer::MeshRenderer(const GameObject& gameObject)
+		: m_GameObject(gameObject)
+	{
+	}
+
 	MeshRenderer::MeshRenderer(AssetHandle<Mesh> mesh, AssetHandle<Material> material)
 	{
 		m_Mesh = mesh;
@@ -17,7 +22,7 @@ namespace Odyssey
 	{
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
-		componentNode.WriteData("Name", MeshRenderer::Type);
+		componentNode.WriteData("Type", MeshRenderer::Type);
 		componentNode.WriteData("m_Mesh", m_Mesh.Get()->GetGUID());
 		componentNode.WriteData("m_Material", m_Material.Get()->GetGUID());
 	}

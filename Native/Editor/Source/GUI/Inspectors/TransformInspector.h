@@ -2,6 +2,7 @@
 #include "Inspector.h"
 #include "Vector3Drawer.h"
 #include "PropertyDrawer.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
@@ -11,18 +12,18 @@ namespace Odyssey
 	{
 	public:
 		TransformInspector() = default;
-		TransformInspector(GameObject* go);
+		TransformInspector(GameObject& gameObject);
 
 	public:
 		virtual void Draw() override;
 
 	private:
-		static void OnPositionChanged(GameObject* gameObject, glm::vec3 position);
-		static void OnRotationChanged(GameObject* gameObject, glm::vec3 rotation);
-		static void OnScaleChanged(GameObject* gameObject, glm::vec3 scale);
+		void OnPositionChanged(glm::vec3 position);
+		void OnRotationChanged(glm::vec3 rotation);
+		void OnScaleChanged(glm::vec3 scale);
 
 	private:
-		GameObject* m_GameObject;
+		GameObject m_GameObject;
 		Vector3Drawer positionDrawer;
 		Vector3Drawer rotationDrawer;
 		Vector3Drawer scaleDrawer;

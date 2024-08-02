@@ -1,99 +1,78 @@
 #include "Scene.h"
 #include "AssetSerializer.h"
 #include "GameObject.h"
+#include "Camera.h"
+#include "IDComponent.h"
+#include "MeshRenderer.h"
+#include "Transform.h"
+#include "ScriptComponent.h"
 
 namespace Odyssey
 {
 	Scene::Scene()
 	{
-		awakeFunc = [](Component* component) { component->Awake(); };
-		updateFunc = [](Component* component) { component->Update(); };
-		onDestroyFunc = [](Component* component) { component->OnDestroy(); };
-		nextGameObjectID = 0;
-		m_ComponentRegistry = std::make_unique<ComponentRegistry>();
 	}
 
 	Scene::Scene(const std::filesystem::path& assetPath)
 		: Asset(assetPath)
 	{
-		awakeFunc = [](Component* component) { component->Awake(); };
-		updateFunc = [](Component* component) { component->Update(); };
-		onDestroyFunc = [](Component* component) { component->OnDestroy(); };
-		nextGameObjectID = 0;
-		m_ComponentRegistry = std::make_unique<ComponentRegistry>();
-
 		LoadFromDisk(assetPath);
 	}
 
-	GameObject* Scene::CreateGameObject()
+	GameObject Scene::CreateGameObject()
 	{
-		// Create a new game object
-		GameObject* gameObject = CreateEmptyGameObject();
-
-		// Automatically add a transform component for new game objects
-		gameObject->AddComponent<Transform>();
-
-		return gameObject;
+		const auto entity = m_Registry.create();
+		return GameObject(this, entity);
 	}
 
-	void Scene::DestroyGameObject(GameObject* gameObject)
+	void Scene::DestroyGameObject(const GameObject& gameObject)
 	{
-		m_ComponentRegistry->RemoveGameObject(gameObject->id);
-		for (int i = 0; i < gameObjects.size(); i++)
-		{
-			if (gameObjects[i]->id == gameObject->id)
-			{
-				gameObjects.erase(gameObjects.begin() + i);
-				break;
-			}
-		}
+		m_Registry.destroy(gameObject);
 	}
 
 	void Scene::Clear()
 	{
-		for (auto& gameObject : gameObjects)
+		for (auto entity : m_Registry.view<IDComponent>())
 		{
-			m_ComponentRegistry->RemoveGameObject(gameObject->id);
+			DestroyGameObject(GameObject(this, entity));
 		}
-
-		gameObjects.clear();
-		gameObjectsByID.clear();
-		nextGameObjectID = 0;
-		m_MainCamera = nullptr;
-	}
-
-	GameObject* Scene::GetGameObject(int32_t id)
-	{
-		if (gameObjectsByID.find(id) != gameObjectsByID.end())
-		{
-			return gameObjectsByID[id].get();
-		}
-
-		Logger::LogError("[Scene] Cannot find game object " + std::to_string(id));
-		return nullptr;
+		m_Registry.clear();
 	}
 
 	void Scene::Awake()
 	{
-		for (const auto& gameObject : gameObjects)
+		for (auto entity : m_Registry.view<Camera>())
 		{
-			m_ComponentRegistry->ExecuteOnGameObjectComponents(gameObject->id, awakeFunc);
+			GameObject gameObject = GameObject(this, entity);
+			auto& camera = gameObject.GetComponent<Camera>();
+			camera.Awake();
+		}
+
+		for (auto entity : m_Registry.view<ScriptComponent>())
+		{
+			GameObject gameObject = GameObject(this, entity);
+			auto& userScript = gameObject.GetComponent<ScriptComponent>();
+			userScript.Awake();
 		}
 	}
 
 	void Scene::Update()
 	{
-		for (const auto& gameObject : gameObjects)
+		for (auto entity : m_Registry.view<ScriptComponent>())
 		{
-			m_ComponentRegistry->ExecuteOnGameObjectComponents(gameObject->id, updateFunc);
+			GameObject gameObject = GameObject(this, entity);
+			auto& userScript = gameObject.GetComponent<ScriptComponent>();
+			userScript.Update();
 		}
 	}
 
 	void Scene::OnDestroy()
 	{
-		for (const auto& gameObject : gameObjects)
+		for (auto entity : m_Registry.view<ScriptComponent>())
 		{
-			m_ComponentRegistry->ExecuteOnGameObjectComponents(gameObject->id, onDestroyFunc);
+			GameObject gameObject = GameObject(this, entity);
+			auto& userScript = gameObject.GetComponent<ScriptComponent>();
+			userScript.OnDestroy();
 		}
 	}
 
@@ -112,18 +91,6 @@ namespace Odyssey
 		LoadFromDisk(m_AssetPath);
 	}
 
-	GameObject* Scene::CreateEmptyGameObject()
-	{
-		// Create a new game object
-		uint32_t id = nextGameObjectID++;
-		std::shared_ptr<GameObject> gameObject = std::make_shared<GameObject>(this, id);
-
-		gameObjects.push_back(gameObject);
-		gameObjectsByID[id] = gameObject;
-
-		return gameObject.get();
-	}
-
 	void Scene::SaveToDisk(const std::filesystem::path& assetPath)
 	{
 		AssetSerializer serializer;
@@ -134,9 +101,10 @@ namespace Odyssey
 
 		SerializationNode gameObjectsNode = root.CreateSequenceNode("GameObjects");
 
-		for (auto& gameObject : gameObjects)
+		for (auto entity : m_Registry.view<IDComponent>())
 		{
-			gameObject->Serialize(gameObjectsNode);
+			GameObject gameObject = GameObject(this, entity);
+			gameObject.Serialize(gameObjectsNode);
 		}
 
 		serializer.WriteToDisk(assetPath);
@@ -156,32 +124,10 @@ namespace Odyssey
 
 			for (size_t i = 0; i < gameObjectsNode.ChildCount(); i++)
 			{
-				GameObject* gameObject = CreateEmptyGameObject();
+				GameObject gameObject = CreateGameObject();
 				SerializationNode child = gameObjectsNode.GetChild(i);
-				gameObject->Deserialize(child);
-			}
-		}
-	}
-
-	Camera* Scene::GetMainCamera()
-	{
-		if (m_MainCamera == nullptr)
-			FindMainCamera();
-
-		return m_MainCamera;
-	}
-
-	void Scene::FindMainCamera()
-	{
-		for (auto& gameObject : gameObjects)
-		{
-			if (!gameObject->m_IsHidden)
-			{
-				if (Camera* camera = gameObject->GetComponent<Camera>())
-				{
-					if (camera->IsMainCamera())
-						m_MainCamera = camera;
-				}
+				gameObject.Deserialize(child);
+				m_GUIDToGameObject[gameObject.GetGUID()] = gameObject;
 			}
 		}
 	}

@@ -6,11 +6,13 @@ namespace Odyssey
 {
 	CLASS_DEFINITION(Odyssey, Camera);
 
+	Camera::Camera(const GameObject& gameObject)
+		: m_GameObject(gameObject)
+	{
+	}
+
 	void Camera::Awake()
 	{
-		// Cache the transform
-		m_Transform = gameObject->GetComponent<Transform>();
-
 		m_Width = 1000;
 		m_Height = 1000;
 		// Calculate our matrices
@@ -22,7 +24,7 @@ namespace Odyssey
 	{
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
-		componentNode.WriteData("Name", Camera::Type);
+		componentNode.WriteData("Type", Camera::Type);
 		componentNode.WriteData("Field of View", m_FieldOfView);
 		componentNode.WriteData("Near Clip", m_NearClip);
 		componentNode.WriteData("Far Clip", m_FarClip);
@@ -49,11 +51,12 @@ namespace Odyssey
 
 	glm::mat4 Camera::GetView()
 	{
-		if (m_Transform == nullptr)
-			m_Transform = gameObject->GetComponent<Transform>();
+		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
+		{
+			transform->SetScale(1, 1, 1);
+			m_View = transform->GetWorldMatrix();
+		}
 
-		m_Transform->SetScale(1, 1, 1);
-		m_View = m_Transform->GetWorldMatrix();
 		return m_View;
 	}
 

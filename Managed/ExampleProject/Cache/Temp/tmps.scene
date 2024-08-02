@@ -3,21 +3,32 @@ m_GUID: 'a77ecccb-ca5d-4e87-832d-19acf6658b7c'
 m_Name: Scene
 m_Type: Scene
 GameObjects:
-  - Name: "Max's GameObject"
+  - Name: "Max's Other GameObject"
+    GUID: 'a77ecccb-ca5d-4e87-832d-19acf6658b7e'
     Type: Odyssey.GameObject
-    Active: 1
-    ID: 0
     Components:
-      - Name: Odyssey.Entities.Transform
+      - Type: Odyssey.Camera
+        Field of View: 45
+        Near Clip: 0.1
+        Far Clip: 1000
+        Main Camera: 1
+      - Type: Odyssey.Transform
+        Position: 'x: -1 y: 2 z: -2'
+        Rotation: 'x: 45 y: 44.6 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Name: "Max's GameObject"
+    GUID: 'a77ecccb-ca5d-4e87-832d-19acf6658b7d'
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        m_Mesh: '7c387cd5-8cbd-4a2a-8a3c-8961092a07bf'
+        m_Material: '2fbc687a-c486-4f04-81a2-f455e2075f49'
+      - Type: Odyssey.Transform
         Position: 'x: 0.72083634 y: 0 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 0.005 y: 0.005 z: 0.005'
-      - Name: Odyssey.MeshRenderer
-        m_Mesh: '7c387cd5-8cbd-4a2a-8a3c-8961092a07bf'
-        m_Material: '2fbc687a-c486-4f04-81a2-f455e2075f49'
-      - Name: Example.Managed.AnotherScript
-        Fields: []
-      - Name: Example.Managed.ExampleScript
+      - Type: Odyssey.ScriptComponent
+        Name: Example.Managed.ExampleScript
         Fields:
           - Name: speed
             ManagedType: 9
@@ -31,17 +42,3 @@ GameObjects:
           - Name: anotherMovementThing
             ManagedType: 5
             Value: -1
-  - Name: "Max's Other GameObject"
-    Type: Odyssey.GameObject
-    Active: 1
-    ID: 1
-    Components:
-      - Name: Odyssey.Entities.Transform
-        Position: 'x: -1 y: 2 z: -2'
-        Rotation: 'x: 45 y: 45 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
-      - Name: Odyssey.Camera
-        Field of View: 45
-        Near Clip: 0.1
-        Far Clip: 1000
-        Main Camera: 1

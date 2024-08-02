@@ -4,83 +4,70 @@
 #include "IntDrawer.h"
 #include "FloatDrawer.h"
 #include "DoubleDrawer.h"
-#include <GameObject.h>
-#include <ManagedObject.hpp>
-#include <string>
-#include <vector>
-#include <memory>
+#include "ScriptComponent.h"
+#include "GameObject.h"
+#include "ManagedObject.hpp"
 
 namespace Odyssey
 {
 	template <typename FieldType>
-	void AddIntDrawer(GameObject* gameObject, const std::string& userScriptClassName, const std::string& fieldName, FieldType initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	std::shared_ptr<IntDrawer<FieldType>> AddIntDrawer(GameObject& gameObject, const std::string& fieldName, FieldType initialValue)
 	{
-		std::function<void(FieldType)> callback = [gameObject, userScriptClassName, fieldName](FieldType fieldValue)
+		std::function<void(FieldType)> callback = [&gameObject, fieldName](FieldType fieldValue)
 			{
-				if (UserScript* userScript = gameObject->GetUserScript(userScriptClassName))
-				{
-					userScript->GetManagedObject().SetFieldValue<FieldType>(fieldName, fieldValue);
-				}
+				if (ScriptComponent* userScript = gameObject.TryGetComponent<ScriptComponent>())
+				userScript->GetManagedObject().SetFieldValue<FieldType>(fieldName, fieldValue);
 			};
 
-		std::unique_ptr<IntDrawer<FieldType>> drawer = std::make_unique<IntDrawer<FieldType>>(fieldName, initialValue, callback);
-		drawers.push_back(std::move(drawer));
+		return std::make_shared<IntDrawer<FieldType>>(fieldName, initialValue, callback);
 	}
 
-	void AddBoolDrawer(GameObject* gameObject, const std::string& userScriptClassName, const std::string& fieldName, bool initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	std::shared_ptr<BoolDrawer> AddBoolDrawer(GameObject& gameObject, const std::string& fieldName, bool initialValue)
 	{
-		std::function<void(bool)> callback = [gameObject, userScriptClassName, fieldName](bool fieldValue)
+		std::function<void(bool)> callback = [&gameObject, fieldName](bool fieldValue)
 			{
-				if (UserScript* userScript = gameObject->GetUserScript(userScriptClassName))
-				{
+				if (ScriptComponent* userScript = gameObject.TryGetComponent<ScriptComponent>())
 					userScript->GetManagedObject().SetFieldValue<uint32_t>(fieldName, fieldValue);
-				}
 			};
 
-		std::unique_ptr<BoolDrawer> drawer = std::make_unique<BoolDrawer>(fieldName, initialValue, callback);
-		drawers.push_back(std::move(drawer));
+		return std::make_shared<BoolDrawer>(fieldName, initialValue, callback);
 	}
 
-	void AddFloatDrawer(GameObject* gameObject, const std::string& userScriptClassName, const std::string& fieldName, float initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	std::shared_ptr<FloatDrawer> AddFloatDrawer(GameObject& gameObject, const std::string& fieldName, float initialValue)
 	{
-		std::function<void(float)> callback = [gameObject, userScriptClassName, fieldName](float fieldValue)
+		std::function<void(float)> callback = [&gameObject, fieldName](float fieldValue)
 			{
-				if (UserScript* userScript = gameObject->GetUserScript(userScriptClassName))
-				{
+				if (ScriptComponent* userScript = gameObject.TryGetComponent<ScriptComponent>())
 					userScript->GetManagedObject().SetFieldValue<float>(fieldName, fieldValue);
-				}
 			};
 
-		std::unique_ptr<FloatDrawer> drawer = std::make_unique<FloatDrawer>(fieldName, initialValue, callback);
-		drawers.push_back(std::move(drawer));
+		return std::make_shared<FloatDrawer>(fieldName, initialValue, callback);
 	}
 
-	void AddDoubleDrawer(GameObject* gameObject, const std::string& userScriptClassName, const std::string& fieldName, double initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	std::shared_ptr<DoubleDrawer> AddDoubleDrawer(GameObject& gameObject, const std::string& fieldName, double initialValue)
 	{
-		std::function<void(double)> callback = [gameObject, userScriptClassName, fieldName](double fieldValue)
+		std::function<void(double)> callback = [&gameObject, fieldName](double fieldValue)
 			{
-				if (UserScript* userScript = gameObject->GetUserScript(userScriptClassName))
+				if (ScriptComponent* userScript = gameObject.TryGetComponent<ScriptComponent>())
 				{
 					userScript->GetManagedObject().SetFieldValue<double>(fieldName, fieldValue);
 				}
 			};
 
-		std::unique_ptr<DoubleDrawer> drawer = std::make_unique<DoubleDrawer>(fieldName, initialValue, callback);
-		drawers.push_back(std::move(drawer));
+		return std::make_shared<DoubleDrawer>(fieldName, initialValue, callback);
 	}
 
-	void AddStringDrawer(GameObject* gameObject, const std::string& userScriptClassName, const std::string& fieldName, std::string initialValue, std::vector<std::unique_ptr<PropertyDrawer>>& drawers)
+	std::shared_ptr<StringDrawer> AddStringDrawer(GameObject& gameObject, const std::string& fieldName, std::string initialValue)
 	{
-		std::function<void(std::string)> callback = [gameObject, userScriptClassName, fieldName](std::string fieldValue)
+		std::function<void(std::string)> callback = [&gameObject, fieldName](std::string fieldValue)
 			{
-				if (UserScript* userScript = gameObject->GetUserScript(userScriptClassName))
+				if (ScriptComponent* userScript = gameObject.TryGetComponent<ScriptComponent>())
 				{
 					Coral::ScopedString field = Coral::String::New(fieldValue);
 					userScript->GetManagedObject().SetFieldValue<Coral::String>(fieldName, field);
 				}
 			};
 
-		std::unique_ptr<StringDrawer> drawer = std::make_unique<StringDrawer>(fieldName, initialValue, callback);
-		drawers.push_back(std::move(drawer));
+		return std::make_shared<StringDrawer>(fieldName, initialValue, callback);
 	}
 }

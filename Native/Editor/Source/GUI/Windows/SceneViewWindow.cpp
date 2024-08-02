@@ -46,7 +46,9 @@ namespace Odyssey
 	{
 		// Reset the camera controller use flag before updating the camera controller
 		m_CameraControllerInUse = false;
-		UpdateCameraController();
+
+		if (m_GameObject)
+			UpdateCameraController();
 
 		if (!m_CameraControllerInUse)
 		{
@@ -72,8 +74,12 @@ namespace Odyssey
 	{
 		DestroyRenderTexture();
 		CreateRenderTexture();
-		if (m_Camera)
-			m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+
+		if (m_GameObject)
+		{
+			if (Camera* camera = m_GameObject.TryGetComponent<Camera>())
+				camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+		}
 	}
 
 	void SceneViewWindow::OnSceneLoaded(SceneLoadedEvent* event)
@@ -82,16 +88,14 @@ namespace Odyssey
 		if (Scene* activeScene = event->loadedScene)
 		{
 			m_GameObject = activeScene->CreateGameObject();
-			m_GameObject->m_IsHidden = true;
+			m_GameObject.AddComponent<Transform>();
 
 			// Add a transform and camera
-			m_CameraTransform = m_GameObject->GetComponent<Transform>();
-			m_CameraTransform->Awake();
-			m_Camera = m_GameObject->AddComponent<Camera>();
-			m_Camera->SetMainCamera(false);
-			m_Camera->Awake();
-			m_Camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
-			m_SceneViewPass->SetCamera(m_Camera);
+			Camera& camera = m_GameObject.AddComponent<Camera>();
+			camera.SetMainCamera(false);
+			camera.Awake();
+			camera.SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+			m_SceneViewPass->SetCamera(&camera);
 		}
 	}
 
@@ -123,7 +127,7 @@ namespace Odyssey
 	}
 
 	void SceneViewWindow::RenderGizmos()
-	{
+	{/*
 		if (m_SelectedObject)
 		{
 			if (Transform* transform = m_SelectedObject->GetComponent<Transform>())
@@ -156,7 +160,7 @@ namespace Odyssey
 						transform->SetScale(scale);
 				}
 			}
-		}
+		}*/
 	}
 
 	void SceneViewWindow::UpdateCameraController()
@@ -164,6 +168,10 @@ namespace Odyssey
 		const float speed = 3.0f;
 
 		glm::vec3 inputVel = glm::zero<vec3>();
+		Transform* transform = m_GameObject.TryGetComponent<Transform>();
+
+		if (!transform)
+			return;
 
 		if (m_CursorInContentRegion && Input::GetMouseButtonDown(MouseButton::Right))
 		{
@@ -197,11 +205,12 @@ namespace Odyssey
 			if (inputVel != glm::zero<vec3>())
 			{
 				inputVel = glm::normalize(inputVel);
-				glm::vec3 right = m_CameraTransform->Right() * inputVel.x;
-				glm::vec3 up = m_CameraTransform->Up() * inputVel.y;
-				glm::vec3 fwd = m_CameraTransform->Forward() * inputVel.z;
+
+				glm::vec3 right = transform->Right() * inputVel.x;
+				glm::vec3 up = transform->Up() * inputVel.y;
+				glm::vec3 fwd = transform->Forward() * inputVel.z;
 				glm::vec3 velocity = (right + up + fwd) * speed * (1.0f / 144.0f);
-				m_CameraTransform->AddPosition(velocity);
+				transform->AddPosition(velocity);
 			}
 
 			float mouseH = (float)Input::GetMouseAxisHorizontal();
@@ -212,8 +221,8 @@ namespace Odyssey
 				glm::vec3 yaw = vec3(0, 1, 0) * mouseH * (1.0f / 144.0f) * 15.0f;
 				glm::vec3 pitch = vec3(1, 0, 0) * mouseV * (1.0f / 144.0f) * 15.0f;
 
-				m_CameraTransform->AddRotation(yaw);
-				m_CameraTransform->AddRotation(pitch);
+				transform->AddRotation(yaw);
+				transform->AddRotation(pitch);
 			}
 		}
 	}

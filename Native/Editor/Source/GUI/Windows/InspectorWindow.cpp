@@ -48,7 +48,8 @@ namespace Odyssey
 		GUISelection& selection = event->Selection;
 
 		if (selection.Type == GameObject::Type)
-			m_Inspector = std::make_shared<GameObjectInspector>(selection.ID);
+			// TODO: Pass game object GUID here
+			m_Inspector = std::make_shared<GameObjectInspector>(selection.GUID);
 		else if (selection.Type == "Material")
 			m_Inspector = std::make_shared<MaterialInspector>(selection.GUID);
 		else if (selection.Type == "SourceShader")

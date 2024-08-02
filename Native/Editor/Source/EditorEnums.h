@@ -17,6 +17,5 @@ namespace Odyssey
 		std::string GUID;
 		std::string Type;
 		std::filesystem::path FilePath;
-		int32_t ID;
 	};
 }

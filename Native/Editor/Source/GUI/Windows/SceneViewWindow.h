@@ -40,9 +40,7 @@ namespace Odyssey
 		std::shared_ptr<IEventListener> m_SceneLoadedListener;
 
 	private: // Camera stuff
-		GameObject* m_GameObject = nullptr;
-		Transform* m_CameraTransform = nullptr;
-		Camera* m_Camera = nullptr;
+		GameObject m_GameObject;
 		bool m_CameraControllerInUse = false;
 
 	private: // Rendering stuff

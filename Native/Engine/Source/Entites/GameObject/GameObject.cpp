@@ -1,5 +1,10 @@
 #include "GameObject.h"
-#include "Component.h"
+#include "Scene.h"
+#include "IDComponent.h"
+#include "Camera.h"
+#include "MeshRenderer.h"
+#include "Transform.h"
+#include "ScriptComponent.h"
 
 namespace Odyssey
 {
@@ -7,48 +12,52 @@ namespace Odyssey
 
 	GameObject::GameObject()
 	{
-		name = "GameObject";
-		id = -1;
-		active = false;
 	}
 
-	GameObject::GameObject(Scene* scene, int32_t ID)
+	GameObject::GameObject(Scene* scene, entt::entity entity)
 	{
-		name = "GameObject";
-		id = ID;
+		m_Entity = entity;
 		m_Scene = scene;
-		active = true;
+	}
+
+	GameObject::GameObject(Scene* scene, uint32_t id)
+	{
+		m_Entity = (entt::entity)id;
+		m_Scene = scene;
 	}
 
 	void GameObject::Serialize(SerializationNode& node)
 	{
-		// Skip hidden game objects
-		if (m_IsHidden)
-			return;
+		IDComponent& idComponent = GetComponent<IDComponent>();
 
 		SerializationNode gameObjectNode = node.AppendChild();
 		gameObjectNode.SetMap();
-		gameObjectNode.WriteData("Name", name);
+		gameObjectNode.WriteData("Name", idComponent.Name);
+		gameObjectNode.WriteData("GUID", idComponent.GUID);
 		gameObjectNode.WriteData("Type", Type);
-		gameObjectNode.WriteData("Active", active);
-		gameObjectNode.WriteData("ID", id);
 
 		SerializationNode componentsNode = gameObjectNode.CreateSequenceNode("Components");
-		
-		auto serializeComponent = [&componentsNode](Component* component)
-			{
-				component->Serialize(componentsNode);
-			};
-		
-		m_Scene->GetComponentRegistry()->ExecuteOnGameObjectComponents(id, serializeComponent);
+
+		if (Camera* camera = TryGetComponent<Camera>())
+			camera->Serialize(componentsNode);
+
+		if (MeshRenderer* meshRenderer = TryGetComponent<MeshRenderer>())
+			meshRenderer->Serialize(componentsNode);
+
+		if (Transform* transform = TryGetComponent<Transform>())
+			transform->Serialize(componentsNode);
+
+		if (ScriptComponent* userScript = TryGetComponent<ScriptComponent>())
+			userScript->Serialize(componentsNode);
 	}
 
 	void GameObject::Deserialize(SerializationNode& node)
 	{
 		assert(node.IsMap());
-		node.ReadData("Name", name);
-		node.ReadData("Active", active);
-		node.ReadData("ID", id);
+
+		IDComponent& idComponent = AddComponent<IDComponent>();
+		node.ReadData("Name", idComponent.Name);
+		node.ReadData("GUID", idComponent.GUID);
 
 		SerializationNode componentsNode = node.GetNode("Components");
 		assert(componentsNode.IsSequence());
@@ -60,30 +69,47 @@ namespace Odyssey
 			assert(componentNode.IsMap());
 
 			std::string componentType;
-			componentNode.ReadData("Name", componentType);
-			
-			if (componentNode.HasChild("Fields"))
+			componentNode.ReadData("Type", componentType);
+
+			if (componentType == Camera::Type)
 			{
-				UserScript* userScript = m_Scene->GetComponentRegistry()->AddUserScript(id, componentType);
-				userScript->SetGameObject(this);
-				userScript->Deserialize(componentNode);
+				Camera& camera = AddComponent<Camera>();
+				camera.Deserialize(componentNode);
 			}
-			else
+			else if (componentType == MeshRenderer::Type)
 			{
-				Component* component = m_Scene->GetComponentRegistry()->AddComponentByName(id, componentType);
-				component->SetGameObject(this);
-				component->Deserialize(componentNode);
+				MeshRenderer& meshRenderer = AddComponent<MeshRenderer>();
+				meshRenderer.Deserialize(componentNode);
+			}
+			else if (componentType == Transform::Type)
+			{
+				Transform& transform = AddComponent<Transform>();
+				transform.Deserialize(componentNode);
+			}
+			else if (componentType == ScriptComponent::Type)
+			{
+				ScriptComponent& script = AddComponent<ScriptComponent>();
+				script.Deserialize(componentNode);
 			}
 		}
-
 	}
-	std::vector<UserScript*> GameObject::GetUserScripts()
+	const std::string& GameObject::GetName()
 	{
-		return m_Scene->GetComponentRegistry()->GetAllUserScripts(id);
+		return GetComponent<IDComponent>().Name;
 	}
 
-	UserScript* GameObject::GetUserScript(const std::string& managedName)
+	const std::string& GameObject::GetGUID()
 	{
-		return m_Scene->GetComponentRegistry()->GetUserScript(id, managedName);
+		return GetComponent<IDComponent>().GUID;
+	}
+
+	void GameObject::SetName(const std::string& name)
+	{
+		GetComponent<IDComponent>().Name = name;
+	}
+
+	void GameObject::SetGUID(const std::string& guid)
+	{
+		GetComponent<IDComponent>().GUID = guid;
 	}
 }

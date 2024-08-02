@@ -5,15 +5,20 @@
 
 namespace Odyssey
 {
-	CameraInspector::CameraInspector(GameObject* gameObject)
+	CameraInspector::CameraInspector(GameObject& gameObject)
 	{
 		m_GameObject = gameObject;
 
-		if (Camera* camera = m_GameObject->GetComponent<Camera>())
+		if (Camera* camera = m_GameObject.TryGetComponent<Camera>())
 		{
-			m_FieldOfViewDrawer = FloatDrawer("Field of View", camera->GetFieldOfView(), [gameObject](float fov) { OnFieldOfViewChanged(gameObject, fov); });
-			m_NearClipDrawer = FloatDrawer("Near Clip", camera->GetNearClip(), [gameObject](float nearClip) { OnNearClipChanged(gameObject, nearClip); });
-			m_FarClipDrawer = FloatDrawer("Far Clip", camera->GetFarClip(), [gameObject](float farClip) { OnFarClipChanged(gameObject, farClip); });
+			m_FieldOfViewDrawer = FloatDrawer("Field of View", camera->GetFieldOfView(),
+				[this](float fov) { OnFieldOfViewChanged(fov); });
+			
+			m_NearClipDrawer = FloatDrawer("Near Clip", camera->GetNearClip(),
+				[this](float nearClip) { OnNearClipChanged(nearClip); });
+			
+			m_FarClipDrawer = FloatDrawer("Far Clip", camera->GetFarClip(),
+				[this](float farClip) { OnFarClipChanged(farClip); });
 		}
 	}
 
@@ -27,25 +32,25 @@ namespace Odyssey
 		}
 	}
 
-	void CameraInspector::OnFieldOfViewChanged(GameObject* gameObject, float fov)
+	void CameraInspector::OnFieldOfViewChanged(float fov)
 	{
-		if (Camera* camera = gameObject->GetComponent<Camera>())
+		if (Camera* camera = m_GameObject.TryGetComponent<Camera>())
 		{
 			camera->SetFieldOfView(fov);
 		}
 	}
 
-	void CameraInspector::OnNearClipChanged(GameObject* gameObject, float nearClip)
+	void CameraInspector::OnNearClipChanged(float nearClip)
 	{
-		if (Camera* camera = gameObject->GetComponent<Camera>())
+		if (Camera* camera = m_GameObject.TryGetComponent<Camera>())
 		{
 			camera->SetNearClip(nearClip);
 		}
 	}
 
-	void CameraInspector::OnFarClipChanged(GameObject* gameObject, float farClip)
+	void CameraInspector::OnFarClipChanged(float farClip)
 	{
-		if (Camera* camera = gameObject->GetComponent<Camera>())
+		if (Camera* camera = m_GameObject.TryGetComponent<Camera>())
 		{
 			camera->SetFarClip(farClip);
 		}

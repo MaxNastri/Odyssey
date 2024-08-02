@@ -2,6 +2,7 @@
 #include "Inspector.h"
 #include "PropertyDrawer.h"
 #include "FloatDrawer.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
@@ -11,18 +12,18 @@ namespace Odyssey
 	{
 	public:
 		CameraInspector() = default;
-		CameraInspector(GameObject* gameObject);
+		CameraInspector(GameObject& gameObject);
 
 	public:
 		virtual void Draw() override;
 
 	private:
-		static void OnFieldOfViewChanged(GameObject* gameObject, float fov);
-		static void OnNearClipChanged(GameObject* gameObject, float nearClip);
-		static void OnFarClipChanged(GameObject* gameObject, float farClip);
+		void OnFieldOfViewChanged(float fov);
+		void OnNearClipChanged(float nearClip);
+		void OnFarClipChanged(float farClip);
 
 	private:
-		GameObject* m_GameObject;
+		GameObject m_GameObject;
 		FloatDrawer m_FieldOfViewDrawer;
 		FloatDrawer m_NearClipDrawer;
 		FloatDrawer m_FarClipDrawer;

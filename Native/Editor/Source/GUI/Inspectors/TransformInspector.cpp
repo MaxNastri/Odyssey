@@ -5,20 +5,20 @@
 
 namespace Odyssey
 {
-	TransformInspector::TransformInspector(GameObject* gameObject)
+	TransformInspector::TransformInspector(GameObject& gameObject)
 	{
 		m_GameObject = gameObject;
 
-		if (Transform* transform = gameObject->GetComponent<Transform>())
+		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
 		{
 			positionDrawer = Vector3Drawer("Position", transform->m_Position, glm::vec3(0, 0, 0),
-				[gameObject](glm::vec3 position) { OnPositionChanged(gameObject, position); });
+				[this](glm::vec3 position) { OnPositionChanged(position); });
 
 			rotationDrawer = Vector3Drawer("Rotation", transform->m_EulerRotation, glm::vec3(0, 0, 0),
-				[gameObject](glm::vec3 rotation) { OnRotationChanged(gameObject, rotation); });
+				[this](glm::vec3 rotation) { OnRotationChanged(rotation); });
 
 			scaleDrawer = Vector3Drawer("Scale", transform->m_Scale, glm::vec3(1, 1, 1),
-				[gameObject](glm::vec3 scale) { OnScaleChanged(gameObject, scale); });
+				[this](glm::vec3 scale) { OnScaleChanged(scale); });
 		}
 	}
 
@@ -33,25 +33,25 @@ namespace Odyssey
 		ImGui::Spacing();
 	}
 
-	void TransformInspector::OnPositionChanged(GameObject* gameObject, glm::vec3 position)
+	void TransformInspector::OnPositionChanged(glm::vec3 position)
 	{
-		if (Transform* transform = gameObject->GetComponent<Transform>())
+		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
 		{
 			transform->m_Position = position;
 		}
 	}
 
-	void TransformInspector::OnRotationChanged(GameObject* gameObject, glm::vec3 rotation)
+	void TransformInspector::OnRotationChanged(glm::vec3 rotation)
 	{
-		if (Transform* transform = gameObject->GetComponent<Transform>())
+		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
 		{
 			transform->SetRotation(rotation);
 		}
 	}
 
-	void TransformInspector::OnScaleChanged(GameObject* gameObject, glm::vec3 scale)
+	void TransformInspector::OnScaleChanged(glm::vec3 scale)
 	{
-		if (Transform* transform = gameObject->GetComponent<Transform>())
+		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
 		{
 			transform->m_Scale = scale;
 		}

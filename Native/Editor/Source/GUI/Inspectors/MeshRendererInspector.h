@@ -1,6 +1,7 @@
 #pragma once
 #include "Inspector.h"
 #include "AssetFieldDrawer.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
@@ -11,18 +12,17 @@ namespace Odyssey
 	{
 	public:
 		MeshRendererInspector() = default;
-		MeshRendererInspector(GameObject* gameObject);
+		MeshRendererInspector(GameObject& gameObject);
 
 	public:
 		virtual void Draw() override;
 
 	private:
-		static void OnMeshModified(GameObject* gameObject, const std::string& guid);
-		static void OnMaterialModified(GameObject* gameObject, const std::string& guid);
+		void OnMeshModified(const std::string& guid);
+		void OnMaterialModified(const std::string& guid);
 
 	private:
-		GameObject* m_GameObject;
-		MeshRenderer* m_MeshRenderer;
+		GameObject m_GameObject;
 		AssetFieldDrawer m_MeshDrawer;
 		AssetFieldDrawer m_MaterialDrawer;
 	};
