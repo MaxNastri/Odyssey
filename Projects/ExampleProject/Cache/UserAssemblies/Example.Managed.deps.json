@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Example.Managed/1.0.0": {
+        "dependencies": {
+          "Coral.Managed": "1.0.0"
+        },
+        "runtime": {
+          "Example.Managed.dll": {}
+        }
+      },
+      "Coral.Managed/1.0.0": {
+        "runtime": {
+          "Coral.Managed.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Example.Managed/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Coral.Managed/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
