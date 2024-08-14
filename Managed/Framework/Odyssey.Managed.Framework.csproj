@@ -3,47 +3,42 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <TargetFramework>net8.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Cache\Build\Binaries\</OutputPath>
-    <IntermediateOutputPath>..\..\Cache\Build\Intermediates\Debug\</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <OutputPath>..\..\Build\Debug\</OutputPath>
+    <IntermediateOutputPath>..\..\Intermediates\Debug\Debug\Odyssey.Managed.Framework\</IntermediateOutputPath>
+    <DefineConstants>_CRT_SECURE_NO_WARNINGS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>CS8500</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\Cache\Build\Binaries\</OutputPath>
-    <IntermediateOutputPath>..\..\Cache\Build\Intermediates\Release\</IntermediateOutputPath>
-    <DefineConstants></DefineConstants>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Build\Release\</OutputPath>
+    <IntermediateOutputPath>..\..\Intermediates\Release\Release\Odyssey.Managed.Framework\</IntermediateOutputPath>
+    <DefineConstants>_CRT_SECURE_NO_WARNINGS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <NoWarn>CS8500</NoWarn>
   </PropertyGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <Reference Include="Coral.Managed">
-      <HintPath>..\..\Cache\UserAssemblies\Coral.Managed.dll</HintPath>
-    </Reference>
-    <Reference Include="Odyssey.Managed.Framework">
-      <HintPath>..\..\Cache\UserAssemblies\Odyssey.Managed.Framework.dll</HintPath>
-    </Reference>
+    <Reference Include="Coral.Managed" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Reference Include="Coral.Managed">
-      <HintPath>..\..\Cache\UserAssemblies\Coral.Managed.dll</HintPath>
-    </Reference>
-    <Reference Include="Odyssey.Managed.Framework">
-      <HintPath>..\..\Cache\UserAssemblies\Odyssey.Managed.Framework.dll</HintPath>
-    </Reference>
+    <Reference Include="Coral.Managed" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\main.cs" />
+    <Compile Include="Source\Component.cs" />
   </ItemGroup>
 </Project>

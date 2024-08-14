@@ -1,6 +1,6 @@
 include "CSExtensions.lua"
 
-project "Coral.Managed"
+project "Odyssey.Managed.Framework"
     language "C#"
     dotnetframework "net8.0"
     kind "SharedLib"
@@ -8,6 +8,10 @@ project "Coral.Managed"
 
     targetdir "%{wks.location}/Build/%{cfg.buildcfg}"
     objdir "%{wks.location}/Intermediates/%{cfg.buildcfg}"
+    
+	links {
+		"Coral.Managed"
+	}
 
     -- Don't specify architecture here. (see https://github.com/premake/premake-core/issues/1758)
     propertytags {
@@ -15,13 +19,11 @@ project "Coral.Managed"
         { "Nullable", "enable" },
     }
 
-    
     disablewarnings {
         "CS8500"
     }
 
     files {
-        "Source/**.cs",
-        "%{wks.location}/Vendor/Coral/Coral.Managed/Source/**.cs",
+        "%{wks.location}/Managed/Framework/Source/**.cs",
     }
         

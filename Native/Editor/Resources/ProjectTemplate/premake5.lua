@@ -22,7 +22,10 @@ project "%ProjectName%"
         "Assets/Scripts/**.cs", 
     }
 
-    links { "Coral.Managed" }
+    links {
+    "%{wks.location}/Cache/UserAssemblies/Coral.Managed",
+    "%{wks.location}/Cache/UserAssemblies/Odyssey.Managed.Framework"
+    }
 
     filter "configurations:Debug"
         optimize "Off"

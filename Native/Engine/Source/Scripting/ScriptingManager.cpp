@@ -22,16 +22,25 @@ namespace Odyssey
 			.ExceptionCallback = ExceptionCallback
 		};
 		hostInstance.Initialize(hostSettings);
+
+		LoadFrameworkAssembly();
+	}
+
+	void ScriptingManager::LoadFrameworkAssembly()
+	{
+		s_FrameworkLoadContext = hostInstance.CreateAssemblyLoadContext("Odyssey.FrameworkContext");
+
+		Path frameworkPath = std::filesystem::current_path() / "Resources/Scripting/Odyssey.Managed.Framework.dll";
+		s_FrameworkAssembly = s_FrameworkLoadContext.LoadAssembly(frameworkPath.string());
 	}
 
 	void ScriptingManager::LoadUserAssemblies()
 	{
 		if (!s_UserAssembliesLoaded)
 		{
-			userAssemblyContext = hostInstance.CreateAssemblyLoadContext("UserScripts");
-
 			// Load the assembly
-			userAssembly = userAssemblyContext.LoadAssembly(s_UserAssemblyPath.string());
+			s_AppLoadContext = hostInstance.CreateAssemblyLoadContext("Odyssey.AppContext");
+			appAssembly = s_AppLoadContext.LoadAssembly(s_UserAssemblyPath.string());
 			s_UserAssembliesLoaded = true;
 		}
 	}
@@ -46,7 +55,7 @@ namespace Odyssey
 			}
 			managedObjects.clear();
 
-			hostInstance.UnloadAssemblyLoadContext(userAssemblyContext);
+			hostInstance.UnloadAssemblyLoadContext(s_AppLoadContext);
 			s_UserAssembliesLoaded = false;
 		}
 	}
@@ -61,7 +70,7 @@ namespace Odyssey
 	Coral::ManagedObject ScriptingManager::CreateManagedObject(std::string_view fqManagedClassName)
 	{
 		// TODO: insert return statement here
-		Coral::Type& managedType = userAssembly.GetType(fqManagedClassName);
+		Coral::Type& managedType = appAssembly.GetType(fqManagedClassName);
 		Coral::ManagedObject managedObject = managedType.CreateInstance();
 
 		managedObjects.push_back(managedObject);
