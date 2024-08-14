@@ -6,16 +6,14 @@ workspace "Odyssey"
     targetdir "%{wks.location}/Build/%{cfg.buildcfg}"
 	objdir "%{wks.location}/Intermediates/%{cfg.buildcfg}"
     
-    startproject "Odyssey.Native.Editor"
+    startproject "Odyssey.Editor"
     
 	defines {
 		"_CRT_SECURE_NO_WARNINGS"
 	}
 
-group "Native"
-include "Native/Editor"
-include "Native/Engine"
-group ""
-group "Managed"
-include "Managed/Framework"
+group "Odyssey"
+include "Projects/Editor"
+include "Projects/Engine"
+include "Projects/Framework"
 group ""
