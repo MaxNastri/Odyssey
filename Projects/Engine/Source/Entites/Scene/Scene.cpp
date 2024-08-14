@@ -21,8 +21,14 @@ namespace Odyssey
 
 	GameObject Scene::CreateGameObject()
 	{
+		// Create the backing entity
 		const auto entity = m_Registry.create();
-		return GameObject(this, entity);
+
+		// Construct a game object and add an ID component 
+		GameObject gameObject = GameObject(this, entity);
+		gameObject.AddComponent<IDComponent>();
+
+		return gameObject;
 	}
 
 	void Scene::DestroyGameObject(const GameObject& gameObject)

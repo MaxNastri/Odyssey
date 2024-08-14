@@ -3,6 +3,7 @@
 #include "Events.h"
 #include "Globals.h"
 #include "ScriptCompiler.h"
+#include "ScriptBindings.h"
 
 namespace Odyssey
 {
@@ -24,6 +25,8 @@ namespace Odyssey
 		hostInstance.Initialize(hostSettings);
 
 		LoadFrameworkAssembly();
+
+		ScriptBindings::Initialize(s_FrameworkAssembly);
 	}
 
 	void ScriptingManager::LoadFrameworkAssembly()

@@ -55,7 +55,10 @@ namespace Odyssey
 	{
 		assert(node.IsMap());
 
-		IDComponent& idComponent = AddComponent<IDComponent>();
+		if (!HasComponent<IDComponent>())
+			AddComponent<IDComponent>();
+
+		IDComponent& idComponent = GetComponent<IDComponent>();
 		node.ReadData("Name", idComponent.Name);
 		node.ReadData("GUID", idComponent.GUID.Ref());
 

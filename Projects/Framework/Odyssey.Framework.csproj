@@ -40,9 +40,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Component.cs" />
+    <Compile Include="Source\GameObject.cs" />
+    <Compile Include="Source\InternalCalls.cs" />
+    <Compile Include="Source\Object.cs" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /B /Y "..\..\Build\Debug\Odyssey.Framework.dll", "$(SolutionDir)\Projects\Editor\Resources\Scripts"
 copy /B /Y "..\..\Build\Debug\Odyssey.Framework.pdb", "$(SolutionDir)\Projects\Editor\Resources\Scripts"</PostBuildEvent>
+    <RootNamespace>Odyssey</RootNamespace>
   </PropertyGroup>
 </Project>

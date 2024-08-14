@@ -1,6 +1,19 @@
 Scene: Scene_01
 GUID: 6049963977740777600
 GameObjects:
+  - Name: ''
+    GUID: 17270054535734790355
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Camera
+        Field of View: 45
+        Near Clip: 0.1
+        Far Clip: 1000
+        Main Camera: 0
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
   - Name: "Max's GameObject"
     GUID: 15322439001782158818
     Type: Odyssey.GameObject

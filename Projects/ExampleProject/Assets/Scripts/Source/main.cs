@@ -19,6 +19,7 @@ namespace Example.Managed
 
         public override void Update()
         {
+            GameObject gameObject = GameObject.Create();
             Console.WriteLine($"MyName: {this.MyName}, Speed = {this.speed}, Movement: {this.movement}");
         }
     }
