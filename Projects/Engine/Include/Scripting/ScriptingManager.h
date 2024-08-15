@@ -16,7 +16,7 @@ namespace Odyssey
 		static void Unload();
 
 	public:
-		static Coral::ManagedObject CreateManagedObject(std::string_view fqManagedClassName);
+		static Coral::ManagedObject CreateManagedObject(std::string_view fqManagedClassName, uint64_t entityGUID);
 	private:
 		inline static Coral::HostInstance hostInstance;
 		inline static Coral::HostSettings hostSettings;

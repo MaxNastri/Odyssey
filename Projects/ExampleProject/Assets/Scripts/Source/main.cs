@@ -9,7 +9,7 @@ namespace Example.Managed
         public float Value;
     }
 
-    public class ExampleScript : Component
+    public class ExampleScript : Entity
     {
         public string MyName = "Max";
         public float speed = 42.0f;
@@ -17,14 +17,30 @@ namespace Example.Managed
         public float newSpeedMulti = 0.01f;
         public int anotherMovementThing = -1;
 
-        public override void Update()
+        private Entity myGameObject;
+        private Transform myTransform;
+
+        protected override void Awake()
         {
-            GameObject gameObject = GameObject.Create();
-            Console.WriteLine($"MyName: {this.MyName}, Speed = {this.speed}, Movement: {this.movement}");
+            myGameObject = Entity.Create();
+            myGameObject.Name = "ExampleName";
+
+            Transform transform = myGameObject.AddComponent<Transform>();
+            Console.WriteLine($"MyGameObject.AddComponent: {transform != null}");
+
+            myTransform = this.GetComponent<Transform>();
+            Console.WriteLine($"gameObject.GetComponent: {myTransform != null}");
+
+            bool removed = myGameObject.RemoveComponent<Transform>();
+            Console.WriteLine($"MyGameObject.RemoveComponent: {removed}");
+        }
+
+        protected override void Update()
+        {
         }
     }
 
-    public class AnotherScript : Component
+    public class AnotherScript : Entity
     {
     }
 }

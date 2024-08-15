@@ -10,13 +10,12 @@ project "Odyssey.Framework"
     objdir "%{wks.location}/Intermediates/%{cfg.buildcfg}"
     
 	links {
-		"Coral.Managed"
+		"%{cfg.targetdir}/Coral.Managed"
 	}
 
     -- Don't specify architecture here. (see https://github.com/premake/premake-core/issues/1758)
     propertytags {
         { "AppendTargetFrameworkToOutputPath", "false" },
-        { "Nullable", "enable" },
     }
 
     disablewarnings {

@@ -2,7 +2,7 @@ Scene: Scene_01
 GUID: 6049963977740777600
 GameObjects:
   - Name: ''
-    GUID: 17270054535734790355
+    GUID: 2394572805666038351
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Camera

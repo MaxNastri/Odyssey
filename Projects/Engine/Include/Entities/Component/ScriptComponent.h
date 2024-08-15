@@ -23,10 +23,6 @@ namespace Odyssey
 		Coral::ManagedObject GetManagedObject() { return managedInstance; }
 		std::string GetManagedTypeName() { return m_ManagedType; }
 
-	public:
-		void SetManagedInstance(Coral::ManagedObject instance);
-		void SetManagedType(std::string_view managedClassName);
-
 	private:
 		bool SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, SerializationNode& node);
 		bool SerializeNativeString(const std::string& fieldName, ryml::NodeRef& node);

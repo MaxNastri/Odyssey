@@ -6,6 +6,7 @@
 #include "MeshRenderer.h"
 #include "Transform.h"
 #include "ScriptComponent.h"
+#include "ScriptingManager.h"
 
 namespace Odyssey
 {
@@ -27,6 +28,8 @@ namespace Odyssey
 		// Construct a game object and add an ID component 
 		GameObject gameObject = GameObject(this, entity);
 		gameObject.AddComponent<IDComponent>();
+
+		m_GUIDToGameObject[gameObject.GetGUID()] = gameObject;
 
 		return gameObject;
 	}
@@ -57,8 +60,8 @@ namespace Odyssey
 		for (auto entity : m_Registry.view<ScriptComponent>())
 		{
 			GameObject gameObject = GameObject(this, entity);
-			auto& userScript = gameObject.GetComponent<ScriptComponent>();
-			userScript.Awake();
+			auto& script = gameObject.GetComponent<ScriptComponent>();
+			script.Awake();
 		}
 	}
 

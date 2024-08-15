@@ -113,6 +113,8 @@ namespace Odyssey
 			Scene* activeScene = SceneManager::GetActiveScene();
 			Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
 			activeScene->SaveTo(tempPath);
+
+			activeScene->Awake();
 			m_UpdateScripts = true;
 			break;
 		}

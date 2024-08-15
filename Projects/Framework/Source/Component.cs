@@ -2,8 +2,10 @@
 {
     public class Component
     {
-        public virtual void Awake() { }
-        public virtual void Update() { }
-        public virtual void OnDestroy() { }
+        public Entity blueprint
+        {
+            get;
+            internal set;
+        }
     }
 }

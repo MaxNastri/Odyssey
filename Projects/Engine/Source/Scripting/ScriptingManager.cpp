@@ -70,11 +70,10 @@ namespace Odyssey
 		EventSystem::Dispatch<OnAssembliesReloaded>();
 	}
 
-	Coral::ManagedObject ScriptingManager::CreateManagedObject(std::string_view fqManagedClassName)
+	Coral::ManagedObject ScriptingManager::CreateManagedObject(std::string_view fqManagedClassName, uint64_t entityGUID)
 	{
-		// TODO: insert return statement here
 		Coral::Type& managedType = appAssembly.GetType(fqManagedClassName);
-		Coral::ManagedObject managedObject = managedType.CreateInstance();
+		Coral::ManagedObject managedObject = managedType.CreateInstance((uint64_t)entityGUID);
 
 		managedObjects.push_back(managedObject);
 		return managedObject;

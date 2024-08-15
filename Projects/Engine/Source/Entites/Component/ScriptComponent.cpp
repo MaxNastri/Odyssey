@@ -66,7 +66,7 @@ namespace Odyssey
 	{
 		// Read the managed type and create an object based on the type
 		node.ReadData("Name", m_ManagedType);
-		managedInstance = ScriptingManager::CreateManagedObject(m_ManagedType);
+		managedInstance = ScriptingManager::CreateManagedObject(m_ManagedType, m_GameObject.GetGUID());
 
 		// Get the fields from that type
 		const Coral::Type& type = managedInstance.GetType();
@@ -106,18 +106,6 @@ namespace Odyssey
 				}
 			}
 		}
-	}
-
-	void ScriptComponent::SetManagedInstance(Coral::ManagedObject instance)
-	{
-		managedInstance = instance;
-	}
-
-	void ScriptComponent::SetManagedType(std::string_view managedClassName)
-	{
-		// TODO (MAX): Destroy any existing managed instance first
-		managedInstance = ScriptingManager::CreateManagedObject(managedClassName);
-		m_ManagedType = managedClassName;
 	}
 
 	bool ScriptComponent::SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, SerializationNode& node)
