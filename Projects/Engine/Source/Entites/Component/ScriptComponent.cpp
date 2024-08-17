@@ -40,6 +40,7 @@ namespace Odyssey
 
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
+		componentNode.WriteData("m_FileID", m_FileID.CRef());
 		componentNode.WriteData("Type", ScriptComponent::Type);
 		componentNode.WriteData("Name", fqManagedName);
 
@@ -65,6 +66,7 @@ namespace Odyssey
 	void ScriptComponent::Deserialize(SerializationNode& node)
 	{
 		// Read the managed type and create an object based on the type
+		node.ReadData("m_FileID", m_FileID.Ref());
 		node.ReadData("Name", m_ManagedType);
 		managedInstance = ScriptingManager::CreateManagedObject(m_ManagedType, m_GameObject.GetGUID());
 

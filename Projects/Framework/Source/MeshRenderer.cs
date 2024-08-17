@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Odyssey
 {
-    public class MeshRenderer : Component
+    public class MeshRenderer
     {
     }
 }

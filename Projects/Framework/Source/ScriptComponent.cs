@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Odyssey
 {
-    public class Transform
+    public class ScriptComponent
     {
     }
 }

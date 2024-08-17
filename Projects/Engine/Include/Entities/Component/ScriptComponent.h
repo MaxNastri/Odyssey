@@ -3,6 +3,7 @@
 #include "ManagedObject.hpp"
 #include "Type.hpp"
 #include "GameObject.h"
+#include "FileID.h"
 
 namespace Odyssey
 {
@@ -30,6 +31,7 @@ namespace Odyssey
 		bool DeserializeNativeString(const std::string& fieldName, SerializationNode& node);
 	
 	private:
+		FileID m_FileID;
 		GameObject m_GameObject;
 		Coral::ManagedObject managedInstance;
 		std::string m_ManagedType;

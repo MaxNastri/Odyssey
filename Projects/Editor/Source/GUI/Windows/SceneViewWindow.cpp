@@ -13,6 +13,7 @@
 #include "RenderPasses.h"
 #include "Input.h"
 #include "Renderer.h"
+#include "EditorComponents.h"
 
 namespace Odyssey
 {
@@ -95,6 +96,11 @@ namespace Odyssey
 			camera.SetMainCamera(false);
 			camera.Awake();
 			camera.SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+
+			// Add the editor properties component to hide this object in the scene hierarchy window
+			EditorPropertiesComponent& properties = m_GameObject.AddComponent<EditorPropertiesComponent>();
+			properties.ShowInHierarchy = false;
+
 			m_SceneViewPass->SetCamera(&camera);
 		}
 	}

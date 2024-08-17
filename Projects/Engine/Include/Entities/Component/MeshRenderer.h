@@ -3,6 +3,7 @@
 #include "AssetHandle.h"
 #include "AssetSerializer.h"
 #include "GameObject.h"
+#include "FileID.h"
 
 namespace Odyssey
 {
@@ -29,6 +30,7 @@ namespace Odyssey
 		AssetHandle<Material> GetMaterial() { return m_Material; }
 
 	private:
+		FileID m_FileID;
 		GameObject m_GameObject;
 		AssetHandle<Mesh> m_Mesh;
 		AssetHandle<Material> m_Material;

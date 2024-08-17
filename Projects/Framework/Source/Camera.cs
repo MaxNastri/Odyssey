@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Odyssey
 {
-    public class Camera : Component
+    public class Camera
     {
     }
 }

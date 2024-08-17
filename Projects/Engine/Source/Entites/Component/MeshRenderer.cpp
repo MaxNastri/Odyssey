@@ -22,6 +22,7 @@ namespace Odyssey
 	{
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
+		componentNode.WriteData("m_FileID", m_FileID.CRef());
 		componentNode.WriteData("Type", MeshRenderer::Type);
 		componentNode.WriteData("m_Mesh", m_Mesh.Get()->GetGUID());
 		componentNode.WriteData("m_Material", m_Material.Get()->GetGUID());
@@ -32,6 +33,7 @@ namespace Odyssey
 		std::string meshGUID;;
 		std::string materialGUID;
 
+		node.ReadData("m_FileID", m_FileID.Ref());
 		node.ReadData("m_Mesh", meshGUID);
 		node.ReadData("m_Material", materialGUID);
 

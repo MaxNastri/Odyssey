@@ -8,6 +8,7 @@
 #include "EventSystem.h"
 #include "EditorEvents.h"
 #include "IDComponent.h"
+#include "EditorComponents.h"
 
 namespace Odyssey
 {
@@ -40,9 +41,12 @@ namespace Odyssey
 				GameObject gameObject = GameObject(m_Scene, entity);
 
 				// Don't display hidden game objects
-				// TODO: Re-add hidden functionality
-				//if (gameObject->m_IsHidden)
-				//	continue;
+				if (gameObject.HasComponent<EditorPropertiesComponent>() )
+				{
+					auto comp = gameObject.GetComponent<EditorPropertiesComponent>();
+					if (!comp.ShowInHierarchy)
+						continue;
+				}
 
 				bool hasChildren = false;
 				const bool isSelected = (selectionMask & (1 << selectionID)) != 0;
