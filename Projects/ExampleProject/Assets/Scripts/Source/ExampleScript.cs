@@ -1,14 +1,8 @@
-using System;
+﻿using System;
 using Odyssey;
 
-namespace Example.Managed
+namespace ExampleProject
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public sealed class CustomAttribute : Attribute
-    {
-        public float Value;
-    }
-
     public class ExampleScript : Entity
     {
         public string MyName = "Max";
@@ -38,9 +32,5 @@ namespace Example.Managed
         protected override void Update()
         {
         }
-    }
-
-    public class AnotherScript : Entity
-    {
     }
 }

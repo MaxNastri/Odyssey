@@ -44,7 +44,7 @@ namespace Odyssey
 
 		if (success)
 		{
-			ScriptingManager::ReloadUserAssemblies();
+			ScriptingManager::ReloadAssemblies();
 		}
 
 		return success;

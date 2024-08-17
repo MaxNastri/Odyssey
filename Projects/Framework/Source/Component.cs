@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Odyssey
 {
-    public class Transform : Component
+    public class Component
     {
+        public Entity Entity { get; internal set; }
     }
 }

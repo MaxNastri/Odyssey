@@ -31,7 +31,7 @@ GameObjects:
         Scale: 'x: 0.005 y: 0.005 z: 0.005'
       - m_FileID: 2330737257
         Type: Odyssey.ScriptComponent
-        Name: Example.Managed.ExampleScript
+        Name: ExampleProject.ExampleScript
         Fields:
           - Name: speed
             ManagedType: 9
@@ -60,3 +60,6 @@ GameObjects:
         Position: 'x: -1 y: 2 z: -2'
         Rotation: 'x: 45 y: 45 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.ScriptComponent
+        Name: ExampleProject.AnotherScript
+        Fields: []

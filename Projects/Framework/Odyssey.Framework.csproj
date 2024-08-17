@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Camera.cs" />
+    <Compile Include="Source\Component.cs" />
     <Compile Include="Source\Entity.cs" />
     <Compile Include="Source\InternalCalls.cs" />
     <Compile Include="Source\MeshRenderer.cs" />

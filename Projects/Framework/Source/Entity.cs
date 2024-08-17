@@ -36,7 +36,7 @@ namespace Odyssey
             unsafe { InternalCalls.GameObject_AddComponent(this.GUID, type); }
 
             // Construct a new component and cache it
-            T component = new T() { blueprint = this };
+            T component = new T() { Entity = this };
             this.componentCache[type] = component;
 
             return component;
@@ -68,7 +68,7 @@ namespace Odyssey
             if (!this.componentCache.ContainsKey(type))
             {
                 // Construct a new managed component and cache it
-                T component = new T() { blueprint = this };
+                T component = new T() { Entity = this };
                 this.componentCache[type] = component;
                 return component;
             }

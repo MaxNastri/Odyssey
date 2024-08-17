@@ -48,7 +48,7 @@ namespace Odyssey
 		m_ScriptCompiler = std::make_unique<ScriptCompiler>(settings);
 
 		ScriptingManager::SetUserAssembliesPath(m_ScriptCompiler->GetUserAssemblyPath());
-		m_ScriptCompiler->BuildUserAssembly();
+		ScriptingManager::LoadUserAssemblies();
 
 		SetupEditorGUI();
 
@@ -88,6 +88,7 @@ namespace Odyssey
 		}
 
 		Renderer::Destroy();
+		ScriptingManager::Destroy();
 	}
 
 	void Editor::Exit()
@@ -138,7 +139,7 @@ namespace Odyssey
 	{
 		if (event->success)
 		{
-			ScriptingManager::ReloadUserAssemblies();
+			ScriptingManager::ReloadAssemblies();
 		}
 	}
 }

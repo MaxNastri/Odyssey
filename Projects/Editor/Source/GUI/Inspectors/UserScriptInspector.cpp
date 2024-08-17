@@ -7,6 +7,7 @@
 #include "ScriptComponent.h"
 #include "imgui.h"
 #include "DrawerUtils.h"
+#include "ScriptingManager.h"
 
 namespace Odyssey
 {
@@ -56,6 +57,7 @@ namespace Odyssey
 		Coral::ManagedObject userObject = userScript->GetManagedObject();
 
 		std::vector<Coral::FieldInfo> fields = type.GetFields();
+		Coral::Type entityType = ScriptingManager::GetEntityType();
 
 		for (auto& field : fields)
 		{
@@ -65,14 +67,13 @@ namespace Odyssey
 				Coral::Type fieldType = field.GetType();
 				bool fieldIsString = fieldType.GetManagedType() == Coral::ManagedType::Unknown && fieldType.GetFullName() == "System.String";
 
-				if (fieldIsString)
-				{
+				bool isSubclass = fieldType.IsSubclassOf(entityType);
+				if (isSubclass) // TODO: Create an asset reference drawer here
+					continue;
+				else if (fieldIsString)
 					CreateStringDrawer(m_GameObject, fieldName, userObject);
-				}
 				else
-				{
 					CreateDrawerFromProperty(m_GameObject, fieldName, field.GetType().GetManagedType(), userObject);
-				}
 			}
 		}
 	}

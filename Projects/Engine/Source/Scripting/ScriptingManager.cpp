@@ -15,14 +15,19 @@ namespace Odyssey
 	void ScriptingManager::Initialize()
 	{
 		// Initialize Coral
-		std::filesystem::path appPath = Globals::GetApplicationPath();
-		std::string coralDir = appPath.string();
-		hostSettings =
+		if (!s_HostInitialized)
 		{
-			.CoralDirectory = coralDir,
-			.ExceptionCallback = ExceptionCallback
-		};
-		hostInstance.Initialize(hostSettings);
+			std::filesystem::path appPath = Globals::GetApplicationPath();
+			std::string coralDir = appPath.string();
+			hostSettings =
+			{
+				.CoralDirectory = coralDir,
+				.ExceptionCallback = ExceptionCallback
+			};
+			hostInstance.Initialize(hostSettings);
+
+			s_HostInitialized = true;
+		}
 
 		LoadFrameworkAssembly();
 
@@ -31,10 +36,10 @@ namespace Odyssey
 
 	void ScriptingManager::LoadFrameworkAssembly()
 	{
-		s_FrameworkLoadContext = hostInstance.CreateAssemblyLoadContext("Odyssey.FrameworkContext");
+		s_LoadContext = hostInstance.CreateAssemblyLoadContext("Odyssey.FrameworkContext");
 
 		Path frameworkPath = std::filesystem::current_path() / "Resources/scripts/Odyssey.Framework.dll";
-		s_FrameworkAssembly = s_FrameworkLoadContext.LoadAssembly(frameworkPath.string());
+		s_FrameworkAssembly = s_LoadContext.LoadAssembly(frameworkPath.string());
 	}
 
 	void ScriptingManager::LoadUserAssemblies()
@@ -42,32 +47,35 @@ namespace Odyssey
 		if (!s_UserAssembliesLoaded)
 		{
 			// Load the assembly
-			s_AppLoadContext = hostInstance.CreateAssemblyLoadContext("Odyssey.AppContext");
-			appAssembly = s_AppLoadContext.LoadAssembly(s_UserAssemblyPath.string());
+			appAssembly = s_LoadContext.LoadAssembly(s_UserAssemblyPath.string());
 			s_UserAssembliesLoaded = true;
 		}
 	}
 
-	void ScriptingManager::UnloadUserAssemblies()
+	void ScriptingManager::ReloadAssemblies()
 	{
-		if (s_UserAssembliesLoaded)
-		{
-			for (Coral::ManagedObject& object : managedObjects)
-			{
-				object.Destroy();
-			}
-			managedObjects.clear();
-
-			hostInstance.UnloadAssemblyLoadContext(s_AppLoadContext);
-			s_UserAssembliesLoaded = false;
-		}
-	}
-
-	void ScriptingManager::ReloadUserAssemblies()
-	{
-		UnloadUserAssemblies();
+		Shutdown();
+		Initialize();
 		LoadUserAssemblies();
 		EventSystem::Dispatch<OnAssembliesReloaded>();
+	}
+
+	void ScriptingManager::Shutdown()
+	{
+		for (Coral::ManagedObject& object : managedObjects)
+		{
+			object.Destroy();
+		}
+		managedObjects.clear();
+
+		hostInstance.UnloadAssemblyLoadContext(s_LoadContext);
+		s_UserAssembliesLoaded = false;
+	}
+
+	void ScriptingManager::Destroy()
+	{
+		Shutdown();
+		hostInstance.Shutdown();
 	}
 
 	Coral::ManagedObject ScriptingManager::CreateManagedObject(std::string_view fqManagedClassName, uint64_t entityGUID)
