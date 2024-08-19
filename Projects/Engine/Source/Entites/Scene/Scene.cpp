@@ -156,7 +156,6 @@ namespace Odyssey
 				{
 					ScriptComponent& scriptComponent = gameObject.GetComponent<ScriptComponent>();
 					uint32_t scriptID = scriptComponent.GetScriptID();
-					ScriptingManager::AddEntityScript(guid, scriptID);
 				}
 			}
 		}

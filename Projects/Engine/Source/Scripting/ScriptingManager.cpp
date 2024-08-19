@@ -91,7 +91,7 @@ namespace Odyssey
 		return managedObject;
 	}
 
-	void ScriptingManager::AddEntityScript(GUID& entityGUID, uint32_t scriptID)
+	void ScriptingManager::AddEntityScript(GUID entityGUID, uint32_t scriptID)
 	{
 		if (!m_ScriptMetdata.contains(scriptID))
 		{
@@ -211,6 +211,7 @@ namespace Odyssey
 						fieldMetadata.SetDefaultValue<glm::vec4>(temp);
 						break;
 					case DataType::Bool:
+						fieldMetadata.SetDefaultValue<Coral::Bool32>(temp);
 					case DataType::String:
 					case DataType::Entity:
 					case DataType::Mesh:

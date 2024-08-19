@@ -4,7 +4,7 @@
 
 namespace Odyssey
 {
-    EntityFieldDrawer::EntityFieldDrawer(const std::string& label, GUID guid, std::function<void(GUID)> callback)
+    EntityFieldDrawer::EntityFieldDrawer(std::string_view label, GUID guid, std::function<void(GUID)> callback)
     {
 		m_Label = label;
 		m_GUID = guid;

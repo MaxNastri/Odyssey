@@ -23,12 +23,12 @@ namespace Odyssey
 		static Coral::Type GetEntityType() { return s_FrameworkAssembly.GetType("Odyssey.Entity"); }
 	
 	public:
-		static void AddEntityScript(GUID& entityGUID, uint32_t scriptID);
+		static void AddEntityScript(GUID entityGUID, uint32_t scriptID);
 		static ScriptStorage& GetScriptStorage(GUID guid);
+		static ScriptMetadata& GetScriptMetadata(uint32_t scriptID);
 
 	private:
 		static void BuildScriptMetadata(Coral::ManagedAssembly& assembly);
-		static ScriptMetadata& GetScriptMetadata(uint32_t scriptID);
 
 	private: // Host settings
 		inline static Coral::HostInstance hostInstance;

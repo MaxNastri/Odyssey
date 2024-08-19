@@ -4,6 +4,7 @@
 #include "FileID.h"
 #include "RawBuffer.hpp"
 #include "DataType.h"
+#include "GUID.h"
 
 namespace Odyssey
 {
@@ -14,6 +15,38 @@ namespace Odyssey
 		DataType DataType;
 		RawBuffer ValueBuffer;
 		Coral::ManagedObject* Instance;
+
+		template<typename T>
+		T GetValue() const
+		{
+			return Instance ? Instance->GetFieldValue<T>(Name) : ValueBuffer.Read<T>();
+		}
+
+		template<typename T>
+		bool TryGetValue(T& outValue)
+		{
+			if (Instance)
+			{
+				outValue = Instance->GetFieldValue<T>(Name);
+				return true;
+			}
+			else
+			{
+				if (ValueBuffer.GetSize() == 0)
+					return false;
+				
+				outValue = ValueBuffer.Read<T>();
+				return true;
+			}
+		}
+		template<typename T>
+		void SetValue(const T& value)
+		{
+			if (Instance)
+				Instance->SetFieldValue<T>(Name, value);
+			else
+				ValueBuffer.Write(&value, sizeof(T));
+		}
 	};
 
 	struct ScriptStorage

@@ -7,6 +7,7 @@
 #include "MeshRenderer.h"
 #include "ScriptComponent.h"
 #include "imgui.h"
+#include "IDComponent.h"
 
 namespace Odyssey
 {
@@ -22,9 +23,7 @@ namespace Odyssey
 			return;
 
 		if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
-		{
 			m_NameDrawer.Draw();
-		}
 
 		ImGui::Spacing();
 
@@ -41,31 +40,24 @@ namespace Odyssey
 
 	void GameObjectInspector::SetGameObject(GameObject gameObject)
 	{
+		m_Target = gameObject;
 		m_Inspectors.clear();
 		userScriptInspectors.clear();
 
 		m_NameDrawer = StringDrawer("Name", gameObject.GetName(),
-			[&gameObject](std::string& name) { gameObject.SetName(name); });
+			[this](const std::string& name) { OnNameChanged(name); });
 
 		if (gameObject.HasComponent<Transform>())
-		{
 			m_Inspectors.push_back(std::make_unique<TransformInspector>(gameObject));
-		}
 
 		if (gameObject.HasComponent<Camera>())
-		{
 			m_Inspectors.push_back(std::make_unique<CameraInspector>(gameObject));
-		}
 
 		if (gameObject.HasComponent<MeshRenderer>())
-		{
 			m_Inspectors.push_back(std::make_unique<MeshRendererInspector>(gameObject));
-		}
 
 		if (gameObject.HasComponent<ScriptComponent>())
-		{
 			m_Inspectors.push_back(std::make_unique<UserScriptInspector>(gameObject));
-		}
 	}
 
 	void GameObjectInspector::RefreshUserScripts()
@@ -74,5 +66,11 @@ namespace Odyssey
 		{
 			userScriptInspector.UpdateFields();
 		}
+	}
+
+	void GameObjectInspector::OnNameChanged(const std::string& name)
+	{
+		if (m_Target.HasComponent<IDComponent>())
+			m_Target.SetName(name);
 	}
 }

@@ -7,13 +7,13 @@ namespace Odyssey
 	{
 	public:
 		StringDrawer() = default;
-		StringDrawer(const std::string& propertyLabel, std::string initialValue, std::function<void(std::string&)> callback, bool readOnly = false);
+		StringDrawer(const std::string& propertyLabel, std::string initialValue, std::function<void(const std::string&)> callback, bool readOnly = false);
 
 	public:
 		virtual void Draw() override;
 
 	private:
-		std::function<void(std::string&)> valueUpdatedCallback;
+		std::function<void(const std::string&)> valueUpdatedCallback;
 		std::string data;
 		bool m_ReadOnly = false;
 	};

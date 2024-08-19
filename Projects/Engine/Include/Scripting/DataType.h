@@ -7,30 +7,26 @@ namespace Odyssey
 
 	enum class DataType
 	{
-		SByte,
-		Byte,
-		Short,
-		UShort,
-		Int,
-		UInt,
-		Long,
-		ULong,
-
-		Float,
-		Double,
-
-		Vector2,
-		Vector3,
-		Vector4,
-
-		Bool,
-		String,
-
-		Entity,
-		Mesh,
-		Material,
-		Texture2D,
-		Scene
+		SByte = 0,
+		Byte = 1,
+		Short = 2,
+		UShort = 3,
+		Int = 4,
+		UInt = 5,
+		Long = 6,
+		ULong = 7,
+		Float = 8,
+		Double = 9,
+		Vector2 = 10,
+		Vector3 = 11,
+		Vector4 = 12,
+		Bool = 13,
+		String = 14,
+		Entity = 15,
+		Mesh = 16,
+		Material = 17,
+		Texture2D = 18,
+		Scene = 19
 	};
 
 	inline uint64_t DataTypeSize(DataType type)

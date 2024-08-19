@@ -20,16 +20,12 @@ GameObjects:
         Name: ExampleProject.ExampleScript
         Fields:
           - Name: speed
-            ManagedType: 9
             Value: 0
           - Name: movement
-            ManagedType: 5
             Value: 10
           - Name: newSpeedMulti
-            ManagedType: 9
             Value: 0.01
           - Name: anotherMovementThing
-            ManagedType: 5
             Value: -1
   - Name: "Max's Other GameObject"
     GUID: 1278710421845013511

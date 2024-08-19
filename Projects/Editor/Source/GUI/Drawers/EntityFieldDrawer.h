@@ -8,7 +8,7 @@ namespace Odyssey
 	{
 	public:
 		EntityFieldDrawer() = default;
-		EntityFieldDrawer(const std::string& label, GUID guid, std::function<void(GUID)> callback);
+		EntityFieldDrawer(std::string_view label, GUID guid, std::function<void(GUID)> callback);
 
 	public:
 		virtual void Draw() override;

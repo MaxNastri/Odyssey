@@ -24,6 +24,10 @@ namespace Odyssey
 		void RefreshUserScripts();
 
 	private:
+		void OnNameChanged(const std::string& name);
+
+	private:
+		GameObject m_Target;
 		std::vector<std::unique_ptr<Inspector>> m_Inspectors;
 		std::vector<UserScriptInspector> userScriptInspectors;
 		StringDrawer m_NameDrawer;
