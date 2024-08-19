@@ -12,8 +12,8 @@ namespace ExampleProject
         protected override void Awake()
         {
             string max = this.otherScriptRef.max;
-
             Console.WriteLine($"From Another Script: this.otherScriptRef.max = {max}");
+            Console.WriteLine($"From another script: otherTransform.position = {otherTransform.Position}");
         }
     }
 }

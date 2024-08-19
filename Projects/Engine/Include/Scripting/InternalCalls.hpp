@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "GameObject.h"
 #include "String.hpp"
+#include "glm.h"
 #include "Logger.h"
 
 namespace Odyssey
@@ -113,5 +114,13 @@ namespace Odyssey::InternalCalls
 		}
 
 		return false;
+	}
+
+	void Transform_GetPosition(uint64_t guid, glm::vec3* position)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (Transform* transform = gameObject.TryGetComponent<Transform>())
+			*position = transform->GetPosition();
 	}
 }

@@ -8,5 +8,14 @@ namespace Odyssey
 {
     public class Transform : Component
     {
+        public Vector3 Position
+        {
+            get
+            {
+                Vector3 result;
+                unsafe { InternalCalls.Transform_GetPosition(Entity.GUID, &result); }
+                return result;
+            }
+        }
     }
 }

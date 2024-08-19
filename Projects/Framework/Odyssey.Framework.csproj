@@ -49,6 +49,7 @@
     <Compile Include="Source\MeshRenderer.cs" />
     <Compile Include="Source\ScriptComponent.cs" />
     <Compile Include="Source\Transform.cs" />
+    <Compile Include="Source\Vector3.cs" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /B /Y "..\..\Build\Debug\Odyssey.Framework.dll", "$(SolutionDir)\Projects\Editor\Resources\Scripts"
