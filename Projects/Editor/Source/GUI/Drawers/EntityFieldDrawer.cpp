@@ -9,6 +9,7 @@ namespace Odyssey
 		m_Label = label;
 		m_GUID = guid;
 		m_OnValueModified = callback;
+		GeneratePossibleGUIDs();
     }
 
     void EntityFieldDrawer::Draw()
@@ -21,22 +22,20 @@ namespace Odyssey
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(-0.01f);
 
-			std::vector<GUID> possibleGUIDs = { m_GUID };
-
 			ImGui::PushID((void*)this);
 
-			std::string selectedDisplayName = selectedIndex != 0 ? possibleGUIDs[selectedIndex].String() : "None";
+			std::string selectedDisplayName = m_SelectedIndex != 0 ? m_PossibleGUIDs[m_SelectedIndex].String() : "None";
 			if (ImGui::BeginCombo("##Empty", selectedDisplayName.c_str()))
 			{
-				for (int32_t i = 0; i < possibleGUIDs.size(); i++)
+				for (int32_t i = 0; i < m_PossibleGUIDs.size(); i++)
 				{
-					const bool isSelected = selectedIndex == i;
-					std::string displayName = i != 0 ? possibleGUIDs[i].String() : "None";
+					const bool isSelected = m_SelectedIndex == i;
+					std::string displayName = i != 0 ? m_PossibleGUIDs[i].String() : "None";
 
 					if (ImGui::Selectable(displayName.c_str(), isSelected) && i != 0)
 					{
-						selectedIndex = i;
-						m_OnValueModified(possibleGUIDs[selectedIndex]);
+						m_SelectedIndex = i;
+						m_OnValueModified(m_PossibleGUIDs[m_SelectedIndex]);
 						m_Modified = true;
 					}
 
@@ -57,6 +56,7 @@ namespace Odyssey
 					uint64_t* payloadData = (uint64_t*)payload->Data;
 					m_GUID = GUID(*payloadData);
 					m_Modified = true;
+					GeneratePossibleGUIDs();
 					m_OnValueModified(m_GUID);
 					Logger::LogInfo("(AssetFieldDrawer) Accepting Entity payload: " + m_GUID.String());
 				}
@@ -66,4 +66,15 @@ namespace Odyssey
 			ImGui::EndTable();
 		}
     }
+
+	void EntityFieldDrawer::GeneratePossibleGUIDs()
+	{
+		m_PossibleGUIDs = { 0, m_GUID };
+
+		for (size_t i = 0; i < m_PossibleGUIDs.size(); i++)
+		{
+			if (m_PossibleGUIDs[i] == m_GUID)
+				m_SelectedIndex = i;
+		}
+	}
 }

@@ -14,8 +14,12 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	private:
+		void GeneratePossibleGUIDs();
+
+	private:
 		std::function<void(GUID)> m_OnValueModified;
-		GUID m_GUID;
-		int32_t selectedIndex = 0;
+		GUID m_GUID = 0;
+		uint64_t m_SelectedIndex = 0;
+		std::vector<GUID> m_PossibleGUIDs;
 	};
 }

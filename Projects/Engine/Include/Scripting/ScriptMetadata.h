@@ -1,6 +1,7 @@
 #pragma once
 #include "ManagedObject.hpp"
 #include "Array.hpp"
+#include "Type.hpp"
 #include "DataType.h"
 #include "RawBuffer.hpp"
 
@@ -37,6 +38,7 @@ namespace Odyssey
 	struct ScriptMetadata
 	{
 		std::string Name;
+		Coral::Type* Type;
 		std::unordered_map<uint32_t, FieldMetadata> Fields;
 	};
 }

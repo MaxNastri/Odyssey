@@ -5,7 +5,7 @@ namespace ExampleProject
 {
     public class ExampleScript : Entity
     {
-        public string MyName = "Max";
+        public string max = "max";
         public float speed = 42.0f;
         public int movement = 10;
         public float newSpeedMulti = 0.01f;
@@ -17,7 +17,7 @@ namespace ExampleProject
         protected override void Awake()
         {
             myGameObject = Entity.Create();
-            myGameObject.Name = "ExampleName";
+            //myGameObject.Name = "ExampleName";
 
             Transform transform = myGameObject.AddComponent<Transform>();
             Console.WriteLine($"MyGameObject.AddComponent: {transform != null}");

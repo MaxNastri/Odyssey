@@ -5,6 +5,7 @@
 #include "ScriptCompiler.h"
 #include "ScriptBindings.h"
 #include "Utils.h"
+#include "GC.hpp"
 
 namespace Odyssey
 {
@@ -66,12 +67,16 @@ namespace Odyssey
 
 	void ScriptingManager::Shutdown()
 	{
-		for (Coral::ManagedObject& object : managedObjects)
+		for (auto& [scriptID, scriptMetadata] : m_ScriptMetdata)
 		{
-			object.Destroy();
+			for (auto& [fieldID, fieldMetadata] : scriptMetadata.Fields)
+			{
+				fieldMetadata.DefaultValue.Free();
+			}
 		}
-		managedObjects.clear();
 
+		m_ScriptMetdata.clear();
+		m_ManagedObjects.Clear();
 		hostInstance.UnloadAssemblyLoadContext(s_LoadContext);
 		s_UserAssembliesLoaded = false;
 	}
@@ -80,15 +85,6 @@ namespace Odyssey
 	{
 		Shutdown();
 		hostInstance.Shutdown();
-	}
-
-	Coral::ManagedObject ScriptingManager::CreateManagedObject(std::string_view fqManagedClassName, uint64_t entityGUID)
-	{
-		Coral::Type& managedType = appAssembly.GetType(fqManagedClassName);
-		Coral::ManagedObject managedObject = managedType.CreateInstance((uint64_t)entityGUID);
-
-		managedObjects.push_back(managedObject);
-		return managedObject;
 	}
 
 	void ScriptingManager::AddEntityScript(GUID entityGUID, uint32_t scriptID)
@@ -133,6 +129,7 @@ namespace Odyssey
 			{
 				ScriptMetadata& metadata = m_ScriptMetdata[scriptID];
 				metadata.Name = fullName;
+				metadata.Type = type;
 
 				auto temp = type->CreateInstance();
 
@@ -212,6 +209,7 @@ namespace Odyssey
 						break;
 					case DataType::Bool:
 						fieldMetadata.SetDefaultValue<Coral::Bool32>(temp);
+						break;
 					case DataType::String:
 					case DataType::Entity:
 					case DataType::Mesh:
@@ -232,6 +230,17 @@ namespace Odyssey
 	{
 		return m_ScriptMetdata.at(scriptID);
 	}
+	void ScriptingManager::DestroyInstance(GUID entityGUID)
+	{
+		ScriptStorage& scriptStorage = m_ScriptStorage[entityGUID];
+
+		for (auto& [fieldID, fieldStorage] : scriptStorage.Fields)
+			fieldStorage.Instance = nullptr;
+
+		scriptStorage.Instance->Destroy();
+		scriptStorage.Instance = nullptr;
+	}
+
 	ScriptStorage& ScriptingManager::GetScriptStorage(GUID guid)
 	{
 		return m_ScriptStorage[guid];

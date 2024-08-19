@@ -14,6 +14,7 @@
 #include "Input.h"
 #include "Renderer.h"
 #include "EditorComponents.h"
+#include "PropertiesComponent.h"
 
 namespace Odyssey
 {
@@ -100,6 +101,10 @@ namespace Odyssey
 			// Add the editor properties component to hide this object in the scene hierarchy window
 			EditorPropertiesComponent& properties = m_GameObject.AddComponent<EditorPropertiesComponent>();
 			properties.ShowInHierarchy = false;
+
+			// Make sure we don't serialize this game object
+			PropertiesComponent& engineProperties = m_GameObject.GetComponent<PropertiesComponent>();
+			engineProperties.Serialize = false;
 
 			m_SceneViewPass->SetCamera(&camera);
 		}

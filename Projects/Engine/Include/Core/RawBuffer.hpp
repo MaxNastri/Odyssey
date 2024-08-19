@@ -93,6 +93,7 @@ namespace Odyssey
 		}
 
 		inline uint64_t GetSize() const { return m_Size; }
+		inline void* GetData() const { return m_Data; }
 	private:
 		void* m_Data = nullptr;
 		size_t m_Size = 0;

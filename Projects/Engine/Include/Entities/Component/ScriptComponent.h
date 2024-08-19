@@ -1,10 +1,9 @@
 #pragma once
 #include "AssetSerializer.h"
-#include "ManagedObject.hpp"
-#include "Type.hpp"
 #include "GameObject.h"
 #include "FileID.h"
 #include "ScriptStorage.h"
+#include "ManagedHandle.h"
 
 namespace Odyssey
 {
@@ -22,7 +21,7 @@ namespace Odyssey
 
 	public:
 		uint32_t GetScriptID() { return m_ScriptID; }
-		std::string GetManagedTypeName() { return m_ManagedType; }
+		void SetManagedHandle(ManagedHandle handle) { m_Handle = handle; }
 
 	private:
 		void SerializeNativeTypes(SerializationNode& node, FieldStorage& storage);
@@ -32,10 +31,9 @@ namespace Odyssey
 	
 	private:
 		FileID m_FileID;
-		GameObject m_GameObject;
-		Coral::ManagedObject managedInstance;
-		std::string m_ManagedType;
 		uint32_t m_ScriptID;
+		GameObject m_GameObject;
+		ManagedHandle m_Handle;
 		CLASS_DECLARATION(ScriptComponent);
 	};
 }

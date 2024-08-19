@@ -7,7 +7,7 @@
 #include "Input.h"
 #include "EventSystem.h"
 #include "EditorEvents.h"
-#include "IDComponent.h"
+#include "PropertiesComponent.h"
 #include "EditorComponents.h"
 
 namespace Odyssey
@@ -36,7 +36,7 @@ namespace Odyssey
 
 		if (m_Scene)
 		{
-			for (auto entity : m_Scene->GetAllEntitiesWith<IDComponent>())
+			for (auto entity : m_Scene->GetAllEntitiesWith<PropertiesComponent>())
 			{
 				GameObject gameObject = GameObject(m_Scene, entity);
 

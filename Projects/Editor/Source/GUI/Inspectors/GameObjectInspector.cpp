@@ -7,7 +7,7 @@
 #include "MeshRenderer.h"
 #include "ScriptComponent.h"
 #include "imgui.h"
-#include "IDComponent.h"
+#include "PropertiesComponent.h"
 
 namespace Odyssey
 {
@@ -70,7 +70,7 @@ namespace Odyssey
 
 	void GameObjectInspector::OnNameChanged(const std::string& name)
 	{
-		if (m_Target.HasComponent<IDComponent>())
+		if (m_Target.HasComponent<PropertiesComponent>())
 			m_Target.SetName(name);
 	}
 }

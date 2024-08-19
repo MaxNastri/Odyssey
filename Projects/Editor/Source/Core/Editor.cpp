@@ -26,7 +26,7 @@ namespace Odyssey
 			([this](BuildCompleteEvent* event) { OnBuildComplete(event); });
 		m_PlaymodeStateListener = EventSystem::Listen<PlaymodeStateChangedEvent>
 			([this](PlaymodeStateChangedEvent* event) { OnPlaymodeStateChanged(event); });
-		
+
 		// Load the default project
 		Project::LoadProject("C:/Git/Odyssey/Projects/ExampleProject");
 
@@ -109,30 +109,32 @@ namespace Odyssey
 	{
 		switch (event->State)
 		{
-		case PlaymodeState::EnterPlaymode:
-		{
-			Scene* activeScene = SceneManager::GetActiveScene();
-			Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
-			activeScene->SaveTo(tempPath);
+			case PlaymodeState::EnterPlaymode:
+			{
+				Scene* activeScene = SceneManager::GetActiveScene();
+				Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
+				activeScene->SaveTo(tempPath);
 
-			activeScene->Awake();
-			m_UpdateScripts = true;
-			break;
-		}
-		case PlaymodeState::PausePlaymode:
-		{
-			m_UpdateScripts = false;
-			break;
-		}
-		case PlaymodeState::ExitPlaymode:
-		{
-			Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
-			SceneManager::LoadScene(tempPath.string());
-			m_UpdateScripts = false;
-			break;
-		}
-		default:
-			break;
+				activeScene->OnStartRuntime();
+				activeScene->Awake();
+				m_UpdateScripts = true;
+				break;
+			}
+			case PlaymodeState::PausePlaymode:
+			{
+				m_UpdateScripts = false;
+				break;
+			}
+			case PlaymodeState::ExitPlaymode:
+			{
+				Scene* activeScene = SceneManager::GetActiveScene();
+				activeScene->OnStopRuntime();
+
+				Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
+				SceneManager::LoadScene(tempPath.string());
+				m_UpdateScripts = false;
+				break;
+			}
 		}
 	}
 	void Editor::OnBuildComplete(BuildCompleteEvent* event)

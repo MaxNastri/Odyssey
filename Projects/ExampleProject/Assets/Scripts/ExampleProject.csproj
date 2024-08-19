@@ -47,4 +47,8 @@
     <Compile Include="Source\AnotherScript.cs" />
     <Compile Include="Source\ExampleScript.cs" />
   </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy /B /Y "$(SolutionDir)\Cache\Build\Binaries\net8.0\ExampleProject.dll", "$(SolutionDir)"
+copy /B /Y "$(SolutionDir)\Cache\Build\Binaries\net8.0\ExampleProject.pdb", "$(SolutionDir)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

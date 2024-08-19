@@ -1,55 +1,53 @@
 Scene: Scene_01
 GUID: 6049963977740777600
 GameObjects:
-  - Name: ''
-    GUID: 2394572805666038351
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.Camera
-        Field of View: 45
-        Near Clip: 0.1
-        Far Clip: 1000
-        Main Camera: 0
-      - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
   - Name: "Max's GameObject"
     GUID: 15322439001782158818
     Type: Odyssey.GameObject
     Components:
-      - Type: Odyssey.MeshRenderer
+      - m_FileID: 1869239950
+        Type: Odyssey.MeshRenderer
         m_Mesh: 1869001743513185192
         m_Material: 942766181068811557
-      - Type: Odyssey.Transform
+      - m_FileID: 2443852871
+        Type: Odyssey.Transform
         Position: 'x: 0.72083634 y: 0 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 0.005 y: 0.005 z: 0.005'
-      - Type: Odyssey.ScriptComponent
-        Name: Example.Managed.ExampleScript
+      - m_FileID: 2330737257
+        m_ScriptID: 1881622155
+        Type: Odyssey.ScriptComponent
         Fields:
+          - Name: anotherMovementThing
+            Value: -1
           - Name: speed
-            ManagedType: 9
             Value: 0
+          - Name: MyName
+            Value: ''
           - Name: movement
-            ManagedType: 5
             Value: 10
           - Name: newSpeedMulti
-            ManagedType: 9
             Value: 0.01
-          - Name: anotherMovementThing
-            ManagedType: 5
-            Value: -1
   - Name: "Max's Other GameObject"
-    GUID: 12787104218450135111
+    GUID: 1278710421845013511
     Type: Odyssey.GameObject
     Components:
-      - Type: Odyssey.Camera
+      - m_FileID: 1987445990
+        Type: Odyssey.Camera
         Field of View: 45
         Near Clip: 0.1
         Far Clip: 1000
         Main Camera: 1
-      - Type: Odyssey.Transform
+      - m_FileID: 804600620
+        Type: Odyssey.Transform
         Position: 'x: -1 y: 2 z: -2'
         Rotation: 'x: 45 y: 45 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
+      - m_FileID: 804600621
+        m_ScriptID: 2998357344
+        Type: Odyssey.ScriptComponent
+        Fields:
+          - Name: varSpeed
+            Value: 10.01
+          - Name: otherScriptRef
+            Value: 15322439001782158818

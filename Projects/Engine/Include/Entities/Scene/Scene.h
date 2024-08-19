@@ -25,6 +25,8 @@ namespace Odyssey
 		void Clear();
 
 	public:
+		void OnStartRuntime();
+		void OnStopRuntime();
 		void Awake();
 		void Update();
 		void OnDestroy();

@@ -17,14 +17,15 @@ namespace Odyssey
 
 		if (ScriptComponent* scriptComponent = m_GameObject.TryGetComponent<ScriptComponent>())
 		{
-			userScriptFullName = scriptComponent->GetManagedTypeName();
-			displayName = userScriptFullName;
+			// TODO FIX THIS
+			ScriptMetadata& metadata = ScriptingManager::GetScriptMetadata(scriptComponent->GetScriptID());
+			displayName = metadata.Name;
 
 			// Remove any namespaces
-			size_t found = userScriptFullName.find_last_of('.');
+			size_t found = displayName.find_last_of('.');
 			if (found != std::string::npos)
 			{
-				displayName = userScriptFullName.substr(found + 1);
+				displayName = displayName.substr(found + 1);
 			}
 
 			InitializeDrawers(scriptComponent);
@@ -56,7 +57,11 @@ namespace Odyssey
 		for (auto& [fieldID, fieldStorage] : storage.Fields)
 		{
 			if (fieldStorage.DataType == DataType::Entity)
-				CreateEntityDrawer(fieldStorage.Name, storage.ScriptID, fieldID, 0);
+			{
+				GUID initialValue = 0;
+				fieldStorage.TryGetValue(initialValue);
+				CreateEntityDrawer(fieldStorage.Name, storage.ScriptID, fieldID, initialValue);
+			}
 			else if (fieldStorage.DataType == DataType::String)
 				CreateStringDrawer(storage.ScriptID, fieldID, fieldStorage);
 			else

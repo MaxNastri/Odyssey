@@ -26,6 +26,12 @@ project "%ProjectName%"
     "%{wks.location}/Cache/UserAssemblies/Coral.Managed",
     "%{wks.location}/Cache/UserAssemblies/Odyssey.Framework"
     }
+    
+    filter { "system:windows" }
+        postbuildcommands {
+            '{COPYFILE} "%{wks.location}/Cache/Build/Binaries/net8.0/%ProjectName%.dll", "%{wks.location}/Cache/UserAssemblies"',
+            '{COPYFILE} "%{wks.location}/Cache/Build/Binaries/net8.0/%ProjectName%.pdb", "%{wks.location}/Cache/UserAssemblies"',
+        }
 
     filter "configurations:Debug"
         optimize "Off"

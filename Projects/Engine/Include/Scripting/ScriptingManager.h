@@ -4,6 +4,7 @@
 #include "ScriptMetadata.h"
 #include "ScriptStorage.h"
 #include "GUID.h"
+#include "ManagedHandle.h"
 
 namespace Odyssey
 {
@@ -19,13 +20,49 @@ namespace Odyssey
 		static void Destroy();
 
 	public:
-		static Coral::ManagedObject CreateManagedObject(std::string_view fqManagedClassName, uint64_t entityGUID);
 		static Coral::Type GetEntityType() { return s_FrameworkAssembly.GetType("Odyssey.Entity"); }
 	
 	public:
 		static void AddEntityScript(GUID entityGUID, uint32_t scriptID);
 		static ScriptStorage& GetScriptStorage(GUID guid);
 		static ScriptMetadata& GetScriptMetadata(uint32_t scriptID);
+		static void DestroyInstance(GUID entityGUID);
+	public:
+		template<typename... Args>
+		static ManagedHandle Instantiate(GUID entityGUID, Args&&... args)
+		{
+			ScriptStorage& scriptStorage = m_ScriptStorage[entityGUID];
+			ScriptMetadata& metadata = m_ScriptMetdata[scriptStorage.ScriptID];
+
+			Coral::ManagedObject instance = metadata.Type->CreateInstance(std::forward<Args>(args)...);
+			auto [index, handle] = m_ManagedObjects.Insert(std::move(instance));
+
+			scriptStorage.Instance = &handle;
+
+			for (auto& [fieldID, fieldStorage] : scriptStorage.Fields)
+			{
+				const FieldMetadata& fieldMetadata = metadata.Fields[fieldID];
+
+				// TODO CONVERT TO ATTRIBUTE CHECK
+				if (fieldMetadata.Type == DataType::Entity)
+				{
+					GUID guid = 0;
+					fieldStorage.TryGetValue<GUID>(guid);
+					Coral::ManagedObject value = fieldMetadata.ManagedType->CreateInstance((uint64_t)guid);
+					handle.SetFieldValue(fieldStorage.Name, value);
+					value.Destroy();
+				}
+				else
+				{
+					if (fieldStorage.ValueBuffer.GetSize() > 0)
+						handle.SetFieldValueRaw(fieldStorage.Name, fieldStorage.ValueBuffer.GetData());
+				}
+
+				fieldStorage.Instance = &handle;
+			}
+
+			return ManagedHandle(&handle);
+		}
 
 	private:
 		static void BuildScriptMetadata(Coral::ManagedAssembly& assembly);
@@ -43,8 +80,8 @@ namespace Odyssey
 		inline static Path s_UserAssemblyPath;
 
 		// Script management
-		inline static std::map<GUID, ScriptMetadata> m_ScriptMetdata;
+		inline static std::map<uint32_t, ScriptMetadata> m_ScriptMetdata;
 		inline static std::map<GUID, ScriptStorage> m_ScriptStorage;
-		inline static std::vector<Coral::ManagedObject> managedObjects;
+		inline static Coral::StableVector<Coral::ManagedObject> m_ManagedObjects;
 	};
 }

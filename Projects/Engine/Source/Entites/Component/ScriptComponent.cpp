@@ -19,17 +19,20 @@ namespace Odyssey
 
 	void ScriptComponent::Awake()
 	{
-		managedInstance.InvokeMethod("Void Awake()");
+		if (m_Handle.IsValid())
+			m_Handle.Invoke("Void Awake()");
 	}
 
 	void ScriptComponent::Update()
 	{
-		managedInstance.InvokeMethod("Void Update()");
+		if (m_Handle.IsValid())
+			m_Handle.Invoke("Void Update()");
 	}
 
 	void ScriptComponent::OnDestroy()
 	{
-		managedInstance.InvokeMethod("Void OnDestroy()");
+		if (m_Handle.IsValid())
+			m_Handle.Invoke("Void OnDestroy()");
 	}
 
 	void ScriptComponent::Serialize(SerializationNode& node)
@@ -65,7 +68,6 @@ namespace Odyssey
 		// Read the managed type and create an object based on the type
 		node.ReadData("m_FileID", m_FileID.Ref());
 		node.ReadData("m_ScriptID", m_ScriptID);
-		node.ReadData("Name", m_ManagedType);
 
 		ScriptingManager::AddEntityScript(m_GameObject.GetGUID(), m_ScriptID);
 
@@ -111,68 +113,74 @@ namespace Odyssey
 		{
 			case DataType::Byte:
 			{
-				uint8_t val = storage.GetValue<uint8_t>();
-				fieldNode.WriteData("Value", val);
+				uint8_t value = storage.GetValue<uint8_t>();
+				fieldNode.WriteData("Value", value);
 				break;
 			}
 			case DataType::UShort:
 			{
-				uint16_t val = storage.GetValue<uint16_t>();
-				fieldNode.WriteData("Value", val);
+				uint16_t value = storage.GetValue<uint16_t>();
+				fieldNode.WriteData("Value", value);
 				break;
 			}
 			case DataType::UInt:
 			{
-				uint32_t val = storage.GetValue<uint32_t>();
-				fieldNode.WriteData("Value", val);
+				uint32_t value = storage.GetValue<uint32_t>();
+				fieldNode.WriteData("Value", value);
 				break;
 			}
 			case DataType::ULong:
 			{
-				uint64_t val = storage.GetValue<uint64_t>();
-				fieldNode.WriteData("Value", val);
+				uint64_t value = storage.GetValue<uint64_t>();
+				fieldNode.WriteData("Value", value);
 				break;
 			}
 			case DataType::SByte:
 			{
-				char8_t val = storage.GetValue<char8_t>();
-				fieldNode.WriteData("Value", val);
+				char8_t value = storage.GetValue<char8_t>();
+				fieldNode.WriteData("Value", value);
 				break;
 			}
 			case DataType::Short:
 			{
-				int16_t val = storage.GetValue<int16_t>();
-				fieldNode.WriteData("Value", val);
+				int16_t value = storage.GetValue<int16_t>();
+				fieldNode.WriteData("Value", value);
 				break;
 			}
 			case DataType::Int:
 			{
-				int32_t val = storage.GetValue<int32_t>();
-				fieldNode.WriteData("Value", val);
+				int32_t value = storage.GetValue<int32_t>();
+				fieldNode.WriteData("Value", value);
 				break;
 			}
 			case DataType::Long:
 			{
-				int64_t val = storage.GetValue<int64_t>();
-				fieldNode.WriteData("Value", val);
+				int64_t value = storage.GetValue<int64_t>();
+				fieldNode.WriteData("Value", value);
 				break;
 			}
 			case DataType::Float:
 			{
-				float val = storage.GetValue<float>();
-				fieldNode.WriteData("Value", val);
+				float value = storage.GetValue<float>();
+				fieldNode.WriteData("Value", value);
 				break;
 			}
 			case DataType::Double:
 			{
-				double val = storage.GetValue<double>();
-				fieldNode.WriteData("Value", val);
+				double value = storage.GetValue<double>();
+				fieldNode.WriteData("Value", value);
 				break;
 			}
 			case DataType::Bool:
 			{
-				Coral::Bool32 val = storage.GetValue<Coral::Bool32>();
-				fieldNode.WriteData("Value", val);
+				Coral::Bool32 value = storage.GetValue<Coral::Bool32>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::Entity:
+			{
+				GUID value = storage.GetValue<GUID>();
+				fieldNode.WriteData("Value", value.CRef());
 				break;
 			}
 		}
@@ -196,9 +204,9 @@ namespace Odyssey
 	template<typename T>
 	inline void DeserializeValue(SerializationNode& node, FieldStorage& storage)
 	{
-		T val;
-		node.ReadData("Value", val);
-		storage.SetValue<T>(val);
+		T value;
+		node.ReadData("Value", value);
+		storage.SetValue<T>(value);
 	}
 
 	void ScriptComponent::DeserializeNativeType(SerializationNode& node, FieldStorage& storage)
@@ -258,6 +266,13 @@ namespace Odyssey
 			case DataType::Bool:
 			{
 				DeserializeValue<Coral::Bool32>(node, storage);
+				break;
+			}
+			case DataType::Entity:
+			{
+				GUID value;
+				node.ReadData("Value", value.Ref());
+				storage.SetValue(value);
 				break;
 			}
 		}
