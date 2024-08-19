@@ -56,7 +56,7 @@ namespace Odyssey
 
 		for (auto& [fieldID, fieldStorage] : storage.Fields)
 		{
-			if (fieldStorage.DataType == DataType::Entity)
+			if (fieldStorage.DataType == DataType::Entity || fieldStorage.DataType == DataType::Component)
 			{
 				GUID initialValue = 0;
 				fieldStorage.TryGetValue(initialValue);

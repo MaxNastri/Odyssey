@@ -44,7 +44,7 @@ namespace Odyssey
 				const FieldMetadata& fieldMetadata = metadata.Fields[fieldID];
 
 				// TODO CONVERT TO ATTRIBUTE CHECK
-				if (fieldMetadata.Type == DataType::Entity)
+				if (fieldMetadata.Type == DataType::Entity || fieldMetadata.Type == DataType::Component)
 				{
 					GUID guid = 0;
 					fieldStorage.TryGetValue<GUID>(guid);

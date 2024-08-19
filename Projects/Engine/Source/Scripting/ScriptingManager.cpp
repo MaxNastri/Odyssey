@@ -119,6 +119,7 @@ namespace Odyssey
 	{
 		std::vector<Coral::Type*> types = assembly.GetTypes();
 		Coral::Type& entityType = assembly.GetType("Odyssey.Entity");
+		Coral::Type& componentType = assembly.GetType("Odyssey.Component");
 
 		for (Coral::Type* type : types)
 		{
@@ -157,6 +158,9 @@ namespace Odyssey
 					// Unknown type, but is a sub class of entity
 					else if (fieldType->IsSubclassOf(entityType))
 						dataType = DataType::Entity;
+					// Unknown type, but is a sub class of component
+					else if (fieldType->IsSubclassOf(componentType))
+						dataType = DataType::Component;
 					// Completely unknown, skip
 					else
 						continue;
@@ -216,6 +220,7 @@ namespace Odyssey
 					case DataType::Material:
 					case DataType::Texture2D:
 					case DataType::Scene:
+					case DataType::Component:
 						break;
 					default:
 						break;

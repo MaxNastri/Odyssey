@@ -1,6 +1,33 @@
 Scene: Scene_01
 GUID: 6049963977740777600
 GameObjects:
+  - Name: "Max's GameObject"
+    GUID: 15322439001782158818
+    Type: Odyssey.GameObject
+    Components:
+      - m_FileID: 1869239950
+        Type: Odyssey.MeshRenderer
+        m_Mesh: 1869001743513185192
+        m_Material: 942766181068811557
+      - m_FileID: 2443852871
+        Type: Odyssey.Transform
+        Position: 'x: 0.72083634 y: 0 z: 2'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 0.005 y: 0.005 z: 0.005'
+      - m_FileID: 2330737257
+        m_ScriptID: 1881622155
+        Type: Odyssey.ScriptComponent
+        Fields:
+          - Name: anotherMovementThing
+            Value: -1
+          - Name: speed
+            Value: 0
+          - Name: max
+            Value: ''
+          - Name: movement
+            Value: 10
+          - Name: newSpeedMulti
+            Value: 0.01
   - Name: "Max's Other GameObject"
     GUID: 1278710421845013511
     Type: Odyssey.GameObject
@@ -24,30 +51,5 @@ GameObjects:
             Value: 10.01
           - Name: otherScriptRef
             Value: 15322439001782158818
-  - Name: "Max's GameObject"
-    GUID: 15322439001782158818
-    Type: Odyssey.GameObject
-    Components:
-      - m_FileID: 1869239950
-        Type: Odyssey.MeshRenderer
-        m_Mesh: 1869001743513185192
-        m_Material: 942766181068811557
-      - m_FileID: 2443852871
-        Type: Odyssey.Transform
-        Position: 'x: 0.72083634 y: 0 z: 2'
-        Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 0.005 y: 0.005 z: 0.005'
-      - m_FileID: 2330737257
-        m_ScriptID: 1881622155
-        Type: Odyssey.ScriptComponent
-        Fields:
-          - Name: anotherMovementThing
-            Value: -1
-          - Name: speed
-            Value: 0
-          - Name: MyName
-            Value: ''
-          - Name: movement
-            Value: 10
-          - Name: newSpeedMulti
-            Value: 0.01
+          - Name: otherTransform
+            Value: 15322439001782158818

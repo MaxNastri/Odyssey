@@ -26,7 +26,8 @@ namespace Odyssey
 		Mesh = 16,
 		Material = 17,
 		Texture2D = 18,
-		Scene = 19
+		Scene = 19,
+		Component = 20,
 	};
 
 	inline uint64_t DataTypeSize(DataType type)
@@ -52,6 +53,7 @@ namespace Odyssey
 		case DataType::Material: return sizeof(GUID);
 		case DataType::Texture2D: return sizeof(GUID);
 		case DataType::Scene: return sizeof(GUID);
+		case DataType::Component: return sizeof(GUID);
 		}
 
 		return 0;

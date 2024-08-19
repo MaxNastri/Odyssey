@@ -178,6 +178,7 @@ namespace Odyssey
 				break;
 			}
 			case DataType::Entity:
+			case DataType::Component:
 			{
 				GUID value = storage.GetValue<GUID>();
 				fieldNode.WriteData("Value", value.CRef());
@@ -269,6 +270,7 @@ namespace Odyssey
 				break;
 			}
 			case DataType::Entity:
+			case DataType::Component:
 			{
 				GUID value;
 				node.ReadData("Value", value.Ref());
