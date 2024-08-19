@@ -52,13 +52,13 @@ namespace Odyssey
 
 			if (ImGui::BeginDragDropTarget())
 			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Asset"))
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
 				{
-					std::string guid((const char*)payload->Data);
-					m_GUID = GUID(guid);
+					uint64_t* payloadData = (uint64_t*)payload->Data;
+					m_GUID = GUID(*payloadData);
 					m_Modified = true;
 					m_OnValueModified(m_GUID);
-					Logger::LogInfo("(AssetFieldDrawer) Accepting D&D payload for mesh asset: " + m_GUID);
+					Logger::LogInfo("(AssetFieldDrawer) Accepting Entity payload: " + m_GUID.String());
 				}
 				ImGui::EndDragDropTarget();
 			}

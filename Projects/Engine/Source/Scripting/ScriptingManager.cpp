@@ -146,7 +146,7 @@ namespace Odyssey
 						fieldType = &fieldType->GetElementType();
 
 					if (fieldInfo.GetAccessibility() != Coral::TypeAccessibility::Public)
-						return;
+						continue;
 
 					Coral::ScopedString typeName = fieldType->GetFullName();
 					std::string fullFieldName = std::format("{}.{}", fullName, fieldNameStr);

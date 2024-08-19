@@ -73,7 +73,7 @@ namespace Odyssey
 					nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 					ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject.GetName().c_str());
 
-					if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+					if (ImGui::IsItemDeactivated() && ImGui::IsItemHovered() && !ImGui::IsItemToggledOpen())
 					{
 						nodeClicked = selectionID;
 
@@ -83,6 +83,15 @@ namespace Odyssey
 						EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
 					}
 				}
+
+				// Allow for this entity to be a potential draw/drop payload
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+				{
+					uint64_t guid = gameObject.GetGUID();
+					ImGui::SetDragDropPayload("Entity", (void*)&guid, sizeof(uint64_t));
+					ImGui::EndDragDropSource();
+				}
+				++selectionID;
 			}
 
 			if (m_CursorInContentRegion)
