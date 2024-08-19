@@ -34,6 +34,15 @@ namespace Odyssey
 		return gameObject;
 	}
 
+	GameObject Scene::CreateEmptyEntity()
+	{
+		// Create the backing entity
+		const auto entity = m_Registry.create();
+
+		// Return a game object wrapper
+		return GameObject(this, entity);
+	}
+
 	void Scene::DestroyGameObject(const GameObject& gameObject)
 	{
 		m_Registry.destroy(gameObject);
@@ -136,10 +145,19 @@ namespace Odyssey
 
 			for (size_t i = 0; i < gameObjectsNode.ChildCount(); i++)
 			{
-				GameObject gameObject = CreateGameObject();
+				GameObject gameObject = CreateEmptyEntity();
 				SerializationNode child = gameObjectsNode.GetChild(i);
 				gameObject.Deserialize(child);
-				m_GUIDToGameObject[gameObject.GetGUID()] = gameObject;
+
+				GUID guid = gameObject.GetGUID();
+				m_GUIDToGameObject[guid] = gameObject;
+
+				if (gameObject.HasComponent<ScriptComponent>())
+				{
+					ScriptComponent& scriptComponent = gameObject.GetComponent<ScriptComponent>();
+					uint32_t scriptID = scriptComponent.GetScriptID();
+					ScriptingManager::AddEntityScript(guid, scriptID);
+				}
 			}
 		}
 	}

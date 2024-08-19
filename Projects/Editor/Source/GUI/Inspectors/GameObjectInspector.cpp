@@ -39,7 +39,7 @@ namespace Odyssey
 		}
 	}
 
-	void GameObjectInspector::SetGameObject(GameObject& gameObject)
+	void GameObjectInspector::SetGameObject(GameObject gameObject)
 	{
 		m_Inspectors.clear();
 		userScriptInspectors.clear();

@@ -1,6 +1,9 @@
 #pragma once
 #include <HostInstance.hpp>
 #include "ManagedObject.hpp"
+#include "ScriptMetadata.h"
+#include "ScriptStorage.h"
+#include "GUID.h"
 
 namespace Odyssey
 {
@@ -19,6 +22,14 @@ namespace Odyssey
 		static Coral::ManagedObject CreateManagedObject(std::string_view fqManagedClassName, uint64_t entityGUID);
 		static Coral::Type GetEntityType() { return s_FrameworkAssembly.GetType("Odyssey.Entity"); }
 	
+	public:
+		static void AddEntityScript(GUID& entityGUID, uint32_t scriptID);
+		static ScriptStorage& GetScriptStorage(GUID guid);
+
+	private:
+		static void BuildScriptMetadata(Coral::ManagedAssembly& assembly);
+		static ScriptMetadata& GetScriptMetadata(uint32_t scriptID);
+
 	private: // Host settings
 		inline static Coral::HostInstance hostInstance;
 		inline static Coral::HostSettings hostSettings;
@@ -31,6 +42,9 @@ namespace Odyssey
 		inline static bool s_UserAssembliesLoaded = false;
 		inline static Path s_UserAssemblyPath;
 
+		// Script management
+		inline static std::map<GUID, ScriptMetadata> m_ScriptMetdata;
+		inline static std::map<GUID, ScriptStorage> m_ScriptStorage;
 		inline static std::vector<Coral::ManagedObject> managedObjects;
 	};
 }

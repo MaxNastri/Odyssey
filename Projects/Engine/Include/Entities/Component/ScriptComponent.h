@@ -20,6 +20,7 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
+		uint32_t GetScriptID() { return m_ScriptID; }
 		Coral::Type GetType() { return managedInstance.GetType(); }
 		Coral::ManagedObject GetManagedObject() { return managedInstance; }
 		std::string GetManagedTypeName() { return m_ManagedType; }
@@ -35,6 +36,7 @@ namespace Odyssey
 		GameObject m_GameObject;
 		Coral::ManagedObject managedInstance;
 		std::string m_ManagedType;
+		uint32_t m_ScriptID;
 		CLASS_DECLARATION(ScriptComponent);
 	};
 }

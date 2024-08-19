@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "DrawerUtils.h"
 #include "ScriptingManager.h"
+#include "EntityFieldDrawer.h"
 
 namespace Odyssey
 {
@@ -29,8 +30,6 @@ namespace Odyssey
 
 			InitializeDrawers(scriptComponent);
 		}
-		
-
 	}
 
 	void UserScriptInspector::Draw()
@@ -53,28 +52,25 @@ namespace Odyssey
 
 	void UserScriptInspector::InitializeDrawers(ScriptComponent* userScript)
 	{
+		auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
+
 		Coral::Type type = userScript->GetType();
 		Coral::ManagedObject userObject = userScript->GetManagedObject();
 
 		std::vector<Coral::FieldInfo> fields = type.GetFields();
-		Coral::Type entityType = ScriptingManager::GetEntityType();
 
-		for (auto& field : fields)
+		for (auto& [fieldID, fieldStorage] : storage.Fields)
 		{
-			if (field.GetAccessibility() == Coral::TypeAccessibility::Public)
+			if (fieldStorage.DataType == DataType::Entity)
 			{
-				std::string fieldName = field.GetName();
-				Coral::Type fieldType = field.GetType();
-				bool fieldIsString = fieldType.GetManagedType() == Coral::ManagedType::Unknown && fieldType.GetFullName() == "System.String";
-
-				bool isSubclass = fieldType.IsSubclassOf(entityType);
-				if (isSubclass) // TODO: Create an asset reference drawer here
-					continue;
-				else if (fieldIsString)
-					CreateStringDrawer(m_GameObject, fieldName, userObject);
-				else
-					CreateDrawerFromProperty(m_GameObject, fieldName, field.GetType().GetManagedType(), userObject);
+				auto drawer = std::make_shared<EntityFieldDrawer>(fieldStorage.Name, 0,
+					[](GUID guid) {  });
+				drawers.push_back(drawer);
 			}
+			else if (fieldStorage.DataType == DataType::String)
+				CreateStringDrawer(m_GameObject, fieldStorage.Name, userObject);
+			else
+				CreateDrawerFromProperty(m_GameObject, fieldStorage.Name, fieldStorage.Type->GetManagedType(), userObject);
 		}
 	}
 

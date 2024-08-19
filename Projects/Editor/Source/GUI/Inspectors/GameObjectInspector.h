@@ -20,7 +20,7 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	public:
-		void SetGameObject(GameObject& gameObject);
+		void SetGameObject(GameObject gameObject);
 		void RefreshUserScripts();
 
 	private:
