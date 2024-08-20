@@ -1,19 +1,19 @@
 FileVersion = 1.0
 OdysseyRootDirectory = os.getenv("ODYSSEY_ROOT")
-ProjectDirectory = path.join(OdysseyRootDirectory, "Projects/%ProjectName%")
+ProjectDirectory = path.join(OdysseyRootDirectory, "Projects/Sandbox")
 TargetDirectory = path.join(ProjectDirectory, "Cache/Build/Binaries")
 
-workspace "%ProjectName%"
-    startproject "%ProjectName%"
+workspace "Sandbox"
+    startproject "Sandbox"
     configurations { "Debug", "Release"}
     
-project "%ProjectName%"
+project "Sandbox"
     location "Assets/Scripts"
     kind "SharedLib"
     language "C#"
     dotnetframework "net8.0"
 
-    targetname "%ProjectName%"
+    targetname "Sandbox"
     targetdir (TargetDirectory)
     objdir (path.join(ProjectDirectory, "Cache/Build/Intermediates"))
 
@@ -28,8 +28,8 @@ project "%ProjectName%"
     
     filter { "system:windows" }
         postbuildcommands {
-            '{COPYFILE} ' .. path.join(TargetDirectory, "net8.0/%ProjectName%.dll") .. ', ' .. path.join(ProjectDirectory, "Cache/UserAssemblies"),
-            '{COPYFILE} ' .. path.join(TargetDirectory, "net8.0/%ProjectName%.pdb") .. ', ' .. path.join(ProjectDirectory, "Cache/UserAssemblies"),
+            '{COPYFILE} ' .. path.join(TargetDirectory, "net8.0/Sandbox.dll") .. ', ' .. path.join(ProjectDirectory, "Cache/UserAssemblies"),
+            '{COPYFILE} ' .. path.join(TargetDirectory, "net8.0/Sandbox.pdb") .. ', ' .. path.join(ProjectDirectory, "Cache/UserAssemblies"),
         }
 
     filter "configurations:Debug"

@@ -14,20 +14,6 @@ GameObjects:
         Position: 'x: 0.72083634 y: 0 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 0.005 y: 0.005 z: 0.005'
-      - m_FileID: 2330737257
-        m_ScriptID: 1881622155
-        Type: Odyssey.ScriptComponent
-        Fields:
-          - Name: anotherMovementThing
-            Value: -1
-          - Name: speed
-            Value: 0
-          - Name: max
-            Value: ''
-          - Name: movement
-            Value: 10
-          - Name: newSpeedMulti
-            Value: 0.01
   - Name: "Max's Other GameObject"
     GUID: 1278710421845013511
     Type: Odyssey.GameObject
@@ -43,13 +29,3 @@ GameObjects:
         Position: 'x: -1 y: 2 z: -2'
         Rotation: 'x: 45 y: 45 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
-      - m_FileID: 804600621
-        m_ScriptID: 2998357344
-        Type: Odyssey.ScriptComponent
-        Fields:
-          - Name: varSpeed
-            Value: 10.01
-          - Name: otherScriptRef
-            Value: 15322439001782158818
-          - Name: otherTransform
-            Value: 15322439001782158818

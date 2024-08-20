@@ -28,7 +28,7 @@ namespace Odyssey
 			([this](PlaymodeStateChangedEvent* event) { OnPlaymodeStateChanged(event); });
 
 		// Load the default project
-		Project::LoadProject("C:/Git/Odyssey/Projects/ExampleProject");
+		Project::LoadProject("C:/Git/Odyssey/Projects/Sandbox");
 
 		// Create the renderer
 		RendererConfig config;

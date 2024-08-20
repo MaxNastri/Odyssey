@@ -18,7 +18,13 @@ namespace Odyssey
         #endregion
 
         #region Transform
+
         internal static delegate* unmanaged<ulong, Vector3*, void> Transform_GetPosition;
+        internal static delegate* unmanaged<ulong, Vector3, void> Transform_SetPosition;
+        internal static delegate* unmanaged<ulong, Vector3*, void> Transform_GetEulerAngles;
+        internal static delegate* unmanaged<ulong, Vector3, void> Transform_SetEulerAngles;
+        internal static delegate* unmanaged<ulong, Vector3*, void> Transform_GetScale;
+        internal static delegate* unmanaged<ulong, Vector3, void> Transform_SetScale;
 
         #endregion
 #pragma warning restore CS0649

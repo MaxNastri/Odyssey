@@ -21,7 +21,7 @@ std::string className::Type = TO_STRING(classNamespace.className);
 
 #pragma endregion
 
-		inline static void ReplaceString(std::string& str, const char* token, const std::string& value)
+		inline static void ReplaceString(std::string& str, const char* token, std::string_view value)
 		{
 			size_t pos = 0;
 			while ((pos = str.find(token, pos)) != std::string::npos)

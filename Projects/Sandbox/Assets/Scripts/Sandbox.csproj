@@ -44,11 +44,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\AnotherScript.cs" />
-    <Compile Include="Source\ExampleScript.cs" />
+    <Compile Include="Source\Sample.cs" />
   </ItemGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy /B /Y "$(SolutionDir)\Cache\Build\Binaries\net8.0\ExampleProject.dll", "$(SolutionDir)\Cache\UserAssemblies"
-copy /B /Y "$(SolutionDir)\Cache\Build\Binaries\net8.0\ExampleProject.pdb", "$(SolutionDir)\Cache\UserAssemblies"</PostBuildEvent>
+    <PostBuildEvent>copy /B /Y C:\Git\Odyssey\Projects\Sandbox\Cache\Build\Binaries\net8.0\Sandbox.dll, C:\Git\Odyssey\Projects\Sandbox\Cache\UserAssemblies
+copy /B /Y C:\Git\Odyssey\Projects\Sandbox\Cache\Build\Binaries\net8.0\Sandbox.pdb, C:\Git\Odyssey\Projects\Sandbox\Cache\UserAssemblies</PostBuildEvent>
   </PropertyGroup>
 </Project>

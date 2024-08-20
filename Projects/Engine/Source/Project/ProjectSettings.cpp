@@ -35,6 +35,7 @@ namespace Odyssey
 		root.WriteData("m_TempDirectory", m_TempDirectory.string());
 		root.WriteData("m_LogsDirectory", m_LogsDirectory.string());
 		root.WriteData("m_ScriptsDirectory", m_ScriptsDirectory.string());
+		root.WriteData("m_CodeDirectory", m_CodeDirectory.string());
 		root.WriteData("m_ScriptsProjectPath", m_ScriptsProjectPath.string());
 		serializer.WriteToDisk(m_Path);
 	}
@@ -54,6 +55,7 @@ namespace Odyssey
 			std::string tempDirectory;
 			std::string logsDirectory;
 			std::string scriptsDirectory;
+			std::string codeDirectory;
 			std::string scriptsProjectPath;
 
 			root.ReadData("m_ProjectName", m_ProjectName);
@@ -62,6 +64,7 @@ namespace Odyssey
 			root.ReadData("m_TempDirectory", tempDirectory);
 			root.ReadData("m_LogsDirectory", logsDirectory);
 			root.ReadData("m_ScriptsDirectory", scriptsDirectory);
+			root.ReadData("m_CodeDirectory", codeDirectory);
 			root.ReadData("m_ScriptsProjectPath", scriptsProjectPath);
 
 			// Convert them back into paths
@@ -70,6 +73,7 @@ namespace Odyssey
 			m_TempDirectory = tempDirectory;
 			m_LogsDirectory = logsDirectory;
 			m_ScriptsDirectory = scriptsDirectory;
+			m_CodeDirectory = codeDirectory;
 			m_ScriptsProjectPath = scriptsProjectPath;
 
 			// Generate paths including the project directory
@@ -78,6 +82,7 @@ namespace Odyssey
 			m_FullTempDirectory = m_ProjectDirectory / m_TempDirectory;
 			m_FullLogsDirectory = m_ProjectDirectory / m_LogsDirectory;
 			m_FullScriptsDirectory = m_ProjectDirectory / m_ScriptsDirectory;
+			m_FullCodeDirectory = m_ProjectDirectory / m_CodeDirectory;
 			m_FullScriptsProjectPath = m_ProjectDirectory / m_ScriptsProjectPath;
 
 			std::filesystem::create_directories(m_FullAssetsDirectory);
@@ -85,6 +90,7 @@ namespace Odyssey
 			std::filesystem::create_directories(m_FullTempDirectory);
 			std::filesystem::create_directories(m_FullLogsDirectory);
 			std::filesystem::create_directories(m_FullScriptsDirectory);
+			std::filesystem::create_directories(m_FullCodeDirectory);
 		}
 	}
 }

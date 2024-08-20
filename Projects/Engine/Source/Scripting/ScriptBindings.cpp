@@ -24,6 +24,11 @@ namespace Odyssey
 		ADD_INTERNAL_CALL(GameObject_RemoveComponent);
 
 		ADD_INTERNAL_CALL(Transform_GetPosition);
+		ADD_INTERNAL_CALL(Transform_SetPosition);
+		ADD_INTERNAL_CALL(Transform_GetEulerAngles);
+		ADD_INTERNAL_CALL(Transform_SetEulerAngles);
+		ADD_INTERNAL_CALL(Transform_GetScale);
+		ADD_INTERNAL_CALL(Transform_SetScale);
 
 		frameworkAssembly.UploadInternalCalls();
 	}

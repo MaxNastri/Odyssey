@@ -123,4 +123,44 @@ namespace Odyssey::InternalCalls
 		if (Transform* transform = gameObject.TryGetComponent<Transform>())
 			*position = transform->GetPosition();
 	}
+
+	void Transform_SetPosition(uint64_t guid, glm::vec3 position)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (Transform* transform = gameObject.TryGetComponent<Transform>())
+			transform->SetPosition(position);
+	}
+
+	void Transform_GetEulerAngles(uint64_t guid, glm::vec3* rotation)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (Transform* transform = gameObject.TryGetComponent<Transform>())
+			*rotation = transform->GetEulerRotation();
+	}
+
+	void Transform_SetEulerAngles(uint64_t guid, glm::vec3 rotation)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (Transform* transform = gameObject.TryGetComponent<Transform>())
+			transform->SetRotation(rotation);
+	}
+
+	void Transform_GetScale(uint64_t guid, glm::vec3* scale)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (Transform* transform = gameObject.TryGetComponent<Transform>())
+			*scale = transform->GetScale();
+	}
+
+	void Transform_SetScale(uint64_t guid, glm::vec3 scale)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (Transform* transform = gameObject.TryGetComponent<Transform>())
+			transform->SetScale(scale);
+	}
 }
