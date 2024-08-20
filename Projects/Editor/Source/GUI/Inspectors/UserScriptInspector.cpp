@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "ScriptingManager.h"
 #include "EntityFieldDrawer.h"
+#include "Vector3Drawer.h"
 
 namespace Odyssey
 {
@@ -150,6 +151,14 @@ namespace Odyssey
 				Coral::Bool32 initialValue = fieldStorage.GetValue<Coral::Bool32>();
 				auto drawer = std::make_shared<BoolDrawer>(fieldStorage.Name, initialValue,
 					[this, scriptID, fieldID](bool newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
+				drawers.push_back(drawer);
+				break;
+			}
+			case DataType::Vector3:
+			{
+				glm::vec3 initialValue = fieldStorage.GetValue<glm::vec3>();
+				auto drawer = std::make_shared<Vector3Drawer>(fieldStorage.Name, initialValue, glm::zero<glm::vec3>(), false,
+					[this, scriptID, fieldID](glm::vec3 newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
 				drawers.push_back(drawer);
 				break;
 			}

@@ -1,7 +1,5 @@
 #pragma once
 #include "Assembly.hpp"
-#include "Core.hpp"
-#include "GameObject.h"
 
 namespace Odyssey
 {

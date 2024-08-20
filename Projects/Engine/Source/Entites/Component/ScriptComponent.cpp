@@ -189,6 +189,12 @@ namespace Odyssey
 				fieldNode.WriteData("Value", value);
 				break;
 			}
+			case DataType::Vector3:
+			{
+				glm::vec3 value = storage.GetValue<glm::vec3>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
 			case DataType::Entity:
 			case DataType::Component:
 			{
@@ -279,6 +285,11 @@ namespace Odyssey
 			case DataType::Bool:
 			{
 				DeserializeValue<Coral::Bool32>(node, storage);
+				break;
+			}
+			case DataType::Vector3:
+			{
+				DeserializeValue<glm::vec3>(node, storage);
 				break;
 			}
 			case DataType::Entity:

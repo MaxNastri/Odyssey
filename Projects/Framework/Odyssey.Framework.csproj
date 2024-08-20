@@ -51,6 +51,7 @@
     <Compile Include="Source\Entity.cs" />
     <Compile Include="Source\InternalCalls.cs" />
     <Compile Include="Source\Math\Vector3.cs" />
+    <Compile Include="Source\Time.cs" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /B /Y "..\..\Build\Debug\Odyssey.Framework.dll", "$(SolutionDir)\Projects\Editor\Resources\Scripts"

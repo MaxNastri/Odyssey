@@ -5,6 +5,7 @@
 #include "String.hpp"
 #include "glm.h"
 #include "Logger.h"
+#include "OdysseyTime.h"
 
 namespace Odyssey
 {
@@ -162,5 +163,10 @@ namespace Odyssey::InternalCalls
 
 		if (Transform* transform = gameObject.TryGetComponent<Transform>())
 			transform->SetScale(scale);
+	}
+
+	float Time_GetDeltaTime()
+	{
+		return Time::DeltaTime();
 	}
 }

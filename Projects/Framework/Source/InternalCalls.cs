@@ -27,6 +27,11 @@ namespace Odyssey
         internal static delegate* unmanaged<ulong, Vector3, void> Transform_SetScale;
 
         #endregion
+
+        #region Time
+        internal static delegate* unmanaged<float> Time_GetDeltaTime;
+
+        #endregion
 #pragma warning restore CS0649
     }
 }

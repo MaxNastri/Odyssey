@@ -11,13 +11,13 @@ namespace Odyssey
 
 		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
 		{
-			positionDrawer = Vector3Drawer("Position", transform->m_Position, glm::vec3(0, 0, 0),
+			positionDrawer = Vector3Drawer("Position", transform->m_Position, glm::vec3(0, 0, 0), true,
 				[this](glm::vec3 position) { OnPositionChanged(position); });
 
-			rotationDrawer = Vector3Drawer("Rotation", transform->m_EulerRotation, glm::vec3(0, 0, 0),
+			rotationDrawer = Vector3Drawer("Rotation", transform->m_EulerRotation, glm::vec3(0, 0, 0), true,
 				[this](glm::vec3 rotation) { OnRotationChanged(rotation); });
 
-			scaleDrawer = Vector3Drawer("Scale", transform->m_Scale, glm::vec3(1, 1, 1),
+			scaleDrawer = Vector3Drawer("Scale", transform->m_Scale, glm::vec3(1, 1, 1), true,
 				[this](glm::vec3 scale) { OnScaleChanged(scale); });
 		}
 	}

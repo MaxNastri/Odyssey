@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Source\Sample.cs" />
     <Compile Include="Source\Tests\FieldTest.cs" />
+    <Compile Include="Source\Tests\TransformTest.cs" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /B /Y C:\Git\Odyssey\Projects\Sandbox\Cache\Build\Binaries\net8.0\Sandbox.dll, C:\Git\Odyssey\Projects\Sandbox\Cache\UserAssemblies

@@ -30,14 +30,16 @@ GameObjects:
         Rotation: 'x: 45 y: 45 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - m_FileID: 3449596229
-        m_ScriptID: 709750549
+        m_ScriptID: 2015860154
         Type: Odyssey.ScriptComponent
         Fields:
-          - Name: Chat
-            Value: ''
           - Name: Target
             Value: 15322439001782158818
+          - Name: ScaleDirection
+            Value: 'x: 0.001 y: 0.001 z: 0.001'
+          - Name: PosDirection
+            Value: 'x: 0 y: 0 z: 1'
           - Name: Speed
-            Value: 10
-          - Name: SpawnCount
-            Value: 4
+            Value: 1
+          - Name: RotDirection
+            Value: 'x: 0 y: 45 z: 0'
