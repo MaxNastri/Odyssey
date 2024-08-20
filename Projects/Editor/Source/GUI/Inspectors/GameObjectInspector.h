@@ -20,10 +20,10 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	public:
-		void SetGameObject(GameObject gameObject);
 		void RefreshUserScripts();
 
 	private:
+		void CreateInspectors();
 		void OnNameChanged(const std::string& name);
 
 	private:

@@ -38,6 +38,7 @@ namespace Odyssey
 	struct ScriptMetadata
 	{
 		std::string Name;
+		uint32_t ScriptID;
 		Coral::Type* Type;
 		std::unordered_map<uint32_t, FieldMetadata> Fields;
 	};

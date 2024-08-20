@@ -43,14 +43,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\Components\Camera.cs" />
-    <Compile Include="Source\Components\Component.cs" />
-    <Compile Include="Source\Components\MeshRenderer.cs" />
-    <Compile Include="Source\Components\ScriptComponent.cs" />
-    <Compile Include="Source\Components\Transform.cs" />
+    <Compile Include="Source\Camera.cs" />
+    <Compile Include="Source\Component.cs" />
     <Compile Include="Source\Entity.cs" />
     <Compile Include="Source\InternalCalls.cs" />
     <Compile Include="Source\Math\Vector3.cs" />
+    <Compile Include="Source\MeshRenderer.cs" />
+    <Compile Include="Source\ScriptComponent.cs" />
+    <Compile Include="Source\Transform.cs" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /B /Y "..\..\Build\Debug\Odyssey.Framework.dll", "$(SolutionDir)\Projects\Editor\Resources\Scripts"

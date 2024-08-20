@@ -31,11 +31,12 @@ namespace Odyssey
 
 		void Allocate(size_t size)
 		{
+			if (size == 0)
+				return;
+
 			Free();
 
 			m_Size = size;
-			if (m_Size == 0)
-				return;
 
 			m_Data = new Byte[m_Size];
 		}

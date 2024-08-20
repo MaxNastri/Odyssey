@@ -12,8 +12,9 @@ project "%ProjectName%"
     kind "SharedLib"
     language "C#"
     dotnetframework "net8.0"
-
     targetname "%ProjectName%"
+    namespace "%ProjectName%"
+
     targetdir (TargetDirectory)
     objdir (path.join(ProjectDirectory, "Cache/Build/Intermediates"))
 

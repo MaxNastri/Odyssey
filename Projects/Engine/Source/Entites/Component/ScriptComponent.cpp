@@ -88,7 +88,7 @@ namespace Odyssey
 				auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
 
 				// Make sure the field still exists on deserialization
-				for (auto [fieldID, fieldStorage] : storage.Fields)
+				for (auto& [fieldID, fieldStorage] : storage.Fields)
 				{
 					if (fieldStorage.Name == fieldName)
 					{
@@ -101,6 +101,18 @@ namespace Odyssey
 				}
 			}
 		}
+	}
+
+	void ScriptComponent::SetScriptID(uint32_t scriptID)
+	{
+		// Remove the script from the entity storage
+		ScriptingManager::RemoveEntityScript(m_GameObject.GetGUID(), m_ScriptID);
+
+		// Update the ID
+		m_ScriptID = scriptID;
+
+		// Add the new script ID to the entity storage
+		ScriptingManager::AddEntityScript(m_GameObject.GetGUID(), m_ScriptID);
 	}
 
 	void ScriptComponent::SerializeNativeTypes(SerializationNode& node, FieldStorage& storage)
@@ -190,10 +202,10 @@ namespace Odyssey
 	bool ScriptComponent::SerializeNativeString(SerializationNode& node, FieldStorage& storage)
 	{
 		std::string fieldValue = "";
-		Coral::String storedValue;
 
-		if (storage.TryGetValue<Coral::String>(storedValue))
-			fieldValue = storedValue;
+		//storedValue.resize(storage.ValueBuffer.GetSize());
+		//if (storage.TryGetValue<std::string>(storedValue))
+		//	fieldValue = storedValue;
 
 		SerializationNode fieldNode = node.AppendChild();
 		fieldNode.SetMap();
@@ -285,8 +297,8 @@ namespace Odyssey
 		std::string nodeValue;
 		node.ReadData("Value", nodeValue);
 
-		storage.ValueBuffer.Allocate(nodeValue.size());
-		storage.SetValue(nodeValue);
+		//storage.ValueBuffer.Allocate(nodeValue.size());
+		//storage.SetValue(nodeValue);
 
 		return true;
 	}

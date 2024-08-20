@@ -5,6 +5,11 @@ namespace Sandbox
 {
     public class SampleScript : Entity
     {
+        public int SpawnCount = 4;
+        public float Speed = 10.0f;
+        public Entity Target;
+        public string Chat;
+
         protected override void Awake()
         {
 

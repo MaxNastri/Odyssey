@@ -7,7 +7,7 @@
 
 namespace Odyssey
 {
-	class ScriptComponent 
+	class ScriptComponent
 	{
 	public:
 		ScriptComponent() = default;
@@ -20,6 +20,7 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
+		void SetScriptID(uint32_t scriptID);
 		uint32_t GetScriptID() { return m_ScriptID; }
 		void SetManagedHandle(ManagedHandle handle) { m_Handle = handle; }
 
@@ -28,7 +29,7 @@ namespace Odyssey
 		bool SerializeNativeString(SerializationNode& node, FieldStorage& storage);
 		void DeserializeNativeType(SerializationNode& node, FieldStorage& storage);
 		bool DeserializeNativeString(SerializationNode& node, FieldStorage& storage);
-	
+
 	private:
 		FileID m_FileID;
 		uint32_t m_ScriptID;

@@ -10,6 +10,7 @@
 #include <istream>
 #include <map>
 #include <queue>
+#include <ranges>
 #include <set>
 #include <string>
 #include <typeindex>

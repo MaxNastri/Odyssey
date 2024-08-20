@@ -115,6 +115,37 @@ namespace Odyssey
 		}
 	}
 
+	void ScriptingManager::RemoveEntityScript(GUID entityGUID, uint32_t scriptID)
+	{
+		if (m_ScriptStorage.contains(entityGUID))
+		{
+			auto& scriptStorage = m_ScriptStorage[entityGUID];
+
+			// Make sure the script ID matches
+			if (scriptStorage.ScriptID == scriptID)
+			{
+				// Iterate through each field
+				for (auto& [fieldID, fieldStorage] : scriptStorage.Fields)
+				{
+					// Free the value buffer
+					if (fieldStorage.ValueBuffer)
+						fieldStorage.ValueBuffer.Free();
+
+					// Destroy the field instance
+					if (fieldStorage.Instance)
+						fieldStorage.Instance->Destroy();
+				}
+
+				// Destroy the script instance
+				if (scriptStorage.Instance)
+					scriptStorage.Instance->Destroy();
+
+				// Remove the entity from storage
+				m_ScriptStorage.erase(entityGUID);
+			}
+		}
+	}
+
 	void ScriptingManager::BuildScriptMetadata(Coral::ManagedAssembly& assembly)
 	{
 		std::vector<Coral::Type*> types = assembly.GetTypes();
@@ -131,6 +162,7 @@ namespace Odyssey
 				ScriptMetadata& metadata = m_ScriptMetdata[scriptID];
 				metadata.Name = fullName;
 				metadata.Type = type;
+				metadata.ScriptID = scriptID;
 
 				auto temp = type->CreateInstance();
 
@@ -231,10 +263,19 @@ namespace Odyssey
 			}
 		}
 	}
+
 	ScriptMetadata& ScriptingManager::GetScriptMetadata(uint32_t scriptID)
 	{
 		return m_ScriptMetdata.at(scriptID);
 	}
+
+	std::vector<ScriptMetadata> ScriptingManager::GetAllScriptMetadatas()
+	{
+		auto valueView = std::views::values(m_ScriptMetdata);
+		std::vector<ScriptMetadata> values{ valueView.begin(), valueView.end() };
+		return values;
+	}
+
 	void ScriptingManager::DestroyInstance(GUID entityGUID)
 	{
 		ScriptStorage& scriptStorage = m_ScriptStorage[entityGUID];

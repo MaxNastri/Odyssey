@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sandbox</RootNamespace>
     <TargetFramework>net8.0</TargetFramework>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
@@ -45,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Sample.cs" />
+    <Compile Include="Source\Tests\FieldTest.cs" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /B /Y C:\Git\Odyssey\Projects\Sandbox\Cache\Build\Binaries\net8.0\Sandbox.dll, C:\Git\Odyssey\Projects\Sandbox\Cache\UserAssemblies

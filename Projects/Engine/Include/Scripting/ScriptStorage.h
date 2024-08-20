@@ -27,7 +27,6 @@ namespace Odyssey
 		{
 			if (Instance)
 			{
-				outValue = Instance->GetFieldValue<T>(Name);
 				return true;
 			}
 			else
@@ -39,6 +38,7 @@ namespace Odyssey
 				return true;
 			}
 		}
+
 		template<typename T>
 		void SetValue(const T& value)
 		{

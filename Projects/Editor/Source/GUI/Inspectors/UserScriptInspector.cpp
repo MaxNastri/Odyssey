@@ -159,13 +159,12 @@ namespace Odyssey
 	void UserScriptInspector::CreateStringDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
 	{
 		std::string initialValue = "";
-		Coral::String storedValue;
 
 		// Check if the field storage has a valid string before assigning it
-		if (fieldStorage.TryGetValue<Coral::String>(storedValue))
-		{
-			initialValue = storedValue;
-		}
+		//if (fieldStorage.TryGetValue<Coral::String>(storedValue))
+		//{
+		//	initialValue = storedValue;
+		//}
 
 		auto drawer = std::make_shared<StringDrawer>(fieldStorage.Name, initialValue,
 			[this, scriptID, fieldID](const std::string& newValue) { OnStringFieldChanged(scriptID, fieldID, newValue); });

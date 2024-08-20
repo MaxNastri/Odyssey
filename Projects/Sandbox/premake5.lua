@@ -12,8 +12,9 @@ project "Sandbox"
     kind "SharedLib"
     language "C#"
     dotnetframework "net8.0"
-
     targetname "Sandbox"
+    namespace "Sandbox"
+    
     targetdir (TargetDirectory)
     objdir (path.join(ProjectDirectory, "Cache/Build/Intermediates"))
 
