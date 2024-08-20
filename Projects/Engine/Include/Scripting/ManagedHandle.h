@@ -20,7 +20,7 @@ namespace Odyssey
 
 		bool IsValid() { return m_Object; }
 		Coral::ManagedObject* GetManagedObject() const { return m_Object; }
-
+		void Clear() { m_Object = nullptr; }
 	private:
 		Coral::ManagedObject* m_Object;
 	};

@@ -23,7 +23,7 @@ namespace Odyssey
 		void SetScriptID(uint32_t scriptID);
 		uint32_t GetScriptID() { return m_ScriptID; }
 		void SetManagedHandle(ManagedHandle handle) { m_Handle = handle; }
-
+		void ClearManagedHandle() { m_Handle.Clear(); }
 	private:
 		void SerializeNativeTypes(SerializationNode& node, FieldStorage& storage);
 		bool SerializeNativeString(SerializationNode& node, FieldStorage& storage);

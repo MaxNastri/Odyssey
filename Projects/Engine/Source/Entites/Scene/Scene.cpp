@@ -78,6 +78,7 @@ namespace Odyssey
 
 			ScriptComponent& script = gameObject.GetComponent<ScriptComponent>();
 			script.OnDestroy();
+			script.ClearManagedHandle();
 			ScriptingManager::DestroyInstance(guid);
 		}
 	}
