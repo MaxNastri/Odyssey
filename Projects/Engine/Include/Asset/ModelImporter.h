@@ -20,18 +20,20 @@ namespace Odyssey
 		std::vector<Vertex> Vertices;
 		std::vector<uint32_t> Indices;
 	};
+
 	class ModelImporter
 	{
 	public:
-		static std::vector<MeshImportData> Import(const Path& modelPath)
+		void Import(const Path& modelPath)
 		{
-			std::vector<MeshImportData> importDatas;
 			Assimp::Importer importer;
 
 			const aiScene* scene = importer.ReadFile(modelPath.string(), 0);
 
 			if (scene->HasMeshes())
 			{
+				m_MeshDatas.clear();
+
 				for (uint32_t m = 0; m < scene->mNumMeshes; m++)
 				{
 					aiMesh* mesh = scene->mMeshes[m];
@@ -63,9 +65,11 @@ namespace Odyssey
 						}
 
 						// TODO: Add support for up to 8 colors?
-						// TODO: Add support for alpha channel
 						if (mesh->HasVertexColors(0))
-							vertex.Color = glm::vec3(mesh->mColors[0][i].r, mesh->mColors[0][i].g, mesh->mColors[0][i].b);
+						{
+							auto color = mesh->mColors[0][i];
+							vertex.Color = glm::vec4(color.r, color.g, color.b, color.a);
+						}
 
 						importData.Vertices.push_back(vertex);
 					}
@@ -83,11 +87,22 @@ namespace Odyssey
 						}
 					}
 
-					importDatas.push_back(importData);
+					m_MeshDatas.push_back(importData);
 				}
 			}
-
-			return importDatas;
 		}
+
+		MeshImportData GetMeshData(uint32_t index)
+		{
+			return m_MeshDatas[index];
+		}
+
+		size_t GetMeshCount()
+		{
+			return m_MeshDatas.size();
+		}
+
+	private:
+		std::vector<MeshImportData> m_MeshDatas;
 	};
 }

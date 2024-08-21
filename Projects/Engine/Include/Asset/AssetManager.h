@@ -17,6 +17,7 @@ namespace Odyssey
 
 	class SourceAsset;
 	class SourceShader;
+	class SourceModel;
 
 	class AssetManager
 	{
@@ -25,6 +26,8 @@ namespace Odyssey
 
 	public:
 		static AssetHandle<SourceShader> CreateSourceShader(const Path& sourcePath);
+		static AssetHandle<SourceModel> CreateSourceModel(const Path& sourcePath);
+
 	public:
 		static AssetHandle<Material> CreateMaterial(const Path& assetPath);
 		static AssetHandle<Mesh> CreateMesh();
@@ -34,6 +37,7 @@ namespace Odyssey
 
 	public:
 		static AssetHandle<SourceShader> LoadSourceShader(GUID guid);
+		static AssetHandle<SourceModel> LoadSourceModel(GUID guid);
 
 	public:
 		static AssetHandle<Material> LoadMaterial(const Path& assetPath);

@@ -5,7 +5,7 @@
 #include "Scene.h"
 #include "Texture2D.h"
 #include "SourceShader.h"
-#include "AssetSerializer.h"
+#include "SourceModel.h"
 
 namespace Odyssey
 {
@@ -37,10 +37,23 @@ namespace Odyssey
 
 		// Set asset data and serialize the metafile
 		shader->SetName("Default");
-		shader->SetType("Shader");
+		shader->SetType("SourceShader");
 		shader->SerializeMetadata();
 
 		return AssetHandle<SourceShader>(id, shader.get());
+	}
+
+	AssetHandle<SourceModel> AssetManager::CreateSourceModel(const Path& sourcePath)
+	{
+		size_t id = s_SourceAssets.Add<SourceModel>(sourcePath);
+		std::shared_ptr<SourceModel> model = s_SourceAssets.Get<SourceModel>(id);
+
+		// Set asset data and serialize the metafile
+		model->SetName("Default");
+		model->SetType("SourceModel");
+		model->SerializeMetadata();
+
+		return AssetHandle<SourceModel>(id, model.get());
 	}
 
 	AssetHandle<Material> AssetManager::CreateMaterial(const Path& assetPath)
@@ -141,6 +154,29 @@ namespace Odyssey
 		shader->SetType(s_SourceAssetDatabase->GUIDToAssetType(guid));
 
 		return AssetHandle<SourceShader>(id, shader.get());
+	}
+
+	AssetHandle<SourceModel> AssetManager::LoadSourceModel(GUID guid)
+	{
+		if (s_LoadedSourceAssets.contains(guid))
+		{
+			uint64_t id = s_LoadedSourceAssets[guid];
+			std::shared_ptr<SourceModel> shader = s_SourceAssets.Get<SourceModel>(id);
+			return AssetHandle<SourceModel>(id, shader.get());
+		}
+
+		Path sourcePath = s_SourceAssetDatabase->GUIDToAssetPath(guid);
+		size_t id = s_SourceAssets.Add<SourceModel>(sourcePath);
+		std::shared_ptr<SourceModel> model = s_SourceAssets.Get<SourceModel>(id);
+
+		// Track the source asset as loaded
+		s_LoadedSourceAssets[guid] = id;
+
+		model->SetGUID(guid);
+		model->SetName(s_SourceAssetDatabase->GUIDToAssetName(guid));
+		model->SetType(s_SourceAssetDatabase->GUIDToAssetType(guid));
+
+		return AssetHandle<SourceModel>(id, model.get());
 	}
 
 	AssetHandle<Mesh> AssetManager::LoadMesh(const Path& assetPath)

@@ -1,5 +1,6 @@
 #pragma once
 #include "Asset.h"
+#include "ModelImporter.h"
 
 namespace Odyssey
 {
@@ -10,5 +11,9 @@ namespace Odyssey
 		SourceModel(const Path& sourcePath);
 
 	public:
+		ModelImporter& GetImporter() { return m_Importer; }
+
+	private:
+		ModelImporter m_Importer;
 	};
 }
