@@ -91,6 +91,6 @@ namespace Odyssey
 
 	std::filesystem::path BinaryCache::GenerateAssetPath(GUID guid)
 	{
-		return m_Path / std::string(guid + ".asset");
+		return m_Path / std::string(guid.String() + ".asset");
 	}
 }

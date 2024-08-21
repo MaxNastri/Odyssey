@@ -7,13 +7,30 @@
 
 namespace Odyssey
 {
-	Shader::Shader(const std::filesystem::path& assetPath)
+	Shader::Shader(const Path& assetPath)
 		: Asset(assetPath)
 	{
 		LoadFromDisk(assetPath);
 
 		if (m_ShaderCodeBuffer)
 			m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ShaderCodeBuffer);
+	}
+
+	Shader::Shader(const Path& assetPath, AssetHandle<SourceShader> source)
+		: Asset(assetPath)
+	{
+		if (SourceShader* shader = source.Get())
+		{
+			m_ShaderType = shader->GetShaderType();
+
+			if (shader->Compile(m_ShaderCodeBuffer))
+			{
+				m_ShaderCodeGUID = AssetManager::CreateBinaryAsset(m_ShaderCodeBuffer);
+				m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ShaderCodeBuffer);
+			}
+
+			SetSourceAsset(shader->GetGUID());
+		}
 	}
 
 	void Shader::LoadFromDisk(const std::filesystem::path& assetPath)
@@ -29,11 +46,10 @@ namespace Odyssey
 			root.ReadData("m_ShaderType", shaderType);
 			m_ShaderType = (ShaderType)shaderType;
 
-			root.ReadData("m_ShaderCode", m_ShaderCodeGUID);
-			if (!m_ShaderCodeGUID.empty())
-			{
+			root.ReadData("m_ShaderCode", m_ShaderCodeGUID.Ref());
+
+			if (m_ShaderCodeGUID)
 				m_ShaderCodeBuffer = AssetManager::LoadBinaryAsset(m_ShaderCodeGUID);
-			}
 		}
 	}
 
@@ -55,7 +71,7 @@ namespace Odyssey
 		// Serialize metadata first
 		SerializeMetadata(serializer);
 		root.WriteData("m_ShaderType", (uint32_t)m_ShaderType);
-		root.WriteData("m_ShaderCode", m_ShaderCodeGUID);
+		root.WriteData("m_ShaderCode", m_ShaderCodeGUID.CRef());
 
 		serializer.WriteToDisk(path);
 	}

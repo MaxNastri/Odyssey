@@ -4,6 +4,7 @@
 #include "imgui.h"
 #include "ShaderCompiler.h"
 #include "Shader.h"
+#include "Project.h"
 
 namespace Odyssey
 {
@@ -39,6 +40,11 @@ namespace Odyssey
 		if (ImGui::Button("Compile"))
 		{
 			m_CompiledDrawer.SetData(m_Shader.Get()->Compile());
+		}
+		if (ImGui::Button("Create Shader"))
+		{
+			if (!m_DstAssetPath.empty())
+				AssetManager::CreateShader(Project::GetActiveAssetsDirectory() / m_DstAssetPath, m_Shader);
 		}
 	}
 }

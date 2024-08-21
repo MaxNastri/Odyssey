@@ -8,5 +8,7 @@ namespace Odyssey
 	public:
 		SourceModel() = default;
 		SourceModel(const Path& sourcePath);
+
+	public:
 	};
 }

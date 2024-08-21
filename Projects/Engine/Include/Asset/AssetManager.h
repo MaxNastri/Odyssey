@@ -30,6 +30,7 @@ namespace Odyssey
 		static AssetHandle<Mesh> CreateMesh();
 		static AssetHandle<Mesh> CreateMesh(const Path& assetPath);
 		static AssetHandle<Shader> CreateShader(const Path& assetPath);
+		static AssetHandle<Shader> CreateShader(const Path& assetPath, AssetHandle<SourceShader> source);
 
 	public:
 		static AssetHandle<SourceShader> LoadSourceShader(GUID guid);
@@ -62,17 +63,14 @@ namespace Odyssey
 	public:
 		static bool IsSourceAsset(const Path& path);
 
-	private:
-		static void ScanForSourceAssets();
-
 	private: // Assets
 		inline static Path s_AssetsDirectory;
-		inline static AssetDatabase s_AssetDatabase;
+		inline static std::unique_ptr<AssetDatabase> s_AssetDatabase;
 		inline static DynamicList<Asset> s_Assets;
 		inline static std::map<GUID, uint64_t> s_LoadedAssets;
 
 	private: // Source Assets
-		inline static AssetDatabase s_SourceAssetDatabase;
+		inline static std::unique_ptr<AssetDatabase> s_SourceAssetDatabase;
 		inline static DynamicList<SourceAsset> s_SourceAssets;
 		inline static std::map<GUID, uint64_t> s_LoadedSourceAssets;
 
@@ -83,14 +81,5 @@ namespace Odyssey
 		inline static std::string s_AssetExtension = ".asset";
 		inline static std::string s_MetaFileExtension = ".meta";
 
-		inline static std::map<std::string, std::string> s_SourceAssetExtensionsToType =
-		{
-			{".glsl", "SourceShader"},
-			{".hlsl", "SourceShader"},
-			{".fbx", "SourceMesh"},
-			{".gltf", "SourceMesh"},
-			{".png", "SourceTexture"},
-			{".jpg", "SourceTexture"},
-		};
 	};
 }

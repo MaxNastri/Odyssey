@@ -9,6 +9,9 @@ namespace Odyssey
 		m_ShaderLanguage = filename.extension().string();
 		m_Name = filename.replace_extension("").string();
 		m_ShaderCode = ReadShaderFile(sourcePath);
+
+		// TODO: Replace this once shaders are unified
+		m_ShaderType = ShaderType::Vertex;
 	}
 
 	bool SourceShader::Compile()

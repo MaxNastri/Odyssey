@@ -4,21 +4,22 @@
 #include "Enums.h"
 #include "AssetHandle.h"
 #include "BinaryBuffer.h"
+#include "SourceShader.h"
 
 namespace Odyssey
 {
 	class VulkanShaderModule;
-	class SourceShader;
 
 	class Shader : public Asset
 	{
 	public:
 		Shader() = default;
-		Shader(const std::filesystem::path& assetPath);
+		Shader(const Path& assetPath);
+		Shader(const Path& assetPath, AssetHandle<SourceShader> source);
 
 	public:
 		ResourceHandle<VulkanShaderModule> GetShaderModule() { return m_ShaderModule; }
-		const std::string& GetShaderCodeGUID() { return m_ShaderCodeGUID; }
+		GUID GetShaderCodeGUID() { return m_ShaderCodeGUID; }
 		ShaderType GetShaderType() { return m_ShaderType; }
 
 	public:
@@ -30,8 +31,8 @@ namespace Odyssey
 		void SaveToDisk(const std::filesystem::path& path);
 
 	private:
-		ShaderType m_ShaderType;
-		std::string m_ShaderCodeGUID;
+		ShaderType m_ShaderType = ShaderType::None;
+		GUID m_ShaderCodeGUID = 0;
 		BinaryBuffer m_ShaderCodeBuffer;
 		ResourceHandle<VulkanShaderModule> m_ShaderModule;
 	};

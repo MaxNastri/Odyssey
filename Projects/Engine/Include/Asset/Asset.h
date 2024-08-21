@@ -58,8 +58,8 @@ namespace Odyssey
 		Path& GetAssetPath() { return m_AssetPath; }
 
 	public:
-		void SetSourceAsset(GUID& guid) { m_SourceAsset = guid; }
-		void SetGUID(GUID& guid) { m_GUID = guid; }
+		void SetSourceAsset(GUID guid) { m_SourceAsset = guid; }
+		void SetGUID(GUID guid) { m_GUID = guid; }
 		void SetName(const std::string& name) { m_Name = name; }
 		void SetType(const std::string& type) { m_Type = type; }
 

@@ -15,14 +15,19 @@ namespace Odyssey
 		s_BinaryCache = BinaryCache(cacheDirectory);
 
 		// Scan for Assets
-		AssetDatabase::SearchOptions assetSearch;
+		SearchOptions assetSearch;
 		assetSearch.Root = s_AssetsDirectory;
 		assetSearch.ExclusionPaths = { };
 		assetSearch.Extensions = { s_AssetExtension };
-		s_AssetDatabase.ScanForAssets(assetSearch);
+		s_AssetDatabase = std::make_unique<AssetDatabase>(assetSearch);
 
 		// Scan for Source Assets
-		ScanForSourceAssets();
+		SearchOptions sourceSearch;
+		sourceSearch.Root = s_AssetsDirectory;
+		sourceSearch.ExclusionPaths = { };
+		sourceSearch.Extensions = { };
+		sourceSearch.SourceAssetsOnly = true;
+		s_SourceAssetDatabase = std::make_unique<AssetDatabase>(sourceSearch);
 	}
 
 	AssetHandle<SourceShader> AssetManager::CreateSourceShader(const Path& sourcePath)
@@ -99,6 +104,22 @@ namespace Odyssey
 		return AssetHandle<Shader>(id, shader.get());
 	}
 
+	AssetHandle<Shader> AssetManager::CreateShader(const Path& assetPath, AssetHandle<SourceShader> source)
+	{
+		// Push back an empty mesh
+		size_t id = s_Assets.Add<Shader>(assetPath, source);
+		std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
+
+		// Set asset data
+		shader->SetName("Default");
+		shader->SetType("Shader");
+
+		// Save to disk
+		shader->Save();
+
+		return AssetHandle<Shader>(id, shader.get());
+	}
+
 	AssetHandle<SourceShader> AssetManager::LoadSourceShader(GUID guid)
 	{
 		if (s_LoadedSourceAssets.contains(guid))
@@ -108,7 +129,7 @@ namespace Odyssey
 			return AssetHandle<SourceShader>(id, shader.get());
 		}
 
-		Path sourcePath = s_SourceAssetDatabase.GUIDToAssetPath(guid);
+		Path sourcePath = s_SourceAssetDatabase->GUIDToAssetPath(guid);
 		size_t id = s_SourceAssets.Add<SourceShader>(sourcePath);
 		std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
 
@@ -116,8 +137,8 @@ namespace Odyssey
 		s_LoadedSourceAssets[guid] = id;
 
 		shader->SetGUID(guid);
-		shader->SetName(s_SourceAssetDatabase.GUIDToAssetName(guid));
-		shader->SetType(s_SourceAssetDatabase.GUIDToAssetType(guid));
+		shader->SetName(s_SourceAssetDatabase->GUIDToAssetName(guid));
+		shader->SetType(s_SourceAssetDatabase->GUIDToAssetType(guid));
 
 		return AssetHandle<SourceShader>(id, shader.get());
 	}
@@ -179,7 +200,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
+		Path path = s_AssetDatabase->GUIDToAssetPath(guid);
 		return AssetManager::LoadShader(path.generic_string());
 	}
 
@@ -195,7 +216,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
+		Path path = s_AssetDatabase->GUIDToAssetPath(guid);
 		return AssetManager::LoadTexture2D(path.string());
 	}
 
@@ -213,10 +234,10 @@ namespace Odyssey
 
 	std::vector<GUID> AssetManager::GetAssetsOfType(const std::string& assetType)
 	{
-		std::vector<GUID> assets = s_AssetDatabase.GetGUIDsOfAssetType(assetType);
+		std::vector<GUID> assets = s_AssetDatabase->GetGUIDsOfAssetType(assetType);
 		
 		if (assets.empty())
-			assets = s_SourceAssetDatabase.GetGUIDsOfAssetType(assetType);
+			assets = s_SourceAssetDatabase->GetGUIDsOfAssetType(assetType);
 		
 		return assets;
 	}
@@ -224,12 +245,12 @@ namespace Odyssey
 	GUID AssetManager::PathToGUID(const Path& path)
 	{
 		// Start with the asset database
-		if (s_AssetDatabase.Contains(path))
-			return s_AssetDatabase.AssetPathToGUID(path);
+		if (s_AssetDatabase->Contains(path))
+			return s_AssetDatabase->AssetPathToGUID(path);
 
 		//  Maybe its in the source asset database
-		if (s_SourceAssetDatabase.Contains(path))
-			return s_SourceAssetDatabase.AssetPathToGUID(path);
+		if (s_SourceAssetDatabase->Contains(path))
+			return s_SourceAssetDatabase->AssetPathToGUID(path);
 
 		return GUID::Empty();
 	}
@@ -237,12 +258,12 @@ namespace Odyssey
 	std::string AssetManager::GUIDToName(GUID guid)
 	{
 		// Start with the asset database
-		if (s_AssetDatabase.Contains(guid))
-			return s_AssetDatabase.GUIDToAssetName(guid);
+		if (s_AssetDatabase->Contains(guid))
+			return s_AssetDatabase->GUIDToAssetName(guid);
 
 		//  Maybe its in the source asset database
-		if (s_SourceAssetDatabase.Contains(guid))
-			return s_SourceAssetDatabase.GUIDToAssetName(guid);
+		if (s_SourceAssetDatabase->Contains(guid))
+			return s_SourceAssetDatabase->GUIDToAssetName(guid);
 
 		return std::string();
 	}
@@ -250,19 +271,19 @@ namespace Odyssey
 	std::string AssetManager::GUIDToAssetType(GUID guid)
 	{
 		// Start with the asset database
-		if (s_AssetDatabase.Contains(guid))
-			return s_AssetDatabase.GUIDToAssetType(guid);
+		if (s_AssetDatabase->Contains(guid))
+			return s_AssetDatabase->GUIDToAssetType(guid);
 
 		//  Maybe its in the source asset database
-		if (s_SourceAssetDatabase.Contains(guid))
-			return s_SourceAssetDatabase.GUIDToAssetType(guid);
+		if (s_SourceAssetDatabase->Contains(guid))
+			return s_SourceAssetDatabase->GUIDToAssetType(guid);
 
 		return std::string();
 	}
 
 	bool AssetManager::IsSourceAsset(const Path& path)
 	{
-		return s_SourceAssetDatabase.Contains(path);
+		return s_SourceAssetDatabase->Contains(path);
 	}
 
 	AssetHandle<Material> AssetManager::LoadMaterialByGUID(GUID guid)
@@ -277,7 +298,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
+		Path path = s_AssetDatabase->GUIDToAssetPath(guid);
 		return AssetManager::LoadMaterial(path.generic_string());
 	}
 
@@ -293,51 +314,7 @@ namespace Odyssey
 		}
 
 		// Load it and return a handle
-		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
+		Path path = s_AssetDatabase->GUIDToAssetPath(guid);
 		return AssetManager::LoadMesh(path);
-	}
-
-	void AssetManager::ScanForSourceAssets()
-	{
-		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(s_AssetsDirectory))
-		{
-			auto assetPath = dirEntry.path();
-			auto extension = assetPath.extension().string();
-			auto metaPath = assetPath;
-			metaPath = metaPath.replace_extension(s_MetaFileExtension);
-
-			// Check if the file extension is a valid source asset
-			// And the source asset does not have a metafile
-			if (dirEntry.is_regular_file() && s_SourceAssetExtensionsToType.contains(extension))
-			{
-				if (std::filesystem::exists(metaPath))
-				{
-					// Deserialize the meta file
-					// Add the asset to the database with the source file extension
-					if (AssetDeserializer deserializer = AssetDeserializer(metaPath))
-					{
-						SourceAsset sourceAsset = SourceAsset::CreateFromMetafile(metaPath);
-
-						if (sourceAsset.HasMetadata())
-						{
-							s_SourceAssetDatabase.AddAsset(sourceAsset.GetGUID(), sourceAsset.GetPath(), sourceAsset.GetName(), sourceAsset.GetType());
-						}
-					}
-				}
-				else
-				{
-					std::string name = assetPath.filename().replace_extension("").string();
-					std::string type = s_SourceAssetExtensionsToType[extension];
-
-					// Create a temporary source asset so we can serialize the metadata
-					SourceAsset asset(assetPath);
-					asset.SetMetadata(GUID(), name, type);
-					asset.SerializeMetadata();
-
-					// Add the source asset to the database
-					s_SourceAssetDatabase.AddAsset(asset.GetGUID(), assetPath, name, type);
-				}
-			}
-		}
 	}
 }
