@@ -57,7 +57,7 @@ namespace Odyssey
 			if (m_VertexCount > 0 && m_VerticesGUID != "")
 			{
 				BinaryBuffer buffer = AssetManager::LoadBinaryAsset(m_VerticesGUID);
-				m_Vertices = buffer.Convert<VulkanVertex>();
+				m_Vertices = buffer.Convert<Vertex>();
 			}
 			if (m_IndexCount > 0 && m_IndicesGUID != "")
 			{
@@ -67,7 +67,7 @@ namespace Odyssey
 		}
 	}
 
-	void Mesh::SetVertices(std::vector<VulkanVertex>& vertices)
+	void Mesh::SetVertices(std::vector<Vertex>& vertices)
 	{
 		m_Vertices = vertices;
 		m_VertexCount = (uint16_t)m_Vertices.size();

@@ -7,7 +7,7 @@
 
 namespace Odyssey
 {
-	VulkanVertexBuffer::VulkanVertexBuffer(std::shared_ptr<VulkanContext> context, std::vector<VulkanVertex>& vertices)
+	VulkanVertexBuffer::VulkanVertexBuffer(std::shared_ptr<VulkanContext> context, std::vector<Vertex>& vertices)
 	{
 		m_Context = context;
 

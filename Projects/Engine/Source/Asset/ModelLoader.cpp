@@ -39,7 +39,7 @@ namespace Odyssey
 
 	AssetHandle<Mesh> ModelLoader::ProcessMesh(aiMesh* importMesh, const aiScene* scene)
 	{
-		std::vector<VulkanVertex> vertices;
+		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
 
 		vertices.resize(importMesh->mNumVertices);
@@ -47,7 +47,7 @@ namespace Odyssey
 		{
 			aiVector3D modelVertex = importMesh->mVertices[i];
 
-			VulkanVertex vertex;
+			Vertex vertex;
 			vertex.Position = glm::vec3(modelVertex.x, modelVertex.y, modelVertex.z);
 
 			if (importMesh->mTextureCoords[0])

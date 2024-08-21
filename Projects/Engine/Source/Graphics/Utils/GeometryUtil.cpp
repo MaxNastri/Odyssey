@@ -4,7 +4,7 @@
 
 namespace Odyssey
 {
-	void GeometryUtil::ComputeBox(vec3 center, vec3 scale, std::vector<VulkanVertex>& vertices, std::vector<unsigned int>& indices)
+	void GeometryUtil::ComputeBox(vec3 center, vec3 scale, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
 	{
 		// A box has six faces, each one pointing in a different direction.
 		constexpr int FaceCount = 6;
@@ -56,25 +56,25 @@ namespace Odyssey
 			// Four vertices per face.
 			// (normal - side1 - side2) * tsize // normal // t0
 			vec3 position = (normal - side1 - side2) * extents;
-			vertices.push_back(VulkanVertex(position + center, normal, uvs[0]));
+			vertices.push_back(Vertex(position + center, normal, uvs[0]));
 
 			// (normal - side1 + side2) * tsize // normal // t1
 			position = (normal - side1 + side2) * extents;
-			vertices.push_back(VulkanVertex(position + center, normal, uvs[1]));
+			vertices.push_back(Vertex(position + center, normal, uvs[1]));
 
 			// (normal + side1 + side2) * tsize // normal // t2
 			position = (normal + side1 + side2) * extents;
-			vertices.push_back(VulkanVertex(position + center, normal, uvs[2]));
+			vertices.push_back(Vertex(position + center, normal, uvs[2]));
 
 			// (normal + side1 - side2) * tsize // normal // t3
 			position = (normal + side1 - side2) * extents;
-			vertices.push_back(VulkanVertex(position + center, normal, uvs[3]));
+			vertices.push_back(Vertex(position + center, normal, uvs[3]));
 		}
 
 		ReverseWinding(vertices, indices);
 	}
 
-	void GeometryUtil::ComputeSphere(float radius, unsigned int tesselation, std::vector<VulkanVertex>& vertices, std::vector<uint32_t>& indices)
+	void GeometryUtil::ComputeSphere(float radius, unsigned int tesselation, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
 	{
 		unsigned int verticalSegments = tesselation;
 		unsigned int horizontalSegment = tesselation * 2;
@@ -100,7 +100,7 @@ namespace Odyssey
 				vec3 normal = vec3(dx, dy, dz);
 				vec2 uv = vec2(u, v);
 
-				vertices.push_back(VulkanVertex(normal * radius, normal, uv));
+				vertices.push_back(Vertex(normal * radius, normal, uv));
 			}
 		}
 
@@ -126,7 +126,7 @@ namespace Odyssey
 		ReverseWinding(vertices, indices);
 	}
 
-	void GeometryUtil::ComputeDiamond(std::vector<VulkanVertex>& vertices, std::vector<unsigned int>& indices)
+	void GeometryUtil::ComputeDiamond(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
 	{
 		// Math constants
 		const float pi = acosf(-1.0f);
@@ -142,16 +142,16 @@ namespace Odyssey
 		indices.resize(7 * 8);
 
 		// Make the verts we need
-		VulkanVertex verts[8] =
+		Vertex verts[8] =
 		{
-			VulkanVertex(vec3(0.1f, 0, -1), normal, uv),
-			VulkanVertex(vec3(1, 0, 0), normal, uv),
-			VulkanVertex(vec3(1, 0, 0.1f), normal, uv),
-			VulkanVertex(vec3(0.4f, 0, 0.4f), normal, uv),
-			VulkanVertex(vec3(0.8f, 0, 0.3f), normal, uv),
-			VulkanVertex(glm::rotate(quatHalf, vertices[4].Position), normal, uv),
-			VulkanVertex(glm::rotate(quatHalf, vertices[1].Position), normal, uv),
-			VulkanVertex(glm::rotate(quatHalf, vertices[2].Position), normal, uv),
+			Vertex(vec3(0.1f, 0, -1), normal, uv),
+			Vertex(vec3(1, 0, 0), normal, uv),
+			Vertex(vec3(1, 0, 0.1f), normal, uv),
+			Vertex(vec3(0.4f, 0, 0.4f), normal, uv),
+			Vertex(vec3(0.8f, 0, 0.3f), normal, uv),
+			Vertex(glm::rotate(quatHalf, vertices[4].Position), normal, uv),
+			Vertex(glm::rotate(quatHalf, vertices[1].Position), normal, uv),
+			Vertex(glm::rotate(quatHalf, vertices[2].Position), normal, uv),
 		};
 
 		int index = 0;
@@ -170,7 +170,7 @@ namespace Odyssey
 
 			for (int pt = 0; pt < 7; ++pt)
 			{
-				vertices[index] = VulkanVertex(glm::rotate(quatAccumulator, verts[pt].Position), normal, uv);
+				vertices[index] = Vertex(glm::rotate(quatAccumulator, verts[pt].Position), normal, uv);
 				indices[index] = index;
 				++index;
 			}
@@ -179,7 +179,7 @@ namespace Odyssey
 		ReverseWinding(vertices, indices);
 	}
 
-	void GeometryUtil::ReverseWinding(std::vector<VulkanVertex>& vertices, std::vector<unsigned int>& indices)
+	void GeometryUtil::ReverseWinding(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
 	{
 		for (auto iter = indices.begin(); iter != indices.end(); iter += 3)
 		{

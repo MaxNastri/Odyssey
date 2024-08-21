@@ -3,7 +3,7 @@
 #include "VulkanTypes.h"
 #include "DynamicList.h"
 #include "ResourceHandle.h"
-#include "VulkanVertex.h"
+#include "Vertex.h"
 #include "VulkanImage.h"
 #include "BinaryBuffer.h"
 
@@ -35,7 +35,7 @@ namespace Odyssey
 	public: // Vulkan allocations
 		static ResourceHandle<VulkanBuffer> AllocateBuffer(BufferType bufferType, size_t size);
 		static ResourceHandle<VulkanUniformBuffer> AllocateUniformBuffer(BufferType bufferType, uint32_t bindingIndex, uint32_t size);
-		static ResourceHandle<VulkanVertexBuffer> AllocateVertexBuffer(std::vector<VulkanVertex>& vertices);
+		static ResourceHandle<VulkanVertexBuffer> AllocateVertexBuffer(std::vector<Vertex>& vertices);
 		static ResourceHandle<VulkanIndexBuffer> AllocateIndexBuffer(std::vector<uint32_t>& indices);
 		static ResourceHandle<VulkanRenderTexture> AllocateRenderTexture(uint32_t width, uint32_t height);
 		static ResourceHandle<VulkanRenderTexture> AllocateRenderTexture(ResourceHandle<VulkanImage> imageHandle, TextureFormat format);

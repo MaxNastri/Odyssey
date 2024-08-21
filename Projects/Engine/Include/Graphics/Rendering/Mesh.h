@@ -1,7 +1,7 @@
 #pragma once
 #include "Asset.h"
 #include "ResourceHandle.h"
-#include "VulkanVertex.h"
+#include "Vertex.h"
 #include "ryml.hpp"
 
 namespace Odyssey
@@ -30,13 +30,13 @@ namespace Odyssey
 		uint32_t GetVertexCount() { return m_VertexCount; }
 
 	public:
-		void SetVertices(std::vector<VulkanVertex>& vertices);
+		void SetVertices(std::vector<Vertex>& vertices);
 		void SetIndices(std::vector<uint32_t>& indices);
 
 	private: // Vertices
 		std::string m_VerticesGUID;
 		uint32_t m_VertexCount;
-		std::vector<VulkanVertex> m_Vertices;
+		std::vector<Vertex> m_Vertices;
 		ResourceHandle<VulkanVertexBuffer> m_VertexBuffer;
 
 	private: // Indices

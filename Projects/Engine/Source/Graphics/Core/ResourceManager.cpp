@@ -42,7 +42,7 @@ namespace Odyssey
 		return ResourceHandle<VulkanUniformBuffer>(id, buffer.get());
 	}
 
-	ResourceHandle<VulkanVertexBuffer> ResourceManager::AllocateVertexBuffer(std::vector<VulkanVertex>& vertices)
+	ResourceHandle<VulkanVertexBuffer> ResourceManager::AllocateVertexBuffer(std::vector<Vertex>& vertices)
 	{
 		uint64_t id = s_Resources.Add<VulkanVertexBuffer>(s_Context, vertices);
 		s_Resources[id]->SetID(id);

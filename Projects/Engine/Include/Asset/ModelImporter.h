@@ -2,7 +2,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
-#include "VulkanVertex.h"
+#include "Vertex.h"
 
 namespace Odyssey
 {
@@ -17,7 +17,7 @@ namespace Odyssey
 		std::vector<uint32_t> UVChannels;
 
 	public:
-		std::vector<VulkanVertex> Vertices;
+		std::vector<Vertex> Vertices;
 		std::vector<uint32_t> Indices;
 	};
 	class ModelImporter
@@ -49,7 +49,7 @@ namespace Odyssey
 
 					for (uint32_t i = 0; i < mesh->mNumVertices; i++)
 					{
-						VulkanVertex vertex;
+						Vertex vertex;
 						vertex.Position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 
 						if (mesh->HasNormals())
