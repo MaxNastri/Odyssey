@@ -49,8 +49,9 @@ namespace Odyssey
 
 	public:
 		static BinaryCache& GetBinaryCache() { return s_BinaryCache; }
-		static BinaryBuffer LoadBinaryAsset(GUID guid);
 		static GUID CreateBinaryAsset(BinaryBuffer& buffer);
+		static BinaryBuffer LoadBinaryAsset(GUID guid);
+		static void WriteBinaryAsset(GUID guid, BinaryBuffer& buffer);
 
 	public:
 		static std::vector<GUID> GetAssetsOfType(const std::string& assetType);

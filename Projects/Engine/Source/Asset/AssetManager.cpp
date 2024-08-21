@@ -225,6 +225,11 @@ namespace Odyssey
 		return s_BinaryCache.LoadBinaryData(guid);
 	}
 
+	void AssetManager::WriteBinaryAsset(GUID guid, BinaryBuffer& buffer)
+	{
+		s_BinaryCache.SaveBinaryData(guid, buffer);
+	}
+
 	GUID AssetManager::CreateBinaryAsset(BinaryBuffer& buffer)
 	{
 		GUID guid;

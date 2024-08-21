@@ -57,7 +57,7 @@ namespace Odyssey
 		vertexInputInfo.vertexBindingDescriptionCount = 1;
 		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 
-		std::array<VkVertexInputAttributeDescription, 4> vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
+		std::array<VkVertexInputAttributeDescription, 12> vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
 		vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
 		vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
 

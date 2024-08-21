@@ -41,6 +41,14 @@ namespace Odyssey
 		serializer.WriteToDisk(path);
 	}
 
+	struct OldVert
+	{
+	public:
+		glm::vec3 Position;
+		glm::vec3 Normal;
+		glm::vec2 TexCoord0;
+		glm::vec3 Color;
+	};
 	void Mesh::LoadFromDisk(const std::filesystem::path& assetPath)
 	{
 		AssetDeserializer deserializer(assetPath);

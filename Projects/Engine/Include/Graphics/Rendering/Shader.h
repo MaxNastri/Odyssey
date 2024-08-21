@@ -18,6 +18,9 @@ namespace Odyssey
 		Shader(const Path& assetPath, AssetHandle<SourceShader> source);
 
 	public:
+		void Recompile();
+
+	public:
 		ResourceHandle<VulkanShaderModule> GetShaderModule() { return m_ShaderModule; }
 		GUID GetShaderCodeGUID() { return m_ShaderCodeGUID; }
 		ShaderType GetShaderType() { return m_ShaderType; }

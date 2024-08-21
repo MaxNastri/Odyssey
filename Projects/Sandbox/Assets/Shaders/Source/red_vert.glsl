@@ -10,11 +10,19 @@ layout(set = 0, binding = 1) uniform UBOModel {
 } uboModel;
 
 layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec3 inColor;
-layout(location = 2) in vec3 inNormal;
-layout(location = 3) in vec2 inUv0;
+layout(location = 1) in vec3 inNormal;
+layout(location = 2) in vec3 inTangent;
+layout(location = 3) in vec4 inColor;
+layout(location = 4) in vec2 inUv0;
+layout(location = 5) in vec2 inUv1;
+layout(location = 6) in vec2 inUv2;
+layout(location = 7) in vec2 inUv3;
+layout(location = 8) in vec2 inUv4;
+layout(location = 9) in vec2 inUv5;
+layout(location = 10) in vec2 inUv6;
+layout(location = 11) in vec2 inUv7;
 
-layout(location = 0) out vec3 fragColor;
+layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec3 fragNormal;
 layout(location = 2) out vec2 fragUV0;
 

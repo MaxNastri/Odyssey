@@ -29,6 +29,9 @@ namespace Odyssey
 		m_ShaderCodeDrawer.Draw();
 		m_ShaderTypeDrawer.Draw();
 		m_SourceShaderDrawer.Draw();
+
+		if (ImGui::Button("Compile"))
+			m_Shader.Get()->Recompile();
 	}
 	void ShaderInspector::OnNameChanged(const std::string& name)
 	{

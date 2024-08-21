@@ -53,6 +53,26 @@ namespace Odyssey
 		}
 	}
 
+	void Shader::Recompile()
+	{
+		AssetHandle<SourceShader> shader = AssetManager::LoadSourceShader(m_SourceAsset);
+		if (SourceShader* source = shader.Get())
+		{
+			BinaryBuffer temp;
+			source->SetShaderType(m_ShaderType);
+			if (source->Compile(temp))
+			{
+				m_ShaderCodeBuffer = temp;
+				AssetManager::WriteBinaryAsset(m_ShaderCodeGUID, m_ShaderCodeBuffer);
+
+				if (m_ShaderModule)
+					ResourceManager::DestroyShader(m_ShaderModule);
+
+				m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ShaderCodeBuffer);
+			}
+		}
+	}
+
 	void Shader::Save()
 	{
 		SaveToDisk(m_AssetPath);
