@@ -14,9 +14,9 @@ namespace Odyssey
 		static std::array< VkVertexInputAttributeDescription, 4> GetAttributeDescriptions();
 
 	public:
-		glm::vec3 m_Position;
-		glm::vec3 m_Normal;
-		glm::vec2 m_UV0;
-		glm::vec3 m_Color;
+		glm::vec3 Position;
+		glm::vec3 Normal;
+		glm::vec2 TexCoord0;
+		glm::vec3 Color;
 	};
 }

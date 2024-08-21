@@ -70,7 +70,7 @@ namespace Odyssey
 				// Scene path
 				DrawSceneAsset(path);
 			}
-			else if (path.extension() == ".glsl") // Source asset lane
+			else if (AssetManager::IsSourceAsset(path)) // Source asset lane
 			{
 				DrawSourceAsset(path);
 			}

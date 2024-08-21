@@ -260,6 +260,11 @@ namespace Odyssey
 		return std::string();
 	}
 
+	bool AssetManager::IsSourceAsset(const Path& path)
+	{
+		return s_SourceAssetDatabase.Contains(path);
+	}
+
 	AssetHandle<Material> AssetManager::LoadMaterialByGUID(GUID guid)
 	{
 		// Check if we have already loaded this asset

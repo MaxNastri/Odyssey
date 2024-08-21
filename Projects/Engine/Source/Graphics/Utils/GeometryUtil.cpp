@@ -149,9 +149,9 @@ namespace Odyssey
 			VulkanVertex(vec3(1, 0, 0.1f), normal, uv),
 			VulkanVertex(vec3(0.4f, 0, 0.4f), normal, uv),
 			VulkanVertex(vec3(0.8f, 0, 0.3f), normal, uv),
-			VulkanVertex(glm::rotate(quatHalf, vertices[4].m_Position), normal, uv),
-			VulkanVertex(glm::rotate(quatHalf, vertices[1].m_Position), normal, uv),
-			VulkanVertex(glm::rotate(quatHalf, vertices[2].m_Position), normal, uv),
+			VulkanVertex(glm::rotate(quatHalf, vertices[4].Position), normal, uv),
+			VulkanVertex(glm::rotate(quatHalf, vertices[1].Position), normal, uv),
+			VulkanVertex(glm::rotate(quatHalf, vertices[2].Position), normal, uv),
 		};
 
 		int index = 0;
@@ -170,7 +170,7 @@ namespace Odyssey
 
 			for (int pt = 0; pt < 7; ++pt)
 			{
-				vertices[index] = VulkanVertex(glm::rotate(quatAccumulator, verts[pt].m_Position), normal, uv);
+				vertices[index] = VulkanVertex(glm::rotate(quatAccumulator, verts[pt].Position), normal, uv);
 				indices[index] = index;
 				++index;
 			}
@@ -188,7 +188,7 @@ namespace Odyssey
 
 		for (auto iter = vertices.begin(); iter != vertices.end(); ++iter)
 		{
-			iter->m_UV0.x = 1.0f - iter->m_UV0.x;
+			iter->TexCoord0.x = 1.0f - iter->TexCoord0.x;
 		}
 	}
 }

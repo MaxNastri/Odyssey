@@ -48,18 +48,18 @@ namespace Odyssey
 			aiVector3D modelVertex = importMesh->mVertices[i];
 
 			VulkanVertex vertex;
-			vertex.m_Position = glm::vec3(modelVertex.x, modelVertex.y, modelVertex.z);
+			vertex.Position = glm::vec3(modelVertex.x, modelVertex.y, modelVertex.z);
 
 			if (importMesh->mTextureCoords[0])
 			{
 				aiVector3D uv0 = importMesh->mTextureCoords[0][i];
-				vertex.m_UV0 = glm::vec2(uv0.x, uv0.y);
+				vertex.TexCoord0 = glm::vec2(uv0.x, uv0.y);
 			}
 
 			if (importMesh->mNormals)
 			{
 				aiVector3D normals = importMesh->mNormals[i];
-				vertex.m_Normal = glm::vec3(normals.x, normals.y, normals.z);
+				vertex.Normal = glm::vec3(normals.x, normals.y, normals.z);
 			}
 
 			vertices[i] = vertex;

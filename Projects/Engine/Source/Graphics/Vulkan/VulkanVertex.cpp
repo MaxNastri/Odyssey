@@ -4,15 +4,15 @@ namespace Odyssey
 {
 	VulkanVertex::VulkanVertex(glm::vec3 position, glm::vec3 color)
 	{
-		m_Position = position;
-		m_Color = color;
+		Position = position;
+		Color = color;
 	}
 
 	VulkanVertex::VulkanVertex(glm::vec3 position, glm::vec3 normal, glm::vec2 uv0)
 	{
-		m_Position = position;
-		m_Normal = normal;
-		m_UV0 = uv0;
+		Position = position;
+		Normal = normal;
+		TexCoord0 = uv0;
 	}
 
 	VkVertexInputBindingDescription VulkanVertex::GetBindingDescription()
@@ -31,22 +31,22 @@ namespace Odyssey
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
 		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[0].offset = offsetof(VulkanVertex, m_Position);
+		attributeDescriptions[0].offset = offsetof(VulkanVertex, Position);
 
 		attributeDescriptions[1].binding = 0;
 		attributeDescriptions[1].location = 1;
 		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[1].offset = offsetof(VulkanVertex, m_Color);
+		attributeDescriptions[1].offset = offsetof(VulkanVertex, Color);
 
 		attributeDescriptions[2].binding = 0;
 		attributeDescriptions[2].location = 2;
 		attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
-		attributeDescriptions[2].offset = offsetof(VulkanVertex, m_Normal);
+		attributeDescriptions[2].offset = offsetof(VulkanVertex, Normal);
 
 		attributeDescriptions[3].binding = 0;
 		attributeDescriptions[3].location = 3;
 		attributeDescriptions[3].format = VK_FORMAT_R32G32_SFLOAT;
-		attributeDescriptions[3].offset = offsetof(VulkanVertex, m_UV0);
+		attributeDescriptions[3].offset = offsetof(VulkanVertex, TexCoord0);
 
 		return attributeDescriptions;
 	}

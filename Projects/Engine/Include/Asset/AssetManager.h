@@ -59,6 +59,9 @@ namespace Odyssey
 		static std::string GUIDToName(GUID guid);
 		static std::string GUIDToAssetType(GUID guid);
 
+	public:
+		static bool IsSourceAsset(const Path& path);
+
 	private:
 		static void ScanForSourceAssets();
 
