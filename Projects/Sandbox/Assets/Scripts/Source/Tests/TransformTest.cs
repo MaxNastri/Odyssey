@@ -1,5 +1,5 @@
-﻿using Odyssey;
-using System;
+﻿using System;
+using Odyssey;
 
 namespace Sandbox
 {

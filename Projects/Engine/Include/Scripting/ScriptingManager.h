@@ -41,12 +41,13 @@ namespace Odyssey
 
 			scriptStorage.Instance = &handle;
 
+			auto& nativeObjectAttributeType = s_FrameworkAssembly.GetType("Odyssey.NativeObjectAttribute");
+
 			for (auto& [fieldID, fieldStorage] : scriptStorage.Fields)
 			{
 				const FieldMetadata& fieldMetadata = metadata.Fields[fieldID];
 
-				// TODO CONVERT TO ATTRIBUTE CHECK
-				if (fieldMetadata.Type == DataType::Entity || fieldMetadata.Type == DataType::Component)
+				if (fieldMetadata.ManagedType->HasAttribute(nativeObjectAttributeType))
 				{
 					GUID guid = 0;
 					fieldStorage.TryGetValue<GUID>(guid);

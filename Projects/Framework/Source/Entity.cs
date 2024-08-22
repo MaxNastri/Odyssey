@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Odyssey
 {
+    [NativeObject]
     public class Entity
     {
         private Dictionary<Type, Component> componentCache = new Dictionary<Type, Component>();

@@ -9,7 +9,6 @@ namespace Sandbox
         public uint Uint;
         public float Float;
         public double Double;
-        public string String;
         public Entity Entity;
         public Transform Transform;
         public Camera Camera;
