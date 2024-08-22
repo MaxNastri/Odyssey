@@ -1,6 +1,5 @@
 #pragma once
 #include "Inspector.h"
-#include "AssetHandle.h"
 #include "StringDrawer.h"
 #include "AssetFieldDrawer.h"
 
@@ -22,7 +21,7 @@ namespace Odyssey
 		void OnSourceAssetChanged(GUID sourceGUID);
 
 	private:
-		AssetHandle<Mesh> m_Mesh;
+		std::shared_ptr<Mesh> m_Mesh;
 		StringDrawer m_GUIDDrawer;
 		StringDrawer m_NameDrawer;
 		StringDrawer m_TypeDrawer;

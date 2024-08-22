@@ -37,7 +37,7 @@ namespace Odyssey
 		}
 	}
 
-	AssetHandle<Mesh> ModelLoader::ProcessMesh(aiMesh* importMesh, const aiScene* scene)
+	std::shared_ptr<Mesh> ModelLoader::ProcessMesh(aiMesh* importMesh, const aiScene* scene)
 	{
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
@@ -75,13 +75,10 @@ namespace Odyssey
 			}
 		}
 
-		AssetHandle<Mesh> meshHandle = AssetManager::CreateMesh();
-		if (Mesh* mesh = meshHandle.Get())
-		{
-			mesh->SetVertices(vertices);
-			mesh->SetIndices(indices);
-		}
+		std::shared_ptr<Mesh> mesh = AssetManager::CreateMesh();
+		mesh->SetVertices(vertices);
+		mesh->SetIndices(indices);
 
-		return meshHandle;
+		return mesh;
 	}
 }

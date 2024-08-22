@@ -2,7 +2,6 @@
 #include "Asset.h"
 #include "ResourceHandle.h"
 #include "Enums.h"
-#include "AssetHandle.h"
 #include "BinaryBuffer.h"
 #include "SourceShader.h"
 
@@ -15,7 +14,7 @@ namespace Odyssey
 	public:
 		Shader() = default;
 		Shader(const Path& assetPath);
-		Shader(const Path& assetPath, AssetHandle<SourceShader> source);
+		Shader(const Path& assetPath, std::shared_ptr<SourceShader> source);
 
 	public:
 		void Recompile();

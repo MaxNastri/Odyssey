@@ -121,7 +121,7 @@ namespace Odyssey
 			setPass.SetMaterial(meshRenderer.GetMaterial(), m_Layouts);
 
 			// Create the drawcall data
-			if (Mesh* mesh = meshRenderer.GetMesh().Get())
+			if (auto mesh = meshRenderer.GetMesh())
 			{
 				Drawcall drawcall;
 				drawcall.VertexBuffer = mesh->GetVertexBuffer();
@@ -138,17 +138,17 @@ namespace Odyssey
 		}
 	}
 
-	SetPass::SetPass(AssetHandle<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts)
+	SetPass::SetPass(std::shared_ptr<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts)
 	{
 		SetMaterial(material, descriptorLayouts);
 	}
 
-	void SetPass::SetMaterial(AssetHandle<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts)
+	void SetPass::SetMaterial(std::shared_ptr<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts)
 	{
 		// Allocate a graphics pipeline
 		VulkanPipelineInfo info;
-		info.vertexShader = material.Get()->GetVertexShader().Get()->GetShaderModule();
-		info.fragmentShader = material.Get()->GetFragmentShader().Get()->GetShaderModule();
+		info.vertexShader = material->GetVertexShader()->GetShaderModule();
+		info.fragmentShader = material->GetFragmentShader()->GetShaderModule();
 		info.descriptorLayouts = descriptorLayouts;
 		pipeline = ResourceManager::AllocateGraphicsPipeline(info);
 
@@ -156,9 +156,9 @@ namespace Odyssey
 		vertexShaderID = info.vertexShader.GetID();
 		fragmentShaderID = info.fragmentShader.GetID();
 
-		if (material.Get()->GetTexture().IsValid())
+		if (auto texture = material->GetTexture())
 		{
-			Texture = material.Get()->GetTexture().Get()->GetTexture();
+			Texture = texture->GetTexture();
 		}
 	}
 }

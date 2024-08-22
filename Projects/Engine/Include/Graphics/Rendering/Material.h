@@ -1,6 +1,5 @@
 #pragma once
 #include "Asset.h"
-#include "AssetHandle.h"
 
 namespace Odyssey
 {
@@ -11,28 +10,28 @@ namespace Odyssey
 	{
 	public:
 		Material() = default;
-		Material(const std::filesystem::path& assetPath);
+		Material(const Path& assetPath);
 
 	public:
 		void Save();
 		void Load();
 
 	private:
-		void SaveToDisk(const std::filesystem::path& path);
-		void LoadFromDisk(const std::filesystem::path& path);
+		void SaveToDisk(const Path& path);
+		void LoadFromDisk(const Path& path);
 
 	public:
-		AssetHandle<Shader> GetVertexShader() { return m_VertexShader; }
-		AssetHandle<Shader> GetFragmentShader() { return m_FragmentShader; }
-		AssetHandle<Texture2D> GetTexture() { return m_Texture; }
+		std::shared_ptr<Shader> GetVertexShader() { return m_VertexShader; }
+		std::shared_ptr<Shader> GetFragmentShader() { return m_FragmentShader; }
+		std::shared_ptr<Texture2D> GetTexture() { return m_Texture; }
 
 	public:
-		void SetFragmentShader(AssetHandle<Shader> shader) { m_FragmentShader = shader; }
-		void SetVertexShader(AssetHandle<Shader> shader) { m_VertexShader = shader; }
-		void SetTexture(AssetHandle<Texture2D> texture) { m_Texture = texture; }
+		void SetFragmentShader(std::shared_ptr<Shader> shader) { m_FragmentShader = shader; }
+		void SetVertexShader(std::shared_ptr<Shader> shader) { m_VertexShader = shader; }
+		void SetTexture(std::shared_ptr<Texture2D> texture) { m_Texture = texture; }
 	private:
-		AssetHandle<Shader> m_VertexShader;
-		AssetHandle<Shader> m_FragmentShader;
-		AssetHandle<Texture2D> m_Texture;
+		std::shared_ptr<Shader> m_VertexShader;
+		std::shared_ptr<Shader> m_FragmentShader;
+		std::shared_ptr<Texture2D> m_Texture;
 	};
 }

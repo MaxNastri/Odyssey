@@ -1,7 +1,6 @@
 #pragma once
 #include "glm.h"
 #include "ResourceHandle.h"
-#include "AssetHandle.h"
 #include "Drawcall.h"
 
 namespace Odyssey
@@ -30,10 +29,10 @@ namespace Odyssey
 	{
 	public:
 		SetPass() = default;
-		SetPass(AssetHandle<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts);
+		SetPass(std::shared_ptr<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts);
 
 	public:
-		void SetMaterial(AssetHandle<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts);
+		void SetMaterial(std::shared_ptr<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts);
 
 	public:
 		ResourceHandle<VulkanGraphicsPipeline> pipeline;

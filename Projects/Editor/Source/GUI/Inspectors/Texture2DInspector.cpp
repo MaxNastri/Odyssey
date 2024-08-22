@@ -6,16 +6,14 @@ namespace Odyssey
 {
 	TextureInspector::TextureInspector(GUID guid)
 	{
-		m_Texture = AssetManager::LoadTexture2DByGUID(guid);
-
-		if (auto texture = m_Texture.Get())
+		if (m_Texture = AssetManager::LoadTexture2DByGUID(guid))
 		{
-			m_GUIDDrawer = StringDrawer("GUID", texture->GetGUID().String(), nullptr, true);
-			m_NameDrawer = StringDrawer("Name", texture->GetName(),
+			m_GUIDDrawer = StringDrawer("GUID", m_Texture->GetGUID().String(), nullptr, true);
+			m_NameDrawer = StringDrawer("Name", m_Texture->GetName(),
 				[this](const std::string& name) { OnNameChanged(name); });
-			m_TypeDrawer = StringDrawer("Type", texture->GetType(), nullptr, true);
-			m_PixelDataGUID = StringDrawer("Pixel Data", texture->GetPixelBufferGUID(), nullptr, true);
-			m_SourceAssetDrawer = AssetFieldDrawer("Source Asset", texture->GetSoureAsset(), "SourceTexture",
+			m_TypeDrawer = StringDrawer("Type", m_Texture->GetType(), nullptr, true);
+			m_PixelDataGUID = StringDrawer("Pixel Data", m_Texture->GetPixelBufferGUID(), nullptr, true);
+			m_SourceAssetDrawer = AssetFieldDrawer("Source Asset", m_Texture->GetSoureAsset(), "SourceTexture",
 				[this](GUID sourceGUID) { OnSourceAssetchanged(sourceGUID); });
 		}
 	}
@@ -30,18 +28,18 @@ namespace Odyssey
 
 	void TextureInspector::OnNameChanged(const std::string& name)
 	{
-		if (auto texture = m_Texture.Get())
+		if (m_Texture)
 		{
-			texture->SetName(name);
-			texture->Save();
+			m_Texture->SetName(name);
+			m_Texture->Save();
 		}
 	}
 	void TextureInspector::OnSourceAssetchanged(GUID sourceGUID)
 	{
-		if (auto texture = m_Texture.Get())
+		if (m_Texture)
 		{
-			texture->SetSourceAsset(sourceGUID);
-			texture->Save();
+			m_Texture->SetSourceAsset(sourceGUID);
+			m_Texture->Save();
 		}
 	}
 }

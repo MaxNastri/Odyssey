@@ -9,7 +9,7 @@ namespace Odyssey
 	{
 	public:
 		SourceShader() = default;
-		SourceShader(const std::filesystem::path& sourcePath);
+		SourceShader(const Path& sourcePath);
 
 	public:
 		bool Compile();

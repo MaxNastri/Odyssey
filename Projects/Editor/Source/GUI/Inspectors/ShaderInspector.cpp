@@ -6,17 +6,15 @@ namespace Odyssey
 {
 	ShaderInspector::ShaderInspector(GUID guid)
 	{
-		m_Shader = AssetManager::LoadShaderByGUID(guid);
-
-		if (auto shader = m_Shader.Get())
+		if (m_Shader = AssetManager::LoadShaderByGUID(guid))
 		{
-			m_GUIDDrawer = StringDrawer("GUID", shader->GetGUID().String(), nullptr, true);
-			m_NameDrawer = StringDrawer("Name", shader->GetName(), 
+			m_GUIDDrawer = StringDrawer("GUID", m_Shader->GetGUID().String(), nullptr, true);
+			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(),
 				[this](const std::string& name) { OnNameChanged(name); });
-			m_TypeDrawer = StringDrawer("Type", shader->GetType(), nullptr, true);
-			m_ShaderCodeDrawer = StringDrawer("Shader Code", shader->GetShaderCodeGUID().String(), nullptr, true);
-			m_ShaderTypeDrawer = IntDrawer<uint32_t>("Shader Type", (uint32_t)shader->GetShaderType(), nullptr, true);
-			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", shader->GetSoureAsset(), "SourceShader",
+			m_TypeDrawer = StringDrawer("Type", m_Shader->GetType(), nullptr, true);
+			m_ShaderCodeDrawer = StringDrawer("Shader Code", m_Shader->GetShaderCodeGUID().String(), nullptr, true);
+			m_ShaderTypeDrawer = IntDrawer<uint32_t>("Shader Type", (uint32_t)m_Shader->GetShaderType(), nullptr, true);
+			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSoureAsset(), "SourceShader",
 				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
 		}
 	}
@@ -31,22 +29,22 @@ namespace Odyssey
 		m_SourceShaderDrawer.Draw();
 
 		if (ImGui::Button("Compile"))
-			m_Shader.Get()->Recompile();
+			m_Shader->Recompile();
 	}
 	void ShaderInspector::OnNameChanged(const std::string& name)
 	{
-		if (auto shader = m_Shader.Get())
+		if (m_Shader)
 		{
-			shader->SetName(name);
-			shader->Save();
+			m_Shader->SetName(name);
+			m_Shader->Save();
 		}
 	}
 	void ShaderInspector::OnSourceAssetChanged(GUID sourceGUID)
 	{
-		if (auto shader = m_Shader.Get())
+		if (m_Shader)
 		{
-			shader->SetSourceAsset(sourceGUID);
-			shader->Save();
+			m_Shader->SetSourceAsset(sourceGUID);
+			m_Shader->Save();
 		}
 	}
 }

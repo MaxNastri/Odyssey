@@ -1,7 +1,6 @@
 #pragma once
 #include "Inspector.h"
 #include "GUID.h"
-#include "AssetHandle.h"
 #include "StringDrawer.h"
 
 namespace Odyssey
@@ -21,7 +20,7 @@ namespace Odyssey
 		void OnDstPathChanged(const std::string& path) { m_DstPath = path; }
 
 	private:
-		AssetHandle<SourceModel> m_Model;
+		std::shared_ptr<SourceModel> m_Model;
 		std::vector<StringDrawer> m_Drawers;
 		Path m_DstPath;
 	};

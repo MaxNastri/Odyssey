@@ -16,35 +16,32 @@ namespace Odyssey
 		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
 	}
 
-	Mesh::Mesh(const Path& assetPath, AssetHandle<SourceModel> source)
+	Mesh::Mesh(const Path& assetPath, std::shared_ptr<SourceModel> source)
 		: Asset(assetPath)
 	{
-		if (SourceModel* model = source.Get())
-		{
-			// TODO: Add support for submeshes
-			ModelImporter& importer = model->GetImporter();
-			const MeshImportData& meshData = importer.GetMeshData(0);
+		// TODO: Add support for submeshes
+		ModelImporter& importer = source->GetImporter();
+		const MeshImportData& meshData = importer.GetMeshData(0);
 
-			// Transfer the mesh data from the importer
-			m_VertexCount = meshData.VertexCount;
-			m_IndexCount = meshData.IndexCount;
-			m_Vertices = meshData.Vertices;
-			m_Indices = meshData.Indices;
+		// Transfer the mesh data from the importer
+		m_VertexCount = meshData.VertexCount;
+		m_IndexCount = meshData.IndexCount;
+		m_Vertices = meshData.Vertices;
+		m_Indices = meshData.Indices;
 
-			// Create the binary asset for the vertices
-			BinaryBuffer buffer;
-			buffer.WriteData(m_Vertices);
-			m_VerticesGUID = AssetManager::CreateBinaryAsset(buffer);
+		// Create the binary asset for the vertices
+		BinaryBuffer buffer;
+		buffer.WriteData(m_Vertices);
+		m_VerticesGUID = AssetManager::CreateBinaryAsset(buffer);
 
-			// Create the binary asset for the indices
-			buffer.Clear();
-			buffer.WriteData(m_Indices);
-			m_IndicesGUID = AssetManager::CreateBinaryAsset(buffer);
+		// Create the binary asset for the indices
+		buffer.Clear();
+		buffer.WriteData(m_Indices);
+		m_IndicesGUID = AssetManager::CreateBinaryAsset(buffer);
 
-			// Allocate our buffers
-			m_VertexBuffer = ResourceManager::AllocateVertexBuffer(m_Vertices);
-			m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
-		}
+		// Allocate our buffers
+		m_VertexBuffer = ResourceManager::AllocateVertexBuffer(m_Vertices);
+		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
 	}
 
 	void Mesh::Save()
@@ -66,7 +63,7 @@ namespace Odyssey
 		SerializeMetadata(serializer);
 
 		root.WriteData("m_VertexCount", m_VertexCount);
-		root.WriteData("m_VertexData",  m_VerticesGUID.CRef());
+		root.WriteData("m_VertexData", m_VerticesGUID.CRef());
 		root.WriteData("m_IndexCount", m_IndexCount);
 		root.WriteData("m_IndexData", m_IndicesGUID.CRef());
 

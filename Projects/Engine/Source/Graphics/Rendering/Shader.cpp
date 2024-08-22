@@ -16,21 +16,18 @@ namespace Odyssey
 			m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ShaderCodeBuffer);
 	}
 
-	Shader::Shader(const Path& assetPath, AssetHandle<SourceShader> source)
+	Shader::Shader(const Path& assetPath, std::shared_ptr<SourceShader> source)
 		: Asset(assetPath)
 	{
-		if (SourceShader* shader = source.Get())
+		m_ShaderType = source->GetShaderType();
+
+		if (source->Compile(m_ShaderCodeBuffer))
 		{
-			m_ShaderType = shader->GetShaderType();
-
-			if (shader->Compile(m_ShaderCodeBuffer))
-			{
-				m_ShaderCodeGUID = AssetManager::CreateBinaryAsset(m_ShaderCodeBuffer);
-				m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ShaderCodeBuffer);
-			}
-
-			SetSourceAsset(shader->GetGUID());
+			m_ShaderCodeGUID = AssetManager::CreateBinaryAsset(m_ShaderCodeBuffer);
+			m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ShaderCodeBuffer);
 		}
+
+		SetSourceAsset(source->GetGUID());
 	}
 
 	void Shader::LoadFromDisk(const std::filesystem::path& assetPath)
@@ -55,12 +52,12 @@ namespace Odyssey
 
 	void Shader::Recompile()
 	{
-		AssetHandle<SourceShader> shader = AssetManager::LoadSourceShader(m_SourceAsset);
-		if (SourceShader* source = shader.Get())
+		if (std::shared_ptr<SourceShader> shader = AssetManager::LoadSourceShader(m_SourceAsset))
 		{
 			BinaryBuffer temp;
-			source->SetShaderType(m_ShaderType);
-			if (source->Compile(temp))
+			shader->SetShaderType(m_ShaderType);
+
+			if (shader->Compile(temp))
 			{
 				m_ShaderCodeBuffer = temp;
 				AssetManager::WriteBinaryAsset(m_ShaderCodeGUID, m_ShaderCodeBuffer);

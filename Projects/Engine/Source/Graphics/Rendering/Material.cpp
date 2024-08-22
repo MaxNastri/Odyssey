@@ -6,7 +6,7 @@
 
 namespace Odyssey
 {
-	Material::Material(const std::filesystem::path& assetPath)
+	Material::Material(const Path& assetPath)
 		: Asset(assetPath)
 	{
 		LoadFromDisk(assetPath);
@@ -28,7 +28,7 @@ namespace Odyssey
 		}
 	}
 
-	void Material::SaveToDisk(const std::filesystem::path& assetPath)
+	void Material::SaveToDisk(const Path& assetPath)
 	{
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
@@ -36,18 +36,20 @@ namespace Odyssey
 		// Serialize metadata first
 		SerializeMetadata(serializer);
 
-		if (Shader* fragmentShader = m_FragmentShader.Get())
-			root.WriteData("m_FragmentShader", fragmentShader->GetGUID());
-		if (Shader* vertexShader = m_VertexShader.Get())
-			root.WriteData("m_VertexShader", vertexShader->GetGUID());
-		if (Texture2D* texture = m_Texture.Get())
-			root.WriteData("m_Texture", texture->GetGUID());
+		if (m_FragmentShader)
+			root.WriteData("m_FragmentShader", m_FragmentShader->GetGUID());
+
+		if (m_VertexShader)
+			root.WriteData("m_VertexShader", m_VertexShader->GetGUID());
+
+		if (m_Texture)
+			root.WriteData("m_Texture", m_Texture->GetGUID());
 
 		// Save to disk
 		serializer.WriteToDisk(assetPath);
 	}
 
-	void Material::LoadFromDisk(const std::filesystem::path& assetPath)
+	void Material::LoadFromDisk(const Path& assetPath)
 	{
 		AssetDeserializer deserializer(assetPath);
 		if (deserializer.IsValid())

@@ -8,7 +8,7 @@ namespace Odyssey
 	static std::uniform_int_distribution<uint64_t> s_UniformDistribution;
 
 	GUID::GUID()
-		: m_GUID(s_UniformDistribution(engine))
+		: m_GUID(0)
 	{
 	}
 
@@ -25,5 +25,9 @@ namespace Odyssey
 	GUID::GUID(const GUID& other)
 		: m_GUID(other.m_GUID)
 	{
+	}
+	GUID GUID::New()
+	{
+		return GUID(s_UniformDistribution(engine));
 	}
 }

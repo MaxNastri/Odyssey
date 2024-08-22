@@ -28,7 +28,14 @@ namespace Odyssey
 
         #endregion
 
+        #region Mesh
+
+        internal static delegate* unmanaged<ulong, uint> Mesh_GetVertexCount;
+        internal static delegate* unmanaged<ulong, uint> Mesh_GetIndexCount;
+
+        #endregion
         #region Time
+
         internal static delegate* unmanaged<float> Time_GetDeltaTime;
 
         #endregion

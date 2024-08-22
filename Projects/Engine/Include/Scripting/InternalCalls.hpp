@@ -6,6 +6,8 @@
 #include "glm.h"
 #include "Logger.h"
 #include "OdysseyTime.h"
+#include "AssetManager.h"
+#include "Mesh.h"
 
 namespace Odyssey
 {
@@ -63,7 +65,7 @@ namespace Odyssey::InternalCalls
 	void GameObject_AddComponent(uint64_t guid, Coral::ReflectionType componentType)
 	{
 		GameObject gameObject = GetGameObject(guid);
-		
+
 		if (Coral::Type& type = componentType)
 		{
 			// Find the HasComponent function for this component type and check that it is valid
@@ -163,6 +165,12 @@ namespace Odyssey::InternalCalls
 
 		if (Transform* transform = gameObject.TryGetComponent<Transform>())
 			transform->SetScale(scale);
+	}
+
+	uint32_t Mesh_GetVertexCount(uint64_t guid)
+	{
+		if (std::shared_ptr<Mesh> mesh = AssetManager::LoadMeshByGUID(GUID(guid)))
+			return mesh->GetVertexCount();
 	}
 
 	float Time_GetDeltaTime()

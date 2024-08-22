@@ -37,9 +37,9 @@ namespace Odyssey
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
 
-		root.WriteData("m_GUID", m_GUID.CRef());
-		root.WriteData("m_Name", m_Name);
-		root.WriteData("m_Type", m_Type);
+		root.WriteData("m_GUID", Guid.CRef());
+		root.WriteData("m_Name", Name);
+		root.WriteData("m_Type", Type);
 		root.WriteData("m_SourceExtension", m_SourceExtension);
 
 		serializer.WriteToDisk(m_MetaFilePath);
@@ -53,23 +53,23 @@ namespace Odyssey
 		if (AssetDeserializer deserializer = AssetDeserializer(m_MetaFilePath))
 		{
 			SerializationNode root = deserializer.GetRoot();
-			root.ReadData("m_GUID", m_GUID.Ref());
-			root.ReadData("m_Name", m_Name);
-			root.ReadData("m_Type", m_Type);
+			root.ReadData("m_GUID", Guid.Ref());
+			root.ReadData("m_Name", Name);
+			root.ReadData("m_Type", Type);
 			root.ReadData("m_SourceExtension", m_SourceExtension);
 		}
 	}
 
 	bool SourceAsset::HasMetadata()
 	{
-		return m_GUID != 0 && !m_Name.empty() && !m_Type.empty() && !m_SourceExtension.empty();
+		return Guid != 0 && !Name.empty() && !Type.empty() && !m_SourceExtension.empty();
 	}
 
 	void SourceAsset::SetMetadata(GUID guid, const std::string& name, const std::string& type)
 	{
-		m_GUID = guid;
-		m_Name = name;
-		m_Type = type;
+		Guid = guid;
+		Name = name;
+		Type = type;
 	}
 
 	Asset::Asset(const Path& assetPath)
@@ -82,9 +82,9 @@ namespace Odyssey
 	{
 		SerializationNode& root = serializer.GetRoot();
 		root.WriteData("m_SourceAsset", m_SourceAsset.CRef());
-		root.WriteData("m_GUID", m_GUID.CRef());
-		root.WriteData("m_Name", m_Name);
-		root.WriteData("m_Type", m_Type);
+		root.WriteData("m_GUID", Guid.CRef());
+		root.WriteData("m_Name", Name);
+		root.WriteData("m_Type", Type);
 	}
 
 	void Asset::Load()
@@ -94,9 +94,9 @@ namespace Odyssey
 		{
 			SerializationNode root = deserializer.GetRoot();
 			root.ReadData("m_SourceAsset", m_SourceAsset.Ref());
-			root.ReadData("m_GUID", m_GUID.Ref());
-			root.ReadData("m_Name", m_Name);
-			root.ReadData("m_Type", m_Type);
+			root.ReadData("m_GUID", Guid.Ref());
+			root.ReadData("m_Name", Name);
+			root.ReadData("m_Type", Type);
 		}
 	}
 }

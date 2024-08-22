@@ -1,6 +1,5 @@
 #pragma once
 #include "Asset.h"
-#include "AssetHandle.h"
 #include "ResourceHandle.h"
 #include "Vertex.h"
 #include "GUID.h"
@@ -16,7 +15,7 @@ namespace Odyssey
 	public:
 		Mesh() = default;
 		Mesh(const Path& assetPath);
-		Mesh(const Path& assetPath, AssetHandle<SourceModel> source);
+		Mesh(const Path& assetPath, std::shared_ptr<SourceModel> source);
 
 	public:
 		void Save();
