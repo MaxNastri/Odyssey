@@ -9,9 +9,12 @@ namespace Odyssey
 		BinaryBuffer(std::vector<unsigned char> buffer, size_t size);
 
 	public:
+		operator bool() { return m_Size != 0; }
+
+	public:
+		void Clear();
 		const std::vector<unsigned char>& GetData() { return m_Data; }
 		size_t GetSize() { return m_Size; }
-		operator bool() { return m_Size != 0; }
 
 	public:
 		template<typename T>

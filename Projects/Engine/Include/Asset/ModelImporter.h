@@ -34,9 +34,11 @@ namespace Odyssey
 			{
 				m_MeshDatas.clear();
 
-				for (uint32_t m = 0; m < scene->mNumMeshes; m++)
+				// TODO: Add support for submeshes
+				//for (uint32_t m = 0; m < scene->mNumMeshes; m++)
 				{
-					aiMesh* mesh = scene->mMeshes[m];
+					// TODO: Add support for submeshes
+					aiMesh* mesh = scene->mMeshes[0];
 					MeshImportData importData;
 
 					// Add to the vertex count

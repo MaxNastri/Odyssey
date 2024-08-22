@@ -7,4 +7,10 @@ namespace Odyssey
 	{
 
 	}
+
+	void BinaryBuffer::Clear()
+	{
+		m_Data.clear();
+		m_Size = 0;
+	}
 }

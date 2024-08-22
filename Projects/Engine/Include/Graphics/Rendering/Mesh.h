@@ -1,19 +1,22 @@
 #pragma once
 #include "Asset.h"
+#include "AssetHandle.h"
 #include "ResourceHandle.h"
 #include "Vertex.h"
-#include "ryml.hpp"
+#include "GUID.h"
 
 namespace Odyssey
 {
 	class VulkanVertexBuffer;
 	class VulkanIndexBuffer;
+	class SourceModel;
 
 	class Mesh : public Asset
 	{
 	public:
 		Mesh() = default;
-		Mesh(const std::filesystem::path& assetPath);
+		Mesh(const Path& assetPath);
+		Mesh(const Path& assetPath, AssetHandle<SourceModel> source);
 
 	public:
 		void Save();
@@ -34,13 +37,13 @@ namespace Odyssey
 		void SetIndices(std::vector<uint32_t>& indices);
 
 	private: // Vertices
-		std::string m_VerticesGUID;
+		GUID m_VerticesGUID = 0;
 		uint32_t m_VertexCount;
 		std::vector<Vertex> m_Vertices;
 		ResourceHandle<VulkanVertexBuffer> m_VertexBuffer;
 
 	private: // Indices
-		std::string m_IndicesGUID;
+		GUID m_IndicesGUID = 0;
 		uint32_t m_IndexCount;
 		std::vector<uint32_t> m_Indices;
 		ResourceHandle<VulkanIndexBuffer> m_IndexBuffer;

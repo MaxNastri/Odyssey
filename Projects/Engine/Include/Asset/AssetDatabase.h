@@ -70,6 +70,7 @@ namespace Odyssey
 			{".hlsl", "SourceShader"},
 			{".fbx", "SourceModel"},
 			{".gltf", "SourceModel"},
+			{".glb", "SourceModel"},
 			{".png", "SourceTexture"},
 			{".jpg", "SourceTexture"},
 		};

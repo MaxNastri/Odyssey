@@ -32,6 +32,7 @@ namespace Odyssey
 		static AssetHandle<Material> CreateMaterial(const Path& assetPath);
 		static AssetHandle<Mesh> CreateMesh();
 		static AssetHandle<Mesh> CreateMesh(const Path& assetPath);
+		static AssetHandle<Mesh> CreateMesh(const Path& assetPath, AssetHandle<SourceModel> source);
 		static AssetHandle<Shader> CreateShader(const Path& assetPath);
 		static AssetHandle<Shader> CreateShader(const Path& assetPath, AssetHandle<SourceShader> source);
 

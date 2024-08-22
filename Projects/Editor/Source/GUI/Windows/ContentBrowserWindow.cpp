@@ -182,7 +182,7 @@ namespace Odyssey
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 		{
 			GUID guid = AssetManager::PathToGUID(assetPath);
-			ImGui::SetDragDropPayload("Asset", guid.String().c_str(), sizeof(guid));
+			ImGui::SetDragDropPayload("Asset", &guid, sizeof(GUID));
 			ImGui::EndDragDropSource();
 		}
 

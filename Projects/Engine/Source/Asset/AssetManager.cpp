@@ -101,6 +101,23 @@ namespace Odyssey
 		return AssetHandle<Mesh>(id, mesh.get());
 	}
 
+	AssetHandle<Mesh> AssetManager::CreateMesh(const Path& assetPath, AssetHandle<SourceModel> source)
+	{
+		// Push back an empty mesh
+		size_t id = s_Assets.Add<Mesh>(assetPath, source);
+		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
+
+		// Set asset data
+		mesh->SetName("Default");
+		mesh->SetType("Mesh");
+		mesh->SetSourceAsset(source.Get()->GetGUID());
+
+		// Save to disk
+		mesh->Save();
+
+		return AssetHandle<Mesh>(id, mesh.get());
+	}
+
 	AssetHandle<Shader> AssetManager::CreateShader(const Path& assetPath)
 	{
 		// Push back an empty mesh
