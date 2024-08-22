@@ -16,7 +16,7 @@ namespace Odyssey
 			m_TypeDrawer = StringDrawer("Type", mesh->GetType(), nullptr, true);
 			m_VertexCountDrawer = StringDrawer("Vertex Count", std::to_string(mesh->GetVertexCount()), nullptr, true);
 			m_IndexCountDrawer = StringDrawer("Index Count", std::to_string(mesh->GetIndexCount()), nullptr, true);
-			m_SourceMeshDrawer = AssetFieldDrawer("Source Asset", mesh->GetSoureAsset(), "SourceMesh",
+			m_SourceMeshDrawer = AssetFieldDrawer("Source Asset", mesh->GetSoureAsset(), "SourceModel",
 				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
 		}
 	}

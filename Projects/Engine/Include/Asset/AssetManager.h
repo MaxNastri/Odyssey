@@ -53,7 +53,6 @@ namespace Odyssey
 		static AssetHandle<Texture2D> LoadTexture2DByGUID(GUID guid);
 
 	public:
-		static BinaryCache& GetBinaryCache() { return s_BinaryCache; }
 		static GUID CreateBinaryAsset(BinaryBuffer& buffer);
 		static BinaryBuffer LoadBinaryAsset(GUID guid);
 		static void WriteBinaryAsset(GUID guid, BinaryBuffer& buffer);
@@ -81,7 +80,7 @@ namespace Odyssey
 		inline static std::map<GUID, uint64_t> s_LoadedSourceAssets;
 
 	private: // Binary Assets
-		inline static BinaryCache s_BinaryCache;
+		inline static std::unique_ptr<BinaryCache> s_BinaryCache;
 
 	private: // Const
 		inline static std::string s_AssetExtension = ".asset";

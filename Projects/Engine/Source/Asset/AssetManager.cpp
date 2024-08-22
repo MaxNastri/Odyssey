@@ -12,7 +12,7 @@ namespace Odyssey
 	void AssetManager::CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory)
 	{
 		s_AssetsDirectory = assetsDirectory;
-		s_BinaryCache = BinaryCache(cacheDirectory);
+		s_BinaryCache = std::make_unique<BinaryCache>(cacheDirectory);
 
 		// Scan for Assets
 		SearchOptions assetSearch;
@@ -275,18 +275,18 @@ namespace Odyssey
 
 	BinaryBuffer AssetManager::LoadBinaryAsset(GUID guid)
 	{
-		return s_BinaryCache.LoadBinaryData(guid);
+		return s_BinaryCache->LoadBinaryData(guid);
 	}
 
 	void AssetManager::WriteBinaryAsset(GUID guid, BinaryBuffer& buffer)
 	{
-		s_BinaryCache.SaveBinaryData(guid, buffer);
+		s_BinaryCache->SaveBinaryData(guid, buffer);
 	}
 
 	GUID AssetManager::CreateBinaryAsset(BinaryBuffer& buffer)
 	{
 		GUID guid;
-		s_BinaryCache.SaveBinaryData(guid, buffer);
+		s_BinaryCache->SaveBinaryData(guid, buffer);
 		return guid;
 	}
 
