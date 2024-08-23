@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sandbox</RootNamespace>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Cache\Build\Binaries\</OutputPath>
+    <IntermediateOutputPath>..\..\Cache\Build\Intermediates\Debug\</IntermediateOutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Cache\Build\Binaries\</OutputPath>
+    <IntermediateOutputPath>..\..\Cache\Build\Intermediates\Release\</IntermediateOutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <Reference Include="Coral.Managed">
+      <HintPath>..\..\Cache\UserAssemblies\Coral.Managed.dll</HintPath>
+    </Reference>
+    <Reference Include="Odyssey.Framework">
+      <HintPath>..\..\Cache\UserAssemblies\Odyssey.Framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Reference Include="Coral.Managed">
+      <HintPath>..\..\Cache\UserAssemblies\Coral.Managed.dll</HintPath>
+    </Reference>
+    <Reference Include="Odyssey.Framework">
+      <HintPath>..\..\Cache\UserAssemblies\Odyssey.Framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Source\Sample.cs" />
+    <Compile Include="Source\Tests\FieldTest.cs" />
+    <Compile Include="Source\Tests\TransformTest.cs" />
+  </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy /B /Y C:\Git\Odyssey\Projects\Sandbox\Cache\Build\Binaries\net8.0\Sandbox.dll, C:\Git\Odyssey\Projects\Sandbox\Cache\UserAssemblies
+copy /B /Y C:\Git\Odyssey\Projects\Sandbox\Cache\Build\Binaries\net8.0\Sandbox.pdb, C:\Git\Odyssey\Projects\Sandbox\Cache\UserAssemblies</PostBuildEvent>
+  </PropertyGroup>
+</Project>

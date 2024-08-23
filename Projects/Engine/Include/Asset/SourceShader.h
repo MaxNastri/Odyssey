@@ -9,7 +9,7 @@ namespace Odyssey
 	{
 	public:
 		SourceShader() = default;
-		SourceShader(const std::filesystem::path& sourcePath);
+		SourceShader(const Path& sourcePath);
 
 	public:
 		bool Compile();
@@ -19,6 +19,7 @@ namespace Odyssey
 		const std::string& GetShaderLanguage() { return m_ShaderLanguage; }
 		bool IsCompiled() { return m_Compiled; }
 		void SetShaderType(ShaderType shaderType) { m_ShaderType = shaderType; }
+		ShaderType GetShaderType() { return m_ShaderType; }
 
 	private:
 		std::string ReadShaderFile(const std::filesystem::path& path);

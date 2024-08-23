@@ -12,7 +12,7 @@ namespace Odyssey
 	{
 	}
 
-	MeshRenderer::MeshRenderer(AssetHandle<Mesh> mesh, AssetHandle<Material> material)
+	MeshRenderer::MeshRenderer(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material)
 	{
 		m_Mesh = mesh;
 		m_Material = material;
@@ -22,9 +22,10 @@ namespace Odyssey
 	{
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
+		componentNode.WriteData("m_FileID", m_FileID.CRef());
 		componentNode.WriteData("Type", MeshRenderer::Type);
-		componentNode.WriteData("m_Mesh", m_Mesh.Get()->GetGUID());
-		componentNode.WriteData("m_Material", m_Material.Get()->GetGUID());
+		componentNode.WriteData("m_Mesh", m_Mesh->GetGUID());
+		componentNode.WriteData("m_Material", m_Material->GetGUID());
 	}
 
 	void MeshRenderer::Deserialize(SerializationNode& node)
@@ -32,6 +33,7 @@ namespace Odyssey
 		std::string meshGUID;;
 		std::string materialGUID;
 
+		node.ReadData("m_FileID", m_FileID.Ref());
 		node.ReadData("m_Mesh", meshGUID);
 		node.ReadData("m_Material", materialGUID);
 
@@ -39,12 +41,12 @@ namespace Odyssey
 		m_Mesh = AssetManager::LoadMeshByGUID(meshGUID);
 	}
 
-	void MeshRenderer::SetMesh(AssetHandle<Mesh> mesh)
+	void MeshRenderer::SetMesh(std::shared_ptr<Mesh> mesh)
 	{
 		m_Mesh = mesh;
 	}
 
-	void MeshRenderer::SetMaterial(AssetHandle<Material> material)
+	void MeshRenderer::SetMaterial(std::shared_ptr<Material> material)
 	{
 		m_Material = material;
 	}

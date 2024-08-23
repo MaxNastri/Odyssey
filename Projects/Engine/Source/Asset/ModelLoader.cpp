@@ -37,9 +37,9 @@ namespace Odyssey
 		}
 	}
 
-	AssetHandle<Mesh> ModelLoader::ProcessMesh(aiMesh* importMesh, const aiScene* scene)
+	std::shared_ptr<Mesh> ModelLoader::ProcessMesh(aiMesh* importMesh, const aiScene* scene)
 	{
-		std::vector<VulkanVertex> vertices;
+		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
 
 		vertices.resize(importMesh->mNumVertices);
@@ -47,19 +47,19 @@ namespace Odyssey
 		{
 			aiVector3D modelVertex = importMesh->mVertices[i];
 
-			VulkanVertex vertex;
-			vertex.m_Position = glm::vec3(modelVertex.x, modelVertex.y, modelVertex.z);
+			Vertex vertex;
+			vertex.Position = glm::vec3(modelVertex.x, modelVertex.y, modelVertex.z);
 
 			if (importMesh->mTextureCoords[0])
 			{
 				aiVector3D uv0 = importMesh->mTextureCoords[0][i];
-				vertex.m_UV0 = glm::vec2(uv0.x, uv0.y);
+				vertex.TexCoord0 = glm::vec2(uv0.x, uv0.y);
 			}
 
 			if (importMesh->mNormals)
 			{
 				aiVector3D normals = importMesh->mNormals[i];
-				vertex.m_Normal = glm::vec3(normals.x, normals.y, normals.z);
+				vertex.Normal = glm::vec3(normals.x, normals.y, normals.z);
 			}
 
 			vertices[i] = vertex;
@@ -75,13 +75,10 @@ namespace Odyssey
 			}
 		}
 
-		AssetHandle<Mesh> meshHandle = AssetManager::CreateMesh();
-		if (Mesh* mesh = meshHandle.Get())
-		{
-			mesh->SetVertices(vertices);
-			mesh->SetIndices(indices);
-		}
+		std::shared_ptr<Mesh> mesh = AssetManager::CreateMesh();
+		mesh->SetVertices(vertices);
+		mesh->SetIndices(indices);
 
-		return meshHandle;
+		return mesh;
 	}
 }

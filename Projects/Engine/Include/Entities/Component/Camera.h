@@ -1,6 +1,7 @@
 #pragma once
 #include "AssetSerializer.h"
 #include "GameObject.h"
+#include "FileID.h"
 
 namespace Odyssey
 {
@@ -35,6 +36,7 @@ namespace Odyssey
 		void CalculateInverseView();
 
 	private: // Serialized
+		FileID m_FileID;
 		float m_FieldOfView = 45.0f;
 		float m_NearClip = 0.1f;
 		float m_FarClip = 1000.0f;

@@ -12,20 +12,19 @@ namespace Odyssey
 	{
 	public:
 		MaterialInspector() = default;
-		MaterialInspector(Material* material);
 		MaterialInspector(GUID guid);
 
 	public:
 		virtual void Draw() override;
 
 	private:
-		static void OnNameModified(Material* material, const std::string& name);
-		static void OnFragmentShaderModified(Material* material, GUID guid);
-		static void OnVertexShaderModified(Material* material, GUID guid);
-		static void OnTextureModified(Material* material, GUID guid);
+		void OnNameModified(const std::string& name);
+		void OnFragmentShaderModified(GUID guid);
+		void OnVertexShaderModified(GUID guid);
+		void OnTextureModified(GUID guid);
 
 	private:
-		Material* m_Material;
+		std::shared_ptr<Material> m_Material;
 
 		StringDrawer m_NameDrawer;
 		StringDrawer m_GUIDDrawer;

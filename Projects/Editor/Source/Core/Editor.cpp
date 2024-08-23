@@ -26,9 +26,9 @@ namespace Odyssey
 			([this](BuildCompleteEvent* event) { OnBuildComplete(event); });
 		m_PlaymodeStateListener = EventSystem::Listen<PlaymodeStateChangedEvent>
 			([this](PlaymodeStateChangedEvent* event) { OnPlaymodeStateChanged(event); });
-		
+
 		// Load the default project
-		Project::LoadProject("C:/Git/Odyssey/Projects/ExampleProject");
+		Project::LoadProject("C:/Git/Odyssey/Projects/Sandbox");
 
 		// Create the renderer
 		RendererConfig config;
@@ -48,7 +48,7 @@ namespace Odyssey
 		m_ScriptCompiler = std::make_unique<ScriptCompiler>(settings);
 
 		ScriptingManager::SetUserAssembliesPath(m_ScriptCompiler->GetUserAssemblyPath());
-		m_ScriptCompiler->BuildUserAssembly();
+		ScriptingManager::LoadUserAssemblies();
 
 		SetupEditorGUI();
 
@@ -88,6 +88,7 @@ namespace Odyssey
 		}
 
 		Renderer::Destroy();
+		ScriptingManager::Destroy();
 	}
 
 	void Editor::Exit()
@@ -108,35 +109,39 @@ namespace Odyssey
 	{
 		switch (event->State)
 		{
-		case PlaymodeState::EnterPlaymode:
-		{
-			Scene* activeScene = SceneManager::GetActiveScene();
-			Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
-			activeScene->SaveTo(tempPath);
-			m_UpdateScripts = true;
-			break;
-		}
-		case PlaymodeState::PausePlaymode:
-		{
-			m_UpdateScripts = false;
-			break;
-		}
-		case PlaymodeState::ExitPlaymode:
-		{
-			Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
-			SceneManager::LoadScene(tempPath.string());
-			m_UpdateScripts = false;
-			break;
-		}
-		default:
-			break;
+			case PlaymodeState::EnterPlaymode:
+			{
+				Scene* activeScene = SceneManager::GetActiveScene();
+				Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
+				activeScene->SaveTo(tempPath);
+
+				activeScene->OnStartRuntime();
+				activeScene->Awake();
+				m_UpdateScripts = true;
+				break;
+			}
+			case PlaymodeState::PausePlaymode:
+			{
+				m_UpdateScripts = false;
+				break;
+			}
+			case PlaymodeState::ExitPlaymode:
+			{
+				Scene* activeScene = SceneManager::GetActiveScene();
+				activeScene->OnStopRuntime();
+
+				Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
+				SceneManager::LoadScene(tempPath.string());
+				m_UpdateScripts = false;
+				break;
+			}
 		}
 	}
 	void Editor::OnBuildComplete(BuildCompleteEvent* event)
 	{
 		if (event->success)
 		{
-			ScriptingManager::ReloadUserAssemblies();
+			ScriptingManager::ReloadAssemblies();
 		}
 	}
 }

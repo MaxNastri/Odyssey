@@ -1,5 +1,4 @@
 #pragma once
-#include "AssetHandle.h"
 
 struct aiMesh;
 struct aiNode;
@@ -12,8 +11,8 @@ namespace Odyssey
 
 	struct ModelAsset
 	{
-		AssetHandle<Mesh> Mesh;
-		AssetHandle<Material> Material;
+		std::shared_ptr<Mesh> Mesh;
+		std::shared_ptr<Material> Material;
 	};
 
 	class ModelLoader
@@ -24,9 +23,9 @@ namespace Odyssey
 	public:
 		bool LoadModel(const std::filesystem::path& assetPath, ModelAsset& outModel);
 		void ProcessNode(aiNode* node, const aiScene* scene);
-		AssetHandle<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene);
+		std::shared_ptr<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene);
 
 	private:
-		std::vector<AssetHandle<Mesh>> m_Meshes;
+		std::vector<std::shared_ptr<Mesh>> m_Meshes;
 	};
 }

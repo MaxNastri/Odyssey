@@ -5,218 +5,343 @@
 #include "Scene.h"
 #include "Texture2D.h"
 #include "SourceShader.h"
-#include "AssetSerializer.h"
+#include "SourceModel.h"
 
 namespace Odyssey
 {
 	void AssetManager::CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory)
 	{
 		s_AssetsDirectory = assetsDirectory;
-		s_BinaryCache = BinaryCache(cacheDirectory);
+		s_BinaryCache = std::make_unique<BinaryCache>(cacheDirectory);
 
 		// Scan for Assets
-		AssetDatabase::SearchOptions assetSearch;
+		SearchOptions assetSearch;
 		assetSearch.Root = s_AssetsDirectory;
 		assetSearch.ExclusionPaths = { };
 		assetSearch.Extensions = { s_AssetExtension };
-		s_AssetDatabase.ScanForAssets(assetSearch);
+		s_AssetDatabase = std::make_unique<AssetDatabase>(assetSearch);
 
 		// Scan for Source Assets
-		ScanForSourceAssets();
+		SearchOptions sourceSearch;
+		sourceSearch.Root = s_AssetsDirectory;
+		sourceSearch.ExclusionPaths = { };
+		sourceSearch.Extensions = { };
+		sourceSearch.SourceAssetsOnly = true;
+		s_SourceAssetDatabase = std::make_unique<AssetDatabase>(sourceSearch);
 	}
 
-	AssetHandle<SourceShader> AssetManager::CreateSourceShader(const Path& sourcePath)
+	std::shared_ptr<SourceShader> AssetManager::CreateSourceShader(const Path& sourcePath)
 	{
-		size_t id = s_SourceAssets.Add<SourceShader>(sourcePath);
-		std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
+		GUID guid = GUID::New();
+		std::shared_ptr<SourceShader> shader = s_SourceAssets.Add<SourceShader>(guid, sourcePath);
 
 		// Set asset data and serialize the metafile
+		shader->Guid = guid;
 		shader->SetName("Default");
-		shader->SetType("Shader");
+		shader->SetType("SourceShader");
 		shader->SerializeMetadata();
 
-		return AssetHandle<SourceShader>(id, shader.get());
+		return shader;
 	}
 
-	AssetHandle<Material> AssetManager::CreateMaterial(const Path& assetPath)
+	std::shared_ptr<SourceModel> AssetManager::CreateSourceModel(const Path& sourcePath)
 	{
-		// Push back an empty material
-		size_t id = s_Assets.Add<Material>(assetPath);
-		std::shared_ptr<Material> material = s_Assets.Get<Material>(id);
+		GUID guid = GUID::New();
+		std::shared_ptr<SourceModel> model = s_SourceAssets.Add<SourceModel>(guid, sourcePath);
+
+		// Set asset data and serialize the metafile
+		model->Guid = guid;
+		model->SetName("Default");
+		model->SetType("SourceModel");
+		model->SerializeMetadata();
+
+		return model;
+	}
+
+	std::shared_ptr<Material> AssetManager::CreateMaterial(const Path& assetPath)
+	{
+		// Create a new material asset
+		GUID guid = GUID::New();
+		std::shared_ptr<Material> material = s_Assets.Add<Material>(guid, assetPath);
 
 		// Set asset data
+		material->Guid = guid;
 		material->SetName("Default");
 		material->SetType("Material");
 
 		// Save to disk
 		material->Save();
 
-		return AssetHandle<Material>(id, material.get());
+		return material;
 	}
 
-	AssetHandle<Mesh> AssetManager::CreateMesh()
+	std::shared_ptr<Mesh> AssetManager::CreateMesh()
 	{
-		// Push back an empty mesh
-		size_t id = s_Assets.Add<Mesh>();
-		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
+		// Create a new mesh asset
+		GUID guid = GUID::New();
+		std::shared_ptr<Mesh> mesh = s_Assets.Add<Mesh>(guid);
 
 		// Set asset data
+		mesh->Guid = guid;
 		mesh->SetName("Default");
 		mesh->SetType("Mesh");
 
-		return AssetHandle<Mesh>(id, mesh.get());
+		return mesh;
 	}
 
-	AssetHandle<Mesh> AssetManager::CreateMesh(const Path& assetPath)
+	std::shared_ptr<Mesh> AssetManager::CreateMesh(const Path& assetPath)
 	{
-		// Push back an empty mesh
-		size_t id = s_Assets.Add<Mesh>(assetPath);
-		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
+		// Create a new mesh asset
+		GUID guid = GUID::New();
+		std::shared_ptr<Mesh> mesh = s_Assets.Add<Mesh>(guid, assetPath);
 
 		// Set asset data
+		mesh->Guid = guid;
 		mesh->SetName("Default");
 		mesh->SetType("Mesh");
 
 		// Save to disk
 		mesh->Save();
 
-		return AssetHandle<Mesh>(id, mesh.get());
+		return mesh;
 	}
 
-	AssetHandle<Shader> AssetManager::CreateShader(const Path& assetPath)
+	std::shared_ptr<Mesh> AssetManager::CreateMesh(const Path& assetPath, std::shared_ptr<SourceModel> source)
 	{
-		// Push back an empty mesh
-		size_t id = s_Assets.Add<Shader>(assetPath);
-		std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
+		// Create a new mesh asset
+		GUID guid = GUID::New();
+		std::shared_ptr<Mesh> mesh = s_Assets.Add<Mesh>(guid, assetPath, source);
 
 		// Set asset data
+		mesh->Guid = guid;
+		mesh->SetName("Default");
+		mesh->SetType("Mesh");
+		mesh->SetSourceAsset(source->GetGUID());
+
+		// Save to disk
+		mesh->Save();
+
+		return mesh;
+	}
+
+	std::shared_ptr<Shader> AssetManager::CreateShader(const Path& assetPath)
+	{
+		// Create a new shader asset
+		GUID guid = GUID::New();
+		std::shared_ptr<Shader> shader = s_Assets.Add<Shader>(guid, assetPath);
+
+		// Set asset data
+		shader->Guid = guid;
 		shader->SetName("Default");
 		shader->SetType("Shader");
 
 		// Save to disk
 		shader->Save();
 
-		return AssetHandle<Shader>(id, shader.get());
+		return shader;
 	}
 
-	AssetHandle<SourceShader> AssetManager::LoadSourceShader(GUID guid)
+	std::shared_ptr<Shader> AssetManager::CreateShader(const Path& assetPath, std::shared_ptr<SourceShader> source)
 	{
-		if (s_LoadedSourceAssets.contains(guid))
-		{
-			uint64_t id = s_LoadedSourceAssets[guid];
-			std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
-			return AssetHandle<SourceShader>(id, shader.get());
-		}
+		// Create a new shader asset
+		GUID guid = GUID::New();
+		std::shared_ptr<Shader> shader = s_Assets.Add<Shader>(guid, assetPath, source);
 
-		Path sourcePath = s_SourceAssetDatabase.GUIDToAssetPath(guid);
-		size_t id = s_SourceAssets.Add<SourceShader>(sourcePath);
-		std::shared_ptr<SourceShader> shader = s_SourceAssets.Get<SourceShader>(id);
+		// Set asset data
+		shader->Guid = guid;
+		shader->SetName("Default");
+		shader->SetType("Shader");
+
+		// Save to disk
+		shader->Save();
+
+		return shader;
+	}
+
+	std::shared_ptr<SourceShader> AssetManager::LoadSourceShader(GUID guid)
+	{
+		// Check if this asset has already been loaded
+		if (s_LoadedSourceAssets.contains(guid))
+			return s_SourceAssets.Get<SourceShader>(guid);
+
+		// Load the source asset
+		Path sourcePath = s_SourceAssetDatabase->GUIDToAssetPath(guid);
+		std::shared_ptr<SourceShader> shader = s_SourceAssets.Add<SourceShader>(guid, sourcePath);
 
 		// Track the source asset as loaded
-		s_LoadedSourceAssets[guid] = id;
+		s_LoadedSourceAssets.emplace(guid);
 
-		shader->SetGUID(guid);
-		shader->SetName(s_SourceAssetDatabase.GUIDToAssetName(guid));
-		shader->SetType(s_SourceAssetDatabase.GUIDToAssetType(guid));
-
-		return AssetHandle<SourceShader>(id, shader.get());
+		return shader;
 	}
 
-	AssetHandle<Mesh> AssetManager::LoadMesh(const Path& assetPath)
+	std::shared_ptr<SourceModel> AssetManager::LoadSourceModel(GUID guid)
 	{
-		// Push back a mesh loaded from the asset path
-		size_t id = s_Assets.Add<Mesh>(assetPath);
-		std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
+		// Check if this asset has already been loaded
+		if (s_LoadedSourceAssets.contains(guid))
+			return s_SourceAssets.Get<SourceModel>(guid);
+
+		// Load the source asset
+		Path sourcePath = s_SourceAssetDatabase->GUIDToAssetPath(guid);
+		std::shared_ptr<SourceModel> model = s_SourceAssets.Add<SourceModel>(guid, sourcePath);
+
+		// Track the source asset as loaded
+		 s_LoadedSourceAssets.emplace(guid);
+
+		return model;
+	}
+
+	std::shared_ptr<Mesh> AssetManager::LoadMesh(const Path& assetPath)
+	{
+		// Convert the path to a guid
+		GUID guid = s_AssetDatabase->AssetPathToGUID(assetPath);
+
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<Mesh>(guid);
 
 		// Track the asset
-		s_LoadedAssets[mesh->GetGUID()] = id;
+		s_LoadedAssets.emplace(guid);
 
-		return AssetHandle<Mesh>(id, mesh.get());
+		// Load and return the mesh asset
+		return s_Assets.Add<Mesh>(guid, assetPath);
 	}
 
-	AssetHandle<Shader> AssetManager::LoadShader(const Path& assetPath)
+	std::shared_ptr<Shader> AssetManager::LoadShader(const Path& assetPath)
 	{
-		// Push back a shader loaded from the asset path
-		size_t id = s_Assets.Add<Shader>(assetPath);
-		std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
+		// Convert the path to a guid
+		GUID guid = s_AssetDatabase->AssetPathToGUID(assetPath);
+
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<Shader>(guid);
 
 		// Track the asset
-		s_LoadedAssets[shader->GetGUID()] = id;
+		s_LoadedAssets.emplace(guid);
 
-		return AssetHandle<Shader>(id, shader.get());
+		// Load and return the mesh asset
+		return s_Assets.Add<Shader>(guid, assetPath);
 	}
 
-	AssetHandle<Texture2D> AssetManager::LoadTexture2D(const Path& assetPath)
+	std::shared_ptr<Texture2D> AssetManager::LoadTexture2D(const Path& assetPath)
 	{
-		// Push back a scene loaded from the asset path
-		size_t id = s_Assets.Add<Texture2D>(assetPath);
-		std::shared_ptr<Texture2D> texture = s_Assets.Get<Texture2D>(id);
+		// Convert the path to a guid
+		GUID guid = s_AssetDatabase->AssetPathToGUID(assetPath);
+
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<Texture2D>(guid);
 
 		// Track the asset
-		s_LoadedAssets[texture->GetGUID()] = id;
+		s_LoadedAssets.emplace(guid);
 
-		return AssetHandle<Texture2D>(id, texture.get());
+		// Load and return the mesh asset
+		return s_Assets.Add<Texture2D>(guid, assetPath);
 	}
 
-	AssetHandle<Material> AssetManager::LoadMaterial(const Path& assetPath)
+	std::shared_ptr<Material> AssetManager::LoadMaterial(const Path& assetPath)
 	{
-		size_t id = s_Assets.Add<Material>(assetPath);
-		std::shared_ptr<Material> material = s_Assets.Get<Material>(id);
-		s_LoadedAssets[material->GetGUID()] = id;
+		// Convert the path to a guid
+		GUID guid = s_AssetDatabase->AssetPathToGUID(assetPath);
 
-		return AssetHandle<Material>(id, material.get());
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<Material>(guid);
+
+		// Track the asset
+		s_LoadedAssets.emplace(guid);
+
+		// Load and return the mesh asset
+		return s_Assets.Add<Material>(guid, assetPath);
 	}
 
-	AssetHandle<Shader> AssetManager::LoadShaderByGUID(GUID guid)
-	{
-		// Check if we have already loaded this asset
-		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
-		{
-			// Return a handle
-			uint64_t id = s_LoadedAssets[guid];
-			std::shared_ptr<Shader> shader = s_Assets.Get<Shader>(id);
-			return AssetHandle<Shader>(id, shader.get());
-		}
 
-		// Load it and return a handle
-		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
-		return AssetManager::LoadShader(path.generic_string());
+	std::shared_ptr<Material> AssetManager::LoadMaterialByGUID(GUID guid)
+	{
+		// Convert the guid to a path
+		Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
+
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<Material>(guid);
+
+		// Track the asset
+		s_LoadedAssets.emplace(guid);
+
+		// Load and return the mesh asset
+		return s_Assets.Add<Material>(guid, assetPath);
 	}
 
-	AssetHandle<Texture2D> AssetManager::LoadTexture2DByGUID(GUID guid)
+	std::shared_ptr<Mesh> AssetManager::LoadMeshByGUID(GUID guid)
 	{
-		// Check if we have already loaded this asset
-		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
-		{
-			// Return a handle
-			uint64_t id = s_LoadedAssets[guid];
-			std::shared_ptr<Texture2D> texture = s_Assets.Get<Texture2D>(id);
-			return AssetHandle<Texture2D>(id, texture.get());
-		}
+		// Convert the guid to a path
+		Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
 
-		// Load it and return a handle
-		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
-		return AssetManager::LoadTexture2D(path.string());
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<Mesh>(guid);
+
+		// Track the asset
+		s_LoadedAssets.emplace(guid);
+
+		// Load and return the mesh asset
+		return s_Assets.Add<Mesh>(guid, assetPath);
+	}
+
+	std::shared_ptr<Shader> AssetManager::LoadShaderByGUID(GUID guid)
+	{
+		// Convert the guid to a path
+		Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
+
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<Shader>(guid);
+
+		// Track the asset
+		s_LoadedAssets.emplace(guid);
+
+		// Load and return the mesh asset
+		return s_Assets.Add<Shader>(guid, assetPath);
+	}
+
+	std::shared_ptr<Texture2D> AssetManager::LoadTexture2DByGUID(GUID guid)
+	{
+		// Convert the guid to a path
+		Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
+
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<Texture2D>(guid);
+
+		// Track the asset
+		s_LoadedAssets.emplace(guid);
+
+		// Load and return the mesh asset
+		return s_Assets.Add<Texture2D>(guid, assetPath);
 	}
 
 	BinaryBuffer AssetManager::LoadBinaryAsset(GUID guid)
 	{
-		return s_BinaryCache.LoadBinaryData(guid);
+		return s_BinaryCache->LoadBinaryData(guid);
+	}
+
+	void AssetManager::WriteBinaryAsset(GUID guid, BinaryBuffer& buffer)
+	{
+		s_BinaryCache->SaveBinaryData(guid, buffer);
 	}
 
 	GUID AssetManager::CreateBinaryAsset(BinaryBuffer& buffer)
 	{
 		GUID guid;
-		s_BinaryCache.SaveBinaryData(guid, buffer);
+		s_BinaryCache->SaveBinaryData(guid, buffer);
 		return guid;
 	}
 
 	std::vector<GUID> AssetManager::GetAssetsOfType(const std::string& assetType)
 	{
-		std::vector<GUID> assets = s_AssetDatabase.GetGUIDsOfAssetType(assetType);
+		std::vector<GUID> assets = s_AssetDatabase->GetGUIDsOfAssetType(assetType);
 		
 		if (assets.empty())
-			assets = s_SourceAssetDatabase.GetGUIDsOfAssetType(assetType);
+			assets = s_SourceAssetDatabase->GetGUIDsOfAssetType(assetType);
 		
 		return assets;
 	}
@@ -224,12 +349,12 @@ namespace Odyssey
 	GUID AssetManager::PathToGUID(const Path& path)
 	{
 		// Start with the asset database
-		if (s_AssetDatabase.Contains(path))
-			return s_AssetDatabase.AssetPathToGUID(path);
+		if (s_AssetDatabase->Contains(path))
+			return s_AssetDatabase->AssetPathToGUID(path);
 
 		//  Maybe its in the source asset database
-		if (s_SourceAssetDatabase.Contains(path))
-			return s_SourceAssetDatabase.AssetPathToGUID(path);
+		if (s_SourceAssetDatabase->Contains(path))
+			return s_SourceAssetDatabase->AssetPathToGUID(path);
 
 		return GUID::Empty();
 	}
@@ -237,12 +362,12 @@ namespace Odyssey
 	std::string AssetManager::GUIDToName(GUID guid)
 	{
 		// Start with the asset database
-		if (s_AssetDatabase.Contains(guid))
-			return s_AssetDatabase.GUIDToAssetName(guid);
+		if (s_AssetDatabase->Contains(guid))
+			return s_AssetDatabase->GUIDToAssetName(guid);
 
 		//  Maybe its in the source asset database
-		if (s_SourceAssetDatabase.Contains(guid))
-			return s_SourceAssetDatabase.GUIDToAssetName(guid);
+		if (s_SourceAssetDatabase->Contains(guid))
+			return s_SourceAssetDatabase->GUIDToAssetName(guid);
 
 		return std::string();
 	}
@@ -250,89 +375,18 @@ namespace Odyssey
 	std::string AssetManager::GUIDToAssetType(GUID guid)
 	{
 		// Start with the asset database
-		if (s_AssetDatabase.Contains(guid))
-			return s_AssetDatabase.GUIDToAssetType(guid);
+		if (s_AssetDatabase->Contains(guid))
+			return s_AssetDatabase->GUIDToAssetType(guid);
 
 		//  Maybe its in the source asset database
-		if (s_SourceAssetDatabase.Contains(guid))
-			return s_SourceAssetDatabase.GUIDToAssetType(guid);
+		if (s_SourceAssetDatabase->Contains(guid))
+			return s_SourceAssetDatabase->GUIDToAssetType(guid);
 
 		return std::string();
 	}
 
-	AssetHandle<Material> AssetManager::LoadMaterialByGUID(GUID guid)
+	bool AssetManager::IsSourceAsset(const Path& path)
 	{
-		// Check if we have already loaded this asset
-		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
-		{
-			// Return a handle
-			uint64_t id = s_LoadedAssets[guid];
-			std::shared_ptr<Material> material = s_Assets.Get<Material>(id);
-			return AssetHandle<Material>(id, material.get());
-		}
-
-		// Load it and return a handle
-		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
-		return AssetManager::LoadMaterial(path.generic_string());
-	}
-
-	AssetHandle<Mesh> AssetManager::LoadMeshByGUID(GUID guid)
-	{
-		// Check if we have already loaded this asset
-		if (s_LoadedAssets.find(guid) != s_LoadedAssets.end())
-		{
-			// Return a handle
-			uint64_t id = s_LoadedAssets[guid];
-			std::shared_ptr<Mesh> mesh = s_Assets.Get<Mesh>(id);
-			return AssetHandle<Mesh>(id, mesh.get());
-		}
-
-		// Load it and return a handle
-		Path path = s_AssetDatabase.GUIDToAssetPath(guid);
-		return AssetManager::LoadMesh(path);
-	}
-
-	void AssetManager::ScanForSourceAssets()
-	{
-		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(s_AssetsDirectory))
-		{
-			auto assetPath = dirEntry.path();
-			auto extension = assetPath.extension().string();
-			auto metaPath = assetPath;
-			metaPath = metaPath.replace_extension(s_MetaFileExtension);
-
-			// Check if the file extension is a valid source asset
-			// And the source asset does not have a metafile
-			if (dirEntry.is_regular_file() && s_SourceAssetExtensionsToType.contains(extension))
-			{
-				if (std::filesystem::exists(metaPath))
-				{
-					// Deserialize the meta file
-					// Add the asset to the database with the source file extension
-					if (AssetDeserializer deserializer = AssetDeserializer(metaPath))
-					{
-						SourceAsset sourceAsset = SourceAsset::CreateFromMetafile(metaPath);
-
-						if (sourceAsset.HasMetadata())
-						{
-							s_SourceAssetDatabase.AddAsset(sourceAsset.GetGUID(), sourceAsset.GetPath(), sourceAsset.GetName(), sourceAsset.GetType());
-						}
-					}
-				}
-				else
-				{
-					std::string name = assetPath.filename().replace_extension("").string();
-					std::string type = s_SourceAssetExtensionsToType[extension];
-
-					// Create a temporary source asset so we can serialize the metadata
-					SourceAsset asset(assetPath);
-					asset.SetMetadata(GUID(), name, type);
-					asset.SerializeMetadata();
-
-					// Add the source asset to the database
-					s_SourceAssetDatabase.AddAsset(asset.GetGUID(), assetPath, name, type);
-				}
-			}
-		}
+		return s_SourceAssetDatabase->Contains(path);
 	}
 }

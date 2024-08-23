@@ -1,6 +1,6 @@
 #pragma once
 #include "DockableWindow.h"
-#include "ResourceHandle.h"
+#include "Resource.h"
 #include "Events.h"
 
 namespace Odyssey
@@ -32,9 +32,9 @@ namespace Odyssey
 
 	private:
 		uint64_t m_RenderTextureID;
-		ResourceHandle<VulkanRenderTexture> m_ColorRT;
-		ResourceHandle<VulkanRenderTexture> m_DepthRT;
-		ResourceHandle<VulkanTextureSampler> m_RTSampler;
+		ResourceID m_ColorRT;
+		ResourceID m_DepthRT;
+		ResourceID m_RTSampler;
 		
 	private:
 		std::shared_ptr<IEventListener> m_SceneLoadListener = nullptr;

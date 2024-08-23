@@ -1,6 +1,6 @@
 #pragma once
 #include "VulkanGlobals.h"
-#include "ResourceHandle.h"
+#include "Resource.h"
 
 namespace Odyssey
 {
@@ -12,8 +12,8 @@ namespace Odyssey
 	public:
 		VulkanPushDescriptors() = default;
 	public:
-		void Add(ResourceHandle<VulkanUniformBuffer> buffer, uint32_t bindingIndex);
-		void Add(ResourceHandle<VulkanTexture> texture, uint32_t bindingIndex);
+		void AddBuffer(ResourceID bufferID, uint32_t bindingIndex);
+		void AddTexture(ResourceID textureID, uint32_t bindingIndex);
 		void Clear();
 
 	public:

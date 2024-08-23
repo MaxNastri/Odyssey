@@ -1,6 +1,7 @@
 #pragma once
 #include "AssetSerializer.h"
 #include "GameObject.h"
+#include "FileID.h"
 
 namespace Odyssey
 {
@@ -47,6 +48,7 @@ namespace Odyssey
         void Reset();
 
 	public:
+        FileID m_FileID;
         GameObject m_GameObject;
 		glm::vec3 m_Position;
 		glm::vec3 m_EulerRotation;

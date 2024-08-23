@@ -2,7 +2,6 @@
 #include "Enums.h"
 #include "VulkanGlobals.h"
 #include "Resource.h"
-#include "ResourceHandle.h"
 #include "BinaryBuffer.h"
 
 VK_FWD_DECLARE(VkImage)
@@ -37,7 +36,7 @@ namespace Odyssey
 		void SetData(BinaryBuffer& buffer);
 		void SetLayout(VkImageLayout layout) { imageLayout = layout; }
 	public:
-		static VkImageMemoryBarrier CreateMemoryBarrier(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage);
+		static VkImageMemoryBarrier CreateMemoryBarrier(ResourceID imageID, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage);
 
 	public:
 		VkImage GetImage() { return m_Image; }
@@ -59,7 +58,7 @@ namespace Odyssey
 		VkImageLayout imageLayout;
 		VkDeviceMemory imageMemory;
 		uint32_t m_Width, m_Height, m_Channels;
-		ResourceHandle<VulkanBuffer> m_StagingBuffer;
+		ResourceID m_StagingBuffer;
 		bool isDepth = false;
 	};
 }

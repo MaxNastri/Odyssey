@@ -40,8 +40,8 @@ namespace Odyssey
 	}
 
 	template<typename T>
-	inline void GameObject::RemoveComponent()
+	inline bool GameObject::RemoveComponent()
 	{
-		m_Scene->m_Registry.remove<T>(m_Entity);
+		return m_Scene->m_Registry.remove<T>(m_Entity);
 	}
 }

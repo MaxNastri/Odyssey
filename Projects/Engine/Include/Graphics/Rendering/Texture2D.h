@@ -1,7 +1,7 @@
 #pragma once
 #include "Asset.h"
 #include "Enums.h"
-#include "ResourceHandle.h"
+#include "Resource.h"
 #include "VulkanGlobals.h"
 #include "VulkanImage.h"
 
@@ -13,24 +13,24 @@ namespace Odyssey
 	class Texture2D : public Asset
 	{
 	public:
-		Texture2D(const std::filesystem::path& assetPath);
-		Texture2D(const std::filesystem::path& assetPath, TextureFormat format);
+		Texture2D(const Path& assetPath);
+		Texture2D(const Path& assetPath, TextureFormat format);
 
 	public:
 		void Save();
 		void Load();
 
 	public:
-		ResourceHandle<VulkanTexture> GetTexture() { return m_Texture; }
-		std::string GetPixelBufferGUID() { return m_PixelBufferGUID; }
+		ResourceID GetTexture() { return m_Texture; }
+		GUID GetPixelBufferGUID() { return m_PixelBufferGUID; }
 
 	private:
-		void SaveToDisk(const std::filesystem::path& assetPath);
-		void LoadFromDisk(const std::filesystem::path& assetPath);
+		void SaveToDisk(const Path& assetPath);
+		void LoadFromDisk(const Path& assetPath);
 		
 	private:
+		GUID m_PixelBufferGUID;
 		VulkanImageDescription m_TextureDescription;
-		ResourceHandle<VulkanTexture> m_Texture;
-		std::string m_PixelBufferGUID;
+		ResourceID m_Texture;
 	};
 }

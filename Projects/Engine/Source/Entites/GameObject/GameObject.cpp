@@ -1,6 +1,6 @@
 #include "GameObject.h"
 #include "Scene.h"
-#include "IDComponent.h"
+#include "PropertiesComponent.h"
 #include "Camera.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
@@ -28,12 +28,12 @@ namespace Odyssey
 
 	void GameObject::Serialize(SerializationNode& node)
 	{
-		IDComponent& idComponent = GetComponent<IDComponent>();
+		PropertiesComponent& properties = GetComponent<PropertiesComponent>();
 
 		SerializationNode gameObjectNode = node.AppendChild();
 		gameObjectNode.SetMap();
-		gameObjectNode.WriteData("Name", idComponent.Name);
-		gameObjectNode.WriteData("GUID", idComponent.GUID.CRef());
+		gameObjectNode.WriteData("Name", properties.Name);
+		gameObjectNode.WriteData("GUID", properties.GUID.CRef());
 		gameObjectNode.WriteData("Type", Type);
 
 		SerializationNode componentsNode = gameObjectNode.CreateSequenceNode("Components");
@@ -55,9 +55,12 @@ namespace Odyssey
 	{
 		assert(node.IsMap());
 
-		IDComponent& idComponent = AddComponent<IDComponent>();
-		node.ReadData("Name", idComponent.Name);
-		node.ReadData("GUID", idComponent.GUID.Ref());
+		if (!HasComponent<PropertiesComponent>())
+			AddComponent<PropertiesComponent>();
+
+		PropertiesComponent& properties = GetComponent<PropertiesComponent>();
+		node.ReadData("Name", properties.Name);
+		node.ReadData("GUID", properties.GUID.Ref());
 
 		SerializationNode componentsNode = node.GetNode("Components");
 		assert(componentsNode.IsSequence());
@@ -95,21 +98,21 @@ namespace Odyssey
 	}
 	const std::string& GameObject::GetName()
 	{
-		return GetComponent<IDComponent>().Name;
+		return GetComponent<PropertiesComponent>().Name;
 	}
 
 	GUID GameObject::GetGUID()
 	{
-		return GetComponent<IDComponent>().GUID;
+		return GetComponent<PropertiesComponent>().GUID;
 	}
 
 	void GameObject::SetName(const std::string& name)
 	{
-		GetComponent<IDComponent>().Name = name;
+		GetComponent<PropertiesComponent>().Name = name;
 	}
 
 	void GameObject::SetGUID(GUID guid)
 	{
-		GetComponent<IDComponent>().GUID = guid;
+		GetComponent<PropertiesComponent>().GUID = guid;
 	}
 }

@@ -23,6 +23,7 @@ namespace Odyssey
 		const std::filesystem::path& GetTempDirectory() { return m_FullTempDirectory; }
 		const std::filesystem::path& GetLogsDirectory() { return m_FullLogsDirectory; }
 		const std::filesystem::path& GetScriptsDirectory() { return m_FullScriptsDirectory; }
+		const std::filesystem::path& GetCodeDirectory() { return m_FullCodeDirectory; }
 		const std::filesystem::path& GetScriptsProjectPath() { return m_FullScriptsProjectPath; }
 
 	private: // Serialized
@@ -32,6 +33,7 @@ namespace Odyssey
 		std::filesystem::path m_TempDirectory;
 		std::filesystem::path m_LogsDirectory;
 		std::filesystem::path m_ScriptsDirectory;
+		std::filesystem::path m_CodeDirectory;
 		std::filesystem::path m_ScriptsProjectPath;
 
 	private: // Generated
@@ -40,6 +42,7 @@ namespace Odyssey
 		std::filesystem::path m_FullTempDirectory;
 		std::filesystem::path m_FullLogsDirectory;
 		std::filesystem::path m_FullScriptsDirectory;
+		std::filesystem::path m_FullCodeDirectory;
 		std::filesystem::path m_FullScriptsProjectPath;
 
 	private:

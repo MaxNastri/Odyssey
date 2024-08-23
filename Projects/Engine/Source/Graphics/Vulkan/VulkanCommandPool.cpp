@@ -2,7 +2,6 @@
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
 #include "VulkanPhysicalDevice.h"
-#include "ResourceHandle.h"
 
 namespace Odyssey
 {
@@ -22,23 +21,22 @@ namespace Odyssey
         }
     }
 
-    ResourceHandle<VulkanCommandBuffer> VulkanCommandPool::AllocateBuffer()
+    ResourceID VulkanCommandPool::AllocateBuffer()
     {
-        ResourceHandle poolHandle = ResourceHandle(m_ID, this);
-        ResourceHandle<VulkanCommandBuffer> bufferHandle = ResourceManager::AllocateCommandBuffer(poolHandle);
-        commandBuffers.push_back(bufferHandle);
+        // Allocate a new command buffer
+        ResourceID commandBuffer = ResourceManager::Allocate<VulkanCommandBuffer>(m_ResourceID);
+        commandBuffers.push_back(commandBuffer);
 
-        return bufferHandle;
+        return commandBuffer;
     }
 
-    void VulkanCommandPool::ReleaseBuffer(ResourceHandle<VulkanCommandBuffer> commandBuffer)
+    void VulkanCommandPool::ReleaseBuffer(ResourceID commandBuffer)
     {
         for (int i = 0; i < commandBuffers.size(); i++)
         {
-            if (commandBuffers[i].GetID() == commandBuffer.GetID())
+            if (commandBuffers[i] == commandBuffer)
             {
-                ResourceHandle poolHandle = ResourceHandle(m_ID, this);
-                ResourceManager::DestroyCommandBuffer(commandBuffer, poolHandle);
+                ResourceManager::Destroy(commandBuffer);
                 commandBuffers.erase(commandBuffers.begin() + i);
                 break;
             }
@@ -57,11 +55,15 @@ namespace Odyssey
     void VulkanCommandPool::Destroy()
     {
         VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
-        ResourceHandle poolHandle = ResourceHandle(m_ID, this);
+        std::shared_ptr<VulkanCommandPool> pool = ResourceManager::GetResource<VulkanCommandPool>(m_ResourceID);
+
+        // Destroy each of our allocated command buffers
         for (auto& commandBuffer : commandBuffers)
         {
-            ResourceManager::DestroyCommandBuffer(commandBuffer, poolHandle);
+            ResourceManager::Destroy(commandBuffer);
         }
+
+        // Destroy the command pool
         vkDestroyCommandPool(device, commandPool, allocator);
         commandPool = VK_NULL_HANDLE;
         commandBuffers.clear();

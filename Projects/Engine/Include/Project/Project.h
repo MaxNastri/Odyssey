@@ -33,6 +33,9 @@ namespace Odyssey
 		static const Path& GetActiveTempDirectory() { return s_ActiveProject->GetTempDirectory(); }
 
 	private:
+		static void ReplaceProjectName(std::string_view projectName, const Path& path);
+
+	private:
 		inline static std::shared_ptr<Project> s_ActiveProject;
 		ProjectSettings m_ProjectSettings;
 
@@ -40,5 +43,6 @@ namespace Odyssey
 		static constexpr std::string_view TEMPLATE_DIRECTORY = "Resources/ProjectTemplate";
 		static constexpr std::string_view TEMPLATE_PREMAKE = "premake5.lua";
 		static constexpr std::string_view TEMPLATE_PROJ_GEN = "Win-GenProjects.bat";
+		static constexpr std::string_view TEMPLATE_SCRIPT_FILE = "Sample.cs";
 	};
 }

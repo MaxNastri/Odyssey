@@ -37,6 +37,7 @@ namespace Odyssey
 		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
 		{
 			Logger::LogError("[ShaderCompiler] Failed to compile shader: " + settings.ShaderName);
+			Logger::LogError("[ShaderCompiler] " + result.GetErrorMessage());
 			return false;
 		}
 

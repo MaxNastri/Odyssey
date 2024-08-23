@@ -1,8 +1,7 @@
 #pragma once
-#include "Asset.h"
-#include "ResourceHandle.h"
 #include "Enums.h"
-#include "AssetHandle.h"
+#include "Asset.h"
+#include "Resource.h"
 #include "BinaryBuffer.h"
 
 namespace Odyssey
@@ -14,11 +13,15 @@ namespace Odyssey
 	{
 	public:
 		Shader() = default;
-		Shader(const std::filesystem::path& assetPath);
+		Shader(const Path& assetPath);
+		Shader(const Path& assetPath, std::shared_ptr<SourceShader> source);
 
 	public:
-		ResourceHandle<VulkanShaderModule> GetShaderModule() { return m_ShaderModule; }
-		const std::string& GetShaderCodeGUID() { return m_ShaderCodeGUID; }
+		void Recompile();
+
+	public:
+		ResourceID GetShaderModule() { return m_ShaderModule; }
+		GUID GetShaderCodeGUID() { return m_ShaderCodeGUID; }
 		ShaderType GetShaderType() { return m_ShaderType; }
 
 	public:
@@ -26,13 +29,13 @@ namespace Odyssey
 		void Load();
 
 	private:
-		void LoadFromDisk(const std::filesystem::path& path);
-		void SaveToDisk(const std::filesystem::path& path);
+		void LoadFromDisk(const Path& path);
+		void SaveToDisk(const Path& path);
 
 	private:
-		ShaderType m_ShaderType;
-		std::string m_ShaderCodeGUID;
+		ShaderType m_ShaderType = ShaderType::None;
+		GUID m_ShaderCodeGUID = 0;
 		BinaryBuffer m_ShaderCodeBuffer;
-		ResourceHandle<VulkanShaderModule> m_ShaderModule;
+		ResourceID m_ShaderModule;
 	};
 }

@@ -3,12 +3,16 @@
 
 namespace Odyssey
 {
-	SourceShader::SourceShader(const std::filesystem::path& sourcePath)
+	SourceShader::SourceShader(const Path& sourcePath)
+		: SourceAsset(sourcePath)
 	{
 		std::filesystem::path filename = sourcePath.filename();
 		m_ShaderLanguage = filename.extension().string();
-		m_Name = filename.replace_extension("").string();
+		Name = filename.replace_extension("").string();
 		m_ShaderCode = ReadShaderFile(sourcePath);
+
+		// TODO: Replace this once shaders are unified
+		m_ShaderType = ShaderType::Vertex;
 	}
 
 	bool SourceShader::Compile()
@@ -20,7 +24,7 @@ namespace Odyssey
 	bool SourceShader::Compile(BinaryBuffer& codeBuffer)
 	{
 		ShaderCompiler::CompilerSettings options;
-		options.ShaderName = m_Name;
+		options.ShaderName = Name;
 		options.ShaderLanguage = m_ShaderLanguage == "hlsl" ? ShaderLanguage::HLSL : ShaderLanguage::GLSL;
 		options.ShaderType = m_ShaderType;
 		options.ShaderCode = m_ShaderCode;

@@ -1,12 +1,11 @@
 #include "Drawcall.h"
-#include "Mesh.h"
 
 namespace Odyssey
 {
-	Drawcall::Drawcall(ResourceHandle<VulkanVertexBuffer> vertexBuffer, ResourceHandle<VulkanIndexBuffer> indexBuffer, uint32_t indexCount)
+	Drawcall::Drawcall(ResourceID vertexBufferID, ResourceID indexBufferID, uint32_t indexCount)
 	{
-		VertexBuffer = vertexBuffer;
-		IndexBuffer = indexBuffer;
+		VertexBufferID = vertexBufferID;
+		IndexBufferID = indexBufferID;
 		indexCount = indexCount;
 	}
 }

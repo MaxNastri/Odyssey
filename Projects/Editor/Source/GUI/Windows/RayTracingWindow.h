@@ -1,6 +1,6 @@
 #pragma once
 #include "DockableWindow.h"
-#include "ResourceHandle.h"
+#include "Resource.h"
 #include "GameObject.h"
 #include "glm.h"
 
@@ -76,8 +76,8 @@ namespace Odyssey
 
 	private:
 		uint64_t m_RenderTextureID;
-		ResourceHandle<VulkanRenderTexture> m_RenderTexture;
-		ResourceHandle<VulkanTextureSampler> m_RTSampler;
+		ResourceID m_RenderTexture;
+		ResourceID m_RTSampler;
 		std::vector<uint32_t> m_ImageData;
 		std::vector<glm::vec4> m_AccumulationData;
 		std::vector<glm::vec3> m_RayDirections;

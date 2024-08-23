@@ -2,11 +2,11 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Odyssey</RootNamespace>
     <TargetFramework>net8.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,13 +33,30 @@
     <NoWarn>CS8500</NoWarn>
   </PropertyGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <Reference Include="Coral.Managed" />
+    <Reference Include="Coral.Managed">
+      <HintPath>..\..\Build\Debug\Coral.Managed.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <Reference Include="Coral.Managed" />
+    <Reference Include="Coral.Managed">
+      <HintPath>..\..\Build\Release\Coral.Managed.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Source\Component.cs" />
+    <Compile Include="Source\Asset.cs" />
+    <Compile Include="Source\AssetHandle.cs" />
+    <Compile Include="Source\Components\Camera.cs" />
+    <Compile Include="Source\Components\Component.cs" />
+    <Compile Include="Source\Components\MeshRenderer.cs" />
+    <Compile Include="Source\Components\ScriptComponent.cs" />
+    <Compile Include="Source\Components\Transform.cs" />
+    <Compile Include="Source\Entity.cs" />
+    <Compile Include="Source\Graphics\Mesh.cs" />
+    <Compile Include="Source\InternalCalls.cs" />
+    <Compile Include="Source\Math\Vector3.cs" />
+    <Compile Include="Source\Attributes.cs" />
+    <Compile Include="Source\Object.cs" />
+    <Compile Include="Source\Time.cs" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /B /Y "..\..\Build\Debug\Odyssey.Framework.dll", "$(SolutionDir)\Projects\Editor\Resources\Scripts"

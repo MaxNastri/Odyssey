@@ -14,7 +14,7 @@ namespace Odyssey
 	{
 	public:
 		VulkanBuffer(std::shared_ptr<VulkanContext> context, BufferType bufferType, VkDeviceSize size);
-		void Destroy();
+		virtual void Destroy() override;
 
 	public:
 		void AllocateMemory();

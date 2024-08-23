@@ -34,9 +34,10 @@ namespace Odyssey
 		vkDestroyDescriptorPool(m_Context->GetDeviceVK(), m_DescriptorPool, nullptr);
 	}
 
-	ResourceHandle<VulkanDescriptorSet> VulkanDescriptorPool::AllocateDescriptorSets(ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count)
+	ResourceID VulkanDescriptorPool::AllocateDescriptorSets(ResourceID descriptorLayoutID, uint32_t count)
 	{
-		return ResourceHandle<VulkanDescriptorSet>();
+		// TODO: Implement
+		return ResourceID();
 	}
 }
 

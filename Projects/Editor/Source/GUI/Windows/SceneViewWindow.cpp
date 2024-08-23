@@ -13,6 +13,8 @@
 #include "RenderPasses.h"
 #include "Input.h"
 #include "Renderer.h"
+#include "EditorComponents.h"
+#include "PropertiesComponent.h"
 
 namespace Odyssey
 {
@@ -95,6 +97,15 @@ namespace Odyssey
 			camera.SetMainCamera(false);
 			camera.Awake();
 			camera.SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+
+			// Add the editor properties component to hide this object in the scene hierarchy window
+			EditorPropertiesComponent& properties = m_GameObject.AddComponent<EditorPropertiesComponent>();
+			properties.ShowInHierarchy = false;
+
+			// Make sure we don't serialize this game object
+			PropertiesComponent& engineProperties = m_GameObject.GetComponent<PropertiesComponent>();
+			engineProperties.Serialize = false;
+
 			m_SceneViewPass->SetCamera(&camera);
 		}
 	}
@@ -102,9 +113,9 @@ namespace Odyssey
 	void SceneViewWindow::CreateRenderTexture()
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
-		m_ColorRT = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
-		m_DepthRT = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
-		m_RTSampler = ResourceManager::AllocateSampler();
+		m_ColorRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
+		m_DepthRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
+		m_RTSampler = ResourceManager::Allocate<VulkanTextureSampler>();
 		m_RenderTextureID = Renderer::AddImguiTexture(m_ColorRT, m_RTSampler);
 	}
 
@@ -114,9 +125,9 @@ namespace Odyssey
 		if (m_ColorRT.IsValid())
 		{
 			// Destroy the render texture
-			ResourceManager::DestroyRenderTexture(m_ColorRT);
-			ResourceManager::DestroyRenderTexture(m_DepthRT);
-			ResourceManager::DestroySampler(m_RTSampler);
+			ResourceManager::Destroy(m_ColorRT);
+			ResourceManager::Destroy(m_DepthRT);
+			ResourceManager::Destroy(m_RTSampler);
 
 			// Create an IMGui texture handle
 		// TODO: Fix this with render command queue

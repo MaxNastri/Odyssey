@@ -3,34 +3,21 @@
 
 namespace Odyssey
 {
-	BinaryCache::BinaryCache(const std::filesystem::path& cacheDirectory)
+	BinaryCache::BinaryCache(const Path& cacheDirectory)
 	{
 		m_Path = cacheDirectory / "BinaryAssets";
 
 		if (!std::filesystem::exists(m_Path))
 			std::filesystem::create_directories(m_Path);
 
-		// Init the database
-		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(m_Path))
-		{
-			auto assetPath = dirEntry.path();
-			auto extension = assetPath.extension();
+		TrackingOptions options;
+		options.Direrctory = m_Path;
+		options.Extensions = { ".asset" };
+		options.Recursive = true;
+		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileAction(path, fileAction); };
+		m_FileTracker = std::make_unique<FileTracker>(options);
 
-			if (dirEntry.is_regular_file() && extension == ".asset")
-			{
-				// Read contents of a file
-				if (LoadBinaryData(assetPath))
-				{
-					// We use the filename as the guid
-					GUID guid = assetPath.filename().replace_extension("").string();
-					if (!m_GUIDToPath.contains(guid))
-					{
-						m_GUIDToPath[guid] = assetPath;
-						m_PathToGUID[assetPath] = guid;
-					}
-				}
-			}
-		}
+		CatalogAssets();
 	}
 	BinaryBuffer BinaryCache::LoadBinaryData(GUID guid)
 	{
@@ -40,7 +27,7 @@ namespace Odyssey
 		return BinaryBuffer();
 	}
 
-	void BinaryCache::SaveBinaryData(const std::filesystem::path& assetPath, BinaryBuffer& buffer)
+	void BinaryCache::SaveBinaryData(const Path& assetPath, BinaryBuffer& buffer)
 	{
 		std::ofstream file(assetPath, std::ios::trunc | std::ios::binary);
 		if (!file.is_open())
@@ -66,7 +53,36 @@ namespace Odyssey
 		SaveBinaryData(GenerateAssetPath(guid), buffer);
 	}
 
-	BinaryBuffer BinaryCache::LoadBinaryData(const std::filesystem::path& path)
+	void BinaryCache::CatalogAssets()
+	{
+		// Clear the lookups before we begin
+		m_GUIDToPath.clear();
+		m_PathToGUID.clear();
+
+		// Init the database
+		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(m_Path))
+		{
+			auto assetPath = dirEntry.path();
+			auto extension = assetPath.extension();
+
+			if (dirEntry.is_regular_file() && extension == ".asset")
+			{
+				// Read contents of a file
+				if (LoadBinaryData(assetPath))
+				{
+					// We use the filename as the guid
+					GUID guid = assetPath.filename().replace_extension("").string();
+					if (!m_GUIDToPath.contains(guid))
+					{
+						m_GUIDToPath[guid] = assetPath;
+						m_PathToGUID[assetPath] = guid;
+					}
+				}
+			}
+		}
+	}
+
+	BinaryBuffer BinaryCache::LoadBinaryData(const Path& path)
 	{
 		std::ifstream file(path, std::ios::binary);
 		if (!file.is_open())
@@ -89,8 +105,13 @@ namespace Odyssey
 		return BinaryBuffer(buffer, bufferSize);
 	}
 
-	std::filesystem::path BinaryCache::GenerateAssetPath(GUID guid)
+	Path BinaryCache::GenerateAssetPath(GUID guid)
 	{
-		return m_Path / std::string(guid + ".asset");
+		return m_Path / std::string(guid.String() + ".asset");
+	}
+	void BinaryCache::OnFileAction(const Path& path, FileActionType fileAction)
+	{
+		if (fileAction != FileActionType::None && fileAction != FileActionType::Modified)
+			CatalogAssets();
 	}
 }

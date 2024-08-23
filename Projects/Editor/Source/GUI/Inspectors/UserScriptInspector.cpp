@@ -6,7 +6,9 @@
 #include "StringDrawer.h"
 #include "ScriptComponent.h"
 #include "imgui.h"
-#include "DrawerUtils.h"
+#include "ScriptingManager.h"
+#include "EntityFieldDrawer.h"
+#include "Vector3Drawer.h"
 
 namespace Odyssey
 {
@@ -16,20 +18,19 @@ namespace Odyssey
 
 		if (ScriptComponent* scriptComponent = m_GameObject.TryGetComponent<ScriptComponent>())
 		{
-			userScriptFullName = scriptComponent->GetManagedTypeName();
-			displayName = userScriptFullName;
+			// TODO FIX THIS
+			ScriptMetadata& metadata = ScriptingManager::GetScriptMetadata(scriptComponent->GetScriptID());
+			displayName = metadata.Name;
 
 			// Remove any namespaces
-			size_t found = userScriptFullName.find_last_of('.');
+			size_t found = displayName.find_last_of('.');
 			if (found != std::string::npos)
 			{
-				displayName = userScriptFullName.substr(found + 1);
+				displayName = displayName.substr(found + 1);
 			}
 
 			InitializeDrawers(scriptComponent);
 		}
-		
-
 	}
 
 	void UserScriptInspector::Draw()
@@ -52,118 +53,150 @@ namespace Odyssey
 
 	void UserScriptInspector::InitializeDrawers(ScriptComponent* userScript)
 	{
-		Coral::Type type = userScript->GetType();
-		Coral::ManagedObject userObject = userScript->GetManagedObject();
+		auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
 
-		std::vector<Coral::FieldInfo> fields = type.GetFields();
-
-		for (auto& field : fields)
+		for (auto& [fieldID, fieldStorage] : storage.Fields)
 		{
-			if (field.GetAccessibility() == Coral::TypeAccessibility::Public)
+			if (fieldStorage.DataType == DataType::Entity || fieldStorage.DataType == DataType::Component)
 			{
-				std::string fieldName = field.GetName();
-				Coral::Type fieldType = field.GetType();
-				bool fieldIsString = fieldType.GetManagedType() == Coral::ManagedType::Unknown && fieldType.GetFullName() == "System.String";
+				GUID initialValue = 0;
+				fieldStorage.TryGetValue(initialValue);
+				CreateEntityDrawer(fieldStorage.Name, storage.ScriptID, fieldID, initialValue);
+			}
+			else if (fieldStorage.DataType == DataType::String)
+				CreateStringDrawer(storage.ScriptID, fieldID, fieldStorage);
+			else
+				CreateDrawerFromProperty(storage.ScriptID, fieldID, fieldStorage);
+		}
+	}
 
-				if (fieldIsString)
-				{
-					CreateStringDrawer(m_GameObject, fieldName, userObject);
-				}
-				else
-				{
-					CreateDrawerFromProperty(m_GameObject, fieldName, field.GetType().GetManagedType(), userObject);
-				}
+	void UserScriptInspector::CreateEntityDrawer(std::string_view fieldName, uint32_t scriptID, uint32_t fieldID, GUID initialValue)
+	{
+		auto drawer = std::make_shared<EntityFieldDrawer>(fieldName, initialValue,
+			[this, scriptID, fieldID](GUID guid) { OnFieldChanged<GUID>(scriptID, fieldID, guid); });
+		drawers.push_back(drawer);
+	}
+
+	template<typename T>
+	std::shared_ptr<IntDrawer<T>> CreateIntDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
+	{
+		T initialValue = fieldStorage.GetValue<T>();
+		auto drawer = std::make_shared<IntDrawer<T>>(fieldStorage.Name, initialValue,
+			[this](T newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
+		return drawer;
+	}
+
+	void UserScriptInspector::CreateDrawerFromProperty(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
+	{
+		switch (fieldStorage.DataType)
+		{
+			case DataType::Byte:
+			{
+				AddIntDrawer<uint8_t>(scriptID, fieldID, fieldStorage);
+				break;
+			}
+			case DataType::UShort:
+			{
+				AddIntDrawer<uint16_t>(scriptID, fieldID, fieldStorage);
+				break;
+			}
+			case DataType::UInt:
+			{
+				AddIntDrawer<uint32_t>(scriptID, fieldID, fieldStorage);
+				break;
+			}
+			case DataType::ULong:
+			{
+				AddIntDrawer<uint64_t>(scriptID, fieldID, fieldStorage);
+				break;
+			}
+			case DataType::SByte:
+			{
+				AddIntDrawer<char8_t>(scriptID, fieldID, fieldStorage);
+				break;
+			}
+			case DataType::Short:
+			{
+				AddIntDrawer<int16_t>(scriptID, fieldID, fieldStorage);
+				break;
+			}
+			case DataType::Int:
+			{
+				AddIntDrawer<int32_t>(scriptID, fieldID, fieldStorage);
+				break;
+			}
+			case DataType::Long:
+			{
+				AddIntDrawer<int64_t>(scriptID, fieldID, fieldStorage);
+				break;
+			}
+			case DataType::Float:
+			{
+				float initialValue = fieldStorage.GetValue<float>();
+				auto drawer = std::make_shared<FloatDrawer>(fieldStorage.Name, initialValue,
+					[this, scriptID, fieldID](float newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
+				drawers.push_back(drawer);
+				break;
+			}
+			case DataType::Double:
+			{
+				double initialValue = fieldStorage.GetValue<double>();
+				auto drawer = std::make_shared<DoubleDrawer>(fieldStorage.Name, initialValue,
+					[this, scriptID, fieldID](double newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
+				drawers.push_back(drawer);
+				break;
+			}
+			case DataType::Bool:
+			{
+				Coral::Bool32 initialValue = fieldStorage.GetValue<Coral::Bool32>();
+				auto drawer = std::make_shared<BoolDrawer>(fieldStorage.Name, initialValue,
+					[this, scriptID, fieldID](bool newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
+				drawers.push_back(drawer);
+				break;
+			}
+			case DataType::Vector3:
+			{
+				glm::vec3 initialValue = fieldStorage.GetValue<glm::vec3>();
+				auto drawer = std::make_shared<Vector3Drawer>(fieldStorage.Name, initialValue, glm::zero<glm::vec3>(), false,
+					[this, scriptID, fieldID](glm::vec3 newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
+				drawers.push_back(drawer);
+				break;
 			}
 		}
 	}
 
-	void UserScriptInspector::CreateDrawerFromProperty(GameObject& gameObject, const std::string& fieldName, Coral::ManagedType managedType, Coral::ManagedObject userObject)
+	void UserScriptInspector::CreateStringDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
 	{
-		switch (managedType)
-		{
-		case Coral::ManagedType::SByte:
-		{
-			char8_t intialValue = userObject.GetFieldValue<char8_t>(fieldName);
-			auto drawer = AddIntDrawer<char8_t>(gameObject, fieldName, intialValue);
-			drawers.push_back(drawer);
-			break;
-		}
-		case Coral::ManagedType::Byte:
-		{
-			uint8_t intialValue = userObject.GetFieldValue<uint8_t>(fieldName);
-			auto drawer = AddIntDrawer<uint8_t>(gameObject, fieldName, intialValue);
-			drawers.push_back(drawer);
-			break;
-		}
-		case Coral::ManagedType::Short:
-		{
-			int16_t intialValue = userObject.GetFieldValue<uint16_t>(fieldName);
-			auto drawer = AddIntDrawer<int16_t>(gameObject, fieldName, intialValue);
-			drawers.push_back(drawer);
-			break;
-		}
-		case Coral::ManagedType::UShort:
-		{
-			uint16_t intialValue = userObject.GetFieldValue<uint16_t>(fieldName);
-			auto drawer = AddIntDrawer<uint16_t>(gameObject, fieldName, intialValue);
-			drawers.push_back(drawer);
-			break;
-		}
-		case Coral::ManagedType::UInt:
-		{
-			uint32_t intialValue = userObject.GetFieldValue<uint32_t>(fieldName);
-			auto drawer = AddIntDrawer<uint32_t>(gameObject, fieldName, intialValue);
-			drawers.push_back(drawer);
-			break;
-		}
-		case Coral::ManagedType::Long:
-		{
-			uint64_t intialValue = userObject.GetFieldValue<uint64_t>(fieldName);
-			auto drawer = AddIntDrawer<uint64_t>(gameObject, fieldName, intialValue);
-			drawers.push_back(drawer);
-			break;
-		}
-		case Coral::ManagedType::ULong:
-		{
-			uint64_t intialValue = userObject.GetFieldValue<uint64_t>(fieldName);
-			auto drawer = AddIntDrawer<uint64_t>(gameObject, fieldName, intialValue);
-			drawers.push_back(drawer);
-			break;
-		}
-		case Coral::ManagedType::Int:
-		{
-			int32_t intialValue = userObject.GetFieldValue<int32_t>(fieldName);
-			auto drawer = AddIntDrawer<int32_t>(gameObject, fieldName, intialValue);
-			drawers.push_back(drawer);
-			break;
-		}
-		case Coral::ManagedType::Bool:
-		{
-			bool initialValue = userObject.GetFieldValue<uint32_t>(fieldName);
-			auto drawer = AddBoolDrawer(gameObject, fieldName, initialValue);
-			drawers.push_back(drawer);
-			break;
-		}
-		case Coral::ManagedType::Double:
-		{
-			double intialValue = userObject.GetFieldValue<double>(fieldName);
-			auto drawer = AddDoubleDrawer(gameObject, fieldName, intialValue);
-			drawers.push_back(drawer);
-			break;
-		}
-		case Coral::ManagedType::Float:
-		{
-			float intialValue = userObject.GetFieldValue<float>(fieldName);
-			auto drawer = AddFloatDrawer(gameObject, fieldName, intialValue);
-			drawers.push_back(drawer);
-			break;
-		}
-		}
+		std::string initialValue = "";
+
+		// Check if the field storage has a valid string before assigning it
+		//if (fieldStorage.TryGetValue<Coral::String>(storedValue))
+		//{
+		//	initialValue = storedValue;
+		//}
+
+		auto drawer = std::make_shared<StringDrawer>(fieldStorage.Name, initialValue,
+			[this, scriptID, fieldID](const std::string& newValue) { OnStringFieldChanged(scriptID, fieldID, newValue); });
+		drawers.push_back(drawer);
 	}
 
-	void UserScriptInspector::CreateStringDrawer(GameObject& gameObject, const std::string& fieldName, Coral::ManagedObject userObject)
+	void UserScriptInspector::OnStringFieldChanged(uint32_t scriptID, uint32_t fieldID, const std::string& newValue)
 	{
-		Coral::ScopedString initialValue = userObject.GetFieldValue<Coral::String>(fieldName);
-		AddStringDrawer(gameObject, fieldName, initialValue);
+		auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
+
+		// Validate we are working on the same script
+		if (storage.ScriptID != scriptID)
+			return;
+
+		// Look through the field storage for the matching field
+		for (auto& [storedFieldID, fieldStorage] : storage.Fields)
+		{
+			if (fieldID == storedFieldID)
+			{
+				fieldStorage.ValueBuffer.Allocate(newValue.size());
+				fieldStorage.SetValue(newValue);
+				break;
+			}
+		}
 	}
 }

@@ -6,17 +6,15 @@ namespace Odyssey
 {
 	MeshInspector::MeshInspector(GUID guid)
 	{
-		m_Mesh = AssetManager::LoadMeshByGUID(guid);
-
-		if (auto mesh = m_Mesh.Get())
+		if (m_Mesh = AssetManager::LoadMeshByGUID(guid))
 		{
-			m_GUIDDrawer = StringDrawer("GUID", mesh->GetGUID().String(), nullptr, true);
-			m_NameDrawer = StringDrawer("Name", mesh->GetName(),
+			m_GUIDDrawer = StringDrawer("GUID", m_Mesh->GetGUID().String(), nullptr, true);
+			m_NameDrawer = StringDrawer("Name", m_Mesh->GetName(),
 				[this](const std::string& name) { OnNameChanged(name); });
-			m_TypeDrawer = StringDrawer("Type", mesh->GetType(), nullptr, true);
-			m_VertexCountDrawer = StringDrawer("Vertex Count", std::to_string(mesh->GetVertexCount()), nullptr, true);
-			m_IndexCountDrawer = StringDrawer("Index Count", std::to_string(mesh->GetIndexCount()), nullptr, true);
-			m_SourceMeshDrawer = AssetFieldDrawer("Source Asset", mesh->GetSoureAsset(), "SourceMesh",
+			m_TypeDrawer = StringDrawer("Type", m_Mesh->GetType(), nullptr, true);
+			m_VertexCountDrawer = StringDrawer("Vertex Count", std::to_string(m_Mesh->GetVertexCount()), nullptr, true);
+			m_IndexCountDrawer = StringDrawer("Index Count", std::to_string(m_Mesh->GetIndexCount()), nullptr, true);
+			m_SourceMeshDrawer = AssetFieldDrawer("Source Asset", m_Mesh->GetSoureAsset(), "SourceModel",
 				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
 		}
 	}
@@ -31,18 +29,18 @@ namespace Odyssey
 	}
 	void MeshInspector::OnNameChanged(const std::string& name)
 	{
-		if (auto mesh = m_Mesh.Get())
+		if (m_Mesh)
 		{
-			mesh->SetName(name);
-			mesh->Save();
+			m_Mesh->SetName(name);
+			m_Mesh->Save();
 		}
 	}
 	void MeshInspector::OnSourceAssetChanged(GUID sourceGUID)
 	{
-		if (auto mesh = m_Mesh.Get())
+		if (m_Mesh)
 		{
-			mesh->SetSourceAsset(sourceGUID);
-			mesh->Save();
+			m_Mesh->SetSourceAsset(sourceGUID);
+			m_Mesh->Save();
 		}
 	}
 }

@@ -10,6 +10,7 @@
 #include <istream>
 #include <map>
 #include <queue>
+#include <ranges>
 #include <set>
 #include <string>
 #include <typeindex>
@@ -25,6 +26,7 @@
 
 #include "coreclr_delegates.h"
 #include "hostfxr.h"
+#include "glm.h"
 #include "Utils.h"
 #include "Globals.h"
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "ResourceHandle.h"
+#include "Resource.h"
 #include "VulkanGlobals.h"
 #include "Camera.h"
 
@@ -21,8 +21,8 @@ namespace Odyssey
 	public:
 		std::shared_ptr<VulkanContext> context;
 		std::shared_ptr<PerFrameRenderingData> renderingData;
-		ResourceHandle<VulkanCommandBuffer> commandBuffer;
-		ResourceHandle<VulkanRenderTexture> FrameRT;
+		ResourceID commandBuffer;
+		ResourceID FrameRT;
 	};
 
 	class RenderPass
@@ -33,14 +33,14 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) = 0;
 
 	public:
-		void SetColorRenderTexture(ResourceHandle<VulkanRenderTexture> colorRT);
-		void SetDepthRenderTexture(ResourceHandle<VulkanRenderTexture> depthRT);
+		void SetColorRenderTexture(ResourceID colorRT) { m_ColorRT = colorRT; }
+		void SetDepthRenderTexture(ResourceID depthRT) { m_DepthRT = depthRT; }
 		void SetLayouts(VkImageLayout beginLayout, VkImageLayout endLayout) { m_BeginLayout = beginLayout; m_EndLayout = endLayout; }
 		void SetClearValue(glm::vec4 clearValue) { m_ClearValue = clearValue; }
 
 	protected:
-		ResourceHandle<VulkanRenderTexture> m_ColorRT;
-		ResourceHandle<VulkanRenderTexture> m_DepthRT;
+		ResourceID m_ColorRT;
+		ResourceID m_DepthRT;
 		glm::vec4 m_ClearValue;
 		// Starting layout
 		// Ending layout

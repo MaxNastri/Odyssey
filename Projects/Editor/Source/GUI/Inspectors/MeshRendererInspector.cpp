@@ -14,10 +14,18 @@ namespace Odyssey
 
 		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 		{
-			m_MeshDrawer = AssetFieldDrawer("Mesh", meshRenderer->GetMesh().Get()->GetGUID(), "Mesh",
+			GUID meshGUID;
+			GUID materialGUID;
+
+			if (auto mesh = meshRenderer->GetMesh())
+				meshGUID = mesh->GetGUID();
+			if (auto material = meshRenderer->GetMaterial())
+				materialGUID = material->GetGUID();
+
+			m_MeshDrawer = AssetFieldDrawer("Mesh", meshGUID, "Mesh",
 				[this](GUID guid) { OnMeshModified(guid); });
 
-			m_MaterialDrawer = AssetFieldDrawer("Material", meshRenderer->GetMaterial().Get()->GetGUID(), "Material",
+			m_MaterialDrawer = AssetFieldDrawer("Material", materialGUID, "Material",
 				[this](GUID guid) { OnMaterialModified(guid); });
 		}
 	}

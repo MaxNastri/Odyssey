@@ -1,12 +1,13 @@
 #pragma once
 #include "AssetSerializer.h"
-#include "ManagedObject.hpp"
-#include "Type.hpp"
 #include "GameObject.h"
+#include "FileID.h"
+#include "ScriptStorage.h"
+#include "ManagedHandle.h"
 
 namespace Odyssey
 {
-	class ScriptComponent 
+	class ScriptComponent
 	{
 	public:
 		ScriptComponent() = default;
@@ -19,24 +20,21 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
-		Coral::Type GetType() { return managedInstance.GetType(); }
-		Coral::ManagedObject GetManagedObject() { return managedInstance; }
-		std::string GetManagedTypeName() { return m_ManagedType; }
-
-	public:
-		void SetManagedInstance(Coral::ManagedObject instance);
-		void SetManagedType(std::string_view managedClassName);
+		void SetScriptID(uint32_t scriptID);
+		uint32_t GetScriptID() { return m_ScriptID; }
+		void SetManagedHandle(ManagedHandle handle) { m_Handle = handle; }
+		void ClearManagedHandle() { m_Handle.Clear(); }
+	private:
+		void SerializeNativeTypes(SerializationNode& node, FieldStorage& storage);
+		bool SerializeNativeString(SerializationNode& node, FieldStorage& storage);
+		void DeserializeNativeType(SerializationNode& node, FieldStorage& storage);
+		bool DeserializeNativeString(SerializationNode& node, FieldStorage& storage);
 
 	private:
-		bool SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, SerializationNode& node);
-		bool SerializeNativeString(const std::string& fieldName, ryml::NodeRef& node);
-		bool DeserializeNativeType(const Coral::ManagedType& managedType, const std::string& fieldName, SerializationNode& node);
-		bool DeserializeNativeString(const std::string& fieldName, SerializationNode& node);
-	
-	private:
+		FileID m_FileID;
+		uint32_t m_ScriptID;
 		GameObject m_GameObject;
-		Coral::ManagedObject managedInstance;
-		std::string m_ManagedType;
+		ManagedHandle m_Handle;
 		CLASS_DECLARATION(ScriptComponent);
 	};
 }

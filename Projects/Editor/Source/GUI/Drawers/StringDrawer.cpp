@@ -4,7 +4,7 @@
 
 namespace Odyssey
 {
-	StringDrawer::StringDrawer(const std::string& propertyLabel, std::string initialValue, std::function<void(std::string&)> callback, bool readOnly)
+	StringDrawer::StringDrawer(const std::string& propertyLabel, std::string initialValue, std::function<void(const std::string&)> callback, bool readOnly)
 		: PropertyDrawer(propertyLabel)
 	{
 		data = initialValue;

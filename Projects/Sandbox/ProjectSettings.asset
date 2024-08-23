@@ -1,0 +1,8 @@
+m_ProjectName: Sandbox
+m_AssetsDirectory: 'Assets'
+m_CacheDirectory: 'Cache'
+m_TempDirectory: 'Cache/Temp'
+m_LogsDirectory: 'Logs'
+m_ScriptsDirectory: 'Assets/Scripts'
+m_CodeDirectory: 'Assets/Scripts/Source'
+m_ScriptsProjectPath: 'Assets/Scripts/Sandbox.csproj'

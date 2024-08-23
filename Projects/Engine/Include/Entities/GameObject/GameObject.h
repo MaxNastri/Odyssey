@@ -49,7 +49,7 @@ namespace Odyssey
 		bool HasComponent();
 
 		template<typename T>
-		void RemoveComponent();
+		bool RemoveComponent();
 
 	public:
 		CLASS_DECLARATION(GameObject);

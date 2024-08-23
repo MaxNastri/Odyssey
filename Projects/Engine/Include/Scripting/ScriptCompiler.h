@@ -37,5 +37,6 @@ namespace Odyssey
 		Settings m_Settings;
 		std::unique_ptr<FileTracker> m_FileTracker;
 		static constexpr std::string_view USER_ASSEMBLIES_DIRECTORY = "UserAssemblies";
+		static constexpr std::string_view SCRIPTS_RESOURCES_DIRECTORY = "Resources/Scripts";
 	};
 }

@@ -7,7 +7,8 @@
 #include "Input.h"
 #include "EventSystem.h"
 #include "EditorEvents.h"
-#include "IDComponent.h"
+#include "PropertiesComponent.h"
+#include "EditorComponents.h"
 
 namespace Odyssey
 {
@@ -35,14 +36,17 @@ namespace Odyssey
 
 		if (m_Scene)
 		{
-			for (auto entity : m_Scene->GetAllEntitiesWith<IDComponent>())
+			for (auto entity : m_Scene->GetAllEntitiesWith<PropertiesComponent>())
 			{
 				GameObject gameObject = GameObject(m_Scene, entity);
 
 				// Don't display hidden game objects
-				// TODO: Re-add hidden functionality
-				//if (gameObject->m_IsHidden)
-				//	continue;
+				if (gameObject.HasComponent<EditorPropertiesComponent>() )
+				{
+					auto comp = gameObject.GetComponent<EditorPropertiesComponent>();
+					if (!comp.ShowInHierarchy)
+						continue;
+				}
 
 				bool hasChildren = false;
 				const bool isSelected = (selectionMask & (1 << selectionID)) != 0;
@@ -69,7 +73,7 @@ namespace Odyssey
 					nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 					ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject.GetName().c_str());
 
-					if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+					if (ImGui::IsItemDeactivated() && ImGui::IsItemHovered() && !ImGui::IsItemToggledOpen())
 					{
 						nodeClicked = selectionID;
 
@@ -79,6 +83,15 @@ namespace Odyssey
 						EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
 					}
 				}
+
+				// Allow for this entity to be a potential draw/drop payload
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+				{
+					uint64_t guid = gameObject.GetGUID();
+					ImGui::SetDragDropPayload("Entity", (void*)&guid, sizeof(uint64_t));
+					ImGui::EndDragDropSource();
+				}
+				++selectionID;
 			}
 
 			if (m_CursorInContentRegion)

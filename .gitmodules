@@ -1,6 +1,6 @@
 [submodule "Vendor/Coral"]
 	path = Vendor/Coral
-	url = https://github.com/StudioCherno/Coral.git
+	url = https://github.com/Kold011/Coral.git
 	branch = main
 [submodule "Vendor/efsw"]
 	path = Vendor/efsw

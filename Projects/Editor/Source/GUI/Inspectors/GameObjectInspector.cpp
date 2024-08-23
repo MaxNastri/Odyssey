@@ -7,13 +7,15 @@
 #include "MeshRenderer.h"
 #include "ScriptComponent.h"
 #include "imgui.h"
+#include "PropertiesComponent.h"
+#include "ScriptingManager.h"
 
 namespace Odyssey
 {
 	GameObjectInspector::GameObjectInspector(GUID guid)
 	{
-		GameObject gameObject = SceneManager::GetActiveScene()->GetGameObject(guid);
-		SetGameObject(gameObject);
+		m_Target = SceneManager::GetActiveScene()->GetGameObject(guid);
+		CreateInspectors();
 	}
 
 	void GameObjectInspector::Draw()
@@ -22,9 +24,7 @@ namespace Odyssey
 			return;
 
 		if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
-		{
 			m_NameDrawer.Draw();
-		}
 
 		ImGui::Spacing();
 
@@ -37,35 +37,88 @@ namespace Odyssey
 		{
 			userScriptInspector.Draw();
 		}
+
+		if (ImGui::Button("Add Component"))
+			ImGui::OpenPopup("Add Component Popup");
+
+		if (ImGui::BeginPopup("Add Component Popup"))
+		{
+			ImGui::SeparatorText("Components");
+
+			std::vector<std::string> possibleComponents
+			{
+				"Camera",
+				"Mesh Renderer",
+				"Transform",
+			};
+
+			auto scriptMetadatas = ScriptingManager::GetAllScriptMetadatas();
+
+			for (auto& metadata : scriptMetadatas)
+			{
+				possibleComponents.push_back(metadata.Name);
+			}
+
+			uint64_t selected = 0;
+
+			for (size_t i = 0; i < possibleComponents.size(); i++)
+			{
+				if (ImGui::Selectable(possibleComponents[i].c_str()))
+				{
+					selected = i;
+
+					if (selected == 0)
+					{
+						if (!m_Target.HasComponent<Camera>())
+							m_Target.AddComponent<Camera>();
+					}
+					else if (selected == 1)
+					{
+						if (!m_Target.HasComponent<MeshRenderer>())
+							m_Target.AddComponent<MeshRenderer>();
+					}
+					else if (selected == 2)
+					{
+						if (!m_Target.HasComponent<Transform>())
+							m_Target.AddComponent<Transform>();
+					}
+					else
+					{
+						if (!m_Target.HasComponent<ScriptComponent>())
+							m_Target.AddComponent<ScriptComponent>();
+
+						ScriptComponent& script = m_Target.GetComponent<ScriptComponent>();
+						size_t scriptIndex = i - 3;
+						script.SetScriptID(scriptMetadatas[scriptIndex].ScriptID);
+					}
+
+					CreateInspectors();
+				}
+			}
+
+			ImGui::EndPopup();
+		}
 	}
 
-	void GameObjectInspector::SetGameObject(GameObject& gameObject)
+	void GameObjectInspector::CreateInspectors()
 	{
 		m_Inspectors.clear();
 		userScriptInspectors.clear();
 
-		m_NameDrawer = StringDrawer("Name", gameObject.GetName(),
-			[&gameObject](std::string& name) { gameObject.SetName(name); });
+		m_NameDrawer = StringDrawer("Name", m_Target.GetName(),
+			[this](const std::string& name) { OnNameChanged(name); });
 
-		if (gameObject.HasComponent<Transform>())
-		{
-			m_Inspectors.push_back(std::make_unique<TransformInspector>(gameObject));
-		}
+		if (m_Target.HasComponent<Transform>())
+			m_Inspectors.push_back(std::make_unique<TransformInspector>(m_Target));
 
-		if (gameObject.HasComponent<Camera>())
-		{
-			m_Inspectors.push_back(std::make_unique<CameraInspector>(gameObject));
-		}
+		if (m_Target.HasComponent<Camera>())
+			m_Inspectors.push_back(std::make_unique<CameraInspector>(m_Target));
 
-		if (gameObject.HasComponent<MeshRenderer>())
-		{
-			m_Inspectors.push_back(std::make_unique<MeshRendererInspector>(gameObject));
-		}
+		if (m_Target.HasComponent<MeshRenderer>())
+			m_Inspectors.push_back(std::make_unique<MeshRendererInspector>(m_Target));
 
-		if (gameObject.HasComponent<ScriptComponent>())
-		{
-			m_Inspectors.push_back(std::make_unique<UserScriptInspector>(gameObject));
-		}
+		if (m_Target.HasComponent<ScriptComponent>())
+			m_Inspectors.push_back(std::make_unique<UserScriptInspector>(m_Target));
 	}
 
 	void GameObjectInspector::RefreshUserScripts()
@@ -74,5 +127,11 @@ namespace Odyssey
 		{
 			userScriptInspector.UpdateFields();
 		}
+	}
+
+	void GameObjectInspector::OnNameChanged(const std::string& name)
+	{
+		if (m_Target.HasComponent<PropertiesComponent>())
+			m_Target.SetName(name);
 	}
 }

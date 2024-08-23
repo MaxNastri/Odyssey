@@ -1,6 +1,5 @@
 #pragma once
 #include "Inspector.h"
-#include "AssetHandle.h"
 #include "StringDrawer.h"
 #include "IntDrawer.h"
 #include "BoolDrawer.h"
@@ -22,7 +21,7 @@ namespace Odyssey
 		void OnDstAssetPathChanged(const std::string& assetPath) { m_DstAssetPath = assetPath; }
 
 	private:
-		AssetHandle<SourceShader> m_Shader;
+		std::shared_ptr<SourceShader> m_Shader;
 		std::string m_DstAssetPath;
 		StringDrawer m_ShaderNameDrawer;
 		StringDrawer m_ShaderLanguageDrawer;

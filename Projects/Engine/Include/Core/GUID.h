@@ -9,6 +9,7 @@ namespace Odyssey
 		GUID(uint64_t guid);
 		GUID(const std::string& guid);
 		GUID(const GUID& other);
+		static GUID New();
 
 	public:
 		operator uint64_t() { return m_GUID; }

@@ -11,46 +11,36 @@ namespace Odyssey
 
 		uint32_t dataSize = (uint32_t)(indices.size() * sizeof(indices[0]));
 
-		m_StagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, dataSize);
-		m_StagingBuffer.Get()->AllocateMemory();
-		m_StagingBuffer.Get()->SetMemory(dataSize, indices.data());
+		m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, dataSize);
+		m_IndexBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Index, dataSize);
 
-		m_IndexBuffer = ResourceManager::AllocateBuffer(BufferType::Index, dataSize);
-		m_IndexBuffer.Get()->AllocateMemory();
+		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
+		stagingBuffer->AllocateMemory();
+		stagingBuffer->SetMemory(dataSize, indices.data());
+
+		auto indexBuffer = ResourceManager::GetResource<VulkanBuffer>(m_IndexBuffer);
+		indexBuffer->AllocateMemory();
 
 		// Allocate a command buffer
-		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
-		ResourceHandle<VulkanCommandBuffer> bufferHandle = commandPool.Get()->AllocateBuffer();
+		ResourceID commandPoolID = m_Context->GetCommandPool();
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+
+		ResourceID commandBufferID = commandPool->AllocateBuffer();
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		// Copy the staging data into the index buffer
-		VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
 		commandBuffer->BeginCommands();
 		commandBuffer->CopyBufferToBuffer(m_StagingBuffer, m_IndexBuffer, (uint32_t)dataSize);
 		commandBuffer->EndCommands();
 
 		// Submit and release
-		m_Context->SubmitCommandBuffer(bufferHandle);
-		commandPool.Get()->ReleaseBuffer(bufferHandle);
+		m_Context->SubmitCommandBuffer(commandBufferID);
+		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
 	void VulkanIndexBuffer::Destroy()
 	{
-		ResourceManager::DestroyBuffer(m_StagingBuffer);
-		ResourceManager::DestroyBuffer(m_IndexBuffer);
-	}
-
-	ResourceHandle<VulkanBuffer> VulkanIndexBuffer::GetIndexBuffer()
-	{
-		return m_IndexBuffer;
-	}
-
-	const VkBuffer VulkanIndexBuffer::GetIndexBufferVK()
-	{
-		return m_IndexBuffer.Get()->buffer;
-	}
-
-	const VkBuffer* VulkanIndexBuffer::GetIndexBufferVKRef()
-	{
-		return &(m_IndexBuffer.Get()->buffer);
+		ResourceManager::Destroy(m_StagingBuffer);
+		ResourceManager::Destroy(m_IndexBuffer);
 	}
 }

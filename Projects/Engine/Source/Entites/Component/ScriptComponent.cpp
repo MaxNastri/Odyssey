@@ -9,7 +9,7 @@ namespace Odyssey
 	ScriptComponent::ScriptComponent(const GameObject& gameObject, const std::string& managedType)
 		: m_GameObject(gameObject)
 	{
-		
+
 	}
 
 	ScriptComponent::ScriptComponent(const GameObject& gameObject)
@@ -19,45 +19,46 @@ namespace Odyssey
 
 	void ScriptComponent::Awake()
 	{
-		managedInstance.InvokeMethod("Void Awake()");
+		if (m_Handle.IsValid())
+			m_Handle.Invoke("Void Awake()");
 	}
 
 	void ScriptComponent::Update()
 	{
-		managedInstance.InvokeMethod("Void Update()");
+		if (m_Handle.IsValid())
+			m_Handle.Invoke("Void Update()");
 	}
 
 	void ScriptComponent::OnDestroy()
 	{
-		managedInstance.InvokeMethod("Void OnDestroy()");
+		if (m_Handle.IsValid())
+			m_Handle.Invoke("Void OnDestroy()");
 	}
 
 	void ScriptComponent::Serialize(SerializationNode& node)
 	{
-		const Coral::Type& type = managedInstance.GetType();
-		std::string fqManagedName = type.GetFullName();
-		std::vector<Coral::FieldInfo> fields = type.GetFields();
+		// Get the fields from that type
+		auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
 
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
+		componentNode.WriteData("m_FileID", m_FileID.CRef());
+		componentNode.WriteData("m_ScriptID", m_ScriptID);
 		componentNode.WriteData("Type", ScriptComponent::Type);
-		componentNode.WriteData("Name", fqManagedName);
 
 		SerializationNode fieldsNode = componentNode.CreateSequenceNode("Fields");
-		for (auto& field : fields)
-		{
-			std::string fieldName = field.GetName();
-			Coral::Type fieldType = field.GetType();
 
-			//if (fieldType.IsString())
-			//{
-			//	SerializeNativeString(fieldName, fieldsNode);
-			//}
-			//else
+		// Make sure the field still exists on deserialization
+		for (auto [fieldID, fieldStorage] : storage.Fields)
+		{
+			if (fieldStorage.DataType == DataType::String)
 			{
-				Coral::ManagedType managedType = fieldType.GetManagedType();
-				if (managedType != Coral::ManagedType::Unknown)
-					SerializeNativeTypes(managedType, fieldName, fieldsNode);
+				// Do stuff
+				SerializeNativeString(fieldsNode, fieldStorage);
+			}
+			else
+			{
+				SerializeNativeTypes(fieldsNode, fieldStorage);
 			}
 		}
 	}
@@ -65,12 +66,10 @@ namespace Odyssey
 	void ScriptComponent::Deserialize(SerializationNode& node)
 	{
 		// Read the managed type and create an object based on the type
-		node.ReadData("Name", m_ManagedType);
-		managedInstance = ScriptingManager::CreateManagedObject(m_ManagedType);
+		node.ReadData("m_FileID", m_FileID.Ref());
+		node.ReadData("m_ScriptID", m_ScriptID);
 
-		// Get the fields from that type
-		const Coral::Type& type = managedInstance.GetType();
-		std::vector<Coral::FieldInfo> fields = type.GetFields();
+		ScriptingManager::AddEntityScript(m_GameObject.GetGUID(), m_ScriptID);
 
 		SerializationNode fieldsNode = node.GetNode("Fields");
 		assert(fieldsNode.IsSequence());
@@ -83,228 +82,235 @@ namespace Odyssey
 				assert(fieldNode.IsMap());
 
 				std::string fieldName;
-				std::string managedType;
 				fieldNode.ReadData("Name", fieldName);
-				fieldNode.ReadData("ManagedType", managedType);
+
+				// Get the fields from that type
+				auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
 
 				// Make sure the field still exists on deserialization
-				for (auto& field : fields)
+				for (auto& [fieldID, fieldStorage] : storage.Fields)
 				{
-					if (field.GetName() == fieldName)
+					if (fieldStorage.Name == fieldName)
 					{
-						if (managedType == "String")
-						{
-							DeserializeNativeString(fieldName, fieldNode);
-						}
+						if (fieldStorage.DataType == DataType::String)
+							DeserializeNativeString(fieldNode, fieldStorage);
 						else
-						{
-							uint32_t managedTypeInt;
-							fieldNode.ReadData("ManagedType", managedTypeInt);
-							DeserializeNativeType((Coral::ManagedType)managedTypeInt, fieldName, fieldNode);
-						}
+							DeserializeNativeType(fieldNode, fieldStorage);
+
 					}
 				}
 			}
 		}
 	}
 
-	void ScriptComponent::SetManagedInstance(Coral::ManagedObject instance)
+	void ScriptComponent::SetScriptID(uint32_t scriptID)
 	{
-		managedInstance = instance;
+		// Remove the script from the entity storage
+		ScriptingManager::RemoveEntityScript(m_GameObject.GetGUID(), m_ScriptID);
+
+		// Update the ID
+		m_ScriptID = scriptID;
+
+		// Add the new script ID to the entity storage
+		ScriptingManager::AddEntityScript(m_GameObject.GetGUID(), m_ScriptID);
 	}
 
-	void ScriptComponent::SetManagedType(std::string_view managedClassName)
+	void ScriptComponent::SerializeNativeTypes(SerializationNode& node, FieldStorage& storage)
 	{
-		// TODO (MAX): Destroy any existing managed instance first
-		managedInstance = ScriptingManager::CreateManagedObject(managedClassName);
-		m_ManagedType = managedClassName;
+		SerializationNode fieldNode = node.AppendChild();
+		fieldNode.SetMap();
+		fieldNode.WriteData("Name", storage.Name);
+
+		switch (storage.DataType)
+		{
+			case DataType::Byte:
+			{
+				uint8_t value = storage.GetValue<uint8_t>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::UShort:
+			{
+				uint16_t value = storage.GetValue<uint16_t>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::UInt:
+			{
+				uint32_t value = storage.GetValue<uint32_t>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::ULong:
+			{
+				uint64_t value = storage.GetValue<uint64_t>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::SByte:
+			{
+				char8_t value = storage.GetValue<char8_t>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::Short:
+			{
+				int16_t value = storage.GetValue<int16_t>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::Int:
+			{
+				int32_t value = storage.GetValue<int32_t>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::Long:
+			{
+				int64_t value = storage.GetValue<int64_t>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::Float:
+			{
+				float value = storage.GetValue<float>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::Double:
+			{
+				double value = storage.GetValue<double>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::Bool:
+			{
+				Coral::Bool32 value = storage.GetValue<Coral::Bool32>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::Vector3:
+			{
+				glm::vec3 value = storage.GetValue<glm::vec3>();
+				fieldNode.WriteData("Value", value);
+				break;
+			}
+			case DataType::Entity:
+			case DataType::Component:
+			{
+				GUID value = storage.GetValue<GUID>();
+				fieldNode.WriteData("Value", value.CRef());
+				break;
+			}
+		}
 	}
 
-	bool ScriptComponent::SerializeNativeTypes(const Coral::ManagedType& managedType, const std::string& fieldName, SerializationNode& node)
+	bool ScriptComponent::SerializeNativeString(SerializationNode& node, FieldStorage& storage)
 	{
-		bool nativeTypeFound = false;
+		std::string fieldValue = "";
+
+		//storedValue.resize(storage.ValueBuffer.GetSize());
+		//if (storage.TryGetValue<std::string>(storedValue))
+		//	fieldValue = storedValue;
 
 		SerializationNode fieldNode = node.AppendChild();
 		fieldNode.SetMap();
-		fieldNode.WriteData("Name", fieldName);
-		fieldNode.WriteData("ManagedType", (uint32_t)managedType);
-
-		if (managedType == Coral::ManagedType::Byte)
-		{
-			uint8_t val = managedInstance.GetFieldValue<uint8_t>(fieldName);
-			fieldNode.WriteData("Value", val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::UShort)
-		{
-			uint16_t val = managedInstance.GetFieldValue<uint16_t>(fieldName);
-			fieldNode.WriteData("Value", val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::UInt)
-		{
-			uint32_t val = managedInstance.GetFieldValue<uint32_t>(fieldName);
-			fieldNode.WriteData("Value", val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::ULong)
-		{
-			uint64_t val = managedInstance.GetFieldValue<uint64_t>(fieldName);
-			fieldNode.WriteData("Value", val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::SByte)
-		{
-			char8_t val = managedInstance.GetFieldValue<char8_t>(fieldName);
-			fieldNode.WriteData("Value", val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Short)
-		{
-			int16_t val = managedInstance.GetFieldValue<int16_t>(fieldName);
-			fieldNode.WriteData("Value", val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Int)
-		{
-			int32_t val = managedInstance.GetFieldValue<int32_t>(fieldName);
-			fieldNode.WriteData("Value", val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Long)
-		{
-			int64_t val = managedInstance.GetFieldValue<int64_t>(fieldName);
-			fieldNode.WriteData("Value", val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Float)
-		{
-			float val = managedInstance.GetFieldValue<float>(fieldName);
-			fieldNode.WriteData("Value", val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Double)
-		{
-			double val = managedInstance.GetFieldValue<double>(fieldName);
-			fieldNode.WriteData("Value", val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Bool)
-		{
-			// NOTE: We cast to an int32_t (4 bytes) because bools in c# are treated as 4 bytes instead of 1.
-			bool val = managedInstance.GetFieldValue<int32_t>(fieldName);
-			fieldNode.WriteData("Value", val);
-			nativeTypeFound = true;
-		}
-
-		return nativeTypeFound;
-	}
-
-	bool ScriptComponent::SerializeNativeString(const std::string& fieldName, ryml::NodeRef& node)
-	{
-		Coral::String fieldValue = managedInstance.GetFieldValue<Coral::String>(fieldName);
-
-		ryml::NodeRef fieldNode = node.append_child();
-		fieldNode |= ryml::MAP;
-		fieldNode["Name"] << fieldName;
-		fieldNode["ManagedType"] << "String";
-		fieldNode["Value"] << std::string(fieldValue);
+		fieldNode.WriteData("Name", storage.Name);
+		fieldNode.WriteData("Value", fieldValue);
 		return true;
 	}
 
-	bool ScriptComponent::DeserializeNativeType(const Coral::ManagedType& managedType, const std::string& fieldName, SerializationNode& node)
+	template<typename T>
+	inline void DeserializeValue(SerializationNode& node, FieldStorage& storage)
 	{
-		bool nativeTypeFound = false;
-
-		if (managedType == Coral::ManagedType::Byte)
-		{
-			uint8_t val;
-			node.ReadData("Value", val);
-			managedInstance.SetFieldValue<uint8_t>(fieldName, val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::UShort)
-		{
-			uint16_t val;
-			node.ReadData("Value", val);
-			managedInstance.SetFieldValue<uint16_t>(fieldName, val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::UInt)
-		{
-			uint32_t val;
-			node.ReadData("Value", val);
-			managedInstance.SetFieldValue<uint32_t>(fieldName, val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::ULong)
-		{
-			uint64_t val;
-			node.ReadData("Value", val);
-			managedInstance.SetFieldValue<uint64_t>(fieldName, val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::SByte)
-		{
-			char8_t val;
-			node.ReadData("Value", val);
-			managedInstance.SetFieldValue<char8_t>(fieldName, val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Short)
-		{
-			int16_t val;
-			node.ReadData("Value", val);
-			managedInstance.SetFieldValue<int16_t>(fieldName, val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Int)
-		{
-			int32_t val;
-			node.ReadData("Value", val);
-			managedInstance.SetFieldValue<int32_t>(fieldName, val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Long)
-		{
-			int64_t val;
-			node.ReadData("Value", val);
-			managedInstance.SetFieldValue<int64_t>(fieldName, val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Float)
-		{
-			float val;
-			node.ReadData("Value", val);
-			managedInstance.SetFieldValue<float>(fieldName, val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Double)
-		{
-			double val;
-			node.ReadData("Value", val);
-			managedInstance.SetFieldValue<double>(fieldName, val);
-			nativeTypeFound = true;
-		}
-		else if (managedType == Coral::ManagedType::Bool)
-		{
-			bool val;
-			node.ReadData("Value", val);
-			// NOTE: We case to an int32_t (4 bytes) because bools in c# are treated as 4 bytes instead of 1.
-			managedInstance.SetFieldValue<int32_t>(fieldName, val);
-			nativeTypeFound = true;
-		}
-
-		return nativeTypeFound;
+		T value;
+		node.ReadData("Value", value);
+		storage.SetValue<T>(value);
 	}
 
-	bool ScriptComponent::DeserializeNativeString(const std::string& fieldName, SerializationNode& node)
+	void ScriptComponent::DeserializeNativeType(SerializationNode& node, FieldStorage& storage)
+	{
+		switch (storage.DataType)
+		{
+			case DataType::Byte:
+			{
+				DeserializeValue<uint8_t>(node, storage);
+				break;
+			}
+			case DataType::UShort:
+			{
+				DeserializeValue<uint16_t>(node, storage);
+				break;
+			}
+			case DataType::UInt:
+			{
+				DeserializeValue<uint32_t>(node, storage);
+				break;
+			}
+			case DataType::ULong:
+			{
+				DeserializeValue<uint64_t>(node, storage);
+				break;
+			}
+			case DataType::SByte:
+			{
+				DeserializeValue<char8_t>(node, storage);
+				break;
+			}
+			case DataType::Short:
+			{
+				DeserializeValue<int16_t>(node, storage);
+				break;
+			}
+			case DataType::Int:
+			{
+				DeserializeValue<int32_t>(node, storage);
+				break;
+			}
+			case DataType::Long:
+			{
+				DeserializeValue<int64_t>(node, storage);
+				break;
+			}
+			case DataType::Float:
+			{
+				DeserializeValue<float>(node, storage);
+				break;
+			}
+			case DataType::Double:
+			{
+				DeserializeValue<double>(node, storage);
+				break;
+			}
+			case DataType::Bool:
+			{
+				DeserializeValue<Coral::Bool32>(node, storage);
+				break;
+			}
+			case DataType::Vector3:
+			{
+				DeserializeValue<glm::vec3>(node, storage);
+				break;
+			}
+			case DataType::Entity:
+			case DataType::Component:
+			{
+				GUID value;
+				node.ReadData("Value", value.Ref());
+				storage.SetValue(value);
+				break;
+			}
+		}
+	}
+
+	bool ScriptComponent::DeserializeNativeString(SerializationNode& node, FieldStorage& storage)
 	{
 		std::string nodeValue;
 		node.ReadData("Value", nodeValue);
 
-		Coral::ScopedString fieldValue = Coral::String::New(nodeValue);
-		managedInstance.SetFieldValue<Coral::String>(fieldName, fieldValue);
+		//storage.ValueBuffer.Allocate(nodeValue.size());
+		//storage.SetValue(nodeValue);
+
 		return true;
 	}
 }

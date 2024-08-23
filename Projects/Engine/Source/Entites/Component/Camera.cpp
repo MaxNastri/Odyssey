@@ -24,6 +24,7 @@ namespace Odyssey
 	{
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
+		componentNode.WriteData("m_FileID", m_FileID.CRef());
 		componentNode.WriteData("Type", Camera::Type);
 		componentNode.WriteData("Field of View", m_FieldOfView);
 		componentNode.WriteData("Near Clip", m_NearClip);
@@ -33,6 +34,7 @@ namespace Odyssey
 
 	void Camera::Deserialize(SerializationNode& node)
 	{
+		node.ReadData("m_FileID", m_FileID.Ref());
 		node.ReadData("Field of View", m_FieldOfView);
 		node.ReadData("Near Clip", m_NearClip);
 		node.ReadData("Far Clip", m_FarClip);

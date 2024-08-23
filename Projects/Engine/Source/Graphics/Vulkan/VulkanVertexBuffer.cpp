@@ -7,47 +7,47 @@
 
 namespace Odyssey
 {
-	VulkanVertexBuffer::VulkanVertexBuffer(std::shared_ptr<VulkanContext> context, std::vector<VulkanVertex>& vertices)
+	VulkanVertexBuffer::VulkanVertexBuffer(std::shared_ptr<VulkanContext> context, std::vector<Vertex>& vertices)
 	{
 		m_Context = context;
 
 		uint32_t dataSize = (uint32_t)(vertices.size() * sizeof(vertices[0]));
 
-		m_StagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, dataSize);
-		m_StagingBuffer.Get()->AllocateMemory();
-		m_StagingBuffer.Get()->SetMemory(dataSize, vertices.data());
+		// Allocate the buffers
+		m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, dataSize);
+		m_VertexBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Vertex, dataSize);
 
-		m_VertexBuffer = ResourceManager::AllocateBuffer(BufferType::Vertex, dataSize);
-		m_VertexBuffer.Get()->AllocateMemory();
+		// Write the vertices into the staging buffer
+		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
+		stagingBuffer->AllocateMemory();
+		stagingBuffer->SetMemory(dataSize, vertices.data());
+
+		// Allocate memory for the vertex buffer
+		auto vertexBuffer = ResourceManager::GetResource<VulkanBuffer>(m_VertexBuffer);
+		vertexBuffer->AllocateMemory();
 
 		// Copy the staging buffer into the vertex buffer
-		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
-		ResourceHandle<VulkanCommandBuffer> bufferHandle = commandPool.Get()->AllocateBuffer();
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetCommandPool());
 
-		VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
+		ResourceID commandBufferID = commandPool->AllocateBuffer();
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
 		commandBuffer->BeginCommands();
 		commandBuffer->CopyBufferToBuffer(m_StagingBuffer, m_VertexBuffer, (uint32_t)dataSize);
 		commandBuffer->EndCommands();
 
-		m_Context->SubmitCommandBuffer(bufferHandle);
-		commandPool.Get()->ReleaseBuffer(bufferHandle);
-	}
-	void VulkanVertexBuffer::Destroy()
-	{
-		ResourceManager::DestroyBuffer(m_StagingBuffer);
-		ResourceManager::DestroyBuffer(m_VertexBuffer);
+		m_Context->SubmitCommandBuffer(commandBufferID);
+		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
-	ResourceHandle<VulkanBuffer> VulkanVertexBuffer::GetVertexBuffer()
+	void VulkanVertexBuffer::Destroy()
+	{
+		ResourceManager::Destroy(m_StagingBuffer);
+		ResourceManager::Destroy(m_VertexBuffer);
+	}
+
+	ResourceID VulkanVertexBuffer::GetBuffer()
 	{
 		return m_VertexBuffer;
-	}
-	const VkBuffer VulkanVertexBuffer::GetVertexBufferVK()
-	{
-		return m_VertexBuffer.Get()->buffer;
-	}
-	const VkBuffer* VulkanVertexBuffer::GetVertexBufferVKRef()
-	{
-		return &(m_VertexBuffer.Get()->buffer);
 	}
 }

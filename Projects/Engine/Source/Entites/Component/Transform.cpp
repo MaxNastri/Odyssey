@@ -235,6 +235,7 @@ namespace Odyssey
 	{
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
+		componentNode.WriteData("m_FileID", m_FileID.CRef());
 		componentNode.WriteData("Type", Transform::Type);
 		componentNode.WriteData("Position", m_Position);
 		componentNode.WriteData("Rotation", m_EulerRotation);
@@ -243,6 +244,7 @@ namespace Odyssey
 
 	void Transform::Deserialize(SerializationNode& node)
 	{
+		node.ReadData("m_FileID", m_FileID.Ref());
 		node.ReadData("Position", m_Position);
 		node.ReadData("Rotation", m_EulerRotation);
 		node.ReadData("Scale", m_Scale);

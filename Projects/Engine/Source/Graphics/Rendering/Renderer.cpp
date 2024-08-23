@@ -36,9 +36,9 @@ namespace Odyssey
 	{
 		s_RendererAPI->GetImGui()->SetDrawGUIListener(listener);
 	}
-	int64_t Renderer::AddImguiTexture(ResourceHandle<VulkanRenderTexture> textureHandle, ResourceHandle<VulkanTextureSampler> samplerHandle)
+	int64_t Renderer::AddImguiTexture(ResourceID renderTextureID, ResourceID samplerID)
 	{
-		return s_RendererAPI->GetImGui()->AddTexture(textureHandle, samplerHandle);
+		return s_RendererAPI->GetImGui()->AddTexture(renderTextureID, samplerID);
 	}
 	std::shared_ptr<VulkanWindow> Renderer::GetWindow()
 	{

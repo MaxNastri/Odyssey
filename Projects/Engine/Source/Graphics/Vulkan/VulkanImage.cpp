@@ -131,25 +131,30 @@ namespace Odyssey
 	{
 		if (!m_StagingBuffer.IsValid())
 		{
-			m_StagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, buffer.GetSize());
-			m_StagingBuffer.Get()->AllocateMemory();
+			m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
+			auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
+			stagingBuffer->AllocateMemory();
 		}
 
-		m_StagingBuffer.Get()->SetMemory(buffer.GetSize(), buffer.GetData().data());
+		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
+		stagingBuffer->SetMemory(buffer.GetSize(), buffer.GetData().data());
 
 
-		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
-		ResourceHandle<VulkanCommandBuffer> commandBuffer = commandPool.Get()->AllocateBuffer();
+		ResourceID commandPoolID = m_Context->GetCommandPool();
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+		ResourceID commandBufferID = commandPool->AllocateBuffer();
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
-		commandBuffer.Get()->BeginCommands();
-		commandBuffer.Get()->CopyBufferToImage(m_StagingBuffer, ResourceHandle<VulkanImage>(0, this), m_Width, m_Height);
-		commandBuffer.Get()->EndCommands();
-		commandBuffer.Get()->Flush();
-		commandPool.Get()->ReleaseBuffer(commandBuffer);
+		commandBuffer->BeginCommands();
+		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_Width, m_Height);
+		commandBuffer->EndCommands();
+		commandBuffer->Flush();
+		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
-	VkImageMemoryBarrier VulkanImage::CreateMemoryBarrier(VulkanImage* image, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage)
+	VkImageMemoryBarrier VulkanImage::CreateMemoryBarrier(ResourceID imageID, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage)
 	{
+		auto image = ResourceManager::GetResource<VulkanImage>(imageID);
 		VkImageMemoryBarrier barrier{};
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 		barrier.oldLayout = oldLayout;

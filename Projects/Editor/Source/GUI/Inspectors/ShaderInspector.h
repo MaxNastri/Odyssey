@@ -1,6 +1,5 @@
 #pragma once
 #include "Inspector.h"
-#include "AssetHandle.h"
 #include "AssetFieldDrawer.h"
 #include "StringDrawer.h"
 #include "IntDrawer.h"
@@ -23,7 +22,7 @@ namespace Odyssey
 		void OnSourceAssetChanged(GUID sourceGUID);
 
 	private:
-		AssetHandle<Shader> m_Shader;
+		std::shared_ptr<Shader> m_Shader;
 		StringDrawer m_GUIDDrawer;
 		StringDrawer m_NameDrawer;
 		StringDrawer m_TypeDrawer;

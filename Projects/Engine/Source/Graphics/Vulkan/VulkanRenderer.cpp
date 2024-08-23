@@ -52,8 +52,12 @@ namespace Odyssey
 
 		for (int i = 0; i < m_Frames.size(); ++i)
 		{
-			m_CommandPools.push_back(ResourceManager::AllocateCommandPool());
-			m_CommandBuffers.push_back(m_CommandPools[i].Get()->AllocateBuffer());
+			ResourceID commandPoolID = ResourceManager::Allocate<VulkanCommandPool>();
+			auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+			ResourceID commandBufferID = commandPool->AllocateBuffer();
+
+			m_CommandPools.push_back(commandPoolID);
+			m_CommandBuffers.push_back(commandBufferID);
 		}
 	}
 
@@ -165,13 +169,16 @@ namespace Odyssey
 			Logger::LogError("(renderer 4)");
 		}
 
-		m_CommandPools[s_FrameIndex].Get()->Reset();
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_CommandPools[s_FrameIndex]);
+		commandPool->Reset();
 
 		// Command buffer begin
-		m_CommandBuffers[s_FrameIndex].Get()->BeginCommands();
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_CommandBuffers[s_FrameIndex]);
+		commandBuffer->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
-		m_CommandBuffers[s_FrameIndex].Get()->TransitionLayouts(frame.GetRenderTarget(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(frame.GetRenderTarget());
+		commandBuffer->TransitionLayouts(renderTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		currentFrame = &frame;
 		return true;
@@ -191,7 +198,7 @@ namespace Odyssey
 			}
 
 			// RenderPass begin
-			VulkanCommandBuffer* commandBuffer = m_CommandBuffers[s_FrameIndex].Get();
+			auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_CommandBuffers[s_FrameIndex]);
 			m_RenderingData->frame = frame;
 			m_RenderingData->renderScene = m_RenderScenes[s_FrameIndex];
 			m_RenderingData->width = width;
@@ -300,7 +307,7 @@ namespace Odyssey
 
 		// Create the frames
 		{
-			std::vector<ResourceHandle<VulkanRenderTexture>> backbuffers = m_Swapchain->GetBackbuffers();
+			std::vector<ResourceID> backbuffers = m_Swapchain->GetBackbuffers();
 			uint32_t imageCount = m_Swapchain->GetImageCount();
 			m_Frames.resize(imageCount);
 

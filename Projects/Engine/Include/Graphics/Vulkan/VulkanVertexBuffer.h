@@ -1,8 +1,7 @@
 #pragma once
 #include "Resource.h"
 #include "VulkanGlobals.h"
-#include "VulkanVertex.h"
-#include "ResourceHandle.h"
+#include "Vertex.h"
 
 VK_FWD_DECLARE(VkBuffer)
 
@@ -14,17 +13,15 @@ namespace Odyssey
 	class VulkanVertexBuffer : public Resource
 	{
 	public:
-		VulkanVertexBuffer(std::shared_ptr<VulkanContext> context, std::vector<VulkanVertex>& vertices);
+		VulkanVertexBuffer(std::shared_ptr<VulkanContext> context, std::vector<Vertex>& vertices);
 		void Destroy();
 
 	public:
-		ResourceHandle<VulkanBuffer> GetVertexBuffer();
-		const VkBuffer GetVertexBufferVK();
-		const VkBuffer* GetVertexBufferVKRef();
+		ResourceID GetBuffer();
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
-		ResourceHandle<VulkanBuffer> m_StagingBuffer;
-		ResourceHandle<VulkanBuffer> m_VertexBuffer;
+		ResourceID m_StagingBuffer;
+		ResourceID m_VertexBuffer;
 	};
 }

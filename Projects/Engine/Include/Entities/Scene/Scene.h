@@ -18,12 +18,15 @@ namespace Odyssey
 
 	public:
 		GameObject CreateGameObject();
+		GameObject CreateEmptyEntity();
 		GameObject GetGameObject(GUID guid) { return m_GUIDToGameObject[guid]; }
 
 		void DestroyGameObject(const GameObject& gameObject);
 		void Clear();
 
 	public:
+		void OnStartRuntime();
+		void OnStopRuntime();
 		void Awake();
 		void Update();
 		void OnDestroy();

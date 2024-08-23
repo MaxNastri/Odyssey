@@ -17,6 +17,9 @@ namespace Odyssey
 		if (!std::filesystem::exists(m_UserAssembliesDirectory))
 			std::filesystem::create_directories(m_UserAssembliesDirectory);
 
+		// Keep the user assemblies directory up to date with our latest coral and framework dlls
+		std::filesystem::copy(SCRIPTS_RESOURCES_DIRECTORY, m_UserAssembliesDirectory, std::filesystem::copy_options::overwrite_existing);
+
 		TrackingOptions options;
 		options.Direrctory = m_Settings.UserScriptsDirectory;
 		options.Extensions = { ".cs" };
@@ -44,7 +47,7 @@ namespace Odyssey
 
 		if (success)
 		{
-			ScriptingManager::ReloadUserAssemblies();
+			ScriptingManager::ReloadAssemblies();
 		}
 
 		return success;
