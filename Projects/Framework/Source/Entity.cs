@@ -8,15 +8,20 @@ namespace Odyssey
     {
         private Dictionary<Type, Component> componentCache = new Dictionary<Type, Component>();
         
-        internal ulong GUID { get; set; }
+        internal GUID GUID { get; set; }
 
         protected Entity()
         {
-            this.GUID = 0;
+            this.GUID = new GUID(0);
         }
 
         // Internal constructor so we can control how the object is created natively
         internal Entity(ulong guid)
+        {
+            this.GUID = new GUID(guid);
+        }
+
+        internal Entity(GUID guid)
         {
             this.GUID = guid;
         }
@@ -79,7 +84,7 @@ namespace Odyssey
 
         public static Entity Create()
         {
-            ulong guid;
+            GUID guid;
             unsafe { guid = InternalCalls.GameObject_Create(); }
             return new Entity(guid);
         }

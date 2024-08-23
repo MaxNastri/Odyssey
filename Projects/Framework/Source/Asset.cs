@@ -1,17 +1,19 @@
-﻿namespace Odyssey
+﻿using Coral.Managed.Interop;
+
+namespace Odyssey
 {
     public class Asset<T>
     {
-        public AssetHandle Handle { get; internal set; }
+        public GUID Guid { get; internal set; }
 
-        internal Asset()
+        public string Name
         {
-            Handle = AssetHandle.Invalid;
+            get { unsafe { return InternalCalls.Asset_GetName(Guid); } }
+            set { unsafe { InternalCalls.Asset_SetName(Guid, value); } }
         }
 
-        internal Asset(ulong guid)
-        {
-            Handle = new AssetHandle(guid);
-        }
+        internal Asset() { Guid = GUID.Invalid; }
+        internal Asset(ulong guid) { Guid = new GUID(guid); }
+        internal Asset(GUID guid) { Guid = guid; }
     }
 }

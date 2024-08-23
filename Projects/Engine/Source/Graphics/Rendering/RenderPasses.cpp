@@ -159,7 +159,7 @@ namespace Odyssey
 					pushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[i], 1);
 
 					// Add textures, if they are set
-					if (setPass.Texture)
+					if (setPass.Texture.IsValid())
 					{
 						pushDescriptors->AddTexture(setPass.Texture, 2);
 					}

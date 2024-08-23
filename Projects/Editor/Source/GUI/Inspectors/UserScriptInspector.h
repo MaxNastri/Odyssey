@@ -25,6 +25,7 @@ namespace Odyssey
 	private:
 		void InitializeDrawers(ScriptComponent* userScript);
 		void CreateEntityDrawer(std::string_view fieldName, uint32_t scriptID, uint32_t fieldID, GUID initialValue);
+		void CreateAssetDrawer(const std::string& fieldName, const std::string& assetType, uint32_t scriptID, uint32_t fieldID, GUID initialValue);
 		void CreateDrawerFromProperty(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage);
 		void CreateStringDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage);
 		void OnStringFieldChanged(uint32_t scriptID, uint32_t fieldID, const std::string& newValue);

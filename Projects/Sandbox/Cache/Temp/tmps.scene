@@ -43,3 +43,9 @@ GameObjects:
         Position: 'x: 0.72083634 y: 0 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 0.005 y: 0.005 z: 0.005'
+      - m_FileID: 2237531522
+        m_ScriptID: 3265108388
+        Type: Odyssey.ScriptComponent
+        Fields:
+          - Name: MeshRenderer
+            Value: 15322439001782158818

@@ -7,15 +7,16 @@ namespace Odyssey
     {
         internal Mesh() : base() { }
         internal Mesh(ulong guid) : base(guid) { }
+        internal Mesh(GUID guid) : base(guid) { }
 
         public uint VertexCount
         {
-            get { unsafe { return InternalCalls.Mesh_GetVertexCount(); } }
+            get { unsafe { return InternalCalls.Mesh_GetVertexCount(Guid); } }
         }
 
         public uint IndexCount
         {
-            get { unsafe { return InternalCalls.Mesh_GetIndexCount(); } }
+            get { unsafe { return InternalCalls.Mesh_GetIndexCount(Guid); } }
         }
     }
 }

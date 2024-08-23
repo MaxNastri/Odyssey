@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Asset.cs" />
-    <Compile Include="Source\AssetHandle.cs" />
+    <Compile Include="Source\Attributes.cs" />
     <Compile Include="Source\Components\Camera.cs" />
     <Compile Include="Source\Components\Component.cs" />
     <Compile Include="Source\Components\MeshRenderer.cs" />
@@ -52,9 +52,9 @@
     <Compile Include="Source\Components\Transform.cs" />
     <Compile Include="Source\Entity.cs" />
     <Compile Include="Source\Graphics\Mesh.cs" />
+    <Compile Include="Source\GUID.cs" />
     <Compile Include="Source\InternalCalls.cs" />
     <Compile Include="Source\Math\Vector3.cs" />
-    <Compile Include="Source\Attributes.cs" />
     <Compile Include="Source\Object.cs" />
     <Compile Include="Source\Time.cs" />
   </ItemGroup>
