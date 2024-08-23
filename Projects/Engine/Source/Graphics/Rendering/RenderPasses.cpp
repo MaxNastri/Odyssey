@@ -12,16 +12,6 @@
 
 namespace Odyssey
 {
-	void RenderPass::SetColorRenderTexture(ResourceHandle<VulkanRenderTexture> colorRT)
-	{
-		m_ColorRT = colorRT;
-	}
-
-	void RenderPass::SetDepthRenderTexture(ResourceHandle<VulkanRenderTexture> depthRT)
-	{
-		m_DepthRT = depthRT;
-	}
-
 	OpaquePass::OpaquePass()
 	{
 		m_ClearValue = glm::vec4(0, 0, 0, 1);
@@ -30,20 +20,22 @@ namespace Odyssey
 
 	void OpaquePass::BeginPass(RenderPassParams& params)
 	{
-		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
+		ResourceID commandBufferID = params.commandBuffer;
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
-		VulkanImage* colorAttachment = nullptr;
+		ResourceID colorAttachmentImage;
 		uint32_t width = 0;
 		uint32_t height = 0;
 
 		// Extract the render target and width/height
-		if (VulkanRenderTexture* renderTexture = m_ColorRT.Get())
+		if (m_ColorRT)
 		{
-			colorAttachment = renderTexture->GetImage().Get();
+			auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_ColorRT);
+			colorAttachmentImage = renderTexture->GetImage();
 			width = renderTexture->GetWidth();
 			height = renderTexture->GetHeight();
 
-			commandBuffer->TransitionLayouts(renderTexture->GetImage(), m_BeginLayout);
+			commandBuffer->TransitionLayouts(colorAttachmentImage, m_BeginLayout);
 		}
 		else
 		{
@@ -62,6 +54,7 @@ namespace Odyssey
 		std::vector<VkRenderingAttachmentInfoKHR> attachments;
 
 		{
+			auto colorAttachment = ResourceManager::GetResource<VulkanImage>(colorAttachmentImage);
 			VkRenderingAttachmentInfoKHR color_attachment_info{};
 			color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 			color_attachment_info.pNext = VK_NULL_HANDLE;
@@ -75,12 +68,18 @@ namespace Odyssey
 			attachments.push_back(color_attachment_info);
 		}
 
-		if (m_DepthRT.IsValid())
+		if (m_DepthRT)
 		{
 			VkClearValue clearValue;
 			clearValue.depthStencil = { 1.0f, 0 };
 
-			VulkanImage* depthAttachment = m_DepthRT.Get()->GetImage().Get();
+			// Get the render texture's image
+			auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_DepthRT);
+			ResourceID depthAttachmentID = renderTexture->GetImage();
+
+			// Load the image
+			auto depthAttachment = ResourceManager::GetResource<VulkanImage>(depthAttachmentID);
+
 			VkRenderingAttachmentInfoKHR depthAttachmentInfo{};
 			depthAttachmentInfo.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 			depthAttachmentInfo.pNext = VK_NULL_HANDLE;
@@ -132,7 +131,9 @@ namespace Odyssey
 
 	void OpaquePass::Execute(RenderPassParams& params)
 	{
-		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
+		ResourceID commandBufferID = params.commandBuffer;
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
 
 		uint32_t cameraIndex = RenderScene::MAX_CAMERAS;
@@ -148,26 +149,28 @@ namespace Odyssey
 		{
 			for (auto& setPass : params.renderingData->renderScene->setPasses)
 			{
-				commandBuffer->BindPipeline(setPass.pipeline);
+				commandBuffer->BindPipeline(setPass.GraphicsPipeline);
 
-				for (size_t i = 0; i < setPass.drawcalls.size(); i++)
+				for (size_t i = 0; i < setPass.Drawcalls.size(); i++)
 				{
-					// Prepare the push descriptor commands
+					// Add the camera and per object data to the push descriptors
 					pushDescriptors->Clear();
-					pushDescriptors->Add(renderScene->cameraDataBuffers[cameraIndex], 0);
-					pushDescriptors->Add(renderScene->perObjectUniformBuffers[i], 1);
-					if (setPass.Texture.IsValid())
+					pushDescriptors->AddBuffer(renderScene->cameraDataBuffers[cameraIndex], 0);
+					pushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[i], 1);
+
+					// Add textures, if they are set
+					if (setPass.Texture)
 					{
-						pushDescriptors->Add(setPass.Texture, 2);
+						pushDescriptors->AddTexture(setPass.Texture, 2);
 					}
 
 					// Push the descriptors into the command buffer
-					commandBuffer->PushDescriptors(pushDescriptors.get(), setPass.pipeline);
+					commandBuffer->PushDescriptors(pushDescriptors.get(), setPass.GraphicsPipeline);
 
 					// Set the per-object descriptor buffer offset
-					Drawcall& drawcall = setPass.drawcalls[i];
-					commandBuffer->BindVertexBuffer(drawcall.VertexBuffer);
-					commandBuffer->BindIndexBuffer(drawcall.IndexBuffer);
+					Drawcall& drawcall = setPass.Drawcalls[i];
+					commandBuffer->BindVertexBuffer(drawcall.VertexBufferID);
+					commandBuffer->BindIndexBuffer(drawcall.IndexBufferID);
 					commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);
 				}
 			}
@@ -176,31 +179,36 @@ namespace Odyssey
 
 	void OpaquePass::EndPass(RenderPassParams& params)
 	{
-		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
+		ResourceID commandBufferID = params.commandBuffer;
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		// End dynamic rendering
 		commandBuffer->EndRendering();
 
 		// Make sure the RT is valid
-		if (!m_ColorRT.IsValid())
+		if (!m_ColorRT)
 		{
 			Logger::LogError("(OpaquePass) Invalid render target for OpaquePass");
 			return;
 		}
 
 		// Transition the backbuffer layout for presenting
-		commandBuffer->TransitionLayouts(m_ColorRT, m_EndLayout);
+		auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_ColorRT);
+		commandBuffer->TransitionLayouts(renderTexture->GetImage(), m_EndLayout);
 	}
 
 	void ImguiPass::BeginPass(RenderPassParams& params)
 	{
-		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
+		ResourceID commandBufferID = params.commandBuffer;
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		uint32_t width = params.renderingData->width;
 		uint32_t height = params.renderingData->height;
 
 		// If we don't have a valid RT set, use the back buffer
-		auto renderTarget = m_ColorRT.IsValid() ? m_ColorRT : params.FrameRT;
+		ResourceID renderTargetID = m_ColorRT.IsValid() ? m_ColorRT : params.FrameRT;
+		auto renderTarget = ResourceManager::GetResource<VulkanRenderTexture>(renderTargetID);
+		auto renderTargetImage = ResourceManager::GetResource<VulkanImage>(renderTarget->GetImage());
 
 		VkClearValue clearValue;
 		clearValue.color.float32[0] = m_ClearValue.r;
@@ -211,8 +219,8 @@ namespace Odyssey
 		VkRenderingAttachmentInfoKHR color_attachment_info{};
 		color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
 		color_attachment_info.pNext = VK_NULL_HANDLE;
-		color_attachment_info.imageView = renderTarget.Get()->GetImage().Get()->GetImageView();
-		color_attachment_info.imageLayout = renderTarget.Get()->GetImage().Get()->GetLayout();;
+		color_attachment_info.imageView = renderTargetImage->GetImageView();
+		color_attachment_info.imageLayout = renderTargetImage->GetLayout();;
 		color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 		color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -255,22 +263,23 @@ namespace Odyssey
 
 	void ImguiPass::Execute(RenderPassParams& params)
 	{
-		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
-		m_Imgui->Render(commandBuffer->GetCommandBuffer());
+		m_Imgui->Render(params.commandBuffer);
 	}
 
 	void ImguiPass::EndPass(RenderPassParams& params)
 	{
-		VulkanCommandBuffer* commandBuffer = params.commandBuffer.Get();
+		ResourceID commandBufferID = params.commandBuffer;
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		// End dynamic rendering
 		commandBuffer->EndRendering();
 
 		// If we don't have a valid RT set, use the back buffer
-		auto renderTarget = m_ColorRT.IsValid() ? m_ColorRT : params.FrameRT;
+		ResourceID renderTarget = m_ColorRT.IsValid() ? m_ColorRT : params.FrameRT;
 		
 		// Transition the backbuffer layout for presenting
-		commandBuffer->TransitionLayouts(renderTarget, m_EndLayout);
+		auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(renderTarget);
+		commandBuffer->TransitionLayouts(renderTexture->GetImage(), m_EndLayout);
 	}
 
 	void ImguiPass::SetImguiState(std::shared_ptr<VulkanImgui> imgui)

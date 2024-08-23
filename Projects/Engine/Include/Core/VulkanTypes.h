@@ -1,16 +1,13 @@
 #pragma once
-#include "ResourceHandle.h"
+#include "Resource.h"
 
 namespace Odyssey
 {
-	class VulkanShaderModule;
-	class VulkanDescriptorLayout;
-
 	struct VulkanPipelineInfo
 	{
 	public:
-		ResourceHandle<VulkanShaderModule> fragmentShader;
-		ResourceHandle<VulkanShaderModule> vertexShader;
-		std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts;
+		ResourceID FragmentShader;
+		ResourceID VertexShader;
+		std::vector<ResourceID> DescriptorLayouts;
 	};
 }

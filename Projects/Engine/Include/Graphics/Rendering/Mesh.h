@@ -1,8 +1,7 @@
 #pragma once
 #include "Asset.h"
-#include "ResourceHandle.h"
 #include "Vertex.h"
-#include "GUID.h"
+#include "Resource.h"
 
 namespace Odyssey
 {
@@ -26,8 +25,8 @@ namespace Odyssey
 		void LoadFromDisk(const std::filesystem::path& assetPath);
 
 	public:
-		ResourceHandle<VulkanVertexBuffer> GetVertexBuffer() { return m_VertexBuffer; }
-		ResourceHandle<VulkanIndexBuffer> GetIndexBuffer() { return m_IndexBuffer; }
+		ResourceID GetVertexBuffer() { return m_VertexBuffer; }
+		ResourceID GetIndexBuffer() { return m_IndexBuffer; }
 		uint32_t GetIndexCount() { return m_IndexCount; }
 		uint32_t GetVertexCount() { return m_VertexCount; }
 
@@ -39,12 +38,12 @@ namespace Odyssey
 		GUID m_VerticesGUID = 0;
 		uint32_t m_VertexCount;
 		std::vector<Vertex> m_Vertices;
-		ResourceHandle<VulkanVertexBuffer> m_VertexBuffer;
+		ResourceID m_VertexBuffer;
 
 	private: // Indices
 		GUID m_IndicesGUID = 0;
 		uint32_t m_IndexCount;
 		std::vector<uint32_t> m_Indices;
-		ResourceHandle<VulkanIndexBuffer> m_IndexBuffer;
+		ResourceID m_IndexBuffer;
 	};
 }

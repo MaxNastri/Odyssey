@@ -2,7 +2,6 @@
 #include "Enums.h"
 #include "VulkanGlobals.h"
 #include "Resource.h"
-#include "ResourceHandle.h"
 #include "VulkanDescriptorSet.h"
 
 VK_FWD_DECLARE(VkDescriptorPool)
@@ -21,7 +20,7 @@ namespace Odyssey
 		void Destroy();
 
 	public:
-		ResourceHandle<VulkanDescriptorSet> AllocateDescriptorSets(ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count);
+		ResourceID AllocateDescriptorSets(ResourceID descriptorLayoutID, uint32_t count);
 
 	public:
 		VkDescriptorPool GetDescriptorPool() { return m_DescriptorPool; }

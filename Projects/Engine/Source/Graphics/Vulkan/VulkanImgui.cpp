@@ -75,13 +75,15 @@ namespace Odyssey
 			m_DrawGUIListener();
 	}
 
-	void VulkanImgui::Render(VkCommandBuffer commandBuffer)
+	void VulkanImgui::Render(ResourceID commandBufferID)
 	{
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
 		ImGui::Render();
 		ImDrawData* main_draw_data = ImGui::GetDrawData();
 
 		// Record dear imgui primitives into command buffer
-		ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer);
+		ImGui_ImplVulkan_RenderDrawData(main_draw_data, commandBuffer->GetCommandBuffer());
 	}
 
 	void VulkanImgui::PostRender()
@@ -96,13 +98,17 @@ namespace Odyssey
 		}
 	}
 
-	uint64_t VulkanImgui::AddTexture(ResourceHandle<VulkanRenderTexture> textureHandle, ResourceHandle<VulkanTextureSampler> samplerHandle)
+	uint64_t VulkanImgui::AddTexture(ResourceID textureID, ResourceID samplerID)
 	{
-		VulkanRenderTexture* texture = textureHandle.Get();
-		VkSampler sampler = samplerHandle.Get()->GetSamplerVK();
-		VkImageView view = texture->GetImage().Get()->GetImageView();
+		auto texture = ResourceManager::GetResource<VulkanRenderTexture>(textureID);
+		auto image = ResourceManager::GetResource<VulkanImage>(texture->GetImage());
+		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(samplerID);
+
+		VkSampler samplerVk = sampler->GetSamplerVK();
+		VkImageView view = image->GetImageView();
 		VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		return reinterpret_cast<uint64_t>(ImGui_ImplVulkan_AddTexture(sampler, view, layout));
+
+		return reinterpret_cast<uint64_t>(ImGui_ImplVulkan_AddTexture(samplerVk, view, layout));
 	}
 
 	void VulkanImgui::RemoveTexture(uint64_t id)
@@ -110,7 +116,7 @@ namespace Odyssey
 		ImGui_ImplVulkan_RemoveTexture(reinterpret_cast<VkDescriptorSet>(id));
 	}
 
-	void VulkanImgui::SetFont(std::filesystem::path fontFile, float fontSize)
+	void VulkanImgui::SetFont(Path fontFile, float fontSize)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		io.Fonts->AddFontFromFileTTF(fontFile.string().c_str(), fontSize);
@@ -147,12 +153,14 @@ namespace Odyssey
 			Logger::LogError("(imgui 3)");
 		}
 	}
+
 	void VulkanImgui::UploadFont()
 	{
 		// Use any command queue
-		ResourceHandle<VulkanCommandPool> commandPool = m_Context->GetCommandPool();
-		ResourceHandle<VulkanCommandBuffer> bufferHandle = commandPool.Get()->AllocateBuffer();
-		VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
+		ResourceID commandPoolID = m_Context->GetCommandPool();
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+		ResourceID commandBufferID = commandPool->AllocateBuffer();
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		commandBuffer->BeginCommands();
 
@@ -179,5 +187,7 @@ namespace Odyssey
 		}
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
+
+		commandPool->ReleaseBuffer(commandBufferID);
 	}
 }

@@ -1,4 +1,6 @@
 #include "Mesh.h"
+#include "VulkanVertexBuffer.h"
+#include "VulkanIndexBuffer.h"
 #include "ResourceManager.h"
 #include "AssetSerializer.h"
 #include "BinaryBuffer.h"
@@ -12,8 +14,8 @@ namespace Odyssey
 	{
 		LoadFromDisk(assetPath);
 
-		m_VertexBuffer = ResourceManager::AllocateVertexBuffer(m_Vertices);
-		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
+		m_VertexBuffer = ResourceManager::Allocate<VulkanVertexBuffer>(m_Vertices);
+		m_IndexBuffer = ResourceManager::Allocate<VulkanIndexBuffer>(m_Indices);
 	}
 
 	Mesh::Mesh(const Path& assetPath, std::shared_ptr<SourceModel> source)
@@ -40,8 +42,8 @@ namespace Odyssey
 		m_IndicesGUID = AssetManager::CreateBinaryAsset(buffer);
 
 		// Allocate our buffers
-		m_VertexBuffer = ResourceManager::AllocateVertexBuffer(m_Vertices);
-		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
+		m_VertexBuffer = ResourceManager::Allocate<VulkanVertexBuffer>(m_Vertices);
+		m_IndexBuffer = ResourceManager::Allocate<VulkanIndexBuffer>(m_Indices);
 	}
 
 	void Mesh::Save()
@@ -101,10 +103,10 @@ namespace Odyssey
 		m_Vertices = vertices;
 		m_VertexCount = (uint16_t)m_Vertices.size();
 
-		if (m_VertexBuffer.IsValid())
-			ResourceManager::DestroyVertexBuffer(m_VertexBuffer);
+		if (m_VertexBuffer)
+			ResourceManager::Destroy(m_VertexBuffer);
 
-		m_VertexBuffer = ResourceManager::AllocateVertexBuffer(m_Vertices);
+		m_VertexBuffer = ResourceManager::Allocate<VulkanVertexBuffer>(m_Vertices);
 	}
 
 	void Mesh::SetIndices(std::vector<uint32_t>& indices)
@@ -112,9 +114,9 @@ namespace Odyssey
 		m_Indices = indices;
 		m_IndexCount = (uint32_t)m_Indices.size();
 
-		if (m_IndexBuffer.IsValid())
-			ResourceManager::DestroyIndexBuffer(m_IndexBuffer);
+		if (m_IndexBuffer)
+			ResourceManager::Destroy(m_IndexBuffer);
 
-		m_IndexBuffer = ResourceManager::AllocateIndexBuffer(m_Indices);
+		m_IndexBuffer = ResourceManager::Allocate<VulkanIndexBuffer>(m_Indices);
 	}
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include "VulkanGlobals.h"
-#include "ResourceHandle.h"
+#include "Resource.h"
 
 VK_FWD_DECLARE(VkInstance)
 VK_FWD_DECLARE(VkPhysicalDevice)
@@ -26,7 +26,7 @@ namespace Odyssey
 
 	public:
 		void SetupResources();
-		void SubmitCommandBuffer(ResourceHandle<VulkanCommandBuffer> commandBuffer);
+		void SubmitCommandBuffer(ResourceID commandBuffer);
 
 	public:
 		VkInstance GetInstance() { return instance; }
@@ -36,7 +36,7 @@ namespace Odyssey
 		VkDevice GetDeviceVK();
 		VulkanQueue* GetGraphicsQueue();
 		const VkQueue GetGraphicsQueueVK();
-		ResourceHandle<VulkanCommandPool> GetCommandPool() { return m_CommandPool; }
+		ResourceID GetCommandPool() { return m_CommandPool; }
 
 	private:
 		void GatherExtensions();
@@ -48,7 +48,7 @@ namespace Odyssey
 		VkInstance instance = nullptr;
 		std::shared_ptr<VulkanPhysicalDevice> physicalDevice;
 		std::shared_ptr<VulkanDevice> logicalDevice;
-		ResourceHandle<VulkanCommandPool> m_CommandPool;
+		ResourceID m_CommandPool;
 		std::shared_ptr<VulkanQueue> m_GraphicsQueue;
 
 	private: // Extensions

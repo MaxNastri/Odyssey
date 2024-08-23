@@ -84,7 +84,10 @@ namespace Odyssey
 
 		BinaryBuffer buffer;
 		buffer.WriteData(m_ImageData);
-		m_RenderTexture.Get()->SetData(buffer);
+
+		auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_RenderTexture);
+		renderTexture->SetData(buffer);
+
 		std::string dt = std::to_string(Time::DeltaTime());
 		ImGui::Text(dt.c_str());
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
@@ -277,20 +280,15 @@ namespace Odyssey
 	void RayTracingWindow::CreateRenderTexture()
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
-		m_RenderTexture = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
-		m_RTSampler = ResourceManager::AllocateSampler();
+		m_RenderTexture = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
+		m_RTSampler = ResourceManager::Allocate<VulkanTextureSampler>();
 		m_RenderTextureID = Renderer::AddImguiTexture(m_RenderTexture, m_RTSampler);
 	}
 
 	void RayTracingWindow::DestroyRenderTexture()
 	{
-		// Destroy the existing render texture
-		if (m_RenderTexture.IsValid())
-		{
-			// Destroy the render texture
-			ResourceManager::DestroyRenderTexture(m_RenderTexture);
-			ResourceManager::DestroySampler(m_RTSampler);
-		}
+		ResourceManager::Destroy(m_RenderTexture);
+		ResourceManager::Destroy(m_RTSampler);
 	}
 
 	bool RayTracingWindow::UpdateCameraController()

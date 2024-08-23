@@ -4,6 +4,7 @@
 #include "VulkanPhysicalDevice.h"
 #include "VulkanSurface.h"
 #include "VulkanImage.h"
+#include "VulkanRenderTexture.h"
 #include "ResourceManager.h"
 
 namespace Odyssey
@@ -21,11 +22,6 @@ namespace Odyssey
         swapchain = VK_NULL_HANDLE;
         imageCount = 0;
 	}
-
-    std::vector<ResourceHandle<VulkanRenderTexture>> VulkanSwapchain::GetBackbuffers()
-    {
-        return backbuffers;
-    }
 
     void VulkanSwapchain::CreateSwapchain(VulkanSurface* surface)
 	{
@@ -119,8 +115,8 @@ namespace Odyssey
         backbuffers.resize(backbufferImages.size());
         for (uint16_t i = 0; i < backbuffers.size(); ++i)
         {
-            ResourceHandle<VulkanImage> image = ResourceManager::AllocateImage(backbufferImages[i], m_Width, m_Height, 4, format);
-            backbuffers[i] = ResourceManager::AllocateRenderTexture(image, GetTextureFormat(format));
+            auto image = ResourceManager::Allocate<VulkanImage>(backbufferImages[i], m_Width, m_Height, 4, format);
+            backbuffers[i] = ResourceManager::Allocate<VulkanRenderTexture>(image, GetTextureFormat(format));
         }
     }
 

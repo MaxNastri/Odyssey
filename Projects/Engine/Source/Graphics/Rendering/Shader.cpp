@@ -13,7 +13,7 @@ namespace Odyssey
 		LoadFromDisk(assetPath);
 
 		if (m_ShaderCodeBuffer)
-			m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ShaderCodeBuffer);
+			m_ShaderModule = ResourceManager::Allocate<VulkanShaderModule>(m_ShaderType, m_ShaderCodeBuffer);
 	}
 
 	Shader::Shader(const Path& assetPath, std::shared_ptr<SourceShader> source)
@@ -24,13 +24,13 @@ namespace Odyssey
 		if (source->Compile(m_ShaderCodeBuffer))
 		{
 			m_ShaderCodeGUID = AssetManager::CreateBinaryAsset(m_ShaderCodeBuffer);
-			m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ShaderCodeBuffer);
+			m_ShaderModule = ResourceManager::Allocate<VulkanShaderModule>(m_ShaderType, m_ShaderCodeBuffer);
 		}
 
 		SetSourceAsset(source->GetGUID());
 	}
 
-	void Shader::LoadFromDisk(const std::filesystem::path& assetPath)
+	void Shader::LoadFromDisk(const Path& assetPath)
 	{
 		AssetDeserializer deserializer(assetPath);
 		if (deserializer.IsValid())
@@ -63,9 +63,9 @@ namespace Odyssey
 				AssetManager::WriteBinaryAsset(m_ShaderCodeGUID, m_ShaderCodeBuffer);
 
 				if (m_ShaderModule)
-					ResourceManager::DestroyShader(m_ShaderModule);
+					ResourceManager::Destroy(m_ShaderModule);
 
-				m_ShaderModule = ResourceManager::AllocateShaderModule(m_ShaderType, m_ShaderCodeBuffer);
+				m_ShaderModule = ResourceManager::Allocate<VulkanShaderModule>(m_ShaderType, m_ShaderCodeBuffer);
 			}
 		}
 	}
@@ -80,7 +80,7 @@ namespace Odyssey
 		LoadFromDisk(m_AssetPath);
 	}
 
-	void Shader::SaveToDisk(const std::filesystem::path& path)
+	void Shader::SaveToDisk(const Path& path)
 	{
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();

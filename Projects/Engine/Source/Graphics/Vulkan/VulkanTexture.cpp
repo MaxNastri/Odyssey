@@ -4,16 +4,18 @@
 
 namespace Odyssey
 {
-	VulkanTexture::VulkanTexture(VulkanImageDescription description, BinaryBuffer& buffer)
+	VulkanTexture::VulkanTexture(std::shared_ptr<VulkanContext> context, VulkanImageDescription description, BinaryBuffer& buffer)
 	{
-		m_Image = ResourceManager::AllocateImage(description);
-		m_Image.Get()->SetData(buffer);
+		m_Image = ResourceManager::Allocate<VulkanImage>(description);
+		auto image = ResourceManager::GetResource<VulkanImage>(m_Image);
+		image->SetData(buffer);
 
-		m_Sampler = ResourceManager::AllocateSampler();
+		m_Sampler = ResourceManager::Allocate<VulkanTextureSampler>();
+		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(m_Sampler);
 
-		descriptor.imageView = m_Image.Get()->GetImageView();
-		descriptor.imageLayout = m_Image.Get()->GetLayout();
-		descriptor.sampler = m_Sampler.Get()->GetSamplerVK();
+		descriptor.imageView = image->GetImageView();
+		descriptor.imageLayout = image->GetLayout();
+		descriptor.sampler = sampler->GetSamplerVK();
 	}
 	VkWriteDescriptorSet VulkanTexture::GetDescriptorInfo()
 	{

@@ -12,7 +12,7 @@ namespace Odyssey
 			m_NameDrawer = StringDrawer("Name", m_Texture->GetName(),
 				[this](const std::string& name) { OnNameChanged(name); });
 			m_TypeDrawer = StringDrawer("Type", m_Texture->GetType(), nullptr, true);
-			m_PixelDataGUID = StringDrawer("Pixel Data", m_Texture->GetPixelBufferGUID(), nullptr, true);
+			m_PixelDataGUID = StringDrawer("Pixel Data", m_Texture->GetPixelBufferGUID().String(), nullptr, true);
 			m_SourceAssetDrawer = AssetFieldDrawer("Source Asset", m_Texture->GetSoureAsset(), "SourceTexture",
 				[this](GUID sourceGUID) { OnSourceAssetchanged(sourceGUID); });
 		}

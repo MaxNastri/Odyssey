@@ -1,5 +1,5 @@
 #pragma once
-#include "ResourceHandle.h"
+#include "Resource.h"
 
 namespace Odyssey
 {
@@ -26,7 +26,7 @@ namespace Odyssey
 	public:
 		static void PushRenderPass(std::shared_ptr<RenderPass> renderPass);
 		static void SetDrawGUIListener(std::function<void(void)> listener);
-		static int64_t AddImguiTexture(ResourceHandle<VulkanRenderTexture> textureHandle, ResourceHandle<VulkanTextureSampler> samplerHandle);
+		static int64_t AddImguiTexture(ResourceID renderTextureID, ResourceID samplerID);
 		static std::shared_ptr<VulkanWindow> GetWindow();
 
 	private:

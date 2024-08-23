@@ -4,24 +4,28 @@
 #include "VulkanContext.h"
 #include "VulkanBuffer.h"
 #include "Logger.h"
+#include "ResourceManager.h"
 
 namespace Odyssey
 {
-	VulkanDescriptorSet::VulkanDescriptorSet(std::shared_ptr<VulkanContext> context, DescriptorType descriptorType, ResourceHandle<VulkanDescriptorPool> pool, ResourceHandle<VulkanDescriptorLayout> layout, uint32_t count)
+	VulkanDescriptorSet::VulkanDescriptorSet(std::shared_ptr<VulkanContext> context, DescriptorType descriptorType, ResourceID descriptorPoolID, ResourceID descriptorLayoutID, uint32_t count)
 	{
 		m_Context = context;
 		m_Count = count;
 		m_Type = descriptorType;
 
+		auto descriptorPool = ResourceManager::GetResource<VulkanDescriptorPool>(descriptorPoolID);
+		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(descriptorLayoutID);
+
 		// Create the allocate info struct
 		VkDescriptorSetAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = pool.Get()->GetDescriptorPool();
+		allocInfo.descriptorPool = descriptorPool->GetDescriptorPool();
 		allocInfo.descriptorSetCount = m_Count;
 
 		// Convert the layout handle into a list of pointers
 		std::vector<VkDescriptorSetLayout> setLayouts;
-		setLayouts.push_back(layout.Get()->GetHandle());
+		setLayouts.push_back(descriptorLayout->GetHandle());
 		allocInfo.pSetLayouts = setLayouts.data();
 
 		m_DescriptorSets.resize(m_Count);

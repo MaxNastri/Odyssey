@@ -1,7 +1,5 @@
 #pragma once
-#include "ResourceHandle.h"
-#include <bitset>
-#include "glm.h"
+#include "Resource.h"
 
 namespace Odyssey
 {
@@ -13,12 +11,12 @@ namespace Odyssey
 	{
 	public:
 		Drawcall() = default;
-		Drawcall(ResourceHandle<VulkanVertexBuffer> vertexBuffer, ResourceHandle<VulkanIndexBuffer> indexBuffer, uint32_t indexCount);
+		Drawcall(ResourceID vertexBufferID, ResourceID indexBufferID, uint32_t indexCount);
 
 	public:
 		std::bitset<16> RenderLayers;
-		ResourceHandle<VulkanVertexBuffer> VertexBuffer;
-		ResourceHandle<VulkanIndexBuffer> IndexBuffer;
+		ResourceID VertexBufferID;
+		ResourceID IndexBufferID;
 		uint32_t IndexCount;
 		uint32_t UniformBufferIndex;
 	};

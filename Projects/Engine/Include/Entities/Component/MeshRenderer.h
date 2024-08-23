@@ -1,5 +1,4 @@
 #pragma once
-#include "ResourceHandle.h"
 #include "AssetSerializer.h"
 #include "GameObject.h"
 #include "FileID.h"

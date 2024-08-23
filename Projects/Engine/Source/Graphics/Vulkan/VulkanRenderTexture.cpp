@@ -12,68 +12,6 @@
 
 namespace Odyssey
 {
-	//VulkanTexture::VulkanTexture(std::shared_ptr<VulkanContext> context, const std::string& filename)
-	//{
-	//	m_Context = context;
-	//	m_Sampler = std::make_unique<VulkanTextureSampler>(context);
-
-	//	// Load the texture via stb
-	//	int texWidth, texHeight, texChannels;
-	//	stbi_uc* pixels = stbi_load(filename.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-
-	//	if (!pixels)
-	//	{
-	//		Logger::LogError("[VulkanTexture] Unable to load texture file " + filename);
-	//		return;
-	//	}
-
-	//	// Create a staging buffer to copy the pixel data into vulkanized memory
-	//	uint32_t imageSize = (uint32_t)(texWidth * texHeight * 4);
-	//	m_StagingBuffer = ResourceManager::AllocateBuffer(BufferType::Staging, imageSize);
-	//	m_StagingBuffer.Get()->SetMemory(imageSize, pixels);
-
-	//	// Now that we have transfered the memory, free the original pixel data
-	//	stbi_image_free(pixels);
-
-	//	m_Width = texWidth;
-	//	m_Height = texHeight;
-
-	//	VulkanImageDescription imageDesc;
-	//	imageDesc.Width = texWidth;
-	//	imageDesc.Height = texHeight;
-	//	m_Image = std::make_unique<VulkanImage>(context, imageDesc);
-
-	//	ResourceHandle<VulkanCommandPool> poolHandle = m_Context->GetCommandPool();
-	//	ResourceHandle<VulkanCommandBuffer> bufferHandle = poolHandle.Get()->AllocateBuffer();
-	//	VulkanCommandBuffer* commandBuffer = bufferHandle.Get();
-
-	//	// Transition layouts so we can transfer data
-	//	{
-	//		commandBuffer->BeginCommands();
-	//		commandBuffer->TransitionLayouts(m_Image.get(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	//		commandBuffer->EndCommands();
-
-	//		m_Context->SubmitCommandBuffer(bufferHandle);
-	//	}
-	//	
-	//	// Set the data from the staging buffer
-	//	m_Image->SetData(m_StagingBuffer, texWidth, texHeight);
-	//	
-	//	// Reset the command buffer
-	//	commandBuffer->Reset();
-
-	//	// Transition layouts into a gpu-read-only format
-	//	{
-	//		commandBuffer->BeginCommands();
-	//		commandBuffer->TransitionLayouts(m_Image.get(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	//		commandBuffer->EndCommands();
-
-	//		m_Context->SubmitCommandBuffer(bufferHandle);
-	//	}
-
-	//	poolHandle.Get()->ReleaseBuffer(bufferHandle);
-	//}
-
 	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height)
 	{
 		m_Context = context;
@@ -86,19 +24,22 @@ namespace Odyssey
 		imageDesc.ImageType = TextureType::RenderTexture;
 		imageDesc.Format = TextureFormat::R8G8B8A8_UNORM;
 
-		m_Image = ResourceManager::AllocateImage(imageDesc);
+		m_Image = ResourceManager::Allocate<VulkanImage>(imageDesc);
 
-		auto pool = context->GetCommandPool();
-		ResourceHandle<VulkanCommandBuffer> commandBufferHandle = pool.Get()->AllocateBuffer();
+		// Allocate a command buffer to transition the image layout
+		auto commandPoolID = context->GetCommandPool();
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+		auto commandBufferID = commandPool->AllocateBuffer();
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
-		if (VulkanCommandBuffer* commandBuffer = commandBufferHandle.Get())
-		{
-			commandBuffer->BeginCommands();
-			commandBuffer->TransitionLayouts(m_Image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-			commandBuffer->EndCommands();
-			commandBuffer->Flush();
-		}
-		pool.Get()->ReleaseBuffer(commandBufferHandle);
+		// Transition the image to the proper layout
+		commandBuffer->BeginCommands();
+		commandBuffer->TransitionLayouts(m_Image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		commandBuffer->EndCommands();
+		commandBuffer->Flush();
+
+		// Release the command buffer
+		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
 	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height, TextureFormat format)
@@ -107,45 +48,56 @@ namespace Odyssey
 		m_Width = width;
 		m_Height = height;
 
+		// Allocate the image
 		VulkanImageDescription imageDesc;
 		imageDesc.Width = width;
 		imageDesc.Height = height;
 		imageDesc.Format = format;
 		imageDesc.ImageType = IsDepthTexture(format) ? TextureType::DepthTexture : TextureType::RenderTexture;
-		m_Image = ResourceManager::AllocateImage(imageDesc);
+		m_Image = ResourceManager::Allocate<VulkanImage>(imageDesc);
 
-		auto pool = context->GetCommandPool();
-		ResourceHandle<VulkanCommandBuffer> commandBufferHandle = pool.Get()->AllocateBuffer();
+		// Allocate a command buffer to transition the image layout
+		auto commandPoolID = context->GetCommandPool();
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+		auto commandBufferID = commandPool->AllocateBuffer();
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
-		if (VulkanCommandBuffer* commandBuffer = commandBufferHandle.Get())
-		{
-			VkImageLayout layout = IsDepthTexture(format) ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL :
-				VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			commandBuffer->BeginCommands();
-			commandBuffer->TransitionLayouts(m_Image, layout);
-			commandBuffer->EndCommands();
-			commandBuffer->Flush();
-		}
-		pool.Get()->ReleaseBuffer(commandBufferHandle);
+		// Transition the image to the proper layout based on format
+		VkImageLayout layout = IsDepthTexture(format) ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL :
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		commandBuffer->BeginCommands();
+		commandBuffer->TransitionLayouts(m_Image, layout);
+		commandBuffer->EndCommands();
+		commandBuffer->Flush();
+
+		// Release the command buffer
+		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
-	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanImage> image, TextureFormat format)
+	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, ResourceID imageID, TextureFormat format)
 	{
 		m_Context = context;
-		m_Width = image.Get()->GetWidth();
-		m_Height = image.Get()->GetHeight();
-		m_Image = image;
+
+		if (auto image = ResourceManager::GetResource<VulkanImage>(imageID))
+		{
+			m_Width = image->GetWidth();
+			m_Height = image->GetHeight();
+			m_Image = imageID;
+		}
 	}
 
 	void VulkanRenderTexture::Destroy()
 	{
-		ResourceManager::DestroyImage(m_Image);
+		ResourceManager::Destroy(m_Image);
 	}
 
 	void VulkanRenderTexture::SetData(BinaryBuffer& buffer)
 	{
-		if (VulkanImage* image = m_Image.Get())
+		if (m_Image)
+		{
+			auto image = ResourceManager::GetResource<VulkanImage>(m_Image);
 			image->SetData(buffer);
+		}
 	}
 
 	bool VulkanRenderTexture::IsDepthTexture(TextureFormat format)

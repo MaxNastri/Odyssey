@@ -6,6 +6,7 @@
 #include "Editor.h"
 #include "Camera.h"
 #include "Renderer.h"
+#include "VulkanRenderTexture.h"
 
 namespace Odyssey
 {
@@ -70,20 +71,20 @@ namespace Odyssey
 	void GameViewWindow::CreateRenderTexture()
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
-		m_ColorRT = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
-		m_DepthRT = ResourceManager::AllocateRenderTexture((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
-		m_RTSampler = ResourceManager::AllocateSampler();
+		m_ColorRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
+		m_DepthRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
+		m_RTSampler = ResourceManager::Allocate<VulkanTextureSampler>();
 		m_RenderTextureID = Renderer::AddImguiTexture(m_ColorRT, m_RTSampler);
 	}
 
 	void GameViewWindow::DestroyRenderTexture()
 	{
 		if (m_ColorRT)
-			ResourceManager::DestroyRenderTexture(m_ColorRT);
+			ResourceManager::Destroy(m_ColorRT);
 		if (m_DepthRT)
-			ResourceManager::DestroyRenderTexture(m_DepthRT);
+			ResourceManager::Destroy(m_DepthRT);
 		if (m_RTSampler)
-			ResourceManager::DestroySampler(m_RTSampler);
+			ResourceManager::Destroy(m_RTSampler);
 
 		// Create an IMGui texture handle
 		// TODO: Fix this with render command queue

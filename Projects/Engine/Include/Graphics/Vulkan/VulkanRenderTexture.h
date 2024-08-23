@@ -3,7 +3,6 @@
 #include "VulkanGlobals.h"
 #include "VulkanImage.h"
 #include "VulkanTextureSampler.h"
-#include "ResourceHandle.h"
 
 namespace Odyssey
 {
@@ -14,14 +13,14 @@ namespace Odyssey
 	public:
 		VulkanRenderTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height);
 		VulkanRenderTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height, TextureFormat format);
-		VulkanRenderTexture(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanImage> image, TextureFormat format);
+		VulkanRenderTexture(std::shared_ptr<VulkanContext> context, ResourceID imageID, TextureFormat format);
 		void Destroy();
 
 	public:
 		void SetData(BinaryBuffer& buffer);
 
 	public:
-		ResourceHandle<VulkanImage> GetImage() { return m_Image; }
+		ResourceID GetImage() { return m_Image; }
 		uint32_t GetWidth() { return m_Width; }
 		uint32_t GetHeight() { return m_Height; }
 
@@ -30,8 +29,8 @@ namespace Odyssey
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
-		ResourceHandle<VulkanImage> m_Image;
-		ResourceHandle<VulkanBuffer> m_StagingBuffer;
+		ResourceID m_Image;
+		ResourceID m_StagingBuffer;
 		uint32_t m_Width, m_Height;
 	};
 }

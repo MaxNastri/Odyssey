@@ -1,6 +1,6 @@
 #pragma once
 #include "glm.h"
-#include "ResourceHandle.h"
+#include "Resource.h"
 #include "Drawcall.h"
 
 namespace Odyssey
@@ -29,17 +29,17 @@ namespace Odyssey
 	{
 	public:
 		SetPass() = default;
-		SetPass(std::shared_ptr<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts);
+		SetPass(std::shared_ptr<Material> material, std::vector<ResourceID> descriptorLayouts);
 
 	public:
-		void SetMaterial(std::shared_ptr<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts);
+		void SetMaterial(std::shared_ptr<Material> material, std::vector<ResourceID> descriptorLayouts);
 
 	public:
-		ResourceHandle<VulkanGraphicsPipeline> pipeline;
-		std::vector<Drawcall> drawcalls;
-		uint64_t vertexShaderID = (uint64_t)(-1);
-		uint64_t fragmentShaderID = (uint64_t)(-1);
-		ResourceHandle<VulkanTexture> Texture;
+		ResourceID GraphicsPipeline;
+		ResourceID VertexShader;
+		ResourceID FragmentShader;
+		ResourceID Texture;
+		std::vector<Drawcall> Drawcalls;
 	};
 
 	class RenderScene
@@ -65,14 +65,11 @@ namespace Odyssey
 		Camera* m_MainCamera = nullptr;
 
 		// Descriptor buffer for per-scene data
-		ResourceHandle<VulkanDescriptorLayout> uboLayout;
-		std::vector<ResourceHandle<VulkanUniformBuffer>> cameraDataBuffers;
-		std::vector<ResourceHandle<VulkanUniformBuffer>> perObjectUniformBuffers;
+		ResourceID uboLayout;
+		std::vector<ResourceID> cameraDataBuffers;
+		std::vector<ResourceID> perObjectUniformBuffers;
 
-		// Descriptor buffer for per-object sampler
-		ResourceHandle<VulkanDescriptorLayout> m_SamplerLayout;
-
-		std::vector<ResourceHandle<VulkanDescriptorLayout>> m_Layouts;
+		std::vector<ResourceID> m_Layouts;
 
 		std::vector<SetPass> setPasses;
 		uint32_t m_NextUniformBuffer = 0;

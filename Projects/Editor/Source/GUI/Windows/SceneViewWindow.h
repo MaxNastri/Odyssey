@@ -1,6 +1,6 @@
 #pragma once
 #include "DockableWindow.h"
-#include "ResourceHandle.h"
+#include "Resource.h"
 #include "GameObject.h"
 #include "Events.h"
 #include "EventSystem.h"
@@ -46,9 +46,9 @@ namespace Odyssey
 	private: // Rendering stuff
 		std::shared_ptr<OpaquePass> m_SceneViewPass;
 		uint64_t m_RenderTextureID;
-		ResourceHandle<VulkanRenderTexture> m_ColorRT;
-		ResourceHandle<VulkanRenderTexture> m_DepthRT;
-		ResourceHandle<VulkanTextureSampler> m_RTSampler;
+		ResourceID m_ColorRT;
+		ResourceID m_DepthRT;
+		ResourceID m_RTSampler;
 
 	private: // Gizmos
 		GameObject* m_SelectedObject = nullptr;

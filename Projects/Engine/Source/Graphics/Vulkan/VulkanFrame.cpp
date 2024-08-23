@@ -7,10 +7,10 @@
 
 namespace Odyssey
 {
-	VulkanFrame::VulkanFrame(std::shared_ptr<VulkanContext> context, ResourceHandle<VulkanRenderTexture> renderTarget, VkFormat format)
+	VulkanFrame::VulkanFrame(std::shared_ptr<VulkanContext> context, ResourceID renderTargetID, VkFormat format)
 	{
 		m_Context = context;
-		m_RenderTexture = renderTarget;
+		m_RenderTexture = renderTargetID;
 
 		CreateFence();
 		CreateSempaphores();
@@ -29,20 +29,10 @@ namespace Odyssey
 		renderCompleteSemaphore = VK_NULL_HANDLE;
 	}
 
-	void VulkanFrame::SetRenderTarget(ResourceHandle<VulkanRenderTexture> renderTarget, uint32_t imageIndex)
+	void VulkanFrame::SetRenderTarget(ResourceID renderTargetID, uint32_t imageIndex)
 	{
-		m_RenderTexture = renderTarget;
+		m_RenderTexture = renderTargetID;
 		m_ImageIndex = imageIndex;
-	}
-
-	VkImage VulkanFrame::GetRenderTargetVK()
-	{
-		return m_RenderTexture.Get()->GetImage().Get()->GetImage();
-	}
-
-	VkImageView VulkanFrame::GetRenderTargetViewVK()
-	{
-		return m_RenderTexture.Get()->GetImage().Get()->GetImageView();
 	}
 
 	void VulkanFrame::CreateFence()

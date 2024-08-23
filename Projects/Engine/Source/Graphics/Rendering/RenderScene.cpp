@@ -13,13 +13,16 @@
 #include "Texture2D.h"
 #include "VulkanDescriptorPool.h"
 #include "GameObject.h"
+#include "VulkanShaderModule.h"
+#include "VulkanDescriptorLayout.h"
+#include "VulkanGraphicsPipeline.h"
 
 namespace Odyssey
 {
 	RenderScene::RenderScene()
 	{
 		// Descriptor layout for the combined uniform buffers
-		uboLayout = ResourceManager::AllocateDescriptorLayout(DescriptorType::Uniform, ShaderStage::Vertex, 0);
+		uboLayout = ResourceManager::Allocate<VulkanDescriptorLayout>(DescriptorType::Uniform, ShaderStage::Vertex, 0);
 		m_Layouts.push_back(uboLayout);
 
 		// Camera uniform buffer
@@ -28,10 +31,14 @@ namespace Odyssey
 		for (uint32_t i = 1; i < MAX_CAMERAS; i++)
 		{
 			// Allocate the UBO
-			ResourceHandle<VulkanUniformBuffer> uniformBuffer = ResourceManager::AllocateUniformBuffer(BufferType::Uniform, 0, cameraDataSize);
-			uniformBuffer.Get()->AllocateMemory();
-			uniformBuffer.Get()->SetMemory(cameraDataSize, &cameraData);
-			cameraDataBuffers.push_back(uniformBuffer);
+			ResourceID uboID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 0, cameraDataSize);
+			
+			// Write the camera data into the ubo memory
+			auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
+			uniformBuffer->AllocateMemory();
+			uniformBuffer->SetMemory(cameraDataSize, &cameraData);
+
+			cameraDataBuffers.push_back(uboID);
 		}
 
 		// Per-object uniform buffers
@@ -40,23 +47,29 @@ namespace Odyssey
 		for (uint32_t i = 1; i < Max_Uniform_Buffers; i++)
 		{
 			// Allocate the UBO
-			ResourceHandle<VulkanUniformBuffer> uniformBuffer = ResourceManager::AllocateUniformBuffer(BufferType::Uniform, 1, perObjectUniformSize);
-			uniformBuffer.Get()->AllocateMemory();
-			uniformBuffer.Get()->SetMemory(perObjectUniformSize, &objectData);
-			perObjectUniformBuffers.push_back(uniformBuffer);
+			ResourceID uboID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 1, perObjectUniformSize);
+
+			// Write the per-object data into the ubo
+			auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
+			uniformBuffer->AllocateMemory();
+			uniformBuffer->SetMemory(perObjectUniformSize, &objectData);
+
+			perObjectUniformBuffers.push_back(uboID);
 		}
 	}
 
 	void RenderScene::Destroy()
 	{
-		ResourceManager::DestroyDescriptorLayout(uboLayout);
-		for (auto& buffer : cameraDataBuffers)
+		ResourceManager::Destroy(uboLayout);
+
+		for (auto& resource : cameraDataBuffers)
 		{
-			ResourceManager::DestroyUniformBuffer(buffer);
+			ResourceManager::Destroy(resource);
 		}
-		for (auto& buffer : perObjectUniformBuffers)
+
+		for (auto& resource : perObjectUniformBuffers)
 		{
-			ResourceManager::DestroyUniformBuffer(buffer);
+			ResourceManager::Destroy(resource);
 		}
 	}
 
@@ -84,7 +97,7 @@ namespace Odyssey
 	{
 		for (auto& setPass : setPasses)
 		{
-			ResourceManager::DestroyGraphicsPipeline(setPass.pipeline);
+			ResourceManager::Destroy(setPass.GraphicsPipeline);
 		}
 
 		setPasses.clear();
@@ -100,7 +113,9 @@ namespace Odyssey
 
 		uint32_t index = m_NextCameraBuffer;
 		uint32_t sceneUniformSize = sizeof(cameraData);
-		cameraDataBuffers[m_NextCameraBuffer]->SetMemory(sceneUniformSize, &cameraData);
+
+		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(cameraDataBuffers[m_NextCameraBuffer]);
+		uniformBuffer->SetMemory(sceneUniformSize, &cameraData);
 		
 		m_NextCameraBuffer++;
 		return index;
@@ -124,41 +139,42 @@ namespace Odyssey
 			if (auto mesh = meshRenderer.GetMesh())
 			{
 				Drawcall drawcall;
-				drawcall.VertexBuffer = mesh->GetVertexBuffer();
-				drawcall.IndexBuffer = mesh->GetIndexBuffer();
+				drawcall.VertexBufferID = mesh->GetVertexBuffer();
+				drawcall.IndexBufferID = mesh->GetIndexBuffer();
 				drawcall.IndexCount = mesh->GetIndexCount();
 				drawcall.UniformBufferIndex = m_NextUniformBuffer++;
-				setPass.drawcalls.push_back(drawcall);
+				setPass.Drawcalls.push_back(drawcall);
 
 				// Update the per-object uniform buffer
 				uint32_t perObjectSize = sizeof(objectData);
 				objectData.world = transform.GetWorldMatrix();
-				perObjectUniformBuffers[drawcall.UniformBufferIndex].Get()->SetMemory(perObjectSize, &objectData);
+
+				ResourceID uboID = perObjectUniformBuffers[drawcall.UniformBufferIndex];
+				auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
+				uniformBuffer->SetMemory(perObjectSize, &objectData);
 			}
 		}
 	}
 
-	SetPass::SetPass(std::shared_ptr<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts)
+	SetPass::SetPass(std::shared_ptr<Material> material, std::vector<ResourceID> descriptorLayouts)
 	{
 		SetMaterial(material, descriptorLayouts);
 	}
 
-	void SetPass::SetMaterial(std::shared_ptr<Material> material, std::vector<ResourceHandle<VulkanDescriptorLayout>> descriptorLayouts)
+	void SetPass::SetMaterial(std::shared_ptr<Material> material, std::vector<ResourceID> descriptorLayouts)
 	{
 		// Allocate a graphics pipeline
 		VulkanPipelineInfo info;
-		info.vertexShader = material->GetVertexShader()->GetShaderModule();
-		info.fragmentShader = material->GetFragmentShader()->GetShaderModule();
-		info.descriptorLayouts = descriptorLayouts;
-		pipeline = ResourceManager::AllocateGraphicsPipeline(info);
+		info.VertexShader = material->GetVertexShader()->GetShaderModule();
+		info.FragmentShader = material->GetFragmentShader()->GetShaderModule();
+		info.DescriptorLayouts = descriptorLayouts;
+		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 
 		// Store the IDs
-		vertexShaderID = info.vertexShader.GetID();
-		fragmentShaderID = info.fragmentShader.GetID();
+		VertexShader = info.VertexShader;
+		FragmentShader = info.FragmentShader;
 
 		if (auto texture = material->GetTexture())
-		{
 			Texture = texture->GetTexture();
-		}
 	}
 }

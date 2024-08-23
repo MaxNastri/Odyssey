@@ -1,18 +1,19 @@
 #include "Texture2D.h"
 #include "ResourceManager.h"
+#include "VulkanTexture.h"
 #include "VulkanTextureSampler.h"
 #include "BinaryBuffer.h"
 #include "AssetManager.h"
 
 namespace Odyssey
 {
-	Texture2D::Texture2D(const std::filesystem::path& assetPath)
+	Texture2D::Texture2D(const Path& assetPath)
 		: Asset(assetPath)
 	{
 		Load();
 	}
 
-	Texture2D::Texture2D(const std::filesystem::path& assetPath, TextureFormat format)
+	Texture2D::Texture2D(const Path& assetPath, TextureFormat format)
 		: Asset(assetPath)
 	{
 		Load();
@@ -28,7 +29,7 @@ namespace Odyssey
 		LoadFromDisk(m_AssetPath);
 	}
 
-	void Texture2D::SaveToDisk(const std::filesystem::path& assetPath)
+	void Texture2D::SaveToDisk(const Path& assetPath)
 	{
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
@@ -38,7 +39,7 @@ namespace Odyssey
 
 		root.WriteData("m_Width", m_TextureDescription.Width);
 		root.WriteData("m_Height", m_TextureDescription.Height);
-		root.WriteData("m_PixelBufferGUID", m_PixelBufferGUID);
+		root.WriteData("m_PixelBufferGUID", m_PixelBufferGUID.CRef());
 
 		serializer.WriteToDisk(assetPath);
 	}
@@ -52,13 +53,13 @@ namespace Odyssey
 
 			root.ReadData("m_Width", m_TextureDescription.Width);
 			root.ReadData("m_Height", m_TextureDescription.Height);
-			root.ReadData("m_PixelBufferGUID", m_PixelBufferGUID);
+			root.ReadData("m_PixelBufferGUID", m_PixelBufferGUID.Ref());
 
 			m_TextureDescription.Channels = 4;
 			m_TextureDescription.Format = TextureFormat::R8G8B8A8_UNORM;
 
 			BinaryBuffer pixelBuffer = AssetManager::LoadBinaryAsset(m_PixelBufferGUID);
-			m_Texture = ResourceManager::AllocateTexture(m_TextureDescription, pixelBuffer);
+			m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, pixelBuffer);
 		}
 	}
 }
