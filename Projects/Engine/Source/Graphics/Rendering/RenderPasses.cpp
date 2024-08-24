@@ -153,10 +153,13 @@ namespace Odyssey
 
 				for (size_t i = 0; i < setPass.Drawcalls.size(); i++)
 				{
+					Drawcall& drawcall = setPass.Drawcalls[i];
+
 					// Add the camera and per object data to the push descriptors
+					uint32_t uboIndex = drawcall.UniformBufferIndex;
 					pushDescriptors->Clear();
 					pushDescriptors->AddBuffer(renderScene->cameraDataBuffers[cameraIndex], 0);
-					pushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[i], 1);
+					pushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
 
 					// Add textures, if they are set
 					if (setPass.Texture.IsValid())
@@ -168,7 +171,6 @@ namespace Odyssey
 					commandBuffer->PushDescriptors(pushDescriptors.get(), setPass.GraphicsPipeline);
 
 					// Set the per-object descriptor buffer offset
-					Drawcall& drawcall = setPass.Drawcalls[i];
 					commandBuffer->BindVertexBuffer(drawcall.VertexBufferID);
 					commandBuffer->BindIndexBuffer(drawcall.IndexBufferID);
 					commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);

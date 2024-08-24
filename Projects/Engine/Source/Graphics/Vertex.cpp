@@ -88,6 +88,16 @@ namespace Odyssey
 		attributeDescriptions[11].format = VK_FORMAT_R32G32_SFLOAT;
 		attributeDescriptions[11].offset = offsetof(Vertex, TexCoord7);
 
+		//attributeDescriptions[12].binding = 0;
+		//attributeDescriptions[12].location = 12;
+		//attributeDescriptions[12].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		//attributeDescriptions[12].offset = offsetof(Vertex, BoneWeights);
+		//
+		//attributeDescriptions[13].binding = 0;
+		//attributeDescriptions[13].location = 13;
+		//attributeDescriptions[13].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		//attributeDescriptions[13].offset = offsetof(Vertex, BoneIndices);
+
 		return attributeDescriptions;
 	}
 }

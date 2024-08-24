@@ -125,7 +125,7 @@ namespace Odyssey
 			{
 				if (ImGui::MenuItem("GameObject"))
 				{
-					m_Scene->CreateGameObject();
+					GameObject gameObject = m_Scene->CreateGameObject();
 				}
 				ImGui::EndMenu();
 			}

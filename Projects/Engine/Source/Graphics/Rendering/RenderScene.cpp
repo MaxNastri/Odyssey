@@ -129,6 +129,9 @@ namespace Odyssey
 			MeshRenderer& meshRenderer = gameObject.GetComponent<MeshRenderer>();
 			Transform& transform = gameObject.GetComponent<Transform>();
 
+			if (!meshRenderer.GetMaterial() || !meshRenderer.GetMesh())
+				continue;
+
 			// For now, 1 set pass per drawcall
 			setPasses.push_back(SetPass());
 			SetPass& setPass = setPasses[setPasses.size() - 1];

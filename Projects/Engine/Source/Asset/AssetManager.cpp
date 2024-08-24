@@ -331,7 +331,7 @@ namespace Odyssey
 
 	GUID AssetManager::CreateBinaryAsset(BinaryBuffer& buffer)
 	{
-		GUID guid;
+		GUID guid = GUID::New();
 		s_BinaryCache->SaveBinaryData(guid, buffer);
 		return guid;
 	}

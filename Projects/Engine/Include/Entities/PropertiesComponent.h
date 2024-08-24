@@ -15,7 +15,7 @@ namespace Odyssey
 
 	public:
 		GUID GUID;
-		std::string Name;
+		std::string Name = "GameObject";
 		bool Serialize = true;
 
 	private:

@@ -124,7 +124,7 @@ namespace Odyssey
 
 					// Create a temporary source asset so we can serialize the metadata
 					SourceAsset asset(assetPath);
-					asset.SetMetadata(GUID(), name, type);
+					asset.SetMetadata(GUID::New(), name, type);
 					asset.SerializeMetadata();
 
 					// Add the source asset to the database

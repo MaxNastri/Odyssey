@@ -27,7 +27,7 @@ namespace Odyssey
 
 		// Construct a game object and add an ID component 
 		GameObject gameObject = GameObject(this, entity);
-		gameObject.AddComponent<PropertiesComponent>();
+		PropertiesComponent& properties = gameObject.AddComponent<PropertiesComponent>(GUID::New());
 
 		m_GUIDToGameObject[gameObject.GetGUID()] = gameObject;
 

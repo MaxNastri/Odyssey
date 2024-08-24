@@ -28,5 +28,7 @@ namespace Odyssey
 		glm::vec2 TexCoord5;
 		glm::vec2 TexCoord6;
 		glm::vec2 TexCoord7;
+		//glm::vec4 BoneWeights;
+		//glm::vec4 BoneIndices;
 	};
 }
