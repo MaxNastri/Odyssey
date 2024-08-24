@@ -115,4 +115,10 @@ namespace Odyssey
 	{
 		GetComponent<PropertiesComponent>().GUID = guid;
 	}
+
+	void GameObject::Destroy()
+	{
+		if (m_Scene)
+			m_Scene->DestroyGameObject(*this);
+	}
 }

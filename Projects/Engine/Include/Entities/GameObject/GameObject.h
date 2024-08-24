@@ -30,6 +30,9 @@ namespace Odyssey
 		void SetGUID(GUID guid);
 
 	public:
+		void Destroy();
+
+	public:
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... params);
 

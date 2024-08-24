@@ -20,6 +20,10 @@ namespace Odyssey
 
 	void GameObjectInspector::Draw()
 	{
+		// Don't draw unless we have a target
+		if (!m_Target)
+			return;
+
 		if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 			m_NameDrawer.Draw();
 

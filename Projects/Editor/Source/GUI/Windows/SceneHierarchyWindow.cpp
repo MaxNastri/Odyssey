@@ -1,7 +1,6 @@
 #include "SceneHierarchyWindow.h"
 #include "imgui.h"
 #include "Scene.h"
-#include "GameObject.h"
 #include "SceneManager.h"
 #include "GUIManager.h"
 #include "Input.h"
@@ -24,18 +23,16 @@ namespace Odyssey
 	void SceneHierarchyWindow::Draw()
 	{
 		if (!Begin())
-		{
 			return;
-		}
 
 		uint32_t selectionID = 0;
-
-		static ImGuiTreeNodeFlags baseFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 		static int selectionMask = (1 << 2);
 		int nodeClicked = -1;
 
 		if (m_Scene)
 		{
+			m_Interactions.clear();
+
 			for (auto entity : m_Scene->GetAllEntitiesWith<PropertiesComponent>())
 			{
 				GameObject gameObject = GameObject(m_Scene, entity);
@@ -43,58 +40,18 @@ namespace Odyssey
 				// Don't display hidden game objects
 				if (gameObject.HasComponent<EditorPropertiesComponent>() )
 				{
-					auto comp = gameObject.GetComponent<EditorPropertiesComponent>();
-					if (!comp.ShowInHierarchy)
+					EditorPropertiesComponent& properties = gameObject.GetComponent<EditorPropertiesComponent>();
+					if (!properties.ShowInHierarchy)
 						continue;
 				}
 
-				bool hasChildren = false;
-				const bool isSelected = (selectionMask & (1 << selectionID)) != 0;
-				ImGuiTreeNodeFlags nodeFlags = baseFlags;
+				if (DrawGameObject(gameObject, selectionMask, selectionID))
+					nodeClicked = selectionID;
 
-				if (hasChildren)
-				{
-					// Draw as tree node
-					bool open = ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject.GetName().c_str());
-
-					if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-						nodeClicked = selectionID;
-
-					if (open)
-					{
-						// Draw child
-
-						// ImGui::TreePop();
-					}
-				}
-				else
-				{
-					// Draw as tree leaf
-					nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-					ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject.GetName().c_str());
-
-					if (ImGui::IsItemDeactivated() && ImGui::IsItemHovered() && !ImGui::IsItemToggledOpen())
-					{
-						nodeClicked = selectionID;
-
-						GUISelection selection;
-						selection.Type = GameObject::Type;
-						selection.GUID = gameObject.GetGUID();
-						EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
-					}
-				}
-
-				// Allow for this entity to be a potential draw/drop payload
-				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-				{
-					uint64_t guid = gameObject.GetGUID();
-					ImGui::SetDragDropPayload("Entity", (void*)&guid, sizeof(uint64_t));
-					ImGui::EndDragDropSource();
-				}
 				++selectionID;
 			}
 
-			if (m_CursorInContentRegion)
+			if (m_CursorInContentRegion && m_Interactions.empty())
 				HandleContextMenu();
 		}
 		
@@ -112,6 +69,81 @@ namespace Odyssey
 	void SceneHierarchyWindow::OnSceneLoaded(SceneLoadedEvent* event)
 	{
 		m_Scene = event->loadedScene;
+	}
+
+	bool SceneHierarchyWindow::DrawGameObject(GameObject& gameObject, int32_t& selectionMask, uint32_t& selectionID)
+	{
+		bool clicked = false;
+		bool hasChildren = false;
+		const bool isSelected = (selectionMask & (1 << selectionID)) != 0;
+		ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+
+		if (hasChildren)
+		{
+			// Draw as tree node
+			bool open = ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject.GetName().c_str());
+
+			if (ImGui::IsItemHovered())
+				m_Interactions.push_back({ InteractionType::Hovered, &gameObject });
+
+			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
+				clicked = true;
+
+			if (open)
+			{
+				// Draw child
+
+				// ImGui::TreePop();
+			}
+		}
+		else
+		{
+			// Draw as tree leaf with no children
+			nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+			ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject.GetName().c_str());
+
+			// Register a hovered interaction
+			if (ImGui::IsItemHovered())
+				m_Interactions.push_back({ InteractionType::Hovered, &gameObject });
+
+			// Check if we should display a context menu
+			if (ImGui::BeginPopupContextItem())
+			{
+				clicked = true;
+				m_Interactions.push_back({ InteractionType::ContextMenu, &gameObject });
+
+				if (ImGui::Button("Delete"))
+					gameObject.Destroy();
+
+				ImGui::EndPopup();
+			}
+
+			// Check if this item has been selected
+			if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+			{
+				clicked = true;
+				m_Interactions.push_back({ InteractionType::Selection, &gameObject });
+
+				// Dispatch an event with the game object's guid
+				GUISelection selection;
+				selection.Type = GameObject::Type;
+				selection.GUID = gameObject.GetGUID();
+				EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
+			}
+		}
+
+		// Allow for this entity to be a potential drag/drop payload
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+		{
+			// Register a drag and drop interaction
+			m_Interactions.push_back({ InteractionType::DragAndDrop, &gameObject });
+
+			uint64_t guid = gameObject.GetGUID();
+			ImGui::SetDragDropPayload("Entity", (void*)&guid, sizeof(uint64_t));
+			ImGui::EndDragDropSource();
+		}
+
+		return clicked;
 	}
 
 	void SceneHierarchyWindow::HandleContextMenu()

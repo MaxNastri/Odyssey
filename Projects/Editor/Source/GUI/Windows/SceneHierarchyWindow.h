@@ -1,6 +1,7 @@
 #pragma once
 #include "DockableWindow.h"
 #include "EventSystem.h"
+#include "Interaction.hpp"
 
 namespace Odyssey
 {
@@ -20,9 +21,11 @@ namespace Odyssey
 		void OnSceneLoaded(SceneLoadedEvent* event);
 
 	private:
+		bool DrawGameObject(GameObject& gameObject, int32_t& selectionMask, uint32_t& selectionID);
 		void HandleContextMenu();
 
-	private: // Context menu
+	private:
+		std::vector<Interaction<GameObject>> m_Interactions;
 		bool m_ContextMenuOpen = false;
 
 	private:
