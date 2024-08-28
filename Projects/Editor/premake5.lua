@@ -8,7 +8,8 @@ project "Odyssey.Editor"
     kind "ConsoleApp"
     staticruntime "Off"
     debuggertype "NativeWithManagedCore"
-    
+    dependson "Odyssey.Engine"
+
     architecture "x86_64"
     
     flags { "MultiProcessorCompile" }
