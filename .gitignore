@@ -44,3 +44,5 @@ bin-int/
 **.vcxproj
 **.vcxproj.filters
 **.vcxproj.user
+Scripts/__pycache__
+Vendor/VulkanSDK

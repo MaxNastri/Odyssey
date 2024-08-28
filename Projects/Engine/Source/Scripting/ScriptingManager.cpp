@@ -20,7 +20,7 @@ namespace Odyssey
 		if (!s_HostInitialized)
 		{
 			std::filesystem::path appPath = Globals::GetApplicationPath();
-			std::string coralDir = appPath.string();
+			std::string coralDir = "Resources/Scripts";
 			hostSettings =
 			{
 				.CoralDirectory = coralDir,

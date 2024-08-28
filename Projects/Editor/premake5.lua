@@ -54,7 +54,7 @@ project "Odyssey.Editor"
 
     links {
         "Odyssey.Engine.lib",
-        "assimp-vc143-mt.lib",
+        "assimp-vc143-mtd.lib",
         "shaderc_combined.lib",
         "spirv-cross-core.lib",
         "spirv-cross-glsl.lib",

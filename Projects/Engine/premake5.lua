@@ -63,7 +63,7 @@ project "Odyssey.Engine"
 
     links {
         "glfw3.lib",
-        "assimp-vc143-mt.lib",
+        "assimp-vc143-mtd.lib",
         "shaderc_combined.lib",
         "spirv-cross-core.lib",
         "spirv-cross-glsl.lib",
@@ -79,8 +79,8 @@ project "Odyssey.Engine"
     filter { "system:windows" }
         prebuildcommands {
 			'{COPYFILE} "%{wks.location}/Vendor/glfw3/lib/glfw3.lib" "%{cfg.targetdir}"',
-            '{COPYFILE} "%{wks.location}/Vendor/assimp/bin/assimp-vc143-mt.dll" "%{cfg.targetdir}"',
-			'{COPYFILE} "%{wks.location}/Vendor/assimp/lib/assimp-vc143-mt.lib" "%{cfg.targetdir}"',
+            '{COPYFILE} "%{wks.location}/Vendor/assimp/lib/assimp-vc143-mtd.dll" "%{cfg.targetdir}"',
+			'{COPYFILE} "%{wks.location}/Vendor/assimp/lib/assimp-vc143-mtd.lib" "%{cfg.targetdir}"',
         }
 	filter {}
 
