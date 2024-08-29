@@ -160,6 +160,7 @@ namespace Odyssey
 					pushDescriptors->Clear();
 					pushDescriptors->AddBuffer(renderScene->cameraDataBuffers[cameraIndex], 0);
 					pushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
+					pushDescriptors->AddBuffer(renderScene->skinningBufferID, 3);
 
 					// Add textures, if they are set
 					if (setPass.Texture.IsValid())

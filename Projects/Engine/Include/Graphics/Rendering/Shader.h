@@ -20,22 +20,23 @@ namespace Odyssey
 		void Recompile();
 
 	public:
-		ResourceID GetShaderModule() { return m_ShaderModule; }
-		GUID GetShaderCodeGUID() { return m_ShaderCodeGUID; }
-		ShaderType GetShaderType() { return m_ShaderType; }
-
-	public:
 		void Save();
 		void Load();
+
+	public:
+		std::map<ShaderType, ResourceID> GetResourceMap();
 
 	private:
 		void LoadFromDisk(const Path& path);
 		void SaveToDisk(const Path& path);
 
 	private:
-		ShaderType m_ShaderType = ShaderType::None;
-		GUID m_ShaderCodeGUID = 0;
-		BinaryBuffer m_ShaderCodeBuffer;
-		ResourceID m_ShaderModule;
+		struct ShaderData
+		{
+			GUID CodeGUID;
+			BinaryBuffer CodeBuffer;
+			ResourceID ShaderModule;
+		};
+		std::map<ShaderType, ShaderData> m_Shaders;
 	};
 }

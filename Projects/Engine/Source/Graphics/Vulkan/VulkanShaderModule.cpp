@@ -22,6 +22,23 @@ namespace Odyssey
 		vkDestroyShaderModule(m_Context->GetDevice()->GetLogicalDevice(), m_ShaderModule, nullptr);
 	}
 
+	VkShaderStageFlagBits VulkanShaderModule::GetShaderFlags()
+	{
+		switch (m_ShaderType)
+		{
+			case Odyssey::ShaderType::None:
+				break;
+			case Odyssey::ShaderType::Fragment:
+				return VK_SHADER_STAGE_FRAGMENT_BIT;
+			case Odyssey::ShaderType::Vertex:
+				return VK_SHADER_STAGE_VERTEX_BIT;
+			default:
+				break;
+		}
+
+		return VkShaderStageFlagBits();
+	}
+
 	void VulkanShaderModule::CreateShaderModule(BinaryBuffer& codeBuffer)
 	{
 		VkShaderModuleCreateInfo createInfo{};

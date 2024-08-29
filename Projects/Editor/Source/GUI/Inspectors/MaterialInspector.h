@@ -19,8 +19,7 @@ namespace Odyssey
 
 	private:
 		void OnNameModified(const std::string& name);
-		void OnFragmentShaderModified(GUID guid);
-		void OnVertexShaderModified(GUID guid);
+		void OnShaderModified(GUID guid);
 		void OnTextureModified(GUID guid);
 
 	private:
@@ -28,8 +27,7 @@ namespace Odyssey
 
 		StringDrawer m_NameDrawer;
 		StringDrawer m_GUIDDrawer;
-		AssetFieldDrawer m_FragmentShaderDrawer;
-		AssetFieldDrawer m_VertexShaderDrawer;
+		AssetFieldDrawer m_ShaderDrawer;
 		AssetFieldDrawer m_TextureDrawer;
 		bool m_Modified = false;
 	};

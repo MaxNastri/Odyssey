@@ -47,6 +47,7 @@ namespace Odyssey
 		m_ShaderStage = shaderStage;
 		m_BindingIndex = bindingIndex;
 
+		// TODO: Make this more dynamic
 		VkDescriptorSetLayoutBinding set_layout_binding{};
 		set_layout_binding.descriptorType = ConvertDescriptorType(type);
 		set_layout_binding.stageFlags = ConvertShaderFlags(shaderStage);
@@ -65,7 +66,13 @@ namespace Odyssey
 		set_layout_binding3.binding = 2;
 		set_layout_binding3.descriptorCount = 1;
 
-		std::vector< VkDescriptorSetLayoutBinding> bindings = { set_layout_binding, set_layout_binding2, set_layout_binding3 };
+		VkDescriptorSetLayoutBinding set_layout_binding4{};
+		set_layout_binding4.descriptorType = ConvertDescriptorType(type);
+		set_layout_binding4.stageFlags = ConvertShaderFlags(shaderStage);
+		set_layout_binding4.binding = 3;
+		set_layout_binding4.descriptorCount = 1;
+
+		std::vector< VkDescriptorSetLayoutBinding> bindings = { set_layout_binding, set_layout_binding2, set_layout_binding3, set_layout_binding4 };
 
 		VkDescriptorSetLayoutCreateInfo descriptor_layout_create_info{};
 		descriptor_layout_create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;

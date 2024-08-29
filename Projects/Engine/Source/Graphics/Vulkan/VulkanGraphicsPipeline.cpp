@@ -15,22 +15,19 @@ namespace Odyssey
 		CreateLayout(info);
 
 		// Shaders
-		auto vertexShader = ResourceManager::GetResource<VulkanShaderModule>(info.VertexShader);
-		auto fragmentShader = ResourceManager::GetResource<VulkanShaderModule>(info.FragmentShader);
+		std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
-		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
-		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-		vertShaderStageInfo.module = vertexShader->GetShaderModule();
-		vertShaderStageInfo.pName = "main";
+		for (auto [shaderType, ResourceID] : info.Shaders)
+		{
+			auto shader = ResourceManager::GetResource<VulkanShaderModule>(ResourceID);
 
-		VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
-		fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-		fragShaderStageInfo.module = fragmentShader->GetShaderModule();
-		fragShaderStageInfo.pName = "main";
-
-		VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+			VkPipelineShaderStageCreateInfo shaderStageInfo{};
+			shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			shaderStageInfo.stage = shader->GetShaderFlags();
+			shaderStageInfo.module = shader->GetShaderModule();
+			shaderStageInfo.pName = "main";
+			shaderStages.push_back(shaderStageInfo);
+		}
 
 		// Dynamics
 		std::vector<VkDynamicState> dynamicStates = {
@@ -146,8 +143,8 @@ namespace Odyssey
 
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-		pipelineInfo.stageCount = 2;
-		pipelineInfo.pStages = shaderStages;
+		pipelineInfo.stageCount = (uint32_t)shaderStages.size();
+		pipelineInfo.pStages = shaderStages.data();
 		pipelineInfo.pVertexInputState = &vertexInputInfo;
 		pipelineInfo.pInputAssemblyState = &inputAssembly;
 		pipelineInfo.pViewportState = &viewportState;

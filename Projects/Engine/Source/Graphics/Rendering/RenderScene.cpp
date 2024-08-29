@@ -22,8 +22,8 @@ namespace Odyssey
 	RenderScene::RenderScene()
 	{
 		// Descriptor layout for the combined uniform buffers
-		uboLayout = ResourceManager::Allocate<VulkanDescriptorLayout>(DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		m_Layouts.push_back(uboLayout);
+		auto descriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>(DescriptorType::Uniform, ShaderStage::Vertex, 0);
+		m_Layouts.push_back(descriptorLayout);
 
 		// Camera uniform buffer
 		uint32_t cameraDataSize = sizeof(cameraData);
@@ -32,7 +32,7 @@ namespace Odyssey
 		{
 			// Allocate the UBO
 			ResourceID uboID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 0, cameraDataSize);
-			
+
 			// Write the camera data into the ubo memory
 			auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
 			uniformBuffer->AllocateMemory();
@@ -44,7 +44,7 @@ namespace Odyssey
 		// Per-object uniform buffers
 		uint32_t perObjectUniformSize = sizeof(objectData);
 
-		for (uint32_t i = 1; i < Max_Uniform_Buffers; i++)
+		for (uint32_t i = 0; i < Max_Uniform_Buffers; i++)
 		{
 			// Allocate the UBO
 			ResourceID uboID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 1, perObjectUniformSize);
@@ -56,11 +56,31 @@ namespace Odyssey
 
 			perObjectUniformBuffers.push_back(uboID);
 		}
+
+		// Skinning buffers
+		size_t skinningBufferSize = sizeof(glm::mat4) * 4;
+		std::vector<glm::mat4> baseBones{
+			glm::identity<glm::mat4>(),
+			glm::identity<glm::mat4>(),
+			glm::identity<glm::mat4>(),
+			glm::identity<glm::mat4>()
+		};
+
+		// Allocate the skinning buffer
+		skinningBufferID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 1, perObjectUniformSize);
+
+		// Write an identity matrix
+		auto skinningUBO = ResourceManager::GetResource<VulkanUniformBuffer>(skinningBufferID);
+		skinningUBO->AllocateMemory();
+		skinningUBO->SetMemory(skinningBufferSize, baseBones.data());
 	}
 
 	void RenderScene::Destroy()
 	{
-		ResourceManager::Destroy(uboLayout);
+		for (auto& layout : m_Layouts)
+		{
+			ResourceManager::Destroy(layout);
+		}
 
 		for (auto& resource : cameraDataBuffers)
 		{
@@ -76,7 +96,7 @@ namespace Odyssey
 	void RenderScene::ConvertScene(Scene* scene)
 	{
 		ClearSceneData();
-		
+
 		// Search the scene for the main camera
 		for (auto entity : scene->GetAllEntitiesWith<Camera>())
 		{
@@ -116,7 +136,7 @@ namespace Odyssey
 
 		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(cameraDataBuffers[m_NextCameraBuffer]);
 		uniformBuffer->SetMemory(sceneUniformSize, &cameraData);
-		
+
 		m_NextCameraBuffer++;
 		return index;
 	}
@@ -168,14 +188,11 @@ namespace Odyssey
 	{
 		// Allocate a graphics pipeline
 		VulkanPipelineInfo info;
-		info.VertexShader = material->GetVertexShader()->GetShaderModule();
-		info.FragmentShader = material->GetFragmentShader()->GetShaderModule();
+		info.Shaders = material->GetShader()->GetResourceMap();
 		info.DescriptorLayouts = descriptorLayouts;
+		
+		Shaders = info.Shaders;
 		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
-
-		// Store the IDs
-		VertexShader = info.VertexShader;
-		FragmentShader = info.FragmentShader;
 
 		if (auto texture = material->GetTexture())
 			Texture = texture->GetTexture();

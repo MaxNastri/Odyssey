@@ -1,5 +1,6 @@
 #pragma once
 #include "glm.h"
+#include "Enums.h"
 #include "Resource.h"
 #include "Drawcall.h"
 
@@ -36,8 +37,7 @@ namespace Odyssey
 
 	public:
 		ResourceID GraphicsPipeline;
-		ResourceID VertexShader;
-		ResourceID FragmentShader;
+		std::map<ShaderType, ResourceID> Shaders;
 		ResourceID Texture;
 		std::vector<Drawcall> Drawcalls;
 	};
@@ -65,9 +65,9 @@ namespace Odyssey
 		Camera* m_MainCamera = nullptr;
 
 		// Descriptor buffer for per-scene data
-		ResourceID uboLayout;
 		std::vector<ResourceID> cameraDataBuffers;
 		std::vector<ResourceID> perObjectUniformBuffers;
+		ResourceID skinningBufferID;
 
 		std::vector<ResourceID> m_Layouts;
 

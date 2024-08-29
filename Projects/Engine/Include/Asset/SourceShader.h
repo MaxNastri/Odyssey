@@ -13,22 +13,22 @@ namespace Odyssey
 
 	public:
 		bool Compile();
-		bool Compile(BinaryBuffer& codeBuffer);
+		bool Compile(ShaderType shaderType, BinaryBuffer& codeBuffer);
 
 	public:
 		const std::string& GetShaderLanguage() { return m_ShaderLanguage; }
 		bool IsCompiled() { return m_Compiled; }
-		void SetShaderType(ShaderType shaderType) { m_ShaderType = shaderType; }
-		ShaderType GetShaderType() { return m_ShaderType; }
+		std::vector<ShaderType> GetShaderTypes();
 
 	private:
-		std::string ReadShaderFile(const std::filesystem::path& path);
-		
+		void ParseShaderFile(const Path& path);
+
 	private:
 		std::string m_ShaderName;
 		std::string m_ShaderLanguage;
-		std::string m_ShaderCode;
-		ShaderType m_ShaderType;
+		std::string m_VertexShaderCode;
+		std::string m_FragmentShaderCode;
+		std::map<ShaderType, std::string> m_ShaderCode;
 		bool m_Compiled = false;
 	};
 }

@@ -25,7 +25,6 @@ namespace Odyssey
 		std::string m_DstAssetPath;
 		StringDrawer m_ShaderNameDrawer;
 		StringDrawer m_ShaderLanguageDrawer;
-		IntDrawer<uint32_t> m_ShaderTypeDrawer;
 		StringDrawer m_DstAssetPathDrawer;
 		BoolDrawer m_CompiledDrawer;
 	};
