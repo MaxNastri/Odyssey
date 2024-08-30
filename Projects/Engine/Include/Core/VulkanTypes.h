@@ -8,6 +8,6 @@ namespace Odyssey
 	{
 	public:
 		std::map<ShaderType, ResourceID> Shaders;
-		std::vector<ResourceID> DescriptorLayouts;
+		ResourceID DescriptorLayout;
 	};
 }

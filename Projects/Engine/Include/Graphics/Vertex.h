@@ -7,13 +7,13 @@ namespace Odyssey
 	struct alignas(4) Vertex
 	{
 	public:
-		Vertex() = default;
+		Vertex();
 		Vertex(glm::vec3 position, glm::vec4 color);
 		Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 uv0);
 
 	public:
 		static VkVertexInputBindingDescription GetBindingDescription();
-		static std::array< VkVertexInputAttributeDescription, 12> GetAttributeDescriptions();
+		static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions();
 
 	public:
 		glm::vec3 Position;
@@ -28,7 +28,7 @@ namespace Odyssey
 		glm::vec2 TexCoord5;
 		glm::vec2 TexCoord6;
 		glm::vec2 TexCoord7;
-		//glm::vec4 BoneWeights;
-		//glm::vec4 BoneIndices;
+		glm::vec4 BoneIndices;
+		glm::vec4 BoneWeights;
 	};
 }

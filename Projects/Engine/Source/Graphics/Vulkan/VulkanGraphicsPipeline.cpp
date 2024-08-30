@@ -54,7 +54,7 @@ namespace Odyssey
 		vertexInputInfo.vertexBindingDescriptionCount = 1;
 		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 
-		std::array<VkVertexInputAttributeDescription, 12> vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
+		std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
 		vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
 		vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
 
@@ -178,16 +178,8 @@ namespace Odyssey
 		// Convert resource handles to vulkan data
 		std::vector<VkDescriptorSetLayout> setLayouts{};
 
-		if (info.DescriptorLayouts.size() > 0)
-		{
-			setLayouts.resize(info.DescriptorLayouts.size());
-
-			for (int i = 0; i < info.DescriptorLayouts.size(); i++)
-			{
-				auto layout = ResourceManager::GetResource<VulkanDescriptorLayout>(info.DescriptorLayouts[i]);
-				setLayouts[i] = layout->GetHandle();
-			}
-		}
+		auto layout = ResourceManager::GetResource<VulkanDescriptorLayout>(info.DescriptorLayout);
+		setLayouts.push_back(layout->GetHandle());
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

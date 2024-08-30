@@ -22,8 +22,14 @@ namespace Odyssey
 	RenderScene::RenderScene()
 	{
 		// Descriptor layout for the combined uniform buffers
-		auto descriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>(DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		m_Layouts.push_back(descriptorLayout);
+		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
+
+		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
+		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
+		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
+		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
+		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 3);
+		descriptorLayout->Apply();
 
 		// Camera uniform buffer
 		uint32_t cameraDataSize = sizeof(cameraData);
@@ -58,16 +64,16 @@ namespace Odyssey
 		}
 
 		// Skinning buffers
-		size_t skinningBufferSize = sizeof(glm::mat4) * 4;
-		std::vector<glm::mat4> baseBones{
-			glm::identity<glm::mat4>(),
-			glm::identity<glm::mat4>(),
-			glm::identity<glm::mat4>(),
-			glm::identity<glm::mat4>()
-		};
+		size_t skinningBufferSize = sizeof(glm::mat4) * 128;
+		std::vector<glm::mat4> baseBones;
+		baseBones.resize(128);
+		for (int i = 0; i < 128; i++)
+		{
+			baseBones[i] = glm::identity<glm::mat4>();
+		}
 
 		// Allocate the skinning buffer
-		skinningBufferID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 1, perObjectUniformSize);
+		skinningBufferID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 2, skinningBufferSize);
 
 		// Write an identity matrix
 		auto skinningUBO = ResourceManager::GetResource<VulkanUniformBuffer>(skinningBufferID);
@@ -77,10 +83,7 @@ namespace Odyssey
 
 	void RenderScene::Destroy()
 	{
-		for (auto& layout : m_Layouts)
-		{
-			ResourceManager::Destroy(layout);
-		}
+		ResourceManager::Destroy(m_DescriptorLayout);
 
 		for (auto& resource : cameraDataBuffers)
 		{
@@ -129,7 +132,7 @@ namespace Odyssey
 	uint32_t RenderScene::SetCameraData(Camera* camera)
 	{
 		cameraData.inverseView = camera->GetInverseView();
-		cameraData.proj = camera->GetProjection();
+		cameraData.ViewProjection = camera->GetProjection() * cameraData.inverseView;
 
 		uint32_t index = m_NextCameraBuffer;
 		uint32_t sceneUniformSize = sizeof(cameraData);
@@ -156,7 +159,7 @@ namespace Odyssey
 			setPasses.push_back(SetPass());
 			SetPass& setPass = setPasses[setPasses.size() - 1];
 
-			setPass.SetMaterial(meshRenderer.GetMaterial(), m_Layouts);
+			setPass.SetMaterial(meshRenderer.GetMaterial(), m_DescriptorLayout);
 
 			// Create the drawcall data
 			if (auto mesh = meshRenderer.GetMesh())
@@ -179,18 +182,18 @@ namespace Odyssey
 		}
 	}
 
-	SetPass::SetPass(std::shared_ptr<Material> material, std::vector<ResourceID> descriptorLayouts)
+	SetPass::SetPass(std::shared_ptr<Material> material, ResourceID descriptorLayout)
 	{
-		SetMaterial(material, descriptorLayouts);
+		SetMaterial(material, descriptorLayout);
 	}
 
-	void SetPass::SetMaterial(std::shared_ptr<Material> material, std::vector<ResourceID> descriptorLayouts)
+	void SetPass::SetMaterial(std::shared_ptr<Material> material, ResourceID descriptorLayout)
 	{
 		// Allocate a graphics pipeline
 		VulkanPipelineInfo info;
 		info.Shaders = material->GetShader()->GetResourceMap();
-		info.DescriptorLayouts = descriptorLayouts;
-		
+		info.DescriptorLayout = descriptorLayout;
+
 		Shaders = info.Shaders;
 		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 

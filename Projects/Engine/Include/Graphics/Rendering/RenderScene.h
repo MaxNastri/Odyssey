@@ -18,7 +18,7 @@ namespace Odyssey
 	struct CameraUniformData
 	{
 		glm::mat4 inverseView;
-		glm::mat4 proj;
+		glm::mat4 ViewProjection;
 	};
 
 	struct ObjectUniformData
@@ -30,10 +30,10 @@ namespace Odyssey
 	{
 	public:
 		SetPass() = default;
-		SetPass(std::shared_ptr<Material> material, std::vector<ResourceID> descriptorLayouts);
+		SetPass(std::shared_ptr<Material> material, ResourceID descriptorLayout);
 
 	public:
-		void SetMaterial(std::shared_ptr<Material> material, std::vector<ResourceID> descriptorLayouts);
+		void SetMaterial(std::shared_ptr<Material> material, ResourceID descriptorLayout);
 
 	public:
 		ResourceID GraphicsPipeline;
@@ -69,7 +69,7 @@ namespace Odyssey
 		std::vector<ResourceID> perObjectUniformBuffers;
 		ResourceID skinningBufferID;
 
-		std::vector<ResourceID> m_Layouts;
+		ResourceID m_DescriptorLayout;
 
 		std::vector<SetPass> setPasses;
 		uint32_t m_NextUniformBuffer = 0;

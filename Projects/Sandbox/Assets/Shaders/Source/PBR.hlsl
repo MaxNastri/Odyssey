@@ -13,6 +13,8 @@ struct VertexInput
     float2 TexCoord5 : TEXCOORD5;
     float2 TexCoord6 : TEXCOORD6;
     float2 TexCoord7 : TEXCOORD7;
+    float4 BoneIndices : BLENDINDICES0;
+    float4 BoneWeights : BLENDWEIGHT0;
 };
 
 struct VertexOutput
@@ -29,6 +31,8 @@ struct VertexOutput
     float2 TexCoord5 : TEXCOORD5;
     float2 TexCoord6 : TEXCOORD6;
     float2 TexCoord7 : TEXCOORD7;
+    float4 BoneIndices : BLENDINDICES0;
+    float4 BoneWeights : BLENDWEIGHT0;
 };
 
 cbuffer SceneData : register(b0)
@@ -42,10 +46,21 @@ cbuffer ModelData : register(b1)
     float4x4 Model;
 }
 
+cbuffer SkinningData : register(b2)
+{
+    float4x4 Bones[128];
+}
+
+// Forward declarations
+float4 SkinVertex(VertexInput input);
+
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
-    output.Position = mul(Model, float4(input.Position, 1.0f));
+    
+    float4 position = SkinVertex(input);
+    //float4 position = float4(input.Position, 1.0f);
+    output.Position = mul(Model, position);
     output.Position = mul(ViewProjection, output.Position);
     output.Normal = input.Normal;
     output.Tangent = input.Tangent;
@@ -58,7 +73,22 @@ VertexOutput main(VertexInput input)
     output.TexCoord5 = input.TexCoord5;
     output.TexCoord6 = input.TexCoord6;
     output.TexCoord7 = input.TexCoord7;
+    output.BoneIndices = input.BoneIndices;
+    output.BoneWeights = input.BoneWeights;
     return output;
+}
+
+float4 SkinVertex(VertexInput input)
+{
+    float4 position = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float4 vertexPosition = float4(input.Position, 1.0f);
+    
+    for (int i = 0; i < 4; i++)
+    {
+        position += mul(vertexPosition, Bones[input.BoneIndices[i]]) * input.BoneWeights[i];
+    }
+    
+    return position;
 }
 
 #pragma Fragment
@@ -76,10 +106,12 @@ struct PixelInput
     float2 TexCoord5 : TEXCOORD5;
     float2 TexCoord6 : TEXCOORD6;
     float2 TexCoord7 : TEXCOORD7;
+    float4 BoneIndices : BLENDINDICES0;
+    float4 BoneWeights : BLENDWEIGHT0;
 };
 
-Texture2D diffuseTex2D : register(t2);
-SamplerState diffuseSampler : register(s2);
+Texture2D diffuseTex2D : register(t3);
+SamplerState diffuseSampler : register(s3);
 
 float4 main(PixelInput input) : SV_Target
 {
