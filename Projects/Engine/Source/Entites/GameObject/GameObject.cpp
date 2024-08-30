@@ -5,6 +5,7 @@
 #include "MeshRenderer.h"
 #include "Transform.h"
 #include "ScriptComponent.h"
+#include "Animator.h"
 
 namespace Odyssey
 {
@@ -37,6 +38,9 @@ namespace Odyssey
 		gameObjectNode.WriteData("Type", Type);
 
 		SerializationNode componentsNode = gameObjectNode.CreateSequenceNode("Components");
+
+		if (Animator* animator = TryGetComponent<Animator>())
+			animator->Serialize(componentsNode);
 
 		if (Camera* camera = TryGetComponent<Camera>())
 			camera->Serialize(componentsNode);
@@ -74,7 +78,12 @@ namespace Odyssey
 			std::string componentType;
 			componentNode.ReadData("Type", componentType);
 
-			if (componentType == Camera::Type)
+			if (componentType == Animator::Type)
+			{
+				Animator& animator = AddComponent<Animator>();
+				animator.Deserialize(componentNode);
+			}
+			else if (componentType == Camera::Type)
 			{
 				Camera& camera = AddComponent<Camera>();
 				camera.Deserialize(componentNode);

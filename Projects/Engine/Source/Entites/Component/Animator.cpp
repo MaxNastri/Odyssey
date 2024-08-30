@@ -13,16 +13,19 @@ namespace Odyssey
 
 	void Animator::Serialize(SerializationNode& node)
 	{
-
+		SerializationNode componentNode = node.AppendChild();
+		componentNode.SetMap();
+		componentNode.WriteData("Type", Animator::Type);
+		componentNode.WriteData("AnimationRig", m_AnimationRig.CRef());
 	}
 
 	void Animator::Deserialize(SerializationNode& node)
 	{
-
+		node.ReadData("AnimationRig", m_AnimationRig.Ref());
 	}
 
-	void Animator::SetRig(std::shared_ptr<AnimationRig> rig)
+	void Animator::SetRig(GUID animationRigGUID)
 	{
-		m_Rig = rig;
+		m_AnimationRig = animationRigGUID;
 	}
 }

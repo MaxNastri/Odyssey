@@ -18,12 +18,12 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
-		AnimationRig* GetRig() { return m_Rig.get(); }
-		void SetRig(std::shared_ptr<AnimationRig> rig);
+		GUID GetRig() { return m_AnimationRig; }
+		void SetRig(GUID animationRigGUID);
 
 	private:
 		GameObject m_GameObject;
-		std::shared_ptr<AnimationRig> m_Rig;
+		GUID m_AnimationRig;
 		CLASS_DECLARATION(Animator);
 	};
 }

@@ -76,7 +76,7 @@ namespace Odyssey
 			m_Bones.clear();
 			m_Bindposes.clear();
 			m_Bones.resize(boneCount);
-			m_Bindposes.reserve(boneCount);
+			m_Bindposes.resize(boneCount);
 
 			SerializationNode bonesNode = root.GetNode("Bones");
 
@@ -85,13 +85,13 @@ namespace Odyssey
 
 			for (size_t i = 0; i < bonesNode.ChildCount(); ++i)
 			{
-				SerializationNode bonesNode = bonesNode.GetChild(i);
-				assert(bonesNode.IsMap());
+				SerializationNode boneNode = bonesNode.GetChild(i);
+				assert(boneNode.IsMap());
 
 				Bone bone;
-				bonesNode.ReadData("Name", bone.Name);
-				bonesNode.ReadData("Index", bone.Index);
-				bonesNode.ReadData("Bindpose", bone.InverseBindpose);
+				boneNode.ReadData("Name", bone.Name);
+				boneNode.ReadData("Index", bone.Index);
+				boneNode.ReadData("Bindpose", bone.InverseBindpose);
 
 				m_Bones[bone.Index] = bone;
 				m_Bindposes[bone.Index] = bone.InverseBindpose;

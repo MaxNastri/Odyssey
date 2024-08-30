@@ -36,7 +36,7 @@ namespace Odyssey
 		// Camera uniform buffer
 		uint32_t cameraDataSize = sizeof(cameraData);
 
-		for (uint32_t i = 1; i < MAX_CAMERAS; i++)
+		for (uint32_t i = 0; i < MAX_CAMERAS; i++)
 		{
 			// Allocate the UBO
 			ResourceID uboID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 0, cameraDataSize);
@@ -183,14 +183,17 @@ namespace Odyssey
 
 				if (auto animator = gameObject.TryGetComponent<Animator>())
 				{
-					if (AnimationRig* rig = animator->GetRig())
+					if (GUID rigGUID = animator->GetRig())
 					{
-						size_t skinningSize = sizeof(SkinningData);
-						SkinningData.SetBindposes(rig->GetBindposes());
+						if (auto animationRig = AssetManager::LoadAnimationRig(rigGUID))
+						{
+							size_t skinningSize = sizeof(SkinningData);
+							SkinningData.SetBindposes(animationRig->GetBindposes());
 
-						ResourceID skinningID = skinningBuffers[drawcall.UniformBufferIndex];
-						auto skinningBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(skinningID);
-						skinningBuffer->SetMemory(skinningSize, &SkinningData);
+							ResourceID skinningID = skinningBuffers[drawcall.UniformBufferIndex];
+							auto skinningBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(skinningID);
+							skinningBuffer->SetMemory(skinningSize, &SkinningData);
+						}
 					}
 				}
 			}

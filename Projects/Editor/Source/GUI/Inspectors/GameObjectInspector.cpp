@@ -9,6 +9,8 @@
 #include "imgui.h"
 #include "PropertiesComponent.h"
 #include "ScriptingManager.h"
+#include "Animator.h"
+#include "AnimatorInspector.h"
 
 namespace Odyssey
 {
@@ -48,6 +50,7 @@ namespace Odyssey
 
 			std::vector<std::string> possibleComponents
 			{
+				"Animator",
 				"Camera",
 				"Mesh Renderer",
 				"Transform",
@@ -67,18 +70,23 @@ namespace Odyssey
 				if (ImGui::Selectable(possibleComponents[i].c_str()))
 				{
 					selected = i;
-
+					
 					if (selected == 0)
+					{
+						if (!m_Target.HasComponent<Animator>())
+							m_Target.AddComponent<Animator>();
+					}
+					else if (selected == 1)
 					{
 						if (!m_Target.HasComponent<Camera>())
 							m_Target.AddComponent<Camera>();
 					}
-					else if (selected == 1)
+					else if (selected == 2)
 					{
 						if (!m_Target.HasComponent<MeshRenderer>())
 							m_Target.AddComponent<MeshRenderer>();
 					}
-					else if (selected == 2)
+					else if (selected == 3)
 					{
 						if (!m_Target.HasComponent<Transform>())
 							m_Target.AddComponent<Transform>();
@@ -89,7 +97,7 @@ namespace Odyssey
 							m_Target.AddComponent<ScriptComponent>();
 
 						ScriptComponent& script = m_Target.GetComponent<ScriptComponent>();
-						size_t scriptIndex = i - 3;
+						size_t scriptIndex = i - 4;
 						script.SetScriptID(scriptMetadatas[scriptIndex].ScriptID);
 					}
 
@@ -108,6 +116,9 @@ namespace Odyssey
 
 		m_NameDrawer = StringDrawer("Name", m_Target.GetName(),
 			[this](const std::string& name) { OnNameChanged(name); });
+
+		if (m_Target.HasComponent<Animator>())
+			m_Inspectors.push_back(std::make_unique<AnimatorInspector>(m_Target));
 
 		if (m_Target.HasComponent<Transform>())
 			m_Inspectors.push_back(std::make_unique<TransformInspector>(m_Target));
