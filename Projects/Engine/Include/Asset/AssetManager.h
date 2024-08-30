@@ -8,6 +8,7 @@
 namespace Odyssey
 {
 	class Asset;
+	class AnimationRig;
 	class Material;
 	class Mesh;
 	class Shader;
@@ -34,7 +35,7 @@ namespace Odyssey
 		static std::shared_ptr<Mesh> CreateMesh(const Path& assetPath, std::shared_ptr<SourceModel> source);
 		static std::shared_ptr<Shader> CreateShader(const Path& assetPath);
 		static std::shared_ptr<Shader> CreateShader(const Path& assetPath, std::shared_ptr<SourceShader> source);
-
+		static std::shared_ptr<AnimationRig> CreateAnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
 	public:
 		static std::shared_ptr<SourceShader> LoadSourceShader(GUID guid);
 		static std::shared_ptr<SourceModel> LoadSourceModel(GUID guid);

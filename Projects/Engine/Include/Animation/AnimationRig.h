@@ -1,24 +1,23 @@
 #pragma once
 #include "Asset.h"
+#include "Bone.h"
 
 namespace Odyssey
 {
-	struct Bone
-	{
-	public:
-		std::string Name;
-		glm::mat4x4 InverseBindpose;
-		uint32_t Index;
-	};
+	class SourceModel;
 
 	class AnimationRig : public Asset
 	{
 	public:
 		AnimationRig(const Path& assetPath);
+		AnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> source);
 
 	public:
 		void Save();
 		void Load();
+
+	public:
+		std::vector<glm::mat4> GetBindposes() { return m_Bindposes; }
 
 	private:
 		void SaveToDisk(const Path& assetPath);
@@ -26,6 +25,6 @@ namespace Odyssey
 
 	private:
 		std::vector<Bone> m_Bones;
-		std::vector<glm::mat4x4> m_Bindposes;
+		std::vector<glm::mat4> m_Bindposes;
 	};
 }

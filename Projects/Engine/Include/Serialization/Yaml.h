@@ -48,7 +48,7 @@ namespace glm
 		return ret != ryml::yml::npos;
 	}
 
-	inline size_t to_chars(ryml::substr buff, glm::mat4x4 mat)
+	inline size_t to_chars(ryml::substr buff, glm::mat4 mat)
 	{
 		return ryml::format(buff, "00: {} 01: {} 02: {} 03: {} 10: {} 11: {} 12: {} 13: {} 20: {} 21: {} 22: {} 23: {} 30: {} 31: {} 32: {} 33: {}",
 			mat[0][0], mat[0][1], mat[0][2], mat[0][3],
@@ -57,7 +57,7 @@ namespace glm
 			mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
 	}
 
-	inline bool from_chars(ryml::csubstr buff, glm::mat4x4* mat)
+	inline bool from_chars(ryml::csubstr buff, glm::mat4* mat)
 	{
 		glm::mat4x4 matBuffer;
 

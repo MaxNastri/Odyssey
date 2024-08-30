@@ -3,7 +3,7 @@
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
 #include "Vertex.h"
-#include "AnimationRig.h"
+#include "Bone.h"
 
 namespace Odyssey
 {
@@ -177,9 +177,14 @@ namespace Odyssey
 			}
 		}
 
-		MeshImportData GetMeshData(uint32_t index)
+		MeshImportData& GetMeshData(uint32_t index)
 		{
 			return m_MeshDatas[index];
+		}
+
+		RigImportData& GetRigData()
+		{
+			return m_RigData;
 		}
 
 		size_t GetMeshCount()

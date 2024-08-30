@@ -1,6 +1,7 @@
 #pragma once
 #include "AssetSerializer.h"
 #include "GameObject.h"
+#include "AnimationRig.h"
 
 namespace Odyssey
 {
@@ -17,6 +18,7 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
+		AnimationRig* GetRig() { return m_Rig.get(); }
 		void SetRig(std::shared_ptr<AnimationRig> rig);
 
 	private:

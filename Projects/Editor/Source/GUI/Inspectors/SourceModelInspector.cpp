@@ -32,5 +32,9 @@ namespace Odyssey
 		{
 			AssetManager::CreateMesh(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);
 		}
+		else if (ImGui::Button("Create Rig Asset"))
+		{
+			AssetManager::CreateAnimationRig(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);
+		}
 	}
 }

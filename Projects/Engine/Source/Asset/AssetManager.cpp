@@ -6,6 +6,7 @@
 #include "Texture2D.h"
 #include "SourceShader.h"
 #include "SourceModel.h"
+#include "AnimationRig.h"
 
 namespace Odyssey
 {
@@ -156,6 +157,23 @@ namespace Odyssey
 		shader->Save();
 
 		return shader;
+	}
+
+	std::shared_ptr<AnimationRig> AssetManager::CreateAnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel)
+	{
+		// Create a new shader asset
+		GUID guid = GUID::New();
+		std::shared_ptr<AnimationRig> animationRig = s_Assets.Add<AnimationRig>(guid, assetPath, sourceModel);
+
+		// Set asset data
+		animationRig->Guid = guid;
+		animationRig->SetName("Default");
+		animationRig->SetType("AnimationRig");
+
+		// Save to disk
+		animationRig->Save();
+
+		return animationRig;
 	}
 
 	std::shared_ptr<SourceShader> AssetManager::LoadSourceShader(GUID guid)

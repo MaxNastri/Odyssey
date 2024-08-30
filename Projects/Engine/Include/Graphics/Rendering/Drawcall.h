@@ -19,5 +19,6 @@ namespace Odyssey
 		ResourceID IndexBufferID;
 		uint32_t IndexCount;
 		uint32_t UniformBufferIndex;
+		uint32_t SkinningBufferIndex;
 	};
 }

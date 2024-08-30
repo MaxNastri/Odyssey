@@ -90,11 +90,8 @@ namespace Odyssey
 		if (deserializer.IsValid())
 		{
 			SerializationNode root = deserializer.GetRoot();
-
-			std::string modulePath;
-
-
 			SerializationNode shadersNode = root.GetNode("m_Shaders");
+
 			assert(shadersNode.IsSequence());
 			assert(shadersNode.HasChildren());
 

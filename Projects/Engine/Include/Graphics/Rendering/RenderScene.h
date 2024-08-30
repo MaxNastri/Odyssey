@@ -26,6 +26,28 @@ namespace Odyssey
 		glm::mat4 world;
 	};
 
+	struct SkinningData
+	{
+		std::array<glm::mat4, 128> Bones;
+
+		SkinningData()
+		{
+			for (size_t i = 0; i < Bones.size(); i++)
+			{
+				Bones[i] = glm::identity<mat4>();
+			}
+		}
+
+		void SetBindposes(std::vector<glm::mat4> bindposes)
+		{
+			assert(bindposes.size() <= Bones.size());
+			for (size_t i = 0; i < bindposes.size(); i++)
+			{
+				Bones[i] = bindposes[i];
+			}
+		}
+	};
+
 	struct SetPass
 	{
 	public:
@@ -62,12 +84,13 @@ namespace Odyssey
 		// Data structs
 		CameraUniformData cameraData;
 		ObjectUniformData objectData;
+		SkinningData SkinningData;
 		Camera* m_MainCamera = nullptr;
 
 		// Descriptor buffer for per-scene data
 		std::vector<ResourceID> cameraDataBuffers;
 		std::vector<ResourceID> perObjectUniformBuffers;
-		ResourceID skinningBufferID;
+		std::vector<ResourceID> skinningBuffers;
 
 		ResourceID m_DescriptorLayout;
 

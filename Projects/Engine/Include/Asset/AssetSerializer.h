@@ -111,8 +111,12 @@ namespace Odyssey
 	public:
 		SerializationNode& GetRoot() { return m_RootNode; }
 
-		void WriteToDisk(const std::filesystem::path& path)
+		void WriteToDisk(const Path& path)
 		{
+			auto parentPath = path.parent_path();
+			if (!std::filesystem::exists(parentPath))
+				std::filesystem::create_directories(parentPath);
+
 			std::ofstream file(path, std::ios::trunc);
 			if (file.is_open())
 			{

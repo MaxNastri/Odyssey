@@ -17,6 +17,7 @@
 #include "VulkanDescriptorLayout.h"
 #include "VulkanGraphicsPipeline.h"
 #include "AssetManager.h"
+#include "Animator.h"
 
 namespace Odyssey
 {
@@ -65,21 +66,20 @@ namespace Odyssey
 		}
 
 		// Skinning buffers
-		size_t skinningBufferSize = sizeof(glm::mat4) * 128;
-		std::vector<glm::mat4> baseBones;
-		baseBones.resize(128);
-		for (int i = 0; i < 128; i++)
+		uint32_t skinningSize = sizeof(SkinningData);
+
+		for (uint32_t i = 0; i < Max_Uniform_Buffers; i++)
 		{
-			baseBones[i] = glm::identity<glm::mat4>();
+			// Allocate the UBO
+			ResourceID uboID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 2, skinningSize);
+
+			// Write the per-object data into the ubo
+			auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
+			uniformBuffer->AllocateMemory();
+			uniformBuffer->SetMemory(skinningSize, &SkinningData);
+
+			skinningBuffers.push_back(uboID);
 		}
-
-		// Allocate the skinning buffer
-		skinningBufferID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 2, skinningBufferSize);
-
-		// Write an identity matrix
-		auto skinningUBO = ResourceManager::GetResource<VulkanUniformBuffer>(skinningBufferID);
-		skinningUBO->AllocateMemory();
-		skinningUBO->SetMemory(skinningBufferSize, baseBones.data());
 	}
 
 	void RenderScene::Destroy()
@@ -180,6 +180,19 @@ namespace Odyssey
 				ResourceID uboID = perObjectUniformBuffers[drawcall.UniformBufferIndex];
 				auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
 				uniformBuffer->SetMemory(perObjectSize, &objectData);
+
+				if (auto animator = gameObject.TryGetComponent<Animator>())
+				{
+					if (AnimationRig* rig = animator->GetRig())
+					{
+						size_t skinningSize = sizeof(SkinningData);
+						SkinningData.SetBindposes(rig->GetBindposes());
+
+						ResourceID skinningID = skinningBuffers[drawcall.UniformBufferIndex];
+						auto skinningBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(skinningID);
+						skinningBuffer->SetMemory(skinningSize, &SkinningData);
+					}
+				}
 			}
 		}
 	}
