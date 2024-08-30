@@ -56,7 +56,7 @@ namespace Odyssey
 		LoadFromDisk(m_AssetPath);
 	}
 
-	void Mesh::SaveToDisk(const std::filesystem::path& path)
+	void Mesh::SaveToDisk(const Path& path)
 	{
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
@@ -72,7 +72,7 @@ namespace Odyssey
 		serializer.WriteToDisk(path);
 	}
 
-	void Mesh::LoadFromDisk(const std::filesystem::path& assetPath)
+	void Mesh::LoadFromDisk(const Path& assetPath)
 	{
 		AssetDeserializer deserializer(assetPath);
 		if (deserializer.IsValid())

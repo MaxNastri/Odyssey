@@ -16,6 +16,7 @@
 #include "VulkanShaderModule.h"
 #include "VulkanDescriptorLayout.h"
 #include "VulkanGraphicsPipeline.h"
+#include "AssetManager.h"
 
 namespace Odyssey
 {
@@ -159,10 +160,11 @@ namespace Odyssey
 			setPasses.push_back(SetPass());
 			SetPass& setPass = setPasses[setPasses.size() - 1];
 
-			setPass.SetMaterial(meshRenderer.GetMaterial(), m_DescriptorLayout);
+			auto material = AssetManager::LoadMaterialByGUID(meshRenderer.GetMaterial());
+			setPass.SetMaterial(material, m_DescriptorLayout);
 
 			// Create the drawcall data
-			if (auto mesh = meshRenderer.GetMesh())
+			if (auto mesh = AssetManager::LoadMeshByGUID(meshRenderer.GetMesh()))
 			{
 				Drawcall drawcall;
 				drawcall.VertexBufferID = mesh->GetVertexBuffer();

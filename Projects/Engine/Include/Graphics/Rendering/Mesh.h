@@ -21,8 +21,8 @@ namespace Odyssey
 		void Load();
 
 	private:
-		void SaveToDisk(const std::filesystem::path& assetPath);
-		void LoadFromDisk(const std::filesystem::path& assetPath);
+		void SaveToDisk(const Path& assetPath);
+		void LoadFromDisk(const Path& assetPath);
 
 	public:
 		ResourceID GetVertexBuffer() { return m_VertexBuffer; }

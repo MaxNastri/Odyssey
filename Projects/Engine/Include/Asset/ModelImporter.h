@@ -3,6 +3,7 @@
 #include <assimp/scene.h>
 #include <assimp/mesh.h>
 #include "Vertex.h"
+#include "AnimationRig.h"
 
 namespace Odyssey
 {
@@ -17,12 +18,58 @@ namespace Odyssey
 		std::vector<uint32_t> UVChannels;
 
 	public:
+		void Clear()
+		{
+			Vertices.clear();
+			Indices.clear();
+			m_VertexBoneTracking.clear();
+		}
+
+		void SetBoneInfluence(uint32_t vertexID, uint32_t boneIndex, float boneWeight)
+		{
+			// Insert 0 as a default
+			if (!m_VertexBoneTracking.contains(vertexID))
+				m_VertexBoneTracking[vertexID] = 0;
+
+			// Use the current influence count as the index into the vec4 for indices/weights
+			uint32_t element = m_VertexBoneTracking[vertexID];
+			if (element < 4)
+			{
+				Vertices[vertexID].BoneIndices[element] = (float)boneIndex;
+				Vertices[vertexID].BoneWeights[element] = boneWeight;
+			}
+
+			// Increment the influence count so we move to the next vec4 element
+			m_VertexBoneTracking[vertexID]++;
+		}
+
+	public:
 		std::vector<Vertex> Vertices;
 		std::vector<uint32_t> Indices;
+
+	private:
+		// <VertexID, InfluenceCount>
+		std::map<uint32_t, uint32_t> m_VertexBoneTracking;
+	};
+
+	struct RigImportData
+	{
+	public:
+		std::map<std::string, Bone> m_BoneMap;
 	};
 
 	class ModelImporter
 	{
+	private:
+		glm::mat4x4 AssimpToGLM(aiMatrix4x4 mat)
+		{
+			return glm::mat4x4(
+				(float)mat.a1, (float)mat.b1, (float)mat.c1, (float)mat.d1,
+				(float)mat.a2, (float)mat.b2, (float)mat.c2, (float)mat.d2,
+				(float)mat.a3, (float)mat.b3, (float)mat.c3, (float)mat.d3,
+				(float)mat.a4, (float)mat.b4, (float)mat.c4, (float)mat.d4
+			);
+		}
 	public:
 		void Import(const Path& modelPath)
 		{
@@ -89,6 +136,42 @@ namespace Odyssey
 						}
 					}
 
+					// Animation
+					if (mesh->HasBones())
+					{
+						uint32_t boneCount = 0;
+
+						for (uint32_t i = 0; i < mesh->mNumBones; i++)
+						{
+							auto sourceBone = mesh->mBones[i];
+							uint32_t boneIndex = 0;
+							std::string boneName = sourceBone->mName.C_Str();
+
+							if (m_RigData.m_BoneMap.contains(boneName))
+							{
+								boneIndex = m_RigData.m_BoneMap[boneName].Index;
+							}
+							else
+							{
+								boneIndex = boneCount;
+								++boneCount;
+							}
+
+							auto& boneData = m_RigData.m_BoneMap[boneName];
+							boneData.Name = boneName;
+							boneData.Index = boneIndex;
+							boneData.InverseBindpose = AssimpToGLM(sourceBone->mOffsetMatrix);
+
+							for (uint32_t j = 0; j < sourceBone->mNumWeights; j++)
+							{
+								uint32_t vertexID = sourceBone->mWeights[j].mVertexId;
+								float weight = sourceBone->mWeights[j].mWeight;
+								if (weight > 0.0f)
+									importData.SetBoneInfluence(vertexID, boneData.Index, weight);
+							}
+						}
+					}
+
 					m_MeshDatas.push_back(importData);
 				}
 			}
@@ -106,5 +189,6 @@ namespace Odyssey
 
 	private:
 		std::vector<MeshImportData> m_MeshDatas;
+		RigImportData m_RigData;
 	};
 }

@@ -180,7 +180,7 @@ namespace Odyssey::InternalCalls
 		GameObject gameObject = GetGameObject(entityGUID);
 
 		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
-			renderer->GetMesh()->GetGUID();
+			renderer->GetMesh();
 
 		return GUID();
 	}
@@ -190,7 +190,7 @@ namespace Odyssey::InternalCalls
 		GameObject gameObject = GetGameObject(entityGUID);
 
 		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
-			renderer->GetMesh()->SetGUID(GUID(meshGUID));
+			renderer->SetMesh(GUID(meshGUID));
 	}
 
 	float Time_GetDeltaTime()

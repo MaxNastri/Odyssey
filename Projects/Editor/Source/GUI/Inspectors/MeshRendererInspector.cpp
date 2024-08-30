@@ -14,13 +14,8 @@ namespace Odyssey
 
 		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 		{
-			GUID meshGUID;
-			GUID materialGUID;
-
-			if (auto mesh = meshRenderer->GetMesh())
-				meshGUID = mesh->GetGUID();
-			if (auto material = meshRenderer->GetMaterial())
-				materialGUID = material->GetGUID();
+			GUID meshGUID = meshRenderer->GetMesh();
+			GUID materialGUID = meshRenderer->GetMaterial();
 
 			m_MeshDrawer = AssetFieldDrawer("Mesh", meshGUID, "Mesh",
 				[this](GUID guid) { OnMeshModified(guid); });
@@ -42,7 +37,7 @@ namespace Odyssey
 	{
 		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 		{
-			meshRenderer->SetMesh(AssetManager::LoadMeshByGUID(guid));
+			meshRenderer->SetMesh(guid);
 		}
 	}
 
@@ -50,7 +45,7 @@ namespace Odyssey
 	{
 		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 		{
-			meshRenderer->SetMaterial(AssetManager::LoadMaterialByGUID(guid));
+			meshRenderer->SetMaterial(guid);
 		}
 	}
 }
