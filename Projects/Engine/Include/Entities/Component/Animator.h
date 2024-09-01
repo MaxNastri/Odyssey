@@ -27,8 +27,8 @@ namespace Odyssey
 		const std::vector<glm::mat4>& GetFinalPoses();
 
 	private:
-		void ProcessKeys(double time, const std::vector<Bone>& bones, const glm::mat4& rigTransform);
-		void ProcessTransforms(double time, const std::vector<Bone>& bones, const glm::mat4& rigTransform);
+		void ProcessKeys(double time, const std::vector<Bone>& bones);
+		void ProcessTransforms(double time, const std::vector<Bone>& bones);
 
 	private:
 		GameObject m_GameObject;

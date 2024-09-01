@@ -18,14 +18,12 @@ namespace Odyssey
 
 	public:
 		const std::vector<Bone>& GetBones() { return m_Bones; }
-		const glm::mat4& GetTransform() { return m_Transform; }
 
 	private:
 		void SaveToDisk(const Path& assetPath);
 		void LoadFromDisk(const Path& assetPath);
 
 	private:
-		glm::mat4 m_Transform;
 		std::vector<Bone> m_Bones;
 	};
 }

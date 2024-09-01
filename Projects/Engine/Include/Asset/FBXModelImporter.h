@@ -1,5 +1,6 @@
 #pragma once
 #include "Vertex.h"
+#include "BoneKeyframe.hpp"
 
 namespace fbxsdk
 {
@@ -44,10 +45,19 @@ namespace Odyssey
 			glm::vec4 Weights;
 		};
 
-		struct RigData
+		struct RigImportData
 		{
 			std::vector<FBXBone> FBXBones;
 			std::vector<BoneInfluence> ControlPointInfluences;
+		};
+
+		struct AnimationImportData
+		{
+		public:
+			std::string Name;
+			double Duration;
+			uint32_t FramesPerSecond;
+			std::map<std::string, BoneKeyframe> BoneKeyframes;
 		};
 
 	public:
@@ -57,12 +67,16 @@ namespace Odyssey
 		void Import(const Path& filePath);
 
 	public:
-		const MeshImportData& GetMeshData() { return m_MeshImportData; }
+		const MeshImportData& GetMeshData() { return m_MeshData; }
+		const RigImportData& GetRigData() { return m_RigData; }
+		const AnimationImportData& GetAnimationData() { return m_AnimationData; }
 
 	private:
 		bool ValidateFile(const Path& filePath);
 		void LoadMeshNodeData(FbxNode* node);
 		void LoadMeshData(FbxNode* meshNode);
+		void LoadAnimationData();
+
 		void ProcessBoneHierarchy(FbxNode* sceneRoot);
 		void ProcessBoneHierarchy(FbxNode* node, int32_t boneIndex, int32_t parentIndex);
 
@@ -79,7 +93,8 @@ namespace Odyssey
 		bool m_LoggingEnabled = false;
 
 	private:
-		MeshImportData m_MeshImportData;
-		RigData m_RigData;
+		MeshImportData m_MeshData;
+		RigImportData m_RigData;
+		AnimationImportData m_AnimationData;
 	};
 }

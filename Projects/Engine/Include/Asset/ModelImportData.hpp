@@ -68,7 +68,6 @@ namespace Odyssey
 		typedef Key<glm::mat4> RotationKey;
 		typedef Key<glm::mat4> ScaleKey;
 
-
 		std::vector<PositionKey> PositionKeys;
 		std::vector<RotationKey> RotationKeys;
 		std::vector<ScaleKey> ScaleKeys;

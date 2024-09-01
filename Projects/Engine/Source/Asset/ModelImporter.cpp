@@ -107,9 +107,9 @@ namespace Odyssey
 			bone.ParentIndex = parentIndex;
 			bone.Index = (int32_t)(m_ImportData.m_BoneMap.size());
 			bone.InverseBindpose = Utils::AssimpToGLM(m_BoneMap[boneName]->mOffsetMatrix);
-			bone.Transform = Utils::AssimpToGLM(node->mTransformation);
+			//bone.Transform = Utils::AssimpToGLM(node->mTransformation);
 
-			parentGlobalTransform = parentGlobalTransform * bone.Transform;
+			//parentGlobalTransform = parentGlobalTransform * bone.Transform;
 
 			// Iterate through the bone's weights and indices
 			for (uint32_t j = 0; j < m_BoneMap[boneName]->mNumWeights; j++)

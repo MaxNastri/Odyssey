@@ -9,6 +9,6 @@ namespace Odyssey
 		uint32_t Index;
 		int32_t ParentIndex;
 		glm::mat4 InverseBindpose;
-		glm::mat4 Transform;
+		glm::mat4 Bindpose;
 	};
 }

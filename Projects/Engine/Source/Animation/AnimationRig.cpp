@@ -1,6 +1,7 @@
 #include "AnimationRig.h"
 #include "SourceModel.h"
 #include "ModelImporter.h"
+#include "FBXModelImporter.h"
 
 namespace Odyssey
 {
@@ -13,18 +14,22 @@ namespace Odyssey
 	AnimationRig::AnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> source)
 		: Asset(assetPath)
 	{
-		RigImportData& rigData = source->GetImporter().GetRigData();
-		m_Transform = rigData.GlobalTransform;
+		const FBXModelImporter::RigImportData& rigData = source->GetFBXImporter().GetRigData();
 
-		auto& boneMap = rigData.m_BoneMap;
+		auto& boneMap = rigData.FBXBones;
 
 		// Clear our existing data and resize to match the new bone count
 		m_Bones.clear();
 		m_Bones.resize(boneMap.size());
 
-		for (auto& [boneName, bone] : boneMap)
+		for (auto& bone : boneMap)
 		{
-			m_Bones[bone.Index] = bone;
+			auto& newBone = m_Bones[bone.Index];
+			newBone.Name = bone.Name;
+			newBone.Index = bone.Index;
+			newBone.ParentIndex = bone.ParentIndex;
+			newBone.InverseBindpose = bone.inverseBindpose;
+			newBone.Bindpose = bone.bindpose;
 		}
 	}
 
@@ -47,7 +52,6 @@ namespace Odyssey
 		SerializeMetadata(serializer);
 
 		root.WriteData("Bone Count", m_Bones.size());
-		root.WriteData("Global Transform", m_Transform);
 
 		SerializationNode bonesNode = root.CreateSequenceNode("Bones");
 		
@@ -58,8 +62,8 @@ namespace Odyssey
 			boneNode.WriteData("Name", bone.Name);
 			boneNode.WriteData("Index", bone.Index);
 			boneNode.WriteData("Parent Index", bone.ParentIndex);
-			boneNode.WriteData("Bindpose", bone.InverseBindpose);
-			boneNode.WriteData("Transform", bone.Transform);
+			boneNode.WriteData("Inverse Bindpose", bone.InverseBindpose);
+			boneNode.WriteData("Bindpose", bone.Bindpose);
 		}
 
 		serializer.WriteToDisk(assetPath);
@@ -75,7 +79,6 @@ namespace Odyssey
 			// Read in the bone count
 			uint32_t boneCount = 0;
 			root.ReadData("Bone Count", boneCount);
-			root.ReadData("Global Transform", m_Transform);
 
 			// Clear and resize to match the bone count
 			m_Bones.clear();
@@ -95,8 +98,8 @@ namespace Odyssey
 				boneNode.ReadData("Name", bone.Name);
 				boneNode.ReadData("Index", bone.Index);
 				boneNode.ReadData("Parent Index", bone.ParentIndex);
-				boneNode.ReadData("Bindpose", bone.InverseBindpose);
-				boneNode.ReadData("Transform", bone.Transform);
+				boneNode.ReadData("Inverse Bindpose", bone.InverseBindpose);
+				boneNode.ReadData("Bindpose", bone.Bindpose);
 
 				m_Bones[bone.Index] = bone;
 			}

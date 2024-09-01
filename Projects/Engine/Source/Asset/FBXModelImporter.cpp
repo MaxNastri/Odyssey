@@ -110,7 +110,7 @@ namespace Odyssey
 			return;
 
 		// Process a bone hierarchy if it exists
-		ProcessBoneHierarchy(m_CurrentScene->GetRootNode());
+		ProcessBoneHierarchy(m_CurrentScene->GetRootNode(), 0, -1);
 
 		// Triangulate the scene
 		// TODO: Put this behind a config flag
@@ -129,7 +129,10 @@ namespace Odyssey
 				LoadMeshNodeData(node->GetChild(i));
 			}
 		}
+
+		LoadAnimationData();
 	}
+
 	bool FBXModelImporter::ValidateFile(const Path& filePath)
 	{
 		int i, animationStackCount;
@@ -325,14 +328,64 @@ namespace Odyssey
 		glm::mat4 world = Utils::ToGLM(meshNode->EvaluateGlobalTransform());
 		std::string name = meshNode->GetName();
 
-		m_MeshImportData.HashIDs.push_back(hashID);
-		m_MeshImportData.Names.push_back(name);
-		m_MeshImportData.WorldMatrices.push_back(world);
-		m_MeshImportData.VertexLists.push_back(vertexList);
-		m_MeshImportData.IndexLists.push_back(indexList);
+		m_MeshData.HashIDs.push_back(hashID);
+		m_MeshData.Names.push_back(name);
+		m_MeshData.WorldMatrices.push_back(world);
+		m_MeshData.VertexLists.push_back(vertexList);
+		m_MeshData.IndexLists.push_back(indexList);
 
 		// Load material info for this mesh
 		//loadNodeMaterial(node);
+	}
+
+	void FBXModelImporter::LoadAnimationData()
+	{
+		// Load animation clip info;
+		FbxAnimStack* animStack = m_CurrentScene->GetCurrentAnimationStack();
+		std::string name = animStack->GetName();
+		FbxTimeSpan timeSpan = animStack->GetLocalTimeSpan();
+		FbxTime duration = timeSpan.GetDuration();
+
+		for (int i = 0; i < animStack->GetMemberCount<FbxAnimLayer>(); i++)
+		{
+			FbxAnimLayer* layer = animStack->GetMember<FbxAnimLayer>(i);
+			FbxString n = layer->GetName();
+		}
+
+		// Get the frame count at 30 frames per second
+		uint64_t frameCount = duration.GetFrameCount(FbxTime::EMode::eFrames30);
+
+		// Get the total duration and frames per second of the clip
+		m_AnimationData.Duration = duration.GetMilliSeconds();
+		m_AnimationData.FramesPerSecond = 30;
+
+		// Iterate over each frame of the animation
+		for (uint64_t frameIndex = 1; frameIndex < frameCount; frameIndex++)
+		{
+			// Set the frame time to the current iteration
+			duration.SetFrame(frameIndex, FbxTime::EMode::eFrames30);
+
+			double time = duration.GetMilliSeconds();
+
+			// Iterate over each joint and get the global transform of the joint in this frame
+			for (size_t i = 0; i < m_RigData.FBXBones.size(); i++)
+			{
+				// Store the joint's transform in the keyframe
+				glm::mat4 boneTransform = Utils::ToGLM(m_RigData.FBXBones[i].Node->EvaluateGlobalTransform(duration));
+				glm::vec3 translation;
+				glm::vec3 scale;
+				glm::quat rotation;
+				glm::vec3 skew;
+				glm::vec4 perspective;
+				glm::decompose(boneTransform, scale, rotation, translation, skew, perspective);
+
+				auto& boneKeyframe = m_AnimationData.BoneKeyframes[m_RigData.FBXBones[i].Name];
+				boneKeyframe.SetBoneName(m_RigData.FBXBones[i].Name);
+				boneKeyframe.AddPositionKey(time, translation);
+				boneKeyframe.AddRotationKey(time, rotation);
+				boneKeyframe.AddScaleKey(time, scale);
+			}
+		}
 	}
 
 	void FBXModelImporter::ProcessBoneHierarchy(FbxNode* sceneRoot)
