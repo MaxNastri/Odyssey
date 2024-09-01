@@ -85,7 +85,7 @@ float4 SkinVertex(VertexInput input)
     
     for (int i = 0; i < 4; i++)
     {
-        position += mul(vertexPosition, Bones[input.BoneIndices[i]]) * input.BoneWeights[i];
+        position += mul(Bones[input.BoneIndices[i]], vertexPosition) * input.BoneWeights[i];
     }
     
     return position;

@@ -34,9 +34,9 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Animator
-        AnimationRig: 16747146434903957744
+        AnimationRig: 4003715406692714386
       - Type: Odyssey.MeshRenderer
-        m_Mesh: 1299585357143763607
+        m_Mesh: 9136055515107144966
         m_Material: 942766181068811557
       - m_FileID: 2443852871
         Type: Odyssey.Transform

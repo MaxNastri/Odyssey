@@ -183,18 +183,12 @@ namespace Odyssey
 
 				if (auto animator = gameObject.TryGetComponent<Animator>())
 				{
-					if (GUID rigGUID = animator->GetRig())
-					{
-						if (auto animationRig = AssetManager::LoadAnimationRig(rigGUID))
-						{
-							size_t skinningSize = sizeof(SkinningData);
-							SkinningData.SetBindposes(animationRig->GetBindposes());
+					size_t skinningSize = sizeof(SkinningData);
+					SkinningData.SetBindposes(animator->GetFinalPoses());
 
-							ResourceID skinningID = skinningBuffers[drawcall.UniformBufferIndex];
-							auto skinningBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(skinningID);
-							skinningBuffer->SetMemory(skinningSize, &SkinningData);
-						}
-					}
+					ResourceID skinningID = skinningBuffers[drawcall.UniformBufferIndex];
+					auto skinningBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(skinningID);
+					skinningBuffer->SetMemory(skinningSize, &SkinningData);
 				}
 			}
 		}

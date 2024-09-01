@@ -13,18 +13,18 @@ namespace Odyssey
 	AnimationRig::AnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> source)
 		: Asset(assetPath)
 	{
-		auto& boneMap = source->GetImporter().GetRigData().m_BoneMap;
-		
+		RigImportData& rigData = source->GetImporter().GetRigData();
+		m_Transform = rigData.GlobalTransform;
+
+		auto& boneMap = rigData.m_BoneMap;
+
 		// Clear our existing data and resize to match the new bone count
 		m_Bones.clear();
-		m_Bindposes.clear();
 		m_Bones.resize(boneMap.size());
-		m_Bindposes.resize(m_Bones.size());
 
 		for (auto& [boneName, bone] : boneMap)
 		{
 			m_Bones[bone.Index] = bone;
-			m_Bindposes[bone.Index] = bone.InverseBindpose;
 		}
 	}
 
@@ -46,7 +46,9 @@ namespace Odyssey
 		// Serialize the asset metadata first
 		SerializeMetadata(serializer);
 
-		root.WriteData("BoneCount", m_Bones.size());
+		root.WriteData("Bone Count", m_Bones.size());
+		root.WriteData("Global Transform", m_Transform);
+
 		SerializationNode bonesNode = root.CreateSequenceNode("Bones");
 		
 		for (auto& bone : m_Bones)
@@ -55,7 +57,9 @@ namespace Odyssey
 			boneNode.SetMap();
 			boneNode.WriteData("Name", bone.Name);
 			boneNode.WriteData("Index", bone.Index);
+			boneNode.WriteData("Parent Index", bone.ParentIndex);
 			boneNode.WriteData("Bindpose", bone.InverseBindpose);
+			boneNode.WriteData("Transform", bone.Transform);
 		}
 
 		serializer.WriteToDisk(assetPath);
@@ -70,13 +74,12 @@ namespace Odyssey
 
 			// Read in the bone count
 			uint32_t boneCount = 0;
-			root.ReadData("BoneCount", boneCount);
+			root.ReadData("Bone Count", boneCount);
+			root.ReadData("Global Transform", m_Transform);
 
 			// Clear and resize to match the bone count
 			m_Bones.clear();
-			m_Bindposes.clear();
 			m_Bones.resize(boneCount);
-			m_Bindposes.resize(boneCount);
 
 			SerializationNode bonesNode = root.GetNode("Bones");
 
@@ -91,10 +94,11 @@ namespace Odyssey
 				Bone bone;
 				boneNode.ReadData("Name", bone.Name);
 				boneNode.ReadData("Index", bone.Index);
+				boneNode.ReadData("Parent Index", bone.ParentIndex);
 				boneNode.ReadData("Bindpose", bone.InverseBindpose);
+				boneNode.ReadData("Transform", bone.Transform);
 
 				m_Bones[bone.Index] = bone;
-				m_Bindposes[bone.Index] = bone.InverseBindpose;
 			}
 		}
 	}

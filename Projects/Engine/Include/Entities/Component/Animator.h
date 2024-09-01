@@ -20,10 +20,12 @@ namespace Odyssey
 	public:
 		GUID GetRig() { return m_AnimationRig; }
 		void SetRig(GUID animationRigGUID);
+		const std::vector<glm::mat4>& GetFinalPoses();
 
 	private:
 		GameObject m_GameObject;
 		GUID m_AnimationRig;
+		std::vector<glm::mat4> m_FinalPoses;
 		CLASS_DECLARATION(Animator);
 	};
 }
