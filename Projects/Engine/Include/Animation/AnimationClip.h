@@ -19,6 +19,8 @@ namespace Odyssey
 	public:
 		std::map<std::string, BoneKeyframe>& GetBoneKeyframes() { return m_BoneKeyframes; }
 		double GetDuration() { return m_Duration; }
+		double GetFrameTime(size_t frameIndex);
+		size_t GetFrameCount();
 
 	private:
 		void SaveToDisk(const Path& assetPath);

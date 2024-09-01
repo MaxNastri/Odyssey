@@ -1,5 +1,5 @@
 m_SourceAsset: 0
-m_GUID: 16476834200709082394
+m_GUID: 9418789030815046255
 m_Name: Monk New Clip
 m_Type: AnimationClip
 Name: ''
@@ -8,6 +8,8 @@ Bone Keyframe Count: 75
 Bone Keyframes:
   - Bone Name: 'mixamorig:Bow1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -82.17722 y: 119.72374 z: -15.260283'
       - Time: 33
         Value: 'x: -82.843506 y: 120.03238 z: -17.539513'
       - Time: 66
@@ -213,6 +215,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -81.289444 y: 119.32988 z: -13.114214'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.84713006 y: 0.27379838 z: 0.016973084 w: -0.45510113'
       - Time: 33
         Value: 'x: 0.8576094 y: 0.26722044 z: 0.0019417645 w: -0.4394264'
       - Time: 66
@@ -418,6 +422,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.83564466 y: 0.2815204 z: 0.03152434 w: -0.47058526'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -624,6 +630,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 1'
   - Bone Name: 'mixamorig:Bow2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -74.316216 y: 112.576126 z: -27.753107'
       - Time: 33
         Value: 'x: -75.2988 y: 112.308136 z: -29.883251'
       - Time: 66
@@ -829,6 +837,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -73.08671 y: 112.793045 z: -25.721333'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.9167098 y: 0.20662853 z: 0.028372157 w: -0.34079736'
       - Time: 33
         Value: 'x: 0.9246538 y: 0.20152049 z: 0.013797038 w: -0.32282266'
       - Time: 66
@@ -1034,6 +1044,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.9078283 y: 0.21300218 z: 0.042629823 w: -0.35869297'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -1240,6 +1252,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 0.99999994'
   - Bone Name: 'mixamorig:Bow3'
     Position Keys:
+      - Time: 0
+        Value: 'x: -67.997154 y: 101.74761 z: -37.483032'
       - Time: 33
         Value: 'x: -69.24308 y: 101.034836 z: -39.2694'
       - Time: 66
@@ -1445,6 +1459,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -66.463806 y: 102.44674 z: -35.76871'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.9502179 y: 0.12559263 z: 0.004011055 w: -0.28512514'
       - Time: 33
         Value: 'x: 0.9564896 y: 0.12055666 z: -0.009262545 w: -0.2655333'
       - Time: 66
@@ -1650,6 +1666,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.9431183 y: 0.1319878 z: 0.017058285 w: -0.3046573'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -1856,6 +1874,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:Bow4'
     Position Keys:
+      - Time: 0
+        Value: 'x: -63.976154 y: 88.300316 z: -46.508205'
       - Time: 33
         Value: 'x: -65.4768 y: 87.18613 z: -47.78293'
       - Time: 66
@@ -2061,6 +2081,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -62.135994 y: 89.43888 z: -45.28278'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.9678648 y: 0.07916324 z: -0.013970127 w: -0.23827659'
       - Time: 33
         Value: 'x: 0.9728024 y: 0.07425639 z: -0.02650667 w: -0.21780461'
       - Time: 66
@@ -2266,6 +2288,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.962166 y: 0.08547853 z: -0.0015836924 w: -0.2587034'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -2472,6 +2496,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:Bow5'
     Position Keys:
+      - Time: 0
+        Value: 'x: -88.180214 y: 122.0287 z: -7.8024406'
       - Time: 33
         Value: 'x: -88.66363 y: 122.68906 z: -10.053768'
       - Time: 66
@@ -2677,6 +2703,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -87.48196 y: 121.264175 z: -5.706152'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.8573518 y: -0.28101474 z: -0.11878839 w: -0.41456965'
       - Time: 33
         Value: 'x: 0.86432177 y: -0.28996155 z: -0.12173716 w: -0.39249244'
       - Time: 66
@@ -2882,6 +2910,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.85021 y: -0.270545 z: -0.11625332 w: -0.4363869'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -3088,6 +3118,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 0.99999994'
   - Bone Name: 'mixamorig:Bow6'
     Position Keys:
+      - Time: 0
+        Value: 'x: -97.4567 y: 114.06331 z: -18.097971'
       - Time: 33
         Value: 'x: -98.20311 y: 114.31736 z: -19.770344'
       - Time: 66
@@ -3293,6 +3325,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -96.45721 y: 113.70768 z: -16.56171'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.9120859 y: -0.20418164 z: -0.12527366 w: -0.3327397'
       - Time: 33
         Value: 'x: 0.9173024 y: -0.2124473 z: -0.1307031 w: -0.31038547'
       - Time: 66
@@ -3498,6 +3532,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.9065638 y: -0.19437587 z: -0.120113134 w: -0.3548703'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -3704,6 +3740,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 0.99999994 z: 1'
   - Bone Name: 'mixamorig:Bow7'
     Position Keys:
+      - Time: 0
+        Value: 'x: -104.703094 y: 103.01179 z: -26.933887'
       - Time: 33
         Value: 'x: -105.68898 y: 102.918236 z: -27.93989'
       - Time: 66
@@ -3909,6 +3947,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -103.41503 y: 103.015724 z: -26.048038'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.9457173 y: -0.116545476 z: -0.10363343 w: -0.28512475'
       - Time: 33
         Value: 'x: 0.95028824 y: -0.12387113 z: -0.11148159 w: -0.2630211'
       - Time: 66
@@ -4114,6 +4154,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.9406945 y: -0.10769802 z: -0.09597944 w: -0.30705532'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 0.99999994 z: 1'
       - Time: 33
         Value: 'x: 1 y: 0.99999994 z: 1'
       - Time: 66
@@ -4320,6 +4362,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 1'
   - Bone Name: 'mixamorig:Bow8'
     Position Keys:
+      - Time: 0
+        Value: 'x: -109.34264 y: 89.5639 z: -35.483837'
       - Time: 33
         Value: 'x: -110.56978 y: 89.126625 z: -35.778378'
       - Time: 66
@@ -4525,6 +4569,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -107.75631 y: 89.933075 z: -35.293053'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.9641098 y: -0.09287875 z: -0.102161646 w: -0.22677957'
       - Time: 33
         Value: 'x: 0.9674496 y: -0.099536106 z: -0.11085469 w: -0.20456067'
       - Time: 66
@@ -4730,6 +4776,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.96028 y: -0.08469866 z: -0.09357172 w: -0.24886285'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 0.99999994 z: 0.99999994'
       - Time: 66
@@ -4936,6 +4984,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:Head'
     Position Keys:
+      - Time: 0
+        Value: 'x: -83.73316 y: 153.6113 z: 23.42686'
       - Time: 33
         Value: 'x: -84.35673 y: 155.78824 z: 19.164364'
       - Time: 66
@@ -5141,6 +5191,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -82.93388 y: 151.13753 z: 27.566435'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.03002808 y: 0.06840909 z: -0.0253028 w: 0.9968843'
       - Time: 33
         Value: 'x: 0.047581915 y: 0.06974932 z: -0.012215158 w: 0.9963543'
       - Time: 66
@@ -5346,6 +5398,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.015279506 y: 0.06910521 z: -0.036777347 w: 0.99681413'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 66
@@ -5552,6 +5606,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:HeadTop_End'
     Position Keys:
+      - Time: 0
+        Value: 'x: -81.46885 y: 178.61948 z: 31.26776'
       - Time: 33
         Value: 'x: -82.67443 y: 180.53708 z: 27.921103'
       - Time: 66
@@ -5757,6 +5813,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -80.125824 y: 176.32336 z: 34.623615'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.03002808 y: 0.06840909 z: -0.0253028 w: 0.9968843'
       - Time: 33
         Value: 'x: 0.047581915 y: 0.06974932 z: -0.012215158 w: 0.9963543'
       - Time: 66
@@ -5962,6 +6020,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.015279506 y: 0.06910521 z: -0.036777347 w: 0.99681413'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 66
@@ -6168,6 +6228,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:Hips'
     Position Keys:
+      - Time: 0
+        Value: 'x: -83.82206 y: 100.235405 z: -8.31365'
       - Time: 33
         Value: 'x: -84.61199 y: 100.97085 z: -9.941856'
       - Time: 66
@@ -6373,6 +6435,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -82.76665 y: 99.42959 z: -6.808983'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.17169422 y: 0.17572598 z: -0.0060967184 w: 0.96933186'
       - Time: 33
         Value: 'x: 0.16389734 y: 0.20012894 z: -0.019549264 w: 0.96576595'
       - Time: 66
@@ -6578,6 +6642,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.17848551 y: 0.15091829 z: 0.0070517287 w: 0.97227407'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -6784,6 +6850,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 0.99999994 z: 1'
   - Bone Name: 'mixamorig:LeftArm'
     Position Keys:
+      - Time: 0
+        Value: 'x: -65.745766 y: 145.8756 z: 16.236017'
       - Time: 33
         Value: 'x: -66.19633 y: 147.55548 z: 12.509463'
       - Time: 66
@@ -6989,6 +7057,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -65.12906 y: 144.00574 z: 19.813286'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6574053 y: 0.37544554 z: -0.39238408 w: 0.5223923'
       - Time: 33
         Value: 'x: 0.66972405 y: 0.35106382 z: -0.39347962 w: 0.52287453'
       - Time: 66
@@ -7194,6 +7264,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.6469006 y: 0.40264222 z: -0.38882554 w: 0.51789343'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -7400,6 +7472,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 0.99999994 z: 1'
   - Bone Name: 'mixamorig:LeftFoot'
     Position Keys:
+      - Time: 0
+        Value: 'x: -87.5337 y: 27.150888 z: -64.360725'
       - Time: 33
         Value: 'x: -94.381386 y: 27.461977 z: -67.100395'
       - Time: 66
@@ -7605,6 +7679,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -79.447464 y: 26.696136 z: -61.903484'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.24487674 y: -0.06052706 z: 0.9649768 w: 0.07205322'
       - Time: 33
         Value: 'x: 0.26268578 y: -0.052965317 z: 0.96010697 w: 0.07990932'
       - Time: 66
@@ -7810,6 +7886,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.22802071 y: -0.05898562 z: 0.97049516 w: 0.05163655'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -8016,6 +8094,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftForeArm'
     Position Keys:
+      - Time: 0
+        Value: 'x: -39.32419 y: 140.83765 z: 27.704395'
       - Time: 33
         Value: 'x: -40.414646 y: 141.51111 z: 24.910059'
       - Time: 66
@@ -8221,6 +8301,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -38.120255 y: 139.93163 z: 30.25026'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.74644554 y: -0.12633336 z: 0.027650516 w: 0.6527591'
       - Time: 33
         Value: 'x: 0.7293997 y: -0.19937965 z: 0.068274096 w: 0.65081686'
       - Time: 66
@@ -8426,6 +8508,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7601572 y: -0.05255586 z: -0.011807677 w: 0.6475025'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -8632,6 +8716,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHand'
     Position Keys:
+      - Time: 0
+        Value: 'x: -45.989906 y: 137.39973 z: 56.405575'
       - Time: 33
         Value: 'x: -51.679096 y: 139.33458 z: 52.26666'
       - Time: 66
@@ -8837,6 +8923,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -40.03692 y: 135.30518 z: 59.489464'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.5476512 y: -0.18118726 z: 0.2635163 w: 0.7731808'
       - Time: 33
         Value: 'x: 0.5205409 y: -0.24725196 z: 0.29922965 w: 0.76050335'
       - Time: 66
@@ -9042,6 +9130,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.57184136 y: -0.112436585 z: 0.22476257 w: 0.7809208'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 0.99999994 z: 0.99999994'
       - Time: 66
@@ -9248,6 +9338,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandIndex1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -56.30401 y: 139.96748 z: 64.819405'
       - Time: 33
         Value: 'x: -63.14825 y: 142.17046 z: 58.913685'
       - Time: 66
@@ -9453,6 +9545,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -48.881294 y: 137.61778 z: 69.49923'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.33054772 y: -0.27647012 z: 0.29809296 w: 0.85172945'
       - Time: 33
         Value: 'x: 0.30976146 y: -0.34450838 z: 0.32128915 w: 0.8259147'
       - Time: 66
@@ -9658,6 +9752,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.34975156 y: -0.20441955 z: 0.27436936 w: 0.8721284'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -9864,6 +9960,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandIndex2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -57.821476 y: 141.2942 z: 65.69453'
       - Time: 33
         Value: 'x: -64.78346 y: 143.49252 z: 59.551598'
       - Time: 66
@@ -10069,6 +10167,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -50.247135 y: 138.94678 z: 70.5933'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6999205 y: -0.08963096 z: 0.34405378 w: 0.61943895'
       - Time: 33
         Value: 'x: 0.6751565 y: -0.13907444 z: 0.3975151 w: 0.6056432'
       - Time: 66
@@ -10274,6 +10374,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7196308 y: -0.037212573 z: 0.28893518 w: 0.6302882'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -10480,6 +10582,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandIndex3'
     Position Keys:
+      - Time: 0
+        Value: 'x: -58.65428 y: 140.96736 z: 66.91035'
       - Time: 33
         Value: 'x: -65.79377 y: 143.14879 z: 60.619183'
       - Time: 66
@@ -10685,6 +10789,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -50.877785 y: 138.6408 z: 71.93018'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.8460046 y: 0.03188046 z: 0.3346519 w: 0.4138454'
       - Time: 33
         Value: 'x: 0.8231415 y: 0.002064497 z: 0.39971504 w: 0.4033133'
       - Time: 66
@@ -10890,6 +10996,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.8617952 y: 0.063771315 z: 0.2681401 w: 0.42584404'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 0.99999994 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -11096,6 +11204,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandIndex4'
     Position Keys:
+      - Time: 0
+        Value: 'x: -59.018536 y: 139.89699 z: 68.08873'
       - Time: 33
         Value: 'x: -66.314766 y: 142.047 z: 61.706196'
       - Time: 66
@@ -11301,6 +11411,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -51.07123 y: 137.61328 z: 73.18469'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.8460046 y: 0.03188046 z: 0.3346519 w: 0.4138454'
       - Time: 33
         Value: 'x: 0.8231415 y: 0.002064497 z: 0.39971504 w: 0.4033133'
       - Time: 66
@@ -11506,6 +11618,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.8617952 y: 0.063771315 z: 0.2681401 w: 0.42584404'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 0.99999994 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -11712,6 +11826,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandMiddle1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -53.946507 y: 140.81693 z: 66.23254'
       - Time: 33
         Value: 'x: -61.029377 y: 142.98419 z: 60.681316'
       - Time: 66
@@ -11917,6 +12033,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -46.341106 y: 138.50832 z: 70.51447'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.43168846 y: -0.24762172 z: 0.30287245 w: 0.8127711'
       - Time: 33
         Value: 'x: 0.41300836 y: -0.3122145 z: 0.33335826 w: 0.7879203'
       - Time: 66
@@ -12122,6 +12240,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.44745582 y: -0.17925674 z: 0.2718772 w: 0.8329064'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -12328,6 +12448,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandMiddle2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -55.559555 y: 141.8308 z: 67.492905'
       - Time: 33
         Value: 'x: -62.818535 y: 143.98154 z: 61.692554'
       - Time: 66
@@ -12533,6 +12655,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -47.742153 y: 139.54025 z: 71.99454'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6690896 y: -0.12659407 z: 0.3339254 w: 0.65175676'
       - Time: 33
         Value: 'x: 0.6479398 y: -0.17806123 z: 0.3839447 w: 0.6332888'
       - Time: 66
@@ -12738,6 +12862,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.6851816 y: -0.071882784 z: 0.28276178 w: 0.6673866'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 0.99999994 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -12944,6 +13070,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 0.99999994 z: 1'
   - Bone Name: 'mixamorig:LeftHandMiddle3'
     Position Keys:
+      - Time: 0
+        Value: 'x: -57.00366 y: 141.5481 z: 69.3739'
       - Time: 33
         Value: 'x: -64.530975 y: 143.66037 z: 63.325928'
       - Time: 66
@@ -13149,6 +13277,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -48.878765 y: 139.30415 z: 74.08161'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.78845227 y: -0.041336775 z: 0.33668005 w: 0.5131091'
       - Time: 33
         Value: 'x: 0.76767015 y: -0.08000257 z: 0.39648438 w: 0.49707374'
       - Time: 66
@@ -13354,6 +13484,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.8023764 y: -0.00012945705 z: 0.27572173 w: 0.5293106'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 0.99999994 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -13560,6 +13692,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 0.99999994 z: 1'
   - Bone Name: 'mixamorig:LeftHandMiddle4'
     Position Keys:
+      - Time: 0
+        Value: 'x: -57.72273 y: 140.72514 z: 70.741844'
       - Time: 33
         Value: 'x: -65.43617 y: 142.79712 z: 64.55109'
       - Time: 66
@@ -13765,6 +13899,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -49.390182 y: 138.53436 z: 75.56871'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.78845227 y: -0.041336775 z: 0.33668005 w: 0.5131091'
       - Time: 33
         Value: 'x: 0.76767015 y: -0.08000257 z: 0.39648438 w: 0.49707374'
       - Time: 66
@@ -13970,6 +14106,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.8023764 y: -0.00012945705 z: 0.27572173 w: 0.5293106'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 0.99999994 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -14176,6 +14314,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 0.99999994 z: 1'
   - Bone Name: 'mixamorig:LeftHandPinky1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -48.614418 y: 141.04437 z: 67.54462'
       - Time: 33
         Value: 'x: -55.97144 y: 143.11662 z: 62.827038'
       - Time: 66
@@ -14381,6 +14521,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -40.871555 y: 138.83861 z: 70.93795'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6286953 y: -0.13881315 z: 0.26330957 w: 0.7184297'
       - Time: 33
         Value: 'x: 0.6183266 y: -0.19232866 z: 0.3087497 w: 0.6966746'
       - Time: 66
@@ -14586,6 +14728,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.6334146 y: -0.08212825 z: 0.2177643 w: 0.73798347'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -14792,6 +14936,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 0.99999994'
   - Bone Name: 'mixamorig:LeftHandPinky2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -49.478832 y: 141.15509 z: 68.84268'
       - Time: 33
         Value: 'x: -57.0159 y: 143.1865 z: 63.988354'
       - Time: 66
@@ -14997,6 +15143,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -41.536743 y: 138.99922 z: 72.34371'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.62645805 y: -0.15985455 z: 0.2891598 w: 0.70596284'
       - Time: 33
         Value: 'x: 0.61413574 y: -0.21275912 z: 0.33403513 w: 0.6826356'
       - Time: 66
@@ -15202,6 +15350,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.63326293 y: -0.10356819 z: 0.24409312 w: 0.72709715'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -15408,6 +15558,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandPinky3'
     Position Keys:
+      - Time: 0
+        Value: 'x: -50.256836 y: 141.2163 z: 69.855286'
       - Time: 33
         Value: 'x: -57.93302 y: 143.21529 z: 64.87856'
       - Time: 66
@@ -15613,6 +15765,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -42.158234 y: 139.09996 z: 73.456375'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6110785 y: -0.167483 z: 0.28752622 w: 0.71823484'
       - Time: 33
         Value: 'x: 0.59831554 y: -0.22173434 z: 0.33106822 w: 0.69515914'
       - Time: 66
@@ -15818,6 +15972,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.61800885 y: -0.110098384 z: 0.24371773 w: 0.73928684'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 0.99999994 z: 1'
       - Time: 33
         Value: 'x: 1 y: 0.99999994 z: 1'
       - Time: 66
@@ -16024,6 +16180,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandPinky4'
     Position Keys:
+      - Time: 0
+        Value: 'x: -51.32932 y: 141.36877 z: 71.21211'
       - Time: 33
         Value: 'x: -59.19286 y: 143.32784 z: 66.067924'
       - Time: 66
@@ -16229,6 +16387,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -43.020157 y: 139.30368 z: 74.9497'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6110785 y: -0.167483 z: 0.28752622 w: 0.71823484'
       - Time: 33
         Value: 'x: 0.59831554 y: -0.22173434 z: 0.33106822 w: 0.69515914'
       - Time: 66
@@ -16434,6 +16594,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.61800885 y: -0.110098384 z: 0.24371773 w: 0.73928684'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 0.99999994 z: 1'
       - Time: 33
         Value: 'x: 1 y: 0.99999994 z: 1'
       - Time: 66
@@ -16640,6 +16802,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandRing1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -51.222477 y: 141.10756 z: 67.15517'
       - Time: 33
         Value: 'x: -58.482056 y: 143.22821 z: 62.025803'
       - Time: 66
@@ -16845,6 +17009,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -43.508907 y: 138.85017 z: 70.981186'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.5411401 y: -0.20942956 z: 0.30652538 w: 0.7545521'
       - Time: 33
         Value: 'x: 0.5251328 y: -0.26816884 z: 0.34493268 w: 0.730303'
       - Time: 66
@@ -17050,6 +17216,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.55278563 y: -0.14714798 z: 0.26775348 w: 0.77529585'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 0.99999994 y: 0.99999994 z: 1'
       - Time: 66
@@ -17256,6 +17424,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 0.99999994'
   - Bone Name: 'mixamorig:LeftHandRing2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -52.715614 y: 141.59807 z: 68.64615'
       - Time: 33
         Value: 'x: -60.183636 y: 143.68425 z: 63.286644'
       - Time: 66
@@ -17461,6 +17631,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -44.760754 y: 139.38196 z: 72.66736'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6456905 y: -0.15483227 z: 0.32011643 w: 0.67574865'
       - Time: 33
         Value: 'x: 0.628828 y: -0.20691274 z: 0.36710134 w: 0.65345174'
       - Time: 66
@@ -17666,6 +17838,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.65728885 y: -0.09935041 z: 0.27255794 w: 0.6955667'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 0.99999994 z: 1'
       - Time: 33
         Value: 'x: 0.99999994 y: 0.99999994 z: 1'
       - Time: 66
@@ -17872,6 +18046,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 0.99999994'
   - Bone Name: 'mixamorig:LeftHandRing3'
     Position Keys:
+      - Time: 0
+        Value: 'x: -53.902435 y: 141.5253 z: 70.09739'
       - Time: 33
         Value: 'x: -61.57197 y: 143.57098 z: 64.54348'
       - Time: 66
@@ -18077,6 +18253,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -45.717155 y: 139.35826 z: 74.28126'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6973814 y: -0.12361193 z: 0.32480687 w: 0.62680125'
       - Time: 33
         Value: 'x: 0.6801829 y: -0.17144074 z: 0.3760145 w: 0.6054523'
       - Time: 66
@@ -18282,6 +18460,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7082461 y: -0.07280175 z: 0.27293634 w: 0.6469878'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -18488,6 +18668,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandRing4'
     Position Keys:
+      - Time: 0
+        Value: 'x: -55.20069 y: 141.11386 z: 71.875786'
       - Time: 33
         Value: 'x: -63.114273 y: 143.1049 z: 66.0996'
       - Time: 66
@@ -18693,6 +18875,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -46.73924 y: 139.0173 z: 76.245056'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6973814 y: -0.12361194 z: 0.32480687 w: 0.62680125'
       - Time: 33
         Value: 'x: 0.6801829 y: -0.17144074 z: 0.3760145 w: 0.6054523'
       - Time: 66
@@ -18898,6 +19082,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7082461 y: -0.07280175 z: 0.27293634 w: 0.6469878'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -19104,6 +19290,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandThumb1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -52.01989 y: 134.57715 z: 60.68535'
       - Time: 33
         Value: 'x: -58.37188 y: 136.66475 z: 55.541233'
       - Time: 66
@@ -19309,6 +19497,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -45.228313 y: 132.33762 z: 64.67476'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.5778246 y: -0.1933415 z: 0.47880393 w: 0.632048'
       - Time: 33
         Value: 'x: 0.5359351 y: -0.24870205 z: 0.5207275 w: 0.6162497'
       - Time: 66
@@ -19514,6 +19704,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.61700636 y: -0.1322088 z: 0.4310218 w: 0.64501494'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 66
@@ -19720,6 +19912,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandThumb2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -53.958572 y: 134.28174 z: 61.961006'
       - Time: 33
         Value: 'x: -60.49698 y: 136.39157 z: 56.48059'
       - Time: 66
@@ -19925,6 +20119,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -46.9108 y: 132.02658 z: 66.27023'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.59333205 y: -0.15977539 z: 0.45413813 w: 0.64512587'
       - Time: 33
         Value: 'x: 0.5548569 y: -0.21360925 z: 0.4936253 w: 0.634696'
       - Time: 66
@@ -20130,6 +20326,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.62876236 y: -0.10371636 z: 0.41227865 w: 0.6510968'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -20336,6 +20534,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftHandThumb3'
     Position Keys:
+      - Time: 0
+        Value: 'x: -55.1951 y: 134.09589 z: 62.950207'
       - Time: 33
         Value: 'x: -61.873966 y: 136.22725 z: 57.26733'
       - Time: 66
@@ -20541,6 +20741,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -47.974724 y: 131.81831 z: 67.439316'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.58141917 y: -0.1603092 z: 0.44047874 w: 0.6650047'
       - Time: 33
         Value: 'x: 0.544681 y: -0.21465707 z: 0.47830674 w: 0.6545744'
       - Time: 66
@@ -20746,6 +20948,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.6150055 y: -0.104446135 z: 0.40108252 w: 0.6708145'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -20952,6 +21156,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 0.99999994 z: 0.99999994'
   - Bone Name: 'mixamorig:LeftHandThumb4'
     Position Keys:
+      - Time: 0
+        Value: 'x: -57.284546 y: 133.92235 z: 64.660355'
       - Time: 33
         Value: 'x: -64.20086 y: 136.08951 z: 58.641052'
       - Time: 66
@@ -21157,6 +21363,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -49.778233 y: 131.60674 z: 69.44508'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.58141917 y: -0.1603092 z: 0.44047874 w: 0.6650047'
       - Time: 33
         Value: 'x: 0.544681 y: -0.21465707 z: 0.47830674 w: 0.6545744'
       - Time: 66
@@ -21362,6 +21570,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.6150055 y: -0.104446135 z: 0.40108252 w: 0.6708145'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -21568,6 +21778,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 0.99999994 z: 0.99999994'
   - Bone Name: 'mixamorig:LeftLeg'
     Position Keys:
+      - Time: 0
+        Value: 'x: -73.272514 y: 49.288116 z: -21.29108'
       - Time: 33
         Value: 'x: -76.631615 y: 50.113033 z: -25.623804'
       - Time: 66
@@ -21773,6 +21985,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -69.50084 y: 48.628616 z: -17.536118'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.1668254 y: -0.52592766 z: 0.83152145 w: 0.064354315'
       - Time: 33
         Value: 'x: 0.17931662 y: -0.51537013 z: 0.8319816 w: 0.100228705'
       - Time: 66
@@ -21978,6 +22192,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.15485586 y: -0.5314034 z: 0.83261657 w: 0.019487426'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -22184,6 +22400,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftShoulder'
     Position Keys:
+      - Time: 0
+        Value: 'x: -77.98233 y: 146.34003 z: 16.463907'
       - Time: 33
         Value: 'x: -78.42452 y: 148.22726 z: 12.654401'
       - Time: 66
@@ -22389,6 +22607,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -77.37064 y: 144.23955 z: 20.113344'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6483384 y: 0.6297237 z: -0.3140342 w: 0.29066807'
       - Time: 33
         Value: 'x: 0.64511824 y: 0.61435163 z: -0.33353782 w: 0.308459'
       - Time: 66
@@ -22594,6 +22814,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.65107214 y: 0.645603 z: -0.29266104 w: 0.27138788'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -22800,6 +23022,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftToeBase'
     Position Keys:
+      - Time: 0
+        Value: 'x: -90.52819 y: 9.71525 z: -65.8078'
       - Time: 33
         Value: 'x: -97.59894 y: 10.038254 z: -68.16046'
       - Time: 66
@@ -23005,6 +23229,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -81.70397 y: 9.164309 z: -63.5177'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.25158277 y: 0.37063062 z: 0.8930156 w: -0.04315245'
       - Time: 33
         Value: 'x: 0.2722711 y: 0.3474554 z: 0.8965968 w: -0.035460066'
       - Time: 66
@@ -23210,6 +23436,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.22612916 y: 0.39536223 z: 0.8882731 w: -0.059372935'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -23416,6 +23644,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftToe_End'
     Position Keys:
+      - Time: 0
+        Value: 'x: -88.6701 y: 4.6283817 z: -61.29407'
       - Time: 33
         Value: 'x: -95.816765 y: 4.70821 z: -63.904057'
       - Time: 66
@@ -23621,6 +23851,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -79.69977 y: 4.3680034 z: -58.755226'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.25158277 y: 0.37063062 z: 0.8930156 w: -0.04315245'
       - Time: 33
         Value: 'x: 0.2722711 y: 0.3474554 z: 0.8965968 w: -0.035460066'
       - Time: 66
@@ -23826,6 +24058,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.22612916 y: 0.39536223 z: 0.8882731 w: -0.059372935'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -24032,6 +24266,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:LeftUpLeg'
     Position Keys:
+      - Time: 0
+        Value: 'x: -73.32059 y: 95.54 z: -15.548853'
       - Time: 33
         Value: 'x: -74.58103 y: 95.984535 z: -17.635515'
       - Time: 66
@@ -24237,6 +24473,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -71.823074 y: 95.00614 z: -13.543013'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.25165522 y: -0.059595972 z: 0.9658468 w: -0.016061975'
       - Time: 33
         Value: 'x: 0.28549492 y: -0.08875897 z: 0.9542548 w: -0.0035018087'
       - Time: 66
@@ -24442,6 +24680,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.21443501 y: -0.03653528 z: 0.9754772 w: -0.033570684'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -24648,6 +24888,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:Leye'
     Position Keys:
+      - Time: 0
+        Value: 'x: -77.763016 y: 163.46346 z: 34.06543'
       - Time: 33
         Value: 'x: -78.60592 y: 165.38054 z: 30.155386'
       - Time: 66
@@ -24853,6 +25095,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -76.72683 y: 161.18703 z: 37.879864'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.03002808 y: 0.06840909 z: -0.0253028 w: 0.9968843'
       - Time: 33
         Value: 'x: 0.047581915 y: 0.06974932 z: -0.012215158 w: 0.9963543'
       - Time: 66
@@ -25058,6 +25302,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.015279506 y: 0.06910521 z: -0.036777347 w: 0.99681413'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 66
@@ -25264,6 +25510,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:Neck'
     Position Keys:
+      - Time: 0
+        Value: 'x: -83.63373 y: 148.03012 z: 18.108782'
       - Time: 33
         Value: 'x: -84.11142 y: 149.9448 z: 14.140878'
       - Time: 66
@@ -25469,6 +25717,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -82.98459 y: 145.86794 z: 21.938805'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.2532132 y: 0.021122698 z: 0.019041846 w: 0.96699244'
       - Time: 33
         Value: 'x: 0.22805807 y: 0.019315723 z: 0.027964763 w: 0.9730542'
       - Time: 66
@@ -25674,6 +25924,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.28092182 y: 0.024950463 z: 0.010917926 w: 0.9593442'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -25880,6 +26132,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 0.99999994'
   - Bone Name: 'mixamorig:Reye'
     Position Keys:
+      - Time: 0
+        Value: 'x: -85.01194 y: 163.7437 z: 35.06352'
       - Time: 33
         Value: 'x: -85.85793 y: 165.45149 z: 31.167713'
       - Time: 66
@@ -26085,6 +26339,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -83.96518 y: 161.64914 z: 38.88699'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.03002808 y: 0.06840909 z: -0.0253028 w: 0.9968843'
       - Time: 33
         Value: 'x: 0.047581915 y: 0.06974932 z: -0.012215158 w: 0.9963543'
       - Time: 66
@@ -26290,6 +26546,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.015279506 y: 0.06910521 z: -0.036777347 w: 0.99681413'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 66
@@ -26496,6 +26754,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightArm'
     Position Keys:
+      - Time: 0
+        Value: 'x: -100.76467 y: 142.8062 z: 14.604024'
       - Time: 33
         Value: 'x: -101.11557 y: 144.21951 z: 10.775437'
       - Time: 66
@@ -26701,6 +26961,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -100.23294 y: 141.11707 z: 18.368093'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.4394529 y: -0.6256496 z: 0.63826287 w: 0.089801155'
       - Time: 33
         Value: 'x: 0.4313709 y: -0.6049862 z: 0.6657193 w: 0.06876522'
       - Time: 66
@@ -26906,6 +27168,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -0.452352 y: 0.6440181 z: -0.6068177 w: -0.1113129'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 33
         Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 66
@@ -27112,6 +27376,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightFoot'
     Position Keys:
+      - Time: 0
+        Value: 'x: -99.863014 y: 13.000944 z: 22.38444'
       - Time: 33
         Value: 'x: -100.29848 y: 12.381306 z: 21.824747'
       - Time: 66
@@ -27317,6 +27583,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -99.35251 y: 13.5202875 z: 22.808357'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.010573742 y: 0.38924563 z: 0.9210611 w: -0.0047467756'
       - Time: 33
         Value: 'x: 0.043173626 y: 0.4106266 z: 0.91057235 w: -0.019489849'
       - Time: 66
@@ -27522,6 +27790,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -0.021788474 y: 0.37011898 z: 0.9286968 w: 0.0077099493'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -27728,6 +27998,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightForeArm'
     Position Keys:
+      - Time: 0
+        Value: 'x: -120.19558 y: 136.92896 z: -6.4412704'
       - Time: 33
         Value: 'x: -119.05472 y: 136.66008 z: -11.043102'
       - Time: 66
@@ -27933,6 +28205,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -121.219986 y: 136.85672 z: -1.5417053'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6835137 y: -0.34258604 z: 0.51943326 w: 0.38161883'
       - Time: 33
         Value: 'x: 0.6725641 y: -0.31582698 z: 0.5465234 w: 0.386294'
       - Time: 66
@@ -28138,6 +28412,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.6966455 y: -0.36615112 z: 0.48889762 w: 0.37629443'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -28344,6 +28620,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHand'
     Position Keys:
+      - Time: 0
+        Value: 'x: -145.84906 y: 122.86769 z: -1.5233566'
       - Time: 33
         Value: 'x: -144.18283 y: 121.76651 z: -5.869505'
       - Time: 66
@@ -28549,6 +28827,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -147.26855 y: 123.54691 z: 3.390584'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6166673 y: -0.36837468 z: 0.50640243 w: 0.4770516'
       - Time: 33
         Value: 'x: 0.6192793 y: -0.33652005 z: 0.51539373 w: 0.48745945'
       - Time: 66
@@ -28754,6 +29034,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.61379004 y: -0.39706522 z: 0.49529082 w: 0.46934858'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 0.99999994 z: 1'
       - Time: 66
@@ -28960,6 +29242,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandIndex1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -157.55836 y: 119.0345 z: 4.1303525'
       - Time: 33
         Value: 'x: -155.56294 y: 117.77161 z: 0.319138'
       - Time: 66
@@ -29165,6 +29449,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -159.24878 y: 119.95189 z: 8.617007'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.5953431 y: -0.3777586 z: 0.44581145 w: 0.55146825'
       - Time: 33
         Value: 'x: 0.6138159 y: -0.32740587 z: 0.46809143 w: 0.54490906'
       - Time: 66
@@ -29370,6 +29656,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.5703113 y: -0.42792875 z: 0.41515517 w: 0.5650382'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -29576,6 +29864,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandIndex2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -159.6273 y: 118.800766 z: 4.8331294'
       - Time: 33
         Value: 'x: -157.56721 y: 117.35021 z: 1.1155908'
       - Time: 66
@@ -29781,6 +30071,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -161.35237 y: 119.962395 z: 9.252484'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.7577503 y: -0.16973439 z: 0.5972195 w: 0.20083222'
       - Time: 33
         Value: 'x: 0.7793989 y: -0.09882201 z: 0.59851515 w: 0.15668815'
       - Time: 66
@@ -29986,6 +30278,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7319884 y: -0.24295124 z: 0.5845938 w: 0.25182897'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -30192,6 +30486,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandIndex3'
     Position Keys:
+      - Time: 0
+        Value: 'x: -160.3777 y: 117.500015 z: 4.986531'
       - Time: 33
         Value: 'x: -158.08287 y: 115.94432 z: 1.3057157'
       - Time: 66
@@ -30397,6 +30693,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -162.33371 y: 118.822556 z: 9.380213'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.7784629 y: -0.041506 z: 0.6262695 w: -0.007699208'
       - Time: 33
         Value: 'x: 0.7863328 y: 0.05693753 z: 0.6058917 w: -0.106462136'
       - Time: 66
@@ -30602,6 +30900,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7607322 y: -0.14395355 z: 0.62588686 w: 0.09396585'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -30808,6 +31108,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandIndex4'
     Position Keys:
+      - Time: 0
+        Value: 'x: -160.46748 y: 115.872734 z: 4.8820534'
       - Time: 33
         Value: 'x: -157.72595 y: 114.358826 z: 1.1449642'
       - Time: 66
@@ -31013,6 +31315,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -162.88348 y: 117.28598 z: 9.319409'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.7784629 y: -0.041506 z: 0.6262695 w: -0.007699208'
       - Time: 33
         Value: 'x: 0.7863328 y: 0.05693753 z: 0.6058917 w: -0.106462136'
       - Time: 66
@@ -31218,6 +31522,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7607322 y: -0.14395355 z: 0.62588686 w: 0.09396585'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -31424,6 +31730,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandMiddle1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -158.12305 y: 119.287834 z: 1.3208469'
       - Time: 33
         Value: 'x: -156.21751 y: 117.86284 z: -2.4807887'
       - Time: 66
@@ -31629,6 +31937,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -159.7378 y: 120.35009 z: 5.81011'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.63663423 y: -0.33691943 z: 0.4914971 w: 0.48950255'
       - Time: 33
         Value: 'x: 0.6558497 y: -0.28237018 z: 0.5120552 w: 0.4774178'
       - Time: 66
@@ -31834,6 +32144,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.61193085 y: -0.39159054 z: 0.4624322 w: 0.50828534'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 0.99999994 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -32040,6 +32352,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandMiddle2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -160.20215 y: 118.61684 z: 1.9880413'
       - Time: 33
         Value: 'x: -158.18044 y: 116.984116 z: -1.7108644'
       - Time: 66
@@ -32245,6 +32559,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -161.90639 y: 119.94667 z: 6.403806'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.74286526 y: -0.19383161 z: 0.5889193 w: 0.25249663'
       - Time: 33
         Value: 'x: 0.76465964 y: -0.12391118 z: 0.5952486 w: 0.21359015'
       - Time: 66
@@ -32450,6 +32766,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7168419 y: -0.26563665 z: 0.5715485 w: 0.29817313'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 0.99999994 z: 1'
       - Time: 66
@@ -32656,6 +32974,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 0.99999994'
   - Bone Name: 'mixamorig:RightHandMiddle3'
     Position Keys:
+      - Time: 0
+        Value: 'x: -161.60016 y: 116.7126 z: 2.3387237'
       - Time: 33
         Value: 'x: -159.24026 y: 114.88715 z: -1.2830623'
       - Time: 66
@@ -32861,6 +33181,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -163.6299 y: 118.32016 z: 6.699555'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.7671745 y: -0.10317283 z: 0.6239559 w: 0.10713418'
       - Time: 33
         Value: 'x: 0.7840574 y: -0.013122302 z: 0.6198621 w: 0.029202446'
       - Time: 66
@@ -33066,6 +33388,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7436403 y: -0.1956095 z: 0.61104226 w: 0.18805148'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -33272,6 +33596,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 0.99999994 z: 0.99999994'
   - Bone Name: 'mixamorig:RightHandMiddle4'
     Position Keys:
+      - Time: 0
+        Value: 'x: -162.1114 y: 115.03917 z: 2.4011092'
       - Time: 33
         Value: 'x: -159.33969 y: 113.13985 z: -1.2313675'
       - Time: 66
@@ -33477,6 +33803,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -164.54167 y: 116.82709 z: 6.770701'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.7671745 y: -0.10317283 z: 0.6239559 w: 0.10713418'
       - Time: 33
         Value: 'x: 0.7840574 y: -0.013122302 z: 0.6198621 w: 0.029202446'
       - Time: 66
@@ -33682,6 +34010,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7436403 y: -0.1956095 z: 0.61104226 w: 0.18805148'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -33888,6 +34218,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 0.99999994 z: 0.99999994'
   - Bone Name: 'mixamorig:RightHandPinky1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -157.08644 y: 119.480736 z: -4.07296'
       - Time: 33
         Value: 'x: -155.3443 y: 117.826744 z: -7.9067564'
       - Time: 66
@@ -34093,6 +34425,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -158.56982 y: 120.73517 z: 0.4535731'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.70394295 y: -0.24573253 z: 0.58120304 w: 0.32601053'
       - Time: 33
         Value: 'x: 0.723828 y: -0.18198876 z: 0.59618866 w: 0.29582468'
       - Time: 66
@@ -34298,6 +34632,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.68037826 y: -0.3103472 z: 0.55609053 w: 0.3626753'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 0.99999994 y: 1 z: 0.99999994'
       - Time: 66
@@ -34504,6 +34840,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandPinky2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -158.21985 y: 118.4384 z: -3.8019357'
       - Time: 33
         Value: 'x: -156.30771 y: 116.64046 z: -7.5764623'
       - Time: 66
@@ -34709,6 +35047,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -159.86075 y: 119.88415 z: 0.68551904'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.70394677 y: -0.24572612 z: 0.5812067 w: 0.3260006'
       - Time: 33
         Value: 'x: 0.7238293 y: -0.1819862 z: 0.5961898 w: 0.2958207'
       - Time: 66
@@ -34914,6 +35254,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.6803896 y: -0.31033078 z: 0.55610275 w: 0.3626494'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 0.99999994 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -35120,6 +35462,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 0.99999994 z: 1'
   - Bone Name: 'mixamorig:RightHandPinky3'
     Position Keys:
+      - Time: 0
+        Value: 'x: -159.14656 y: 117.58611 z: -3.5803392'
       - Time: 33
         Value: 'x: -157.09544 y: 115.67049 z: -7.3063993'
       - Time: 66
@@ -35325,6 +35669,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -160.91624 y: 119.18824 z: 0.8751494'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.69630873 y: -0.25805464 z: 0.57387346 w: 0.34529874'
       - Time: 33
         Value: 'x: 0.7173633 y: -0.1935828 z: 0.5910327 w: 0.31400007'
       - Time: 66
@@ -35530,6 +35876,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.67154455 y: -0.3227523 z: 0.5465159 w: 0.38233396'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -35736,6 +36084,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandPinky4'
     Position Keys:
+      - Time: 0
+        Value: 'x: -160.45859 y: 116.49517 z: -3.2596846'
       - Time: 33
         Value: 'x: -158.22208 y: 114.40678 z: -6.921524'
       - Time: 66
@@ -35941,6 +36291,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -162.39442 y: 118.32135 z: 1.1542089'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.69630873 y: -0.25805464 z: 0.57387346 w: 0.34529874'
       - Time: 33
         Value: 'x: 0.7173633 y: -0.1935828 z: 0.5910327 w: 0.31400007'
       - Time: 66
@@ -36146,6 +36498,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.67154455 y: -0.3227523 z: 0.5465159 w: 0.38233396'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -36352,6 +36706,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandRing1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -157.87454 y: 119.39375 z: -1.5572165'
       - Time: 33
         Value: 'x: -156.05594 y: 117.83484 z: -5.3668475'
       - Time: 66
@@ -36557,6 +36913,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -159.41876 y: 120.57097 z: 2.9455595'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6795119 y: -0.28195813 z: 0.5396148 w: 0.4093642'
       - Time: 33
         Value: 'x: 0.69909954 y: -0.22160934 z: 0.55749416 w: 0.38903648'
       - Time: 66
@@ -36762,6 +37120,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.6553345 y: -0.34295014 z: 0.51264536 w: 0.43602374'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -36968,6 +37328,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 0.99999994'
   - Bone Name: 'mixamorig:RightHandRing2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -159.66179 y: 118.297905 z: -1.011201'
       - Time: 33
         Value: 'x: -157.66693 y: 116.53699 z: -4.723733'
       - Time: 66
@@ -37173,6 +37535,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -161.36104 y: 119.73791 z: 3.4218626'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.7265013 y: -0.21287417 z: 0.5818534 w: 0.2971988'
       - Time: 33
         Value: 'x: 0.7471852 y: -0.1445741 z: 0.5927453 w: 0.26356345'
       - Time: 66
@@ -37378,6 +37742,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.70159173 y: -0.2827161 z: 0.5604159 w: 0.33730507'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -37584,6 +37950,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandRing3'
     Position Keys:
+      - Time: 0
+        Value: 'x: -160.89095 y: 116.923256 z: -0.665797'
       - Time: 33
         Value: 'x: -158.65845 y: 114.99997 z: -4.3063564'
       - Time: 66
@@ -37789,6 +38157,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -162.81456 y: 118.58862 z: 3.715329'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.7372348 y: -0.17933477 z: 0.6024203 w: 0.24781804'
       - Time: 33
         Value: 'x: 0.7584754 y: -0.100987986 z: 0.6130626 w: 0.19664869'
       - Time: 66
@@ -37994,6 +38364,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.71141785 y: -0.25877878 z: 0.5788836 w: 0.30300507'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -38200,6 +38572,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 0.99999994'
   - Bone Name: 'mixamorig:RightHandRing4'
     Position Keys:
+      - Time: 0
+        Value: 'x: -162.15207 y: 115.10247 z: -0.33129704'
       - Time: 33
         Value: 'x: -159.5417 y: 112.978905 z: -3.915516'
       - Time: 66
@@ -38405,6 +38779,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -164.42514 y: 117.05995 z: 4.009936'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.7372348 y: -0.17933477 z: 0.6024203 w: 0.24781804'
       - Time: 33
         Value: 'x: 0.7584754 y: -0.100987986 z: 0.6130626 w: 0.19664869'
       - Time: 66
@@ -38610,6 +38986,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.71141785 y: -0.25877878 z: 0.5788836 w: 0.30300507'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 0.99999994'
       - Time: 66
@@ -38816,6 +39194,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 0.99999994'
   - Bone Name: 'mixamorig:RightHandThumb1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -149.8577 y: 117.39174 z: 2.5491061'
       - Time: 33
         Value: 'x: -147.85121 y: 116.34983 z: -1.4149989'
       - Time: 66
@@ -39021,6 +39401,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -151.58507 y: 118.066895 z: 7.1291947'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.7881553 y: -0.05815302 z: 0.36620688 w: 0.4912453'
       - Time: 33
         Value: 'x: 0.78068644 y: -0.03978378 z: 0.36961874 w: 0.50232255'
       - Time: 66
@@ -39226,6 +39608,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.79492944 y: -0.0735149 z: 0.35943985 w: 0.48320362'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -39432,6 +39816,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandThumb2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -150.91402 y: 116.19706 z: 4.2612815'
       - Time: 33
         Value: 'x: -148.8654 y: 115.198235 z: 0.35131937'
       - Time: 66
@@ -39637,6 +40023,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -152.6713 y: 116.84501 z: 8.80303'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.7509168 y: -0.2506999 z: 0.48856926 w: 0.36684284'
       - Time: 33
         Value: 'x: 0.756601 y: -0.20769715 z: 0.48018846 w: 0.39221928'
       - Time: 66
@@ -39842,6 +40230,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.737482 y: -0.30273473 z: 0.49919856 w: 0.33951843'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -40048,6 +40438,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightHandThumb3'
     Position Keys:
+      - Time: 0
+        Value: 'x: -152.08583 y: 115.232216 z: 4.74911'
       - Time: 33
         Value: 'x: -149.96707 y: 114.23196 z: 0.97956645'
       - Time: 66
@@ -40253,6 +40645,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -153.92368 y: 115.91045 z: 9.119558'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.73724777 y: -0.27776363 z: 0.49243215 w: 0.36989683'
       - Time: 33
         Value: 'x: 0.7454647 y: -0.22708742 z: 0.4807386 w: 0.40200013'
       - Time: 66
@@ -40458,6 +40852,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7189625 y: -0.33934337 z: 0.5072073 w: 0.33268574'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 0.99999994 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -40664,6 +41060,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 0.99999994 z: 1'
   - Bone Name: 'mixamorig:RightHandThumb4'
     Position Keys:
+      - Time: 0
+        Value: 'x: -154.17963 y: 113.684456 z: 5.484646'
       - Time: 33
         Value: 'x: -151.9289 y: 112.679855 z: 2.0104578'
       - Time: 66
@@ -40869,6 +41267,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -156.157 y: 114.42686 z: 9.482501'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.73724777 y: -0.27776363 z: 0.49243215 w: 0.36989683'
       - Time: 33
         Value: 'x: 0.7454647 y: -0.22708742 z: 0.4807386 w: 0.40200013'
       - Time: 66
@@ -41074,6 +41474,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.7189625 y: -0.33934337 z: 0.5072073 w: 0.33268574'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 0.99999994 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -41280,6 +41682,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 0.99999994 z: 1'
   - Bone Name: 'mixamorig:RightLeg'
     Position Keys:
+      - Time: 0
+        Value: 'x: -97.230316 y: 63.16305 z: 27.41022'
       - Time: 33
         Value: 'x: -95.37647 y: 62.52087 z: 25.022331'
       - Time: 66
@@ -41485,6 +41889,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -99.26783 y: 63.600407 z: 29.164555'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.06714713 y: -0.051500622 z: 0.9961543 w: 0.022704862'
       - Time: 33
         Value: 'x: 0.07694128 y: -0.035393707 z: 0.99533355 w: 0.046242677'
       - Time: 66
@@ -41690,6 +42096,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.05503127 y: -0.06303118 z: 0.9964897 w: -0.002639288'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 0.99999994 z: 0.99999994'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -41896,6 +42304,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightShoulder'
     Position Keys:
+      - Time: 0
+        Value: 'x: -89.02824 y: 145.73532 z: 16.522417'
       - Time: 33
         Value: 'x: -89.46236 y: 147.48741 z: 12.653532'
       - Time: 66
@@ -42101,6 +42511,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -88.42052 y: 143.73335 z: 20.272173'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.6854424 y: -0.57897985 z: 0.38697258 w: 0.21261054'
       - Time: 33
         Value: 'x: 0.68146825 y: -0.5615927 z: 0.41110954 w: 0.22628222'
       - Time: 66
@@ -42306,6 +42718,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.6906985 y: -0.59504414 z: 0.36019957 w: 0.19777349'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 0.99999994 z: 1'
       - Time: 66
@@ -42512,6 +42926,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightToeBase'
     Position Keys:
+      - Time: 0
+        Value: 'x: -99.5617 y: 0.630425 z: 35.11008'
       - Time: 33
         Value: 'x: -99.03911 y: 0.6305962 z: 35.068512'
       - Time: 66
@@ -42717,6 +43133,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -99.89298 y: 0.635473 z: 35.00475'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.007789763 y: 0.72537726 z: 0.68825394 w: -0.008582851'
       - Time: 33
         Value: 'x: 0.0322936 y: 0.7305 z: 0.6812679 w: -0.03465519'
       - Time: 66
@@ -42922,6 +43340,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -0.01656687 y: 0.7246003 z: 0.68878174 w: 0.01611519'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 0.99999994 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -43128,6 +43548,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightToe_End'
     Position Keys:
+      - Time: 0
+        Value: 'x: -99.398735 y: 1.0004913 z: 42.148476'
       - Time: 33
         Value: 'x: -98.37359 y: 1.1217159 z: 42.069824'
       - Time: 66
@@ -43333,6 +43755,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -100.21875 y: 0.99227816 z: 42.038174'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.007789763 y: 0.72537726 z: 0.68825394 w: -0.008582851'
       - Time: 33
         Value: 'x: 0.0322936 y: 0.7305 z: 0.6812679 w: -0.03465519'
       - Time: 66
@@ -43538,6 +43962,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -0.01656687 y: 0.7246003 z: 0.68878174 w: 0.01611519'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 0.99999994 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -43744,6 +44170,8 @@ Bone Keyframes:
         Value: 'x: 1 y: 1 z: 1'
   - Bone Name: 'mixamorig:RightUpLeg'
     Position Keys:
+      - Time: 0
+        Value: 'x: -96.16912 y: 94.35809 z: -7.201007'
       - Time: 33
         Value: 'x: -96.966 y: 95.30631 z: -8.065159'
       - Time: 66
@@ -43949,6 +44377,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -95.06569 y: 93.359955 z: -6.457133'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.07771552 y: 0.4038937 z: 0.9102869 w: 0.046988927'
       - Time: 33
         Value: 'x: 0.12508366 y: 0.38357818 z: 0.9143729 w: 0.03382295'
       - Time: 66
@@ -44154,6 +44584,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.029280657 y: 0.42037326 z: 0.9046572 w: 0.06343798'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -44360,6 +44792,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 0.99999994'
   - Bone Name: 'mixamorig:Spine'
     Position Keys:
+      - Time: 0
+        Value: 'x: -83.052284 y: 110.57346 z: -4.741867'
       - Time: 33
         Value: 'x: -83.50269 y: 111.35807 z: -6.6100893'
       - Time: 66
@@ -44565,6 +44999,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -82.34511 y: 109.71583 z: -3.0352278'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.34512302 y: 0.051362876 z: 0.0017729269 w: 0.9371493'
       - Time: 33
         Value: 'x: 0.32446608 y: 0.061624985 z: -0.0051178224 w: 0.9438739'
       - Time: 66
@@ -44770,6 +45206,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.36562225 y: 0.04140005 z: 0.0101013435 w: 0.9297873'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -44976,6 +45414,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 1'
   - Bone Name: 'mixamorig:Spine1'
     Position Keys:
+      - Time: 0
+        Value: 'x: -82.68064 y: 120.4288 z: 3.1622417'
       - Time: 33
         Value: 'x: -82.915245 y: 121.55033 z: 0.84065765'
       - Time: 66
@@ -45181,6 +45621,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -82.22955 y: 119.21211 z: 5.304318'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.31029215 y: 0.030882275 z: 0.013551177 w: 0.95004284'
       - Time: 33
         Value: 'x: 0.2848334 y: 0.035205573 z: 0.013653178 w: 0.95783305'
       - Time: 66
@@ -45386,6 +45828,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.33654755 y: 0.027624546 z: 0.014634112 w: 0.9411474'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 1 y: 1 z: 1'
       - Time: 66
@@ -45592,6 +46036,8 @@ Bone Keyframes:
         Value: 'x: 0.99999994 y: 1 z: 1'
   - Bone Name: 'mixamorig:Spine2'
     Position Keys:
+      - Time: 0
+        Value: 'x: -82.777435 y: 132.29466 z: 11.842807'
       - Time: 33
         Value: 'x: -83.00492 y: 133.86162 z: 8.877088'
       - Time: 66
@@ -45797,6 +46243,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: -82.36116 y: 130.5777 z: 14.6299'
     Rotation Keys:
+      - Time: 0
+        Value: 'x: 0.33186638 y: 0.011570898 z: 0.02491669 w: 0.9429263'
       - Time: 33
         Value: 'x: 0.302092 y: 0.010073933 z: 0.031908862 w: 0.9526913'
       - Time: 66
@@ -46002,6 +46450,8 @@ Bone Keyframes:
       - Time: 3400
         Value: 'x: 0.3632808 y: 0.01500416 z: 0.01871563 w: 0.93137085'
     Scale Keys:
+      - Time: 0
+        Value: 'x: 1 y: 1 z: 1'
       - Time: 33
         Value: 'x: 0.99999994 y: 1 z: 1'
       - Time: 66

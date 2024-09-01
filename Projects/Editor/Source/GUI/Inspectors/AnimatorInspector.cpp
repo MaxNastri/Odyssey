@@ -16,7 +16,7 @@ namespace Odyssey
 			m_RigDrawer = AssetFieldDrawer("Rig", rigGUID, "AnimationRig",
 				[this](GUID guid) { OnRigModified(guid); });
 
-			m_ClipDrawer = AssetFieldDrawer("Clip", clipGUID, "AnimationRig",
+			m_ClipDrawer = AssetFieldDrawer("Clip", clipGUID, "AnimationClip",
 				[this](GUID guid) { OnClipModified(guid); });
 		}
 	}
@@ -27,6 +27,17 @@ namespace Odyssey
 		{
 			m_RigDrawer.Draw();
 			m_ClipDrawer.Draw();
+
+			if (ImGui::Button("Play"))
+			{
+				if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
+					animator->Play();
+			}
+			else if (ImGui::Button("Pause"))
+			{
+				if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
+					animator->Pause();
+			}
 		}
 	}
 

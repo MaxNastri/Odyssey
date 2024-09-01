@@ -35,7 +35,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Animator
         Animation Rig: 12068358419570349370
-        Animation Clip: 16476834200709082394
+        Animation Clip: 9418789030815046255
       - Type: Odyssey.MeshRenderer
         m_Mesh: 7294577961625990464
         m_Material: 942766181068811557

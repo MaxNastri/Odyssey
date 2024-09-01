@@ -29,10 +29,30 @@ namespace Odyssey
 		node.ReadData("Animation Clip", m_AnimationClip.Ref());
 	}
 
+	void Animator::Update()
+	{
+		if (m_Playing)
+			m_CurrentTime += ((double)Time::DeltaTime() * 1000.0);
+
+		auto animClip = AssetManager::LoadAnimationClip(m_AnimationClip);
+		std::map<std::string, BoneKeyframe>& boneKeyframes = animClip->GetBoneKeyframes();
+
+		double nextFrameTime = animClip->GetFrameTime(m_NextFrame);
+		double frameTime = m_NextFrame == 0 ? animClip->GetDuration() : nextFrameTime;
+
+		if ((m_CurrentTime) >= frameTime)
+		{
+			size_t maxFrames = animClip->GetFrameCount();
+			m_PrevFrame = m_NextFrame;
+			m_NextFrame = (m_NextFrame + 1) % maxFrames;
+
+			m_CurrentTime = animClip->GetFrameTime(m_PrevFrame);
+		}
+	}
+
 	const std::vector<glm::mat4>& Animator::GetFinalPoses()
 	{
-		static double time = 0.0;
-		time += (double)Time::DeltaTime();
+		Update();
 
 		auto animRig = AssetManager::LoadAnimationRig(m_AnimationRig);
 		const std::vector<Bone>& bones = animRig->GetBones();
@@ -41,20 +61,17 @@ namespace Odyssey
 		m_FinalPoses.resize(bones.size());
 
 		if (m_AnimationClip)
-			ProcessKeys(time * 1000.0, bones);
+			ProcessKeys(bones);
 		else
-			ProcessTransforms(time * 1000.0, bones);
+			ProcessTransforms(bones);
 
 		return m_FinalPoses;
 	}
 
-	void Animator::ProcessKeys(double time, const std::vector<Bone>& bones)
+	void Animator::ProcessKeys(const std::vector<Bone>& bones)
 	{
 		// Load the clip
 		auto animClip = AssetManager::LoadAnimationClip(m_AnimationClip);
-
-		if (time > animClip->GetDuration())
-			time = std::fmod(time, animClip->GetDuration());
 
 		// Get the bone keyframes
 		std::map<std::string, BoneKeyframe>& boneKeyframes = animClip->GetBoneKeyframes();
@@ -64,7 +81,12 @@ namespace Odyssey
 
 		for (auto& [boneName, boneKeyframe] : boneKeyframes)
 		{
-			boneKeys[boneName] = boneKeyframe.GetKey(time, false);
+			const double prevTime = boneKeyframe.GetFrameTime(m_PrevFrame);
+			const double nextTime = boneKeyframe.GetFrameTime(m_NextFrame);
+			double totalTime = nextTime == 0.0 ? animClip->GetDuration() : nextTime;
+			float blendFactor = (float)(m_CurrentTime - prevTime) / (totalTime - prevTime);
+			// TODO: Disable blending for now
+			boneKeys[boneName] = boneKeyframe.BlendKeys(m_PrevFrame, m_NextFrame, 0.0f);
 		}
 
 		for (size_t i = 0; i < bones.size(); i++)
@@ -77,7 +99,7 @@ namespace Odyssey
 		}
 	}
 
-	void Animator::ProcessTransforms(double time, const std::vector<Bone>& bones)
+	void Animator::ProcessTransforms(const std::vector<Bone>& bones)
 	{
 		for (size_t i = 0; i < bones.size(); i++)
 		{

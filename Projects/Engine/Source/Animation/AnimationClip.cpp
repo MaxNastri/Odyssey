@@ -35,6 +35,22 @@ namespace Odyssey
 		LoadFromDisk(m_AssetPath);
 	}
 
+	double AnimationClip::GetFrameTime(size_t frameIndex)
+	{
+		for (auto& [boneName, boneKeyframe] : m_BoneKeyframes)
+		{
+			return boneKeyframe.GetFrameTime(frameIndex);
+		}
+	}
+
+	size_t AnimationClip::GetFrameCount()
+	{
+		for (auto& [boneName, boneKeyframe] : m_BoneKeyframes)
+		{
+			return boneKeyframe.GetPositionKeys().size();
+		}
+	}
+
 	void AnimationClip::SaveToDisk(const Path& assetPath)
 	{
 		AssetSerializer serializer;

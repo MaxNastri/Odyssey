@@ -360,7 +360,7 @@ namespace Odyssey
 		m_AnimationData.FramesPerSecond = 30;
 
 		// Iterate over each frame of the animation
-		for (uint64_t frameIndex = 1; frameIndex < frameCount; frameIndex++)
+		for (uint64_t frameIndex = 0; frameIndex < frameCount; frameIndex++)
 		{
 			// Set the frame time to the current iteration
 			duration.SetFrame(frameIndex, FbxTime::EMode::eFrames30);

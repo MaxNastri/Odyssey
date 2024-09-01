@@ -22,6 +22,8 @@ namespace Odyssey
 		const std::vector<PositionKey>& GetPositionKeys() { return m_PositionKeys; }
 		const std::vector<RotationKey>& GetRotationKeys() { return m_RotationKeys; }
 		const std::vector<ScaleKey>& GetScaleKeys() { return m_ScaleKeys; }
+		const double GetFrameTime(size_t frameIndex) { return m_PositionKeys[frameIndex].Time; }
+
 		std::string_view GetName() { return m_Name; }
 
 	public:
@@ -44,29 +46,29 @@ namespace Odyssey
 					PositionKey prev, next;
 					FindKeys<PositionKey>(time, m_PositionKeys, prev, next, loop);
 
+					double totalTime = next.Time == 0.0 ? prev.Time : next.Time;
+
 					if (prev.Time == next.Time)
 						position = prev.Value;
 					else
 					{
-						double ratio = (next.Time - time) / (next.Time - prev.Time);
+						double ratio = (time - prev.Time) / (totalTime - prev.Time);
 						position = glm::mix(prev.Value, next.Value, ratio);
 					}
 				}
 
 				// Find the rotation keys and lerp them
 				{
-					if (m_RotationKeys.size() > 2)
-						int debug = 0;
-
 					RotationKey prev, next;
 					FindKeys<RotationKey>(time, m_RotationKeys, prev, next, loop);
 
+					double totalTime = next.Time == 0.0 ? prev.Time : next.Time;
 					// Same frame, don't blend
 					if (prev.Time == next.Time)
 						rotation = prev.Value;
 					else
 					{
-						double ratio = (next.Time - time) / (next.Time - prev.Time);
+						double ratio = (time - prev.Time) / (next.Time - prev.Time);
 						rotation = glm::lerp(prev.Value, next.Value, (float)ratio);
 					}
 				}
@@ -76,12 +78,13 @@ namespace Odyssey
 					ScaleKey prev, next;
 					FindKeys<ScaleKey>(time, m_ScaleKeys, prev, next, loop);
 
+					double totalTime = next.Time == 0.0 ? prev.Time : next.Time;
 					// Same frame, don't blend
 					if (prev.Time == next.Time)
 						scale = prev.Value;
 					else
 					{
-						double ratio = (next.Time - time) / (next.Time - prev.Time);
+						double ratio = (time - prev.Time) / (next.Time - prev.Time);
 						scale = glm::mix(prev.Value, next.Value, ratio);
 					}
 				}
@@ -96,6 +99,25 @@ namespace Odyssey
 			return t * r * s;
 		}
 
+		glm::mat4 BlendKeys(size_t prevKey, size_t nextKey, float blendFactor)
+		{
+			glm::vec3 position;
+			glm::quat rotation;
+			glm::vec3 scale;
+
+			position = glm::mix(m_PositionKeys[prevKey].Value, m_PositionKeys[nextKey].Value, blendFactor);
+			rotation = glm::lerp(m_RotationKeys[prevKey].Value, m_RotationKeys[nextKey].Value, blendFactor);
+			scale = glm::mix(m_ScaleKeys[prevKey].Value, m_ScaleKeys[nextKey].Value, blendFactor);
+
+			// Convert to matrices
+			glm::mat4 t = glm::translate(glm::identity<mat4>(), position);
+			glm::mat4 r = glm::mat4_cast(rotation);
+			glm::mat4 s = glm::scale(glm::identity<mat4>(), scale);
+
+			// Return TRS
+			return t * r * s;
+		}
+	private:
 		template<typename KeyType>
 		void FindKeys(double time, std::vector<KeyType>& keys, KeyType& outPrev, KeyType& outNext, bool loop)
 		{
@@ -134,5 +156,6 @@ namespace Odyssey
 		std::vector<PositionKey> m_PositionKeys;
 		std::vector<RotationKey> m_RotationKeys;
 		std::vector<ScaleKey> m_ScaleKeys;
+
 	};
 }
