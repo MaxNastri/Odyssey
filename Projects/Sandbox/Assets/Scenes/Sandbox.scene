@@ -1,6 +1,18 @@
 Scene: Scene_01
 GUID: 6049963977740777600
 GameObjects:
+  - Name: "Max's GameObject"
+    GUID: 15322439001782158818
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        m_Mesh: 7294577961625990464
+        m_Material: 942766181068811557
+      - m_FileID: 2443852871
+        Type: Odyssey.Transform
+        Position: 'x: 0.72083634 y: 0 z: 2'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 0.01 y: 0.01 z: 0.01'
   - Name: "Max's Other GameObject"
     GUID: 1278710421845013511
     Type: Odyssey.GameObject
@@ -29,17 +41,3 @@ GameObjects:
             Value: 1
           - Name: RotDirection
             Value: 'x: 0 y: 45 z: 0'
-  - Name: "Max's GameObject"
-    GUID: 15322439001782158818
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.Animator
-        AnimationRig: 4003715406692714386
-      - Type: Odyssey.MeshRenderer
-        m_Mesh: 9136055515107144966
-        m_Material: 942766181068811557
-      - m_FileID: 2443852871
-        Type: Odyssey.Transform
-        Position: 'x: 0.72083634 y: 0 z: 2'
-        Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 0.1 y: 0.1 z: 0.1'

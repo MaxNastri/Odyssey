@@ -14,6 +14,7 @@ namespace Odyssey
 	class Shader;
 	class Scene;
 	class Texture2D;
+	class AnimationClip;
 
 	class SourceAsset;
 	class SourceShader;
@@ -36,6 +37,7 @@ namespace Odyssey
 		static std::shared_ptr<Shader> CreateShader(const Path& assetPath);
 		static std::shared_ptr<Shader> CreateShader(const Path& assetPath, std::shared_ptr<SourceShader> source);
 		static std::shared_ptr<AnimationRig> CreateAnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
+		static std::shared_ptr<AnimationClip> CreateAnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
 	public:
 		static std::shared_ptr<SourceShader> LoadSourceShader(GUID guid);
 		static std::shared_ptr<SourceModel> LoadSourceModel(GUID guid);
@@ -51,6 +53,7 @@ namespace Odyssey
 		static std::shared_ptr<Shader> LoadShaderByGUID(GUID guid);
 		static std::shared_ptr<Texture2D> LoadTexture2DByGUID(GUID guid);
 		static std::shared_ptr<AnimationRig> LoadAnimationRig(GUID guid);
+		static std::shared_ptr<AnimationClip> LoadAnimationClip(GUID guid);
 
 	public:
 		static GUID CreateBinaryAsset(BinaryBuffer& buffer);

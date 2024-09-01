@@ -7,6 +7,7 @@
 #include "SourceShader.h"
 #include "SourceModel.h"
 #include "AnimationRig.h"
+#include "AnimationClip.h"
 
 namespace Odyssey
 {
@@ -174,6 +175,23 @@ namespace Odyssey
 		animationRig->Save();
 
 		return animationRig;
+	}
+
+	std::shared_ptr<AnimationClip> AssetManager::CreateAnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel)
+	{
+		// Create a new shader asset
+		GUID guid = GUID::New();
+		std::shared_ptr<AnimationClip> animationClip = s_Assets.Add<AnimationClip>(guid, assetPath, sourceModel);
+
+		// Set asset data
+		animationClip->Guid = guid;
+		animationClip->SetName("Default");
+		animationClip->SetType("AnimationClip");
+
+		// Save to disk
+		animationClip->Save();
+
+		return animationClip;
 	}
 
 	std::shared_ptr<SourceShader> AssetManager::LoadSourceShader(GUID guid)
@@ -351,6 +369,22 @@ namespace Odyssey
 
 		// Load and return the mesh asset
 		return s_Assets.Add<AnimationRig>(guid, assetPath);
+	}
+
+	std::shared_ptr<AnimationClip> AssetManager::LoadAnimationClip(GUID guid)
+	{
+		// Convert the guid to a path
+		Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
+
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<AnimationClip>(guid);
+
+		// Track the asset
+		s_LoadedAssets.emplace(guid);
+
+		// Load and return the mesh asset
+		return s_Assets.Add<AnimationClip>(guid, assetPath);
 	}
 
 	BinaryBuffer AssetManager::LoadBinaryAsset(GUID guid)

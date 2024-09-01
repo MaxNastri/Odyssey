@@ -6,6 +6,9 @@ namespace Odyssey
 		: SourceAsset(sourcePath)
 	{
 		// TODO: Add validation
-		m_Importer.Import(sourcePath);
+		if (sourcePath.extension() == ".fbx")
+			m_FBXImporter.Import(sourcePath);
+		else
+			m_Importer.Import(sourcePath);
 	}
 }

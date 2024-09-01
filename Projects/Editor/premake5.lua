@@ -40,6 +40,7 @@ project "Odyssey.Editor"
         "%{wks.location}/Vendor/assimp/include/",
         "%{wks.location}/Vendor/efsw/include/efsw",
         "%{wks.location}/Vendor/entt/include/",
+        "%{wks.location}/Vendor/FBX/include/",
     }
     
     includedirs {
@@ -51,6 +52,7 @@ project "Odyssey.Editor"
         "%{cfg.targetdir}",
         "%{wks.location}/Vendor/Vulkan/Lib/",
         "%{wks.location}/Vendor/efsw/lib/",
+        "%{wks.location}/Vendor/FBX/Lib/Debug",
     }
 
     links {
@@ -63,6 +65,11 @@ project "Odyssey.Editor"
         "spirv-cross-reflect.lib",
         "spirv-cross-util.lib",
         "efsw-static-debug.lib",
+        "libfbxsdk",
+    }
+    
+    defines {
+        "FBXSDK_SHARED",
     }
 
     filter { "system:windows" }

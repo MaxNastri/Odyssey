@@ -36,5 +36,9 @@ namespace Odyssey
 		{
 			AssetManager::CreateAnimationRig(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);
 		}
+		else if (ImGui::Button("Create Animation Clip"))
+		{
+			AssetManager::CreateAnimationClip(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);
+		}
 	}
 }

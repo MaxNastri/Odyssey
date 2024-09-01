@@ -1,4 +1,8 @@
 #include "ModelImporter.h"
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/mesh.h>
+#include <assimp/postprocess.h>
 
 namespace Odyssey
 {
@@ -16,7 +20,7 @@ namespace Odyssey
 
 	namespace Utils
 	{
-		glm::mat4x4 AssimpToGLM(aiMatrix4x4 mat)
+		inline static glm::mat4x4 AssimpToGLM(aiMatrix4x4 mat)
 		{
 			return glm::mat4x4(
 				(float)mat.a1, (float)mat.b1, (float)mat.c1, (float)mat.d1,
@@ -24,6 +28,16 @@ namespace Odyssey
 				(float)mat.a3, (float)mat.b3, (float)mat.c3, (float)mat.d3,
 				(float)mat.a4, (float)mat.b4, (float)mat.c4, (float)mat.d4
 			);
+		}
+
+		inline static glm::vec3 AssimpToGLM(aiVector3D vec)
+		{
+			return glm::vec3(vec.x, vec.y, vec.z);
+		}
+
+		inline static glm::quat AssimpToGLM(aiQuaternion quat)
+		{
+			return glm::quat(quat.w, quat.x, quat.y, quat.z);
 		}
 	}
 	class BoneHierarchy
@@ -148,72 +162,173 @@ namespace Odyssey
 
 		if (scene->HasMeshes())
 		{
-			m_MeshDatas.clear();
-
 			// TODO: Add support for submeshes
-			//for (uint32_t m = 0; m < scene->mNumMeshes; m++)
+			m_MeshCount = scene->mNumMeshes;
+
+			auto mesh = scene->mMeshes[0];
+			ImportMesh(mesh);
+
+			// Bone Hierarchy / Rig
+			if (mesh->HasBones())
 			{
-				// TODO: Add support for submeshes
-				aiMesh* mesh = scene->mMeshes[0];
-				MeshImportData importData;
+				NormalizeMeshWeights(mesh);
+				ImportRig(scene);
+			}
 
-				// Add to the vertex count
-				importData.VertexCount += mesh->mNumVertices;
+			// TODO: Add support for multiple clips
+			if (scene->HasAnimations())
+				ImportAnimationClip(scene->mAnimations[0]);
+		}
+	}
 
-				// Add to the normals count
-				if (mesh->HasNormals())
-					importData.NormalsCount += mesh->mNumVertices;
+	void ModelImporter::NormalizeMeshWeights(const aiMesh* mesh)
+	{
+		if (mesh->mNumBones == 0)
+			return;
 
-				// Track the uv channel count
-				importData.UVChannelCount = mesh->GetNumUVChannels();
+		struct BoneWeight {
+			uint32_t mBoneIndex; // index of a bone in current mesh
+			aiVertexWeight* mVertexWeight; // a pointer to mVertexWeight in meshs[x]->mBones[x]->mWeight for quick visit
+		};
 
-				for (uint32_t i = 0; i < mesh->mNumVertices; i++)
-				{
-					Vertex vertex;
-					vertex.Position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+		struct VertexBoneWeights {
+			float mTotalWeight;
+			std::vector<BoneWeight> mBoneWeights;
+		};
 
-					if (mesh->HasNormals())
-						vertex.Normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+		std::map<uint32_t, VertexBoneWeights> map;
 
-					// TODO: Add support for 8 texcoord channels
-					if (mesh->HasTextureCoords(0))
-					{
-						vertex.TexCoord0 = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-						importData.UVChannels.push_back(0);
-					}
+		for (uint32_t b = 0; b < mesh->mNumBones; b++)
+		{
+			auto bone = mesh->mBones[b];
 
-					// TODO: Add support for up to 8 colors?
-					if (mesh->HasVertexColors(0))
-					{
-						auto color = mesh->mColors[0][i];
-						vertex.Color = glm::vec4(color.r, color.g, color.b, color.a);
-					}
+			for (uint32_t w = 0; w < bone->mNumWeights; w++)
+			{
+				auto vertexWeight = &bone->mWeights[w];
+				auto key = vertexWeight->mVertexId;
 
-					importData.Vertices.push_back(vertex);
-				}
+				auto& vertex_BoneWeights = map[key];
 
-				for (uint32_t i = 0; i < mesh->mNumFaces; i++)
-				{
-					aiFace face = mesh->mFaces[i];
+				BoneWeight boneWeights;
+				boneWeights.mBoneIndex = b;
+				boneWeights.mVertexWeight = vertexWeight;
 
-					// Add to the index count
-					importData.IndexCount += face.mNumIndices;
+				vertex_BoneWeights.mTotalWeight += vertexWeight->mWeight;
+				vertex_BoneWeights.mBoneWeights.push_back(boneWeights);
+			}
+		}
 
-					for (uint32_t index = 0; index < face.mNumIndices; index++)
-					{
-						importData.Indices.push_back(face.mIndices[index]);
-					}
-				}
-
-				// Animation
-				if (mesh->HasBones())
-				{
-					BoneHierarchy boneHierarchy(scene, importData);
-					m_RigData = boneHierarchy.CreateSkeleton();
-				}
-
-				m_MeshDatas.push_back(importData);
+		uint32_t count = 0;
+		// normalize all weights: 
+		// every weight for a same vertex divided by totalWeight of this vertex 
+		for (auto& item : map)
+		{
+			auto& vertex_BoneWeights = item.second;
+			auto f = 1.0 / vertex_BoneWeights.mTotalWeight;
+			if (f < 1.0)
+				int debug = 0;
+			for (uint32_t i = 0; i < vertex_BoneWeights.mBoneWeights.size(); i++)
+			{
+				vertex_BoneWeights.mBoneWeights[i].mVertexWeight->mWeight *= f;
+				count++;
 			}
 		}
 	}
+
+	void ModelImporter::ImportMesh(const aiMesh* mesh)
+	{
+		// Add to the vertex count
+		m_MeshData.VertexCount += mesh->mNumVertices;
+
+		// Add to the normals count
+		if (mesh->HasNormals())
+			m_MeshData.NormalsCount += mesh->mNumVertices;
+
+		// Track the uv channel count
+		m_MeshData.UVChannelCount = mesh->GetNumUVChannels();
+
+		for (uint32_t i = 0; i < mesh->mNumVertices; i++)
+		{
+			Vertex vertex;
+			vertex.Position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+
+			if (mesh->HasNormals())
+				vertex.Normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+
+			// TODO: Add support for 8 texcoord channels
+			if (mesh->HasTextureCoords(0))
+			{
+				vertex.TexCoord0 = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+				m_MeshData.UVChannels.push_back(0);
+			}
+
+			// TODO: Add support for up to 8 colors?
+			if (mesh->HasVertexColors(0))
+			{
+				auto color = mesh->mColors[0][i];
+				vertex.Color = glm::vec4(color.r, color.g, color.b, color.a);
+			}
+
+			m_MeshData.Vertices.push_back(vertex);
+		}
+
+		for (uint32_t i = 0; i < mesh->mNumFaces; i++)
+		{
+			aiFace face = mesh->mFaces[i];
+
+			// Add to the index count
+			m_MeshData.IndexCount += face.mNumIndices;
+
+			for (uint32_t index = 0; index < face.mNumIndices; index++)
+			{
+				m_MeshData.Indices.push_back(face.mIndices[index]);
+			}
+		}
+	}
+
+	void ModelImporter::ImportRig(const aiScene* scene)
+	{
+		BoneHierarchy boneHierarchy(scene, m_MeshData);
+		m_RigData = boneHierarchy.CreateSkeleton();
+	}
+
+	void ModelImporter::ImportAnimationClip(const aiAnimation* animation)
+	{
+		m_AnimationData.Name = animation->mName.C_Str();
+		m_AnimationData.Duration = animation->mDuration / animation->mTicksPerSecond;
+
+		// For each bone
+		for (uint32_t boneIndex = 0; boneIndex < animation->mNumChannels; boneIndex++)
+		{
+			// Get the keys stored for the bone
+			auto boneKeys = animation->mChannels[boneIndex];
+
+			// Get our keyframe for this bone
+			std::string boneName = boneKeys->mNodeName.C_Str();
+			auto& boneKeyframe = m_AnimationData.BoneKeyframes[boneName];
+			boneKeyframe.SetBoneName(boneName);
+
+			// Store the position keys
+			for (uint32_t i = 0; i < boneKeys->mNumPositionKeys; i++)
+			{
+				auto positionKey = boneKeys->mPositionKeys[i];
+				boneKeyframe.AddPositionKey(positionKey.mTime / animation->mTicksPerSecond, Utils::AssimpToGLM(positionKey.mValue));
+			}
+
+			// Store the rotation keys
+			for (uint32_t i = 0; i < boneKeys->mNumRotationKeys; i++)
+			{
+				auto rotationKey = boneKeys->mRotationKeys[i];
+				boneKeyframe.AddRotationKey(rotationKey.mTime / animation->mTicksPerSecond, Utils::AssimpToGLM(rotationKey.mValue));
+			}
+
+			// Store the scale keys
+			for (uint32_t i = 0; i < boneKeys->mNumScalingKeys; i++)
+			{
+				auto scaleKeys = boneKeys->mScalingKeys[i];
+				boneKeyframe.AddScaleKey(scaleKeys.mTime / animation->mTicksPerSecond, Utils::AssimpToGLM(scaleKeys.mValue));
+			}
+		}
+	}
+
 }

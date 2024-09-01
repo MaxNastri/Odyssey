@@ -19,12 +19,21 @@ namespace Odyssey
 
 	public:
 		GUID GetRig() { return m_AnimationRig; }
-		void SetRig(GUID animationRigGUID);
+		GUID GetClip() { return m_AnimationClip; }
+		void SetRig(GUID animationRigGUID) { m_AnimationRig = animationRigGUID; }
+		void SetClip(GUID animationClipGUID) { m_AnimationClip = animationClipGUID; }
+
+	public:
 		const std::vector<glm::mat4>& GetFinalPoses();
+
+	private:
+		void ProcessKeys(double time, const std::vector<Bone>& bones, const glm::mat4& rigTransform);
+		void ProcessTransforms(double time, const std::vector<Bone>& bones, const glm::mat4& rigTransform);
 
 	private:
 		GameObject m_GameObject;
 		GUID m_AnimationRig;
+		GUID m_AnimationClip;
 		std::vector<glm::mat4> m_FinalPoses;
 		CLASS_DECLARATION(Animator);
 	};

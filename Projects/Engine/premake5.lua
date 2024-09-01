@@ -47,18 +47,21 @@ project "Odyssey.Engine"
         "%{wks.location}/Vendor/Coral/NetCore/**",
         "%{wks.location}/Vendor/Coral/NetCore/",
     }
+
     externalincludedirs {
         "%{wks.location}/Vendor/glfw3/",
         "%{wks.location}/Vendor/Vulkan/Include/",
         "%{wks.location}/Vendor/assimp/include/",
         "%{wks.location}/Vendor/efsw/include/efsw",
         "%{wks.location}/Vendor/entt/include/",
+        "%{wks.location}/Vendor/FBX/include/",
     }
 
     libdirs {
         "%{cfg.targetdir}",
         "%{wks.location}/Vendor/Vulkan/Lib/",
         "%{wks.location}/Vendor/efsw/lib/",
+        "%{wks.location}/Vendor/FBX/Lib/Debug",
     }
 
     links {
@@ -71,6 +74,7 @@ project "Odyssey.Engine"
         "spirv-cross-reflect.lib",
         "spirv-cross-util.lib",
         "efsw-static-debug.lib",
+        "libfbxsdk.lib",
     }
 
     
@@ -91,10 +95,11 @@ project "Odyssey.Engine"
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
         "VK_NO_PROTOTYPES",
         "IMGUI_DEFINE_MATH_OPERATORS",
+        "FBXSDK_SHARED",
     }
 
     filter "action:vs*"
-        linkoptions { "/ignore:4099" } -- NOTE(Peter): Disable no PDB found warning
+        linkoptions { "/ignore:4099", "/ignore:4006" } -- NOTE(Peter): Disable no PDB found warning
         disablewarnings { "4068" } -- Disable "Unknown #pragma mark warning"
         
     filter { "system:windows" }

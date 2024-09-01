@@ -16,9 +16,11 @@ namespace Odyssey
 
 	private:
 		void OnRigModified(GUID guid);
+		void OnClipModified(GUID guid);
 
 	private:
 		GameObject m_GameObject;
 		AssetFieldDrawer m_RigDrawer;
+		AssetFieldDrawer m_ClipDrawer;
 	};
 }

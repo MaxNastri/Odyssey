@@ -21,10 +21,8 @@ Thumbs.db
 *.log
 *.hint
 [Bb]in
-[Dd]ebug*/
 *.sbr
 obj/
-[Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
 .vs/
@@ -46,3 +44,5 @@ bin-int/
 **.vcxproj.user
 Scripts/__pycache__
 Vendor/VulkanSDK
+Intermediates
+Build
