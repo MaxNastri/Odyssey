@@ -75,6 +75,7 @@ project "Odyssey.Editor"
     filter { "system:windows" }
         postbuildcommands {
             '{COPYFILE} "%{wks.location}/Vendor/Coral/Build/Debug/Coral.Managed.dll", "%{cfg.targetdir}"',
+            '{COPYFILE} "%{wks.location}/Vendor/FBX/Lib/Debug/libfbxsdk.dll", "%{cfg.targetdir}"',
             '{COPYFILE} "%{wks.location}/Vendor/Coral/Coral.Managed/Coral.Managed.runtimeconfig.json", "%{cfg.targetdir}"',
         }
 
