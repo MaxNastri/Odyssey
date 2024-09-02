@@ -37,7 +37,7 @@ GameObjects:
         Animation Rig: 12068358419570349370
         Animation Clip: 9418789030815046255
       - Type: Odyssey.MeshRenderer
-        m_Mesh: 7294577961625990464
+        m_Mesh: 15813187439399979618
         m_Material: 942766181068811557
       - m_FileID: 2443852871
         Type: Odyssey.Transform

@@ -15,6 +15,7 @@ namespace Odyssey
 	class VulkanImage;
 	class VulkanPushDescriptors;
 	struct PerFrameRenderingData;
+	class RenderSubPass;
 
 	struct RenderPassParams
 	{
@@ -60,10 +61,11 @@ namespace Odyssey
 
 	public:
 		void SetCamera(Camera* camera) { m_Camera = camera; }
+		void AddDebugSubPass();
 
 	private:
 		Camera* m_Camera = nullptr;
-		std::shared_ptr<VulkanPushDescriptors> pushDescriptors;
+		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
 	};
 
 	class ImguiPass : public RenderPass

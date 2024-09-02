@@ -15,6 +15,7 @@
 #include "Renderer.h"
 #include "EditorComponents.h"
 #include "PropertiesComponent.h"
+#include "DebugRenderer.h"
 
 namespace Odyssey
 {
@@ -25,6 +26,7 @@ namespace Odyssey
 		// Rendering stuff
 		m_SceneViewPass = std::make_shared<OpaquePass>();
 		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		m_SceneViewPass->AddDebugSubPass();
 		Renderer::PushRenderPass(m_SceneViewPass);
 
 		// Create the render texture

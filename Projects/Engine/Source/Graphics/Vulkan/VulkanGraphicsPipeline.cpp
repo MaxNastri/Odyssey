@@ -61,7 +61,7 @@ namespace Odyssey
 		// Input Assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		inputAssembly.topology = info.Triangles ? VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST : VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
 		// Rasterizer
@@ -179,8 +179,8 @@ namespace Odyssey
 		// Convert resource handles to vulkan data
 		std::vector<VkDescriptorSetLayout> setLayouts{};
 
-		auto layout = ResourceManager::GetResource<VulkanDescriptorLayout>(info.DescriptorLayout);
-		setLayouts.push_back(layout->GetHandle());
+		if (auto layout = ResourceManager::GetResource<VulkanDescriptorLayout>(info.DescriptorLayout))
+			setLayouts.push_back(layout->GetHandle());
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

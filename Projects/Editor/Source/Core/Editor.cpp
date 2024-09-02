@@ -10,6 +10,7 @@
 #include "ShaderCompiler.h"
 #include "Project.h"
 #include "Renderer.h"
+#include "DebugRenderer.h"
 
 namespace Odyssey
 {
@@ -30,14 +31,21 @@ namespace Odyssey
 		// Load the default project
 		Project::LoadProject("C:/Git/Odyssey/Projects/Sandbox");
 
+		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveCacheDirectory());
+
 		// Create the renderer
-		RendererConfig config;
-		config.EnableIMGUI = true;
+		RendererConfig config = { .EnableIMGUI = true };
 		Renderer::Init(config);
 		Renderer::SetDrawGUIListener(GUIManager::DrawGUI);
+
+		// Setup debug renderer
+		DebugRenderer::Settings debugSettings;
+		debugSettings.DebugShaderPath = "Resources/Shaders/Debug.asset";
+		debugSettings.MaxVertices = 128000;
+		DebugRenderer::Init(debugSettings);
+
 		GUIManager::Initialize();
 
-		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveCacheDirectory());
 
 		// Build the user assembly
 		ScriptCompiler::Settings settings;
@@ -75,7 +83,7 @@ namespace Odyssey
 
 				// Process any changes made to the user's managed dll
 				m_ScriptCompiler->Process();
-
+				DebugRenderer::Clear();
 				GUIManager::Update();
 
 				// Only update the scene if we are updating scripts (playmode)

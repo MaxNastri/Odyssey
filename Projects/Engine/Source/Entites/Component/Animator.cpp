@@ -3,6 +3,8 @@
 #include "AssetManager.h"
 #include "AnimationClip.h"
 #include "OdysseyTime.h"
+#include "DebugRenderer.h"
+#include "Transform.h"
 
 namespace Odyssey
 {
@@ -27,67 +29,57 @@ namespace Odyssey
 	{
 		node.ReadData("Animation Rig", m_AnimationRig.Ref());
 		node.ReadData("Animation Clip", m_AnimationClip.Ref());
+
+		if (m_AnimationRig)
+		{
+			// Load the rig and resize our final poses to match the bone count
+			auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
+			m_FinalPoses.clear();
+			m_FinalPoses.resize(rig->GetBones().size());
+		}
+
+		// Create a timeline for the clip
+		if (m_AnimationClip)
+			m_Timeline = AnimationClipTimeline(m_AnimationClip);
 	}
 
-	void Animator::Update()
+	void Animator::SetRig(GUID animationRigGUID)
 	{
-		if (m_Playing)
-			m_CurrentTime += ((double)Time::DeltaTime() * 1000.0);
+		m_AnimationRig = animationRigGUID;
 
-		auto animClip = AssetManager::LoadAnimationClip(m_AnimationClip);
-		std::map<std::string, BoneKeyframe>& boneKeyframes = animClip->GetBoneKeyframes();
+		// Load the rig and resize our final poses to match the bone count
+		auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
+		m_FinalPoses.clear();
+		m_FinalPoses.resize(rig->GetBones().size());
+	}
 
-		double nextFrameTime = animClip->GetFrameTime(m_NextFrame);
-		double frameTime = m_NextFrame == 0 ? animClip->GetDuration() : nextFrameTime;
+	void Animator::SetClip(GUID animationClipGUID)
+	{
+		m_AnimationClip = animationClipGUID;
 
-		if ((m_CurrentTime) >= frameTime)
-		{
-			size_t maxFrames = animClip->GetFrameCount();
-			m_PrevFrame = m_NextFrame;
-			m_NextFrame = (m_NextFrame + 1) % maxFrames;
-
-			m_CurrentTime = animClip->GetFrameTime(m_PrevFrame);
-		}
+		// Create a timeline for the clip
+		if (m_AnimationClip)
+			m_Timeline = AnimationClipTimeline(m_AnimationClip);
 	}
 
 	const std::vector<glm::mat4>& Animator::GetFinalPoses()
 	{
-		Update();
-
-		auto animRig = AssetManager::LoadAnimationRig(m_AnimationRig);
-		const std::vector<Bone>& bones = animRig->GetBones();
-
-		m_FinalPoses.clear();
-		m_FinalPoses.resize(bones.size());
-
 		if (m_AnimationClip)
-			ProcessKeys(bones);
+			ProcessKeys();
 		else
-			ProcessTransforms(bones);
+			ProcessTransforms();
 
 		return m_FinalPoses;
 	}
 
-	void Animator::ProcessKeys(const std::vector<Bone>& bones)
+	void Animator::ProcessKeys()
 	{
-		// Load the clip
-		auto animClip = AssetManager::LoadAnimationClip(m_AnimationClip);
-
-		// Get the bone keyframes
-		std::map<std::string, BoneKeyframe>& boneKeyframes = animClip->GetBoneKeyframes();
-
 		// Create storage for our bone keys
-		std::map<std::string, glm::mat4> boneKeys;
+		auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
+		const std::vector<Bone>& bones = rig->GetBones();
 
-		for (auto& [boneName, boneKeyframe] : boneKeyframes)
-		{
-			const double prevTime = boneKeyframe.GetFrameTime(m_PrevFrame);
-			const double nextTime = boneKeyframe.GetFrameTime(m_NextFrame);
-			double totalTime = nextTime == 0.0 ? animClip->GetDuration() : nextTime;
-			float blendFactor = (float)(m_CurrentTime - prevTime) / (totalTime - prevTime);
-			// TODO: Disable blending for now
-			boneKeys[boneName] = boneKeyframe.BlendKeys(m_PrevFrame, m_NextFrame, 0.0f);
-		}
+		double time = m_Playing ? (double)Time::DeltaTime() : 0.0;
+		auto boneKeys = m_Timeline.BlendKeys(time);
 
 		for (size_t i = 0; i < bones.size(); i++)
 		{
@@ -96,27 +88,54 @@ namespace Odyssey
 			glm::mat4 globalKey = boneKeys[boneName];
 
 			m_FinalPoses[i] = globalKey * bones[i].InverseBindpose;
+
+			if (m_DebugEnabled)
+				DebugDrawKey(globalKey);
 		}
 	}
 
-	void Animator::ProcessTransforms(const std::vector<Bone>& bones)
+	void Animator::ProcessTransforms()
 	{
+		// Create storage for our bone keys
+		auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
+		const std::vector<Bone>& bones = rig->GetBones();
+
+		double time = m_Playing ? (double)Time::DeltaTime() : 0.0;
+
 		for (size_t i = 0; i < bones.size(); i++)
 		{
-			//glm::mat4 globalTransform = bones[i].Transform;
+			m_FinalPoses[i] = bones[i].Bindpose * bones[i].InverseBindpose;
 
-			//int32_t parentIndex = bones[i].ParentIndex;
-			//while (parentIndex != -1)
-			//{
-			//	// Get the parent's transform and multiply it into our global transform
-			//	glm::mat4 parent = bones[parentIndex].Transform;
-			//	globalTransform = parent * globalTransform;
-
-			//	// Move the the next parent
-			//	parentIndex = bones[parentIndex].ParentIndex;
-			//}
-
-			//m_FinalPoses[i] = rigTransform * globalTransform * bones[i].InverseBindpose;
+			if (m_DebugEnabled)
+				DebugDrawBone(bones[i]);
 		}
+	}
+
+	void Animator::DebugDrawKey(const glm::mat4& key)
+	{
+		auto& transform = m_GameObject.GetComponent<Transform>();
+		glm::mat4 worldSpace = transform.GetWorldMatrix() * key;
+		glm::vec3 translation;
+		glm::vec3 scale;
+		glm::quat rotation;
+		glm::vec3 skew;
+		glm::vec4 perspective;
+		glm::decompose(worldSpace, scale, rotation, translation, skew, perspective);
+
+		DebugRenderer::AddSphere(translation, 0.025f, glm::vec4(0, 1, 0, 1));
+	}
+
+	void Animator::DebugDrawBone(const Bone& bone)
+	{
+		auto& transform = m_GameObject.GetComponent<Transform>();
+		glm::mat4 boneTransform = transform.GetWorldMatrix() * bone.Bindpose;
+		glm::vec3 translation;
+		glm::vec3 scale;
+		glm::quat rotation;
+		glm::vec3 skew;
+		glm::vec4 perspective;
+		glm::decompose(boneTransform, scale, rotation, translation, skew, perspective);
+
+		DebugRenderer::AddSphere(translation, 0.025f, glm::vec4(0, 1, 0, 1));
 	}
 }

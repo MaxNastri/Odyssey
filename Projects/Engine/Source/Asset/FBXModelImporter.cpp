@@ -20,7 +20,15 @@ namespace Odyssey
 					std::hash<float>()(v.Tangent.y) +
 					std::hash<float>()(v.Tangent.z) +
 					std::hash<float>()(v.TexCoord0.x) +
-					std::hash<float>()(v.TexCoord0.y));
+					std::hash<float>()(v.TexCoord0.y) +
+					std::hash<float>()(v.BoneWeights.x) +
+					std::hash<float>()(v.BoneWeights.y) +
+					std::hash<float>()(v.BoneWeights.z) +
+					std::hash<float>()(v.BoneWeights.w) +
+					std::hash<float>()(v.BoneIndices.x) +
+					std::hash<float>()(v.BoneIndices.y) +
+					std::hash<float>()(v.BoneIndices.z) +
+					std::hash<float>()(v.BoneIndices.w));
 			}
 		};
 
@@ -39,7 +47,15 @@ namespace Odyssey
 					(v1.Tangent.y == v2.Tangent.y) &&
 					(v1.Tangent.z == v2.Tangent.z) &&
 					(v1.TexCoord0.x == v2.TexCoord0.x) &&
-					(v1.TexCoord0.y == v2.TexCoord0.y);
+					(v1.TexCoord0.y == v2.TexCoord0.y) &&
+					(v1.BoneWeights.x == v2.BoneWeights.x) &&
+					(v1.BoneWeights.y == v2.BoneWeights.y) &&
+					(v1.BoneWeights.z == v2.BoneWeights.z) &&
+					(v1.BoneWeights.z == v2.BoneWeights.z)&&
+					(v1.BoneIndices.x == v2.BoneIndices.x) &&
+					(v1.BoneIndices.y == v2.BoneIndices.y)&&
+					(v1.BoneIndices.z == v2.BoneIndices.z) &&
+					(v1.BoneIndices.w == v2.BoneIndices.w);
 			}
 		};
 
@@ -356,7 +372,7 @@ namespace Odyssey
 		uint64_t frameCount = duration.GetFrameCount(FbxTime::EMode::eFrames30);
 
 		// Get the total duration and frames per second of the clip
-		m_AnimationData.Duration = duration.GetMilliSeconds();
+		m_AnimationData.Duration = duration.GetSecondDouble();
 		m_AnimationData.FramesPerSecond = 30;
 
 		// Iterate over each frame of the animation
@@ -365,7 +381,7 @@ namespace Odyssey
 			// Set the frame time to the current iteration
 			duration.SetFrame(frameIndex, FbxTime::EMode::eFrames30);
 
-			double time = duration.GetMilliSeconds();
+			double time = duration.GetSecondDouble();
 
 			// Iterate over each joint and get the global transform of the joint in this frame
 			for (size_t i = 0; i < m_RigData.FBXBones.size(); i++)
@@ -388,41 +404,24 @@ namespace Odyssey
 		}
 	}
 
-	void FBXModelImporter::ProcessBoneHierarchy(FbxNode* sceneRoot)
-	{
-		for (int childIndex = 0; childIndex < sceneRoot->GetChildCount(); childIndex++)
-		{
-			FbxNode* currNode = sceneRoot->GetChild(childIndex);
-			ProcessBoneHierarchy(currNode, 0, -1);
-		}
-
-		// Iterate through the bone list
-		for (size_t i = 0; i < m_RigData.FBXBones.size(); i++)
-		{
-			// Get the local space TRS for the bone
-			FBXBone& bone = m_RigData.FBXBones[i];
-			FbxDouble3 translation = bone.Node->LclTranslation.Get();
-			FbxDouble3 rotation = bone.Node->LclRotation.Get();
-			FbxDouble3 scale = bone.Node->LclScaling.Get();
-
-			FbxAMatrix fbxTransform;
-			fbxTransform.SetTRS(translation, rotation, scale);
-
-			// Store the TRS transform
-			bone.bindpose = Utils::ToGLM(fbxTransform);
-			bone.inverseBindpose = glm::identity<glm::mat4>();
-		}
-	}
-
 	void FBXModelImporter::ProcessBoneHierarchy(FbxNode* node, int32_t boneIndex, int32_t parentIndex)
 	{
 		if (node->GetNodeAttribute() && node->GetNodeAttribute()->GetAttributeType() && node->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton)
 		{
+			FbxDouble3 translation = node->LclTranslation.Get();
+			FbxDouble3 rotation = node->LclRotation.Get();
+			FbxDouble3 scale = node->LclScaling.Get();
+
+			FbxAMatrix fbxTransform;
+			fbxTransform.SetTRS(translation, rotation, scale);
+
 			FBXBone bone;
 			bone.Node = node;
 			bone.Name = node->GetName();
 			bone.Index = boneIndex;
 			bone.ParentIndex = parentIndex;
+			bone.bindpose = Utils::ToGLM(node->EvaluateGlobalTransform());
+			bone.inverseBindpose = glm::identity<glm::mat4>();
 			m_RigData.FBXBones.push_back(bone);
 		}
 

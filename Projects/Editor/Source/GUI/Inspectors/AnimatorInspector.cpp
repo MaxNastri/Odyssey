@@ -18,6 +18,9 @@ namespace Odyssey
 
 			m_ClipDrawer = AssetFieldDrawer("Clip", clipGUID, "AnimationClip",
 				[this](GUID guid) { OnClipModified(guid); });
+
+			m_DebugEnabledDrawer = BoolDrawer("Debug", false,
+				[this](bool enabled) { OnDebugEnabledModified(enabled); });
 		}
 	}
 
@@ -27,13 +30,15 @@ namespace Odyssey
 		{
 			m_RigDrawer.Draw();
 			m_ClipDrawer.Draw();
+			m_DebugEnabledDrawer.Draw();
 
 			if (ImGui::Button("Play"))
 			{
 				if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
 					animator->Play();
 			}
-			else if (ImGui::Button("Pause"))
+			ImGui::SameLine();
+			if (ImGui::Button("Pause"))
 			{
 				if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
 					animator->Pause();
@@ -51,5 +56,10 @@ namespace Odyssey
 	{
 		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
 			animator->SetClip(guid);
+	}
+	void AnimatorInspector::OnDebugEnabledModified(bool enabled)
+	{
+		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
+			animator->SetDebugEnabled(enabled);
 	}
 }

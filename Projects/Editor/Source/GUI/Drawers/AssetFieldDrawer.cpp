@@ -49,7 +49,7 @@ namespace Odyssey
 					const bool isSelected = selectedIndex == i;
 					std::string displayName = i != 0 ? AssetManager::GUIDToName(possibleGUIDs[i]) : "None";
 
-					if (ImGui::Selectable(displayName.c_str(), isSelected) && i != 0)
+					if (ImGui::Selectable(displayName.c_str(), isSelected))
 					{
 						selectedIndex = i;
 						m_OnValueModified(possibleGUIDs[selectedIndex]);

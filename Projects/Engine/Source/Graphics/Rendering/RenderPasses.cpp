@@ -9,13 +9,24 @@
 #include "VulkanImgui.h"
 #include "VulkanPushDescriptors.h"
 #include "VulkanTexture.h"
+#include "DebugRenderer.h"
+#include "Shader.h"
+#include "VulkanGraphicsPipeline.h"
+#include "VulkanDescriptorLayout.h"
+
+#include "RenderSubPasses.h"
 
 namespace Odyssey
 {
 	OpaquePass::OpaquePass()
 	{
 		m_ClearValue = glm::vec4(0, 0, 0, 1);
-		pushDescriptors = std::make_shared<VulkanPushDescriptors>();
+		m_SubPasses.push_back(std::make_shared<OpaqueSubPass>());
+
+		for (auto& subPass : m_SubPasses)
+		{
+			subPass->Setup();
+		}
 	}
 
 	void OpaquePass::BeginPass(RenderPassParams& params)
@@ -28,7 +39,7 @@ namespace Odyssey
 		uint32_t height = 0;
 
 		// Extract the render target and width/height
-		if (m_ColorRT)
+		if (m_ColorRT.IsValid())
 		{
 			auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_ColorRT);
 			colorAttachmentImage = renderTexture->GetImage();
@@ -68,7 +79,7 @@ namespace Odyssey
 			attachments.push_back(color_attachment_info);
 		}
 
-		if (m_DepthRT)
+		if (m_DepthRT.IsValid())
 		{
 			VkClearValue clearValue;
 			clearValue.depthStencil = { 1.0f, 0 };
@@ -131,11 +142,7 @@ namespace Odyssey
 
 	void OpaquePass::Execute(RenderPassParams& params)
 	{
-		ResourceID commandBufferID = params.commandBuffer;
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
-
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
-
 		uint32_t cameraIndex = RenderScene::MAX_CAMERAS;
 
 		// Set either the camera override or the scene's main camera
@@ -144,38 +151,15 @@ namespace Odyssey
 		else if (renderScene->HasMainCamera())
 			cameraIndex = renderScene->SetCameraData(renderScene->m_MainCamera);
 
+		RenderSubPassData subPassData;
+		subPassData.CameraIndex = cameraIndex;
+
 		// Check for a valid camera data index
 		if (cameraIndex < RenderScene::MAX_CAMERAS)
 		{
-			for (auto& setPass : params.renderingData->renderScene->setPasses)
+			for (auto& renderSubPass : m_SubPasses)
 			{
-				commandBuffer->BindPipeline(setPass.GraphicsPipeline);
-
-				for (size_t i = 0; i < setPass.Drawcalls.size(); i++)
-				{
-					Drawcall& drawcall = setPass.Drawcalls[i];
-
-					// Add the camera and per object data to the push descriptors
-					uint32_t uboIndex = drawcall.UniformBufferIndex;
-					pushDescriptors->Clear();
-					pushDescriptors->AddBuffer(renderScene->cameraDataBuffers[cameraIndex], 0);
-					pushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
-					pushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
-
-					// Add textures, if they are set
-					if (setPass.Texture.IsValid())
-					{
-						pushDescriptors->AddTexture(setPass.Texture, 3);
-					}
-
-					// Push the descriptors into the command buffer
-					commandBuffer->PushDescriptors(pushDescriptors.get(), setPass.GraphicsPipeline);
-
-					// Set the per-object descriptor buffer offset
-					commandBuffer->BindVertexBuffer(drawcall.VertexBufferID);
-					commandBuffer->BindIndexBuffer(drawcall.IndexBufferID);
-					commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);
-				}
+				renderSubPass->Execute(params, subPassData);
 			}
 		}
 	}
@@ -189,7 +173,7 @@ namespace Odyssey
 		commandBuffer->EndRendering();
 
 		// Make sure the RT is valid
-		if (!m_ColorRT)
+		if (!m_ColorRT.IsValid())
 		{
 			Logger::LogError("(OpaquePass) Invalid render target for OpaquePass");
 			return;
@@ -198,6 +182,13 @@ namespace Odyssey
 		// Transition the backbuffer layout for presenting
 		auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_ColorRT);
 		commandBuffer->TransitionLayouts(renderTexture->GetImage(), m_EndLayout);
+	}
+
+	void OpaquePass::AddDebugSubPass()
+	{
+		std::shared_ptr<DebugSubPass> debugSubPass = std::make_shared<DebugSubPass>();
+		debugSubPass->Setup();
+		m_SubPasses.push_back(debugSubPass);
 	}
 
 	void ImguiPass::BeginPass(RenderPassParams& params)

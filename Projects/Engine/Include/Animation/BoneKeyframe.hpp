@@ -27,7 +27,7 @@ namespace Odyssey
 		std::string_view GetName() { return m_Name; }
 
 	public:
-		glm::mat4 GetKey(double time, bool loop)
+		glm::mat4 GetKey(double time, bool loop, double duration)
 		{
 			glm::vec3 position;
 			glm::quat rotation;
@@ -46,7 +46,7 @@ namespace Odyssey
 					PositionKey prev, next;
 					FindKeys<PositionKey>(time, m_PositionKeys, prev, next, loop);
 
-					double totalTime = next.Time == 0.0 ? prev.Time : next.Time;
+					double totalTime = next.Time == 0.0 ? duration : next.Time;
 
 					if (prev.Time == next.Time)
 						position = prev.Value;
@@ -62,14 +62,14 @@ namespace Odyssey
 					RotationKey prev, next;
 					FindKeys<RotationKey>(time, m_RotationKeys, prev, next, loop);
 
-					double totalTime = next.Time == 0.0 ? prev.Time : next.Time;
+					double totalTime = next.Time == 0.0 ? duration : next.Time;
 					// Same frame, don't blend
 					if (prev.Time == next.Time)
 						rotation = prev.Value;
 					else
 					{
 						double ratio = (time - prev.Time) / (next.Time - prev.Time);
-						rotation = glm::lerp(prev.Value, next.Value, (float)ratio);
+						rotation = glm::slerp(prev.Value, next.Value, (float)ratio);
 					}
 				}
 
@@ -78,7 +78,7 @@ namespace Odyssey
 					ScaleKey prev, next;
 					FindKeys<ScaleKey>(time, m_ScaleKeys, prev, next, loop);
 
-					double totalTime = next.Time == 0.0 ? prev.Time : next.Time;
+					double totalTime = next.Time == 0.0 ? duration : next.Time;
 					// Same frame, don't blend
 					if (prev.Time == next.Time)
 						scale = prev.Value;
@@ -103,10 +103,10 @@ namespace Odyssey
 		{
 			glm::vec3 position;
 			glm::quat rotation;
-			glm::vec3 scale;
+			glm::vec3 scale = glm::vec3(1,1,1);
 
 			position = glm::mix(m_PositionKeys[prevKey].Value, m_PositionKeys[nextKey].Value, blendFactor);
-			rotation = glm::lerp(m_RotationKeys[prevKey].Value, m_RotationKeys[nextKey].Value, blendFactor);
+			rotation = glm::slerp(m_RotationKeys[prevKey].Value, m_RotationKeys[nextKey].Value, blendFactor);
 			scale = glm::mix(m_ScaleKeys[prevKey].Value, m_ScaleKeys[nextKey].Value, blendFactor);
 
 			// Convert to matrices
@@ -156,6 +156,5 @@ namespace Odyssey
 		std::vector<PositionKey> m_PositionKeys;
 		std::vector<RotationKey> m_RotationKeys;
 		std::vector<ScaleKey> m_ScaleKeys;
-
 	};
 }

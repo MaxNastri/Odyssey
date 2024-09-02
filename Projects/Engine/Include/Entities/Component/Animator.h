@@ -2,6 +2,7 @@
 #include "AssetSerializer.h"
 #include "GameObject.h"
 #include "AnimationRig.h"
+#include "AnimationClipTimeline.h"
 
 namespace Odyssey
 {
@@ -25,15 +26,20 @@ namespace Odyssey
 	public:
 		GUID GetRig() { return m_AnimationRig; }
 		GUID GetClip() { return m_AnimationClip; }
-		void SetRig(GUID animationRigGUID) { m_AnimationRig = animationRigGUID; }
-		void SetClip(GUID animationClipGUID) { m_AnimationClip = animationClipGUID; }
+		void SetRig(GUID animationRigGUID);
+		void SetClip(GUID animationClipGUID);
+		void SetDebugEnabled(bool enabled) { m_DebugEnabled = enabled; }
 
 	public:
 		const std::vector<glm::mat4>& GetFinalPoses();
 
 	private:
-		void ProcessKeys(const std::vector<Bone>& bones);
-		void ProcessTransforms(const std::vector<Bone>& bones);
+		void ProcessKeys();
+		void ProcessTransforms();
+
+	private:
+		void DebugDrawKey(const glm::mat4& key);
+		void DebugDrawBone(const Bone& bone);
 
 	private:
 		GameObject m_GameObject;
@@ -43,10 +49,11 @@ namespace Odyssey
 	private:
 		std::vector<glm::mat4> m_FinalPoses;
 		bool m_Playing = false;
-		double m_CurrentTime = 0.0;
-		size_t m_PrevFrame = 0;
-		size_t m_NextFrame = 0;
+		AnimationClipTimeline m_Timeline;
 
+	private:
+		bool m_DebugEnabled = false;
 		CLASS_DECLARATION(Animator);
 	};
+
 }

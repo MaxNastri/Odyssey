@@ -50,4 +50,25 @@ namespace Odyssey
 	{
 		return m_VertexBuffer;
 	}
+
+	void VulkanVertexBuffer::UploadData(const std::vector<Vertex>& vertices)
+	{
+		// Upload the vertex data into the staging buffer
+		uint32_t dataSize = (uint32_t)(vertices.size() * sizeof(Vertex));
+		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
+		stagingBuffer->SetMemory(dataSize, vertices.data());
+
+		// Allocate a commandbuffer
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetCommandPool());
+		ResourceID commandBufferID = commandPool->AllocateBuffer();
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+		// Copy the staging buffer into the vertex buffer
+		commandBuffer->BeginCommands();
+		commandBuffer->CopyBufferToBuffer(m_StagingBuffer, m_VertexBuffer, (uint32_t)dataSize);
+		commandBuffer->EndCommands();
+
+		m_Context->SubmitCommandBuffer(commandBufferID);
+		commandPool->ReleaseBuffer(commandBufferID);
+	}
 }

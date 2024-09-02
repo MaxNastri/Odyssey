@@ -9,5 +9,6 @@ namespace Odyssey
 	public:
 		std::map<ShaderType, ResourceID> Shaders;
 		ResourceID DescriptorLayout;
+		bool Triangles = true;
 	};
 }
