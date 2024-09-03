@@ -26,6 +26,7 @@ namespace Odyssey
 
 	public:
 		void SetParent(const GameObject& parent);
+		void RemoveParent();
 		GameObject GetParent();
 		std::vector<GameObject> GetChildren();
 

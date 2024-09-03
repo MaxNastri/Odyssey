@@ -1,5 +1,6 @@
 #include "SceneHierarchyWindow.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "GUIManager.h"
@@ -8,6 +9,7 @@
 #include "EditorEvents.h"
 #include "PropertiesComponent.h"
 #include "EditorComponents.h"
+#include "RawBuffer.hpp"
 
 namespace Odyssey
 {
@@ -44,6 +46,7 @@ namespace Odyssey
 		}
 
 		ProcessInteractions();
+		HandleDragAndDropWindow();
 
 		if (m_Deferred)
 		{
@@ -125,12 +128,23 @@ namespace Odyssey
 			ImGui::EndPopup();
 		}
 
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
+			{
+				// Register a drag and drop interaction
+				Interaction<GameObject> interaction;
+				interaction.Type = InteractionType::DragAndDropTarget;
+				interaction.Target = &gameObject;
+				interaction.Data = RawBuffer::Copy(payload->Data, payload->DataSize);
+				m_Interactions.push_back(interaction);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		// Allow for this entity to be a potential drag/drop payload
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 		{
-			// Register a drag and drop interaction
-			m_Interactions.push_back({ InteractionType::DragAndDrop, &gameObject });
-
 			uint64_t guid = gameObject.GetGUID();
 			ImGui::SetDragDropPayload("Entity", (void*)&guid, sizeof(uint64_t));
 			ImGui::EndDragDropSource();
@@ -157,6 +171,24 @@ namespace Odyssey
 			ImGui::EndPopup();
 		}
 	}
+	void SceneHierarchyWindow::HandleDragAndDropWindow()
+	{
+		ImRect rect;
+		rect.Min = ImVec2(m_ContentRegionMin.x, m_ContentRegionMin.y);
+		rect.Max = ImVec2(m_ContentRegionMax.x, m_ContentRegionMax.y);
+		if (ImGui::BeginDragDropTargetCustom(rect, 123))
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
+			{
+
+				GUID guid = *((GUID*)payload->Data);
+				GameObject gameObject = m_Scene->GetGameObject(guid);
+				if (gameObject.GetParent())
+					gameObject.RemoveParent();
+			}
+			ImGui::EndDragDropTarget();
+		}
+	}
 	void SceneHierarchyWindow::ProcessInteractions()
 	{
 		for (auto& interaction : m_Interactions)
@@ -172,19 +204,12 @@ namespace Odyssey
 					EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
 					break;
 				}
-				case InteractionType::ContextMenu:
+				case InteractionType::DragAndDropTarget:
 				{
-					if (ImGui::BeginPopupContextItem())
-					{
-						if (ImGui::Button("Delete"))
-							interaction.Target->Destroy();
-						if (ImGui::Button("Child"))
-						{
-							interaction.Target->SetParent(m_Selected);
-						}
-
-						ImGui::EndPopup();
-					}
+					GUID guid = interaction.Data.Read<GUID>();
+					GameObject gameObject = m_Scene->GetGameObject(guid);
+					interaction.Target->SetParent(gameObject);
+					break;
 				}
 				default:
 					break;

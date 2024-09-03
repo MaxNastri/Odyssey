@@ -37,7 +37,13 @@ namespace Odyssey
 	void SceneGraph::RemoveParent(const GameObject& entity)
 	{
 		if (auto node = FindNode(entity))
+		{
 			RemoveParent(node);
+
+			// Re-child the node to the root
+			node->Parent = m_Root;
+			m_Root->Children.push_back(node);
+		}
 	}
 
 	GameObject SceneGraph::GetParent(const GameObject& entity)
@@ -125,17 +131,21 @@ namespace Odyssey
 
 	void SceneGraph::RemoveParent(std::shared_ptr<Node> node)
 	{
-		if (auto parent = node->Parent)
+		auto parent = node->Parent;
+
+		if (parent)
 		{
 			auto& children = parent->Children;
 			for (size_t i = 0; i < children.size(); i++)
 			{
 				if (children[i]->Entity.Equals(node->Entity))
+				{
 					children.erase(children.begin() + i);
+					break;
+				}
 			}
 		}
 
-		node->Parent = nullptr;
 	}
 
 	void SceneGraph::RemoveChildNode(std::shared_ptr<Node> parentNode, std::shared_ptr<Node> childNode)

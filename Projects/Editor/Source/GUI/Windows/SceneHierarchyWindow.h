@@ -24,6 +24,7 @@ namespace Odyssey
 		void DrawSceneNode(const std::shared_ptr<SceneGraph::Node> node);
 		bool DrawGameObject(GameObject& gameObject, bool leaf);
 		void HandleContextMenu();
+		void HandleDragAndDropWindow();
 		void ProcessInteractions();
 
 	private:

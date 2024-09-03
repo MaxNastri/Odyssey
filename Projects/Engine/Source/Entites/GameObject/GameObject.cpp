@@ -107,6 +107,11 @@ namespace Odyssey
 		m_Scene->GetSceneGraph().SetParent(parent, *this);
 	}
 
+	void GameObject::RemoveParent()
+	{
+		m_Scene->GetSceneGraph().RemoveParent(*this);
+	}
+
 	GameObject GameObject::GetParent()
 	{
 		return m_Scene->GetSceneGraph().GetParent(*this);

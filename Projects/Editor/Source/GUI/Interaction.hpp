@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "RawBuffer.hpp"
 
 namespace Odyssey
 {
@@ -9,7 +10,7 @@ namespace Odyssey
 		Hovered = 1,
 		Selection = 2,
 		ContextMenu = 3,
-		DragAndDrop = 4,
+		DragAndDropTarget = 4,
 		Opened = 5,
 	};
 
@@ -19,6 +20,7 @@ namespace Odyssey
 	public:
 		InteractionType Type = InteractionType::None;
 		T* Target;
+		RawBuffer Data;
 
 		void Set(InteractionType type, T* target)
 		{
