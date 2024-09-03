@@ -31,7 +31,7 @@ namespace Odyssey
 		void SetDebugEnabled(bool enabled) { m_DebugEnabled = enabled; }
 
 	public:
-		const std::vector<glm::mat4>& GetFinalPoses();
+		const std::vector<glm::mat4>& GetFinalPoses() { return m_FinalPoses; }
 
 	private:
 		void ProcessKeys();

@@ -11,10 +11,6 @@ namespace Odyssey
 {
 	CLASS_DEFINITION(Odyssey, GameObject);
 
-	GameObject::GameObject()
-	{
-	}
-
 	GameObject::GameObject(Scene* scene, entt::entity entity)
 	{
 		m_Entity = entity;
@@ -105,6 +101,22 @@ namespace Odyssey
 			}
 		}
 	}
+
+	void GameObject::SetParent(const GameObject& parent)
+	{
+		m_Scene->GetSceneGraph().SetParent(parent, *this);
+	}
+
+	GameObject GameObject::GetParent()
+	{
+		return m_Scene->GetSceneGraph().GetParent(*this);
+	}
+
+	std::vector<GameObject> GameObject::GetChildren()
+	{
+		return m_Scene->GetSceneGraph().GetChildren(*this);
+	}
+
 	const std::string& GameObject::GetName()
 	{
 		return GetComponent<PropertiesComponent>().Name;

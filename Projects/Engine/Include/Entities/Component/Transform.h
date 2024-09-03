@@ -36,10 +36,10 @@ namespace Odyssey
         glm::vec3 Forward();
         glm::vec3 Right();
         glm::vec3 Up();
+        glm::mat4 GetLocalMatrix();
         glm::mat4x4 GetWorldMatrix();
 
     public:
-        void UpdateWorldMatrix(bool forceUpdateWorld = false);
         void RotateAround(glm::vec3 center, glm::vec3 axis, float degrees, bool worldSpace);
     
     private:
@@ -48,7 +48,6 @@ namespace Odyssey
         void Reset();
 
 	public:
-        FileID m_FileID;
         GameObject m_GameObject;
 		glm::vec3 m_Position;
 		glm::vec3 m_EulerRotation;

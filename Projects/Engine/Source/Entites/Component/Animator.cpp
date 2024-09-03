@@ -43,6 +43,14 @@ namespace Odyssey
 			m_Timeline = AnimationClipTimeline(m_AnimationClip);
 	}
 
+	void Animator::Update()
+	{
+		if (m_AnimationClip)
+			ProcessKeys();
+		else
+			ProcessTransforms();
+	}
+
 	void Animator::SetRig(GUID animationRigGUID)
 	{
 		m_AnimationRig = animationRigGUID;
@@ -60,16 +68,6 @@ namespace Odyssey
 		// Create a timeline for the clip
 		if (m_AnimationClip)
 			m_Timeline = AnimationClipTimeline(m_AnimationClip);
-	}
-
-	const std::vector<glm::mat4>& Animator::GetFinalPoses()
-	{
-		if (m_AnimationClip)
-			ProcessKeys();
-		else
-			ProcessTransforms();
-
-		return m_FinalPoses;
 	}
 
 	void Animator::ProcessKeys()

@@ -114,6 +114,13 @@ namespace Odyssey
 
 				if (ImGui::Button("Delete"))
 					gameObject.Destroy();
+				if (ImGui::Button("Child"))
+				{
+					auto view = m_Scene->GetAllEntitiesWith<PropertiesComponent>();
+					auto entity = view.begin()[selectionID];
+					GameObject parent = GameObject(m_Scene, entity);
+					gameObject.SetParent(parent);
+				}
 
 				ImGui::EndPopup();
 			}

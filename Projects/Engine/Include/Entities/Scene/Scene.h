@@ -3,6 +3,7 @@
 #include "entt.hpp"
 #include "GameObject.h"
 #include "GUID.h"
+#include "SceneGraph.hpp"
 
 namespace Odyssey
 {
@@ -38,6 +39,7 @@ namespace Odyssey
 
 	public:
 		GUID GetGUID() { return m_GUID; }
+		SceneGraph& GetSceneGraph() { return m_SceneGraph; }
 
 	private:
 		void SaveToDisk(const std::filesystem::path& assetPath);
@@ -61,6 +63,7 @@ namespace Odyssey
 		Camera* m_MainCamera = nullptr;
 		entt::registry m_Registry;
 		std::map<GUID, GameObject> m_GUIDToGameObject;
+		SceneGraph m_SceneGraph;
 	};
 }
 

@@ -7,6 +7,7 @@
 #include "Transform.h"
 #include "ScriptComponent.h"
 #include "ScriptingManager.h"
+#include "Animator.h"
 
 namespace Odyssey
 {
@@ -30,6 +31,8 @@ namespace Odyssey
 		PropertiesComponent& properties = gameObject.AddComponent<PropertiesComponent>(GUID::New());
 
 		m_GUIDToGameObject[gameObject.GetGUID()] = gameObject;
+
+		m_SceneGraph.AddEntity(gameObject);
 
 		return gameObject;
 	}
@@ -108,6 +111,13 @@ namespace Odyssey
 			auto& userScript = gameObject.GetComponent<ScriptComponent>();
 			userScript.Update();
 		}
+
+		for (auto entity : m_Registry.view<Animator>())
+		{
+			GameObject gameObject = GameObject(this, entity);
+			Animator& animator = gameObject.GetComponent<Animator>();
+			animator.Update();
+		}
 	}
 
 	void Scene::OnDestroy()
@@ -180,6 +190,8 @@ namespace Odyssey
 
 				GUID guid = gameObject.GetGUID();
 				m_GUIDToGameObject[guid] = gameObject;
+
+				m_SceneGraph.AddEntity(gameObject);
 
 				if (gameObject.HasComponent<ScriptComponent>())
 				{
