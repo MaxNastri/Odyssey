@@ -87,7 +87,7 @@ namespace Odyssey
 			const std::string& boneName = bones[i].Name;
 			glm::mat4 globalKey = boneKeys[boneName];
 
-			m_FinalPoses[i] = globalKey * bones[i].InverseBindpose;
+			m_FinalPoses[i] = bones[i].InverseBindpose;
 
 			if (m_DebugEnabled)
 				DebugDrawKey(globalKey);
@@ -104,7 +104,7 @@ namespace Odyssey
 
 		for (size_t i = 0; i < bones.size(); i++)
 		{
-			m_FinalPoses[i] = bones[i].Bindpose * bones[i].InverseBindpose;
+			m_FinalPoses[i] = glm::identity<mat4>();
 
 			if (m_DebugEnabled)
 				DebugDrawBone(bones[i]);

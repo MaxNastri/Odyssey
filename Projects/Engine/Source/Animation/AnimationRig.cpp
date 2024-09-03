@@ -13,15 +13,31 @@ namespace Odyssey
 	AnimationRig::AnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> source)
 		: Asset(assetPath)
 	{
-		const RigImportData& rigData = source->GetFBXImporter().GetRigData();
+		const RigImportData& rigData = source->GetImporter()->GetRigData();
 
-		auto& boneMap = rigData.FBXBones;
+		//auto& boneMap = rigData.FBXBones;
+		//
+		//// Clear our existing data and resize to match the new bone count
+		//m_Bones.clear();
+		//m_Bones.resize(boneMap.size());
+		//
+		//for (auto& bone : boneMap)
+		//{
+		//	auto& newBone = m_Bones[bone.Index];
+		//	newBone.Name = bone.Name;
+		//	newBone.Index = bone.Index;
+		//	newBone.ParentIndex = bone.ParentIndex;
+		//	newBone.InverseBindpose = bone.inverseBindpose;
+		//	newBone.Bindpose = bone.bindpose;
+		//}
+
+		auto& boneMap = rigData.Bones;
 
 		// Clear our existing data and resize to match the new bone count
 		m_Bones.clear();
 		m_Bones.resize(boneMap.size());
 
-		for (auto& bone : boneMap)
+		for (auto& [boneName, bone] : boneMap)
 		{
 			auto& newBone = m_Bones[bone.Index];
 			newBone.Name = bone.Name;

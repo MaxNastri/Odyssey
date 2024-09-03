@@ -24,8 +24,8 @@ namespace Odyssey
 		// FBX Import
 		{
 			// TODO: Add support for submeshes
-			FBXModelImporter& importer = source->GetFBXImporter();
-			const MeshImportData& meshData = importer.GetMeshData();
+			auto importer = source->GetImporter();
+			const MeshImportData& meshData = importer->GetMeshData();
 		
 			// Transfer the mesh data from the importer
 			m_VertexCount = (uint32_t)meshData.VertexLists[0].size();
@@ -33,18 +33,6 @@ namespace Odyssey
 			m_Vertices = meshData.VertexLists[0];
 			m_Indices = meshData.IndexLists[0];
 		}
-
-		// GLTF Import
-		//{
-		//	GLTFAssetImporter importer = source->GetGLTFImporter();
-		//	const MeshImportData& meshData = importer.GetMeshData();
-		//
-		//	// Transfer the mesh data from the importer
-		//	m_VertexCount = (uint32_t)meshData.VertexLists[0].size();
-		//	m_IndexCount = (uint32_t)meshData.IndexLists[0].size();
-		//	m_Vertices = meshData.VertexLists[0];
-		//	m_Indices = meshData.IndexLists[0];
-		//}
 
 		// Create the binary asset for the vertices
 		BinaryBuffer buffer;

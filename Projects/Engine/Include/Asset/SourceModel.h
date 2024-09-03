@@ -12,11 +12,9 @@ namespace Odyssey
 		SourceModel(const Path& sourcePath);
 
 	public:
-		FBXModelImporter& GetFBXImporter() { return m_FBXImporter; }
-		GLTFAssetImporter& GetGLTFImporter() { return m_gltfImporer; }
+		ModelAssetImporter* GetImporter() { return m_ModelImporter.get(); }
 
 	private:
-		FBXModelImporter m_FBXImporter;
-		GLTFAssetImporter m_gltfImporer;
+		std::unique_ptr<ModelAssetImporter> m_ModelImporter;
 	};
 }

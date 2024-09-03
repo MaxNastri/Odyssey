@@ -24,8 +24,8 @@ namespace Odyssey
 	{
 		fbxsdk::FbxNode* Node;
 		std::string Name;
-		int32_t ParentIndex;
-		int32_t Index;
+		int32_t ParentIndex = -1;
+		int32_t Index = -1;
 		glm::mat4 bindpose;
 		glm::mat4 inverseBindpose;
 	};
@@ -40,14 +40,32 @@ namespace Odyssey
 	{
 		std::vector<FBXBone> FBXBones;
 		std::vector<BoneInfluence> ControlPointInfluences;
+		std::unordered_map<std::string, FBXBone> Bones;
 	};
 
 	struct AnimationImportData
 	{
 	public:
 		std::string Name;
+		double Start = std::numeric_limits<double>::max();
 		double Duration;
 		uint32_t FramesPerSecond;
 		std::map<std::string, BoneKeyframe> BoneKeyframes;
+	};
+
+	class ModelAssetImporter
+	{
+	public:
+		virtual bool Import(const Path& modelPath) = 0;
+
+	public:
+		const MeshImportData& GetMeshData() { return m_MeshData; }
+		const RigImportData& GetRigData() { return m_RigData; }
+		const AnimationImportData& GetAnimationData() { return m_AnimationData; }
+
+	protected:
+		MeshImportData m_MeshData;
+		RigImportData m_RigData;
+		AnimationImportData m_AnimationData;
 	};
 }

@@ -158,12 +158,12 @@ namespace Odyssey
 		}
 	}
 
-	void FBXModelImporter::Import(const Path& assetPath)
+	bool FBXModelImporter::Import(const Path& modelPath)
 	{
-		assert(assetPath.extension() == ".fbx");
+		assert(modelPath.extension() == ".fbx");
 
-		if (!ValidateFile(assetPath))
-			return;
+		if (!ValidateFile(modelPath))
+			return false;
 
 		// Process a bone hierarchy if it exists
 		ProcessBoneHierarchy(m_CurrentScene->GetRootNode(), 0, -1);
@@ -187,6 +187,8 @@ namespace Odyssey
 		}
 
 		LoadAnimationData();
+
+		return true;
 	}
 
 

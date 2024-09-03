@@ -10,6 +10,17 @@ namespace Odyssey
 {
 	using namespace tinygltf;
 
+	GLTFAssetImporter::GLTFAssetImporter()
+	{
+		m_Settings.ConvertLH = true;
+		m_Settings.LoggingEnabled = false;
+	}
+
+	GLTFAssetImporter::GLTFAssetImporter(Settings settings)
+		: m_Settings(settings)
+	{
+	}
+
 	bool GLTFAssetImporter::Import(const Path& filePath)
 	{
 		const Path& extension = filePath.extension();
@@ -41,6 +52,8 @@ namespace Odyssey
 		}
 
 		LoadMeshData(&model);
+		LoadRigData(&model);
+		LoadAnimationData(&model);
 		return true;
 	}
 
@@ -85,6 +98,92 @@ namespace Odyssey
 		return data;
 	}
 
+	struct MySkin
+	{
+		std::string name;
+		std::vector<glm::mat4> inverseBindposes;
+		std::vector<MyNode*> joints;
+	};
+
+	struct MyNode
+	{
+		MyNode* parent;
+		int32_t index;
+		std::vector<MyNode*> children;
+		glm::mat4 matrix;
+		std::string name;
+		Mesh* mesh;
+		Skin* skin;
+		int32_t skinIndex = -1;
+		glm::vec3 translation;
+		glm::vec3 scale{ 1.0f };
+		glm::quat rotation;
+
+	public:
+		glm::mat4 LocalMatrix()
+		{
+			return glm::translate(glm::mat4(1.0f), translation)* glm::mat4(rotation)* glm::scale(glm::mat4(1.0f), scale)* matrix;
+		}
+		glm::mat4 GlobalMatrix()
+		{
+			glm::mat4 mat = LocalMatrix();
+			MyNode* p = parent;
+			while (p)
+			{
+				mat = p->LocalMatrix() * mat;
+				p = p->parent;
+			}
+			return mat;
+		}
+	};
+
+	void GLTFAssetImporter::LoadNode(MyNode* parent, const Node* node, uint32_t nodeIndex, const Model* model, float globalScale)
+	{
+		MyNode* newNode = new MyNode{};
+		newNode->index = nodeIndex;
+		newNode->parent = parent;
+		newNode->name = node->name;
+		newNode->skinIndex = node->skin;
+		newNode->matrix = glm::mat4(1.0f);
+
+		// Generate local node matrix
+		glm::vec3 translation = glm::vec3(0.0f);
+		if (node->translation.size() == 3) {
+			translation = glm::make_vec3(node->translation.data());
+			newNode->translation = translation;
+		}
+		glm::mat4 rotation = glm::mat4(1.0f);
+		if (node->rotation.size() == 4) {
+			glm::quat q = glm::make_quat(node->rotation.data());
+			newNode->rotation = glm::mat4(q);
+		}
+		glm::vec3 scale = glm::vec3(1.0f);
+		if (node->scale.size() == 3) {
+			scale = glm::make_vec3(node->scale.data());
+			newNode->scale = scale;
+		}
+		if (node->matrix.size() == 16) {
+			newNode->matrix = glm::make_mat4x4(node->matrix.data());
+		};
+
+		// Node with children
+		if (node->children.size() > 0) {
+			for (size_t i = 0; i < node->children.size(); i++) {
+				LoadNode(newNode, &model->nodes[node->children[i]], node->children[i], model, globalScale);
+			}
+		}
+
+		if (node->mesh > -1)
+		{
+			LoadMeshData(model);
+		}
+
+		if (parent)
+			parent->children.push_back(newNode);
+		else
+			m_Nodes.push_back(newNode);
+	}
+
 	void GLTFAssetImporter::LoadMeshData(const Model* model)
 	{
 		m_MeshData.ObjectCount = 0;
@@ -118,20 +217,24 @@ namespace Odyssey
 					{
 						Vertex& vertex = vertices[v];
 
-						// IMPORTANT: Negate the z components to convert RH to LH coord system
 						vertex.Position = glm::make_vec3(positionData.GetData<float>(v));
-						vertex.Position.z = -vertex.Position.z;
 						vertex.Normal = normalData.IsValid() ? glm::make_vec3(normalData.GetData<float>(v)) : glm::vec3(0.0f);
-						vertex.Normal.z = -vertex.Normal.z;
 						vertex.Color = colorData.IsValid() ? glm::vec4(glm::make_vec3(colorData.GetData<float>(v)), 1.0f) : glm::vec4(1.0f);
-						
+
 						// IMPORTANT: We flip the UV to convert RH to LH
 						vertex.TexCoord0 = texCoord0Data.IsValid() ? glm::make_vec2(texCoord0Data.GetData<float>(v)) : glm::vec2(0.0f);
-						vertex.TexCoord0.y = 1.0f - vertex.TexCoord0.y;
-						
+
 						vertex.BoneWeights = weightsData.IsValid() ? glm::make_vec4(weightsData.GetData<float>(v)) : glm::vec4(0.0f);
 						if (glm::length(vertex.BoneWeights) == 0.0f)
 							vertex.BoneWeights = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
+
+						// IMPORTANT: Flip the z component to convert from RH to LH
+						if (m_Settings.ConvertLH)
+						{
+							vertex.Position.z = -vertex.Position.z;
+							vertex.Normal.z = -vertex.Normal.z;
+							vertex.TexCoord0.y = 1.0f - vertex.TexCoord0.y;
+						}
 
 						if (indicesData.IsValid())
 						{
@@ -207,9 +310,288 @@ namespace Odyssey
 				}
 
 				// IMPORTANT: We reverse the winding order to convert RH to LH coord system
-				std::reverse(indices.begin(), indices.end());
+				if (m_Settings.ConvertLH)
+					std::reverse(indices.begin(), indices.end());
+
 				m_MeshData.IndexLists.push_back(indices);
 			}
+		}
+	}
+
+	glm::mat4 ToGLM(std::vector<double> matrix)
+	{
+		return glm::mat4(
+			(float)matrix[0], (float)matrix[1], (float)matrix[2], (float)matrix[3],
+			(float)matrix[4], (float)matrix[5], (float)matrix[6], (float)matrix[7],
+			(float)matrix[8], (float)matrix[9], (float)matrix[10], (float)matrix[11],
+			(float)matrix[12], (float)matrix[13], (float)matrix[14], (float)matrix[15]
+		);
+	}
+
+	glm::mat4 GetMatrix(const Node* node)
+	{
+		if (node->matrix.size() == 0)
+		{
+			glm::vec3 translation = glm::vec3(node->translation[0], node->translation[1], node->translation[2]);
+			glm::quat rotation = glm::quat(node->rotation[0], node->rotation[1], node->rotation[2], node->rotation[3]);
+
+			return glm::translate(glm::identity<mat4>(), translation) * glm::toMat4(rotation);
+		}
+		else
+		{
+			return ToGLM(node->matrix);
+		}
+	}
+
+	glm::mat4 ConvertLH(glm::mat4 mat)
+	{
+		glm::vec3 translation;
+		glm::vec3 scale;
+		glm::quat rotation;
+		glm::vec3 skew;
+		glm::vec4 perspective;
+		glm::decompose(mat, scale, rotation, translation, skew, perspective);
+
+		translation.z = -translation.z;
+		rotation.x = -rotation.x;
+		rotation.y = -rotation.y;
+
+		glm::mat4 t = glm::translate(glm::identity<mat4>(), translation);
+		glm::mat4 r = glm::toMat4(rotation);
+		glm::mat4 s = glm::scale(glm::identity<mat4>(), scale);
+		return t * r * s;
+	}
+
+	void GLTFAssetImporter::LoadRigData(const Model* model)
+	{
+		for (size_t s = 0; s < model->skins.size(); s++)
+		{
+			const Skin* skin = &model->skins[s];
+			int32_t rootIndex = skin->skeleton;
+
+			for (auto& bone : skin->joints)
+			{
+				const Node* node = &model->nodes[bone];
+				BuildBoneMap(model, skin, node, bone, -1, GetMatrix(node));
+			}
+
+			for (auto& [boneName, bone] : m_RigData.Bones)
+			{
+				int32_t parent = bone.ParentIndex;
+				glm::mat4 bindpose = GetMatrix(&model->nodes[bone.Index]);
+				while (parent != -1)
+				{
+					bindpose = GetMatrix(&model->nodes[parent]) * bindpose;
+					parent = m_RigData.Bones[model->nodes[parent].name].ParentIndex;
+				}
+				bone.bindpose = bindpose;
+			}
+			if (m_RigData.Bones.size() > 0)
+			{
+				const Accessor& accessor = model->accessors[skin->inverseBindMatrices];
+				const BufferView& bufferView = model->bufferViews[accessor.bufferView];
+				const Buffer& buffer = model->buffers[bufferView.buffer];
+
+				std::vector<glm::mat4> inverseBindposes;
+				inverseBindposes.resize(accessor.count);
+
+				memcpy(inverseBindposes.data(), &buffer.data[accessor.byteOffset + bufferView.byteOffset], accessor.count * sizeof(glm::mat4));
+
+				for (auto& [boneName, bone] : m_RigData.Bones)
+				{
+					bone.inverseBindpose = ConvertLH(inverseBindposes[bone.Index]);
+				}
+			}
+		}
+	}
+
+	void GLTFAssetImporter::BuildBoneMap(const Model* model, const Skin* skin, const Node* node, int32_t index, int32_t parentIndex, glm::mat4 parentTransform)
+	{
+		// Make sure this is a valid bone index
+		bool valid = false;
+		for (auto boneIndex : skin->joints)
+			if (boneIndex == index)
+				valid = true;
+
+		if (valid)
+		{
+			auto& bone = m_RigData.Bones[node->name];
+			bone.Name = node->name;
+			if (bone.ParentIndex == -1)
+				bone.ParentIndex = parentIndex;
+			if (bone.Index == -1)
+				bone.Index = index;
+		}
+
+		for (const auto& child : node->children)
+		{
+			BuildBoneMap(model, skin, &model->nodes[child], child, index, parentTransform * GetMatrix(node));
+		}
+	}
+
+	struct Sampler
+	{
+		std::vector<float> inputs;
+		std::vector<glm::vec4> outputsVec4;
+		std::vector<float> outputs;
+	};
+
+	struct Channel
+	{
+		int32_t TargetBone = -1;
+		int32_t SamplerIndex = -1;
+		bool IsPosition = false;
+		bool IsRotation = false;
+		bool IsScale = false;
+	};
+	void GLTFAssetImporter::LoadAnimationData(const Model* model)
+	{
+		for (const Animation& anim : model->animations)
+		{
+			std::string name = anim.name;
+
+			std::vector<Odyssey::Sampler> samplers;
+			std::vector<Odyssey::Channel> channels;
+
+			for (auto& sampler : anim.samplers)
+			{
+				Odyssey::Sampler customSampler;
+				// Custom interpolation not supported
+				//if (sampler.interpolation == "LINEAR") {}
+				//if (sampler.interpolation == "STEP") {}
+				//if (sampler.interpolation == "CUBICSPLINE") {}
+
+				// Read sampler input time values
+				{
+					const tinygltf::Accessor& accessor = model->accessors[sampler.input];
+					const tinygltf::BufferView& bufferView = model->bufferViews[accessor.bufferView];
+					const tinygltf::Buffer& buffer = model->buffers[bufferView.buffer];
+
+					assert(accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
+
+					const void* dataPtr = &buffer.data[accessor.byteOffset + bufferView.byteOffset];
+					const float* buf = static_cast<const float*>(dataPtr);
+					for (size_t index = 0; index < accessor.count; index++)
+					{
+						customSampler.inputs.push_back(buf[index]);
+					}
+
+					for (auto input : customSampler.inputs)
+					{
+						if (input < m_AnimationData.Start)
+							m_AnimationData.Start = input;
+						if (input > m_AnimationData.Duration)
+							m_AnimationData.Duration = input;
+					}
+				}
+
+				// Read sampler output T/R/S values
+				{
+					const tinygltf::Accessor& accessor = model->accessors[sampler.output];
+					const tinygltf::BufferView& bufferView = model->bufferViews[accessor.bufferView];
+					const tinygltf::Buffer& buffer = model->buffers[bufferView.buffer];
+
+					assert(accessor.componentType == TINYGLTF_COMPONENT_TYPE_FLOAT);
+
+					const void* dataPtr = &buffer.data[accessor.byteOffset + bufferView.byteOffset];
+
+					switch (accessor.type) {
+						case TINYGLTF_TYPE_VEC3: {
+							const glm::vec3* buf = static_cast<const glm::vec3*>(dataPtr);
+							for (size_t index = 0; index < accessor.count; index++) {
+								customSampler.outputsVec4.push_back(glm::vec4(buf[index], 0.0f));
+								customSampler.outputs.push_back(buf[index][0]);
+								customSampler.outputs.push_back(buf[index][1]);
+								customSampler.outputs.push_back(buf[index][2]);
+							}
+							break;
+						}
+						case TINYGLTF_TYPE_VEC4: {
+							const glm::vec4* buf = static_cast<const glm::vec4*>(dataPtr);
+							for (size_t index = 0; index < accessor.count; index++) {
+								customSampler.outputsVec4.push_back(buf[index]);
+								customSampler.outputs.push_back(buf[index][0]);
+								customSampler.outputs.push_back(buf[index][1]);
+								customSampler.outputs.push_back(buf[index][2]);
+								customSampler.outputs.push_back(buf[index][3]);
+							}
+							break;
+						}
+						default: {
+							std::cout << "unknown type" << std::endl;
+							break;
+						}
+					}
+				}
+
+				samplers.push_back(customSampler);
+			}
+
+			for (auto& source : anim.channels)
+			{
+				Odyssey::Channel myChannel;
+
+				if (source.target_path == "rotation")
+					myChannel.IsRotation = true;
+				if (source.target_path == "translation")
+					myChannel.IsPosition = true;
+				if (source.target_path == "scale")
+					myChannel.IsScale = true;
+				if (source.target_path == "weights")
+				{
+					std::cout << "weights not yet supported, skipping channel" << std::endl;
+					continue;
+				}
+				myChannel.SamplerIndex = source.sampler;
+				myChannel.TargetBone = source.target_node;
+
+				if (myChannel.TargetBone == -1)
+					continue;
+
+				channels.push_back(myChannel);
+			}
+
+			// Convert the channels and samplers into something actually readable
+			for (auto& channel : channels)
+			{
+				std::string targetName;
+				for (auto& [boneName, bone] : m_RigData.Bones)
+				{
+					if (bone.Index == channel.TargetBone)
+					{
+						targetName = boneName;
+						break;
+					}
+				}
+
+				if (!targetName.empty())
+				{
+					auto& bone = m_RigData.Bones[targetName];
+					auto& boneKeyframe = m_AnimationData.BoneKeyframes[bone.Name];
+					boneKeyframe.SetBoneName(bone.Name);
+					Odyssey::Sampler& sampler = samplers[channel.SamplerIndex];
+
+					for (size_t i = 0; i < sampler.inputs.size(); i++)
+					{
+						if (channel.IsPosition)
+						{
+							glm::vec3 position = sampler.outputsVec4[i];
+							boneKeyframe.AddPositionKey(sampler.inputs[i], sampler.outputsVec4[i]);
+						}
+						else if (channel.IsRotation)
+						{
+							glm::quat rotation = glm::quat(sampler.outputsVec4[i].w, sampler.outputsVec4[i].x, sampler.outputsVec4[i].y, sampler.outputsVec4[i].z);
+							boneKeyframe.AddRotationKey(sampler.inputs[i], rotation);
+						}
+						else if (channel.IsScale)
+						{
+							boneKeyframe.AddScaleKey(sampler.inputs[i], sampler.outputsVec4[i]);
+						}
+					}
+				}
+			}
+
+			int debug = 0;
 		}
 	}
 }

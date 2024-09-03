@@ -1,5 +1,5 @@
 #pragma once
-#include "ModelImportData.hpp"
+#include "ModelAssetImporter.hpp"
 
 namespace fbxsdk
 {
@@ -10,11 +10,12 @@ namespace fbxsdk
 	class FbxScene;
 }
 
+using namespace fbxsdk;
+
 namespace Odyssey
 {
-	using namespace fbxsdk;
 
-	class FBXModelImporter
+	class FBXModelImporter : public ModelAssetImporter
 	{
 	public:
 		struct Settings
@@ -28,12 +29,7 @@ namespace Odyssey
 		FBXModelImporter(const Settings& settings);
 
 	public:
-		void Import(const Path& filePath);
-
-	public:
-		const MeshImportData& GetMeshData() { return m_MeshData; }
-		const RigImportData& GetRigData() { return m_RigData; }
-		const AnimationImportData& GetAnimationData() { return m_AnimationData; }
+		virtual bool Import(const Path& modelPath) override;
 
 	private:
 		void Init();
@@ -55,10 +51,5 @@ namespace Odyssey
 		FbxIOSettings* m_FBXSettings;
 		FbxScene* m_CurrentScene;
 		Settings m_Settings;
-
-	private:
-		MeshImportData m_MeshData;
-		RigImportData m_RigData;
-		AnimationImportData m_AnimationData;
 	};
 }

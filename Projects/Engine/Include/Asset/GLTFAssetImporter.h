@@ -1,35 +1,44 @@
 #pragma once
-#include "ModelImportData.hpp"
+#include "ModelAssetImporter.hpp"
 
 namespace tinygltf
 {
 	class Node;
 	class Model;
+	struct Skin;
 }
 
 namespace Odyssey
 {
+	class MyNode;
+
 	using namespace tinygltf;
 
-	class GLTFAssetImporter
+	class GLTFAssetImporter : public ModelAssetImporter
 	{
 	public:
-		bool Import(const Path& filePath);
+		struct Settings
+		{
+		public:
+			bool ConvertLH = true;
+			bool LoggingEnabled = false;
+		};
+	public:
+		GLTFAssetImporter();
+		GLTFAssetImporter(Settings settings);
 
 	public:
-		const MeshImportData& GetMeshData() { return m_MeshData; }
-		const RigImportData& GetRigData() { return m_RigData; }
-		const AnimationImportData& GetAnimationData() { return m_AnimationData; }
+		virtual bool Import(const Path& modelPath) override;
 
 	private:
+		void LoadNode(MyNode* parent, const Node* node, uint32_t nodeIndex, const Model* model, float globalScale);
 		void LoadMeshData(const Model* model);
+		void LoadRigData(const Model* model);
+		void BuildBoneMap(const Model* model, const Skin* skin, const Node* node, int32_t index, int32_t parentIndex, glm::mat4 parentTransform);
+		void LoadAnimationData(const Model* model);
 
 	private:
-		bool m_LoggingEnabled = false;
-
-	private:
-		MeshImportData m_MeshData;
-		RigImportData m_RigData;
-		AnimationImportData m_AnimationData;
+		Settings m_Settings;
+		std::vector<MyNode*> m_Nodes;
 	};
 }

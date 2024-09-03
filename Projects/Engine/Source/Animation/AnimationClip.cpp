@@ -13,7 +13,7 @@ namespace Odyssey
 	AnimationClip::AnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel)
 		: Asset(assetPath)
 	{
-		const AnimationImportData& animationData = sourceModel->GetFBXImporter().GetAnimationData();
+		const AnimationImportData& animationData = sourceModel->GetImporter()->GetAnimationData();
 
 		m_Name = animationData.Name;
 		m_Duration = animationData.Duration;
