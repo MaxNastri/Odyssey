@@ -10,6 +10,7 @@ namespace Odyssey
 		Selection = 2,
 		ContextMenu = 3,
 		DragAndDrop = 4,
+		Opened = 5,
 	};
 
 	template<typename T>

@@ -3,7 +3,7 @@
 #include "entt.hpp"
 #include "GameObject.h"
 #include "GUID.h"
-#include "SceneGraph.hpp"
+#include "SceneGraph.h"
 
 namespace Odyssey
 {

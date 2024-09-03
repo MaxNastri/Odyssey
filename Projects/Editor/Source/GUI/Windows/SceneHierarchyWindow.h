@@ -2,6 +2,7 @@
 #include "DockableWindow.h"
 #include "EventSystem.h"
 #include "Interaction.hpp"
+#include "SceneGraph.h"
 
 namespace Odyssey
 {
@@ -17,21 +18,20 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	public:
-		void OnGameObjectSelected(std::function<void(int32_t)> callback) { m_OnGameObjectSelected.push_back(callback); }
 		void OnSceneLoaded(SceneLoadedEvent* event);
 
 	private:
-		bool DrawGameObject(GameObject& gameObject, int32_t& selectionMask, uint32_t& selectionID);
+		void DrawSceneNode(const std::shared_ptr<SceneGraph::Node> node);
+		bool DrawGameObject(GameObject& gameObject, bool leaf);
 		void HandleContextMenu();
-
-	private:
-		std::vector<Interaction<GameObject>> m_Interactions;
-		bool m_ContextMenuOpen = false;
+		void ProcessInteractions();
 
 	private:
 		Scene* m_Scene;
+		std::vector<Interaction<GameObject>> m_Interactions;
+		bool m_ContextMenuOpen = false;
 		std::shared_ptr<IEventListener> m_SceneLoadedListener;
-		bool m_NewObjectSelected = false;
-		std::vector<std::function<void(int32_t)>> m_OnGameObjectSelected;
+		GameObject m_Selected;
+		std::function<void(void)> m_Deferred;
 	};
 }

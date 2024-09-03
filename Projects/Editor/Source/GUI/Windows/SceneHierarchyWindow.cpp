@@ -25,118 +25,104 @@ namespace Odyssey
 		if (!Begin())
 			return;
 
-		uint32_t selectionID = 0;
-		static int selectionMask = (1 << 2);
-		int nodeClicked = -1;
-
 		if (m_Scene)
 		{
 			m_Interactions.clear();
 
-			for (auto entity : m_Scene->GetAllEntitiesWith<PropertiesComponent>())
+			SceneGraph& sceneGraph = m_Scene->GetSceneGraph();
+			const SceneGraph::Node* sceneRoot = sceneGraph.GetSceneRoot();
+
+			// Draw the scene root's children
+			// Note: Their children will be drawn recursively
+			for (auto& node : sceneRoot->Children)
 			{
-				GameObject gameObject = GameObject(m_Scene, entity);
-
-				// Don't display hidden game objects
-				if (gameObject.HasComponent<EditorPropertiesComponent>() )
-				{
-					EditorPropertiesComponent& properties = gameObject.GetComponent<EditorPropertiesComponent>();
-					if (!properties.ShowInHierarchy)
-						continue;
-				}
-
-				if (DrawGameObject(gameObject, selectionMask, selectionID))
-					nodeClicked = selectionID;
-
-				++selectionID;
+				DrawSceneNode(node);
 			}
 
 			if (m_CursorInContentRegion && m_Interactions.empty())
 				HandleContextMenu();
 		}
-		
-		if (nodeClicked != -1)
-		{
-			if (ImGui::GetIO().KeyCtrl)
-				selectionMask ^= (1 << nodeClicked);
-			else
-				selectionMask = (1 << nodeClicked);
-		}
 
+		ProcessInteractions();
+
+		if (m_Deferred)
+		{
+			m_Deferred();
+			m_Deferred = nullptr;
+		}
 		End();
 	}
-	
+
 	void SceneHierarchyWindow::OnSceneLoaded(SceneLoadedEvent* event)
 	{
 		m_Scene = event->loadedScene;
 	}
 
-	bool SceneHierarchyWindow::DrawGameObject(GameObject& gameObject, int32_t& selectionMask, uint32_t& selectionID)
+	void SceneHierarchyWindow::DrawSceneNode(const std::shared_ptr<SceneGraph::Node> node)
 	{
-		bool clicked = false;
-		bool hasChildren = false;
-		const bool isSelected = (selectionMask & (1 << selectionID)) != 0;
+		GameObject& entity = node->Entity;
+		bool isLeaf = node->Children.size() == 0;
+
+		// Skip entities, and their children, who are marked as don't show in hierarchy
+		if (entity.HasComponent<EditorPropertiesComponent>())
+		{
+			EditorPropertiesComponent& properties = entity.GetComponent<EditorPropertiesComponent>();
+			if (!properties.ShowInHierarchy)
+				return;
+		}
+
+		// Draw the node
+		if (DrawGameObject(entity, isLeaf))
+		{
+			// Draw the node's children, if they exist
+			for (auto& childNode : node->Children)
+			{
+				DrawSceneNode(childNode);
+			}
+
+			// Pop the tree if we have children
+			if (!isLeaf)
+				ImGui::TreePop();
+		}
+	}
+
+	bool SceneHierarchyWindow::DrawGameObject(GameObject& gameObject, bool leaf)
+	{
+		// Setup the flags
 		ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-		if (hasChildren)
-		{
-			// Draw as tree node
-			bool open = ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject.GetName().c_str());
-
-			if (ImGui::IsItemHovered())
-				m_Interactions.push_back({ InteractionType::Hovered, &gameObject });
-
-			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-				clicked = true;
-
-			if (open)
-			{
-				// Draw child
-
-				// ImGui::TreePop();
-			}
-		}
-		else
-		{
-			// Draw as tree leaf with no children
+		if (leaf)
 			nodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-			ImGui::TreeNodeEx((void*)(intptr_t)selectionID, nodeFlags, gameObject.GetName().c_str());
 
-			// Register a hovered interaction
-			if (ImGui::IsItemHovered())
-				m_Interactions.push_back({ InteractionType::Hovered, &gameObject });
+		if (bool selected = m_Selected.Equals(gameObject))
+			nodeFlags |= ImGuiTreeNodeFlags_Selected;
 
-			// Check if we should display a context menu
-			if (ImGui::BeginPopupContextItem())
+		void* id = &gameObject;
+		bool open = leaf;
+
+		open = ImGui::TreeNodeEx(id, nodeFlags, gameObject.GetName().c_str());
+
+		if (ImGui::IsItemHovered())
+			m_Interactions.push_back({ InteractionType::Hovered, &gameObject });
+
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+		{
+			m_Interactions.push_back({ InteractionType::Selection, &gameObject });
+			m_Selected = gameObject;
+		}
+
+		if (ImGui::BeginPopupContextItem())
+		{
+			if (ImGui::Button("Delete"))
 			{
-				clicked = true;
-				m_Interactions.push_back({ InteractionType::ContextMenu, &gameObject });
-
-				if (ImGui::Button("Delete"))
-					gameObject.Destroy();
-				if (ImGui::Button("Child"))
-				{
-					auto view = m_Scene->GetAllEntitiesWith<PropertiesComponent>();
-					auto entity = view.begin()[selectionID];
-					GameObject parent = GameObject(m_Scene, entity);
-					gameObject.SetParent(parent);
-				}
-
-				ImGui::EndPopup();
+				m_Deferred = [this, &gameObject] { gameObject.Destroy(); };
+			}
+			if (ImGui::Button("Child"))
+			{
+				m_Deferred = [this, &gameObject] { gameObject.SetParent(m_Selected); };
 			}
 
-			// Check if this item has been selected
-			if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
-			{
-				clicked = true;
-				m_Interactions.push_back({ InteractionType::Selection, &gameObject });
-
-				// Dispatch an event with the game object's guid
-				GUISelection selection;
-				selection.Type = GameObject::Type;
-				selection.GUID = gameObject.GetGUID();
-				EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
-			}
+			ImGui::EndPopup();
 		}
 
 		// Allow for this entity to be a potential drag/drop payload
@@ -150,7 +136,7 @@ namespace Odyssey
 			ImGui::EndDragDropSource();
 		}
 
-		return clicked;
+		return open;
 	}
 
 	void SceneHierarchyWindow::HandleContextMenu()
@@ -169,6 +155,40 @@ namespace Odyssey
 				ImGui::EndMenu();
 			}
 			ImGui::EndPopup();
+		}
+	}
+	void SceneHierarchyWindow::ProcessInteractions()
+	{
+		for (auto& interaction : m_Interactions)
+		{
+			switch (interaction.Type)
+			{
+				case InteractionType::Selection:
+				{
+					// Dispatch an event with the game object's guid
+					GUISelection selection;
+					selection.Type = GameObject::Type;
+					selection.GUID = interaction.Target->GetGUID();
+					EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
+					break;
+				}
+				case InteractionType::ContextMenu:
+				{
+					if (ImGui::BeginPopupContextItem())
+					{
+						if (ImGui::Button("Delete"))
+							interaction.Target->Destroy();
+						if (ImGui::Button("Child"))
+						{
+							interaction.Target->SetParent(m_Selected);
+						}
+
+						ImGui::EndPopup();
+					}
+				}
+				default:
+					break;
+			}
 		}
 	}
 }
