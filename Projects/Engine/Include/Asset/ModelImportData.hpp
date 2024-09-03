@@ -3,74 +3,43 @@
 #include "Bone.h"
 #include "BoneKeyframe.hpp"
 
+namespace fbxsdk
+{
+	class FbxNode;
+}
+
 namespace Odyssey
 {
 	struct MeshImportData
 	{
-	public: // Inspector data
-		uint32_t VertexCount = 0;
-		uint32_t IndexCount = 0;
-		uint32_t UVChannelCount = 0;
-		uint32_t TangentsCount = 0;
-		uint32_t NormalsCount = 0;
-		std::vector<uint32_t> UVChannels;
+		size_t ObjectCount;
+		std::vector<size_t> HashIDs;
+		std::vector<std::string> Names;
+		std::vector<glm::mat4> WorldMatrices;
+		std::vector<std::vector<Vertex>> VertexLists;
+		std::vector<std::vector<uint32_t>> IndexLists;
+	};
 
-	public:
-		void Clear()
-		{
-			Vertices.clear();
-			Indices.clear();
-			m_VertexBoneTracking.clear();
-		}
+	struct FBXBone
+	{
+		fbxsdk::FbxNode* Node;
+		std::string Name;
+		int32_t ParentIndex;
+		int32_t Index;
+		glm::mat4 bindpose;
+		glm::mat4 inverseBindpose;
+	};
 
-		void SetBoneInfluence(uint32_t vertexID, uint32_t boneIndex, float boneWeight)
-		{
-			// Insert 0 as a default
-			if (!m_VertexBoneTracking.contains(vertexID))
-				m_VertexBoneTracking[vertexID] = 0;
-
-			// Use the current influence count as the index into the vec4 for indices/weights
-			uint32_t element = m_VertexBoneTracking[vertexID];
-			if (element < 4)
-			{
-				Vertices[vertexID].BoneIndices[element] = (float)boneIndex;
-				Vertices[vertexID].BoneWeights[element] = boneWeight;
-
-				if (glm::length(Vertices[vertexID].BoneWeights) > 1.0f)
-					int dbeug = 0;
-			}
-
-			// Increment the influence count so we move to the next vec4 element
-			m_VertexBoneTracking[vertexID]++;
-		}
-
-	public:
-		std::vector<Vertex> Vertices;
-		std::vector<uint32_t> Indices;
-
-	private:
-		// <VertexID, InfluenceCount>
-		std::map<uint32_t, uint32_t> m_VertexBoneTracking;
+	struct BoneInfluence
+	{
+		glm::vec4 Indices;
+		glm::vec4 Weights;
 	};
 
 	struct RigImportData
 	{
-	public:
-		glm::mat4 GlobalTransform;
-		std::map<std::string, Bone> m_BoneMap;
-	};
-
-	struct BoneKeyframeData
-	{
-	public:
-		template<typename T> struct Key { double Time; T Value; };
-		typedef Key<glm::mat4> PositionKey;
-		typedef Key<glm::mat4> RotationKey;
-		typedef Key<glm::mat4> ScaleKey;
-
-		std::vector<PositionKey> PositionKeys;
-		std::vector<RotationKey> RotationKeys;
-		std::vector<ScaleKey> ScaleKeys;
+		std::vector<FBXBone> FBXBones;
+		std::vector<BoneInfluence> ControlPointInfluences;
 	};
 
 	struct AnimationImportData
@@ -78,6 +47,7 @@ namespace Odyssey
 	public:
 		std::string Name;
 		double Duration;
+		uint32_t FramesPerSecond;
 		std::map<std::string, BoneKeyframe> BoneKeyframes;
 	};
 }

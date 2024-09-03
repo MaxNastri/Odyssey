@@ -128,6 +128,7 @@ namespace Odyssey
 	void Animator::DebugDrawBone(const Bone& bone)
 	{
 		auto& transform = m_GameObject.GetComponent<Transform>();
+
 		glm::mat4 boneTransform = transform.GetWorldMatrix() * bone.Bindpose;
 		glm::vec3 translation;
 		glm::vec3 scale;

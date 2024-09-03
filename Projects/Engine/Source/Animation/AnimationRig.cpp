@@ -1,6 +1,5 @@
 #include "AnimationRig.h"
 #include "SourceModel.h"
-#include "ModelImporter.h"
 #include "FBXModelImporter.h"
 
 namespace Odyssey
@@ -14,7 +13,7 @@ namespace Odyssey
 	AnimationRig::AnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> source)
 		: Asset(assetPath)
 	{
-		const FBXModelImporter::RigImportData& rigData = source->GetFBXImporter().GetRigData();
+		const RigImportData& rigData = source->GetFBXImporter().GetRigData();
 
 		auto& boneMap = rigData.FBXBones;
 

@@ -51,13 +51,14 @@ namespace Odyssey
 					(v1.BoneWeights.x == v2.BoneWeights.x) &&
 					(v1.BoneWeights.y == v2.BoneWeights.y) &&
 					(v1.BoneWeights.z == v2.BoneWeights.z) &&
-					(v1.BoneWeights.z == v2.BoneWeights.z)&&
+					(v1.BoneWeights.z == v2.BoneWeights.z) &&
 					(v1.BoneIndices.x == v2.BoneIndices.x) &&
-					(v1.BoneIndices.y == v2.BoneIndices.y)&&
+					(v1.BoneIndices.y == v2.BoneIndices.y) &&
 					(v1.BoneIndices.z == v2.BoneIndices.z) &&
 					(v1.BoneIndices.w == v2.BoneIndices.w);
 			}
 		};
+
 
 		inline static glm::mat4 ToGLM(FbxAMatrix fbxM)
 		{
@@ -67,6 +68,35 @@ namespace Odyssey
 				(float)(fbxM.Get(2, 0)), (float)(fbxM.Get(2, 1)), (float)(fbxM.Get(2, 2)), (float)(fbxM.Get(2, 3)),
 				(float)(fbxM.Get(3, 0)), (float)(fbxM.Get(3, 1)), (float)(fbxM.Get(3, 2)), (float)(fbxM.Get(3, 3))
 			);
+		}
+
+		inline static glm::mat4 ConvertLH(FbxAMatrix fbxM)
+		{
+			// Get the translation and rotation of the world matrix
+			FbxVector4 translation = fbxM.GetT();
+			FbxVector4 rotation = fbxM.GetR();
+			// Invert the z position and x/y rotation
+			translation.Set(translation.mData[0], translation.mData[1], -translation.mData[2]);
+			rotation.Set(-rotation.mData[0], -rotation.mData[1], rotation.mData[2]);
+
+			// Construct a new world matrix from the inverted translation/rotation
+			FbxAMatrix returnMatrix = fbxM;
+			returnMatrix.SetT(translation);
+			returnMatrix.SetR(rotation);
+
+			return ToGLM(returnMatrix);
+		}
+
+		inline static glm::mat4 ConvertLHSwapYZ(FbxAMatrix fbxM, bool rotate)
+		{
+			glm::mat4 mat = ToGLM(fbxM);
+			mat = glm::mat4(
+				mat[0][0], mat[0][2], mat[0][1], mat[0][3],
+				mat[2][0], mat[2][2], mat[2][1], mat[2][3],
+				mat[1][0], mat[1][2], mat[1][1], mat[1][3],
+				mat[3][0], mat[3][2], mat[3][1], mat[3][3]
+			);
+			return mat;
 		}
 
 		inline static glm::vec2 ToGLM2(FbxVector2 vec)
@@ -98,6 +128,19 @@ namespace Odyssey
 
 	FBXModelImporter::FBXModelImporter()
 	{
+		m_Settings.ConvertToLH = true;
+		m_Settings.LoggingEnabled = false;
+		Init();
+	}
+
+	FBXModelImporter::FBXModelImporter(const Settings& settings)
+		: m_Settings(settings)
+	{
+		Init();
+	}
+
+	void FBXModelImporter::Init()
+	{
 		m_SDKManager = FbxManager::Create();
 		if (!m_SDKManager)
 		{
@@ -105,12 +148,9 @@ namespace Odyssey
 			return;
 		}
 
-		m_Settings = FbxIOSettings::Create(m_SDKManager, IOSROOT);
-		m_SDKManager->SetIOSettings(m_Settings);
+		m_FBXSettings = FbxIOSettings::Create(m_SDKManager, IOSROOT);
+		m_SDKManager->SetIOSettings(m_FBXSettings);
 		m_CurrentScene = FbxScene::Create(m_SDKManager, "Import Scene");
-
-		fbxsdk::FbxAxisSystem system(fbxsdk::FbxAxisSystem::EPreDefinedAxisSystem::eDirectX);
-		system.DeepConvertScene(m_CurrentScene);
 
 		if (!m_CurrentScene)
 		{
@@ -149,6 +189,7 @@ namespace Odyssey
 		LoadAnimationData();
 	}
 
+
 	bool FBXModelImporter::ValidateFile(const Path& filePath)
 	{
 		int i, animationStackCount;
@@ -162,7 +203,7 @@ namespace Odyssey
 		FbxImporter* importer = FbxImporter::Create(m_SDKManager, "Importer");
 
 		// Initialize the importer with a filename and get the file version
-		const bool importStatus = importer->Initialize(filePath.string().c_str(), -1, m_Settings);
+		const bool importStatus = importer->Initialize(filePath.string().c_str(), -1, m_FBXSettings);
 		int32_t fileMajor, fileMinor, fileRevision;
 		importer->GetFileVersion(fileMajor, fileMinor, fileRevision);
 
@@ -188,7 +229,7 @@ namespace Odyssey
 		// Check if the file is an fbx file
 		if (importer->IsFBX())
 		{
-			if (m_LoggingEnabled)
+			if (m_Settings.LoggingEnabled)
 			{
 				Logger::LogInfo("[FBXModelImporter] Animation Stack Information");
 				animationStackCount = importer->GetAnimStackCount();
@@ -301,6 +342,18 @@ namespace Odyssey
 				vertex.Tangent = GetTangent(mesh, vertexId, controlPointIndex);
 				vertex.TexCoord0 = GetTexcoord(mesh, j, controlPointIndex, i);
 
+				// IMPORTANT: Negate the z component and rotate 180 degrees to convert RH to LH
+				if (m_Settings.ConvertToLH)
+				{
+					// NOTE: Swapping y and z is a separate conversion
+					vertex.Position.z = -vertex.Position.z;
+					vertex.Normal.z = -vertex.Normal.z;
+					vertex.Tangent.z = -vertex.Tangent.z;
+					//vertex.Position = glm::rotateY(vertex.Position, glm::pi<float>());
+					//vertex.Normal = glm::rotateY(vertex.Normal, glm::pi<float>());
+					//vertex.Tangent = glm::rotateY(vertex.Tangent, glm::pi<float>());
+				}
+
 				// Check if this mesh is animated
 				if (m_RigData.FBXBones.size() > 0)
 				{
@@ -343,6 +396,10 @@ namespace Odyssey
 		// Convert the world matrix to a directx type for storage
 		glm::mat4 world = Utils::ToGLM(meshNode->EvaluateGlobalTransform());
 		std::string name = meshNode->GetName();
+
+		// IMPORTANT: Reverse the winding order to convert from RH to LH
+		if (m_Settings.ConvertToLH)
+			std::reverse(indexList.begin(), indexList.end());
 
 		m_MeshData.HashIDs.push_back(hashID);
 		m_MeshData.Names.push_back(name);
@@ -387,7 +444,17 @@ namespace Odyssey
 			for (size_t i = 0; i < m_RigData.FBXBones.size(); i++)
 			{
 				// Store the joint's transform in the keyframe
-				glm::mat4 boneTransform = Utils::ToGLM(m_RigData.FBXBones[i].Node->EvaluateGlobalTransform(duration));
+				glm::mat4 boneTransform;
+				if (m_Settings.ConvertToLH)
+				{
+					glm::mat4 rotMatrix = glm::mat4_cast(glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
+					boneTransform = rotMatrix * Utils::ConvertLH(m_RigData.FBXBones[i].Node->EvaluateGlobalTransform(duration));
+				}
+				else
+				{
+					boneTransform = Utils::ToGLM(m_RigData.FBXBones[i].Node->EvaluateGlobalTransform(duration));
+				}
+
 				glm::vec3 translation;
 				glm::vec3 scale;
 				glm::quat rotation;
@@ -420,7 +487,17 @@ namespace Odyssey
 			bone.Name = node->GetName();
 			bone.Index = boneIndex;
 			bone.ParentIndex = parentIndex;
-			bone.bindpose = Utils::ToGLM(node->EvaluateGlobalTransform());
+
+			if (m_Settings.ConvertToLH)
+			{
+				// Rotate the BINDPOSE (not inverse bindpose) by 180 on the y
+				// This works to rotate the rig post-LH conversion
+				glm::mat4 rotMatrix = glm::mat4_cast(glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
+				bone.bindpose = rotMatrix * Utils::ConvertLH(node->EvaluateGlobalTransform());
+			}
+			else
+				bone.bindpose = Utils::ToGLM(node->EvaluateGlobalTransform());
+
 			bone.inverseBindpose = glm::identity<glm::mat4>();
 			m_RigData.FBXBones.push_back(bone);
 		}
@@ -514,6 +591,7 @@ namespace Odyssey
 
 		return tangent;
 	}
+
 	glm::vec2 FBXModelImporter::GetTexcoord(FbxMesh* mesh, int32_t vertexID, int32_t controlPoint, int32_t polygonPos)
 	{
 		glm::vec2 texCoord(0, 0);
@@ -552,6 +630,7 @@ namespace Odyssey
 
 		return texCoord;
 	}
+
 	void FBXModelImporter::GetBoneInfluences(FbxMesh* mesh)
 	{
 		fbxsdk::FbxSkin* rootSkin = nullptr;
@@ -607,9 +686,9 @@ namespace Odyssey
 			cluster->GetTransformMatrix(clusterTransform);
 			cluster->GetTransformLinkMatrix(clusterTransformLink);
 
-			glm::mat4 geometry = Utils::ToGLM(geometryTransform);
-			glm::mat4 transform = Utils::ToGLM(clusterTransform);
-			glm::mat4 transformLink = Utils::ToGLM(clusterTransformLink.Inverse());
+			glm::mat4 geometry = Utils::ConvertLH(geometryTransform);
+			glm::mat4 transform = Utils::ConvertLH(clusterTransform);
+			glm::mat4 transformLink = Utils::ConvertLH(clusterTransformLink.Inverse());
 			glm::mat4 inverseBindpose = transformLink * transform;
 			inverseBindpose = inverseBindpose * geometry;
 			m_RigData.FBXBones[boneIndex].inverseBindpose = inverseBindpose;

@@ -45,7 +45,7 @@ namespace Odyssey
 
 				if (!scenePath.empty())
 				{
-					//SceneManager::SaveActiveSceneTo(scenePath);
+					SceneManager::SaveActiveScene(scenePath);
 				}
 			}
 

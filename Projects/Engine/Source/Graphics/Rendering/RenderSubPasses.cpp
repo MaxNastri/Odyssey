@@ -85,6 +85,6 @@ namespace Odyssey
 
 		// Set the per-object descriptor buffer offset
 		commandBuffer->BindVertexBuffer(DebugRenderer::GetVertexBuffer());
-		commandBuffer->Draw(DebugRenderer::GetVertexCount(), 1, 0, 0);
+		commandBuffer->Draw((uint32_t)DebugRenderer::GetVertexCount(), 1, 0, 0);
 	}
 }

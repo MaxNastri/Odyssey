@@ -120,7 +120,7 @@ namespace Odyssey
 		}
 	}
 
-	void Scene::SaveTo(const std::filesystem::path& savePath)
+	void Scene::SaveTo(const Path& savePath)
 	{
 		SaveToDisk(savePath);
 	}

@@ -1,6 +1,5 @@
 #include "AnimationClip.h"
 #include "SourceModel.h"
-#include "ModelImporter.h"
 #include "FBXModelImporter.h"
 
 namespace Odyssey
@@ -14,7 +13,7 @@ namespace Odyssey
 	AnimationClip::AnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel)
 		: Asset(assetPath)
 	{
-		const FBXModelImporter::AnimationImportData& animationData = sourceModel->GetFBXImporter().GetAnimationData();
+		const AnimationImportData& animationData = sourceModel->GetFBXImporter().GetAnimationData();
 
 		m_Name = animationData.Name;
 		m_Duration = animationData.Duration;
@@ -41,6 +40,7 @@ namespace Odyssey
 		{
 			return boneKeyframe.GetFrameTime(frameIndex);
 		}
+		return 0.0;
 	}
 
 	size_t AnimationClip::GetFrameCount()
@@ -49,6 +49,7 @@ namespace Odyssey
 		{
 			return boneKeyframe.GetPositionKeys().size();
 		}
+		return 0;
 	}
 
 	void AnimationClip::SaveToDisk(const Path& assetPath)

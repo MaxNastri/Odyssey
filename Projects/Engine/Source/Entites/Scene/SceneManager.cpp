@@ -29,6 +29,15 @@ namespace Odyssey
 			scenes[activeScene]->Save();
 	}
 
+	void SceneManager::SaveActiveScene(const Path& path)
+	{
+		if (activeScene < scenes.size())
+		{
+			scenes[activeScene]->SaveTo(path);
+			LoadScene(path.string());
+		}
+	}
+
 	Scene* SceneManager::GetActiveScene()
 	{
 		if (activeScene < scenes.size())

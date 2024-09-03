@@ -1,7 +1,7 @@
 Scene: Scene_01
 GUID: 6049963977740777600
 GameObjects:
-  - Name: "Max's Other GameObject"
+  - Name: Camera
     GUID: 1278710421845013511
     Type: Odyssey.GameObject
     Components:
@@ -29,17 +29,17 @@ GameObjects:
             Value: 1
           - Name: RotDirection
             Value: 'x: 0 y: 45 z: 0'
-  - Name: "Max's GameObject"
+  - Name: Monk FBX
     GUID: 15322439001782158818
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Animator
-        Animation Rig: 12068358419570349370
-        Animation Clip: 9418789030815046255
+        Animation Rig: 12416338601938706859
+        Animation Clip: 8152782904922878649
       - Type: Odyssey.MeshRenderer
-        m_Mesh: 15813187439399979618
+        m_Mesh: 4307647604278076713
         m_Material: 942766181068811557
-      - m_FileID: 2443852871
+      - m_FileID: 463842556
         Type: Odyssey.Transform
         Position: 'x: 0.72083634 y: 0 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'

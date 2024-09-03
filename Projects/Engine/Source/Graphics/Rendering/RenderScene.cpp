@@ -176,7 +176,6 @@ namespace Odyssey
 				// Update the per-object uniform buffer
 				uint32_t perObjectSize = sizeof(objectData);
 				objectData.world = transform.GetWorldMatrix();
-
 				ResourceID uboID = perObjectUniformBuffers[drawcall.UniformBufferIndex];
 				auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
 				uniformBuffer->SetMemory(perObjectSize, &objectData);

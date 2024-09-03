@@ -37,10 +37,10 @@ project "Odyssey.Editor"
         "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral",
         "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**",
         "%{wks.location}/Vendor/Vulkan/Include/",
-        "%{wks.location}/Vendor/assimp/include/",
         "%{wks.location}/Vendor/efsw/include/efsw",
         "%{wks.location}/Vendor/entt/include/",
         "%{wks.location}/Vendor/FBX/include/",
+        "%{wks.location}/Vendor/tinygltf/Include/",
     }
     
     includedirs {
@@ -57,7 +57,6 @@ project "Odyssey.Editor"
 
     links {
         "Odyssey.Engine.lib",
-        "assimp-vc143-mtd.lib",
         "shaderc_combined.lib",
         "spirv-cross-core.lib",
         "spirv-cross-glsl.lib",

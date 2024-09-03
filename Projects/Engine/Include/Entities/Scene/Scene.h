@@ -32,7 +32,7 @@ namespace Odyssey
 		void OnDestroy();
 
 	public:
-		void SaveTo(const std::filesystem::path& savePath);
+		void SaveTo(const Path& savePath);
 		void Save();
 		void Load();
 
