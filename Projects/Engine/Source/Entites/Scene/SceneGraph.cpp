@@ -1,10 +1,83 @@
 #include "SceneGraph.h"
+#include "PropertiesComponent.h"
+#include "Scene.h"
 
 namespace Odyssey
 {
 	SceneGraph::SceneGraph()
 	{
 		m_Root = std::make_shared<Node>();
+	}
+
+	void SceneGraph::Serialize(Scene* scene, SerializationNode& serializationNode)
+	{
+		SerializationNode sceneGraphNode = serializationNode.CreateSequenceNode("Scene Graph Nodes");
+
+		for (auto& node : m_Nodes)
+		{
+			// Skip game objects who dont' want to be serialized
+			PropertiesComponent properties = node->Entity.GetComponent<PropertiesComponent>();
+			if (!properties.Serialize)
+				continue;
+
+			SerializationNode sceneNode = sceneGraphNode.AppendChild();
+			sceneNode.SetMap();
+
+			sceneNode.WriteData("Entity", node->Entity.GetGUID());
+
+			GUID parent = GUID(0);
+			if (node->Parent && node->Parent->Entity)
+				parent = node->Parent->Entity.GetGUID();
+
+			sceneNode.WriteData("Parent", parent);
+		}
+	}
+
+	void SceneGraph::Deserialize(Scene* scene, SerializationNode& serializationNode)
+	{
+		SerializationNode sceneGraphNode = serializationNode.GetNode("Scene Graph Nodes");
+		assert(sceneGraphNode.IsSequence());
+		assert(sceneGraphNode.HasChildren());
+
+		struct NodeConnection
+		{
+			std::shared_ptr<Node> Node;
+			GUID Parent;
+		};
+		std::vector<NodeConnection> connections;
+
+		for (size_t i = 0; i < sceneGraphNode.ChildCount(); i++)
+		{
+			SerializationNode sceneNode = sceneGraphNode.GetChild(i);
+
+			assert(sceneNode.IsMap());
+
+			std::shared_ptr<Node> node = m_Nodes.emplace_back(std::make_shared<Node>());
+			NodeConnection& connection = connections.emplace_back();
+			connection.Node = node;
+
+			GUID entity;
+			sceneNode.ReadData("Entity", entity.Ref());
+			sceneNode.ReadData("Parent", connection.Parent.Ref());
+
+			if (entity)
+				node->Entity = scene->GetGameObject(entity);
+		}
+
+		for (auto& connection : connections)
+		{
+			if (connection.Parent)
+			{
+				GameObject parent = scene->GetGameObject(connection.Parent);
+				connection.Node->Parent = FindNode(parent);
+				connection.Node->Parent->Children.push_back(connection.Node);
+			}
+			else
+			{
+				connection.Node->Parent = m_Root;
+				m_Root->Children.push_back(connection.Node);
+			}
+		}
 	}
 
 	void SceneGraph::AddEntity(const GameObject& entity)

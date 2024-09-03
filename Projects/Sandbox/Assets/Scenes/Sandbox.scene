@@ -50,3 +50,10 @@ GameObjects:
         Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
+Scene Graph Nodes:
+  - Entity: 11129887593766772703
+    Parent: 15322439001782158818
+  - Entity: 15322439001782158818
+    Parent: 0
+  - Entity: 1278710421845013511
+    Parent: 0

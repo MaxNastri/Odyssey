@@ -15,7 +15,7 @@ namespace Odyssey
 	{
 	public:
 		Scene();
-		Scene(const std::filesystem::path& assetPath);
+		Scene(const Path& assetPath);
 
 	public:
 		GameObject CreateGameObject();
@@ -42,8 +42,8 @@ namespace Odyssey
 		SceneGraph& GetSceneGraph() { return m_SceneGraph; }
 
 	private:
-		void SaveToDisk(const std::filesystem::path& assetPath);
-		void LoadFromDisk(const std::filesystem::path& assetPath);
+		void SaveToDisk(const Path& assetPath);
+		void LoadFromDisk(const Path& assetPath);
 
 	public:
 		template<typename... Components>

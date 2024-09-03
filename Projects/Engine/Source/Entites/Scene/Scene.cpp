@@ -15,7 +15,7 @@ namespace Odyssey
 	{
 	}
 
-	Scene::Scene(const std::filesystem::path& assetPath)
+	Scene::Scene(const Path& assetPath)
 		: m_Path(assetPath)
 	{
 		LoadFromDisk(m_Path);
@@ -145,14 +145,13 @@ namespace Odyssey
 		LoadFromDisk(m_Path);
 	}
 
-	void Scene::SaveToDisk(const std::filesystem::path& assetPath)
+	void Scene::SaveToDisk(const Path& assetPath)
 	{
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
 
 		root.WriteData("Scene", m_Name);
 		root.WriteData("GUID", m_GUID);
-
 		SerializationNode gameObjectsNode = root.CreateSequenceNode("GameObjects");
 
 		for (auto entity : m_Registry.view<PropertiesComponent>())
@@ -164,10 +163,12 @@ namespace Odyssey
 				gameObject.Serialize(gameObjectsNode);
 		}
 
+		m_SceneGraph.Serialize(this, root);
+
 		serializer.WriteToDisk(assetPath);
 	}
 
-	void Scene::LoadFromDisk(const std::filesystem::path& assetPath)
+	void Scene::LoadFromDisk(const Path& assetPath)
 	{
 		AssetDeserializer deserializer(assetPath);
 
@@ -190,15 +191,16 @@ namespace Odyssey
 
 				GUID guid = gameObject.GetGUID();
 				m_GUIDToGameObject[guid] = gameObject;
-
-				m_SceneGraph.AddEntity(gameObject);
-
+				
 				if (gameObject.HasComponent<ScriptComponent>())
 				{
 					ScriptComponent& scriptComponent = gameObject.GetComponent<ScriptComponent>();
 					uint32_t scriptID = scriptComponent.GetScriptID();
 				}
 			}
+
+			m_SceneGraph.Deserialize(this, root);
+			int debug = 0;
 		}
 	}
 }

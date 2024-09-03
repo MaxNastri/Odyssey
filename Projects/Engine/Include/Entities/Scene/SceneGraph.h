@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "AssetSerializer.h"
 
 namespace Odyssey
 {
@@ -20,6 +21,10 @@ namespace Odyssey
 
 	public:
 		SceneGraph();
+
+	public:
+		void Serialize(Scene* scene, SerializationNode& serializationNode);
+		void Deserialize(Scene* scene, SerializationNode& serializationNode);
 
 	public:
 		const Node* GetSceneRoot() { return m_Root.get(); }
