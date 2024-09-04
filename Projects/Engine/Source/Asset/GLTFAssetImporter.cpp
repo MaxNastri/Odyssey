@@ -320,6 +320,7 @@ namespace Odyssey
 						{
 							vertex.Position.z = -vertex.Position.z;
 							vertex.Normal.x = -vertex.Normal.x;
+							vertex.TexCoord0.y = 1.0f - vertex.TexCoord0.y;
 						}
 
 						if (indicesData.IsValid())
@@ -713,6 +714,22 @@ namespace Odyssey
 							glm::vec3 skew;
 							glm::vec4 perspective;
 							glm::decompose(convert, scale, rotation2, translation, skew, perspective);
+
+							if (bone.ParentIndex == -1)
+							{
+								glm::vec3 euler = glm::eulerAngles(rotation2);
+								euler.x = glm::degrees(euler.x);
+								euler.y = glm::degrees(euler.y);
+								euler.z = glm::degrees(euler.z);
+								euler.x = euler.x - 90;
+								float oldY = euler.y;
+								euler.y = euler.z;
+								euler.z = -oldY;
+
+								glm::vec3 radians = glm::vec3(glm::radians(euler.x), glm::radians(euler.y), glm::radians(euler.z));
+								rotation2 = glm::quat(radians);
+							}
+
 							boneKeyframe.AddRotationKey(sampler.inputs[i], rotation2);
 						}
 						else if (channel.IsScale)
