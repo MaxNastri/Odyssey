@@ -120,10 +120,6 @@ namespace Odyssey
 			{
 				m_Deferred = [this, &gameObject] { gameObject.Destroy(); };
 			}
-			if (ImGui::Button("Child"))
-			{
-				m_Deferred = [this, &gameObject] { gameObject.SetParent(m_Selected); };
-			}
 
 			ImGui::EndPopup();
 		}
@@ -208,7 +204,7 @@ namespace Odyssey
 				{
 					GUID guid = interaction.Data.Read<GUID>();
 					GameObject gameObject = m_Scene->GetGameObject(guid);
-					interaction.Target->SetParent(gameObject);
+					gameObject.SetParent(*interaction.Target);
 					break;
 				}
 				default:

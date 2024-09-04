@@ -23,6 +23,8 @@ namespace Odyssey
 		public:
 			bool ConvertToLH = true;
 			bool LoggingEnabled = false;
+			float Scale = 0.01f;
+			bool BakeGlobalTransform = false;
 		};
 	public:
 		FBXModelImporter();

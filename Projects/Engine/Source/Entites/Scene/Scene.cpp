@@ -211,7 +211,6 @@ namespace Odyssey
 			}
 
 			m_SceneGraph.Deserialize(this, root);
-			int debug = 0;
 		}
 	}
 }

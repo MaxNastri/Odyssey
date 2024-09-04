@@ -33,15 +33,15 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Animator
-        Animation Rig: 0
-        Animation Clip: 0
+        Animation Rig: 11519690897429141827
+        Animation Clip: 1480094622537577134
       - Type: Odyssey.MeshRenderer
-        m_Mesh: 0
+        m_Mesh: 7889834594713330204
         m_Material: 942766181068811557
       - Type: Odyssey.Transform
         Position: 'x: 0.72083634 y: 0 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 0.01 y: 0.01 z: 0.01'
+        Scale: 'x: 1 y: 1 z: 1'
 Scene Graph Nodes:
   - Entity: 15322439001782158818
     Parent: 0

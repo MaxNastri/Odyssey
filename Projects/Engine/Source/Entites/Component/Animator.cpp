@@ -35,10 +35,16 @@ namespace Odyssey
 		// Create a timeline for the clip
 		if (m_AnimationClip)
 			m_Timeline = AnimationClipTimeline(m_AnimationClip);
+
+		if (m_AnimationRig)
+			SetRig(m_AnimationRig);
 	}
 
 	void Animator::OnEditorUpdate()
 	{
+		if (m_BoneGameObjects.size() == 0)
+			CreateBoneGameObjects();
+
 		if (m_AnimationClip)
 			ProcessKeys();
 		else
@@ -61,7 +67,7 @@ namespace Odyssey
 		auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
 		m_FinalPoses.clear();
 		m_FinalPoses.resize(rig->GetBones().size());
-		CreateBoneGameObjects();
+		//CreateBoneGameObjects();
 	}
 
 	void Animator::SetClip(GUID animationClipGUID)
@@ -90,6 +96,8 @@ namespace Odyssey
 		{
 			// Set the animator as the parent by default
 			m_BoneGameObjects[i] = scene->CreateGameObject();
+			m_BoneGameObjects[i].AddComponent<Transform>();
+			m_BoneGameObjects[i].SetParent(m_GameObject);
 
 			// Update the map
 			m_BoneGameObjectsMap[bones[i].Name] = m_BoneGameObjects[i];
@@ -98,9 +106,6 @@ namespace Odyssey
 			PropertiesComponent& properties = m_BoneGameObjects[i].GetComponent<PropertiesComponent>();
 			properties.Serialize = false;
 			properties.Name = bones[i].Name;
-
-			Transform& transform = m_BoneGameObjects[i].AddComponent<Transform>();
-			transform.SetLocalMatrix(glm::inverse(bones[i].InverseBindpose));
 		}
 
 		for (size_t i = 0; i < m_BoneGameObjects.size(); i++)
@@ -132,6 +137,7 @@ namespace Odyssey
 		double time = m_Playing ? (double)Time::DeltaTime() : 0.0;
 		auto boneKeys = m_Timeline.BlendKeys(time);
 
+		glm::mat4 animatorInverse = glm::inverse(m_GameObject.GetComponent<Transform>().GetWorldMatrix());
 		for (size_t i = 0; i < bones.size(); i++)
 		{
 			// Get the key for this bone
@@ -142,7 +148,7 @@ namespace Odyssey
 			transform.SetPosition(blendKey.position);
 			transform.SetRotation(blendKey.rotation);
 			transform.SetScale(blendKey.scale);
-			glm::mat4 key = rig->GetGlobalMatrix() * transform.GetWorldMatrix();
+			glm::mat4 key = rig->GetGlobalMatrix() * animatorInverse * transform.GetWorldMatrix();
 			m_FinalPoses[i] =  key * bones[i].InverseBindpose;
 
 			if (m_DebugEnabled)
@@ -166,6 +172,20 @@ namespace Odyssey
 		if (m_DebugEnabled)
 			DebugDrawBones();
 	}
+
+
+	//void Animator::CalculateRootSpaceTransforms()
+	//{
+	//	Scene* scene = m_GameObject.GetScene();
+	//	SceneGraph& sceneGraph = scene->GetSceneGraph();
+	//
+	//	auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
+	//
+	//	GameObject rootBone = m_BoneGameObjects[rig->GetRootBone().Index];
+	//	auto rootBoneNode = sceneGraph.GetNode(rootBone);
+	//
+	//	for (auto& )
+	//}
 
 	void Animator::DebugDrawBones()
 	{

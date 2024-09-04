@@ -128,8 +128,6 @@ namespace Odyssey
 
 	FBXModelImporter::FBXModelImporter()
 	{
-		m_Settings.ConvertToLH = true;
-		m_Settings.LoggingEnabled = false;
 		Init();
 	}
 
@@ -175,7 +173,11 @@ namespace Odyssey
 
 		// Set the global matrix for the rig to a 180 rotation matrix if we are converting LH
 		if (m_Settings.ConvertToLH)
-			m_RigData.GlobalMatrix = glm::mat4_cast(glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
+		{
+			glm::mat4 scale = glm::scale(glm::identity<mat4>(), glm::vec3(m_Settings.Scale, m_Settings.Scale, m_Settings.Scale));
+			glm::mat4 rotation = glm::mat4_cast(glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
+			m_RigData.GlobalMatrix = rotation * scale;
+		}
 
 		// Get the root node of the scene
 		if (FbxNode* node = m_CurrentScene->GetRootNode())
@@ -353,9 +355,10 @@ namespace Odyssey
 					vertex.Position.z = -vertex.Position.z;
 					vertex.Normal.z = -vertex.Normal.z;
 					vertex.Tangent.z = -vertex.Tangent.z;
-					//vertex.Position = glm::rotateY(vertex.Position, glm::pi<float>());
-					//vertex.Normal = glm::rotateY(vertex.Normal, glm::pi<float>());
-					//vertex.Tangent = glm::rotateY(vertex.Tangent, glm::pi<float>());
+
+					// Non-skinned mesh
+					if (m_Settings.BakeGlobalTransform)
+						vertex.Position = m_RigData.GlobalMatrix * glm::vec4(vertex.Position, 1.0f);
 				}
 
 				// Check if this mesh is animated
@@ -425,7 +428,7 @@ namespace Odyssey
 			bone.Index = boneIndex;
 			bone.ParentIndex = parentIndex;
 			bone.inverseBindpose = glm::identity<glm::mat4>();
-			m_RigData.Bones[bone.Name] =bone;
+			m_RigData.Bones[bone.Name] = bone;
 			parentIndex = boneIndex;
 		}
 
@@ -660,7 +663,7 @@ namespace Odyssey
 			FbxTakeInfo* takeInfo = m_CurrentScene->GetTakeInfo(animStackName);
 			FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
 			FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
-			
+
 			m_AnimationData.Duration = takeInfo->mLocalTimeSpan.GetDuration().GetSecondDouble();
 
 			for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames30); i <= end.GetFrameCount(FbxTime::eFrames30); ++i)
@@ -672,7 +675,7 @@ namespace Odyssey
 				FbxAMatrix finalOffset = currentTransformOffset.Inverse() * linkNode->EvaluateLocalTransform(currTime);
 
 				glm::mat4 finalPose;
-				
+
 				if (m_Settings.ConvertToLH)
 					finalPose = Utils::ConvertLH(finalOffset);
 				else

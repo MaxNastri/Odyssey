@@ -38,6 +38,7 @@ namespace Odyssey
 		void DestroyBoneGameObjects();
 		void ProcessKeys();
 		void ProcessTransforms();
+		void CalculateRootSpaceTransforms();
 
 	private:
 		void DebugDrawBones();
@@ -52,6 +53,7 @@ namespace Odyssey
 	private:
 		std::vector<GameObject> m_BoneGameObjects;
 		std::unordered_map<std::string, GameObject> m_BoneGameObjectsMap;
+		std::map<std::string, glm::mat4> m_BoneTransforms;
 		std::vector<glm::mat4> m_FinalPoses;
 		bool m_Playing = false;
 		AnimationClipTimeline m_Timeline;

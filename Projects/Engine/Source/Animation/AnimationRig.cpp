@@ -50,6 +50,7 @@ namespace Odyssey
 		// Serialize the asset metadata first
 		SerializeMetadata(serializer);
 
+		root.WriteData("Root Bone", m_RootBone);
 		root.WriteData("Global Matrix", m_GlobalMatrix);
 		root.WriteData("Bone Count", m_Bones.size());
 
@@ -76,6 +77,7 @@ namespace Odyssey
 			SerializationNode root = deserializer.GetRoot();
 
 			// Read in the global matrix
+			root.ReadData("Root Bone", m_RootBone);
 			root.ReadData("Global Matrix", m_GlobalMatrix);
 
 			// Read in the bone count
@@ -103,6 +105,9 @@ namespace Odyssey
 				boneNode.ReadData("Inverse Bindpose", bone.InverseBindpose);
 
 				m_Bones[bone.Index] = bone;
+
+				if (bone.ParentIndex == -1)
+					m_RootBone = bone.Index;
 			}
 		}
 	}
