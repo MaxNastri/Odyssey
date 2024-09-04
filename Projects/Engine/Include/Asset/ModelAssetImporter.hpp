@@ -27,6 +27,7 @@ namespace Odyssey
 		int32_t ParentIndex = -1;
 		int32_t Index = -1;
 		glm::mat4 inverseBindpose;
+		int32_t NodeIndex = -1;
 	};
 
 	struct BoneInfluence
@@ -40,6 +41,7 @@ namespace Odyssey
 		std::vector<BoneInfluence> ControlPointInfluences;
 		std::unordered_map<std::string, FBXBone> Bones;
 		glm::mat4 GlobalMatrix;
+		size_t BoneCount = 0;
 	};
 
 	struct AnimationImportData

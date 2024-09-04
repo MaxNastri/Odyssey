@@ -148,7 +148,7 @@ namespace Odyssey
 			transform.SetPosition(blendKey.position);
 			transform.SetRotation(blendKey.rotation);
 			transform.SetScale(blendKey.scale);
-			glm::mat4 key = rig->GetGlobalMatrix() * animatorInverse * transform.GetWorldMatrix();
+			glm::mat4 key =  animatorInverse * rig->GetGlobalMatrix() * transform.GetWorldMatrix();
 			m_FinalPoses[i] =  key * bones[i].InverseBindpose;
 
 			if (m_DebugEnabled)
@@ -208,7 +208,7 @@ namespace Odyssey
 	void Animator::DebugDrawKey(const glm::mat4& key)
 	{
 		auto& transform = m_GameObject.GetComponent<Transform>();
-		glm::mat4 worldSpace = transform.GetWorldMatrix() * key;
+		glm::mat4 worldSpace = key;
 		glm::vec3 translation;
 		glm::vec3 scale;
 		glm::quat rotation;

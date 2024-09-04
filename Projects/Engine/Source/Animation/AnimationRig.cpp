@@ -29,6 +29,9 @@ namespace Odyssey
 			newBone.Index = bone.Index;
 			newBone.ParentIndex = bone.ParentIndex;
 			newBone.InverseBindpose = bone.inverseBindpose;
+
+			if (bone.ParentIndex == -1)
+				m_RootBone = bone.Index;
 		}
 	}
 

@@ -122,7 +122,7 @@ namespace Odyssey
 	public:
 		glm::mat4 LocalMatrix()
 		{
-			return glm::translate(glm::mat4(1.0f), translation)* glm::mat4(rotation)* glm::scale(glm::mat4(1.0f), scale)* matrix;
+			return glm::translate(glm::mat4(1.0f), translation) * glm::mat4(rotation) * glm::scale(glm::mat4(1.0f), scale) * matrix;
 		}
 		glm::mat4 GlobalMatrix()
 		{
@@ -183,11 +183,98 @@ namespace Odyssey
 		else
 			m_Nodes.push_back(newNode);
 	}
+	struct TempNode
+	{
+		const tinygltf::Node* node;
+		TempNode* parent;
+		glm::vec3 pos;
+		glm::quat rot;
+		glm::vec3 scale;
+		glm::mat4 mat;
+
+	public:
+		void Construct()
+		{
+			mat4x4 t = glm::translate(glm::identity<mat4x4>(), pos);
+			mat4x4 r = glm::toMat4(rot);
+			mat4x4 s = glm::scale(glm::identity<mat4x4>(), scale);
+			mat = t * r * s;
+		}
+		glm::mat4 GetWorld()
+		{
+			Construct();
+
+			glm::mat world = mat;
+			TempNode* lParent = parent;
+
+			while (lParent)
+			{
+				lParent->Construct();
+				world = lParent->mat * world;
+				lParent = lParent->parent;
+			}
+
+			return world;
+		}
+	};
+
+	inline static std::vector<TempNode*> tempNodes;
+
+	void CreateNodeRecursive(const Model* model, const tinygltf::Node* node, TempNode* parent)
+	{
+		TempNode* tempNode = new TempNode();
+		tempNode->node = node;
+		tempNode->parent = parent;
+		tempNode->mat = glm::mat4(1.0f);
+		parent = tempNode;
+
+		tempNodes.push_back(tempNode);
+
+		glm::vec3 translation = glm::vec3(0.0f);
+		if (node->translation.size() == 3)
+		{
+			translation = glm::make_vec3(node->translation.data());
+			tempNode->pos = translation;
+		}
+		glm::quat rotation = glm::mat4(1.0f);
+		if (node->rotation.size() == 4) {
+			rotation = glm::make_quat(node->rotation.data());
+		}
+		tempNode->rot = rotation;
+		glm::vec3 scale = glm::vec3(1.0f);
+		if (node->scale.size() == 3) {
+			scale = glm::make_vec3(node->scale.data());
+		}
+		tempNode->scale = scale;
+		if (node->matrix.size() == 16) {
+			tempNode->mat = glm::make_mat4x4(node->matrix.data());
+		};
+
+		// Node with children
+		if (node->children.size() > 0)
+		{
+			for (size_t i = 0; i < node->children.size(); i++)
+			{
+				CreateNodeRecursive(model, &model->nodes[node->children[i]], tempNode);
+			}
+		}
+	}
 
 	void GLTFAssetImporter::LoadMeshData(const Model* model)
 	{
+		const Scene& scene = model->scenes[model->defaultScene ? model->defaultScene : 0];
+
 		m_MeshData.ObjectCount = 0;
 
+
+		TempNode* parent = nullptr;
+
+		for (auto node : scene.nodes)
+		{
+			CreateNodeRecursive(model, &model->nodes[node], nullptr);
+		}
+
+		m_RigData.GlobalMatrix = tempNodes[1]->GetWorld();
 		for (size_t m = 0; m < model->meshes.size(); m++)
 		{
 			const Mesh& mesh = model->meshes[m];
@@ -221,7 +308,6 @@ namespace Odyssey
 						vertex.Normal = normalData.IsValid() ? glm::make_vec3(normalData.GetData<float>(v)) : glm::vec3(0.0f);
 						vertex.Color = colorData.IsValid() ? glm::vec4(glm::make_vec3(colorData.GetData<float>(v)), 1.0f) : glm::vec4(1.0f);
 
-						// IMPORTANT: We flip the UV to convert RH to LH
 						vertex.TexCoord0 = texCoord0Data.IsValid() ? glm::make_vec2(texCoord0Data.GetData<float>(v)) : glm::vec2(0.0f);
 
 						vertex.BoneWeights = weightsData.IsValid() ? glm::make_vec4(weightsData.GetData<float>(v)) : glm::vec4(0.0f);
@@ -229,11 +315,11 @@ namespace Odyssey
 							vertex.BoneWeights = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
 
 						// IMPORTANT: Flip the z component to convert from RH to LH
+						// IMPORTANT: We flip the UV to convert RH to LH
 						if (m_Settings.ConvertLH)
 						{
 							vertex.Position.z = -vertex.Position.z;
-							vertex.Normal.z = -vertex.Normal.z;
-							vertex.TexCoord0.y = 1.0f - vertex.TexCoord0.y;
+							vertex.Normal.x = -vertex.Normal.x;
 						}
 
 						if (indicesData.IsValid())
@@ -332,8 +418,8 @@ namespace Odyssey
 	{
 		if (node->matrix.size() == 0)
 		{
-			glm::vec3 translation = glm::vec3(node->translation[0], node->translation[1], node->translation[2]);
-			glm::quat rotation = glm::quat(node->rotation[0], node->rotation[1], node->rotation[2], node->rotation[3]);
+			glm::vec3 translation = glm::vec3((float)node->translation[0], (float)node->translation[1], (float)node->translation[2]);
+			glm::quat rotation = glm::quat((float)node->rotation[0], (float)node->rotation[1], (float)node->rotation[2], (float)node->rotation[3]);
 
 			return glm::translate(glm::identity<mat4>(), translation) * glm::toMat4(rotation);
 		}
@@ -356,35 +442,40 @@ namespace Odyssey
 		rotation.x = -rotation.x;
 		rotation.y = -rotation.y;
 
-		glm::mat4 t = glm::translate(glm::identity<mat4>(), translation);
-		glm::mat4 r = glm::toMat4(rotation);
-		glm::mat4 s = glm::scale(glm::identity<mat4>(), scale);
-		return t * r * s;
+		return glm::translate(glm::mat4(1.0f), translation) * glm::mat4(rotation) * glm::scale(glm::mat4(1.0f), scale);
+		//glm::mat4 copy = mat;
+		//
+		//// Invert the top row
+		//copy[0][2] = -copy[0][2];
+		//
+		//// Invert the x components of all other rows
+		//copy[1][2] = -copy[1][2];
+		//copy[2][0] = -copy[2][0];
+		//copy[3][2] = -copy[3][2];
+		//return copy;
 	}
 
 	void GLTFAssetImporter::LoadRigData(const Model* model)
 	{
+		//m_RigData.GlobalMatrix = glm::scale(glm::identity<mat4>(), glm::vec3(m_Settings.Scale, m_Settings.Scale, m_Settings.Scale));
+
+		if (m_Settings.ConvertLH)
+		{
+			//m_RigData.GlobalMatrix = ConvertLH(m_RigData.GlobalMatrix);
+		}
+
 		for (size_t s = 0; s < model->skins.size(); s++)
 		{
 			const Skin* skin = &model->skins[s];
 			int32_t rootIndex = skin->skeleton;
 
-			for (auto& bone : skin->joints)
+			for (int32_t nodeIndex : skin->joints)
 			{
-				const Node* node = &model->nodes[bone];
-				BuildBoneMap(model, skin, node, bone, -1, GetMatrix(node));
+				const Node* node = &model->nodes[nodeIndex];
+
+				BuildBoneMap(model, skin, node, nodeIndex);
 			}
 
-			for (auto& [boneName, bone] : m_RigData.Bones)
-			{
-				int32_t parent = bone.ParentIndex;
-				glm::mat4 bindpose = GetMatrix(&model->nodes[bone.Index]);
-				while (parent != -1)
-				{
-					bindpose = GetMatrix(&model->nodes[parent]) * bindpose;
-					parent = m_RigData.Bones[model->nodes[parent].name].ParentIndex;
-				}
-			}
 			if (m_RigData.Bones.size() > 0)
 			{
 				const Accessor& accessor = model->accessors[skin->inverseBindMatrices];
@@ -398,33 +489,57 @@ namespace Odyssey
 
 				for (auto& [boneName, bone] : m_RigData.Bones)
 				{
-					bone.inverseBindpose = ConvertLH(inverseBindposes[bone.Index]);
+					if (m_Settings.ConvertLH)
+						bone.inverseBindpose = ConvertLH(inverseBindposes[bone.Index]);
+					else
+						bone.inverseBindpose = inverseBindposes[bone.Index];
 				}
 			}
 		}
 	}
 
-	void GLTFAssetImporter::BuildBoneMap(const Model* model, const Skin* skin, const Node* node, int32_t index, int32_t parentIndex, glm::mat4 parentTransform)
+	void GLTFAssetImporter::BuildBoneMap(const Model* model, const Skin* skin, const Node* node, int32_t nodeIndex)
 	{
 		// Make sure this is a valid bone index
 		bool valid = false;
 		for (auto boneIndex : skin->joints)
-			if (boneIndex == index)
+		{
+			if (boneIndex == nodeIndex)
+			{
 				valid = true;
+				break;
+			}
+		}
 
 		if (valid)
 		{
-			auto& bone = m_RigData.Bones[node->name];
+			FBXBone& bone = m_RigData.Bones[node->name];
 			bone.Name = node->name;
-			if (bone.ParentIndex == -1)
-				bone.ParentIndex = parentIndex;
-			if (bone.Index == -1)
-				bone.Index = index;
-		}
+			bone.Index = m_RigData.BoneCount;
+			bone.NodeIndex = nodeIndex;
+			m_RigData.BoneCount++;
 
-		for (const auto& child : node->children)
-		{
-			BuildBoneMap(model, skin, &model->nodes[child], child, index, parentTransform * GetMatrix(node));
+			// Iterate through this node's children and set only their parent index if they are a valid bone
+			// Note: They will have their own bone index + name set later since we are iterating through all bones
+			for (const auto& child : node->children)
+			{
+				bool childValid = false;
+				for (auto boneIndex : skin->joints)
+				{
+					if (boneIndex == nodeIndex)
+					{
+						childValid = true;
+						break;
+					}
+				}
+
+				if (childValid)
+				{
+					Node childNode = model->nodes[child];
+					auto& childBone = m_RigData.Bones[childNode.name];
+					childBone.ParentIndex = bone.Index;
+				}
+			}
 		}
 	}
 
@@ -437,7 +552,7 @@ namespace Odyssey
 
 	struct Channel
 	{
-		int32_t TargetBone = -1;
+		int32_t TargetNODE = -1;
 		int32_t SamplerIndex = -1;
 		bool IsPosition = false;
 		bool IsRotation = false;
@@ -542,9 +657,9 @@ namespace Odyssey
 					continue;
 				}
 				myChannel.SamplerIndex = source.sampler;
-				myChannel.TargetBone = source.target_node;
+				myChannel.TargetNODE = source.target_node;
 
-				if (myChannel.TargetBone == -1)
+				if (myChannel.TargetNODE == -1)
 					continue;
 
 				channels.push_back(myChannel);
@@ -556,7 +671,7 @@ namespace Odyssey
 				std::string targetName;
 				for (auto& [boneName, bone] : m_RigData.Bones)
 				{
-					if (bone.Index == channel.TargetBone)
+					if (bone.NodeIndex == channel.TargetNODE)
 					{
 						targetName = boneName;
 						break;
@@ -575,12 +690,30 @@ namespace Odyssey
 						if (channel.IsPosition)
 						{
 							glm::vec3 position = sampler.outputsVec4[i];
-							boneKeyframe.AddPositionKey(sampler.inputs[i], sampler.outputsVec4[i]);
+							if (m_Settings.ConvertLH)
+								position.z = -position.z;
+							if (bone.ParentIndex == -1)
+							{
+								float oldy = position.y;
+								position.y = position.z;
+								position.z = -oldy;
+							}
+							boneKeyframe.AddPositionKey(sampler.inputs[i], position);
 						}
 						else if (channel.IsRotation)
 						{
 							glm::quat rotation = glm::quat(sampler.outputsVec4[i].w, sampler.outputsVec4[i].x, sampler.outputsVec4[i].y, sampler.outputsVec4[i].z);
-							boneKeyframe.AddRotationKey(sampler.inputs[i], rotation);
+							glm::mat mat = glm::toMat4(rotation);
+
+							glm::mat convert = ConvertLH(mat);
+
+							glm::vec3 translation;
+							glm::vec3 scale;
+							glm::quat rotation2;
+							glm::vec3 skew;
+							glm::vec4 perspective;
+							glm::decompose(convert, scale, rotation2, translation, skew, perspective);
+							boneKeyframe.AddRotationKey(sampler.inputs[i], rotation2);
 						}
 						else if (channel.IsScale)
 						{
@@ -589,8 +722,6 @@ namespace Odyssey
 					}
 				}
 			}
-
-			int debug = 0;
 		}
 	}
 }
