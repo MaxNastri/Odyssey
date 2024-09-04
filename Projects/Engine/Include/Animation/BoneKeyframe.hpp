@@ -2,6 +2,13 @@
 
 namespace Odyssey
 {
+	struct BlendKey
+	{
+		glm::vec3 position;
+		glm::quat rotation;
+		glm::vec3 scale;
+	};
+
 	class BoneKeyframe
 	{
 	public:
@@ -99,7 +106,7 @@ namespace Odyssey
 			return t * r * s;
 		}
 
-		glm::mat4 BlendKeys(size_t prevKey, size_t nextKey, float blendFactor)
+		glm::mat4 BlendKeysOld(size_t prevKey, size_t nextKey, float blendFactor)
 		{
 			glm::vec3 position;
 			glm::quat rotation;
@@ -116,6 +123,15 @@ namespace Odyssey
 
 			// Return TRS
 			return t * r * s;
+		}
+
+		BlendKey BlendKeys(size_t prevKey, size_t nextKey, float blendFactor)
+		{
+			BlendKey blendKey;
+			blendKey.position = glm::mix(m_PositionKeys[prevKey].Value, m_PositionKeys[nextKey].Value, blendFactor);
+			blendKey.rotation = glm::slerp(m_RotationKeys[prevKey].Value, m_RotationKeys[nextKey].Value, blendFactor);
+			blendKey.scale = glm::mix(m_ScaleKeys[prevKey].Value, m_ScaleKeys[nextKey].Value, blendFactor);
+			return blendKey;
 		}
 	private:
 		template<typename KeyType>

@@ -103,6 +103,16 @@ namespace Odyssey
 		SetScale(glm::vec3(x, y, z));
 	}
 
+	void Transform::SetLocalMatrix(glm::mat4 localMatrix)
+	{
+		m_LocalMatrix = localMatrix;
+
+		glm::vec3 scale;
+		glm::vec3 skew;
+		glm::vec4 perspective;
+		glm::decompose(localMatrix, scale, m_Rotation, m_Position, skew, perspective);
+	}
+
 	glm::vec3 Transform::Forward()
 	{
 		glm::vec3 row2 = glm::column(m_LocalMatrix, 2);

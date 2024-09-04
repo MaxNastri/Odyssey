@@ -32,27 +32,17 @@ GameObjects:
     GUID: 15322439001782158818
     Type: Odyssey.GameObject
     Components:
+      - Type: Odyssey.Animator
+        Animation Rig: 0
+        Animation Clip: 0
       - Type: Odyssey.MeshRenderer
-        m_Mesh: 4307647604278076713
+        m_Mesh: 0
         m_Material: 942766181068811557
       - Type: Odyssey.Transform
         Position: 'x: 0.72083634 y: 0 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 0.01 y: 0.01 z: 0.01'
-  - Name: Monk GLTF
-    GUID: 11129887593766772703
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        m_Mesh: 9144198186343789671
-        m_Material: 942766181068811557
-      - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
 Scene Graph Nodes:
-  - Entity: 11129887593766772703
-    Parent: 15322439001782158818
   - Entity: 15322439001782158818
     Parent: 0
   - Entity: 1278710421845013511

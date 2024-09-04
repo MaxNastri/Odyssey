@@ -13,7 +13,6 @@ namespace Odyssey
 	public:
 		Animator() = default;
 		Animator(const GameObject& gameObject);
-
 	public:
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
@@ -21,6 +20,7 @@ namespace Odyssey
 	public:
 		void Play() { m_Playing = true; }
 		void Pause() { m_Playing = !m_Playing; }
+		void OnEditorUpdate();
 		void Update();
 
 	public:
@@ -34,10 +34,13 @@ namespace Odyssey
 		const std::vector<glm::mat4>& GetFinalPoses() { return m_FinalPoses; }
 
 	private:
+		void CreateBoneGameObjects();
+		void DestroyBoneGameObjects();
 		void ProcessKeys();
 		void ProcessTransforms();
 
 	private:
+		void DebugDrawBones();
 		void DebugDrawKey(const glm::mat4& key);
 		void DebugDrawBone(const Bone& bone);
 
@@ -47,6 +50,8 @@ namespace Odyssey
 		GUID m_AnimationClip;
 
 	private:
+		std::vector<GameObject> m_BoneGameObjects;
+		std::unordered_map<std::string, GameObject> m_BoneGameObjectsMap;
 		std::vector<glm::mat4> m_FinalPoses;
 		bool m_Playing = false;
 		AnimationClipTimeline m_Timeline;

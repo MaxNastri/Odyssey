@@ -18,6 +18,7 @@ namespace Odyssey
 
 	public:
 		const std::vector<Bone>& GetBones() { return m_Bones; }
+		const glm::mat4& GetGlobalMatrix() { return m_GlobalMatrix; }
 
 	private:
 		void SaveToDisk(const Path& assetPath);
@@ -25,5 +26,6 @@ namespace Odyssey
 
 	private:
 		std::vector<Bone> m_Bones;
+		glm::mat4 m_GlobalMatrix;
 	};
 }

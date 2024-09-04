@@ -29,6 +29,8 @@ namespace Odyssey
         void SetScale(glm::vec3 scaleFactor);
         void SetScale(float x, float y, float z);
 
+        void SetLocalMatrix(glm::mat4 localMatrix);
+
         glm::vec3 GetPosition() { return m_Position; }
         glm::vec3 GetEulerRotation() { return m_EulerRotation; }
         glm::quat GetRotation() { return m_Rotation; }

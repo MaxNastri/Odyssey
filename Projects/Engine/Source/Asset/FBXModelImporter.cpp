@@ -165,13 +165,17 @@ namespace Odyssey
 		if (!ValidateFile(modelPath))
 			return false;
 
-		// Process a bone hierarchy if it exists
-		ProcessBoneHierarchy(m_CurrentScene->GetRootNode(), 0, -1);
-
 		// Triangulate the scene
 		// TODO: Put this behind a config flag
 		FbxGeometryConverter geoConverter(m_SDKManager);
 		geoConverter.Triangulate(m_CurrentScene, false);
+
+		// Process a bone hierarchy if it exists
+		ProcessBoneHierarchy(m_CurrentScene->GetRootNode(), 0, -1);
+
+		// Set the global matrix for the rig to a 180 rotation matrix if we are converting LH
+		if (m_Settings.ConvertToLH)
+			m_RigData.GlobalMatrix = glm::mat4_cast(glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
 
 		// Get the root node of the scene
 		if (FbxNode* node = m_CurrentScene->GetRootNode())
@@ -185,8 +189,6 @@ namespace Odyssey
 				LoadMeshNodeData(node->GetChild(i));
 			}
 		}
-
-		LoadAnimationData();
 
 		return true;
 	}
@@ -357,7 +359,7 @@ namespace Odyssey
 				}
 
 				// Check if this mesh is animated
-				if (m_RigData.FBXBones.size() > 0)
+				if (m_RigData.Bones.size() > 0)
 				{
 					// Transfer the indices and normalize the weights
 					vertex.BoneIndices = m_RigData.ControlPointInfluences[controlPointIndex].Indices;
@@ -413,100 +415,23 @@ namespace Odyssey
 		//loadNodeMaterial(node);
 	}
 
-	void FBXModelImporter::LoadAnimationData()
-	{
-		// Load animation clip info;
-		FbxAnimStack* animStack = m_CurrentScene->GetCurrentAnimationStack();
-		std::string name = animStack->GetName();
-		FbxTimeSpan timeSpan = animStack->GetLocalTimeSpan();
-		FbxTime duration = timeSpan.GetDuration();
-
-		for (int i = 0; i < animStack->GetMemberCount<FbxAnimLayer>(); i++)
-		{
-			FbxAnimLayer* layer = animStack->GetMember<FbxAnimLayer>(i);
-			FbxString n = layer->GetName();
-		}
-
-		// Get the frame count at 30 frames per second
-		uint64_t frameCount = duration.GetFrameCount(FbxTime::EMode::eFrames30);
-
-		// Get the total duration and frames per second of the clip
-		m_AnimationData.Duration = duration.GetSecondDouble();
-		m_AnimationData.FramesPerSecond = 30;
-
-		// Iterate over each frame of the animation
-		for (uint64_t frameIndex = 0; frameIndex < frameCount; frameIndex++)
-		{
-			// Set the frame time to the current iteration
-			duration.SetFrame(frameIndex, FbxTime::EMode::eFrames30);
-
-			double time = duration.GetSecondDouble();
-
-			// Iterate over each joint and get the global transform of the joint in this frame
-			for (size_t i = 0; i < m_RigData.FBXBones.size(); i++)
-			{
-				// Store the joint's transform in the keyframe
-				glm::mat4 boneTransform;
-				if (m_Settings.ConvertToLH)
-				{
-					glm::mat4 rotMatrix = glm::mat4_cast(glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
-					boneTransform = rotMatrix * Utils::ConvertLH(m_RigData.FBXBones[i].Node->EvaluateGlobalTransform(duration));
-				}
-				else
-				{
-					boneTransform = Utils::ToGLM(m_RigData.FBXBones[i].Node->EvaluateGlobalTransform(duration));
-				}
-
-				glm::vec3 translation;
-				glm::vec3 scale;
-				glm::quat rotation;
-				glm::vec3 skew;
-				glm::vec4 perspective;
-				glm::decompose(boneTransform, scale, rotation, translation, skew, perspective);
-
-				auto& boneKeyframe = m_AnimationData.BoneKeyframes[m_RigData.FBXBones[i].Name];
-				boneKeyframe.SetBoneName(m_RigData.FBXBones[i].Name);
-				boneKeyframe.AddPositionKey(time, translation);
-				boneKeyframe.AddRotationKey(time, rotation);
-				boneKeyframe.AddScaleKey(time, scale);
-			}
-		}
-	}
-
 	void FBXModelImporter::ProcessBoneHierarchy(FbxNode* node, int32_t boneIndex, int32_t parentIndex)
 	{
 		if (node->GetNodeAttribute() && node->GetNodeAttribute()->GetAttributeType() && node->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton)
 		{
-			FbxDouble3 translation = node->LclTranslation.Get();
-			FbxDouble3 rotation = node->LclRotation.Get();
-			FbxDouble3 scale = node->LclScaling.Get();
-
-			FbxAMatrix fbxTransform;
-			fbxTransform.SetTRS(translation, rotation, scale);
-
 			FBXBone bone;
 			bone.Node = node;
 			bone.Name = node->GetName();
 			bone.Index = boneIndex;
 			bone.ParentIndex = parentIndex;
-
-			if (m_Settings.ConvertToLH)
-			{
-				// Rotate the BINDPOSE (not inverse bindpose) by 180 on the y
-				// This works to rotate the rig post-LH conversion
-				glm::mat4 rotMatrix = glm::mat4_cast(glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
-				bone.bindpose = rotMatrix * Utils::ConvertLH(node->EvaluateGlobalTransform());
-			}
-			else
-				bone.bindpose = Utils::ToGLM(node->EvaluateGlobalTransform());
-
 			bone.inverseBindpose = glm::identity<glm::mat4>();
-			m_RigData.FBXBones.push_back(bone);
+			m_RigData.Bones[bone.Name] =bone;
+			parentIndex = boneIndex;
 		}
 
 		for (int i = 0; i < node->GetChildCount(); i++)
 		{
-			ProcessBoneHierarchy(node->GetChild(i), (int32_t)(m_RigData.FBXBones.size()), boneIndex);
+			ProcessBoneHierarchy(node->GetChild(i), m_RigData.Bones.size(), parentIndex);
 		}
 	}
 
@@ -664,23 +589,9 @@ namespace Odyssey
 			fbxsdk::FbxCluster* cluster = rootSkin->GetCluster(clusterIndex);
 
 			// Get the linked node
-			FbxNode* node = cluster->GetLink();
+			FbxNode* linkNode = cluster->GetLink();
 
-			// Iterate through the fbx joint list to find the corresponding joint
-			int boneIndex = -1;
-
-			for (size_t i = 0; i < m_RigData.FBXBones.size(); i++)
-			{
-				std::string name = node->GetName();
-				auto& bone = m_RigData.FBXBones[i];
-
-				if (name == bone.Name)
-				{
-					boneIndex = bone.Index;
-					break;
-				}
-			}
-
+			std::string boneName = linkNode->GetName();
 			FbxAMatrix clusterTransform;
 			FbxAMatrix clusterTransformLink;
 			FbxAMatrix globalBIM;
@@ -688,12 +599,24 @@ namespace Odyssey
 			cluster->GetTransformMatrix(clusterTransform);
 			cluster->GetTransformLinkMatrix(clusterTransformLink);
 
-			glm::mat4 geometry = Utils::ConvertLH(geometryTransform);
-			glm::mat4 transform = Utils::ConvertLH(clusterTransform);
-			glm::mat4 transformLink = Utils::ConvertLH(clusterTransformLink.Inverse());
-			glm::mat4 inverseBindpose = transformLink * transform;
-			inverseBindpose = inverseBindpose * geometry;
-			m_RigData.FBXBones[boneIndex].inverseBindpose = inverseBindpose;
+			if (m_Settings.ConvertToLH)
+			{
+				glm::mat4 geometry = Utils::ConvertLH(geometryTransform);
+				glm::mat4 transform = Utils::ConvertLH(clusterTransform);
+				glm::mat4 transformLink = Utils::ConvertLH(clusterTransformLink.Inverse());
+				glm::mat4 inverseBindpose = transformLink * transform;
+				inverseBindpose = inverseBindpose * geometry;
+				m_RigData.Bones[boneName].inverseBindpose = inverseBindpose;
+			}
+			else
+			{
+				glm::mat4 geometry = Utils::ToGLM(geometryTransform);
+				glm::mat4 transform = Utils::ToGLM(clusterTransform);
+				glm::mat4 transformLink = Utils::ToGLM(clusterTransformLink.Inverse());
+				glm::mat4 inverseBindpose = transformLink * transform;
+				inverseBindpose = inverseBindpose * geometry;
+				m_RigData.Bones[boneName].inverseBindpose = inverseBindpose;
+			}
 
 			// Get the number of control point indices
 			int controlPointIndices = cluster->GetControlPointIndicesCount();
@@ -723,9 +646,50 @@ namespace Odyssey
 
 				if (lowComponent != -1)
 				{
-					influence.Indices[lowComponent] = (float)boneIndex;
+					influence.Indices[lowComponent] = (float)m_RigData.Bones[boneName].Index;
 					influence.Weights[lowComponent] = weight;
 				}
+			}
+
+			// Handle animation for this bone
+			// Get animation information
+			// Now only supports one take
+			FbxAnimStack* currAnimStack = m_CurrentScene->GetSrcObject<FbxAnimStack>(0);
+			FbxString animStackName = currAnimStack->GetName();
+			m_AnimationData.Name = animStackName.Buffer();
+			FbxTakeInfo* takeInfo = m_CurrentScene->GetTakeInfo(animStackName);
+			FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
+			FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
+			
+			m_AnimationData.Duration = takeInfo->mLocalTimeSpan.GetDuration().GetSecondDouble();
+
+			for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames30); i <= end.GetFrameCount(FbxTime::eFrames30); ++i)
+			{
+				FbxTime currTime;
+				currTime.SetFrame(i, FbxTime::eFrames30);
+				double time = currTime.GetSecondDouble();
+				FbxAMatrix currentTransformOffset = mesh->GetNode()->EvaluateLocalTransform(currTime) * geometryTransform;
+				FbxAMatrix finalOffset = currentTransformOffset.Inverse() * linkNode->EvaluateLocalTransform(currTime);
+
+				glm::mat4 finalPose;
+				
+				if (m_Settings.ConvertToLH)
+					finalPose = Utils::ConvertLH(finalOffset);
+				else
+					finalPose = Utils::ToGLM(finalOffset);
+
+				glm::vec3 translation;
+				glm::vec3 scale;
+				glm::quat rotation;
+				glm::vec3 skew;
+				glm::vec4 perspective;
+				glm::decompose(finalPose, scale, rotation, translation, skew, perspective);
+
+				auto& boneKeyframe = m_AnimationData.BoneKeyframes[boneName];
+				boneKeyframe.SetBoneName(boneName);
+				boneKeyframe.AddPositionKey(time, translation);
+				boneKeyframe.AddRotationKey(time, rotation);
+				boneKeyframe.AddScaleKey(time, scale);
 			}
 		}
 	}

@@ -52,6 +52,12 @@ namespace Odyssey
 			scenes[activeScene]->Awake();
 	}
 
+	void SceneManager::OnEditorUpdate()
+	{
+		if (activeScene < scenes.size())
+			scenes[activeScene]->OnEditorUpdate();
+	}
+
 	void SceneManager::Update()
 	{
 		if (activeScene < scenes.size())

@@ -36,7 +36,6 @@ namespace Odyssey
 		bool ValidateFile(const Path& filePath);
 		void LoadMeshNodeData(FbxNode* node);
 		void LoadMeshData(FbxNode* meshNode);
-		void LoadAnimationData();
 
 		void ProcessBoneHierarchy(FbxNode* node, int32_t boneIndex, int32_t parentIndex);
 

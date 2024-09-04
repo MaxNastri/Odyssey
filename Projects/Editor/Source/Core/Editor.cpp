@@ -86,6 +86,8 @@ namespace Odyssey
 				DebugRenderer::Clear();
 				GUIManager::Update();
 
+				SceneManager::OnEditorUpdate();
+
 				// Only update the scene if we are updating scripts (playmode)
 				if (m_UpdateScripts)
 					SceneManager::Update();

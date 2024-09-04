@@ -48,6 +48,7 @@ namespace Odyssey
 
 	void Scene::DestroyGameObject(const GameObject& gameObject)
 	{
+		m_SceneGraph.RemoveEntityAndChildren(gameObject);
 		m_Registry.destroy(gameObject);
 	}
 
@@ -100,6 +101,16 @@ namespace Odyssey
 			GameObject gameObject = GameObject(this, entity);
 			ScriptComponent& script = gameObject.GetComponent<ScriptComponent>();
 			script.Awake();
+		}
+	}
+
+	void Scene::OnEditorUpdate()
+	{
+		for (auto entity : m_Registry.view<Animator>())
+		{
+			GameObject gameObject = GameObject(this, entity);
+			Animator& animator = gameObject.GetComponent<Animator>();
+			animator.OnEditorUpdate();
 		}
 	}
 

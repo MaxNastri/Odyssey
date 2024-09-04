@@ -16,6 +16,7 @@ namespace Odyssey
 
 	public:
 		static void Awake();
+		static void OnEditorUpdate();
 		static void Update();
 
 	private:

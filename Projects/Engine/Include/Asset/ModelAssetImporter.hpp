@@ -26,7 +26,6 @@ namespace Odyssey
 		std::string Name;
 		int32_t ParentIndex = -1;
 		int32_t Index = -1;
-		glm::mat4 bindpose;
 		glm::mat4 inverseBindpose;
 	};
 
@@ -38,9 +37,9 @@ namespace Odyssey
 
 	struct RigImportData
 	{
-		std::vector<FBXBone> FBXBones;
 		std::vector<BoneInfluence> ControlPointInfluences;
 		std::unordered_map<std::string, FBXBone> Bones;
+		glm::mat4 GlobalMatrix;
 	};
 
 	struct AnimationImportData

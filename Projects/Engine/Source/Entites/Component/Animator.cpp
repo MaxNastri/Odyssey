@@ -5,6 +5,8 @@
 #include "OdysseyTime.h"
 #include "DebugRenderer.h"
 #include "Transform.h"
+#include "Scene.h"
+#include "PropertiesComponent.h"
 
 namespace Odyssey
 {
@@ -30,17 +32,17 @@ namespace Odyssey
 		node.ReadData("Animation Rig", m_AnimationRig.Ref());
 		node.ReadData("Animation Clip", m_AnimationClip.Ref());
 
-		if (m_AnimationRig)
-		{
-			// Load the rig and resize our final poses to match the bone count
-			auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
-			m_FinalPoses.clear();
-			m_FinalPoses.resize(rig->GetBones().size());
-		}
-
 		// Create a timeline for the clip
 		if (m_AnimationClip)
 			m_Timeline = AnimationClipTimeline(m_AnimationClip);
+	}
+
+	void Animator::OnEditorUpdate()
+	{
+		if (m_AnimationClip)
+			ProcessKeys();
+		else
+			ProcessTransforms();
 	}
 
 	void Animator::Update()
@@ -59,6 +61,7 @@ namespace Odyssey
 		auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
 		m_FinalPoses.clear();
 		m_FinalPoses.resize(rig->GetBones().size());
+		CreateBoneGameObjects();
 	}
 
 	void Animator::SetClip(GUID animationClipGUID)
@@ -68,6 +71,56 @@ namespace Odyssey
 		// Create a timeline for the clip
 		if (m_AnimationClip)
 			m_Timeline = AnimationClipTimeline(m_AnimationClip);
+	}
+
+	void Animator::CreateBoneGameObjects()
+	{
+		// Destroy any existing bone game objects
+		DestroyBoneGameObjects();
+
+		// Load the rig and get the bones
+		auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
+		const std::vector<Bone>& bones = rig->GetBones();
+
+		// Resize our bone game objects to match
+		m_BoneGameObjects.resize(bones.size());
+
+		Scene* scene = m_GameObject.GetScene();
+		for (size_t i = 0; i < bones.size(); i++)
+		{
+			// Set the animator as the parent by default
+			m_BoneGameObjects[i] = scene->CreateGameObject();
+
+			// Update the map
+			m_BoneGameObjectsMap[bones[i].Name] = m_BoneGameObjects[i];
+
+			// Make sure we don't serialize these transforms
+			PropertiesComponent& properties = m_BoneGameObjects[i].GetComponent<PropertiesComponent>();
+			properties.Serialize = false;
+			properties.Name = bones[i].Name;
+
+			Transform& transform = m_BoneGameObjects[i].AddComponent<Transform>();
+			transform.SetLocalMatrix(glm::inverse(bones[i].InverseBindpose));
+		}
+
+		for (size_t i = 0; i < m_BoneGameObjects.size(); i++)
+		{
+			const Bone& bone = bones[i];
+			if (bone.ParentIndex > -1)
+			{
+				m_BoneGameObjects[i].SetParent(m_BoneGameObjects[bone.ParentIndex]);
+			}
+		}
+	}
+
+	void Animator::DestroyBoneGameObjects()
+	{
+		for (auto& gameObject : m_BoneGameObjects)
+		{
+			gameObject.Destroy();
+		}
+
+		m_BoneGameObjects.clear();
 	}
 
 	void Animator::ProcessKeys()
@@ -83,12 +136,17 @@ namespace Odyssey
 		{
 			// Get the key for this bone
 			const std::string& boneName = bones[i].Name;
-			glm::mat4 globalKey = boneKeys[boneName];
+			BlendKey& blendKey = boneKeys[boneName];
 
-			m_FinalPoses[i] = bones[i].InverseBindpose;
+			auto& transform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
+			transform.SetPosition(blendKey.position);
+			transform.SetRotation(blendKey.rotation);
+			transform.SetScale(blendKey.scale);
+			glm::mat4 key = rig->GetGlobalMatrix() * transform.GetWorldMatrix();
+			m_FinalPoses[i] =  key * bones[i].InverseBindpose;
 
 			if (m_DebugEnabled)
-				DebugDrawKey(globalKey);
+				DebugDrawKey(key);
 		}
 	}
 
@@ -102,10 +160,28 @@ namespace Odyssey
 
 		for (size_t i = 0; i < bones.size(); i++)
 		{
-			m_FinalPoses[i] = glm::identity<mat4>();
+			m_FinalPoses[i] = rig->GetGlobalMatrix();
+		}
 
-			if (m_DebugEnabled)
-				DebugDrawBone(bones[i]);
+		if (m_DebugEnabled)
+			DebugDrawBones();
+	}
+
+	void Animator::DebugDrawBones()
+	{
+		auto& transform = m_GameObject.GetComponent<Transform>();
+		for (auto& boneGameObject : m_BoneGameObjects)
+		{
+			auto& boneTransform = boneGameObject.GetComponent<Transform>();
+			glm::mat4 finalPose = boneTransform.GetWorldMatrix();
+			glm::vec3 translation;
+			glm::vec3 scale;
+			glm::quat rotation;
+			glm::vec3 skew;
+			glm::vec4 perspective;
+			glm::decompose(finalPose, scale, rotation, translation, skew, perspective);
+
+			DebugRenderer::AddSphere(translation, 0.025f, glm::vec4(0, 1, 0, 1));
 		}
 	}
 

@@ -29,6 +29,7 @@ namespace Odyssey
 		void OnStartRuntime();
 		void OnStopRuntime();
 		void Awake();
+		void OnEditorUpdate();
 		void Update();
 		void OnDestroy();
 

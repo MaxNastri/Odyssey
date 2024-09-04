@@ -384,7 +384,6 @@ namespace Odyssey
 					bindpose = GetMatrix(&model->nodes[parent]) * bindpose;
 					parent = m_RigData.Bones[model->nodes[parent].name].ParentIndex;
 				}
-				bone.bindpose = bindpose;
 			}
 			if (m_RigData.Bones.size() > 0)
 			{
