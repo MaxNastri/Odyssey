@@ -274,7 +274,6 @@ namespace Odyssey
 			CreateNodeRecursive(model, &model->nodes[node], nullptr);
 		}
 
-		m_RigData.GlobalMatrix = tempNodes[1]->GetWorld();
 		for (size_t m = 0; m < model->meshes.size(); m++)
 		{
 			const Mesh& mesh = model->meshes[m];
@@ -444,25 +443,16 @@ namespace Odyssey
 		rotation.y = -rotation.y;
 
 		return glm::translate(glm::mat4(1.0f), translation) * glm::mat4(rotation) * glm::scale(glm::mat4(1.0f), scale);
-		//glm::mat4 copy = mat;
-		//
-		//// Invert the top row
-		//copy[0][2] = -copy[0][2];
-		//
-		//// Invert the x components of all other rows
-		//copy[1][2] = -copy[1][2];
-		//copy[2][0] = -copy[2][0];
-		//copy[3][2] = -copy[3][2];
-		//return copy;
 	}
 
 	void GLTFAssetImporter::LoadRigData(const Model* model)
 	{
-		//m_RigData.GlobalMatrix = glm::scale(glm::identity<mat4>(), glm::vec3(m_Settings.Scale, m_Settings.Scale, m_Settings.Scale));
+		m_RigData.GlobalMatrix = glm::scale(glm::identity<mat4>(), glm::vec3(m_Settings.Scale, m_Settings.Scale, m_Settings.Scale));
 
 		if (m_Settings.ConvertLH)
 		{
-			//m_RigData.GlobalMatrix = ConvertLH(m_RigData.GlobalMatrix);
+			glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0, 1, 0));
+			m_RigData.GlobalMatrix = rotation * m_RigData.GlobalMatrix;
 		}
 
 		for (size_t s = 0; s < model->skins.size(); s++)

@@ -22,7 +22,7 @@ namespace Odyssey
 		public:
 			bool ConvertLH = true;
 			bool LoggingEnabled = false;
-			float Scale = 1.0f;
+			float Scale = 0.01f;
 			bool BakeGlobalTransform = false;
 		};
 	public:

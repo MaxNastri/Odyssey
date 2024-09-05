@@ -148,7 +148,7 @@ namespace Odyssey
 			transform.SetPosition(blendKey.position);
 			transform.SetRotation(blendKey.rotation);
 			transform.SetScale(blendKey.scale);
-			glm::mat4 key =  transform.GetWorldMatrix();
+			glm::mat4 key = rig->GetGlobalMatrix() * animatorInverse * transform.GetWorldMatrix();
 			m_FinalPoses[i] = key * bones[i].InverseBindpose;
 
 			if (m_DebugEnabled)
