@@ -16,7 +16,7 @@ namespace Odyssey
 		m_Width = desc.Width;
 		m_Height = desc.Height;
 		m_Channels = desc.Channels;
-		isDepth = desc.ImageType == TextureType::DepthTexture;
+		isDepth = desc.ImageType == ImageType::DepthTexture;
 
 		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
 		VkPhysicalDevice physicalDevice = m_Context->GetPhysicalDevice()->GetPhysicalDevice();
@@ -73,8 +73,8 @@ namespace Odyssey
 			viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 			viewInfo.format = GetFormat(desc.Format);
 			viewInfo.subresourceRange.aspectMask = isDepth ? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
-			viewInfo.subresourceRange.levelCount = 1;
-			viewInfo.subresourceRange.layerCount = 1;
+			viewInfo.subresourceRange.levelCount = desc.MipLevels;
+			viewInfo.subresourceRange.layerCount = desc.ArrayLayers;
 
 			if (vkCreateImageView(device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
 			{
@@ -281,16 +281,16 @@ namespace Odyssey
 
 		throw std::runtime_error("failed to find suitable memory type!");
 	}
-	VkImageUsageFlags VulkanImage::GetUsage(TextureType imageType)
+	VkImageUsageFlags VulkanImage::GetUsage(ImageType imageType)
 	{
 		switch (imageType)
 		{
-			case Odyssey::TextureType::None:
-			case Odyssey::TextureType::Image2D:
+			case Odyssey::ImageType::None:
+			case Odyssey::ImageType::Image2D:
 				return VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-			case Odyssey::TextureType::RenderTexture:
+			case Odyssey::ImageType::RenderTexture:
 				return VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-			case TextureType::DepthTexture:
+			case ImageType::DepthTexture:
 				return VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 			default:
 				return 0;

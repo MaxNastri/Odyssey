@@ -87,4 +87,14 @@ namespace Odyssey
 		commandBuffer->BindVertexBuffer(DebugRenderer::GetVertexBuffer());
 		commandBuffer->Draw((uint32_t)DebugRenderer::GetVertexCount(), 1, 0, 0);
 	}
+
+	void SkyboxSubPass::Setup()
+	{
+		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
+	}
+
+	void SkyboxSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
+	{
+
+	}
 }

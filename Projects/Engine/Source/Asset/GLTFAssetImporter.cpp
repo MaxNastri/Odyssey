@@ -1,6 +1,5 @@
 #include "GLTFAssetImporter.h"
 #define TINYGLTF_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "tiny_gltf.h"
 #include "Logger.h"
@@ -318,7 +317,7 @@ namespace Odyssey
 						if (m_Settings.ConvertLH)
 						{
 							vertex.Position.z = -vertex.Position.z;
-							vertex.Normal.x = -vertex.Normal.x;
+							vertex.Normal.z = -vertex.Normal.z;
 							vertex.TexCoord0.y = 1.0f - vertex.TexCoord0.y;
 						}
 

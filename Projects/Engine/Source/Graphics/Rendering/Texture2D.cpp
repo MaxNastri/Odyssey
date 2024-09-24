@@ -4,6 +4,7 @@
 #include "VulkanTextureSampler.h"
 #include "BinaryBuffer.h"
 #include "AssetManager.h"
+#include "SourceTexture.h"
 
 namespace Odyssey
 {
@@ -17,6 +18,22 @@ namespace Odyssey
 		: Asset(assetPath)
 	{
 		Load();
+	}
+
+	Texture2D::Texture2D(const Path& assetPath, std::shared_ptr<SourceTexture> source)
+		: Asset(assetPath)
+	{
+		// Copy in the texture settings
+		m_TextureDescription.Width = (uint32_t)source->GetWidth();
+		m_TextureDescription.Height = (uint32_t)source->GetHeight();
+		m_TextureDescription.Channels = (uint32_t)source->GetChannels();
+
+		// Create the pixel buffer and allocate a texture
+		BinaryBuffer& pixelBuffer = source->GetPixelBuffer();
+		m_PixelBufferGUID = AssetManager::CreateBinaryAsset(pixelBuffer);
+		m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, pixelBuffer);
+		
+		SetSourceAsset(source->GetGUID());
 	}
 
 	void Texture2D::Save()

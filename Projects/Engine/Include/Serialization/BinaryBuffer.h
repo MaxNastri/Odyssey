@@ -6,7 +6,8 @@ namespace Odyssey
 	{
 	public:
 		BinaryBuffer() = default;
-		BinaryBuffer(std::vector<unsigned char> buffer, size_t size);
+		BinaryBuffer(std::vector<uint8_t> buffer);
+		BinaryBuffer(uint8_t* buffer, size_t size);
 
 	public:
 		operator bool() { return m_Size != 0; }
@@ -49,6 +50,19 @@ namespace Odyssey
 
 			// Mem-copy the data into the binary buffer
 			memcpy(&m_Data[0], writeData.data(), m_Size);
+		}
+
+		template<typename T>
+		void WriteData(T* data, size_t size)
+		{
+			m_Size = size;
+
+			// Clear the data and resize to match
+			m_Data.clear();
+			m_Data.resize(m_Size);
+
+			// Mem-copy the data into the binary buffer
+			memcpy(&m_Data[0], data, m_Size);
 		}
 
 	private:

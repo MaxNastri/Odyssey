@@ -28,7 +28,9 @@ namespace Odyssey
 			{
 				m_Modified = true;
 				valueUpdatedCallback(data);
+				m_Modified = false;
 			}
+
 			if (m_ReadOnly)
 				ImGui::EndDisabled();
 			ImGui::EndTable();

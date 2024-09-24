@@ -19,6 +19,7 @@ namespace Odyssey
 	class SourceAsset;
 	class SourceShader;
 	class SourceModel;
+	class SourceTexture;
 
 	class AssetManager
 	{
@@ -36,11 +37,13 @@ namespace Odyssey
 		static std::shared_ptr<Mesh> CreateMesh(const Path& assetPath, std::shared_ptr<SourceModel> source);
 		static std::shared_ptr<Shader> CreateShader(const Path& assetPath);
 		static std::shared_ptr<Shader> CreateShader(const Path& assetPath, std::shared_ptr<SourceShader> source);
+		static std::shared_ptr<Texture2D> CreateTexture2D(const Path& assetPath, std::shared_ptr<SourceTexture> sourceTexture);
 		static std::shared_ptr<AnimationRig> CreateAnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
 		static std::shared_ptr<AnimationClip> CreateAnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
 	public:
 		static std::shared_ptr<SourceShader> LoadSourceShader(GUID guid);
 		static std::shared_ptr<SourceModel> LoadSourceModel(GUID guid);
+		static std::shared_ptr<SourceTexture> LoadSourceTexture(GUID guid);
 
 	public:
 		static std::shared_ptr<Material> LoadMaterial(const Path& assetPath);

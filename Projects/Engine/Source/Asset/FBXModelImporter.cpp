@@ -353,6 +353,7 @@ namespace Odyssey
 				{
 					// NOTE: Swapping y and z is a separate conversion
 					vertex.Position.z = -vertex.Position.z;
+					vertex.TexCoord0.y = 1.0f - vertex.TexCoord0.y;
 					vertex.Normal.z = -vertex.Normal.z;
 					vertex.Tangent.z = -vertex.Tangent.z;
 

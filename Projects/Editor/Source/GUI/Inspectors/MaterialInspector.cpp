@@ -40,15 +40,12 @@ namespace Odyssey
 		m_ShaderDrawer.Draw();
 		m_TextureDrawer.Draw();
 
-		bool modified = m_NameDrawer.IsModified() || m_ShaderDrawer.IsModified();
-
-		if (modified)
+		if (m_Modified)
 		{
 			if (ImGui::Button("Save"))
 			{
 				m_Material->Save();
-				m_NameDrawer.SetModified(false);
-				m_ShaderDrawer.SetModified(false);
+				m_Modified = false;
 			}
 		}
 	}
@@ -57,6 +54,8 @@ namespace Odyssey
 	{
 		if (m_Material)
 			m_Material->SetName(name);
+
+		m_Modified = true;
 	}
 
 	void MaterialInspector::OnShaderModified(GUID guid)
@@ -65,6 +64,8 @@ namespace Odyssey
 		{
 			if (auto vertShader = AssetManager::LoadShaderByGUID(guid))
 				m_Material->SetShader(vertShader);
+
+			m_Modified = true;
 		}
 	}
 
@@ -74,6 +75,8 @@ namespace Odyssey
 		{
 			if (auto texture = AssetManager::LoadTexture2DByGUID(guid))
 				m_Material->SetTexture(texture);
+
+			m_Modified = true;
 		}
 	}
 }

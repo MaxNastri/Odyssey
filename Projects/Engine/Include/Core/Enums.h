@@ -28,6 +28,25 @@ namespace Odyssey
 	enum class TextureType
 	{
 		None = 0,
+		Texture2D = 1,
+		Texture3D = 2,
+		Cubemap = 3,
+	};
+
+	enum class TextureFace
+	{
+		None = 0,
+		XNeg = 1,
+		XPos = 2,
+		YNeg = 1,
+		YPos = 2,
+		ZNeg = 1,
+		ZPos = 2,
+	};
+
+	enum class ImageType
+	{
+		None = 0,
 		Image2D = 1,
 		RenderTexture = 2,
 		DepthTexture = 3,

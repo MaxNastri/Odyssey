@@ -11,7 +11,7 @@ namespace Odyssey
 {
 	struct VulkanImageDescription
 	{
-		TextureType ImageType = TextureType::None;
+		ImageType ImageType = ImageType::None;
 		TextureFormat Format = TextureFormat::R8G8B8A8_UNORM;
 		uint32_t Width = 1;
 		uint32_t Height = 1;
@@ -47,7 +47,7 @@ namespace Odyssey
 
 	private:
 		uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
-		VkImageUsageFlags GetUsage(TextureType imageType);
+		VkImageUsageFlags GetUsage(ImageType imageType);
 		VkFormat GetFormat(TextureFormat format);
 		bool IsDepthFormat(TextureFormat format);
 

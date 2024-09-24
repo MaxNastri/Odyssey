@@ -1,20 +1,6 @@
 Scene: Scene_01
 GUID: 6049963977740777600
 GameObjects:
-  - Name: Monk FBX
-    GUID: 15322439001782158818
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.Animator
-        Animation Rig: 11519690897429141827
-        Animation Clip: 1480094622537577134
-      - Type: Odyssey.MeshRenderer
-        m_Mesh: 7889834594713330204
-        m_Material: 942766181068811557
-      - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
   - Name: Camera
     GUID: 1278710421845013511
     Type: Odyssey.GameObject
@@ -42,6 +28,20 @@ GameObjects:
             Value: 1
           - Name: RotDirection
             Value: 'x: 0 y: 45 z: 0'
+  - Name: Monk FBX
+    GUID: 15322439001782158818
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Animator
+        Animation Rig: 11519690897429141827
+        Animation Clip: 1480094622537577134
+      - Type: Odyssey.MeshRenderer
+        m_Mesh: 13759854750235908315
+        m_Material: 942766181068811557
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
 Scene Graph Nodes:
   - Entity: 15322439001782158818
     Parent: 0

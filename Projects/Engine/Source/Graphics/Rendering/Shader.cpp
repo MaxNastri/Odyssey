@@ -22,8 +22,8 @@ namespace Odyssey
 	Shader::Shader(const Path& assetPath, std::shared_ptr<SourceShader> source)
 		: Asset(assetPath)
 	{
-		auto shaderTypes = source->GetShaderTypes();
-		for (auto shaderType : shaderTypes)
+		std::vector<ShaderType> shaderTypes = source->GetShaderTypes();
+		for (ShaderType shaderType : shaderTypes)
 		{
 			auto& shaderData = m_Shaders[shaderType];
 			if (source->Compile(shaderType, shaderData.CodeBuffer))

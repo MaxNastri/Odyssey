@@ -39,4 +39,14 @@ namespace Odyssey
 		std::shared_ptr<VulkanPushDescriptors> m_PushDescriptors;
 		ResourceID m_DescriptorLayout;
 	};
+
+	class SkyboxSubPass : public RenderSubPass
+	{
+	public:
+		virtual void Setup() override;
+		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+
+	private:
+		std::shared_ptr<VulkanPushDescriptors> m_PushDescriptors;
+	};
 }

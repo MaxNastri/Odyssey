@@ -38,6 +38,7 @@ namespace Odyssey
 		void LoadRigData(const Model* model);
 		void BuildBoneMap(const Model* model, const Skin* skin, const Node* node, int32_t nodeIndex);
 		void LoadAnimationData(const Model* model);
+		void LoadMaterialData(const Model* model);
 
 	private:
 		Settings m_Settings;
