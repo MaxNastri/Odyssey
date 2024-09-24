@@ -8,15 +8,18 @@
 namespace Odyssey
 {
 	class Asset;
+	class AnimationRig;
 	class Material;
 	class Mesh;
 	class Shader;
 	class Scene;
 	class Texture2D;
+	class AnimationClip;
 
 	class SourceAsset;
 	class SourceShader;
 	class SourceModel;
+	class SourceTexture;
 
 	class AssetManager
 	{
@@ -34,22 +37,26 @@ namespace Odyssey
 		static std::shared_ptr<Mesh> CreateMesh(const Path& assetPath, std::shared_ptr<SourceModel> source);
 		static std::shared_ptr<Shader> CreateShader(const Path& assetPath);
 		static std::shared_ptr<Shader> CreateShader(const Path& assetPath, std::shared_ptr<SourceShader> source);
-
+		static std::shared_ptr<Texture2D> CreateTexture2D(const Path& assetPath, std::shared_ptr<SourceTexture> sourceTexture);
+		static std::shared_ptr<AnimationRig> CreateAnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
+		static std::shared_ptr<AnimationClip> CreateAnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
 	public:
 		static std::shared_ptr<SourceShader> LoadSourceShader(GUID guid);
 		static std::shared_ptr<SourceModel> LoadSourceModel(GUID guid);
+		static std::shared_ptr<SourceTexture> LoadSourceTexture(GUID guid);
 
 	public:
 		static std::shared_ptr<Material> LoadMaterial(const Path& assetPath);
 		static std::shared_ptr<Mesh> LoadMesh(const Path& assetPath);
 		static std::shared_ptr<Shader> LoadShader(const Path& assetPath);
 		static std::shared_ptr<Texture2D> LoadTexture2D(const Path& assetPath);
-
 	public:
 		static std::shared_ptr<Material> LoadMaterialByGUID(GUID guid);
 		static std::shared_ptr<Mesh> LoadMeshByGUID(GUID guid);
 		static std::shared_ptr<Shader> LoadShaderByGUID(GUID guid);
 		static std::shared_ptr<Texture2D> LoadTexture2DByGUID(GUID guid);
+		static std::shared_ptr<AnimationRig> LoadAnimationRig(GUID guid);
+		static std::shared_ptr<AnimationClip> LoadAnimationClip(GUID guid);
 
 	public:
 		static GUID CreateBinaryAsset(BinaryBuffer& buffer);

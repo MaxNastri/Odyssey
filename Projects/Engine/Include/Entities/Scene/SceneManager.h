@@ -11,10 +11,12 @@ namespace Odyssey
 	public:
 		static void LoadScene(const std::string& assetPath);
 		static void SaveActiveScene();
+		static void SaveActiveScene(const Path& path);
 		static Scene* GetActiveScene();
 
 	public:
 		static void Awake();
+		static void OnEditorUpdate();
 		static void Update();
 
 	private:

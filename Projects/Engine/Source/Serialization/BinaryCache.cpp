@@ -102,7 +102,7 @@ namespace Odyssey
 		// Done reading
 		file.close();
 
-		return BinaryBuffer(buffer, bufferSize);
+		return BinaryBuffer(buffer);
 	}
 
 	Path BinaryCache::GenerateAssetPath(GUID guid)

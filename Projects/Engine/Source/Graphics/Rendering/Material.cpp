@@ -36,14 +36,11 @@ namespace Odyssey
 		// Serialize metadata first
 		SerializeMetadata(serializer);
 
-		if (m_FragmentShader)
-			root.WriteData("m_FragmentShader", m_FragmentShader->GetGUID());
-
-		if (m_VertexShader)
-			root.WriteData("m_VertexShader", m_VertexShader->GetGUID());
+		if (m_Shader)
+			root.WriteData("m_Shader", m_Shader->GetGUID().CRef());
 
 		if (m_Texture)
-			root.WriteData("m_Texture", m_Texture->GetGUID());
+			root.WriteData("m_Texture", m_Texture->GetGUID().CRef());
 
 		// Save to disk
 		serializer.WriteToDisk(assetPath);
@@ -56,19 +53,16 @@ namespace Odyssey
 		{
 			SerializationNode root = deserializer.GetRoot();
 
-			std::string fragGUID;
-			std::string vertGUID;
-			std::string textureGUID;
+			GUID shaderGUID;
+			GUID textureGUID;
 
-			root.ReadData("m_FragmentShader", fragGUID);
-			root.ReadData("m_VertexShader", vertGUID);
-			root.ReadData("m_Texture", textureGUID);
+			root.ReadData("m_Shader", shaderGUID.Ref());
+			root.ReadData("m_Texture", textureGUID.Ref());
 
-			if (!fragGUID.empty())
-				m_FragmentShader = AssetManager::LoadShaderByGUID(fragGUID);
-			if (!vertGUID.empty())
-				m_VertexShader = AssetManager::LoadShaderByGUID(vertGUID);
-			if (!textureGUID.empty())
+			if (shaderGUID)
+				m_Shader = AssetManager::LoadShaderByGUID(shaderGUID);
+
+			if (textureGUID)
 				m_Texture = AssetManager::LoadTexture2DByGUID(textureGUID);
 		}
 	}

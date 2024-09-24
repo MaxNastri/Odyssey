@@ -171,6 +171,26 @@ namespace Odyssey::InternalCalls
 	{
 		if (std::shared_ptr<Mesh> mesh = AssetManager::LoadMeshByGUID(GUID(guid)))
 			return mesh->GetVertexCount();
+
+		return 0;
+	}
+
+	uint64_t MeshRenderer_GetMesh(uint64_t entityGUID)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+			renderer->GetMesh();
+
+		return GUID();
+	}
+
+	void MeshRenderer_SetMesh(uint64_t entityGUID, uint64_t meshGUID)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+			renderer->SetMesh(GUID(meshGUID));
 	}
 
 	float Time_GetDeltaTime()

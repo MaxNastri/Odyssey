@@ -14,6 +14,7 @@ namespace Odyssey
 		m_EulerRotation = glm::vec3(0, 0, 0);
 		m_Rotation = glm::quat(1, 0, 0, 0);
 		m_Scale = glm::vec3(1, 1, 1);
+		m_Dirty = true;
 	}
 
 	void Transform::AddPosition(glm::vec3 pos)
@@ -88,18 +89,28 @@ namespace Odyssey
 		m_Dirty = true;
 	}
 
-	void Transform::SetScale(glm::vec3 scaleFactor)
+	void Transform::SetScale(glm::vec3 scale)
 	{
-		m_Scale = scaleFactor;
-		m_Dirty = true;
+		if (m_Scale != scale)
+		{
+			m_Scale = scale;
+			m_Dirty = true;
+		}
 	}
 
 	void Transform::SetScale(float x, float y, float z)
 	{
-		m_Scale.x = x;
-		m_Scale.y = y;
-		m_Scale.z = z;
-		m_Dirty = true;
+		SetScale(glm::vec3(x, y, z));
+	}
+
+	void Transform::SetLocalMatrix(glm::mat4 localMatrix)
+	{
+		m_LocalMatrix = localMatrix;
+
+		glm::vec3 scale;
+		glm::vec3 skew;
+		glm::vec4 perspective;
+		glm::decompose(localMatrix, scale, m_Rotation, m_Position, skew, perspective);
 	}
 
 	glm::vec3 Transform::Forward()
@@ -120,35 +131,27 @@ namespace Odyssey
 		return glm::normalize(row2);
 	}
 
-	glm::mat4x4 Transform::GetWorldMatrix()
+	glm::mat4 Transform::GetLocalMatrix()
 	{
-		//UpdateWorldMatrix();
 		ComposeLocalMatrix();
 		return m_LocalMatrix;
 	}
 
-	void Transform::UpdateWorldMatrix(bool forceUpdateWorld)
+	glm::mat4x4 Transform::GetWorldMatrix()
 	{
-		forceUpdateWorld |= m_Dirty;
+		ComposeLocalMatrix();
+		glm::mat4 worldMatrix = m_LocalMatrix;
 
-		// Check if we need to recalculate our world matrix
-		if (m_Dirty)
+		GameObject parent = m_GameObject.GetParent();
+		while (parent)
 		{
-			ComposeLocalMatrix();
-			m_Dirty = false;
+			Transform& parentTransform = parent.GetComponent<Transform>();
+			worldMatrix = parentTransform.GetLocalMatrix() * worldMatrix;
+
+			parent = parent.GetParent();
 		}
 
-		// Check if we need to force an update to our world matrix
-		//if (forceUpdateWorld && parent)
-		//{
-		//    worldMatrix = parent->worldMatrix * localMatrix;
-		//}
-
-		// Update our children
-		//for (int i = 0; i < children.size(); ++i)
-		//{
-		//    children[i]->UpdateWorldMatrix(forceUpdateWorld);
-		//}
+		return worldMatrix;
 	}
 
 	void Transform::RotateAround(glm::vec3 center, glm::vec3 axis, float degrees, bool worldSpace)
@@ -209,11 +212,14 @@ namespace Odyssey
 	void Transform::ComposeLocalMatrix()
 	{
 		// Compose the position, rotation and scale into 3 matrices
-		mat4x4 t = glm::translate(glm::identity<mat4x4>(), m_Position);
-		mat4x4 r = glm::toMat4(m_Rotation);
-		mat4x4 s = glm::scale(glm::identity<mat4x4>(), m_Scale);
-		m_LocalMatrix = t * r * s;
-		m_WorldMatrix = m_LocalMatrix;
+		if (m_Dirty)
+		{
+			mat4x4 t = glm::translate(glm::identity<mat4x4>(), m_Position);
+			mat4x4 r = glm::toMat4(m_Rotation);
+			mat4x4 s = glm::scale(glm::identity<mat4x4>(), m_Scale);
+			m_LocalMatrix = t * r * s;
+			m_Dirty = false;
+		}
 	}
 
 	void Transform::Reset()
@@ -235,7 +241,6 @@ namespace Odyssey
 	{
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
-		componentNode.WriteData("m_FileID", m_FileID.CRef());
 		componentNode.WriteData("Type", Transform::Type);
 		componentNode.WriteData("Position", m_Position);
 		componentNode.WriteData("Rotation", m_EulerRotation);
@@ -244,7 +249,6 @@ namespace Odyssey
 
 	void Transform::Deserialize(SerializationNode& node)
 	{
-		node.ReadData("m_FileID", m_FileID.Ref());
 		node.ReadData("Position", m_Position);
 		node.ReadData("Rotation", m_EulerRotation);
 		node.ReadData("Scale", m_Scale);

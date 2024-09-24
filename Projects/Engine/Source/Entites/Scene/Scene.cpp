@@ -7,6 +7,7 @@
 #include "Transform.h"
 #include "ScriptComponent.h"
 #include "ScriptingManager.h"
+#include "Animator.h"
 
 namespace Odyssey
 {
@@ -14,7 +15,7 @@ namespace Odyssey
 	{
 	}
 
-	Scene::Scene(const std::filesystem::path& assetPath)
+	Scene::Scene(const Path& assetPath)
 		: m_Path(assetPath)
 	{
 		LoadFromDisk(m_Path);
@@ -27,9 +28,11 @@ namespace Odyssey
 
 		// Construct a game object and add an ID component 
 		GameObject gameObject = GameObject(this, entity);
-		gameObject.AddComponent<PropertiesComponent>();
+		PropertiesComponent& properties = gameObject.AddComponent<PropertiesComponent>(GUID::New());
 
 		m_GUIDToGameObject[gameObject.GetGUID()] = gameObject;
+
+		m_SceneGraph.AddEntity(gameObject);
 
 		return gameObject;
 	}
@@ -45,6 +48,7 @@ namespace Odyssey
 
 	void Scene::DestroyGameObject(const GameObject& gameObject)
 	{
+		m_SceneGraph.RemoveEntityAndChildren(gameObject);
 		m_Registry.destroy(gameObject);
 	}
 
@@ -100,6 +104,16 @@ namespace Odyssey
 		}
 	}
 
+	void Scene::OnEditorUpdate()
+	{
+		for (auto entity : m_Registry.view<Animator>())
+		{
+			GameObject gameObject = GameObject(this, entity);
+			Animator& animator = gameObject.GetComponent<Animator>();
+			animator.OnEditorUpdate();
+		}
+	}
+
 	void Scene::Update()
 	{
 		for (auto entity : m_Registry.view<ScriptComponent>())
@@ -107,6 +121,13 @@ namespace Odyssey
 			GameObject gameObject = GameObject(this, entity);
 			auto& userScript = gameObject.GetComponent<ScriptComponent>();
 			userScript.Update();
+		}
+
+		for (auto entity : m_Registry.view<Animator>())
+		{
+			GameObject gameObject = GameObject(this, entity);
+			Animator& animator = gameObject.GetComponent<Animator>();
+			animator.Update();
 		}
 	}
 
@@ -120,7 +141,7 @@ namespace Odyssey
 		}
 	}
 
-	void Scene::SaveTo(const std::filesystem::path& savePath)
+	void Scene::SaveTo(const Path& savePath)
 	{
 		SaveToDisk(savePath);
 	}
@@ -135,14 +156,13 @@ namespace Odyssey
 		LoadFromDisk(m_Path);
 	}
 
-	void Scene::SaveToDisk(const std::filesystem::path& assetPath)
+	void Scene::SaveToDisk(const Path& assetPath)
 	{
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
 
 		root.WriteData("Scene", m_Name);
 		root.WriteData("GUID", m_GUID);
-
 		SerializationNode gameObjectsNode = root.CreateSequenceNode("GameObjects");
 
 		for (auto entity : m_Registry.view<PropertiesComponent>())
@@ -154,10 +174,12 @@ namespace Odyssey
 				gameObject.Serialize(gameObjectsNode);
 		}
 
+		m_SceneGraph.Serialize(this, root);
+
 		serializer.WriteToDisk(assetPath);
 	}
 
-	void Scene::LoadFromDisk(const std::filesystem::path& assetPath)
+	void Scene::LoadFromDisk(const Path& assetPath)
 	{
 		AssetDeserializer deserializer(assetPath);
 
@@ -180,13 +202,15 @@ namespace Odyssey
 
 				GUID guid = gameObject.GetGUID();
 				m_GUIDToGameObject[guid] = gameObject;
-
+				
 				if (gameObject.HasComponent<ScriptComponent>())
 				{
 					ScriptComponent& scriptComponent = gameObject.GetComponent<ScriptComponent>();
 					uint32_t scriptID = scriptComponent.GetScriptID();
 				}
 			}
+
+			m_SceneGraph.Deserialize(this, root);
 		}
 	}
 }

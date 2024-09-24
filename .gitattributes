@@ -3,3 +3,5 @@
 **.glb filter=lfs diff=lfs merge=lfs -text
 BinaryAssets/** filter=lfs diff=lfs merge=lfs -text
 Projects/Sandbox/Cache/BinaryAssets/** filter=lfs diff=lfs merge=lfs -text
+Vendor/**/*.dll filter=lfs diff=lfs merge=lfs -text
+Vendor/**/*.lib filter=lfs diff=lfs merge=lfs -text

@@ -6,6 +6,9 @@
 #include "Texture2D.h"
 #include "SourceShader.h"
 #include "SourceModel.h"
+#include "SourceTexture.h"
+#include "AnimationRig.h"
+#include "AnimationClip.h"
 
 namespace Odyssey
 {
@@ -158,6 +161,57 @@ namespace Odyssey
 		return shader;
 	}
 
+	std::shared_ptr<Texture2D> AssetManager::CreateTexture2D(const Path& assetPath, std::shared_ptr<SourceTexture> sourceTexture)
+	{
+		// Create a new shader asset
+		GUID guid = GUID::New();
+		std::shared_ptr<Texture2D> texture = s_Assets.Add<Texture2D>(guid, assetPath, sourceTexture);
+
+		// Set asset data
+		texture->Guid = guid;
+		texture->SetName("Default");
+		texture->SetType("Texture2D");
+
+		// Save to disk
+		texture->Save();
+
+		return texture;
+	}
+
+	std::shared_ptr<AnimationRig> AssetManager::CreateAnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel)
+	{
+		// Create a new shader asset
+		GUID guid = GUID::New();
+		std::shared_ptr<AnimationRig> animationRig = s_Assets.Add<AnimationRig>(guid, assetPath, sourceModel);
+
+		// Set asset data
+		animationRig->Guid = guid;
+		animationRig->SetName("Default");
+		animationRig->SetType("AnimationRig");
+
+		// Save to disk
+		animationRig->Save();
+
+		return animationRig;
+	}
+
+	std::shared_ptr<AnimationClip> AssetManager::CreateAnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel)
+	{
+		// Create a new shader asset
+		GUID guid = GUID::New();
+		std::shared_ptr<AnimationClip> animationClip = s_Assets.Add<AnimationClip>(guid, assetPath, sourceModel);
+
+		// Set asset data
+		animationClip->Guid = guid;
+		animationClip->SetName("Default");
+		animationClip->SetType("AnimationClip");
+
+		// Save to disk
+		animationClip->Save();
+
+		return animationClip;
+	}
+
 	std::shared_ptr<SourceShader> AssetManager::LoadSourceShader(GUID guid)
 	{
 		// Check if this asset has already been loaded
@@ -188,6 +242,22 @@ namespace Odyssey
 		 s_LoadedSourceAssets.emplace(guid);
 
 		return model;
+	}
+
+	std::shared_ptr<SourceTexture> AssetManager::LoadSourceTexture(GUID guid)
+	{
+		// Check if this asset has already been loaded
+		if (s_LoadedSourceAssets.contains(guid))
+			return s_SourceAssets.Get<SourceTexture>(guid);
+
+		// Load the source asset
+		Path sourcePath = s_SourceAssetDatabase->GUIDToAssetPath(guid);
+		std::shared_ptr<SourceTexture> texture = s_SourceAssets.Add<SourceTexture>(guid, sourcePath);
+
+		// Track the source asset as loaded
+		s_LoadedSourceAssets.emplace(guid);
+
+		return texture;
 	}
 
 	std::shared_ptr<Mesh> AssetManager::LoadMesh(const Path& assetPath)
@@ -319,6 +389,38 @@ namespace Odyssey
 		return s_Assets.Add<Texture2D>(guid, assetPath);
 	}
 
+	std::shared_ptr<AnimationRig> AssetManager::LoadAnimationRig(GUID guid)
+	{
+		// Convert the guid to a path
+		Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
+
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<AnimationRig>(guid);
+
+		// Track the asset
+		s_LoadedAssets.emplace(guid);
+
+		// Load and return the mesh asset
+		return s_Assets.Add<AnimationRig>(guid, assetPath);
+	}
+
+	std::shared_ptr<AnimationClip> AssetManager::LoadAnimationClip(GUID guid)
+	{
+		// Convert the guid to a path
+		Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
+
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<AnimationClip>(guid);
+
+		// Track the asset
+		s_LoadedAssets.emplace(guid);
+
+		// Load and return the mesh asset
+		return s_Assets.Add<AnimationClip>(guid, assetPath);
+	}
+
 	BinaryBuffer AssetManager::LoadBinaryAsset(GUID guid)
 	{
 		return s_BinaryCache->LoadBinaryData(guid);
@@ -331,7 +433,7 @@ namespace Odyssey
 
 	GUID AssetManager::CreateBinaryAsset(BinaryBuffer& buffer)
 	{
-		GUID guid;
+		GUID guid = GUID::New();
 		s_BinaryCache->SaveBinaryData(guid, buffer);
 		return guid;
 	}

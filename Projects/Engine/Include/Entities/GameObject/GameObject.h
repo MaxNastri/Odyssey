@@ -11,23 +11,34 @@ namespace Odyssey
 	class GameObject
 	{
 	public:
-		GameObject();
+		GameObject() = default;
 		GameObject(Scene* scene, entt::entity entity);
 		GameObject(Scene* scene, uint32_t id);
 
 	public:
 		operator entt::entity() const { return m_Entity; }
 		operator bool() const { return m_Scene; }
+		bool Equals(const GameObject& other) { return m_Entity == other.m_Entity && m_Scene == other.m_Scene; }
 
 	public:
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 
 	public:
+		void SetParent(const GameObject& parent);
+		void RemoveParent();
+		GameObject GetParent();
+		std::vector<GameObject> GetChildren();
+		Scene* GetScene() { return m_Scene; }
+
+	public:
 		const std::string& GetName();
 		GUID GetGUID();
 		void SetName(const std::string& name);
 		void SetGUID(GUID guid);
+
+	public:
+		void Destroy();
 
 	public:
 		template<typename T, typename... Args>
@@ -57,6 +68,5 @@ namespace Odyssey
 	private: // Non-serialized
 		entt::entity m_Entity;
 		Scene* m_Scene = nullptr;
-		bool m_IsHidden = false;
 	};
 }

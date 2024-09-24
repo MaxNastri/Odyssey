@@ -16,9 +16,6 @@ namespace Odyssey
 
 			m_ShaderLanguageDrawer = StringDrawer("Shader Language", m_Shader->GetShaderLanguage(), nullptr, true);
 
-			m_ShaderTypeDrawer = IntDrawer<uint32_t>("Shader Type", 0,
-				[this](uint32_t shaderType) { m_Shader->SetShaderType((ShaderType)shaderType); });
-
 			m_CompiledDrawer = BoolDrawer("Compiled", m_Shader->IsCompiled(), nullptr, true);
 
 			m_DstAssetPathDrawer = StringDrawer("Destination Asset Path", m_DstAssetPath,
@@ -26,7 +23,6 @@ namespace Odyssey
 
 			m_ShaderNameDrawer.SetLabelWidth(0.5f);
 			m_ShaderLanguageDrawer.SetLabelWidth(0.5f);
-			m_ShaderTypeDrawer.SetLabelWidth(0.5f);
 			m_CompiledDrawer.SetLabelWidth(0.5f);
 			m_DstAssetPathDrawer.SetLabelWidth(0.7f);
 		}
@@ -35,7 +31,6 @@ namespace Odyssey
 	{
 		m_ShaderNameDrawer.Draw();
 		m_ShaderLanguageDrawer.Draw();
-		m_ShaderTypeDrawer.Draw();
 		m_CompiledDrawer.Draw();
 		m_DstAssetPathDrawer.Draw();
 		if (ImGui::Button("Compile"))

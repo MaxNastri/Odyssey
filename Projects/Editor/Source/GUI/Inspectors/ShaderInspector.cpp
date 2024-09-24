@@ -11,9 +11,6 @@ namespace Odyssey
 			m_GUIDDrawer = StringDrawer("GUID", m_Shader->GetGUID().String(), nullptr, true);
 			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(),
 				[this](const std::string& name) { OnNameChanged(name); });
-			m_TypeDrawer = StringDrawer("Type", m_Shader->GetType(), nullptr, true);
-			m_ShaderCodeDrawer = StringDrawer("Shader Code", m_Shader->GetShaderCodeGUID().String(), nullptr, true);
-			m_ShaderTypeDrawer = IntDrawer<uint32_t>("Shader Type", (uint32_t)m_Shader->GetShaderType(), nullptr, true);
 			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSoureAsset(), "SourceShader",
 				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
 		}
@@ -23,9 +20,6 @@ namespace Odyssey
 	{
 		m_GUIDDrawer.Draw();
 		m_NameDrawer.Draw();
-		m_TypeDrawer.Draw();
-		m_ShaderCodeDrawer.Draw();
-		m_ShaderTypeDrawer.Draw();
 		m_SourceShaderDrawer.Draw();
 
 		if (ImGui::Button("Compile"))

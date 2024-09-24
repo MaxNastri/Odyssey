@@ -7,6 +7,7 @@
 #include "MeshRendererInspector.h"
 #include "SourceShaderInspector.h"
 #include "SourceModelInspector.h"
+#include "SourceTextureInspector.h"
 #include "ShaderInspector.h"
 #include "MeshInspector.h"
 #include "Texture2DInspector.h"
@@ -57,6 +58,8 @@ namespace Odyssey
 			m_Inspector = std::make_shared<SourceShaderInspector>(selection.GUID);
 		else if (selection.Type == "SourceModel")
 			m_Inspector = std::make_shared<SourceModelInspector>(selection.GUID);
+		else if (selection.Type == "SourceTexture")
+			m_Inspector = std::make_shared<SourceTextureInspector>(selection.GUID);
 		else if (selection.Type == "Shader")
 			m_Inspector = std::make_shared<ShaderInspector>(selection.GUID);
 		else if (selection.Type == "Mesh")

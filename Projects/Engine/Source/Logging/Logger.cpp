@@ -23,6 +23,16 @@ namespace Odyssey
 		spdlog::warn(message);
 	}
 
+	void Logger::LogWarning(std::string message)
+	{
+		spdlog::warn(message);
+	}
+
+	void Logger::LogWarning(std::string_view message)
+	{
+		spdlog::warn(message);
+	}
+
 	void Logger::LogError(const char* message)
 	{
 		spdlog::error(message);

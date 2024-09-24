@@ -43,6 +43,11 @@ namespace Odyssey
 		}
 
 		if (m_Options.Callback && (isDirectory || extensionMatch))
+		{
+			if (!isDirectory && fileAction.Action == efsw::Action::Add && std::filesystem::file_size(fileAction.Directory / fileAction.Filename) == 0)
+				return;
+
 			m_Options.Callback(fileAction.Filename, (FileActionType)fileAction.Action);
+		}
 	}
 }

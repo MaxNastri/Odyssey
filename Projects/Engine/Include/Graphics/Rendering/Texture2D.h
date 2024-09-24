@@ -7,14 +7,14 @@
 
 namespace Odyssey
 {
-	class VulkanBuffer;
-	class VulkanTexture;
+	class SourceTexture;
 
 	class Texture2D : public Asset
 	{
 	public:
 		Texture2D(const Path& assetPath);
 		Texture2D(const Path& assetPath, TextureFormat format);
+		Texture2D(const Path& assetPath, std::shared_ptr<SourceTexture> source);
 
 	public:
 		void Save();

@@ -13,8 +13,8 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Build\Debug\</OutputPath>
-    <IntermediateOutputPath>..\..\Intermediates\Debug\Debug\Odyssey.Framework\</IntermediateOutputPath>
+    <OutputPath>..\Editor\Resources\Scripts\</OutputPath>
+    <IntermediateOutputPath>..\Editor\Resources\Scripts\Intermediates\Debug\</IntermediateOutputPath>
     <DefineConstants>_CRT_SECURE_NO_WARNINGS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,8 +25,8 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Build\Release\</OutputPath>
-    <IntermediateOutputPath>..\..\Intermediates\Release\Release\Odyssey.Framework\</IntermediateOutputPath>
+    <OutputPath>..\Editor\Resources\Scripts\</OutputPath>
+    <IntermediateOutputPath>..\Editor\Resources\Scripts\Intermediates\Release\</IntermediateOutputPath>
     <DefineConstants>_CRT_SECURE_NO_WARNINGS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,32 +34,30 @@
   </PropertyGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <Reference Include="Coral.Managed">
-      <HintPath>..\..\Build\Debug\Coral.Managed.dll</HintPath>
+      <HintPath>..\Editor\Resources\Scripts\Coral.Managed.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Reference Include="Coral.Managed">
-      <HintPath>..\..\Build\Release\Coral.Managed.dll</HintPath>
+      <HintPath>..\Editor\Resources\Scripts\Coral.Managed.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Animation\AnimationRig.cs" />
     <Compile Include="Source\Asset.cs" />
-    <Compile Include="Source\AssetHandle.cs" />
+    <Compile Include="Source\Attributes.cs" />
+    <Compile Include="Source\Components\Animator.cs" />
     <Compile Include="Source\Components\Camera.cs" />
     <Compile Include="Source\Components\Component.cs" />
     <Compile Include="Source\Components\MeshRenderer.cs" />
     <Compile Include="Source\Components\ScriptComponent.cs" />
     <Compile Include="Source\Components\Transform.cs" />
     <Compile Include="Source\Entity.cs" />
+    <Compile Include="Source\GUID.cs" />
     <Compile Include="Source\Graphics\Mesh.cs" />
     <Compile Include="Source\InternalCalls.cs" />
     <Compile Include="Source\Math\Vector3.cs" />
-    <Compile Include="Source\Attributes.cs" />
     <Compile Include="Source\Object.cs" />
     <Compile Include="Source\Time.cs" />
   </ItemGroup>
-  <PropertyGroup>
-    <PostBuildEvent>copy /B /Y "..\..\Build\Debug\Odyssey.Framework.dll", "$(SolutionDir)\Projects\Editor\Resources\Scripts"
-copy /B /Y "..\..\Build\Debug\Odyssey.Framework.pdb", "$(SolutionDir)\Projects\Editor\Resources\Scripts"</PostBuildEvent>
-  </PropertyGroup>
 </Project>

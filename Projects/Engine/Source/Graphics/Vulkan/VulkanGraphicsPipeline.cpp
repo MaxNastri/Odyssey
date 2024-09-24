@@ -15,22 +15,19 @@ namespace Odyssey
 		CreateLayout(info);
 
 		// Shaders
-		auto vertexShader = ResourceManager::GetResource<VulkanShaderModule>(info.VertexShader);
-		auto fragmentShader = ResourceManager::GetResource<VulkanShaderModule>(info.FragmentShader);
+		std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
-		VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
-		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-		vertShaderStageInfo.module = vertexShader->GetShaderModule();
-		vertShaderStageInfo.pName = "main";
+		for (auto [shaderType, ResourceID] : info.Shaders)
+		{
+			auto shader = ResourceManager::GetResource<VulkanShaderModule>(ResourceID);
 
-		VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
-		fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-		fragShaderStageInfo.module = fragmentShader->GetShaderModule();
-		fragShaderStageInfo.pName = "main";
-
-		VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+			VkPipelineShaderStageCreateInfo shaderStageInfo{};
+			shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			shaderStageInfo.stage = shader->GetShaderFlags();
+			shaderStageInfo.module = shader->GetShaderModule();
+			shaderStageInfo.pName = "main";
+			shaderStages.push_back(shaderStageInfo);
+		}
 
 		// Dynamics
 		std::vector<VkDynamicState> dynamicStates = {
@@ -57,14 +54,14 @@ namespace Odyssey
 		vertexInputInfo.vertexBindingDescriptionCount = 1;
 		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 
-		std::array<VkVertexInputAttributeDescription, 12> vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
+		std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
 		vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
 		vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
 
 		// Input Assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		inputAssembly.topology = info.Triangles ? VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST : VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
 		// Rasterizer
@@ -74,7 +71,8 @@ namespace Odyssey
 		rasterizer.rasterizerDiscardEnable = VK_FALSE;
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
-		rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+		// TODO: Convert this to be dynamically set based on config/per material
+		rasterizer.cullMode = VK_CULL_MODE_NONE;// VK_CULL_MODE_BACK_BIT;
 		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 		rasterizer.depthBiasConstantFactor = 0.0f; // Optional
@@ -146,8 +144,8 @@ namespace Odyssey
 
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-		pipelineInfo.stageCount = 2;
-		pipelineInfo.pStages = shaderStages;
+		pipelineInfo.stageCount = (uint32_t)shaderStages.size();
+		pipelineInfo.pStages = shaderStages.data();
 		pipelineInfo.pVertexInputState = &vertexInputInfo;
 		pipelineInfo.pInputAssemblyState = &inputAssembly;
 		pipelineInfo.pViewportState = &viewportState;
@@ -181,16 +179,8 @@ namespace Odyssey
 		// Convert resource handles to vulkan data
 		std::vector<VkDescriptorSetLayout> setLayouts{};
 
-		if (info.DescriptorLayouts.size() > 0)
-		{
-			setLayouts.resize(info.DescriptorLayouts.size());
-
-			for (int i = 0; i < info.DescriptorLayouts.size(); i++)
-			{
-				auto layout = ResourceManager::GetResource<VulkanDescriptorLayout>(info.DescriptorLayouts[i]);
-				setLayouts[i] = layout->GetHandle();
-			}
-		}
+		if (auto layout = ResourceManager::GetResource<VulkanDescriptorLayout>(info.DescriptorLayout))
+			setLayouts.push_back(layout->GetHandle());
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

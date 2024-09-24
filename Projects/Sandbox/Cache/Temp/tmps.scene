@@ -13,7 +13,7 @@ GameObjects:
         Main Camera: 1
       - m_FileID: 804600620
         Type: Odyssey.Transform
-        Position: 'x: -1 y: 2 z: -2'
+        Position: 'x: -1 y: 4.5 z: -2'
         Rotation: 'x: 45 y: 45 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - m_FileID: 3449596229
@@ -36,10 +36,10 @@ GameObjects:
     Components:
       - m_FileID: 1869239950
         Type: Odyssey.MeshRenderer
-        m_Mesh: 1869001743513185192
+        m_Mesh: 7683229502331582948
         m_Material: 942766181068811557
       - m_FileID: 2443852871
         Type: Odyssey.Transform
         Position: 'x: 0.72083634 y: 0 z: 2'
         Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 0.005 y: 0.005 z: 0.005'
+        Scale: 'x: 1 y: 1 z: 1'

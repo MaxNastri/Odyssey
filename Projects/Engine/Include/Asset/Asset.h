@@ -66,7 +66,7 @@ namespace Odyssey
 		void SetSourceAsset(GUID guid) { m_SourceAsset = guid; }
 
 	public:
-		GUID Guid = 0;
+		GUID Guid;
 		std::string Name;
 		std::string Type;
 

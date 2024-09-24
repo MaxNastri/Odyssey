@@ -1,4 +1,7 @@
 include "CSExtensions.lua"
+OdysseyRootDirectory = os.getenv("ODYSSEY_ROOT")
+ProjectDirectory = path.join(OdysseyRootDirectory, "Projects/Framework")
+TargetDirectory = path.join(OdysseyRootDirectory, "Projects/Editor/Resources/Scripts")
 
 project "Odyssey.Framework"
     language "C#"
@@ -8,11 +11,11 @@ project "Odyssey.Framework"
     targetname "Odyssey.Framework"
     namespace "Odyssey"
 
-    targetdir "%{wks.location}/Build/%{cfg.buildcfg}"
-    objdir "%{wks.location}/Intermediates/%{cfg.buildcfg}"
+    targetdir "%{TargetDirectory}"
+    objdir "%{TargetDirectory}/Intermediates"
     
 	links {
-		"%{cfg.targetdir}/Coral.Managed"
+		"%{TargetDirectory}/Coral.Managed"
 	}
 
     -- Don't specify architecture here. (see https://github.com/premake/premake-core/issues/1758)
@@ -25,11 +28,5 @@ project "Odyssey.Framework"
     }
 
     files {
-        "%{wks.location}/Projects/Framework/Source/**.cs",
+        "%{ProjectDirectory}/Source/**.cs",
     }
-        
-    filter { "system:windows" }
-        postbuildcommands {
-            '{COPYFILE} "%{cfg.targetdir}/Odyssey.Framework.dll", "%{wks.location}/Projects/Editor/Resources/Scripts"',
-            '{COPYFILE} "%{cfg.targetdir}/Odyssey.Framework.pdb", "%{wks.location}/Projects/Editor/Resources/Scripts"',
-        }

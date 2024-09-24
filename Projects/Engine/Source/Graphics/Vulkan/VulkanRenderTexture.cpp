@@ -21,7 +21,7 @@ namespace Odyssey
 		VulkanImageDescription imageDesc;
 		imageDesc.Width = width;
 		imageDesc.Height = height;
-		imageDesc.ImageType = TextureType::RenderTexture;
+		imageDesc.ImageType = ImageType::RenderTexture;
 		imageDesc.Format = TextureFormat::R8G8B8A8_UNORM;
 
 		m_Image = ResourceManager::Allocate<VulkanImage>(imageDesc);
@@ -53,7 +53,7 @@ namespace Odyssey
 		imageDesc.Width = width;
 		imageDesc.Height = height;
 		imageDesc.Format = format;
-		imageDesc.ImageType = IsDepthTexture(format) ? TextureType::DepthTexture : TextureType::RenderTexture;
+		imageDesc.ImageType = IsDepthTexture(format) ? ImageType::DepthTexture : ImageType::RenderTexture;
 		m_Image = ResourceManager::Allocate<VulkanImage>(imageDesc);
 
 		// Allocate a command buffer to transition the image layout

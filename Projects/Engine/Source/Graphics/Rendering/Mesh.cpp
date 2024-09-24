@@ -21,15 +21,18 @@ namespace Odyssey
 	Mesh::Mesh(const Path& assetPath, std::shared_ptr<SourceModel> source)
 		: Asset(assetPath)
 	{
-		// TODO: Add support for submeshes
-		ModelImporter& importer = source->GetImporter();
-		const MeshImportData& meshData = importer.GetMeshData(0);
-
-		// Transfer the mesh data from the importer
-		m_VertexCount = meshData.VertexCount;
-		m_IndexCount = meshData.IndexCount;
-		m_Vertices = meshData.Vertices;
-		m_Indices = meshData.Indices;
+		// FBX Import
+		{
+			// TODO: Add support for submeshes
+			auto importer = source->GetImporter();
+			const MeshImportData& meshData = importer->GetMeshData();
+		
+			// Transfer the mesh data from the importer
+			m_VertexCount = (uint32_t)meshData.VertexLists[0].size();
+			m_IndexCount = (uint32_t)meshData.IndexLists[0].size();
+			m_Vertices = meshData.VertexLists[0];
+			m_Indices = meshData.IndexLists[0];
+		}
 
 		// Create the binary asset for the vertices
 		BinaryBuffer buffer;
@@ -56,7 +59,7 @@ namespace Odyssey
 		LoadFromDisk(m_AssetPath);
 	}
 
-	void Mesh::SaveToDisk(const std::filesystem::path& path)
+	void Mesh::SaveToDisk(const Path& path)
 	{
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
@@ -72,7 +75,7 @@ namespace Odyssey
 		serializer.WriteToDisk(path);
 	}
 
-	void Mesh::LoadFromDisk(const std::filesystem::path& assetPath)
+	void Mesh::LoadFromDisk(const Path& assetPath)
 	{
 		AssetDeserializer deserializer(assetPath);
 		if (deserializer.IsValid())

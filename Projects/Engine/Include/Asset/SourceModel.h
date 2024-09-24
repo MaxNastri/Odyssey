@@ -1,6 +1,7 @@
 #pragma once
 #include "Asset.h"
-#include "ModelImporter.h"
+#include "FBXModelImporter.h"
+#include "GLTFAssetImporter.h"
 
 namespace Odyssey
 {
@@ -11,9 +12,9 @@ namespace Odyssey
 		SourceModel(const Path& sourcePath);
 
 	public:
-		ModelImporter& GetImporter() { return m_Importer; }
+		ModelAssetImporter* GetImporter() { return m_ModelImporter.get(); }
 
 	private:
-		ModelImporter m_Importer;
+		std::unique_ptr<ModelAssetImporter> m_ModelImporter;
 	};
 }

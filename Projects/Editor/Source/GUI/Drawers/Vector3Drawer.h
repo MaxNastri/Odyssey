@@ -12,6 +12,7 @@ namespace Odyssey
 
 	public:
 		virtual void Draw() override;
+		void SetValue(glm::vec3 value) { data = { value.x, value.y, value.z }; }
 
 	private:
 		std::function<void(glm::vec3)> onValueModified;

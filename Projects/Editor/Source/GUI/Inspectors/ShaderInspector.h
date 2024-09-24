@@ -25,8 +25,6 @@ namespace Odyssey
 		std::shared_ptr<Shader> m_Shader;
 		StringDrawer m_GUIDDrawer;
 		StringDrawer m_NameDrawer;
-		StringDrawer m_TypeDrawer;
-		StringDrawer m_ShaderCodeDrawer;
 		IntDrawer<uint32_t> m_ShaderTypeDrawer;
 		AssetFieldDrawer m_SourceShaderDrawer;
 	};

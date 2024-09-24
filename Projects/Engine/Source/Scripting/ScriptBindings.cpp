@@ -30,6 +30,9 @@ namespace Odyssey
 		ADD_INTERNAL_CALL(Transform_GetScale);
 		ADD_INTERNAL_CALL(Transform_SetScale);
 
+		ADD_INTERNAL_CALL(MeshRenderer_GetMesh);
+		ADD_INTERNAL_CALL(MeshRenderer_SetMesh);
+
 		ADD_INTERNAL_CALL(Time_GetDeltaTime);
 
 		frameworkAssembly.UploadInternalCalls();

@@ -46,7 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\Sample.cs" />
+    <Compile Include="Source\Tests\AssetTest.cs" />
     <Compile Include="Source\Tests\FieldTest.cs" />
+    <Compile Include="Source\Tests\MeshRendererTest.cs" />
     <Compile Include="Source\Tests\TransformTest.cs" />
   </ItemGroup>
   <PropertyGroup>

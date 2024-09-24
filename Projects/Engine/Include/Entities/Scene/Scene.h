@@ -3,6 +3,7 @@
 #include "entt.hpp"
 #include "GameObject.h"
 #include "GUID.h"
+#include "SceneGraph.h"
 
 namespace Odyssey
 {
@@ -14,7 +15,7 @@ namespace Odyssey
 	{
 	public:
 		Scene();
-		Scene(const std::filesystem::path& assetPath);
+		Scene(const Path& assetPath);
 
 	public:
 		GameObject CreateGameObject();
@@ -28,20 +29,22 @@ namespace Odyssey
 		void OnStartRuntime();
 		void OnStopRuntime();
 		void Awake();
+		void OnEditorUpdate();
 		void Update();
 		void OnDestroy();
 
 	public:
-		void SaveTo(const std::filesystem::path& savePath);
+		void SaveTo(const Path& savePath);
 		void Save();
 		void Load();
 
 	public:
 		GUID GetGUID() { return m_GUID; }
+		SceneGraph& GetSceneGraph() { return m_SceneGraph; }
 
 	private:
-		void SaveToDisk(const std::filesystem::path& assetPath);
-		void LoadFromDisk(const std::filesystem::path& assetPath);
+		void SaveToDisk(const Path& assetPath);
+		void LoadFromDisk(const Path& assetPath);
 
 	public:
 		template<typename... Components>
@@ -61,6 +64,7 @@ namespace Odyssey
 		Camera* m_MainCamera = nullptr;
 		entt::registry m_Registry;
 		std::map<GUID, GameObject> m_GUIDToGameObject;
+		SceneGraph m_SceneGraph;
 	};
 }
 

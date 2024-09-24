@@ -1,5 +1,6 @@
 #pragma once
 #include "glm.h"
+#include "Enums.h"
 #include "Resource.h"
 #include "Drawcall.h"
 
@@ -17,7 +18,7 @@ namespace Odyssey
 	struct CameraUniformData
 	{
 		glm::mat4 inverseView;
-		glm::mat4 proj;
+		glm::mat4 ViewProjection;
 	};
 
 	struct ObjectUniformData
@@ -25,19 +26,40 @@ namespace Odyssey
 		glm::mat4 world;
 	};
 
+	struct SkinningData
+	{
+		std::array<glm::mat4, 128> Bones;
+
+		SkinningData()
+		{
+			for (size_t i = 0; i < Bones.size(); i++)
+			{
+				Bones[i] = glm::identity<mat4>();
+			}
+		}
+
+		void SetBindposes(std::vector<glm::mat4> bindposes)
+		{
+			assert(bindposes.size() <= Bones.size());
+			for (size_t i = 0; i < bindposes.size(); i++)
+			{
+				Bones[i] = bindposes[i];
+			}
+		}
+	};
+
 	struct SetPass
 	{
 	public:
 		SetPass() = default;
-		SetPass(std::shared_ptr<Material> material, std::vector<ResourceID> descriptorLayouts);
+		SetPass(std::shared_ptr<Material> material, ResourceID descriptorLayout);
 
 	public:
-		void SetMaterial(std::shared_ptr<Material> material, std::vector<ResourceID> descriptorLayouts);
+		void SetMaterial(std::shared_ptr<Material> material, ResourceID descriptorLayout);
 
 	public:
 		ResourceID GraphicsPipeline;
-		ResourceID VertexShader;
-		ResourceID FragmentShader;
+		std::map<ShaderType, ResourceID> Shaders;
 		ResourceID Texture;
 		std::vector<Drawcall> Drawcalls;
 	};
@@ -62,14 +84,15 @@ namespace Odyssey
 		// Data structs
 		CameraUniformData cameraData;
 		ObjectUniformData objectData;
+		SkinningData SkinningData;
 		Camera* m_MainCamera = nullptr;
 
 		// Descriptor buffer for per-scene data
-		ResourceID uboLayout;
 		std::vector<ResourceID> cameraDataBuffers;
 		std::vector<ResourceID> perObjectUniformBuffers;
+		std::vector<ResourceID> skinningBuffers;
 
-		std::vector<ResourceID> m_Layouts;
+		ResourceID m_DescriptorLayout;
 
 		std::vector<SetPass> setPasses;
 		uint32_t m_NextUniformBuffer = 0;

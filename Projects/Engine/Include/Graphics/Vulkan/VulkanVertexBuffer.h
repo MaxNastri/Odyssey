@@ -18,7 +18,7 @@ namespace Odyssey
 
 	public:
 		ResourceID GetBuffer();
-
+		void UploadData(const std::vector<Vertex>& vertices);
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		ResourceID m_StagingBuffer;

@@ -8,7 +8,8 @@ project "Odyssey.Editor"
     kind "ConsoleApp"
     staticruntime "Off"
     debuggertype "NativeWithManagedCore"
-    
+    dependson "Odyssey.Engine"
+
     architecture "x86_64"
     
     flags { "MultiProcessorCompile" }
@@ -36,9 +37,10 @@ project "Odyssey.Editor"
         "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral",
         "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**",
         "%{wks.location}/Vendor/Vulkan/Include/",
-        "%{wks.location}/Vendor/assimp/include/",
         "%{wks.location}/Vendor/efsw/include/efsw",
         "%{wks.location}/Vendor/entt/include/",
+        "%{wks.location}/Vendor/FBX/include/",
+        "%{wks.location}/Vendor/tinygltf/Include/",
     }
     
     includedirs {
@@ -50,11 +52,11 @@ project "Odyssey.Editor"
         "%{cfg.targetdir}",
         "%{wks.location}/Vendor/Vulkan/Lib/",
         "%{wks.location}/Vendor/efsw/lib/",
+        "%{wks.location}/Vendor/FBX/Lib/Debug",
     }
 
     links {
         "Odyssey.Engine.lib",
-        "assimp-vc143-mt.lib",
         "shaderc_combined.lib",
         "spirv-cross-core.lib",
         "spirv-cross-glsl.lib",
@@ -62,11 +64,17 @@ project "Odyssey.Editor"
         "spirv-cross-reflect.lib",
         "spirv-cross-util.lib",
         "efsw-static-debug.lib",
+        "libfbxsdk",
+    }
+    
+    defines {
+        "FBXSDK_SHARED",
     }
 
     filter { "system:windows" }
         postbuildcommands {
             '{COPYFILE} "%{wks.location}/Vendor/Coral/Build/Debug/Coral.Managed.dll", "%{cfg.targetdir}"',
+            '{COPYFILE} "%{wks.location}/Vendor/FBX/Lib/Debug/libfbxsdk.dll", "%{cfg.targetdir}"',
             '{COPYFILE} "%{wks.location}/Vendor/Coral/Coral.Managed/Coral.Managed.runtimeconfig.json", "%{cfg.targetdir}"',
         }
 

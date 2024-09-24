@@ -19,6 +19,7 @@ namespace Odyssey
 	public:
 		VkShaderModule GetShaderModule() { return m_ShaderModule; }
 		ShaderType GetShaderType() { return m_ShaderType; }
+		VkShaderStageFlagBits GetShaderFlags();
 
 	private:
 		void CreateShaderModule(BinaryBuffer& codeBuffer);

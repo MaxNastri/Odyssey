@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "ScriptingManager.h"
 #include "EntityFieldDrawer.h"
+#include "AssetFieldDrawer.h"
 #include "Vector3Drawer.h"
 
 namespace Odyssey
@@ -59,9 +60,16 @@ namespace Odyssey
 		{
 			if (fieldStorage.DataType == DataType::Entity || fieldStorage.DataType == DataType::Component)
 			{
-				GUID initialValue = 0;
+				GUID initialValue;
 				fieldStorage.TryGetValue(initialValue);
 				CreateEntityDrawer(fieldStorage.Name, storage.ScriptID, fieldID, initialValue);
+			}
+			// TODO: Convert into IsAssetType check
+			else if (fieldStorage.DataType == DataType::Mesh || fieldStorage.DataType == DataType::Material)
+			{
+				GUID initialValue;
+				fieldStorage.TryGetValue(initialValue);
+				CreateAssetDrawer(fieldStorage.Name, fieldStorage.Type->GetFullName(), storage.ScriptID, fieldID, initialValue);
 			}
 			else if (fieldStorage.DataType == DataType::String)
 				CreateStringDrawer(storage.ScriptID, fieldID, fieldStorage);
@@ -73,6 +81,13 @@ namespace Odyssey
 	void UserScriptInspector::CreateEntityDrawer(std::string_view fieldName, uint32_t scriptID, uint32_t fieldID, GUID initialValue)
 	{
 		auto drawer = std::make_shared<EntityFieldDrawer>(fieldName, initialValue,
+			[this, scriptID, fieldID](GUID guid) { OnFieldChanged<GUID>(scriptID, fieldID, guid); });
+		drawers.push_back(drawer);
+	}
+
+	void UserScriptInspector::CreateAssetDrawer(const std::string& fieldName, const std::string& assetType, uint32_t scriptID, uint32_t fieldID, GUID initialValue)
+	{
+		auto drawer = std::make_shared<AssetFieldDrawer>(fieldName, initialValue, assetType,
 			[this, scriptID, fieldID](GUID guid) { OnFieldChanged<GUID>(scriptID, fieldID, guid); });
 		drawers.push_back(drawer);
 	}

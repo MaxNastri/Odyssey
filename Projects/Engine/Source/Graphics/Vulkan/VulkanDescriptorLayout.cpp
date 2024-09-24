@@ -40,47 +40,37 @@ namespace Odyssey
 		}
 	}
 
-	VulkanDescriptorLayout::VulkanDescriptorLayout(std::shared_ptr<VulkanContext> context, DescriptorType type, ShaderStage shaderStage, uint32_t bindingIndex)
+	VulkanDescriptorLayout::VulkanDescriptorLayout(std::shared_ptr<VulkanContext> context)
 	{
 		m_Context = context;
-		m_Type = type;
-		m_ShaderStage = shaderStage;
-		m_BindingIndex = bindingIndex;
-
-		VkDescriptorSetLayoutBinding set_layout_binding{};
-		set_layout_binding.descriptorType = ConvertDescriptorType(type);
-		set_layout_binding.stageFlags = ConvertShaderFlags(shaderStage);
-		set_layout_binding.binding = bindingIndex;
-		set_layout_binding.descriptorCount = 1;
-
-		VkDescriptorSetLayoutBinding set_layout_binding2{};
-		set_layout_binding2.descriptorType = ConvertDescriptorType(type);
-		set_layout_binding2.stageFlags = ConvertShaderFlags(shaderStage);
-		set_layout_binding2.binding = 1;
-		set_layout_binding2.descriptorCount = 1;
-
-		VkDescriptorSetLayoutBinding set_layout_binding3{};
-		set_layout_binding3.descriptorType = ConvertDescriptorType(DescriptorType::Sampler);
-		set_layout_binding3.stageFlags = ConvertShaderFlags(ShaderStage::Fragment);
-		set_layout_binding3.binding = 2;
-		set_layout_binding3.descriptorCount = 1;
-
-		std::vector< VkDescriptorSetLayoutBinding> bindings = { set_layout_binding, set_layout_binding2, set_layout_binding3 };
-
-		VkDescriptorSetLayoutCreateInfo descriptor_layout_create_info{};
-		descriptor_layout_create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		descriptor_layout_create_info.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR;
-		descriptor_layout_create_info.bindingCount = (uint32_t)(bindings.size());
-		descriptor_layout_create_info.pBindings = bindings.data();
-
-		if (vkCreateDescriptorSetLayout(m_Context->GetDeviceVK(), &descriptor_layout_create_info, nullptr, &m_Layout) != VK_SUCCESS)
-		{
-			Logger::LogError("(VulkanDescriptorLayout) Could not create descriptor set layout.");
-		}
 	}
 
 	void VulkanDescriptorLayout::Destroy()
 	{
 		vkDestroyDescriptorSetLayout(m_Context->GetDeviceVK(), m_Layout, allocator);
+	}
+
+	void VulkanDescriptorLayout::AddBinding(std::string_view bindingName, DescriptorType type, ShaderStage shaderStage, uint32_t bindingIndex)
+	{
+		VkDescriptorSetLayoutBinding layoutBinding{};
+		layoutBinding.descriptorType = ConvertDescriptorType(type);
+		layoutBinding.stageFlags = ConvertShaderFlags(shaderStage);
+		layoutBinding.binding = bindingIndex;
+		layoutBinding.descriptorCount = 1;
+		m_Bindings.push_back(layoutBinding);
+	}
+
+	void VulkanDescriptorLayout::Apply()
+	{
+		VkDescriptorSetLayoutCreateInfo descriptor_layout_create_info{};
+		descriptor_layout_create_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		descriptor_layout_create_info.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_PUSH_DESCRIPTOR_BIT_KHR;
+		descriptor_layout_create_info.bindingCount = (uint32_t)(m_Bindings.size());
+		descriptor_layout_create_info.pBindings = m_Bindings.data();
+
+		if (vkCreateDescriptorSetLayout(m_Context->GetDeviceVK(), &descriptor_layout_create_info, nullptr, &m_Layout) != VK_SUCCESS)
+		{
+			Logger::LogError("(VulkanDescriptorLayout) Could not create descriptor set layout.");
+		}
 	}
 }

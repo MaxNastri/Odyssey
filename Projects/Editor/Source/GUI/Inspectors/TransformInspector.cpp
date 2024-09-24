@@ -36,9 +36,7 @@ namespace Odyssey
 	void TransformInspector::OnPositionChanged(glm::vec3 position)
 	{
 		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
-		{
-			transform->m_Position = position;
-		}
+			transform->SetPosition(position);
 	}
 
 	void TransformInspector::OnRotationChanged(glm::vec3 rotation)
@@ -52,8 +50,6 @@ namespace Odyssey
 	void TransformInspector::OnScaleChanged(glm::vec3 scale)
 	{
 		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
-		{
-			transform->m_Scale = scale;
-		}
+			transform->SetScale(scale);
 	}
 }

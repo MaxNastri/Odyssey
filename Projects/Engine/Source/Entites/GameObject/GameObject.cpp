@@ -5,14 +5,11 @@
 #include "MeshRenderer.h"
 #include "Transform.h"
 #include "ScriptComponent.h"
+#include "Animator.h"
 
 namespace Odyssey
 {
 	CLASS_DEFINITION(Odyssey, GameObject);
-
-	GameObject::GameObject()
-	{
-	}
 
 	GameObject::GameObject(Scene* scene, entt::entity entity)
 	{
@@ -37,6 +34,9 @@ namespace Odyssey
 		gameObjectNode.WriteData("Type", Type);
 
 		SerializationNode componentsNode = gameObjectNode.CreateSequenceNode("Components");
+
+		if (Animator* animator = TryGetComponent<Animator>())
+			animator->Serialize(componentsNode);
 
 		if (Camera* camera = TryGetComponent<Camera>())
 			camera->Serialize(componentsNode);
@@ -74,7 +74,12 @@ namespace Odyssey
 			std::string componentType;
 			componentNode.ReadData("Type", componentType);
 
-			if (componentType == Camera::Type)
+			if (componentType == Animator::Type)
+			{
+				Animator& animator = AddComponent<Animator>();
+				animator.Deserialize(componentNode);
+			}
+			else if (componentType == Camera::Type)
 			{
 				Camera& camera = AddComponent<Camera>();
 				camera.Deserialize(componentNode);
@@ -96,6 +101,27 @@ namespace Odyssey
 			}
 		}
 	}
+
+	void GameObject::SetParent(const GameObject& parent)
+	{
+		m_Scene->GetSceneGraph().SetParent(parent, *this);
+	}
+
+	void GameObject::RemoveParent()
+	{
+		m_Scene->GetSceneGraph().RemoveParent(*this);
+	}
+
+	GameObject GameObject::GetParent()
+	{
+		return m_Scene->GetSceneGraph().GetParent(*this);
+	}
+
+	std::vector<GameObject> GameObject::GetChildren()
+	{
+		return m_Scene->GetSceneGraph().GetChildren(*this);
+	}
+
 	const std::string& GameObject::GetName()
 	{
 		return GetComponent<PropertiesComponent>().Name;
@@ -114,5 +140,11 @@ namespace Odyssey
 	void GameObject::SetGUID(GUID guid)
 	{
 		GetComponent<PropertiesComponent>().GUID = guid;
+	}
+
+	void GameObject::Destroy()
+	{
+		if (m_Scene)
+			m_Scene->DestroyGameObject(*this);
 	}
 }

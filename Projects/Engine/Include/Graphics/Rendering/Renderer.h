@@ -9,6 +9,20 @@ namespace Odyssey
 	class VulkanTextureSampler;
 	class VulkanWindow;
 
+	enum class RenderTargetType
+	{
+		None = 0,
+		BackBuffer = 1,
+		SceneView = 2,
+		GameView = 3,
+	};
+	struct RenderTarget
+	{
+		RenderTargetType Type;
+		ResourceID ColorAttachment;
+		ResourceID DepthAttachment;
+	};
+
 	struct RendererConfig
 	{
 	public:
@@ -29,7 +43,12 @@ namespace Odyssey
 		static int64_t AddImguiTexture(ResourceID renderTextureID, ResourceID samplerID);
 		static std::shared_ptr<VulkanWindow> GetWindow();
 
+	public:
+		static void RegisterRenderTarget(RenderTargetType rtType, ResourceID colorRT, ResourceID depthRT);
+
 	private:
+
+		inline static std::unordered_map<RenderTargetType, RenderTarget> m_RenderTargets;
 		inline static std::shared_ptr<VulkanRenderer> s_RendererAPI;
 		inline static RendererConfig s_Config;
 	};

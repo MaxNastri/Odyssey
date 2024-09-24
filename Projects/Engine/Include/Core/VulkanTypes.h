@@ -1,13 +1,14 @@
 #pragma once
 #include "Resource.h"
+#include "Enums.h"
 
 namespace Odyssey
 {
 	struct VulkanPipelineInfo
 	{
 	public:
-		ResourceID FragmentShader;
-		ResourceID VertexShader;
-		std::vector<ResourceID> DescriptorLayouts;
+		std::map<ShaderType, ResourceID> Shaders;
+		ResourceID DescriptorLayout;
+		bool Triangles = true;
 	};
 }
