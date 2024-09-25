@@ -33,23 +33,25 @@ namespace Odyssey
 		Cubemap = 3,
 	};
 
-	enum class TextureFace
+	enum class CubemapFace
 	{
 		None = 0,
 		XNeg = 1,
 		XPos = 2,
-		YNeg = 1,
-		YPos = 2,
-		ZNeg = 1,
-		ZPos = 2,
+		YNeg = 3,
+		YPos = 4,
+		ZNeg = 5,
+		ZPos = 6,
 	};
 
 	enum class ImageType
 	{
 		None = 0,
 		Image2D = 1,
-		RenderTexture = 2,
-		DepthTexture = 3,
+		Image2DArray = 2,
+		Cubemap = 3,
+		RenderTexture = 4,
+		DepthTexture = 5,
 	};
 
 	enum class TextureFormat

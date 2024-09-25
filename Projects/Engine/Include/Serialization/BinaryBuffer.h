@@ -36,12 +36,25 @@ namespace Odyssey
 		}
 
 		template<typename T>
+		void AppendData(std::vector<T> writeData)
+		{
+			// Calculate the buffer size
+			size_t objSize = sizeof(T);
+
+			size_t writeSize = objSize * writeData.size();
+			size_t prevSize = m_Size;
+			m_Size += writeSize;
+
+			m_Data.resize(m_Size);
+			memcpy(&(m_Data[0]) + prevSize, writeData.data(), writeSize);
+		}
+
+		template<typename T>
 		void WriteData(std::vector<T> writeData)
 		{
 			// Calculate the buffer size
 			size_t objSize = sizeof(T);
 
-			// Note: We add extra padding to store the size of the buffer
 			m_Size = objSize * writeData.size();
 
 			// Clear the data and resize to match

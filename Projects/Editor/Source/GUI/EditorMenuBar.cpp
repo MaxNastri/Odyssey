@@ -7,6 +7,7 @@
 #include "EventSystem.h"
 #include "EditorEvents.h"
 #include "Renderer.h"
+#include "CubemapCreationWindow.h"
 
 namespace Odyssey
 {
@@ -51,14 +52,20 @@ namespace Odyssey
 
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Imgui"))
+
+		if (ImGui::BeginMenu("Window"))
 		{
+			if (ImGui::MenuItem("Cubemap Creation Window"))
+			{
+				GUIManager::CreateDockableWindow<CubemapCreationWindow>();
+			}
 			if (ImGui::MenuItem("Display Demo Window"))
 			{
 				m_ShowDemoWindow = true;
 			}
 			ImGui::EndMenu();
 		}
+
 		if (m_ShowDemoWindow)
 		{
 			ImGui::ShowDemoWindow(&m_ShowDemoWindow);

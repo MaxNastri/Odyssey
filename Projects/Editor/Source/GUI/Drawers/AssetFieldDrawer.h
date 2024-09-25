@@ -13,6 +13,9 @@ namespace Odyssey
 	public:
 		virtual void Draw() override;
 
+	public:
+		GUID GetGUID() { return m_GUID; }
+
 	private:
 		std::function<void(GUID)> m_OnValueModified;
 		GUID m_GUID;

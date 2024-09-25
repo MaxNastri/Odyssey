@@ -12,9 +12,12 @@ namespace Odyssey
 	public:
 		virtual void Draw() override;
 
+	public:
+		const std::string& GetValue() { return m_Data; }
+
 	private:
 		std::function<void(const std::string&)> valueUpdatedCallback;
-		std::string data;
+		std::string m_Data;
 		bool m_ReadOnly = false;
 	};
 }

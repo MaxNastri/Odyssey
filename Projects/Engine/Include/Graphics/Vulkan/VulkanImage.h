@@ -18,7 +18,7 @@ namespace Odyssey
 		uint32_t Channels = 3;
 		uint32_t Depth = 1;
 		uint32_t MipLevels = 1;
-		uint32_t ArrayLayers = 1;
+		uint32_t ArrayDepth = 1;
 		uint32_t Samples = 1;
 	};
 
@@ -34,7 +34,11 @@ namespace Odyssey
 
 	public:
 		void SetData(BinaryBuffer& buffer);
+		void SetData(BinaryBuffer& buffer, size_t arrayDepth);
 		void SetLayout(VkImageLayout layout) { imageLayout = layout; }
+
+	public:
+
 	public:
 		static VkImageMemoryBarrier CreateMemoryBarrier(ResourceID imageID, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage);
 
@@ -43,7 +47,9 @@ namespace Odyssey
 		VkImageView GetImageView() { return imageView; }
 		uint32_t GetWidth() { return m_Width; }
 		uint32_t GetHeight() { return m_Height; }
+		uint32_t GetArrayDepth() { return m_ArrayDepth; }
 		VkImageLayout GetLayout() { return imageLayout; }
+		std::vector<VkBufferImageCopy> GetCopyRegions() { return m_CopyRegions; }
 
 	private:
 		uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
@@ -57,7 +63,9 @@ namespace Odyssey
 		VkImageView imageView;
 		VkImageLayout imageLayout;
 		VkDeviceMemory imageMemory;
+		std::vector<VkBufferImageCopy> m_CopyRegions;
 		uint32_t m_Width, m_Height, m_Channels;
+		uint32_t m_ArrayDepth;
 		ResourceID m_StagingBuffer;
 		bool isDepth = false;
 	};

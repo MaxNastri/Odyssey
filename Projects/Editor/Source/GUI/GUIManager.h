@@ -29,6 +29,14 @@ namespace Odyssey
 		static void CreateContentBrowserWindow();
 
 	public:
+		template<typename T>
+		static void CreateDockableWindow()
+		{
+			static_assert(std::is_base_of<DockableWindow, T>::value, "T is not a dervied class of DockableWindow.");
+			s_Windows.push_back(std::make_shared<T>());
+		}
+
+	public:
 		static void Update();
 		static void DrawGUI();
 

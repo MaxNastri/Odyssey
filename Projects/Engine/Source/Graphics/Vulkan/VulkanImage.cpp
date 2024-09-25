@@ -16,6 +16,7 @@ namespace Odyssey
 		m_Width = desc.Width;
 		m_Height = desc.Height;
 		m_Channels = desc.Channels;
+		m_ArrayDepth = desc.ArrayDepth;
 		isDepth = desc.ImageType == ImageType::DepthTexture;
 
 		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
@@ -30,14 +31,15 @@ namespace Odyssey
 			imageInfo.extent.height = desc.Height;
 			imageInfo.extent.depth = desc.Depth;
 			imageInfo.mipLevels = desc.MipLevels;
-			imageInfo.arrayLayers = desc.ArrayLayers;
+			imageInfo.arrayLayers = desc.ArrayDepth;
 			imageInfo.format = GetFormat(desc.Format);
 			imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 			imageInfo.initialLayout = imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			imageInfo.usage = GetUsage(desc.ImageType);
 			imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 			imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-			imageInfo.flags = 0; // Optional
+			if (desc.ImageType == ImageType::Cubemap)
+				imageInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 
 			if (vkCreateImage(device, &imageInfo, allocator, &m_Image) != VK_SUCCESS)
 			{
@@ -70,11 +72,11 @@ namespace Odyssey
 			VkImageViewCreateInfo viewInfo{};
 			viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 			viewInfo.image = m_Image;
-			viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			viewInfo.viewType = desc.ImageType == ImageType::Cubemap ? VK_IMAGE_VIEW_TYPE_CUBE : VK_IMAGE_VIEW_TYPE_2D;
 			viewInfo.format = GetFormat(desc.Format);
 			viewInfo.subresourceRange.aspectMask = isDepth ? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
 			viewInfo.subresourceRange.levelCount = desc.MipLevels;
-			viewInfo.subresourceRange.layerCount = desc.ArrayLayers;
+			viewInfo.subresourceRange.layerCount = desc.ArrayDepth;
 
 			if (vkCreateImageView(device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
 			{
@@ -91,6 +93,7 @@ namespace Odyssey
 		m_Width = width;
 		m_Height = height;
 		m_Channels = channels;
+		m_ArrayDepth = 1;
 		isDepth = false;
 
 		imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -136,15 +139,77 @@ namespace Odyssey
 			stagingBuffer->AllocateMemory();
 		}
 
+		// Set the staging buffer's memory
 		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
 		stagingBuffer->SetMemory(buffer.GetSize(), buffer.GetData().data());
 
+		// Generate a copy region for this new set of data
+		VkBufferImageCopy bufferCopyRegion = {};
+		bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		bufferCopyRegion.imageSubresource.mipLevel = 0;
+		bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
+		bufferCopyRegion.imageSubresource.layerCount = 1;
+		bufferCopyRegion.imageExtent.width = m_Width;
+		bufferCopyRegion.imageExtent.height = m_Height;
+		bufferCopyRegion.imageExtent.depth = 1;
+		bufferCopyRegion.imageOffset = { 0, 0, 0 };
+		bufferCopyRegion.bufferOffset = 0;
 
+		m_CopyRegions.push_back(bufferCopyRegion);
+
+		// Allocate a command buffer
 		ResourceID commandPoolID = m_Context->GetCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
+		// Copy the buffer into the image
+		commandBuffer->BeginCommands();
+		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_Width, m_Height);
+		commandBuffer->EndCommands();
+		commandBuffer->Flush();
+		commandPool->ReleaseBuffer(commandBufferID);
+	}
+
+	void VulkanImage::SetData(BinaryBuffer& buffer, size_t arrayDepth)
+	{
+		size_t offset = buffer.GetSize() / arrayDepth;
+
+		if (!m_StagingBuffer.IsValid())
+		{
+			m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
+			auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
+			stagingBuffer->AllocateMemory();
+		}
+
+		// Set the staging buffer's memory
+		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
+		stagingBuffer->SetMemory(buffer.GetSize(), buffer.GetData().data());
+
+		// Generate a copy region for this new set of data
+		for (size_t i = 0; i < arrayDepth; i++)
+		{
+			VkBufferImageCopy bufferCopyRegion = {};
+			bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			bufferCopyRegion.imageSubresource.mipLevel = 0;
+			bufferCopyRegion.imageSubresource.baseArrayLayer = (uint32_t)i;
+			bufferCopyRegion.imageSubresource.layerCount = 1;
+			bufferCopyRegion.imageExtent.width = m_Width;
+			bufferCopyRegion.imageExtent.height = m_Height;
+			bufferCopyRegion.imageExtent.depth = 1;
+			bufferCopyRegion.imageOffset = { 0, 0, 0 };
+			bufferCopyRegion.bufferOffset = offset * i;
+
+			m_CopyRegions.push_back(bufferCopyRegion);
+		}
+
+		// Allocate a command buffer
+		ResourceID commandPoolID = m_Context->GetCommandPool();
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+		ResourceID commandBufferID = commandPool->AllocateBuffer();
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+		// Copy the buffer into the image
 		commandBuffer->BeginCommands();
 		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_Width, m_Height);
 		commandBuffer->EndCommands();
@@ -166,7 +231,7 @@ namespace Odyssey
 		barrier.subresourceRange.baseMipLevel = 0;
 		barrier.subresourceRange.levelCount = 1;
 		barrier.subresourceRange.baseArrayLayer = 0;
-		barrier.subresourceRange.layerCount = 1;
+		barrier.subresourceRange.layerCount = image->GetArrayDepth();
 		barrier.srcAccessMask = 0;
 		barrier.dstAccessMask = 0;
 
@@ -285,10 +350,12 @@ namespace Odyssey
 	{
 		switch (imageType)
 		{
-			case Odyssey::ImageType::None:
-			case Odyssey::ImageType::Image2D:
+			case ImageType::None:
+			case ImageType::Image2D:
+			case ImageType::Image2DArray:
+			case ImageType::Cubemap:
 				return VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-			case Odyssey::ImageType::RenderTexture:
+			case ImageType::RenderTexture:
 				return VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 			case ImageType::DepthTexture:
 				return VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;

@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Scene.h"
 #include "Texture2D.h"
+#include "Cubemap.h"
 #include "SourceShader.h"
 #include "SourceModel.h"
 #include "SourceTexture.h"
@@ -176,6 +177,23 @@ namespace Odyssey
 		texture->Save();
 
 		return texture;
+	}
+
+	std::shared_ptr<Cubemap> AssetManager::CreateCubemap(const Path& assetPath, TextureImportSettings& settings)
+	{
+		// Create a new shader asset
+		GUID guid = GUID::New();
+		std::shared_ptr<Cubemap> cubemap = s_Assets.Add<Cubemap>(guid, assetPath, settings);
+
+		// Set asset data
+		cubemap->Guid = guid;
+		cubemap->SetName("Default");
+		cubemap->SetType("Cubemap");
+
+		// Save to disk
+		cubemap->Save();
+
+		return cubemap;
 	}
 
 	std::shared_ptr<AnimationRig> AssetManager::CreateAnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel)

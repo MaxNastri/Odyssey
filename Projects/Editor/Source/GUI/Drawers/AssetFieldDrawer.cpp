@@ -52,8 +52,13 @@ namespace Odyssey
 					if (ImGui::Selectable(displayName.c_str(), isSelected))
 					{
 						selectedIndex = i;
-						m_OnValueModified(possibleGUIDs[selectedIndex]);
-						m_Modified = true;
+						m_GUID = possibleGUIDs[selectedIndex];
+						if (m_OnValueModified)
+						{
+							m_Modified = true;
+							m_OnValueModified(m_GUID);
+							m_Modified = false;
+						}
 					}
 
 					if (isSelected)
@@ -72,8 +77,12 @@ namespace Odyssey
 				{
 					GUID guid = *((GUID*)payload->Data);
 					m_GUID = GUID(guid);
-					m_Modified = true;
-					m_OnValueModified(m_GUID);
+					if (m_OnValueModified)
+					{
+						m_Modified = true;
+						m_OnValueModified(m_GUID);
+						m_Modified = false;
+					}
 					Logger::LogInfo("(AssetFieldDrawer) Accepting D&D payload for mesh asset: " + m_GUID.String());
 				}
 				ImGui::EndDragDropTarget();

@@ -152,15 +152,12 @@ namespace Odyssey
 	void VulkanCommandBuffer::CopyBufferToImage(ResourceID bufferID, ResourceID imageID, uint32_t width, uint32_t height)
 	{
 		TransitionLayouts(imageID, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		VkBufferImageCopy region{};
-		region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		region.imageSubresource.layerCount = 1;
-		region.imageOffset = { 0, 0, 0 };
-		region.imageExtent = { width, height, 1 };
 
 		auto buffer = ResourceManager::GetResource<VulkanBuffer>(bufferID);
 		auto image = ResourceManager::GetResource<VulkanImage>(imageID);
-		vkCmdCopyBufferToImage(m_CommandBuffer, buffer->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+
+		auto copyRegions = image->GetCopyRegions();
+		vkCmdCopyBufferToImage(m_CommandBuffer, buffer->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, (uint32_t)copyRegions.size(), copyRegions.data());
 
 		TransitionLayouts(imageID, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}

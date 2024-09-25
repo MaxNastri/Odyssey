@@ -4,6 +4,7 @@
 #include "AssetDatabase.h"
 #include "BinaryCache.h"
 #include "GUID.h"
+#include "TextureImportSettings.h"
 
 namespace Odyssey
 {
@@ -15,6 +16,7 @@ namespace Odyssey
 	class Scene;
 	class Texture2D;
 	class AnimationClip;
+	class Cubemap;
 
 	class SourceAsset;
 	class SourceShader;
@@ -38,6 +40,7 @@ namespace Odyssey
 		static std::shared_ptr<Shader> CreateShader(const Path& assetPath);
 		static std::shared_ptr<Shader> CreateShader(const Path& assetPath, std::shared_ptr<SourceShader> source);
 		static std::shared_ptr<Texture2D> CreateTexture2D(const Path& assetPath, std::shared_ptr<SourceTexture> sourceTexture);
+		static std::shared_ptr<Cubemap> CreateCubemap(const Path& assetPath, TextureImportSettings& settings);
 		static std::shared_ptr<AnimationRig> CreateAnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
 		static std::shared_ptr<AnimationClip> CreateAnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
 	public:
