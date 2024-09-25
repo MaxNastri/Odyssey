@@ -12,6 +12,7 @@
 #include "MeshInspector.h"
 #include "Texture2DInspector.h"
 #include "Events.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
@@ -41,6 +42,11 @@ namespace Odyssey
 		
 		ImGui::PopStyleVar();
 		ImGui::End();
+	}
+
+	void InspectorWindow::OnWindowClose()
+	{
+		GUIManager::DestroyDockableWindow(this);
 	}
 
 	void InspectorWindow::OnGUISelectionChanged(GUISelectionChangedEvent* event)

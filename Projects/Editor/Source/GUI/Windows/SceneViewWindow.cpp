@@ -16,11 +16,12 @@
 #include "EditorComponents.h"
 #include "PropertiesComponent.h"
 #include "DebugRenderer.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
-	SceneViewWindow::SceneViewWindow()
-		: DockableWindow("Scene View",
+	SceneViewWindow::SceneViewWindow(size_t windowID)
+		: DockableWindow("Scene View", windowID,
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		// Rendering stuff
@@ -84,6 +85,11 @@ namespace Odyssey
 			if (Camera* camera = m_GameObject.TryGetComponent<Camera>())
 				camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
 		}
+	}
+
+	void SceneViewWindow::OnWindowClose()
+	{
+		GUIManager::DestroyDockableWindow(this);
 	}
 
 	void SceneViewWindow::OnSceneLoaded(SceneLoadedEvent* event)

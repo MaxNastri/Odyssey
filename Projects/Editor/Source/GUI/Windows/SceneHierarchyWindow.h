@@ -12,10 +12,11 @@ namespace Odyssey
 	class SceneHierarchyWindow : public DockableWindow
 	{
 	public:
-		SceneHierarchyWindow();
+		SceneHierarchyWindow(size_t windowID);
 
 	public:
 		virtual void Draw() override;
+		virtual void OnWindowClose() override;
 
 	public:
 		void OnSceneLoaded(SceneLoadedEvent* event);
@@ -34,5 +35,9 @@ namespace Odyssey
 		std::shared_ptr<IEventListener> m_SceneLoadedListener;
 		GameObject m_Selected;
 		std::function<void(void)> m_Deferred;
+
+	private:
+		inline static uint32_t s_NextWindowID = 0;
+		std::string m_WindowID;
 	};
 }

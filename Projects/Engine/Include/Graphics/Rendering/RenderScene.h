@@ -98,6 +98,6 @@ namespace Odyssey
 		uint32_t m_NextUniformBuffer = 0;
 		uint32_t m_NextCameraBuffer = 0;
 		const uint32_t Max_Uniform_Buffers = 128;
-		inline static constexpr uint32_t MAX_CAMERAS = 4;
+		inline static constexpr uint32_t MAX_CAMERAS = 12;
 	};
 }

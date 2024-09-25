@@ -53,23 +53,35 @@ namespace Odyssey
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("Assets"))
+		{
+			if (ImGui::MenuItem("Cubemap"))
+				GUIManager::CreateDockableWindow<CubemapCreationWindow>();
+
+			ImGui::EndMenu();
+		}
+
 		if (ImGui::BeginMenu("Window"))
 		{
-			if (ImGui::MenuItem("Cubemap Creation Window"))
-			{
-				GUIManager::CreateDockableWindow<CubemapCreationWindow>();
-			}
+			if (ImGui::MenuItem("Content Browser"))
+				GUIManager::CreateDockableWindow<ContentBrowserWindow>();
+			if (ImGui::MenuItem("Game View"))
+				GUIManager::CreateDockableWindow<GameViewWindow>();
+			if (ImGui::MenuItem("Inspector Window"))
+				GUIManager::CreateDockableWindow<InspectorWindow>();
+			if (ImGui::MenuItem("Scene Hierarchy"))
+				GUIManager::CreateDockableWindow<SceneHierarchyWindow>();
+			if (ImGui::MenuItem("Scene View"))
+				GUIManager::CreateDockableWindow<SceneViewWindow>();
+
 			if (ImGui::MenuItem("Display Demo Window"))
-			{
 				m_ShowDemoWindow = true;
-			}
+
 			ImGui::EndMenu();
 		}
 
 		if (m_ShowDemoWindow)
-		{
 			ImGui::ShowDemoWindow(&m_ShowDemoWindow);
-		}
 
 		ImGui::EndMainMenuBar();
 	}

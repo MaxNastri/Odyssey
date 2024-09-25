@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "GUID.h"
 #include "SceneGraph.h"
+#include "EnvironmentSettings.hpp"
 
 namespace Odyssey
 {
@@ -57,6 +58,7 @@ namespace Odyssey
 		GUID m_GUID;
 		std::string m_Name;
 		Path m_Path;
+		EnvironmentSettings m_EnvironmentSettings;
 
 	private:
 		friend class RenderScene;

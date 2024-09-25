@@ -9,10 +9,11 @@ namespace Odyssey
 	class CubemapCreationWindow : public DockableWindow
 	{
 	public:
-		CubemapCreationWindow();
+		CubemapCreationWindow(size_t windowID);
 
 	public:
 		virtual void Draw() override;
+		virtual void OnWindowClose() override;
 
 	private:
 		GUID m_XPosFaceGUID;

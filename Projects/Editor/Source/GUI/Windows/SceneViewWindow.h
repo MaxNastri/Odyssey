@@ -16,13 +16,14 @@ namespace Odyssey
 	class SceneViewWindow : public DockableWindow
 	{
 	public:
-		SceneViewWindow();
+		SceneViewWindow(size_t windowID);
 		void Destroy();
 
 	public:
 		virtual void Update() override;
 		virtual void Draw() override;
 		virtual void OnWindowResize() override;
+		virtual void OnWindowClose() override;
 
 	public:
 		std::shared_ptr<OpaquePass> GetRenderPass() { return m_SceneViewPass; }

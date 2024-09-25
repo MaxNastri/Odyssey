@@ -25,30 +25,6 @@ namespace Odyssey
 		s_Windows.push_back(std::make_shared<InspectorWindow>(std::make_shared<GameObjectInspector>()));
 	}
 
-	void GUIManager::CreateSceneHierarchyWindow()
-	{
-		s_Windows.push_back(std::make_shared<SceneHierarchyWindow>());
-	}
-
-	void GUIManager::CreateSceneViewWindow()
-	{
-		auto sceneView = std::make_shared<SceneViewWindow>();
-		s_SceneViews.push_back(sceneView);
-		s_Windows.push_back(sceneView);
-	}
-
-	void GUIManager::CreateGameViewWindow()
-	{
-		auto gameView = std::make_shared<GameViewWindow>();
-		s_GameViews.push_back(gameView);
-		s_Windows.push_back(gameView);
-	}
-
-	void GUIManager::CreateContentBrowserWindow()
-	{
-		s_Windows.push_back(std::make_shared<ContentBrowserWindow>());
-	}
-
 	void GUIManager::Update()
 	{
 		s_MenuBar.Update();
@@ -71,9 +47,13 @@ namespace Odyssey
 		s_MenuBar.Draw();
 		s_ActionsBar.Draw();
 
-		for (auto& window : s_Windows)
+		for (size_t i = 0; i < s_Windows.size(); i++)
 		{
+			std::shared_ptr<DockableWindow> window = s_Windows[i];
 			window->Draw();
+
+			if (!window->IsOpen())
+				--i;
 		}
 	}
 

@@ -4,9 +4,13 @@
 
 namespace Odyssey
 {
-	DockableWindow::DockableWindow(const std::string& windowName, glm::vec2 position, glm::vec2 size, glm::vec2 framePadding)
+	DockableWindow::DockableWindow(const std::string& windowName, size_t windowID, glm::vec2 position, glm::vec2 size, glm::vec2 framePadding)
 	{
 		m_WindowName = windowName;
+		m_WindowID = windowID;
+		if (m_WindowID > 0)
+			m_WindowName += "(" + std::to_string(windowID) + ")";
+
 		m_WindowPos = position;
 		m_WindowSize = size;
 		m_FramePadding = framePadding;
@@ -19,6 +23,13 @@ namespace Odyssey
 		if (!ImGui::Begin(m_WindowName.c_str(), &m_Open))
 		{
 			ImGui::End();
+			return false;
+		}
+
+		if (!m_Open)
+		{
+			ImGui::End();
+			OnWindowClose();
 			return false;
 		}
 

@@ -3,13 +3,15 @@
 #include "TextureImportSettings.h"
 #include "AssetManager.h"
 #include "Project.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
-	CubemapCreationWindow::CubemapCreationWindow()
-		: DockableWindow("Cubemap Creation Window",
+	CubemapCreationWindow::CubemapCreationWindow(size_t windowID)
+		: DockableWindow("Cubemap Creation Window", windowID,
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
+
 		m_XPosFaceDrawer = AssetFieldDrawer("X+ Face", 0, "SourceTexture", nullptr);
 		m_XNegFaceDrawer = AssetFieldDrawer("X- Face", 0, "SourceTexture", nullptr);
 		m_YPosFaceDrawer = AssetFieldDrawer("Y- Face", 0, "SourceTexture", nullptr);
@@ -47,5 +49,9 @@ namespace Odyssey
 			AssetManager::CreateCubemap(assetPath, settings);
 		}
 		End();
+	}
+	void CubemapCreationWindow::OnWindowClose()
+	{
+		GUIManager::DestroyDockableWindow(this);
 	}
 }

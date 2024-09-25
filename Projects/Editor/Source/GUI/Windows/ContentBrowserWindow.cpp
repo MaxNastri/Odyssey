@@ -8,11 +8,12 @@
 #include "Project.h"
 #include "EventSystem.h"
 #include "EditorEvents.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
-	ContentBrowserWindow::ContentBrowserWindow()
-		: DockableWindow("Content Browser",
+	ContentBrowserWindow::ContentBrowserWindow(size_t windowID)
+		: DockableWindow("Content Browser", windowID,
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		m_AssetsPath = Project::GetActiveAssetsDirectory();
@@ -86,6 +87,11 @@ namespace Odyssey
 		if (m_UpdatePaths)
 			UpdatePaths();
 		End();
+	}
+
+	void ContentBrowserWindow::OnWindowClose()
+	{
+		GUIManager::DestroyDockableWindow(this);
 	}
 
 	void ContentBrowserWindow::UpdatePaths()

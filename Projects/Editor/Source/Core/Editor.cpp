@@ -109,10 +109,10 @@ namespace Odyssey
 	void Editor::SetupEditorGUI()
 	{
 		GUIManager::CreateInspectorWindow();
-		GUIManager::CreateSceneHierarchyWindow();
-		GUIManager::CreateSceneViewWindow();
-		GUIManager::CreateGameViewWindow();
-		GUIManager::CreateContentBrowserWindow();
+		GUIManager::CreateDockableWindow<GameViewWindow>();
+		GUIManager::CreateDockableWindow<SceneViewWindow>();
+		GUIManager::CreateDockableWindow<ContentBrowserWindow>();
+		GUIManager::CreateDockableWindow<SceneHierarchyWindow>();
 	}
 
 	void Editor::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event)
