@@ -20,7 +20,8 @@ namespace Odyssey
 		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
 			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
 
-		m_SkyboxDrawer = AssetFieldDrawer("Skybox", 0, "Cubemap", 
+		GUID initialValue = m_Scene ? m_Scene->GetEnvironmentSettings().Skybox : GUID(0);
+		m_SkyboxDrawer = AssetFieldDrawer("Skybox", initialValue, "Cubemap",
 			[this](GUID skyboxGUID) { OnSkyboxChanged(skyboxGUID); });
 	}
 
@@ -42,6 +43,7 @@ namespace Odyssey
 	void SceneSettingsWindow::OnSceneLoaded(SceneLoadedEvent* event)
 	{
 		m_Scene = event->loadedScene;
+		m_SkyboxDrawer.SetGUID(m_Scene->GetEnvironmentSettings().Skybox);
 	}
 
 	void SceneSettingsWindow::OnSkyboxChanged(GUID skyboxGUID)

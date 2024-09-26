@@ -1,9 +1,0 @@
-m_SourceAsset: 15725304285020688217
-m_GUID: 9634657926911688453
-m_Name: PBR
-m_Type: Shader
-m_Shaders:
-  - ShaderType: 1
-    ShaderCode: 2014516192613528873
-  - ShaderType: 2
-    ShaderCode: 17547895010854438639

@@ -124,8 +124,12 @@ namespace Odyssey
 
 	void SkyboxSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.commandBuffer);
 		auto renderScene = params.renderingData->renderScene;
+
+		if (!renderScene->SkyboxCubemap.IsValid())
+			return;
+
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.commandBuffer);
 
 		glm::mat4 world = subPassData.Camera->GetView();
 		glm::mat4 posOnly = glm::translate(glm::mat4(1.0f), glm::vec3(world[3][0], world[3][1], world[3][2]));
@@ -139,7 +143,6 @@ namespace Odyssey
 		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
 		m_PushDescriptors->AddBuffer(uboID, 1);
 
-		if (renderScene->SkyboxCubemap.IsValid())
 			m_PushDescriptors->AddTexture(renderScene->SkyboxCubemap, 3);
 
 		// Push the descriptors into the command buffer

@@ -33,6 +33,7 @@ struct VertexOutput
     float2 TexCoord7 : TEXCOORD7;
     float4 BoneIndices : BLENDINDICES0;
     float4 BoneWeights : BLENDWEIGHT0;
+    float2 TexCoordTemp : TEXCOORD8;
 };
 
 cbuffer SceneData : register(b0)
@@ -66,6 +67,7 @@ VertexOutput main(VertexInput input)
     output.TexCoord7 = input.TexCoord7;
     output.BoneIndices = input.BoneIndices;
     output.BoneWeights = input.BoneWeights;
+    output.TexCoordTemp = input.TexCoord0;
     return output;
 }
 

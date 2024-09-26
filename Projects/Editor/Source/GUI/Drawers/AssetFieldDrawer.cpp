@@ -11,19 +11,7 @@ namespace Odyssey
 		m_GUID = guid;
 		m_Type = assetType;
 		m_OnValueModified = callback;
-
-		std::vector<GUID> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
-		possibleGUIDs.insert(possibleGUIDs.begin(), 0);
-
-		// Find this guid's selected index
-		for (uint32_t i = 0; i < possibleGUIDs.size(); i++)
-		{
-			if (possibleGUIDs[i] == m_GUID)
-			{
-				selectedIndex = i;
-				break;
-			}
-		}
+		SetSelectedIndex();
 	}
 
 	void AssetFieldDrawer::Draw()
@@ -89,6 +77,28 @@ namespace Odyssey
 			}
 
 			ImGui::EndTable();
+		}
+	}
+
+	void AssetFieldDrawer::SetGUID(GUID guid)
+	{
+		m_GUID = guid;
+		SetSelectedIndex();
+	}
+
+	void AssetFieldDrawer::SetSelectedIndex()
+	{
+		std::vector<GUID> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
+		possibleGUIDs.insert(possibleGUIDs.begin(), 0);
+
+		// Find this guid's selected index
+		for (uint32_t i = 0; i < possibleGUIDs.size(); i++)
+		{
+			if (possibleGUIDs[i] == m_GUID)
+			{
+				selectedIndex = i;
+				break;
+			}
 		}
 	}
 }
