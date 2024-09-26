@@ -14,7 +14,7 @@ namespace Odyssey
 
 		m_XPosFaceDrawer = AssetFieldDrawer("X+ Face", 0, "SourceTexture", nullptr);
 		m_XNegFaceDrawer = AssetFieldDrawer("X- Face", 0, "SourceTexture", nullptr);
-		m_YPosFaceDrawer = AssetFieldDrawer("Y- Face", 0, "SourceTexture", nullptr);
+		m_YPosFaceDrawer = AssetFieldDrawer("Y+ Face", 0, "SourceTexture", nullptr);
 		m_YNegFaceDrawer = AssetFieldDrawer("Y- Face", 0, "SourceTexture", nullptr);
 		m_ZPosFaceDrawer = AssetFieldDrawer("Z+ Face", 0, "SourceTexture", nullptr);
 		m_ZNegFaceDrawer = AssetFieldDrawer("Z- Face", 0, "SourceTexture", nullptr);

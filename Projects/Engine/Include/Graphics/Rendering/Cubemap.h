@@ -9,11 +9,15 @@ namespace Odyssey
 	class Cubemap : public Asset
 	{
 	public:
+		Cubemap(const Path& assetPath);
 		Cubemap(const Path& assetPath, TextureImportSettings& settings);
 
 	public:
 		void Save();
 		void Load();
+
+	public:
+		ResourceID GetTexture() { return m_Texture; }
 
 	private:
 		void SaveToDisk(const Path& assetPath);

@@ -87,6 +87,8 @@ namespace Odyssey
 		SkinningData SkinningData;
 		Camera* m_MainCamera = nullptr;
 
+		ResourceID SkyboxCubemap;
+
 		// Descriptor buffer for per-scene data
 		std::vector<ResourceID> cameraDataBuffers;
 		std::vector<ResourceID> perObjectUniformBuffers;

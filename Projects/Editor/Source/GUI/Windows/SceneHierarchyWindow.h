@@ -35,9 +35,5 @@ namespace Odyssey
 		std::shared_ptr<IEventListener> m_SceneLoadedListener;
 		GameObject m_Selected;
 		std::function<void(void)> m_Deferred;
-
-	private:
-		inline static uint32_t s_NextWindowID = 0;
-		std::string m_WindowID;
 	};
 }

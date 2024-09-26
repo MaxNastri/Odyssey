@@ -407,6 +407,22 @@ namespace Odyssey
 		return s_Assets.Add<Texture2D>(guid, assetPath);
 	}
 
+	std::shared_ptr<Cubemap> AssetManager::LoadCubemap(GUID guid)
+	{
+		// Convert the guid to a path
+		Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
+
+		// Check if the asset is already loaded
+		if (s_LoadedAssets.contains(guid))
+			return s_Assets.Get<Cubemap>(guid);
+
+		// Track the asset
+		s_LoadedAssets.emplace(guid);
+
+		// Load and return the mesh asset
+		return s_Assets.Add<Cubemap>(guid, assetPath);
+	}
+
 	std::shared_ptr<AnimationRig> AssetManager::LoadAnimationRig(GUID guid)
 	{
 		// Convert the guid to a path

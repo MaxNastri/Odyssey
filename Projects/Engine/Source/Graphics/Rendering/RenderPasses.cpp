@@ -21,6 +21,7 @@ namespace Odyssey
 	OpaquePass::OpaquePass()
 	{
 		m_ClearValue = glm::vec4(0, 0, 0, 1);
+		m_SubPasses.push_back(std::make_shared<SkyboxSubPass>());
 		m_SubPasses.push_back(std::make_shared<OpaqueSubPass>());
 
 		for (auto& subPass : m_SubPasses)
@@ -143,19 +144,24 @@ namespace Odyssey
 	void OpaquePass::Execute(RenderPassParams& params)
 	{
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
-		uint32_t cameraIndex = RenderScene::MAX_CAMERAS;
+
+		RenderSubPassData subPassData;
+		subPassData.CameraIndex = RenderScene::MAX_CAMERAS;
 
 		// Set either the camera override or the scene's main camera
 		if (m_Camera)
-			cameraIndex = renderScene->SetCameraData(m_Camera);
+		{
+			subPassData.CameraIndex = renderScene->SetCameraData(m_Camera);
+			subPassData.Camera = m_Camera;
+		}
 		else if (renderScene->HasMainCamera())
-			cameraIndex = renderScene->SetCameraData(renderScene->m_MainCamera);
-
-		RenderSubPassData subPassData;
-		subPassData.CameraIndex = cameraIndex;
+		{
+			subPassData.CameraIndex = renderScene->SetCameraData(renderScene->m_MainCamera);
+			subPassData.Camera = renderScene->m_MainCamera;
+		}
 
 		// Check for a valid camera data index
-		if (cameraIndex < RenderScene::MAX_CAMERAS)
+		if (subPassData.CameraIndex < RenderScene::MAX_CAMERAS)
 		{
 			for (auto& renderSubPass : m_SubPasses)
 			{

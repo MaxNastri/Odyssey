@@ -1,10 +1,10 @@
 m_SourceAsset: 0
-m_GUID: 12574459835240255796
-m_Name: Skybox
+m_GUID: 10307629578746515932
+m_Name: PlanetSkybox
 m_Type: Cubemap
 Image Type: 3
 Width: 2048
 Height: 2048
 Array Depth: 6
 Channels: 4
-m_PixelBufferGUID: 6176470397243798115
+m_PixelBufferGUID: 12279871363325335882

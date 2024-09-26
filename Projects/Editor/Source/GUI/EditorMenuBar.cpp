@@ -8,6 +8,7 @@
 #include "EditorEvents.h"
 #include "Renderer.h"
 #include "CubemapCreationWindow.h"
+#include "SceneSettingsWindow.h"
 
 namespace Odyssey
 {
@@ -71,6 +72,8 @@ namespace Odyssey
 				GUIManager::CreateDockableWindow<InspectorWindow>();
 			if (ImGui::MenuItem("Scene Hierarchy"))
 				GUIManager::CreateDockableWindow<SceneHierarchyWindow>();
+			if (ImGui::MenuItem("Scene Settings"))
+				GUIManager::CreateDockableWindow<SceneSettingsWindow>();
 			if (ImGui::MenuItem("Scene View"))
 				GUIManager::CreateDockableWindow<SceneViewWindow>();
 

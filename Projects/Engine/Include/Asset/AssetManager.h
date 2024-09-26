@@ -53,11 +53,13 @@ namespace Odyssey
 		static std::shared_ptr<Mesh> LoadMesh(const Path& assetPath);
 		static std::shared_ptr<Shader> LoadShader(const Path& assetPath);
 		static std::shared_ptr<Texture2D> LoadTexture2D(const Path& assetPath);
+		//static std::shared_ptr<Cubemap> LoadCubemap(const Path& assetPath);
 	public:
 		static std::shared_ptr<Material> LoadMaterialByGUID(GUID guid);
 		static std::shared_ptr<Mesh> LoadMeshByGUID(GUID guid);
 		static std::shared_ptr<Shader> LoadShaderByGUID(GUID guid);
 		static std::shared_ptr<Texture2D> LoadTexture2DByGUID(GUID guid);
+		static std::shared_ptr<Cubemap> LoadCubemap(GUID guid);
 		static std::shared_ptr<AnimationRig> LoadAnimationRig(GUID guid);
 		static std::shared_ptr<AnimationClip> LoadAnimationClip(GUID guid);
 

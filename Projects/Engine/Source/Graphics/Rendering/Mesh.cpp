@@ -49,6 +49,29 @@ namespace Odyssey
 		m_IndexBuffer = ResourceManager::Allocate<VulkanIndexBuffer>(m_Indices);
 	}
 
+	Mesh::Mesh(const Path& assetPath, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
+		: Asset(assetPath)
+	{
+		m_Vertices = vertices;
+		m_Indices = indices;
+		m_VertexCount = m_Vertices.size();
+		m_IndexCount = m_Indices.size();
+
+		// Create the binary asset for the vertices
+		BinaryBuffer buffer;
+		buffer.WriteData(m_Vertices);
+		m_VerticesGUID = AssetManager::CreateBinaryAsset(buffer);
+
+		// Create the binary asset for the indices
+		buffer.Clear();
+		buffer.WriteData(m_Indices);
+		m_IndicesGUID = AssetManager::CreateBinaryAsset(buffer);
+
+		// Allocate our buffers
+		m_VertexBuffer = ResourceManager::Allocate<VulkanVertexBuffer>(m_Vertices);
+		m_IndexBuffer = ResourceManager::Allocate<VulkanIndexBuffer>(m_Indices);
+	}
+
 	void Mesh::Save()
 	{
 		SaveToDisk(m_AssetPath);

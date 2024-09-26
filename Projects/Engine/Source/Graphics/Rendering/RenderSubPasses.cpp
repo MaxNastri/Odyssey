@@ -8,6 +8,8 @@
 #include "VulkanPushDescriptors.h"
 #include "VulkanDescriptorLayout.h"
 #include "VulkanGraphicsPipeline.h"
+#include "Mesh.h"
+#include "VulkanUniformBuffer.h"
 
 namespace Odyssey
 {
@@ -90,11 +92,61 @@ namespace Odyssey
 
 	void SkyboxSubPass::Setup()
 	{
+		// Create the descriptor layout
+		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
+		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
+		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
+		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
+		descriptorLayout->AddBinding("Skybox", DescriptorType::Sampler, ShaderStage::Fragment, 3);
+		descriptorLayout->Apply();
+
+		m_Shader = std::make_shared<Shader>(SkyboxShaderPath);
+
+		VulkanPipelineInfo info;
+		info.Shaders = m_Shader->GetResourceMap();
+		info.DescriptorLayout = m_DescriptorLayout;
+		info.WriteDepth = false;
+
+		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
+
+		m_CubeMesh = std::make_shared<Mesh>(CubeMeshPath);
+
+		// Allocate the UBO
+		uboID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 1, sizeof(glm::mat4));
+
+		// Write the camera data into the ubo memory
+		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
+		glm::mat4 identity = glm::mat4(1.0f);
+		uniformBuffer->AllocateMemory();
+		uniformBuffer->SetMemory(sizeof(glm::mat4), &identity);
 	}
 
 	void SkyboxSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.commandBuffer);
+		auto renderScene = params.renderingData->renderScene;
 
+		glm::mat4 world = subPassData.Camera->GetView();
+		glm::mat4 posOnly = glm::translate(glm::mat4(1.0f), glm::vec3(world[3][0], world[3][1], world[3][2]));
+		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
+		uniformBuffer->SetMemory(sizeof(glm::mat4), &posOnly);
+
+		// Bind our graphics pipeline
+		commandBuffer->BindPipeline(m_GraphicsPipeline);
+
+		m_PushDescriptors->Clear();
+		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
+		m_PushDescriptors->AddBuffer(uboID, 1);
+
+		if (renderScene->SkyboxCubemap.IsValid())
+			m_PushDescriptors->AddTexture(renderScene->SkyboxCubemap, 3);
+
+		// Push the descriptors into the command buffer
+		commandBuffer->PushDescriptors(m_PushDescriptors.get(), m_GraphicsPipeline);
+
+		commandBuffer->BindVertexBuffer(m_CubeMesh->GetVertexBuffer());
+		commandBuffer->BindIndexBuffer(m_CubeMesh->GetIndexBuffer());
+		commandBuffer->DrawIndexed(m_CubeMesh->GetIndexCount(), 1, 0, 0, 0);
 	}
 }

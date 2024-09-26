@@ -18,7 +18,6 @@ namespace Odyssey
 		: DockableWindow("Scene Hierarchy", windowID,
 			glm::vec2(0, 0), glm::vec2(400, 450), glm::vec2(2, 2))
 	{
-
 		m_Scene = SceneManager::GetActiveScene();
 		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
 			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });

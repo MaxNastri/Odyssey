@@ -6,6 +6,6 @@ namespace Odyssey
 	class EnvironmentSettings
 	{
 	public:
-		ResourceID Skybox;
+		GUID Skybox;
 	};
 }

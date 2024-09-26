@@ -18,6 +18,7 @@
 #include "VulkanGraphicsPipeline.h"
 #include "AssetManager.h"
 #include "Animator.h"
+#include "Cubemap.h"
 
 namespace Odyssey
 {
@@ -112,6 +113,13 @@ namespace Odyssey
 				m_MainCamera = &camera;
 				SetCameraData(m_MainCamera);
 			}
+		}
+
+		EnvironmentSettings envSettings = scene->GetEnvironmentSettings();
+		if (envSettings.Skybox)
+		{
+			auto skyboxTexture = AssetManager::LoadCubemap(envSettings.Skybox);
+			SkyboxCubemap = skyboxTexture->GetTexture();
 		}
 
 		SetupDrawcalls(scene);

@@ -42,6 +42,7 @@ namespace Odyssey
 	public:
 		GUID GetGUID() { return m_GUID; }
 		SceneGraph& GetSceneGraph() { return m_SceneGraph; }
+		EnvironmentSettings& GetEnvironmentSettings() { return m_EnvironmentSettings; }
 
 	private:
 		void SaveToDisk(const Path& assetPath);

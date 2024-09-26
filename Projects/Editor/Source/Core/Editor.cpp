@@ -11,6 +11,7 @@
 #include "Project.h"
 #include "Renderer.h"
 #include "DebugRenderer.h"
+#include "SceneSettingsWindow.h"
 
 namespace Odyssey
 {
@@ -113,6 +114,7 @@ namespace Odyssey
 		GUIManager::CreateDockableWindow<SceneViewWindow>();
 		GUIManager::CreateDockableWindow<ContentBrowserWindow>();
 		GUIManager::CreateDockableWindow<SceneHierarchyWindow>();
+		GUIManager::CreateDockableWindow<SceneSettingsWindow>();
 	}
 
 	void Editor::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event)

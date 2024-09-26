@@ -5,6 +5,12 @@
 #include "VulkanTexture.h"
 namespace Odyssey
 {
+	Cubemap::Cubemap(const Path& assetPath)
+		: Asset(assetPath)
+	{
+		Load();
+	}
+
 	Cubemap::Cubemap(const Path& assetPath, TextureImportSettings& settings)
 		: Asset(assetPath)
 	{
