@@ -29,39 +29,66 @@ namespace Odyssey
 		static void CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory);
 
 	public:
-		static std::shared_ptr<SourceShader> CreateSourceShader(const Path& sourcePath);
-		static std::shared_ptr<SourceModel> CreateSourceModel(const Path& sourcePath);
+		template<typename T, typename... Args>
+		static std::shared_ptr<T> CreateAsset(const Path& assetPath, Args&&... params)
+		{
+			static_assert(std::is_base_of<Asset, T>::value, "T is not a dervied class of Asset.");
 
-	public:
-		static std::shared_ptr<Material> CreateMaterial(const Path& assetPath);
-		static std::shared_ptr<Mesh> CreateMesh();
-		static std::shared_ptr<Mesh> CreateMesh(const Path& assetPath);
-		static std::shared_ptr<Mesh> CreateMesh(const Path& assetPath, std::shared_ptr<SourceModel> source);
-		static std::shared_ptr<Shader> CreateShader(const Path& assetPath);
-		static std::shared_ptr<Shader> CreateShader(const Path& assetPath, std::shared_ptr<SourceShader> source);
-		static std::shared_ptr<Texture2D> CreateTexture2D(const Path& assetPath, std::shared_ptr<SourceTexture> sourceTexture);
-		static std::shared_ptr<Cubemap> CreateCubemap(const Path& assetPath, TextureImportSettings& settings);
-		static std::shared_ptr<AnimationRig> CreateAnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
-		static std::shared_ptr<AnimationClip> CreateAnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
-	public:
-		static std::shared_ptr<SourceShader> LoadSourceShader(GUID guid);
-		static std::shared_ptr<SourceModel> LoadSourceModel(GUID guid);
-		static std::shared_ptr<SourceTexture> LoadSourceTexture(GUID guid);
+			// Create a new material asset
+			GUID guid = GUID::New();
+			std::shared_ptr<T> asset = s_Assets.Add<T>(guid, assetPath, std::forward<Args>(params)...);
 
-	public:
-		static std::shared_ptr<Material> LoadMaterial(const Path& assetPath);
-		static std::shared_ptr<Mesh> LoadMesh(const Path& assetPath);
-		static std::shared_ptr<Shader> LoadShader(const Path& assetPath);
-		static std::shared_ptr<Texture2D> LoadTexture2D(const Path& assetPath);
-		//static std::shared_ptr<Cubemap> LoadCubemap(const Path& assetPath);
-	public:
-		static std::shared_ptr<Material> LoadMaterialByGUID(GUID guid);
-		static std::shared_ptr<Mesh> LoadMeshByGUID(GUID guid);
-		static std::shared_ptr<Shader> LoadShaderByGUID(GUID guid);
-		static std::shared_ptr<Texture2D> LoadTexture2DByGUID(GUID guid);
-		static std::shared_ptr<Cubemap> LoadCubemap(GUID guid);
-		static std::shared_ptr<AnimationRig> LoadAnimationRig(GUID guid);
-		static std::shared_ptr<AnimationClip> LoadAnimationClip(GUID guid);
+			// Set asset data
+			asset->Guid = guid;
+			asset->SetName("Default");
+			asset->SetType(T::Type);
+
+			// Save to disk
+			asset->Save();
+
+			return asset;
+		}
+
+		template<typename T>
+		static std::shared_ptr<T> LoadSourceAsset(GUID guid)
+		{
+			// Check if this asset has already been loaded
+			if (s_LoadedSourceAssets.contains(guid))
+				return s_SourceAssets.Get<T>(guid);
+
+			// Load the source asset
+			Path sourcePath = s_SourceAssetDatabase->GUIDToAssetPath(guid);
+			std::shared_ptr<T> sourceAsset = s_SourceAssets.Add<T>(guid, sourcePath);
+
+			// Track the source asset as loaded
+			s_LoadedSourceAssets.emplace(guid);
+
+			return sourceAsset;
+		}
+
+		template<typename T>
+		static std::shared_ptr<T> LoadAsset(const Path& assetPath)
+		{
+			// Convert the path to a guid and load the asset
+			return LoadAsset(s_AssetDatabase->AssetPathToGUID(assetPath));
+		}
+
+		template<typename T>
+		static std::shared_ptr<T> LoadAsset(GUID guid)
+		{
+			// Check if the asset is already loaded
+			if (s_LoadedAssets.contains(guid))
+				return s_Assets.Get<T>(guid);
+
+			// Track the asset
+			s_LoadedAssets.emplace(guid);
+
+			// Convert the guid to a path
+			Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
+
+			// Load and return the asset
+			return s_Assets.Add<T>(guid, assetPath);
+		}
 
 	public:
 		static GUID CreateBinaryAsset(BinaryBuffer& buffer);

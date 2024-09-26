@@ -126,7 +126,6 @@ namespace Odyssey
 			{
 				if (ImGui::MenuItem("Material"))
 				{
-					AssetManager::CreateMaterial(Path("Assets/Materials/MyMaterial.mat"));
 				}
 				if (ImGui::MenuItem("Scene"))
 				{

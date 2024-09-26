@@ -118,7 +118,7 @@ namespace Odyssey
 		EnvironmentSettings envSettings = scene->GetEnvironmentSettings();
 		if (envSettings.Skybox)
 		{
-			auto skyboxTexture = AssetManager::LoadCubemap(envSettings.Skybox);
+			auto skyboxTexture = AssetManager::LoadAsset<Cubemap>(envSettings.Skybox);
 			SkyboxCubemap = skyboxTexture->GetTexture();
 		}
 
@@ -168,11 +168,11 @@ namespace Odyssey
 			setPasses.push_back(SetPass());
 			SetPass& setPass = setPasses[setPasses.size() - 1];
 
-			auto material = AssetManager::LoadMaterialByGUID(meshRenderer.GetMaterial());
+			auto material = AssetManager::LoadAsset<Material>(meshRenderer.GetMaterial());
 			setPass.SetMaterial(material, m_DescriptorLayout);
 
 			// Create the drawcall data
-			if (auto mesh = AssetManager::LoadMeshByGUID(meshRenderer.GetMesh()))
+			if (auto mesh = AssetManager::LoadAsset<Mesh>(meshRenderer.GetMesh()))
 			{
 				Drawcall drawcall;
 				drawcall.VertexBufferID = mesh->GetVertexBuffer();

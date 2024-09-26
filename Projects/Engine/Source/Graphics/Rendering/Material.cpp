@@ -60,10 +60,10 @@ namespace Odyssey
 			root.ReadData("m_Texture", textureGUID.Ref());
 
 			if (shaderGUID)
-				m_Shader = AssetManager::LoadShaderByGUID(shaderGUID);
+				m_Shader = AssetManager::LoadAsset<Shader>(shaderGUID);
 
 			if (textureGUID)
-				m_Texture = AssetManager::LoadTexture2DByGUID(textureGUID);
+				m_Texture = AssetManager::LoadAsset<Texture2D>(textureGUID);
 		}
 	}
 }

@@ -7,7 +7,7 @@ namespace Odyssey
 {
 	ShaderInspector::ShaderInspector(GUID guid)
 	{
-		if (m_Shader = AssetManager::LoadShaderByGUID(guid))
+		if (m_Shader = AssetManager::LoadAsset<Shader>(guid))
 		{
 			m_GUIDDrawer = StringDrawer("GUID", m_Shader->GetGUID().String(), nullptr, true);
 			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(),

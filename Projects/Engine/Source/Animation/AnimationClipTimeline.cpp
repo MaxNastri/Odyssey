@@ -7,7 +7,7 @@ namespace Odyssey
 	AnimationClipTimeline::AnimationClipTimeline(GUID animationClip)
 		: m_AnimationClip(animationClip)
 	{
-		auto animClip = AssetManager::LoadAnimationClip(m_AnimationClip);
+		auto animClip = AssetManager::LoadAsset<AnimationClip>(m_AnimationClip);
 		m_Duration = animClip->GetDuration();
 	}
 
@@ -16,7 +16,7 @@ namespace Odyssey
 		m_CurrentTime += dt;
 
 		// Load the animation clip and get the bone keyframes
-		auto animClip = AssetManager::LoadAnimationClip(m_AnimationClip);
+		auto animClip = AssetManager::LoadAsset<AnimationClip>(m_AnimationClip);
 		std::map<std::string, BoneKeyframe>& boneKeyframes = animClip->GetBoneKeyframes();
 
 		// Get the next frame time so we can calculate the proper end time
@@ -56,7 +56,7 @@ namespace Odyssey
 		m_CurrentTime += dt;
 
 		// Load the animation clip and get the bone keyframes
-		auto animClip = AssetManager::LoadAnimationClip(m_AnimationClip);
+		auto animClip = AssetManager::LoadAsset<AnimationClip>(m_AnimationClip);
 		std::map<std::string, BoneKeyframe>& boneKeyframes = animClip->GetBoneKeyframes();
 
 		// Get the next frame time so we can calculate the proper end time

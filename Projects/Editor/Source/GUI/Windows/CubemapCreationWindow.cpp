@@ -5,6 +5,7 @@
 #include "Project.h"
 #include "GUIManager.h"
 #include "SourceTexture.h"
+#include "Cubemap.h"
 
 namespace Odyssey
 {
@@ -46,7 +47,7 @@ namespace Odyssey
 			settings.SetCubemapFace(CubemapFace::ZPos, m_ZPosFaceDrawer.GetGUID());
 
 			Path assetPath = Project::GetActiveAssetsDirectory() / m_AssetPathDrawer.GetValue();
-			AssetManager::CreateCubemap(assetPath, settings);
+			AssetManager::CreateAsset<Cubemap>(assetPath, settings);
 		}
 		End();
 	}

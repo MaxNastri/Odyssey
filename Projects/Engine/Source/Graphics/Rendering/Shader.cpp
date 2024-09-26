@@ -39,7 +39,7 @@ namespace Odyssey
 
 	void Shader::Recompile()
 	{
-		if (std::shared_ptr<SourceShader> source = AssetManager::LoadSourceShader(m_SourceAsset))
+		if (std::shared_ptr<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
 		{
 			auto shaderTypes = source->GetShaderTypes();
 			for (auto shaderType : shaderTypes)

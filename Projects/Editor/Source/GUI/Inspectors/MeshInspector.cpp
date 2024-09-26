@@ -7,7 +7,7 @@ namespace Odyssey
 {
 	MeshInspector::MeshInspector(GUID guid)
 	{
-		if (m_Mesh = AssetManager::LoadMeshByGUID(guid))
+		if (m_Mesh = AssetManager::LoadAsset<Mesh>(guid))
 		{
 			m_GUIDDrawer = StringDrawer("GUID", m_Mesh->GetGUID().String(), nullptr, true);
 			m_NameDrawer = StringDrawer("Name", m_Mesh->GetName(),

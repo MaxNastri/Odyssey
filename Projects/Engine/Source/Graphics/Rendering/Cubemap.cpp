@@ -14,12 +14,12 @@ namespace Odyssey
 	Cubemap::Cubemap(const Path& assetPath, TextureImportSettings& settings)
 		: Asset(assetPath)
 	{
-		std::shared_ptr<SourceTexture> xNegFace = AssetManager::LoadSourceTexture(settings.GetCubemapFace(CubemapFace::XNeg));
-		std::shared_ptr<SourceTexture> xPosFace = AssetManager::LoadSourceTexture(settings.GetCubemapFace(CubemapFace::XPos));
-		std::shared_ptr<SourceTexture> yNegFace = AssetManager::LoadSourceTexture(settings.GetCubemapFace(CubemapFace::YNeg));
-		std::shared_ptr<SourceTexture> yPosFace = AssetManager::LoadSourceTexture(settings.GetCubemapFace(CubemapFace::YPos));
-		std::shared_ptr<SourceTexture> zNegFace = AssetManager::LoadSourceTexture(settings.GetCubemapFace(CubemapFace::ZNeg));
-		std::shared_ptr<SourceTexture> zPosFace = AssetManager::LoadSourceTexture(settings.GetCubemapFace(CubemapFace::ZPos));
+		std::shared_ptr<SourceTexture> xNegFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::XNeg));
+		std::shared_ptr<SourceTexture> xPosFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::XPos));
+		std::shared_ptr<SourceTexture> yNegFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::YNeg));
+		std::shared_ptr<SourceTexture> yPosFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::YPos));
+		std::shared_ptr<SourceTexture> zNegFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::ZNeg));
+		std::shared_ptr<SourceTexture> zPosFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::ZPos));
 
 		BinaryBuffer& xNegBuffer = xNegFace->GetPixelBuffer();
 		BinaryBuffer& xPosBuffer = xPosFace->GetPixelBuffer();

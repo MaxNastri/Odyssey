@@ -7,7 +7,7 @@ namespace Odyssey
 {
 	TextureInspector::TextureInspector(GUID guid)
 	{
-		if (m_Texture = AssetManager::LoadTexture2DByGUID(guid))
+		if (m_Texture = AssetManager::LoadAsset<Texture2D>(guid))
 		{
 			m_GUIDDrawer = StringDrawer("GUID", m_Texture->GetGUID().String(), nullptr, true);
 			m_NameDrawer = StringDrawer("Name", m_Texture->GetName(),
