@@ -15,7 +15,7 @@ namespace Odyssey
 	struct TrackingOptions
 	{
 	public:
-		std::filesystem::path Direrctory;
+		std::filesystem::path Directory;
 		std::vector<std::filesystem::path> Extensions;
 		bool Recursive = false;
 		bool IncludeDirectoryChanges = false;

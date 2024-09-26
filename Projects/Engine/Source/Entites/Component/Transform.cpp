@@ -5,8 +5,6 @@
 
 namespace Odyssey
 {
-	CLASS_DEFINITION(Odyssey, Transform);
-
 	Transform::Transform(const GameObject& gameObject)
 		: m_GameObject(gameObject)
 	{

@@ -21,7 +21,7 @@ namespace Odyssey
 		std::filesystem::copy(SCRIPTS_RESOURCES_DIRECTORY, m_UserAssembliesDirectory, std::filesystem::copy_options::overwrite_existing);
 
 		TrackingOptions options;
-		options.Direrctory = m_Settings.UserScriptsDirectory;
+		options.Directory = m_Settings.UserScriptsDirectory;
 		options.Extensions = { ".cs" };
 		options.Recursive = true;
 		options.Callback = [this](const Path& path, FileActionType fileAction)

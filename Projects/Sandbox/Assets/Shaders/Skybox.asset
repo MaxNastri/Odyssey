@@ -1,7 +1,7 @@
 m_SourceAsset: 13794650480514420553
 m_GUID: 12373133592092994291
 m_Name: Skybox
-m_Type: Shader
+m_Type: Odyssey.Shader
 m_Shaders:
   - ShaderType: 1
     ShaderCode: 12221122711286747219

@@ -12,6 +12,8 @@ namespace Odyssey
 	class Shader : public Asset
 	{
 	public:
+		CLASS_DECLARATION(Odyssey, Shader)
+	public:
 		Shader() = default;
 		Shader(const Path& assetPath);
 		Shader(const Path& assetPath, std::shared_ptr<SourceShader> source);

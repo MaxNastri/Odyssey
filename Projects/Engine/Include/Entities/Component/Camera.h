@@ -49,6 +49,6 @@ namespace Odyssey
 		glm::mat4 m_InverseView;
 		float m_Width;
 		float m_Height;
-		CLASS_DECLARATION(Camera);
+		CLASS_DECLARATION(Odyssey, Camera)
 	};
 }

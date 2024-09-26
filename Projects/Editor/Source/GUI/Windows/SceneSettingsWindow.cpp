@@ -5,10 +5,7 @@
 #include "SceneManager.h"
 #include "GUIManager.h"
 #include "imgui.h"
-
-#include "GeometryUtil.h"
-#include "AssetManager.h"
-#include "Mesh.h"
+#include "Cubemap.h"
 
 namespace Odyssey
 {
@@ -21,7 +18,7 @@ namespace Odyssey
 			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
 
 		GUID initialValue = m_Scene ? m_Scene->GetEnvironmentSettings().Skybox : GUID(0);
-		m_SkyboxDrawer = AssetFieldDrawer("Skybox", initialValue, "Cubemap",
+		m_SkyboxDrawer = AssetFieldDrawer("Skybox", initialValue, Cubemap::Type,
 			[this](GUID skyboxGUID) { OnSkyboxChanged(skyboxGUID); });
 	}
 

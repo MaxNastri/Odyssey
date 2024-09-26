@@ -9,8 +9,6 @@
 
 namespace Odyssey
 {
-	CLASS_DEFINITION(Odyssey, GameObject);
-
 	GameObject::GameObject(Scene* scene, entt::entity entity)
 	{
 		m_Entity = entity;

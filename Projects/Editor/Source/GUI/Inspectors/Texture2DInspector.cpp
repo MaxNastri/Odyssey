@@ -1,6 +1,7 @@
 #include "Texture2DInspector.h"
 #include "AssetManager.h"
 #include "Texture2D.h"
+#include "SourceTexture.h"
 
 namespace Odyssey
 {
@@ -13,7 +14,7 @@ namespace Odyssey
 				[this](const std::string& name) { OnNameChanged(name); });
 			m_TypeDrawer = StringDrawer("Type", m_Texture->GetType(), nullptr, true);
 			m_PixelDataGUID = StringDrawer("Pixel Data", m_Texture->GetPixelBufferGUID().String(), nullptr, true);
-			m_SourceAssetDrawer = AssetFieldDrawer("Source Asset", m_Texture->GetSoureAsset(), "SourceTexture",
+			m_SourceAssetDrawer = AssetFieldDrawer("Source Asset", m_Texture->GetSoureAsset(), SourceTexture::Type,
 				[this](GUID sourceGUID) { OnSourceAssetchanged(sourceGUID); });
 		}
 	}

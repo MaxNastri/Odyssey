@@ -5,7 +5,7 @@ namespace Odyssey
 	FileTracker::FileTracker(TrackingOptions options)
 	{
 		m_Options = options;
-		m_ID = s_FileWatcher.addWatch(m_Options.Direrctory.string(), this, options.Recursive);
+		m_ID = s_FileWatcher.addWatch(m_Options.Directory.string(), this, options.Recursive);
 	}
 
 	FileTracker::~FileTracker()

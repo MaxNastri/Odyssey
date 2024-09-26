@@ -4,8 +4,6 @@
 
 namespace Odyssey
 {
-	CLASS_DEFINITION(Odyssey, ScriptComponent);
-
 	ScriptComponent::ScriptComponent(const GameObject& gameObject, const std::string& managedType)
 		: m_GameObject(gameObject)
 	{

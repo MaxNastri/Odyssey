@@ -4,8 +4,6 @@
 
 namespace Odyssey
 {
-	CLASS_DEFINITION(Odyssey, Camera);
-
 	Camera::Camera(const GameObject& gameObject)
 		: m_GameObject(gameObject)
 	{

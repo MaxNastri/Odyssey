@@ -8,6 +8,7 @@ namespace Odyssey
 
 	class AnimationRig : public Asset
 	{
+		CLASS_DECLARATION(Odyssey, AnimationRig)
 	public:
 		AnimationRig(const Path& assetPath);
 		AnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> source);

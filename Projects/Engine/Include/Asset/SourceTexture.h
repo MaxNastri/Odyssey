@@ -8,6 +8,7 @@ namespace Odyssey
 {
 	class SourceTexture : public SourceAsset
 	{
+		CLASS_DECLARATION(Odyssey, SourceTexture)
 	public:
 		SourceTexture() = default;
 		SourceTexture(const Path& sourcePath);

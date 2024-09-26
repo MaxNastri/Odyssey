@@ -2,12 +2,10 @@
 #include "Inspector.h"
 #include "AssetFieldDrawer.h"
 #include "StringDrawer.h"
-#include "GUID.h"
+#include "Material.h"
 
 namespace Odyssey
 {
-	class Material;
-
 	class MaterialInspector : public Inspector
 	{
 	public:

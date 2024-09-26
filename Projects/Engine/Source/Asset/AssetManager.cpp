@@ -42,7 +42,7 @@ namespace Odyssey
 		// Set asset data and serialize the metafile
 		shader->Guid = guid;
 		shader->SetName("Default");
-		shader->SetType("SourceShader");
+		shader->SetType(SourceShader::Type);
 		shader->SerializeMetadata();
 
 		return shader;
@@ -56,7 +56,7 @@ namespace Odyssey
 		// Set asset data and serialize the metafile
 		model->Guid = guid;
 		model->SetName("Default");
-		model->SetType("SourceModel");
+		model->SetType(SourceModel::Type);
 		model->SerializeMetadata();
 
 		return model;
@@ -71,7 +71,7 @@ namespace Odyssey
 		// Set asset data
 		material->Guid = guid;
 		material->SetName("Default");
-		material->SetType("Material");
+		material->SetType(Material::Type);
 
 		// Save to disk
 		material->Save();
@@ -88,7 +88,7 @@ namespace Odyssey
 		// Set asset data
 		mesh->Guid = guid;
 		mesh->SetName("Default");
-		mesh->SetType("Mesh");
+		mesh->SetType(Mesh::Type);
 
 		return mesh;
 	}
@@ -102,7 +102,7 @@ namespace Odyssey
 		// Set asset data
 		mesh->Guid = guid;
 		mesh->SetName("Default");
-		mesh->SetType("Mesh");
+		mesh->SetType(Mesh::Type);
 
 		// Save to disk
 		mesh->Save();
@@ -119,7 +119,7 @@ namespace Odyssey
 		// Set asset data
 		mesh->Guid = guid;
 		mesh->SetName("Default");
-		mesh->SetType("Mesh");
+		mesh->SetType(Mesh::Type);
 		mesh->SetSourceAsset(source->GetGUID());
 
 		// Save to disk
@@ -137,7 +137,7 @@ namespace Odyssey
 		// Set asset data
 		shader->Guid = guid;
 		shader->SetName("Default");
-		shader->SetType("Shader");
+		shader->SetType(Shader::Type);
 
 		// Save to disk
 		shader->Save();
@@ -154,7 +154,7 @@ namespace Odyssey
 		// Set asset data
 		shader->Guid = guid;
 		shader->SetName("Default");
-		shader->SetType("Shader");
+		shader->SetType(Shader::Type);
 
 		// Save to disk
 		shader->Save();
@@ -171,7 +171,7 @@ namespace Odyssey
 		// Set asset data
 		texture->Guid = guid;
 		texture->SetName("Default");
-		texture->SetType("Texture2D");
+		texture->SetType(Texture2D::Type);
 
 		// Save to disk
 		texture->Save();
@@ -188,7 +188,7 @@ namespace Odyssey
 		// Set asset data
 		cubemap->Guid = guid;
 		cubemap->SetName("Default");
-		cubemap->SetType("Cubemap");
+		cubemap->SetType(Cubemap::Type);
 
 		// Save to disk
 		cubemap->Save();
@@ -205,7 +205,7 @@ namespace Odyssey
 		// Set asset data
 		animationRig->Guid = guid;
 		animationRig->SetName("Default");
-		animationRig->SetType("AnimationRig");
+		animationRig->SetType(AnimationRig::Type);
 
 		// Save to disk
 		animationRig->Save();
@@ -222,7 +222,7 @@ namespace Odyssey
 		// Set asset data
 		animationClip->Guid = guid;
 		animationClip->SetName("Default");
-		animationClip->SetType("AnimationClip");
+		animationClip->SetType(AnimationClip::Type);
 
 		// Save to disk
 		animationClip->Save();

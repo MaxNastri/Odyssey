@@ -7,6 +7,7 @@ namespace Odyssey
 {
 	class SourceModel : public SourceAsset
 	{
+		CLASS_DECLARATION(Odyssey, SourceModel)
 	public:
 		SourceModel() = default;
 		SourceModel(const Path& sourcePath);

@@ -9,15 +9,11 @@ namespace Odyssey
 #pragma region Macros
 
 #define TO_STRING( x ) #x
-#define CLASS_DECLARATION( classname ) \
+#define CLASS_DECLARATION( classNamespace, className ) \
 public: \
-	static std::string ClassNamespace; \
-	static std::string ClassName; \
-	static std::string Type;
-#define CLASS_DEFINITION( classNamespace, className ) \
-std::string className::ClassNamespace = TO_STRING( classNamespace ); \
-std::string className::ClassName = TO_STRING( className ); \
-std::string className::Type = TO_STRING(classNamespace.className);
+	inline static std::string ClassNamespace = TO_STRING(classNamespace); \
+	inline static std::string ClassName = TO_STRING(className); \
+	inline static std::string Type = TO_STRING(classNamespace.className);
 
 #pragma endregion
 

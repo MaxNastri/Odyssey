@@ -25,5 +25,6 @@
 	#include <Windows.h>
 #endif
 #include "volk.h"
+#include "Globals.h"
 
 using Path = std::filesystem::path;

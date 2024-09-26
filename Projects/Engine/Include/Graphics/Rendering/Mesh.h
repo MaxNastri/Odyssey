@@ -11,6 +11,7 @@ namespace Odyssey
 
 	class Mesh : public Asset
 	{
+		CLASS_DECLARATION(Odyssey, Mesh)
 	public:
 		Mesh() = default;
 		Mesh(const Path& assetPath);

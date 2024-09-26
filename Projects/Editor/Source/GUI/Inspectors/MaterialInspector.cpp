@@ -25,10 +25,10 @@ namespace Odyssey
 
 			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), nullptr, true);
 
-			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, "Shader",
+			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type,
 				[this](GUID guid) { OnShaderModified(guid); });
 
-			m_TextureDrawer = AssetFieldDrawer("Texture", textureGUID, "Texture2D",
+			m_TextureDrawer = AssetFieldDrawer("Texture", textureGUID, Texture2D::Type,
 				[this](GUID guid) { OnTextureModified(guid); });
 		}
 	}

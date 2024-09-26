@@ -1,6 +1,7 @@
 #include "ShaderInspector.h"
 #include "AssetManager.h"
 #include "Shader.h"
+#include "SourceShader.h"
 
 namespace Odyssey
 {
@@ -11,7 +12,7 @@ namespace Odyssey
 			m_GUIDDrawer = StringDrawer("GUID", m_Shader->GetGUID().String(), nullptr, true);
 			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(),
 				[this](const std::string& name) { OnNameChanged(name); });
-			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSoureAsset(), "SourceShader",
+			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSoureAsset(), SourceShader::Type,
 				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
 		}
 	}

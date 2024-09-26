@@ -8,6 +8,7 @@ namespace Odyssey
 {
 	class Cubemap : public Asset
 	{
+		CLASS_DECLARATION(Odyssey, Cubemap)
 	public:
 		Cubemap(const Path& assetPath);
 		Cubemap(const Path& assetPath, TextureImportSettings& settings);

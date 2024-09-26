@@ -20,6 +20,6 @@ namespace Odyssey
 
 	private:
 		GameObject m_GameObject;
-		CLASS_DECLARATION(PropertiesComponent);
+		CLASS_DECLARATION(Odyssey, PropertiesComponent)
 	};
 }

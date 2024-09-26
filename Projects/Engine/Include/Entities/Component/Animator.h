@@ -60,7 +60,7 @@ namespace Odyssey
 
 	private:
 		bool m_DebugEnabled = false;
-		CLASS_DECLARATION(Animator);
+		CLASS_DECLARATION(Odyssey, Animator)
 	};
 
 }

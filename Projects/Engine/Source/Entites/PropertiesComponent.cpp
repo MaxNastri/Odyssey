@@ -2,8 +2,6 @@
 
 namespace Odyssey
 {
-	CLASS_DEFINITION(Odyssey, PropertiesComponent);
-
 	PropertiesComponent::PropertiesComponent(const GameObject& gameObject)
 		: m_GameObject(gameObject)
 	{

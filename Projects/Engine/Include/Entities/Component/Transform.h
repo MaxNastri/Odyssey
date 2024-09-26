@@ -58,6 +58,6 @@ namespace Odyssey
         glm::mat4x4 m_LocalMatrix;
         glm::mat4x4 m_WorldMatrix;
         bool m_Dirty;
-		CLASS_DECLARATION(Transform);
+		CLASS_DECLARATION(Odyssey, Transform)
 	};
 }

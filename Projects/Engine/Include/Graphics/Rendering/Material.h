@@ -8,6 +8,7 @@ namespace Odyssey
 
 	class Material : public Asset
 	{
+		CLASS_DECLARATION(Odyssey, Material)
 	public:
 		Material() = default;
 		Material(const Path& assetPath);

@@ -5,8 +5,6 @@
 
 namespace Odyssey
 {
-	CLASS_DEFINITION(Odyssey, MeshRenderer);
-
 	MeshRenderer::MeshRenderer(const GameObject& gameObject)
 		: m_GameObject(gameObject)
 	{

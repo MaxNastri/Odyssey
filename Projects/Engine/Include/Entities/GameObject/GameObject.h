@@ -63,8 +63,7 @@ namespace Odyssey
 		bool RemoveComponent();
 
 	public:
-		CLASS_DECLARATION(GameObject);
-
+		CLASS_DECLARATION(Odyssey, GameObject)
 	private: // Non-serialized
 		entt::entity m_Entity;
 		Scene* m_Scene = nullptr;

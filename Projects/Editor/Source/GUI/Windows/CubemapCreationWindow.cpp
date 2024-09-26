@@ -4,6 +4,7 @@
 #include "AssetManager.h"
 #include "Project.h"
 #include "GUIManager.h"
+#include "SourceTexture.h"
 
 namespace Odyssey
 {
@@ -11,13 +12,12 @@ namespace Odyssey
 		: DockableWindow("Cubemap Creation Window", windowID,
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
-
-		m_XPosFaceDrawer = AssetFieldDrawer("X+ Face", 0, "SourceTexture", nullptr);
-		m_XNegFaceDrawer = AssetFieldDrawer("X- Face", 0, "SourceTexture", nullptr);
-		m_YPosFaceDrawer = AssetFieldDrawer("Y+ Face", 0, "SourceTexture", nullptr);
-		m_YNegFaceDrawer = AssetFieldDrawer("Y- Face", 0, "SourceTexture", nullptr);
-		m_ZPosFaceDrawer = AssetFieldDrawer("Z+ Face", 0, "SourceTexture", nullptr);
-		m_ZNegFaceDrawer = AssetFieldDrawer("Z- Face", 0, "SourceTexture", nullptr);
+		m_XPosFaceDrawer = AssetFieldDrawer("X+ Face", 0, SourceTexture::Type, nullptr);
+		m_XNegFaceDrawer = AssetFieldDrawer("X- Face", 0, SourceTexture::Type, nullptr);
+		m_YPosFaceDrawer = AssetFieldDrawer("Y+ Face", 0, SourceTexture::Type, nullptr);
+		m_YNegFaceDrawer = AssetFieldDrawer("Y- Face", 0, SourceTexture::Type, nullptr);
+		m_ZPosFaceDrawer = AssetFieldDrawer("Z+ Face", 0, SourceTexture::Type, nullptr);
+		m_ZNegFaceDrawer = AssetFieldDrawer("Z- Face", 0, SourceTexture::Type, nullptr);
 		m_AssetPathDrawer = StringDrawer("Asset Path", "", nullptr, false);
 	}
 

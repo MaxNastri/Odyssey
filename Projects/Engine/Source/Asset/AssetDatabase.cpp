@@ -11,7 +11,7 @@ namespace Odyssey
 
 		// Create a file tracker based on the search options so we can detect any file changes
 		TrackingOptions options;
-		options.Direrctory = searchOptions.Root;
+		options.Directory = searchOptions.Root;
 		options.Extensions = searchOptions.Extensions;
 		options.Recursive = true;
 		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileAction(path, fileAction); };

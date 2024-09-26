@@ -10,8 +10,6 @@
 
 namespace Odyssey
 {
-	CLASS_DEFINITION(Odyssey, Animator);
-
 	Animator::Animator(const GameObject& gameObject)
 		: m_GameObject(gameObject)
 	{

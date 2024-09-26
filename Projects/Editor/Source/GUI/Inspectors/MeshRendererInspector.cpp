@@ -17,10 +17,10 @@ namespace Odyssey
 			GUID meshGUID = meshRenderer->GetMesh();
 			GUID materialGUID = meshRenderer->GetMaterial();
 
-			m_MeshDrawer = AssetFieldDrawer("Mesh", meshGUID, "Mesh",
+			m_MeshDrawer = AssetFieldDrawer("Mesh", meshGUID, Mesh::Type,
 				[this](GUID guid) { OnMeshModified(guid); });
 
-			m_MaterialDrawer = AssetFieldDrawer("Material", materialGUID, "Material",
+			m_MaterialDrawer = AssetFieldDrawer("Material", materialGUID, Material::Type,
 				[this](GUID guid) { OnMaterialModified(guid); });
 		}
 	}

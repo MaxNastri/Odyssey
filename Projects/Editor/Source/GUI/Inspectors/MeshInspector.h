@@ -1,12 +1,11 @@
 #pragma once
 #include "Inspector.h"
+#include "Mesh.h"
 #include "StringDrawer.h"
 #include "AssetFieldDrawer.h"
 
 namespace Odyssey
 {
-	class Mesh;
-
 	class MeshInspector : public Inspector
 	{
 	public:

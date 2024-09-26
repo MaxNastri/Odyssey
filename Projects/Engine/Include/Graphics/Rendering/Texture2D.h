@@ -11,6 +11,7 @@ namespace Odyssey
 
 	class Texture2D : public Asset
 	{
+		CLASS_DECLARATION(Odyssey, Texture2D)
 	public:
 		Texture2D(const Path& assetPath);
 		Texture2D(const Path& assetPath, TextureFormat format);

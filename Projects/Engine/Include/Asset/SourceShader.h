@@ -7,6 +7,7 @@ namespace Odyssey
 {
 	class SourceShader : public SourceAsset
 	{
+		CLASS_DECLARATION(Odyssey, SourceShader)
 	public:
 		SourceShader() = default;
 		SourceShader(const Path& sourcePath);

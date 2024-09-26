@@ -1,7 +1,7 @@
 m_SourceAsset: 5231999934609759280
 m_GUID: 6039372826235374126
 m_Name: PBR Non-Skinned
-m_Type: Shader
+m_Type: Odyssey.Shader
 m_Shaders:
   - ShaderType: 1
     ShaderCode: 17087412715733078264
