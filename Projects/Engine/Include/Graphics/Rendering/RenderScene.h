@@ -63,6 +63,7 @@ namespace Odyssey
 	struct alignas(16) LightingData
 	{
 	public:
+		glm::vec4 AmbientColor;
 		std::array<SceneLight, 16> SceneLights;
 		uint32_t LightCount;
 	};

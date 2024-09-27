@@ -150,6 +150,10 @@ namespace Odyssey
 			LightingData.LightCount++;
 		}
 
+		// Set the ambient color from the environment settings
+		LightingData.AmbientColor = glm::vec4(scene->GetEnvironmentSettings().AmbientColor, 1.0f);
+
+		// Copy the data into the uniform buffer
 		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(LightingBuffer);
 		uniformBuffer->SetMemory(sizeof(LightingData), &LightingData);
 

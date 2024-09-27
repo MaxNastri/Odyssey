@@ -164,6 +164,8 @@ namespace Odyssey
 		root.WriteData("Scene", m_Name);
 		root.WriteData("GUID", m_GUID.CRef());
 		root.WriteData("Skybox", m_EnvironmentSettings.Skybox.CRef());
+		root.WriteData("Ambient Color", m_EnvironmentSettings.AmbientColor);
+
 		SerializationNode gameObjectsNode = root.CreateSequenceNode("GameObjects");
 
 		for (auto entity : m_Registry.view<PropertiesComponent>())
@@ -192,6 +194,7 @@ namespace Odyssey
 			root.ReadData("Scene", m_Name);
 			root.ReadData("GUID", m_GUID.Ref());
 			root.ReadData("Skybox", m_EnvironmentSettings.Skybox.Ref());
+			root.ReadData("Ambient Color", m_EnvironmentSettings.AmbientColor);
 
 			assert(gameObjectsNode.IsSequence());
 			assert(gameObjectsNode.HasChildren());

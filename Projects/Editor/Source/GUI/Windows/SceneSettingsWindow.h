@@ -1,6 +1,7 @@
 #pragma once
 #include "DockableWindow.h"
 #include "AssetFieldDrawer.h"
+#include "ColorDrawer.h"
 
 namespace Odyssey
 {
@@ -20,9 +21,11 @@ namespace Odyssey
 	private:
 		void OnSceneLoaded(SceneLoadedEvent* event);
 		void OnSkyboxChanged(GUID skyboxGUID);
+		void OnAmbientColorChanged(glm::vec3 color);
 
 	private:
 		AssetFieldDrawer m_SkyboxDrawer;
+		ColorDrawer m_AmbientColorDrawer;
 
 	private:
 		Scene* m_Scene;

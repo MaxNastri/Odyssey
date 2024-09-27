@@ -14,12 +14,16 @@ namespace Odyssey
 			glm::vec2(0, 0), glm::vec2(400, 450), glm::vec2(2, 2))
 	{
 		m_Scene = SceneManager::GetActiveScene();
-		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
-			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
+		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>(
+			[this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
 
-		GUID initialValue = m_Scene ? m_Scene->GetEnvironmentSettings().Skybox : GUID(0);
-		m_SkyboxDrawer = AssetFieldDrawer("Skybox", initialValue, Cubemap::Type,
+		GUID skyboxGUID = m_Scene ? m_Scene->GetEnvironmentSettings().Skybox : GUID(0);
+		m_SkyboxDrawer = AssetFieldDrawer("Skybox", skyboxGUID, Cubemap::Type,
 			[this](GUID skyboxGUID) { OnSkyboxChanged(skyboxGUID); });
+
+		glm::vec3 ambientColor = m_Scene ? m_Scene->GetEnvironmentSettings().AmbientColor : glm::vec3(0.0f);
+		m_AmbientColorDrawer = ColorDrawer("Ambient Color", ambientColor,
+			[this](glm::vec3 color) { OnAmbientColorChanged(color); });
 	}
 
 	void SceneSettingsWindow::Draw()
@@ -27,7 +31,11 @@ namespace Odyssey
 		if (!Begin())
 			return;
 
-		m_SkyboxDrawer.Draw();
+		if (m_Scene)
+		{
+			m_SkyboxDrawer.Draw();
+			m_AmbientColorDrawer.Draw();
+		}
 
 		End();
 	}
@@ -41,11 +49,17 @@ namespace Odyssey
 	{
 		m_Scene = event->loadedScene;
 		m_SkyboxDrawer.SetGUID(m_Scene->GetEnvironmentSettings().Skybox);
+		m_AmbientColorDrawer.SetValue(m_Scene->GetEnvironmentSettings().AmbientColor);
 	}
 
 	void SceneSettingsWindow::OnSkyboxChanged(GUID skyboxGUID)
 	{
 		if (m_Scene)
 			m_Scene->GetEnvironmentSettings().Skybox = skyboxGUID;
+	}
+	void SceneSettingsWindow::OnAmbientColorChanged(glm::vec3 color)
+	{
+		if (m_Scene)
+			m_Scene->GetEnvironmentSettings().AmbientColor = color;
 	}
 }

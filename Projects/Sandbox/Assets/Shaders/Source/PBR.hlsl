@@ -53,7 +53,7 @@ VertexOutput main(VertexInput input)
     SkinningOutput skinning = SkinVertex(input);
     float4 worldPosition = mul(Model, skinning.Position);
     output.Position = mul(ViewProjection, worldPosition);
-    output.Normal = skinning.Normal.xyz;
+    output.Normal = normalize(mul(Model, skinning.Normal).xyz);
     output.Tangent = input.Tangent;
     output.Color = input.Color;
     output.TexCoord0 = input.TexCoord0;
@@ -67,7 +67,7 @@ SkinningOutput SkinVertex(VertexInput input)
     output.Position = float4(0, 0, 0, 1);
     output.Normal = float4(0, 0, 0, 1);
     float4 vertexPosition = float4(input.Position, 1.0f);
-    float4 vertexNormal = float4(input.Normal, 1.0f);
+    float4 vertexNormal = float4(input.Normal, 0.0f);
     
     for (int i = 0; i < 4; i++)
     {
@@ -75,7 +75,6 @@ SkinningOutput SkinVertex(VertexInput input)
         output.Normal += mul(Bones[input.BoneIndices[i]], vertexNormal) * input.BoneWeights[i];
     }
     
-    output.Normal = normalize(output.Normal);
     return output;
 }
 
@@ -108,8 +107,10 @@ struct LightingOutput
     float3 Diffuse;
 };
 
+// Bindings
 cbuffer LightData : register(b3)
 {
+    float4 AmbientColor;
     Light SceneLights[16];
     uint LightCount;
 }
@@ -117,15 +118,14 @@ cbuffer LightData : register(b3)
 Texture2D diffuseTex2D : register(t4);
 SamplerState diffuseSampler : register(s4);
 
+// Forward declarations
 LightingOutput CalculateLighting(float3 surfaceNormal);
 float3 CalculateDiffuse(Light light, float3 surfaceNormal);
 
 float4 main(PixelInput input) : SV_Target
 {
     LightingOutput lighting = CalculateLighting(input.Normal);
-    
-    float3 ambient = (0.2f, 0.2f, 0.2f);
-    float4 finalLighting = float4(lighting.Diffuse + ambient, 1.0f);
+    float4 finalLighting = float4(lighting.Diffuse + AmbientColor.rgb, 1.0f);
     
     return diffuseTex2D.Sample(diffuseSampler, input.TexCoord0) * finalLighting;
 }
