@@ -1,9 +1,0 @@
-m_SourceAsset: 5231999934609759280
-m_GUID: 11174641419976366209
-m_Name: Default
-m_Type: Odyssey.Shader
-m_Shaders:
-  - ShaderType: 1
-    ShaderCode: 813445953885790897
-  - ShaderType: 2
-    ShaderCode: 3912081283574863025

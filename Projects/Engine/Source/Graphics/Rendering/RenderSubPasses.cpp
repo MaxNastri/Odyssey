@@ -37,10 +37,11 @@ namespace Odyssey
 				m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
 				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
 				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
+				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 3);
 
 				// Add textures, if they are set
 				if (setPass.Texture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.Texture, 3);
+					m_PushDescriptors->AddTexture(setPass.Texture, 4);
 
 				// Push the descriptors into the command buffer
 				commandBuffer->PushDescriptors(m_PushDescriptors.get(), setPass.GraphicsPipeline);

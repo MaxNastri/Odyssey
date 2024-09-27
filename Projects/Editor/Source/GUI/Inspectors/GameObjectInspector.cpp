@@ -11,6 +11,7 @@
 #include "ScriptingManager.h"
 #include "Animator.h"
 #include "AnimatorInspector.h"
+#include "LightInspector.h"
 
 namespace Odyssey
 {
@@ -52,6 +53,7 @@ namespace Odyssey
 			{
 				"Animator",
 				"Camera",
+				"Light",
 				"Mesh Renderer",
 				"Transform",
 			};
@@ -83,10 +85,15 @@ namespace Odyssey
 					}
 					else if (selected == 2)
 					{
+						if (!m_Target.HasComponent<Light>())
+							m_Target.AddComponent<Light>();
+					}
+					else if (selected == 3)
+					{
 						if (!m_Target.HasComponent<MeshRenderer>())
 							m_Target.AddComponent<MeshRenderer>();
 					}
-					else if (selected == 3)
+					else if (selected == 4)
 					{
 						if (!m_Target.HasComponent<Transform>())
 							m_Target.AddComponent<Transform>();
@@ -131,6 +138,9 @@ namespace Odyssey
 
 		if (m_Target.HasComponent<ScriptComponent>())
 			m_Inspectors.push_back(std::make_unique<UserScriptInspector>(m_Target));
+
+		if (m_Target.HasComponent<Light>())
+			m_Inspectors.push_back(std::make_unique<LightInspector>(m_Target));
 	}
 
 	void GameObjectInspector::RefreshUserScripts()
