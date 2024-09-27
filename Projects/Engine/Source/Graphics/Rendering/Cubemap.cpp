@@ -3,6 +3,8 @@
 #include "SourceTexture.h"
 #include "ResourceManager.h"
 #include "VulkanTexture.h"
+#include "CubemapConverter.hpp"
+
 namespace Odyssey
 {
 	Cubemap::Cubemap(const Path& assetPath)
@@ -11,35 +13,37 @@ namespace Odyssey
 		Load();
 	}
 
-	Cubemap::Cubemap(const Path& assetPath, TextureImportSettings& settings)
+	Cubemap::Cubemap(const Path& assetPath, std::shared_ptr<SourceTexture> source)
 		: Asset(assetPath)
 	{
-		std::shared_ptr<SourceTexture> xNegFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::XNeg));
-		std::shared_ptr<SourceTexture> xPosFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::XPos));
-		std::shared_ptr<SourceTexture> yNegFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::YNeg));
-		std::shared_ptr<SourceTexture> yPosFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::YPos));
-		std::shared_ptr<SourceTexture> zNegFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::ZNeg));
-		std::shared_ptr<SourceTexture> zPosFace = AssetManager::LoadSourceAsset<SourceTexture>(settings.GetCubemapFace(CubemapFace::ZPos));
+		SetSourceAsset(source->GetGUID());
 
-		BinaryBuffer& xNegBuffer = xNegFace->GetPixelBuffer();
-		BinaryBuffer& xPosBuffer = xPosFace->GetPixelBuffer();
-		BinaryBuffer& yNegBuffer = yNegFace->GetPixelBuffer();
-		BinaryBuffer& yPosBuffer = yPosFace->GetPixelBuffer();
-		BinaryBuffer& zNegBuffer = zNegFace->GetPixelBuffer();
-		BinaryBuffer& zPosBuffer = zPosFace->GetPixelBuffer();
+		// Convert the source texture into 6 faces
+		HdriToCubemap<unsigned char> hdriToCube_ldr(source->GetPath().string(), 1024, true);
+
+		size_t resolution = hdriToCube_ldr.getCubemapResolution();
+		size_t channels = hdriToCube_ldr.getNumChannels();
+		size_t bufferSize = resolution * resolution * channels;
+
+		BinaryBuffer rightBuffer(hdriToCube_ldr.getRight(), bufferSize);
+		BinaryBuffer leftBuffer(hdriToCube_ldr.getLeft(), bufferSize);
+		BinaryBuffer upBuffer(hdriToCube_ldr.getUp(), bufferSize);
+		BinaryBuffer downBuffer(hdriToCube_ldr.getDown(), bufferSize);
+		BinaryBuffer frontBuffer(hdriToCube_ldr.getFront(), bufferSize);
+		BinaryBuffer backBuffer(hdriToCube_ldr.getBack(), bufferSize);
 
 		BinaryBuffer combinedBuffer;
-		combinedBuffer.AppendData(zPosBuffer.GetData());
-		combinedBuffer.AppendData(zNegBuffer.GetData());
-		combinedBuffer.AppendData(yPosBuffer.GetData());
-		combinedBuffer.AppendData(yNegBuffer.GetData());
-		combinedBuffer.AppendData(xPosBuffer.GetData());
-		combinedBuffer.AppendData(xNegBuffer.GetData());
+		combinedBuffer.AppendData(rightBuffer.GetData());
+		combinedBuffer.AppendData(leftBuffer.GetData());
+		combinedBuffer.AppendData(upBuffer.GetData());
+		combinedBuffer.AppendData(downBuffer.GetData());
+		combinedBuffer.AppendData(frontBuffer.GetData());
+		combinedBuffer.AppendData(backBuffer.GetData());
 
 		m_TextureDescription.ImageType = ImageType::Cubemap;
-		m_TextureDescription.Width = zPosFace->GetWidth();
-		m_TextureDescription.Height = zPosFace->GetHeight();
-		m_TextureDescription.Channels = zPosFace->GetChannels();
+		m_TextureDescription.Width = resolution;
+		m_TextureDescription.Height = resolution;
+		m_TextureDescription.Channels = channels;
 		m_TextureDescription.ArrayDepth = 6;
 
 		m_PixelBufferGUID = AssetManager::CreateBinaryAsset(combinedBuffer);

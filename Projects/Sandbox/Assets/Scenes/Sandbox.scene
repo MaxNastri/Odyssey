@@ -1,7 +1,7 @@
 Scene: Scene_01
 GUID: 6049963977740777600
-Skybox: 10307629578746515932
-Ambient Color: 'x: 0.078431375 y: 0.078431375 z: 0.078431375'
+Skybox: 16662637833593679810
+Ambient Color: 'x: 0.1886121 y: 0.097326525 z: 0.097326525'
 GameObjects:
   - Name: Sun
     GUID: 1496534082370822112
@@ -13,7 +13,7 @@ GameObjects:
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.Light
         Light Type: 1
-        Color: 'x: 0.07233951 y: 0.13512945 z: 0.24199289'
+        Color: 'x: 0.68327403 y: 0.33798966 z: 0.33798966'
         Intensity: 1
         Range: 1
   - Name: Monk FBX

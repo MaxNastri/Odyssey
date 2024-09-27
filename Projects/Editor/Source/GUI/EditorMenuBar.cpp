@@ -7,7 +7,6 @@
 #include "EventSystem.h"
 #include "EditorEvents.h"
 #include "Renderer.h"
-#include "CubemapCreationWindow.h"
 #include "SceneSettingsWindow.h"
 
 namespace Odyssey
@@ -50,14 +49,6 @@ namespace Odyssey
 					SceneManager::SaveActiveScene(scenePath);
 				}
 			}
-
-			ImGui::EndMenu();
-		}
-
-		if (ImGui::BeginMenu("Assets"))
-		{
-			if (ImGui::MenuItem("Cubemap"))
-				GUIManager::CreateDockableWindow<CubemapCreationWindow>();
 
 			ImGui::EndMenu();
 		}

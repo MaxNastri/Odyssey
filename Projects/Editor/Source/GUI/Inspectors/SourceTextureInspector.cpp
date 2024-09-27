@@ -4,6 +4,7 @@
 #include "AssetManager.h"
 #include "Project.h"
 #include "Texture2D.h"
+#include "Cubemap.h"
 
 namespace Odyssey
 {
@@ -26,6 +27,10 @@ namespace Odyssey
 		if (ImGui::Button("Create Texture2D"))
 		{
 			AssetManager::CreateAsset<Texture2D>(Project::GetActiveAssetsDirectory() / m_AssetPath, m_Texture);
+		}
+		if (ImGui::Button("Create Cubemap"))
+		{
+			AssetManager::CreateAsset<Cubemap>(Project::GetActiveAssetsDirectory() / m_AssetPath, m_Texture);
 		}
 	}
 }

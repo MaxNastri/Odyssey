@@ -6,12 +6,14 @@
 
 namespace Odyssey
 {
+	class SourceTexture;
+
 	class Cubemap : public Asset
 	{
 		CLASS_DECLARATION(Odyssey, Cubemap)
 	public:
 		Cubemap(const Path& assetPath);
-		Cubemap(const Path& assetPath, TextureImportSettings& settings);
+		Cubemap(const Path& assetPath, std::shared_ptr<SourceTexture> source);
 
 	public:
 		void Save();
