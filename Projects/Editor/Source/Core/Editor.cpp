@@ -12,6 +12,7 @@
 #include "Renderer.h"
 #include "DebugRenderer.h"
 #include "SceneSettingsWindow.h"
+#include "AssetRegistry.hpp"
 
 namespace Odyssey
 {

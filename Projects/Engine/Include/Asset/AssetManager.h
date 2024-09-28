@@ -4,7 +4,7 @@
 #include "AssetDatabase.h"
 #include "BinaryCache.h"
 #include "GUID.h"
-#include "TextureImportSettings.h"
+#include "AssetRegistry.hpp"
 
 namespace Odyssey
 {
@@ -27,6 +27,7 @@ namespace Odyssey
 	{
 	public:
 		static void CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory);
+		static void AddRegistry(AssetRegistry& registry);
 
 	public:
 		template<typename T, typename... Args>
@@ -53,15 +54,15 @@ namespace Odyssey
 		static std::shared_ptr<T> LoadSourceAsset(GUID guid)
 		{
 			// Check if this asset has already been loaded
-			if (s_LoadedSourceAssets.contains(guid))
+			if (s_LoadedAssets.contains(guid))
 				return s_SourceAssets.Get<T>(guid);
 
 			// Load the source asset
-			Path sourcePath = s_SourceAssetDatabase->GUIDToAssetPath(guid);
+			Path sourcePath = s_AssetDatabase->GUIDToAssetPath(guid);
 			std::shared_ptr<T> sourceAsset = s_SourceAssets.Add<T>(guid, sourcePath);
 
 			// Track the source asset as loaded
-			s_LoadedSourceAssets.emplace(guid);
+			s_LoadedAssets.emplace(guid);
 
 			return sourceAsset;
 		}
@@ -110,19 +111,10 @@ namespace Odyssey
 		inline static Path s_AssetsDirectory;
 		inline static std::unique_ptr<AssetDatabase> s_AssetDatabase;
 		inline static AssetList s_Assets;
-		inline static std::set<GUID> s_LoadedAssets;
-
-	private: // Source Assets
-		inline static std::unique_ptr<AssetDatabase> s_SourceAssetDatabase;
 		inline static SourceAssetList s_SourceAssets;
-		inline static std::set<GUID> s_LoadedSourceAssets;
+		inline static std::set<GUID> s_LoadedAssets;
 
 	private: // Binary Assets
 		inline static std::unique_ptr<BinaryCache> s_BinaryCache;
-
-	private: // Const
-		inline static std::string s_AssetExtension = ".asset";
-		inline static std::string s_MetaFileExtension = ".meta";
-
 	};
 }

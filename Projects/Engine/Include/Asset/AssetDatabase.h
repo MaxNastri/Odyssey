@@ -1,6 +1,7 @@
 #pragma once
 #include "GUID.h"
 #include "FileTracker.h"
+#include "AssetRegistry.hpp"
 
 namespace Odyssey
 {
@@ -17,18 +18,22 @@ namespace Odyssey
 	public:
 		AssetDatabase() = default;
 		AssetDatabase(SearchOptions& searchOptions);
+		AssetDatabase(SearchOptions& searchOptions, AssetRegistry& registry);
 
 	public:
 		void Scan();
+		AssetRegistry CreateRegistry();
+		void AddRegistry(AssetRegistry& registry);
 
 	private:
 		void ScanForAssets();
 		void ScanForSourceAssets();
 
 	public:
-		void AddAsset(GUID guid, const Path& path, const std::string& assetName, const std::string& assetType);
+		void AddAsset(GUID guid, const Path& path, const std::string& assetName, const std::string& assetType, bool sourceAsset);
 		bool Contains(GUID& guid);
 		bool Contains(const Path& path);
+		bool IsSourceAsset(const Path& path);
 
 	public:
 		Path GUIDToAssetPath(GUID guid);
@@ -47,6 +52,7 @@ namespace Odyssey
 			std::filesystem::path AssetPath;
 			std::string AssetName;
 			std::string AssetType;
+			bool IsSourceAsset = false;
 		};
 
 	protected:
@@ -64,15 +70,20 @@ namespace Odyssey
 		inline static std::string s_AssetExtension = ".asset";
 		inline static std::string s_MetaFileExtension = ".meta";
 
+		inline static std::set<std::string> s_AssetExtensions =
+		{
+			".asset", ".shader", ".mesh", ".scene", ".prefab",
+		};
+
 		inline static std::map<std::string, std::string> s_SourceAssetExtensionsToType =
 		{
-			{".glsl", "SourceShader"},
-			{".hlsl", "SourceShader"},
-			{".fbx", "SourceModel"},
-			{".gltf", "SourceModel"},
-			{".glb", "SourceModel"},
-			{".png", "SourceTexture"},
-			{".jpg", "SourceTexture"},
+			{".glsl", "Odyssey.SourceShader"},
+			{".hlsl", "Odyssey.SourceShader"},
+			{".fbx", "Odyssey.SourceModel"},
+			{".gltf", "Odyssey.SourceModel"},
+			{".glb", "Odyssey.SourceModel"},
+			{".png", "Odyssey.SourceTexture"},
+			{".jpg", "Odyssey.SourceTexture"},
 		};
 	};
 }

@@ -10,6 +10,7 @@
 #include "SourceTexture.h"
 #include "AnimationRig.h"
 #include "AnimationClip.h"
+#include "AssetRegistry.hpp"
 
 namespace Odyssey
 {
@@ -18,20 +19,13 @@ namespace Odyssey
 		s_AssetsDirectory = assetsDirectory;
 		s_BinaryCache = std::make_unique<BinaryCache>(cacheDirectory);
 
+		AssetRegistry assets(assetsDirectory / "AssetsRegistry.osettings");
+
 		// Scan for Assets
 		SearchOptions assetSearch;
 		assetSearch.Root = s_AssetsDirectory;
 		assetSearch.ExclusionPaths = { };
-		assetSearch.Extensions = { s_AssetExtension };
-		s_AssetDatabase = std::make_unique<AssetDatabase>(assetSearch);
-
-		// Scan for Source Assets
-		SearchOptions sourceSearch;
-		sourceSearch.Root = s_AssetsDirectory;
-		sourceSearch.ExclusionPaths = { };
-		sourceSearch.Extensions = { };
-		sourceSearch.SourceAssetsOnly = true;
-		s_SourceAssetDatabase = std::make_unique<AssetDatabase>(sourceSearch);
+		s_AssetDatabase = std::make_unique<AssetDatabase>(assetSearch, assets);
 	}
 
 	BinaryBuffer AssetManager::LoadBinaryAsset(GUID guid)
@@ -53,12 +47,7 @@ namespace Odyssey
 
 	std::vector<GUID> AssetManager::GetAssetsOfType(const std::string& assetType)
 	{
-		std::vector<GUID> assets = s_AssetDatabase->GetGUIDsOfAssetType(assetType);
-		
-		if (assets.empty())
-			assets = s_SourceAssetDatabase->GetGUIDsOfAssetType(assetType);
-		
-		return assets;
+		return s_AssetDatabase->GetGUIDsOfAssetType(assetType);
 	}
 
 	GUID AssetManager::PathToGUID(const Path& path)
@@ -66,10 +55,6 @@ namespace Odyssey
 		// Start with the asset database
 		if (s_AssetDatabase->Contains(path))
 			return s_AssetDatabase->AssetPathToGUID(path);
-
-		//  Maybe its in the source asset database
-		if (s_SourceAssetDatabase->Contains(path))
-			return s_SourceAssetDatabase->AssetPathToGUID(path);
 
 		return GUID::Empty();
 	}
@@ -80,10 +65,6 @@ namespace Odyssey
 		if (s_AssetDatabase->Contains(guid))
 			return s_AssetDatabase->GUIDToAssetName(guid);
 
-		//  Maybe its in the source asset database
-		if (s_SourceAssetDatabase->Contains(guid))
-			return s_SourceAssetDatabase->GUIDToAssetName(guid);
-
 		return std::string();
 	}
 
@@ -93,15 +74,11 @@ namespace Odyssey
 		if (s_AssetDatabase->Contains(guid))
 			return s_AssetDatabase->GUIDToAssetType(guid);
 
-		//  Maybe its in the source asset database
-		if (s_SourceAssetDatabase->Contains(guid))
-			return s_SourceAssetDatabase->GUIDToAssetType(guid);
-
 		return std::string();
 	}
 
 	bool AssetManager::IsSourceAsset(const Path& path)
 	{
-		return s_SourceAssetDatabase->Contains(path);
+		return s_AssetDatabase->IsSourceAsset(path);
 	}
 }
