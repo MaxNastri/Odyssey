@@ -110,9 +110,7 @@ namespace Odyssey
 		if (fileAction == FileActionType::Modified)
 		{
 			ParseShaderFile(m_SourcePath);
-
-			for (auto& callback : m_OnSourceModified)
-				callback();
+			OnSourceModified();
 		}
 	}
 }

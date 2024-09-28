@@ -18,6 +18,9 @@ namespace Odyssey
 		void DeserializeMetadata();
 
 	public:
+		void AddOnModifiedListener(std::function<void()> onSourceModified) { m_OnSourceModified.push_back(onSourceModified); }
+
+	public:
 		GUID GetGUID() { return Guid; }
 		const std::string& GetName() { return Name; }
 		const std::string& GetType() { return Type; }
@@ -35,11 +38,15 @@ namespace Odyssey
 		std::string Name;
 		std::string Type;
 
+	protected:
+		void OnSourceModified();
+
 	protected: // Serialized
 		std::string m_SourceAsset;
 		std::string m_SourceExtension;
 		Path m_SourcePath;
 		Path m_MetaFilePath;
+		std::vector<std::function<void()>> m_OnSourceModified;
 	};
 
 	class Asset

@@ -11,28 +11,26 @@ namespace Odyssey
 	Texture2D::Texture2D(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		Load();
+		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+		{
+			source->AddOnModifiedListener([this]() { OnSourceModified(); });
+			LoadFromSource(source);
+		}
 	}
 
 	Texture2D::Texture2D(const Path& assetPath, TextureFormat format)
 		: Asset(assetPath)
 	{
-		Load();
+		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+		{
+			source->AddOnModifiedListener([this]() { OnSourceModified(); });
+			LoadFromSource(source);
+		}
 	}
 
 	Texture2D::Texture2D(const Path& assetPath, std::shared_ptr<SourceTexture> source)
 		: Asset(assetPath)
 	{
-		// Copy in the texture settings
-		m_TextureDescription.Width = (uint32_t)source->GetWidth();
-		m_TextureDescription.Height = (uint32_t)source->GetHeight();
-		m_TextureDescription.Channels = (uint32_t)source->GetChannels();
-
-		// Create the pixel buffer and allocate a texture
-		BinaryBuffer& pixelBuffer = source->GetPixelBuffer();
-		m_PixelBufferGUID = AssetManager::CreateBinaryAsset(pixelBuffer);
-		m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, pixelBuffer);
-		
 		SetSourceAsset(source->GetGUID());
 	}
 
@@ -43,7 +41,24 @@ namespace Odyssey
 
 	void Texture2D::Load()
 	{
-		LoadFromDisk(m_AssetPath);
+		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+			LoadFromSource(source);
+		//LoadFromDisk(m_AssetPath);
+	}
+
+	void Texture2D::LoadFromSource(std::shared_ptr<SourceTexture> source)
+	{
+		// Copy in the texture settings
+		m_TextureDescription.Width = (uint32_t)source->GetWidth();
+		m_TextureDescription.Height = (uint32_t)source->GetHeight();
+		m_TextureDescription.Channels = (uint32_t)source->GetChannels();
+
+		// Destroy the existing texture
+		if (m_Texture)
+			ResourceManager::Destroy(m_Texture);
+
+		// Allocate a new texture using the source pixel buffer
+		m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, source->GetPixelBuffer());
 	}
 
 	void Texture2D::SaveToDisk(const Path& assetPath)
@@ -61,7 +76,7 @@ namespace Odyssey
 		serializer.WriteToDisk(assetPath);
 	}
 
-	void Texture2D::LoadFromDisk(const std::filesystem::path& assetPath)
+	void Texture2D::LoadFromDisk(const Path& assetPath)
 	{
 		AssetDeserializer deserializer(assetPath);
 		if (deserializer.IsValid())
@@ -78,5 +93,10 @@ namespace Odyssey
 			BinaryBuffer pixelBuffer = AssetManager::LoadBinaryAsset(m_PixelBufferGUID);
 			m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, pixelBuffer);
 		}
+	}
+	void Texture2D::OnSourceModified()
+	{
+		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+			LoadFromSource(source);
 	}
 }

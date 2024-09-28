@@ -1,5 +1,6 @@
 #pragma once
 #include "efsw.hpp"
+#include "ReadWriteLock.hpp"
 
 namespace Odyssey
 {
@@ -49,7 +50,7 @@ namespace Odyssey
 		TrackingOptions m_Options;
 		TrackingMode m_TrackingMode;
 		uint32_t m_ID = (uint32_t)(-1);
-
+		inline static ReadWriteLock m_Lock;
 		inline static std::vector<std::function<void()>> m_WaitingCallbacks;
 	};
 }

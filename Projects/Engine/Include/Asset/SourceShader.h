@@ -18,9 +18,6 @@ namespace Odyssey
 		bool Compile(ShaderType shaderType, BinaryBuffer& codeBuffer);
 
 	public:
-		void AddOnModifiedListener(std::function<void()> onSourceModified) { m_OnSourceModified.push_back(onSourceModified); }
-
-	public:
 		const std::string& GetShaderLanguage() { return m_ShaderLanguage; }
 		bool IsCompiled() { return m_Compiled; }
 		std::vector<ShaderType> GetShaderTypes();
@@ -35,7 +32,6 @@ namespace Odyssey
 		std::string m_VertexShaderCode;
 		std::string m_FragmentShaderCode;
 		std::map<ShaderType, std::string> m_ShaderCode;
-		std::vector<std::function<void()>> m_OnSourceModified;
 		std::unique_ptr<FileTracker> m_FileTracker;
 		bool m_Compiled = false;
 	};

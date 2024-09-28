@@ -73,9 +73,5 @@ Entries:
     GUID: 12861167884330528575
   - Name: Kachujin_diffuse
     Type: Odyssey.SourceTexture
-    Path: Models/Capoeira.fbm/Kachujin_diffuse.png
-    GUID: 17785645852077111092
-  - Name: Kachujin_diffuse
-    Type: Odyssey.SourceTexture
     Path: Textures/Kachujin_diffuse.png
-    GUID: 18344999990038789354
+    GUID: 17785645852077111092

@@ -22,10 +22,12 @@ namespace Odyssey
 
 	void FileTracker::Dispatch()
 	{
+		m_Lock.Lock(LockState::Write);
 		for (auto& callback : m_WaitingCallbacks)
 			callback();
 
 		m_WaitingCallbacks.clear();
+		m_Lock.Unlock(LockState::Write);
 	}
 
 	void FileTracker::handleFileAction(efsw::FileAction& fileAction)
@@ -39,7 +41,11 @@ namespace Odyssey
 					return;
 
 				if (m_Options.Callback)
+				{
+					m_Lock.Lock(LockState::Write);
 					m_WaitingCallbacks.push_back([this, fileAction]() { m_Options.Callback(fileAction.Filename, (FileActionType)fileAction.Action); });
+					m_Lock.Unlock(LockState::Write);
+				}	
 			}
 		}
 		else if (m_TrackingMode == TrackingMode::Directory)
@@ -73,7 +79,11 @@ namespace Odyssey
 					return;
 
 				if (m_Options.Callback)
+				{
+					m_Lock.Lock(LockState::Write);
 					m_WaitingCallbacks.push_back([this, fileAction]() { m_Options.Callback(fileAction.Filename, (FileActionType)fileAction.Action); });
+					m_Lock.Unlock(LockState::Write);
+				}
 			}
 		}
 	}

@@ -72,6 +72,12 @@ namespace Odyssey
 		Type = type;
 	}
 
+	void SourceAsset::OnSourceModified()
+	{
+		for (auto& callback : m_OnSourceModified)
+			callback();
+	}
+
 	Asset::Asset(const Path& assetPath)
 	{
 		m_AssetPath = assetPath;
