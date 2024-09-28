@@ -33,7 +33,12 @@ namespace Odyssey
 		// Load the default project
 		Project::LoadProject("C:/Git/Odyssey/Projects/Sandbox");
 
-		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveCacheDirectory());
+		std::vector<Path> registries = 
+		{
+			Project::GetActiveAssetRegistry(),
+			"Resources/AssetRegistry.osettings"
+		};
+		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveCacheDirectory(), registries);
 
 		// Create the renderer
 		RendererConfig config = { .EnableIMGUI = true };
@@ -42,12 +47,10 @@ namespace Odyssey
 
 		// Setup debug renderer
 		DebugRenderer::Settings debugSettings;
-		debugSettings.DebugShaderPath = "Resources/Shaders/Debug.asset";
 		debugSettings.MaxVertices = 128000;
 		DebugRenderer::Init(debugSettings);
 
 		GUIManager::Initialize();
-
 
 		// Build the user assembly
 		ScriptCompiler::Settings settings;

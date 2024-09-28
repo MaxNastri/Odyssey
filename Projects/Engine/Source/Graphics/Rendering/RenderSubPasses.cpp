@@ -10,6 +10,7 @@
 #include "VulkanGraphicsPipeline.h"
 #include "Mesh.h"
 #include "VulkanUniformBuffer.h"
+#include "AssetManager.h"
 
 namespace Odyssey
 {
@@ -62,8 +63,10 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
 		descriptorLayout->Apply();
 
+		m_Shader = AssetManager::LoadAsset<Shader>(s_DebugShaderGUID);
+
 		VulkanPipelineInfo info;
-		info.Shaders = DebugRenderer::GetShader()->GetResourceMap();
+		info.Shaders = m_Shader->GetResourceMap();
 		info.DescriptorLayout = m_DescriptorLayout;
 		info.Triangles = false;
 
@@ -101,7 +104,7 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Skybox", DescriptorType::Sampler, ShaderStage::Fragment, 3);
 		descriptorLayout->Apply();
 
-		m_Shader = std::make_shared<Shader>(SkyboxShaderPath);
+		m_Shader = AssetManager::LoadAsset<Shader>(s_SkyboxShaderGUID);
 
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();

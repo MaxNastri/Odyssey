@@ -6,47 +6,50 @@ namespace Odyssey
 	{
 	public:
 		ProjectSettings() = default;
-		ProjectSettings(const std::string& projectName, const std::filesystem::path& projectDirectory);
-		ProjectSettings(const std::filesystem::path& settingsPath);
+		ProjectSettings(const std::string& projectName, const Path& projectDirectory);
+		ProjectSettings(const Path& settingsPath);
 
 	public:
 		void Save();
 		void Load();
 
 	public:
-		const std::filesystem::path& GetPath() { return m_Path; }
-		const std::filesystem::path& GetProjectDirectory() { return m_ProjectDirectory; }
+		const Path& GetPath() { return m_Path; }
+		const Path& GetProjectDirectory() { return m_ProjectDirectory; }
 
 	public:
-		const std::filesystem::path& GetAssetsDirectory() { return m_FullAssetsDirectory; }
-		const std::filesystem::path& GetCacheDirectory() { return m_FullCacheDirectory; }
-		const std::filesystem::path& GetTempDirectory() { return m_FullTempDirectory; }
-		const std::filesystem::path& GetLogsDirectory() { return m_FullLogsDirectory; }
-		const std::filesystem::path& GetScriptsDirectory() { return m_FullScriptsDirectory; }
-		const std::filesystem::path& GetCodeDirectory() { return m_FullCodeDirectory; }
-		const std::filesystem::path& GetScriptsProjectPath() { return m_FullScriptsProjectPath; }
+		const Path& GetAssetsDirectory() { return m_FullAssetsDirectory; }
+		const Path& GetCacheDirectory() { return m_FullCacheDirectory; }
+		const Path& GetTempDirectory() { return m_FullTempDirectory; }
+		const Path& GetLogsDirectory() { return m_FullLogsDirectory; }
+		const Path& GetScriptsDirectory() { return m_FullScriptsDirectory; }
+		const Path& GetCodeDirectory() { return m_FullCodeDirectory; }
+		const Path& GetScriptsProjectPath() { return m_FullScriptsProjectPath; }
+		const Path& GetAssetRegistryPath() { return m_FullAssetRegistryPath; }
 
 	private: // Serialized
 		std::string m_ProjectName;
-		std::filesystem::path m_AssetsDirectory;
-		std::filesystem::path m_CacheDirectory;
-		std::filesystem::path m_TempDirectory;
-		std::filesystem::path m_LogsDirectory;
-		std::filesystem::path m_ScriptsDirectory;
-		std::filesystem::path m_CodeDirectory;
-		std::filesystem::path m_ScriptsProjectPath;
+		Path m_AssetsDirectory;
+		Path m_CacheDirectory;
+		Path m_TempDirectory;
+		Path m_LogsDirectory;
+		Path m_ScriptsDirectory;
+		Path m_CodeDirectory;
+		Path m_ScriptsProjectPath;
+		Path m_AssetRegistryPath;
 
 	private: // Generated
-		std::filesystem::path m_FullAssetsDirectory;
-		std::filesystem::path m_FullCacheDirectory;
-		std::filesystem::path m_FullTempDirectory;
-		std::filesystem::path m_FullLogsDirectory;
-		std::filesystem::path m_FullScriptsDirectory;
-		std::filesystem::path m_FullCodeDirectory;
-		std::filesystem::path m_FullScriptsProjectPath;
+		Path m_FullAssetsDirectory;
+		Path m_FullCacheDirectory;
+		Path m_FullTempDirectory;
+		Path m_FullLogsDirectory;
+		Path m_FullScriptsDirectory;
+		Path m_FullCodeDirectory;
+		Path m_FullScriptsProjectPath;
+		Path m_FullAssetRegistryPath;
 
 	private:
-		std::filesystem::path m_Path;
-		std::filesystem::path m_ProjectDirectory;
+		Path m_Path;
+		Path m_ProjectDirectory;
 	};
 }

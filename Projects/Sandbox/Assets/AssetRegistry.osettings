@@ -19,10 +19,6 @@ Entries:
     Type: Odyssey.AnimationClip
     Path: 'Animation/Monk-GLTF-Clip.asset'
     GUID: 3096668997398545466
-  - Name: Default
-    Type: Odyssey.Shader
-    Path: Shaders/Debug.asset
-    GUID: 3857300505190494605
   - Name: Monk GLTF Mesh
     Type: Odyssey.Mesh
     Path: 'Meshes/Monk-GLTF-Mesh.asset'
@@ -35,10 +31,6 @@ Entries:
     Type: Odyssey.AnimationRig
     Path: 'Animation/Monk-FBX-Rig.asset'
     GUID: 11519690897429141827
-  - Name: Skybox
-    Type: Odyssey.Shader
-    Path: Shaders/Skybox.asset
-    GUID: 12373133592092994291
   - Name: Monk GLTF Rig
     Type: Odyssey.AnimationRig
     Path: 'Animation/Monk-GLTF-Rig.asset'
@@ -75,18 +67,10 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: Models/Capoeira.fbm/Kachujin_normal.png
     GUID: 9561603051015759961
-  - Name: Skybox
-    Type: Odyssey.SourceShader
-    Path: Shaders/Source/Skybox.hlsl
-    GUID: 9603282697325208513
   - Name: Capoeira
     Type: Odyssey.SourceModel
     Path: Models/Capoeira.fbx
     GUID: 12861167884330528575
-  - Name: Debug
-    Type: Odyssey.SourceShader
-    Path: Shaders/Source/Debug.hlsl
-    GUID: 14856991710712284328
   - Name: Kachujin_diffuse
     Type: Odyssey.SourceTexture
     Path: Models/Capoeira.fbm/Kachujin_diffuse.png

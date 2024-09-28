@@ -20,7 +20,7 @@ namespace Odyssey
 		Scan();
 	}
 
-	AssetDatabase::AssetDatabase(SearchOptions& searchOptions, AssetRegistry& registry)
+	AssetDatabase::AssetDatabase(SearchOptions& searchOptions, const std::vector<AssetRegistry>& registries)
 	{
 		m_SearchOptions = searchOptions;
 
@@ -32,7 +32,10 @@ namespace Odyssey
 		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileAction(path, fileAction); };
 		m_FileTracker = std::make_unique<FileTracker>(options);
 
-		AddRegistry(registry);
+		for (const AssetRegistry& registry : registries)
+		{
+			AddRegistry(registry);
+		}
 		Scan();
 	}
 
@@ -55,12 +58,12 @@ namespace Odyssey
 		return registry;
 	}
 
-	void AssetDatabase::AddRegistry(AssetRegistry& registry)
+	void AssetDatabase::AddRegistry(const AssetRegistry& registry)
 	{
 		for (auto& entry : registry.Entries)
 		{
 			bool sourceAsset = !s_AssetExtensions.contains(entry.Path.extension().string());
-			AddAsset(entry.Guid, m_SearchOptions.Root / entry.Path, entry.Path.filename().replace_extension().string(), entry.Type, sourceAsset);
+			AddAsset(entry.Guid, registry.RootDirectory / entry.Path, entry.Path.filename().replace_extension().string(), entry.Type, sourceAsset);
 		}
 	}
 

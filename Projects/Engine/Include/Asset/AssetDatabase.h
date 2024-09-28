@@ -18,12 +18,12 @@ namespace Odyssey
 	public:
 		AssetDatabase() = default;
 		AssetDatabase(SearchOptions& searchOptions);
-		AssetDatabase(SearchOptions& searchOptions, AssetRegistry& registry);
+		AssetDatabase(SearchOptions& searchOptions, const std::vector<AssetRegistry>& registries);
 
 	public:
 		void Scan();
 		AssetRegistry CreateRegistry();
-		void AddRegistry(AssetRegistry& registry);
+		void AddRegistry(const AssetRegistry& registry);
 
 	private:
 		void ScanForAssets();

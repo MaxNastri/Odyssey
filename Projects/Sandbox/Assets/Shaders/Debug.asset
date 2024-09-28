@@ -1,9 +1,0 @@
-m_SourceAsset: 14856991710712284328
-m_GUID: 3857300505190494605
-m_Name: Debug
-m_Type: Odyssey.Shader
-m_Shaders:
-  - ShaderType: 1
-    ShaderCode: 2554357060424548023
-  - ShaderType: 2
-    ShaderCode: 9585690132874687678

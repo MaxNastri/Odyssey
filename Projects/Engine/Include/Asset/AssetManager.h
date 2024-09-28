@@ -26,8 +26,7 @@ namespace Odyssey
 	class AssetManager
 	{
 	public:
-		static void CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory);
-		static void AddRegistry(AssetRegistry& registry);
+		static void CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory, std::vector<Path>& assetRegistries);
 
 	public:
 		template<typename T, typename... Args>

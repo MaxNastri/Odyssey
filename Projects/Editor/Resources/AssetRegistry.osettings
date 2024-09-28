@@ -1,0 +1,17 @@
+Entries:
+  - Name: Skybox
+    Type: Odyssey.Shader
+    Path: Shaders/Skybox.asset
+    GUID: 12373133592092994291
+  - Name: Debug
+    Type: Odyssey.Shader
+    Path: Shaders/Debug.asset
+    GUID: 3857300505190494605
+  - Name: Skybox
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Skybox.hlsl
+    GUID: 9603282697325208513
+  - Name: Debug
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Debug.hlsl
+    GUID: 14856991710712284328

@@ -38,9 +38,13 @@ namespace Odyssey
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
 
 	private:
+		std::shared_ptr<Shader> m_Shader;
 		ResourceID m_GraphicsPipeline;
 		std::shared_ptr<VulkanPushDescriptors> m_PushDescriptors;
 		ResourceID m_DescriptorLayout;
+
+	private:
+		inline static const GUID& s_DebugShaderGUID = 3857300505190494605;
 	};
 
 	class SkyboxSubPass : public RenderSubPass
@@ -56,7 +60,7 @@ namespace Odyssey
 		ResourceID uboID;
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<Mesh> m_CubeMesh;
-		inline static std::string SkyboxShaderPath = "Resources/Shaders/Skybox.asset";
+		inline static const GUID& s_SkyboxShaderGUID = 12373133592092994291;
 		inline static std::string CubeMeshPath = "Resources/Meshes/Cube.asset";
 	};
 }
