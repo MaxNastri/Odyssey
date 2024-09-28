@@ -52,8 +52,10 @@ VertexOutput main(VertexInput input)
     
     SkinningOutput skinning = SkinVertex(input);
     float4 worldPosition = mul(Model, skinning.Position);
+    float4 normal = float4(normalize(skinning.Normal.xyz), 0.0f);
+    
     output.Position = mul(ViewProjection, worldPosition);
-    output.Normal = normalize(mul(Model, skinning.Normal).xyz);
+    output.Normal = mul(Model, normal).xyz;
     output.Tangent = input.Tangent;
     output.Color = input.Color;
     output.TexCoord0 = input.TexCoord0;

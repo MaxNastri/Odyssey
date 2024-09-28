@@ -35,6 +35,9 @@ namespace Odyssey
 
 		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
 			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
+
+		m_GUISelectionListener = EventSystem::Listen< GUISelectionChangedEvent>
+			([this](GUISelectionChangedEvent* event) { OnGUISelectionChanged(event); });
 	}
 
 	void SceneViewWindow::Destroy()
@@ -95,9 +98,9 @@ namespace Odyssey
 	void SceneViewWindow::OnSceneLoaded(SceneLoadedEvent* event)
 	{
 		// Create a new game object and mark it as hidden
-		if (Scene* activeScene = event->loadedScene)
+		if (m_ActiveScene = event->loadedScene)
 		{
-			m_GameObject = activeScene->CreateGameObject();
+			m_GameObject = m_ActiveScene->CreateGameObject();
 			m_GameObject.AddComponent<Transform>();
 
 			// Add a transform and camera
@@ -116,6 +119,11 @@ namespace Odyssey
 
 			m_SceneViewPass->SetCamera(&camera);
 		}
+	}
+
+	void SceneViewWindow::OnGUISelectionChanged(GUISelectionChangedEvent* event)
+	{
+		m_SelectedGO = m_ActiveScene->GetGameObject(event->Selection.GUID);
 	}
 
 	void SceneViewWindow::CreateRenderTexture()
@@ -146,16 +154,17 @@ namespace Odyssey
 	}
 
 	void SceneViewWindow::RenderGizmos()
-	{/*
-		if (m_SelectedObject)
+	{
+		if (m_SelectedGO)
 		{
-			if (Transform* transform = m_SelectedObject->GetComponent<Transform>())
+			if (Transform* transform = m_SelectedGO.TryGetComponent<Transform>())
 			{
+				Camera& camera = m_GameObject.GetComponent<Camera>();
 				ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 
 				glm::mat4 worldMatrix = transform->GetWorldMatrix();
-				glm::mat4 view = m_Camera->GetInverseView();
-				glm::mat4 proj = m_Camera->GetProjection();
+				glm::mat4 view = camera.GetInverseView();
+				glm::mat4 proj = camera.GetProjection();
 				proj[1][1] *= -1.0f;
 
 				ImGuizmo::AllowAxisFlip(false);
@@ -179,7 +188,7 @@ namespace Odyssey
 						transform->SetScale(scale);
 				}
 			}
-		}*/
+		}
 	}
 
 	void SceneViewWindow::UpdateCameraController()
