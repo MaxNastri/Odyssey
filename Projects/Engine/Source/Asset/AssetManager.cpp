@@ -14,10 +14,9 @@
 
 namespace Odyssey
 {
-	void AssetManager::CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory, const Path& projectRegistryPath, std::vector<Path>& additionalRegistries)
+	void AssetManager::CreateDatabase(const Path& assetsDirectory, const Path& projectRegistryPath, std::vector<Path>& additionalRegistries)
 	{
 		s_AssetsDirectory = assetsDirectory;
-		s_BinaryCache = std::make_unique<BinaryCache>(cacheDirectory);
 
 		std::vector<AssetRegistry> registries;
 		AssetRegistry projectRegistry(projectRegistryPath);
@@ -33,23 +32,6 @@ namespace Odyssey
 		assetSearch.ExclusionPaths = { };
 
 		s_AssetDatabase = std::make_unique<AssetDatabase>(assetSearch, projectRegistry, registries);
-	}
-
-	BinaryBuffer AssetManager::LoadBinaryAsset(GUID guid)
-	{
-		return s_BinaryCache->LoadBinaryData(guid);
-	}
-
-	void AssetManager::WriteBinaryAsset(GUID guid, BinaryBuffer& buffer)
-	{
-		s_BinaryCache->SaveBinaryData(guid, buffer);
-	}
-
-	GUID AssetManager::CreateBinaryAsset(BinaryBuffer& buffer)
-	{
-		GUID guid = GUID::New();
-		s_BinaryCache->SaveBinaryData(guid, buffer);
-		return guid;
 	}
 
 	std::vector<GUID> AssetManager::GetAssetsOfType(const std::string& assetType)

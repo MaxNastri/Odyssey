@@ -32,7 +32,7 @@ namespace Odyssey
 			auto& shaderData = m_Shaders[shaderType];
 			if (source->Compile(shaderType, shaderData.CodeBuffer))
 			{
-				shaderData.CodeGUID = AssetManager::CreateBinaryAsset(shaderData.CodeBuffer);
+				//shaderData.CodeGUID = AssetManager::CreateBinaryAsset(shaderData.CodeBuffer);
 				shaderData.ShaderModule = ResourceManager::Allocate<VulkanShaderModule>(shaderType, shaderData.CodeBuffer);
 			}
 		}
@@ -54,7 +54,6 @@ namespace Odyssey
 				if (source->Compile(shaderType, tempBuffer))
 				{
 					shaderData.CodeBuffer = tempBuffer;
-					AssetManager::WriteBinaryAsset(shaderData.CodeGUID, shaderData.CodeBuffer);
 
 					if (shaderData.ShaderModule)
 						ResourceManager::Destroy(shaderData.ShaderModule);

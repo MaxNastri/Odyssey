@@ -28,7 +28,6 @@ namespace Odyssey
 	private:
 		void LoadFromSource(std::shared_ptr<SourceTexture> source);
 		void SaveToDisk(const Path& assetPath);
-		void LoadFromDisk(const Path& assetPath);
 
 	private:
 		void OnSourceModified();

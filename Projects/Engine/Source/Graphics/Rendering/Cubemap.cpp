@@ -10,14 +10,35 @@ namespace Odyssey
 	Cubemap::Cubemap(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		Load();
+		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+		{
+			source->AddOnModifiedListener([this]() { OnSourceModified(); });
+			LoadFromSource(source);
+		}
 	}
 
 	Cubemap::Cubemap(const Path& assetPath, std::shared_ptr<SourceTexture> source)
 		: Asset(assetPath)
 	{
-		SetSourceAsset(source->GetGUID());
+		source->AddOnModifiedListener([this]() { OnSourceModified(); });
 
+		SetSourceAsset(source->GetGUID());
+		LoadFromSource(source);
+	}
+
+	void Cubemap::Save()
+	{
+		SaveToDisk(m_AssetPath);
+	}
+
+	void Cubemap::Load()
+	{
+		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+			LoadFromSource(source);
+	}
+
+	void Cubemap::LoadFromSource(std::shared_ptr<SourceTexture> source)
+	{
 		// Convert the source texture into 6 faces
 		HdriToCubemap<unsigned char> hdriToCube_ldr(source->GetPath().string(), 1024, true);
 
@@ -46,18 +67,7 @@ namespace Odyssey
 		m_TextureDescription.Channels = channels;
 		m_TextureDescription.ArrayDepth = 6;
 
-		m_PixelBufferGUID = AssetManager::CreateBinaryAsset(combinedBuffer);
 		m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, combinedBuffer);
-	}
-
-	void Cubemap::Save()
-	{
-		SaveToDisk(m_AssetPath);
-	}
-
-	void Cubemap::Load()
-	{
-		LoadFromDisk(m_AssetPath);
 	}
 
 	void Cubemap::SaveToDisk(const Path& assetPath)
@@ -80,24 +90,30 @@ namespace Odyssey
 
 	void Cubemap::LoadFromDisk(const Path& assetPath)
 	{
-		AssetDeserializer deserializer(assetPath);
-		if (deserializer.IsValid())
-		{
-			SerializationNode root = deserializer.GetRoot();
+		//AssetDeserializer deserializer(assetPath);
+		//if (deserializer.IsValid())
+		//{
+		//	SerializationNode root = deserializer.GetRoot();
+		//
+		//	uint32_t imageType = 0;
+		//	root.ReadData("Image Type", imageType);
+		//	root.ReadData("Width", m_TextureDescription.Width);
+		//	root.ReadData("Height", m_TextureDescription.Height);
+		//	root.ReadData("Array Depth", m_TextureDescription.ArrayDepth);
+		//	root.ReadData("Channels", m_TextureDescription.Channels);
+		//	root.ReadData("m_PixelBufferGUID", m_PixelBufferGUID.Ref());
+		//
+		//	m_TextureDescription.ImageType = (ImageType)imageType;
+		//	m_TextureDescription.Format = TextureFormat::R8G8B8A8_UNORM;
+		//
+		//	BinaryBuffer pixelBuffer = AssetManager::LoadBinaryAsset(m_PixelBufferGUID);
+		//	m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, pixelBuffer);
+		//}
+	}
 
-			uint32_t imageType = 0;
-			root.ReadData("Image Type", imageType);
-			root.ReadData("Width", m_TextureDescription.Width);
-			root.ReadData("Height", m_TextureDescription.Height);
-			root.ReadData("Array Depth", m_TextureDescription.ArrayDepth);
-			root.ReadData("Channels", m_TextureDescription.Channels);
-			root.ReadData("m_PixelBufferGUID", m_PixelBufferGUID.Ref());
-
-			m_TextureDescription.ImageType = (ImageType)imageType;
-			m_TextureDescription.Format = TextureFormat::R8G8B8A8_UNORM;
-
-			BinaryBuffer pixelBuffer = AssetManager::LoadBinaryAsset(m_PixelBufferGUID);
-			m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, pixelBuffer);
-		}
+	void Cubemap::OnSourceModified()
+	{
+		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+			LoadFromSource(source);
 	}
 }

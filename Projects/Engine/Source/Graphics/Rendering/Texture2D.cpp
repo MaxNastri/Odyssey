@@ -76,25 +76,6 @@ namespace Odyssey
 		serializer.WriteToDisk(assetPath);
 	}
 
-	void Texture2D::LoadFromDisk(const Path& assetPath)
-	{
-		AssetDeserializer deserializer(assetPath);
-		if (deserializer.IsValid())
-		{
-			SerializationNode root = deserializer.GetRoot();
-
-			root.ReadData("m_Width", m_TextureDescription.Width);
-			root.ReadData("m_Height", m_TextureDescription.Height);
-			root.ReadData("m_PixelBufferGUID", m_PixelBufferGUID.Ref());
-
-			m_TextureDescription.Channels = 4;
-			m_TextureDescription.Format = TextureFormat::R8G8B8A8_UNORM;
-
-			BinaryBuffer pixelBuffer = AssetManager::LoadBinaryAsset(m_PixelBufferGUID);
-			m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, pixelBuffer);
-		}
-	}
-
 	void Texture2D::OnSourceModified()
 	{
 		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))

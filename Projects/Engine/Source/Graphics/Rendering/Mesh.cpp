@@ -63,32 +63,6 @@ namespace Odyssey
 		serializer.WriteToDisk(path);
 	}
 
-	void Mesh::LoadFromDisk(const Path& assetPath)
-	{
-		AssetDeserializer deserializer(assetPath);
-		if (deserializer.IsValid())
-		{
-			SerializationNode root = deserializer.GetRoot();
-
-			root.ReadData("m_VertexCount", m_VertexCount);
-			root.ReadData("m_VertexData", m_VerticesGUID.Ref());
-			root.ReadData("m_IndexCount", m_IndexCount);
-			root.ReadData("m_IndexData", m_IndicesGUID.Ref());
-
-			// Convert the vertex/index data from hex into real values
-			if (m_VertexCount > 0 && m_VerticesGUID != 0)
-			{
-				BinaryBuffer buffer = AssetManager::LoadBinaryAsset(m_VerticesGUID);
-				m_Vertices = buffer.Convert<Vertex>();
-			}
-			if (m_IndexCount > 0 && m_IndicesGUID != 0)
-			{
-				BinaryBuffer buffer = AssetManager::LoadBinaryAsset(m_IndicesGUID);
-				m_Indices = buffer.Convert<uint32_t>();
-			}
-		}
-	}
-
 	void Mesh::SetVertices(std::vector<Vertex>& vertices)
 	{
 		m_Vertices = vertices;

@@ -23,8 +23,12 @@ namespace Odyssey
 		ResourceID GetTexture() { return m_Texture; }
 
 	private:
+		void LoadFromSource(std::shared_ptr<SourceTexture> source);
 		void SaveToDisk(const Path& assetPath);
 		void LoadFromDisk(const Path& assetPath);
+
+	private:
+		void OnSourceModified();
 
 	private:
 		GUID m_PixelBufferGUID;

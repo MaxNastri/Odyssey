@@ -24,7 +24,6 @@ namespace Odyssey
 	private:
 		void LoadFromSource(std::shared_ptr<SourceModel> source);
 		void SaveToDisk(const Path& assetPath);
-		void LoadFromDisk(const Path& assetPath);
 
 	public:
 		ResourceID GetVertexBuffer() { return m_VertexBuffer; }

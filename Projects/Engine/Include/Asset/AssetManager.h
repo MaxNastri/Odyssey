@@ -26,7 +26,7 @@ namespace Odyssey
 	class AssetManager
 	{
 	public:
-		static void CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory, const Path& projectRegistryPath, std::vector<Path>& additionalRegistries);
+		static void CreateDatabase(const Path& assetsDirectory, const Path& projectRegistryPath, std::vector<Path>& additionalRegistries);
 
 	public:
 		template<typename T, typename... Args>
@@ -97,11 +97,6 @@ namespace Odyssey
 		}
 
 	public:
-		static GUID CreateBinaryAsset(BinaryBuffer& buffer);
-		static BinaryBuffer LoadBinaryAsset(GUID guid);
-		static void WriteBinaryAsset(GUID guid, BinaryBuffer& buffer);
-
-	public:
 		static std::vector<GUID> GetAssetsOfType(const std::string& assetType);
 
 	public:
@@ -118,8 +113,5 @@ namespace Odyssey
 		inline static AssetList s_Assets;
 		inline static SourceAssetList s_SourceAssets;
 		inline static std::set<GUID> s_LoadedAssets;
-
-	private: // Binary Assets
-		inline static std::unique_ptr<BinaryCache> s_BinaryCache;
 	};
 }
