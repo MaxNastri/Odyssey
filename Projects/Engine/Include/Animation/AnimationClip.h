@@ -24,8 +24,11 @@ namespace Odyssey
 		size_t GetFrameCount();
 
 	private:
+		void LoadFromSource(std::shared_ptr<SourceModel> source);
 		void SaveToDisk(const Path& assetPath);
-		void LoadFromDisk(const Path& assetPath);
+
+	private:
+		void OnSourceModified();
 
 	private:
 		std::string m_Name;

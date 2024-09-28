@@ -20,9 +20,12 @@ namespace Odyssey
 	public:
 		BoneKeyframe() = default;
 	public:
-		void AddPositionKey(double time, glm::vec3 value) { m_PositionKeys.push_back({ time, value }); }
-		void AddRotationKey(double time, glm::quat value) { m_RotationKeys.push_back({ time, value }); }
-		void AddScaleKey(double time, glm::vec3 value) { m_ScaleKeys.push_back({ time, value }); }
+		void AddPositionKey(double time, glm::vec3 value);
+		void AddRotationKey(double time, glm::quat value);
+		void AddScaleKey(double time, glm::vec3 value);
+		bool HasPositionKey(double time);
+		bool HasRotationKey(double time);
+		bool HasScaleKey(double time);
 		void SetBoneName(std::string_view boneName) { m_Name = boneName; }
 
 	public:
@@ -32,6 +35,8 @@ namespace Odyssey
 		const double GetFrameTime(size_t frameIndex) { return m_PositionKeys[frameIndex].Time; }
 
 		std::string_view GetName() { return m_Name; }
+
+		void SortKeys();
 
 	public:
 		glm::mat4 GetKey(double time, bool loop, double duration)

@@ -123,7 +123,8 @@ namespace Odyssey
 
 	void SceneViewWindow::OnGUISelectionChanged(GUISelectionChangedEvent* event)
 	{
-		m_SelectedGO = m_ActiveScene->GetGameObject(event->Selection.GUID);
+		if (event->Selection.Type == GameObject::Type)
+			m_SelectedGO = m_ActiveScene->GetGameObject(event->Selection.GUID);
 	}
 
 	void SceneViewWindow::CreateRenderTexture()

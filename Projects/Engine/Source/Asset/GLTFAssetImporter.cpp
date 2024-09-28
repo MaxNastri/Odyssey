@@ -1,6 +1,9 @@
 #include "GLTFAssetImporter.h"
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#define TINYGLTF_NO_STB_IMAGE
+#define TINYGLTF_NO_EXTERNAL_IMAGE
+#define TINYGLTF_USE_CPP14
 #include "tiny_gltf.h"
 #include "Logger.h"
 #include "Vertex.h"
@@ -31,6 +34,12 @@ namespace Odyssey
 		std::string warning;
 
 		bool status = false;
+
+		// Note: We set a custom (empty) function as the image loader to save performance
+		// We handle image loading ourselves outside of gltf importing
+		LoadImageDataFunction func = [this](
+			Image*, const int, std::string*, std::string*, int, int, const unsigned char*, int, void*) { return true; };
+		context.SetImageLoader(func, nullptr);
 
 		if (extension == ".glb")
 			status = context.LoadBinaryFromFile(&model, &error, &warning, filePath.string());
@@ -318,7 +327,7 @@ namespace Odyssey
 						{
 							vertex.Position.z = -vertex.Position.z;
 							vertex.Normal.z = -vertex.Normal.z;
-							vertex.TexCoord0.y = 1.0f - vertex.TexCoord0.y;
+							//vertex.TexCoord0.y = 1.0f - vertex.TexCoord0.y;
 						}
 
 						if (indicesData.IsValid())
@@ -550,6 +559,8 @@ namespace Odyssey
 	};
 	void GLTFAssetImporter::LoadAnimationData(const Model* model)
 	{
+		m_AnimationData.FramesPerSecond = 30;
+
 		for (const Animation& anim : model->animations)
 		{
 			std::string name = anim.name;
@@ -724,6 +735,63 @@ namespace Odyssey
 						else if (channel.IsScale)
 						{
 							boneKeyframe.AddScaleKey(sampler.inputs[i], sampler.outputsVec4[i]);
+						}
+					}
+				}
+			}
+
+			size_t maxFrames = std::ceil(m_AnimationData.Duration * (double)m_AnimationData.FramesPerSecond);
+			double step = 1.0 / (double)m_AnimationData.FramesPerSecond;
+
+			for (auto& [boneName, boneKeyframe] : m_AnimationData.BoneKeyframes)
+			{
+				// Position Keys
+				{
+					auto positionKeys = boneKeyframe.GetPositionKeys();
+					BoneKeyframe::PositionKey first = positionKeys[0];
+					BoneKeyframe::PositionKey last = positionKeys[positionKeys.size() - 1];
+
+					for (int i = 1; i < maxFrames; i++)
+					{
+						double frameTime = (double)i * step;
+						if (!boneKeyframe.HasPositionKey(frameTime))
+						{
+							double blend = frameTime / m_AnimationData.Duration;
+							boneKeyframe.AddPositionKey(frameTime, glm::mix(first.Value, last.Value, blend));
+						}
+					}
+				}
+
+				// Rotation Keys
+				{
+					auto rotationKeys = boneKeyframe.GetRotationKeys();
+					BoneKeyframe::RotationKey first = rotationKeys[0];
+					BoneKeyframe::RotationKey last = rotationKeys[rotationKeys.size() - 1];
+
+					for (int i = 1; i < maxFrames; i++)
+					{
+						double frameTime = (double)i * step;
+						if (!boneKeyframe.HasRotationKey(frameTime))
+						{
+							float blend = (float)(frameTime / m_AnimationData.Duration);
+							boneKeyframe.AddRotationKey(frameTime, glm::slerp(first.Value, last.Value, blend));
+						}
+					}
+				}
+
+				// Scale Keys
+				{
+					auto scaleKeys = boneKeyframe.GetScaleKeys();
+					BoneKeyframe::ScaleKey first = scaleKeys[0];
+					BoneKeyframe::ScaleKey last = scaleKeys[scaleKeys.size() - 1];
+
+					for (int i = 1; i < maxFrames; i++)
+					{
+						double frameTime = (double)i * step;
+						if (!boneKeyframe.HasScaleKey(frameTime))
+						{
+							double blend = frameTime / m_AnimationData.Duration;
+							boneKeyframe.AddScaleKey(frameTime, glm::mix(first.Value, last.Value, blend));
 						}
 					}
 				}
