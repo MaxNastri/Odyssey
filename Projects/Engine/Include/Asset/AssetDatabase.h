@@ -13,12 +13,20 @@ namespace Odyssey
 		bool SourceAssetsOnly = false;
 	};
 
+	struct AssetMetadata
+	{
+	public:
+		Path AssetPath;
+		std::string AssetName;
+		std::string AssetType;
+		bool IsSourceAsset = false;
+	};
+
 	class AssetDatabase
 	{
 	public:
 		AssetDatabase() = default;
-		AssetDatabase(SearchOptions& searchOptions);
-		AssetDatabase(SearchOptions& searchOptions, const std::vector<AssetRegistry>& registries);
+		AssetDatabase(SearchOptions& searchOptions, AssetRegistry& projectRegistry, const std::vector<AssetRegistry>& additionalRegistries);
 
 	public:
 		void Scan();
@@ -41,23 +49,15 @@ namespace Odyssey
 		std::string GUIDToAssetType(GUID guid);
 		GUID AssetPathToGUID(const Path& assetPath);
 		std::vector<GUID> GetGUIDsOfAssetType(const std::string& assetType);
+		const AssetMetadata& GetMetadata(GUID guid);
 
 	private:
 		void OnFileAction(const Path& filename, FileActionType fileAction);
 
 	protected:
-		struct AssetMetadata
-		{
-		public:
-			std::filesystem::path AssetPath;
-			std::string AssetName;
-			std::string AssetType;
-			bool IsSourceAsset = false;
-		};
-
-	protected:
 		std::unique_ptr<FileTracker> m_FileTracker;
 		SearchOptions m_SearchOptions;
+		AssetRegistry& m_ProjectRegistry;
 
 		// [GUID, AssetMetadata]
 		std::map<GUID, AssetMetadata> m_GUIDToMetadata;
@@ -67,12 +67,9 @@ namespace Odyssey
 		std::map<std::string, std::vector<GUID>> m_AssetTypeToGUIDs;
 
 	private:
-		inline static std::string s_AssetExtension = ".asset";
-		inline static std::string s_MetaFileExtension = ".meta";
-
 		inline static std::set<std::string> s_AssetExtensions =
 		{
-			".asset", ".shader", ".mesh", ".scene", ".prefab",
+			".asset", ".shader", ".mesh", ".prefab",
 		};
 
 		inline static std::map<std::string, std::string> s_SourceAssetExtensionsToType =

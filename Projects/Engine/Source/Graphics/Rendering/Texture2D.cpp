@@ -94,6 +94,7 @@ namespace Odyssey
 			m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, pixelBuffer);
 		}
 	}
+
 	void Texture2D::OnSourceModified()
 	{
 		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))

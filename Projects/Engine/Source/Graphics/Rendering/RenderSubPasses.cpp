@@ -114,7 +114,7 @@ namespace Odyssey
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
 
-		m_CubeMesh = std::make_shared<Mesh>(CubeMeshPath);
+		m_CubeMesh = AssetManager::LoadAsset<Mesh>(s_CubeMeshGUID);
 
 		// Allocate the UBO
 		uboID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 1, sizeof(glm::mat4));
@@ -147,7 +147,7 @@ namespace Odyssey
 		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
 		m_PushDescriptors->AddBuffer(uboID, 1);
 
-			m_PushDescriptors->AddTexture(renderScene->SkyboxCubemap, 3);
+		m_PushDescriptors->AddTexture(renderScene->SkyboxCubemap, 3);
 
 		// Push the descriptors into the command buffer
 		commandBuffer->PushDescriptors(m_PushDescriptors.get(), m_GraphicsPipeline);

@@ -12,64 +12,15 @@ namespace Odyssey
 	Mesh::Mesh(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		LoadFromDisk(assetPath);
-
-		m_VertexBuffer = ResourceManager::Allocate<VulkanVertexBuffer>(m_Vertices);
-		m_IndexBuffer = ResourceManager::Allocate<VulkanIndexBuffer>(m_Indices);
+		if (auto source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
+			LoadFromSource(source);
 	}
 
 	Mesh::Mesh(const Path& assetPath, std::shared_ptr<SourceModel> source)
 		: Asset(assetPath)
 	{
-		// FBX Import
-		{
-			// TODO: Add support for submeshes
-			auto importer = source->GetImporter();
-			const MeshImportData& meshData = importer->GetMeshData();
-		
-			// Transfer the mesh data from the importer
-			m_VertexCount = (uint32_t)meshData.VertexLists[0].size();
-			m_IndexCount = (uint32_t)meshData.IndexLists[0].size();
-			m_Vertices = meshData.VertexLists[0];
-			m_Indices = meshData.IndexLists[0];
-		}
-
-		// Create the binary asset for the vertices
-		BinaryBuffer buffer;
-		buffer.WriteData(m_Vertices);
-		m_VerticesGUID = AssetManager::CreateBinaryAsset(buffer);
-
-		// Create the binary asset for the indices
-		buffer.Clear();
-		buffer.WriteData(m_Indices);
-		m_IndicesGUID = AssetManager::CreateBinaryAsset(buffer);
-
-		// Allocate our buffers
-		m_VertexBuffer = ResourceManager::Allocate<VulkanVertexBuffer>(m_Vertices);
-		m_IndexBuffer = ResourceManager::Allocate<VulkanIndexBuffer>(m_Indices);
-	}
-
-	Mesh::Mesh(const Path& assetPath, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
-		: Asset(assetPath)
-	{
-		m_Vertices = vertices;
-		m_Indices = indices;
-		m_VertexCount = m_Vertices.size();
-		m_IndexCount = m_Indices.size();
-
-		// Create the binary asset for the vertices
-		BinaryBuffer buffer;
-		buffer.WriteData(m_Vertices);
-		m_VerticesGUID = AssetManager::CreateBinaryAsset(buffer);
-
-		// Create the binary asset for the indices
-		buffer.Clear();
-		buffer.WriteData(m_Indices);
-		m_IndicesGUID = AssetManager::CreateBinaryAsset(buffer);
-
-		// Allocate our buffers
-		m_VertexBuffer = ResourceManager::Allocate<VulkanVertexBuffer>(m_Vertices);
-		m_IndexBuffer = ResourceManager::Allocate<VulkanIndexBuffer>(m_Indices);
+		SetSourceAsset(source->GetGUID());
+		LoadFromSource(source);
 	}
 
 	void Mesh::Save()
@@ -79,7 +30,21 @@ namespace Odyssey
 
 	void Mesh::Load()
 	{
-		LoadFromDisk(m_AssetPath);
+		if (auto source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
+			LoadFromSource(source);
+	}
+
+	void Mesh::LoadFromSource(std::shared_ptr<SourceModel> source)
+	{
+		// TODO: Add support for submeshes
+		auto importer = source->GetImporter();
+		const MeshImportData& meshData = importer->GetMeshData();
+
+		std::vector<Vertex> vertices = meshData.VertexLists[0];
+		SetVertices(vertices);
+
+		std::vector<uint32_t> indices = meshData.IndexLists[0];
+		SetIndices(indices);
 	}
 
 	void Mesh::SaveToDisk(const Path& path)

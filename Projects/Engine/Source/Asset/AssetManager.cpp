@@ -14,14 +14,15 @@
 
 namespace Odyssey
 {
-	void AssetManager::CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory, std::vector<Path>& assetRegistries)
+	void AssetManager::CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory, const Path& projectRegistryPath, std::vector<Path>& additionalRegistries)
 	{
 		s_AssetsDirectory = assetsDirectory;
 		s_BinaryCache = std::make_unique<BinaryCache>(cacheDirectory);
 
 		std::vector<AssetRegistry> registries;
+		AssetRegistry projectRegistry(projectRegistryPath);
 
-		for (const Path& registry : assetRegistries)
+		for (const Path& registry : additionalRegistries)
 		{
 			registries.push_back(AssetRegistry(registry));
 		}
@@ -31,7 +32,7 @@ namespace Odyssey
 		assetSearch.Root = s_AssetsDirectory;
 		assetSearch.ExclusionPaths = { };
 
-		s_AssetDatabase = std::make_unique<AssetDatabase>(assetSearch, registries);
+		s_AssetDatabase = std::make_unique<AssetDatabase>(assetSearch, projectRegistry, registries);
 	}
 
 	BinaryBuffer AssetManager::LoadBinaryAsset(GUID guid)

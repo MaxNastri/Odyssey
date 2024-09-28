@@ -3,33 +3,6 @@ GUID: 6049963977740777600
 Skybox: 16662637833593679810
 Ambient Color: 'x: 0.1886121 y: 0.097326525 z: 0.097326525'
 GameObjects:
-  - Name: Sun
-    GUID: 1496534082370822112
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 0 y: 90 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
-      - Type: Odyssey.Light
-        Light Type: 1
-        Color: 'x: 0.68327403 y: 0.33798966 z: 0.33798966'
-        Intensity: 1
-        Range: 1
-  - Name: Monk FBX
-    GUID: 15322439001782158818
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.Animator
-        Animation Rig: 11519690897429141827
-        Animation Clip: 1480094622537577134
-      - Type: Odyssey.MeshRenderer
-        m_Mesh: 13759854750235908315
-        m_Material: 942766181068811557
-      - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
   - Name: Camera
     GUID: 1278710421845013511
     Type: Odyssey.GameObject
@@ -57,6 +30,33 @@ GameObjects:
             Value: 1
           - Name: RotDirection
             Value: 'x: 0 y: 45 z: 0'
+  - Name: Monk FBX
+    GUID: 15322439001782158818
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Animator
+        Animation Rig: 11519690897429141827
+        Animation Clip: 1480094622537577134
+      - Type: Odyssey.MeshRenderer
+        m_Mesh: 13759854750235908315
+        m_Material: 942766181068811557
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Name: Sun
+    GUID: 1496534082370822112
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.Light
+        Light Type: 1
+        Color: 'x: 0.68327403 y: 0.33798966 z: 0.33798966'
+        Intensity: 1
+        Range: 1
 Scene Graph Nodes:
   - Entity: 15322439001782158818
     Parent: 0

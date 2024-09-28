@@ -26,6 +26,13 @@ namespace Odyssey
 
 		void AddAsset(const std::string& name, const std::string& type, const Path& path, GUID guid)
 		{
+			// Make sure this isn't a dupe
+			for (auto& entry : Entries)
+			{
+				if (entry.Guid == guid)
+					return;
+			}
+
 			AssetEntry& entry = Entries.emplace_back();
 			entry.Name = name;
 			entry.Type = type;

@@ -75,3 +75,15 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: Textures/Kachujin_diffuse.png
     GUID: 17785645852077111092
+  - Name: Kachujin_diffuse
+    Type: Odyssey.SourceTexture
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Models/Capoeira.fbm/Kachujin_diffuse.png'
+    GUID: 3391686428449141831
+  - Name: Cube
+    Type: Odyssey.SourceModel
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Models/Cube.fbx'
+    GUID: 9086862285100025922
+  - Name: Cube
+    Type: Odyssey.Mesh
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Meshes/Cube.mesh'
+    GUID: 16688031995771648164

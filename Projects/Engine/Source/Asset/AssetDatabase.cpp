@@ -5,7 +5,8 @@
 
 namespace Odyssey
 {
-	AssetDatabase::AssetDatabase(SearchOptions& searchOptions, const std::vector<AssetRegistry>& registries)
+	AssetDatabase::AssetDatabase(SearchOptions& searchOptions, AssetRegistry& projectRegistry, const std::vector<AssetRegistry>& additionalRegistries)
+		: m_ProjectRegistry(projectRegistry)
 	{
 		m_SearchOptions = searchOptions;
 
@@ -29,7 +30,9 @@ namespace Odyssey
 		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileAction(path, fileAction); };
 		m_FileTracker = std::make_unique<FileTracker>(options);
 
-		for (const AssetRegistry& registry : registries)
+		AddRegistry(projectRegistry);
+
+		for (const AssetRegistry& registry : additionalRegistries)
 		{
 			AddRegistry(registry);
 		}
@@ -114,6 +117,10 @@ namespace Odyssey
 							root.ReadData("m_Type", type);
 							root.ReadData("m_Name", name);
 							AddAsset(guid, path, name, type, false);
+
+							Path relativePath = std::filesystem::relative(path, m_ProjectRegistry.RootDirectory);
+							m_ProjectRegistry.AddAsset(name, type, path, guid);
+							m_ProjectRegistry.Save();
 						}
 					}
 				}
@@ -131,8 +138,6 @@ namespace Odyssey
 
 			auto assetPath = dirEntry.path();
 			auto extension = assetPath.extension().string();
-			auto metaPath = assetPath;
-			metaPath = metaPath.replace_extension(s_MetaFileExtension);
 
 			// Check if the file extension is a valid source asset
 			if (dirEntry.is_regular_file() && s_SourceAssetExtensionsToType.contains(extension))
@@ -141,7 +146,12 @@ namespace Odyssey
 				std::string type = s_SourceAssetExtensionsToType[extension];
 
 				// Add the source asset to the database
-				AddAsset(GUID::New(), assetPath, name, type, true);
+				GUID guid = GUID::New();
+				AddAsset(guid, assetPath, name, type, true);
+
+				Path relativePath = std::filesystem::relative(assetPath, m_ProjectRegistry.RootDirectory);
+				m_ProjectRegistry.AddAsset(name, type, assetPath, guid);
+				m_ProjectRegistry.Save();
 			}
 		}
 	}
@@ -156,6 +166,7 @@ namespace Odyssey
 
 		// No contains check since we are storing multiple guids per asset type
 		m_AssetTypeToGUIDs[assetType].push_back(guid);
+
 	}
 
 	bool AssetDatabase::Contains(GUID& guid)
@@ -214,6 +225,11 @@ namespace Odyssey
 			return m_AssetTypeToGUIDs[assetType];
 
 		return std::vector<GUID>();
+	}
+
+	const AssetMetadata& AssetDatabase::GetMetadata(GUID guid)
+	{
+		return m_GUIDToMetadata[guid];
 	}
 
 	void AssetDatabase::OnFileAction(const Path& filename, FileActionType fileAction)

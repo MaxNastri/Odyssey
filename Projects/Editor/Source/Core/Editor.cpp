@@ -35,10 +35,9 @@ namespace Odyssey
 
 		std::vector<Path> registries = 
 		{
-			Project::GetActiveAssetRegistry(),
 			"Resources/AssetRegistry.osettings"
 		};
-		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveCacheDirectory(), registries);
+		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveCacheDirectory(), Project::GetActiveAssetRegistry(), registries);
 
 		// Create the renderer
 		RendererConfig config = { .EnableIMGUI = true };

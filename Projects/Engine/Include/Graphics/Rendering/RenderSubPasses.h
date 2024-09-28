@@ -61,6 +61,6 @@ namespace Odyssey
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<Mesh> m_CubeMesh;
 		inline static const GUID& s_SkyboxShaderGUID = 12373133592092994291;
-		inline static std::string CubeMeshPath = "Resources/Meshes/Cube.asset";
+		inline static const GUID& s_CubeMeshGUID = 4325336624522892849;
 	};
 }

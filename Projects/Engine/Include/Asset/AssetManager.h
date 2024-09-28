@@ -26,7 +26,7 @@ namespace Odyssey
 	class AssetManager
 	{
 	public:
-		static void CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory, std::vector<Path>& assetRegistries);
+		static void CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory, const Path& projectRegistryPath, std::vector<Path>& additionalRegistries);
 
 	public:
 		template<typename T, typename... Args>
@@ -52,6 +52,8 @@ namespace Odyssey
 		template<typename T>
 		static std::shared_ptr<T> LoadSourceAsset(GUID guid)
 		{
+			static_assert(std::is_base_of<SourceAsset, T>::value, "T is not a dervied class of SourceAsset.");
+
 			// Check if this asset has already been loaded
 			if (s_LoadedAssets.contains(guid))
 				return s_SourceAssets.Get<T>(guid);
@@ -59,6 +61,10 @@ namespace Odyssey
 			// Load the source asset
 			Path sourcePath = s_AssetDatabase->GUIDToAssetPath(guid);
 			std::shared_ptr<T> sourceAsset = s_SourceAssets.Add<T>(guid, sourcePath);
+
+			// Set the metadata for the source asset
+			const auto& metadata = s_AssetDatabase->GetMetadata(guid);
+			sourceAsset->SetMetadata(guid, metadata.AssetName, metadata.AssetType);
 
 			// Track the source asset as loaded
 			s_LoadedAssets.emplace(guid);
