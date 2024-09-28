@@ -29,8 +29,12 @@ namespace Odyssey
 		std::map<ShaderType, ResourceID> GetResourceMap();
 
 	private:
+		void LoadFromSource(std::shared_ptr<SourceShader> source);
 		void LoadFromDisk(const Path& path);
 		void SaveToDisk(const Path& path);
+
+	private:
+		void OnSourceModified();
 
 	private:
 		struct ShaderData

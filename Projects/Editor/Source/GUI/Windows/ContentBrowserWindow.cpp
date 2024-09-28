@@ -20,7 +20,7 @@ namespace Odyssey
 		m_CurrentPath = m_AssetsPath;
 		
 		TrackingOptions options;
-		options.Directory = m_AssetsPath;
+		options.TrackingPath = m_AssetsPath;
 		options.Extensions = { ".asset", ".glsl", ".meta" };
 		options.Recursive = true;
 		options.IncludeDirectoryChanges = true;

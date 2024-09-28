@@ -5,29 +5,26 @@
 
 namespace Odyssey
 {
-	AssetDatabase::AssetDatabase(SearchOptions& searchOptions)
-	{
-		m_SearchOptions = searchOptions;
-
-		// Create a file tracker based on the search options so we can detect any file changes
-		TrackingOptions options;
-		options.Directory = searchOptions.Root;
-		options.Extensions = searchOptions.Extensions;
-		options.Recursive = true;
-		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileAction(path, fileAction); };
-		m_FileTracker = std::make_unique<FileTracker>(options);
-
-		Scan();
-	}
-
 	AssetDatabase::AssetDatabase(SearchOptions& searchOptions, const std::vector<AssetRegistry>& registries)
 	{
 		m_SearchOptions = searchOptions;
 
+		std::vector<Path> supportedExtensions;
+		
+		for (auto& extension : s_AssetExtensions)
+		{
+			supportedExtensions.push_back(extension);
+		}
+
+		for (auto& [extension, sourceType] : s_SourceAssetExtensionsToType)
+		{
+			supportedExtensions.push_back(extension);
+		}
+
 		// Create a file tracker based on the search options so we can detect any file changes
 		TrackingOptions options;
-		options.Directory = searchOptions.Root;
-		options.Extensions = searchOptions.Extensions;
+		options.TrackingPath = searchOptions.Root;
+		options.Extensions = supportedExtensions;
 		options.Recursive = true;
 		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileAction(path, fileAction); };
 		m_FileTracker = std::make_unique<FileTracker>(options);

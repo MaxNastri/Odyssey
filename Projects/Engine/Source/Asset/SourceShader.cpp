@@ -11,6 +11,11 @@ namespace Odyssey
 		m_ShaderLanguage = filename.extension().string().substr(1);
 		Name = filename.replace_extension("").string();
 		ParseShaderFile(sourcePath);
+
+		TrackingOptions options;
+		options.TrackingPath = sourcePath;
+		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileModified(path, fileAction); };
+		m_FileTracker = std::make_unique<FileTracker>(options);
 	}
 
 	bool SourceShader::Compile()
@@ -57,6 +62,8 @@ namespace Odyssey
 
 	void SourceShader::ParseShaderFile(const Path& path)
 	{
+		m_ShaderCode.clear();
+
 		std::vector<char> buffer;
 
 		// Open the file as text
@@ -96,6 +103,16 @@ namespace Odyssey
 		if (fragmentPos != std::string::npos)
 		{
 			m_ShaderCode[ShaderType::Fragment] = fileContents.substr(fragmentPos + pragmaFragment.length());
+		}
+	}
+	void SourceShader::OnFileModified(const Path& path, FileActionType fileAction)
+	{
+		if (fileAction == FileActionType::Modified)
+		{
+			ParseShaderFile(m_SourcePath);
+
+			for (auto& callback : m_OnSourceModified)
+				callback();
 		}
 	}
 }

@@ -15,11 +15,11 @@ namespace Odyssey
 	struct TrackingOptions
 	{
 	public:
-		std::filesystem::path Directory;
-		std::vector<std::filesystem::path> Extensions;
+		Path TrackingPath;
+		std::vector<Path> Extensions;
 		bool Recursive = false;
 		bool IncludeDirectoryChanges = false;
-		std::function<void(const std::filesystem::path, FileActionType)> Callback = nullptr;
+		std::function<void(const Path, FileActionType)> Callback = nullptr;
 	};
 
 	class FileTracker : efsw::FileWatchListener
@@ -34,12 +34,22 @@ namespace Odyssey
 	private:
 		friend class Editor;
 		static void Init();
+		static void Dispatch();
 
 	private:
 		inline static efsw::FileWatcher s_FileWatcher;
 
 	private:
+		enum class TrackingMode
+		{
+			None = 0,
+			Directory = 1,
+			File = 2,
+		};
 		TrackingOptions m_Options;
+		TrackingMode m_TrackingMode;
 		uint32_t m_ID = (uint32_t)(-1);
+
+		inline static std::vector<std::function<void()>> m_WaitingCallbacks;
 	};
 }

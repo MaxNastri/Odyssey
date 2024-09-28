@@ -30,6 +30,7 @@ namespace Odyssey
 		SearchOptions assetSearch;
 		assetSearch.Root = s_AssetsDirectory;
 		assetSearch.ExclusionPaths = { };
+
 		s_AssetDatabase = std::make_unique<AssetDatabase>(assetSearch, registries);
 	}
 

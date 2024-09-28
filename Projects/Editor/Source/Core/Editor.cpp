@@ -86,6 +86,7 @@ namespace Odyssey
 			{
 				m_TimeSinceLastUpdate = 0.0f;
 
+				FileTracker::Dispatch();
 				// Process any changes made to the user's managed dll
 				m_ScriptCompiler->Process();
 				DebugRenderer::Clear();

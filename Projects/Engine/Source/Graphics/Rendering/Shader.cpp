@@ -10,7 +10,11 @@ namespace Odyssey
 	Shader::Shader(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		LoadFromDisk(assetPath);
+		if (std::shared_ptr<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
+		{
+			source->AddOnModifiedListener([this]() { OnSourceModified(); });
+			LoadFromSource(source);
+		}
 
 		for (auto& [shaderType, shaderData] : m_Shaders)
 		{
@@ -68,7 +72,8 @@ namespace Odyssey
 
 	void Shader::Load()
 	{
-		LoadFromDisk(m_AssetPath);
+		if (std::shared_ptr<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
+			LoadFromSource(source);
 	}
 
 	std::map<ShaderType, ResourceID> Shader::GetResourceMap()
@@ -84,34 +89,58 @@ namespace Odyssey
 	}
 
 
-	void Shader::LoadFromDisk(const Path& assetPath)
+	void Shader::LoadFromSource(std::shared_ptr<SourceShader> source)
 	{
-		AssetDeserializer deserializer(assetPath);
-		if (deserializer.IsValid())
+		// Clear any existing shaders
+		for (auto& [shaderType, shaderData] : m_Shaders)
 		{
-			SerializationNode root = deserializer.GetRoot();
-			SerializationNode shadersNode = root.GetNode("m_Shaders");
+			shaderData.CodeBuffer.Clear();
+			ResourceManager::Destroy(shaderData.ShaderModule);
+		}
+		m_Shaders.clear();
 
-			assert(shadersNode.IsSequence());
-			assert(shadersNode.HasChildren());
+		auto shaderTypes = source->GetShaderTypes();
+		for (auto shaderType : shaderTypes)
+		{
+			BinaryBuffer tempBuffer;
+			auto& shaderData = m_Shaders[shaderType];
 
-			for (size_t i = 0; i < shadersNode.ChildCount(); ++i)
+			if (source->Compile(shaderType, tempBuffer))
 			{
-				SerializationNode shaderNode = shadersNode.GetChild(i);
-				assert(shaderNode.IsMap());
-
-				// Read in the shader type
-				uint32_t shaderType = 0;
-				shaderNode.ReadData("ShaderType", shaderType);
-
-				// Get the code GUID
-				auto& shaderData = m_Shaders[(ShaderType)shaderType];
-				shaderNode.ReadData("ShaderCode", shaderData.CodeGUID.Ref());
-
-				if (shaderData.CodeGUID)
-					shaderData.CodeBuffer = AssetManager::LoadBinaryAsset(shaderData.CodeGUID);
+				shaderData.CodeBuffer = tempBuffer;
+				shaderData.ShaderModule = ResourceManager::Allocate<VulkanShaderModule>(shaderType, shaderData.CodeBuffer);
 			}
 		}
+	}
+
+	void Shader::LoadFromDisk(const Path& assetPath)
+	{
+		//AssetDeserializer deserializer(assetPath);
+		//if (deserializer.IsValid())
+		//{
+		//	SerializationNode root = deserializer.GetRoot();
+		//	SerializationNode shadersNode = root.GetNode("m_Shaders");
+		//
+		//	assert(shadersNode.IsSequence());
+		//	assert(shadersNode.HasChildren());
+		//
+		//	for (size_t i = 0; i < shadersNode.ChildCount(); ++i)
+		//	{
+		//		SerializationNode shaderNode = shadersNode.GetChild(i);
+		//		assert(shaderNode.IsMap());
+		//
+		//		// Read in the shader type
+		//		uint32_t shaderType = 0;
+		//		shaderNode.ReadData("ShaderType", shaderType);
+		//
+		//		// Get the code GUID
+		//		auto& shaderData = m_Shaders[(ShaderType)shaderType];
+		//		shaderNode.ReadData("ShaderCode", shaderData.CodeGUID.Ref());
+		//
+		//		if (shaderData.CodeGUID)
+		//			shaderData.CodeBuffer = AssetManager::LoadBinaryAsset(shaderData.CodeGUID);
+		//	}
+		//}
 	}
 
 	void Shader::SaveToDisk(const Path& path)
@@ -132,5 +161,11 @@ namespace Odyssey
 		}
 
 		serializer.WriteToDisk(path);
+	}
+
+	void Shader::OnSourceModified()
+	{
+		if (std::shared_ptr<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
+			LoadFromSource(source);
 	}
 }

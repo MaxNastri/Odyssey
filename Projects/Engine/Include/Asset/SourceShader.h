@@ -2,6 +2,7 @@
 #include "Asset.h"
 #include "BinaryBuffer.h"
 #include "Enums.h"
+#include "FileTracker.h"
 
 namespace Odyssey
 {
@@ -17,12 +18,16 @@ namespace Odyssey
 		bool Compile(ShaderType shaderType, BinaryBuffer& codeBuffer);
 
 	public:
+		void AddOnModifiedListener(std::function<void()> onSourceModified) { m_OnSourceModified.push_back(onSourceModified); }
+
+	public:
 		const std::string& GetShaderLanguage() { return m_ShaderLanguage; }
 		bool IsCompiled() { return m_Compiled; }
 		std::vector<ShaderType> GetShaderTypes();
 
 	private:
 		void ParseShaderFile(const Path& path);
+		void OnFileModified(const Path& path, FileActionType fileAction);
 
 	private:
 		std::string m_ShaderName;
@@ -30,6 +35,8 @@ namespace Odyssey
 		std::string m_VertexShaderCode;
 		std::string m_FragmentShaderCode;
 		std::map<ShaderType, std::string> m_ShaderCode;
+		std::vector<std::function<void()>> m_OnSourceModified;
+		std::unique_ptr<FileTracker> m_FileTracker;
 		bool m_Compiled = false;
 	};
 }
