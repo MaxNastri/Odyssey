@@ -103,3 +103,7 @@ Entries:
     Type: Odyssey.Mesh
     Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Meshes/Monk-GLTF-Mesh2.mesh'
     GUID: 13511586946249507819
+  - Name: Particles
+    Type: Odyssey.SourceShader
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Shaders/Source/Particles.hlsl'
+    GUID: 10846604692805764995

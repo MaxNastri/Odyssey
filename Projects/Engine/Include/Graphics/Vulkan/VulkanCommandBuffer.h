@@ -27,12 +27,14 @@ namespace Odyssey
 		void BeginCommands();
 		void EndCommands();
 		void Reset();
-		void Flush();
+		void SubmitGraphics();
+		void SubmitCompute();
 
 	public:
 		void BeginRendering(VkRenderingInfoKHR& renderingInfo);
 		void EndRendering();
-		void BindPipeline(ResourceID pipelineID);
+		void BindGraphicsPipeline(ResourceID pipelineID);
+		void BindComputePipeline(ResourceID pipelineID);
 		void BindViewport(VkViewport viewport);
 		void SetScissor(VkRect2D scissor);
 		void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
@@ -44,7 +46,9 @@ namespace Odyssey
 		void CopyBufferToBuffer(ResourceID source, ResourceID destination, uint32_t dataSize);
 		void BindIndexBuffer(ResourceID indexBufferID);
 		void BindDescriptorSet(ResourceID descriptorSetID, ResourceID pipelineID);
-		void PushDescriptors(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
+		void PushDescriptorsGraphics(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
+		void PushDescriptorsCompute(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
+		void Dispatch(uint32_t groupX, uint32_t groupY, uint32_t groupZ);
 	public:
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
 		const VkCommandBuffer* GetCommandBufferRef() { return &m_CommandBuffer; }

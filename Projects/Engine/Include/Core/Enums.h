@@ -17,6 +17,7 @@ namespace Odyssey
 		None = 0,
 		Uniform = 1,
 		Sampler = 2,
+		Storage = 3,
 	};
 
 	enum class ShaderStage
@@ -24,6 +25,8 @@ namespace Odyssey
 		None = 0,
 		Fragment = 1,
 		Vertex = 2,
+		Compute = 3,
+		Geometry = 4,
 	};
 
 	enum class TextureType

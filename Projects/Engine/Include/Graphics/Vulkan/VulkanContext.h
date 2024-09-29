@@ -26,7 +26,6 @@ namespace Odyssey
 
 	public:
 		void SetupResources();
-		void SubmitCommandBuffer(ResourceID commandBuffer);
 
 	public:
 		VkInstance GetInstance() { return instance; }
@@ -35,8 +34,11 @@ namespace Odyssey
 		VulkanDevice* GetDevice() { return logicalDevice.get(); }
 		VkDevice GetDeviceVK();
 		VulkanQueue* GetGraphicsQueue();
+		VulkanQueue* GetComputeQueue();
 		const VkQueue GetGraphicsQueueVK();
-		ResourceID GetCommandPool() { return m_CommandPool; }
+		const VkQueue GetComputeQueueVK();
+		ResourceID GetGraphicsCommandPool() { return m_GraphicsCommandPool; }
+		ResourceID GetComputeCommandPool() { return m_ComputeCommandPool; }
 
 	private:
 		void GatherExtensions();
@@ -48,8 +50,10 @@ namespace Odyssey
 		VkInstance instance = nullptr;
 		std::shared_ptr<VulkanPhysicalDevice> physicalDevice;
 		std::shared_ptr<VulkanDevice> logicalDevice;
-		ResourceID m_CommandPool;
+		ResourceID m_GraphicsCommandPool;
+		ResourceID m_ComputeCommandPool;
 		std::shared_ptr<VulkanQueue> m_GraphicsQueue;
+		std::shared_ptr<VulkanQueue> m_ComputeQueue;
 
 	private: // Extensions
 		std::vector<const char*> extensions;

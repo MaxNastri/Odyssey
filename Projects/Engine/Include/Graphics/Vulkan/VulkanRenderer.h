@@ -55,8 +55,10 @@ namespace Odyssey
 		std::shared_ptr<VulkanWindow> m_Window;
 
 	private: // Commands
-		std::vector<ResourceID> m_CommandPools;
-		std::vector<ResourceID> m_CommandBuffers;
+		std::vector<ResourceID> m_GraphicsCommandPools;
+		std::vector<ResourceID> m_GraphicsCommandBuffers;
+		std::vector<ResourceID> m_ComputeCommandPools;
+		std::vector<ResourceID> m_ComputeCommandBuffers;
 
 	private: // Draws
 		std::vector<std::shared_ptr<RenderScene>> m_RenderScenes;

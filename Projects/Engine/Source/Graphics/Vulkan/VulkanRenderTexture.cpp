@@ -27,7 +27,7 @@ namespace Odyssey
 		m_Image = ResourceManager::Allocate<VulkanImage>(imageDesc);
 
 		// Allocate a command buffer to transition the image layout
-		auto commandPoolID = context->GetCommandPool();
+		auto commandPoolID = context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 		auto commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -36,7 +36,7 @@ namespace Odyssey
 		commandBuffer->BeginCommands();
 		commandBuffer->TransitionLayouts(m_Image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		commandBuffer->EndCommands();
-		commandBuffer->Flush();
+		commandBuffer->SubmitGraphics();
 
 		// Release the command buffer
 		commandPool->ReleaseBuffer(commandBufferID);
@@ -57,7 +57,7 @@ namespace Odyssey
 		m_Image = ResourceManager::Allocate<VulkanImage>(imageDesc);
 
 		// Allocate a command buffer to transition the image layout
-		auto commandPoolID = context->GetCommandPool();
+		auto commandPoolID = context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 		auto commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -68,7 +68,7 @@ namespace Odyssey
 		commandBuffer->BeginCommands();
 		commandBuffer->TransitionLayouts(m_Image, layout);
 		commandBuffer->EndCommands();
-		commandBuffer->Flush();
+		commandBuffer->SubmitGraphics();
 
 		// Release the command buffer
 		commandPool->ReleaseBuffer(commandBufferID);

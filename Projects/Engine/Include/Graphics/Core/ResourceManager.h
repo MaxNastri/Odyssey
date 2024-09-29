@@ -1,30 +1,10 @@
 #pragma once
 #include "Enums.h"
-#include "VulkanTypes.h"
 #include "ResourceList.hpp"
-#include "Vertex.h"
-#include "VulkanImage.h"
-#include "BinaryBuffer.h"
 
 namespace Odyssey
 {
-	class Resource;
-	class VulkanBuffer;
-	class VulkanUniformBuffer;
 	class VulkanContext;
-	class VulkanGraphicsPipeline;
-	class VulkanIndexBuffer;
-	class VulkanShaderModule;
-	class VulkanRenderTexture;
-	class VulkanVertexBuffer;
-	class VulkanCommandPool;
-	class VulkanCommandBuffer;
-	class VulkanDescriptorLayout;
-	class VulkanImage;
-	class VulkanTextureSampler;
-	class VulkanDescriptorPool;
-	class VulkanDescriptorSet;
-	class VulkanTexture;
 
 	class ResourceManager
 	{

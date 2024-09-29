@@ -63,4 +63,20 @@ namespace Odyssey
 		inline static const GUID& s_SkyboxShaderGUID = 12373133592092994291;
 		inline static const GUID& s_CubeMeshGUID = 4325336624522892849;
 	};
+
+	class ParticleSubPass : public RenderSubPass
+	{
+	public:
+		virtual void Setup() override;
+		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+
+	private:
+		ResourceID m_ComputePipeline;
+		ResourceID m_GraphicsPipeline;
+		ResourceID m_DescriptorLayout;
+		std::shared_ptr<VulkanPushDescriptors> m_PushDescriptors;
+		ResourceID m_ModelUBO;
+		std::shared_ptr<Shader> m_Shader;
+		inline static const GUID& s_ParticleShaderGUID = 16032593712191697003;
+	};
 }

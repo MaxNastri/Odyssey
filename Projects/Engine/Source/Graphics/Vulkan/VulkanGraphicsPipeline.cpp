@@ -19,6 +19,10 @@ namespace Odyssey
 
 		for (auto [shaderType, ResourceID] : info.Shaders)
 		{
+			// Skip compute shaders for graphics pipelines
+			if (shaderType == ShaderType::Compute)
+				continue;
+
 			auto shader = ResourceManager::GetResource<VulkanShaderModule>(ResourceID);
 
 			VkPipelineShaderStageCreateInfo shaderStageInfo{};

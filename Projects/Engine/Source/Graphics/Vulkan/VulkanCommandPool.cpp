@@ -5,10 +5,10 @@
 
 namespace Odyssey
 {
-    VulkanCommandPool::VulkanCommandPool(std::shared_ptr<VulkanContext> context)
+    VulkanCommandPool::VulkanCommandPool(std::shared_ptr<VulkanContext> context, VulkanQueueType queue)
     {
         m_Context = context;
-        uint32_t queueIndex = m_Context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics);
+        uint32_t queueIndex = m_Context->GetPhysicalDevice()->GetFamilyIndex(queue);
 
         VkCommandPoolCreateInfo info = {};
         info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

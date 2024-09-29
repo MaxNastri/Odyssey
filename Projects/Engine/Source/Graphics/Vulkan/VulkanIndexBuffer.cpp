@@ -22,7 +22,7 @@ namespace Odyssey
 		indexBuffer->AllocateMemory();
 
 		// Allocate a command buffer
-		ResourceID commandPoolID = m_Context->GetCommandPool();
+		ResourceID commandPoolID = m_Context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
@@ -34,7 +34,7 @@ namespace Odyssey
 		commandBuffer->EndCommands();
 
 		// Submit and release
-		m_Context->SubmitCommandBuffer(commandBufferID);
+		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 

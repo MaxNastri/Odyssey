@@ -23,6 +23,7 @@ namespace Odyssey
 		m_ClearValue = glm::vec4(0, 0, 0, 1);
 		m_SubPasses.push_back(std::make_shared<SkyboxSubPass>());
 		m_SubPasses.push_back(std::make_shared<OpaqueSubPass>());
+		m_SubPasses.push_back(std::make_shared<ParticleSubPass>());
 
 		for (auto& subPass : m_SubPasses)
 		{
@@ -32,7 +33,7 @@ namespace Odyssey
 
 	void OpaquePass::BeginPass(RenderPassParams& params)
 	{
-		ResourceID commandBufferID = params.commandBuffer;
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		ResourceID colorAttachmentImage;
@@ -172,7 +173,7 @@ namespace Odyssey
 
 	void OpaquePass::EndPass(RenderPassParams& params)
 	{
-		ResourceID commandBufferID = params.commandBuffer;
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		// End dynamic rendering
@@ -199,7 +200,7 @@ namespace Odyssey
 
 	void ImguiPass::BeginPass(RenderPassParams& params)
 	{
-		ResourceID commandBufferID = params.commandBuffer;
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		uint32_t width = params.renderingData->width;
@@ -263,12 +264,12 @@ namespace Odyssey
 
 	void ImguiPass::Execute(RenderPassParams& params)
 	{
-		m_Imgui->Render(params.commandBuffer);
+		m_Imgui->Render(params.GraphicsCommandBuffer);
 	}
 
 	void ImguiPass::EndPass(RenderPassParams& params)
 	{
-		ResourceID commandBufferID = params.commandBuffer;
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		// End dynamic rendering

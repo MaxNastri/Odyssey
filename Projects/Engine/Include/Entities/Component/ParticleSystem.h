@@ -3,21 +3,16 @@
 
 namespace Odyssey
 {
-	struct Particle
+	struct alignas(16) Particle
 	{
-		glm::vec4 Position;
-		glm::vec4 Color;
-		glm::vec4 Velocity;
-		float Lifetime;
-		float Size;
-		float SizeOverLifetime;
+		glm::vec4 Position = glm::vec4(0.0f);
+		glm::vec4 Color = glm::vec4(1.0f);
+		glm::vec4 Velocity = glm::vec4(0.0f);
+		float Lifetime = 0.0f;
+		float Size = 1.0f;
+		float SizeOverLifetime = 0.0f;
 	};
 
-	struct ParticleData
-	{
-		std::vector<Particle> Particles;
-		uint32_t ParticleCount = 0;
-	};
 	class ParticleSystem
 	{
 		CLASS_DECLARATION(Odyssey, ParticleSystem)

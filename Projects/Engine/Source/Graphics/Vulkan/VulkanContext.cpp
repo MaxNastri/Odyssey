@@ -26,26 +26,16 @@ namespace Odyssey
 
 	void VulkanContext::Destroy()
 	{
-		ResourceManager::Destroy(m_CommandPool);
+		ResourceManager::Destroy(m_GraphicsCommandPool);
+		ResourceManager::Destroy(m_ComputeCommandPool);
 	}
 
 	void VulkanContext::SetupResources()
 	{
-		m_CommandPool = ResourceManager::Allocate<VulkanCommandPool>();
+		m_GraphicsCommandPool = ResourceManager::Allocate<VulkanCommandPool>(VulkanQueueType::Graphics);
+		m_ComputeCommandPool = ResourceManager::Allocate<VulkanCommandPool>(VulkanQueueType::Compute);
 		m_GraphicsQueue = std::make_shared<VulkanQueue>(VulkanQueueType::Graphics, VulkanContext::shared_from_this());
-		m_GraphicsQueue = std::make_shared<VulkanQueue>(VulkanQueueType::Compute, VulkanContext::shared_from_this());
-	}
-
-	void VulkanContext::SubmitCommandBuffer(ResourceID resourceID)
-	{
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(resourceID);
-		VkSubmitInfo submitInfo{};
-		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
-
-		vkQueueSubmit(m_GraphicsQueue->queue, 1, &submitInfo, VK_NULL_HANDLE);
-		vkQueueWaitIdle(m_GraphicsQueue->queue);
+		m_ComputeQueue = std::make_shared<VulkanQueue>(VulkanQueueType::Compute, VulkanContext::shared_from_this());
 	}
 
 	VkPhysicalDevice VulkanContext::GetPhysicalDeviceVK()
@@ -63,9 +53,19 @@ namespace Odyssey
 		return m_GraphicsQueue.get();
 	}
 
+	VulkanQueue* VulkanContext::GetComputeQueue()
+	{
+		return m_ComputeQueue.get();
+	}
+
 	const VkQueue VulkanContext::GetGraphicsQueueVK()
 	{
 		return m_GraphicsQueue->queue;
+	}
+
+	const VkQueue VulkanContext::GetComputeQueueVK()
+	{
+		return m_ComputeQueue->queue;
 	}
 
 	void VulkanContext::GatherExtensions()

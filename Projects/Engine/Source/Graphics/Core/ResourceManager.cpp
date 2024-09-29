@@ -1,21 +1,6 @@
 #include "ResourceManager.h"
 #include "Resource.h"
 #include "VulkanContext.h"
-#include "VulkanVertexBuffer.h"
-#include "VulkanIndexBuffer.h"
-#include "VulkanRenderTexture.h"
-#include "VulkanShaderModule.h"
-#include "VulkanGraphicsPipeline.h"
-#include "VulkanBuffer.h"
-#include "VulkanUniformBuffer.h"
-#include "VulkanCommandPool.h"
-#include "VulkanCommandPool.h"
-#include "VulkanDescriptorLayout.h"
-#include "VulkanImage.h"
-#include "VulkanTextureSampler.h"
-#include "VulkanDescriptorPool.h"
-#include "VulkanDescriptorSet.h"
-#include "VulkanTexture.h"
 
 namespace Odyssey
 {

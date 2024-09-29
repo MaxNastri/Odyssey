@@ -158,7 +158,7 @@ namespace Odyssey
 		m_CopyRegions.push_back(bufferCopyRegion);
 
 		// Allocate a command buffer
-		ResourceID commandPoolID = m_Context->GetCommandPool();
+		ResourceID commandPoolID = m_Context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -167,7 +167,7 @@ namespace Odyssey
 		commandBuffer->BeginCommands();
 		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_Width, m_Height);
 		commandBuffer->EndCommands();
-		commandBuffer->Flush();
+		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
@@ -204,7 +204,7 @@ namespace Odyssey
 		}
 
 		// Allocate a command buffer
-		ResourceID commandPoolID = m_Context->GetCommandPool();
+		ResourceID commandPoolID = m_Context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -213,7 +213,7 @@ namespace Odyssey
 		commandBuffer->BeginCommands();
 		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_Width, m_Height);
 		commandBuffer->EndCommands();
-		commandBuffer->Flush();
+		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 

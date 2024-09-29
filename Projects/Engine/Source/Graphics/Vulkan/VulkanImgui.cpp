@@ -157,7 +157,7 @@ namespace Odyssey
 	void VulkanImgui::UploadFont()
 	{
 		// Use any command queue
-		ResourceID commandPoolID = m_Context->GetCommandPool();
+		ResourceID commandPoolID = m_Context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);

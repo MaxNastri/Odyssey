@@ -13,6 +13,13 @@ namespace Odyssey
 		VulkanComputePipeline(std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info);
 		void Destroy();
 
+	public:
+		VkPipeline GetPipeline() { return m_ComputePipeline; }
+		VkPipelineLayout GetLayout() { return m_PipelineLayout; }
+
+	private:
+		void CreateLayout(VulkanPipelineInfo& info);
+
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		VkPipelineLayout m_PipelineLayout = nullptr;

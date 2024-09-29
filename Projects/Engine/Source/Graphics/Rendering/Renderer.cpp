@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "VulkanRenderer.h"
+#include "ParticleBatcher.h"
 
 namespace Odyssey
 {
@@ -10,6 +11,8 @@ namespace Odyssey
 
 		if (s_Config.EnableIMGUI)
 			s_RendererAPI->AddImguiPass();
+
+		ParticleBatcher::Init();
 	}
 
 	bool Renderer::Update()

@@ -14,7 +14,7 @@ namespace Odyssey
 	{
 	public:
 		VulkanCommandPool() = default;
-		VulkanCommandPool(std::shared_ptr<VulkanContext> context);
+		VulkanCommandPool(std::shared_ptr<VulkanContext> context, VulkanQueueType queue);
 
 	public:
 		ResourceID AllocateBuffer();

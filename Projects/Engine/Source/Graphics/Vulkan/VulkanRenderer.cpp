@@ -52,12 +52,25 @@ namespace Odyssey
 
 		for (int i = 0; i < m_Frames.size(); ++i)
 		{
-			ResourceID commandPoolID = ResourceManager::Allocate<VulkanCommandPool>();
-			auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
-			ResourceID commandBufferID = commandPool->AllocateBuffer();
+			// Graphics command resources
+			{
+				ResourceID commandPoolID = ResourceManager::Allocate<VulkanCommandPool>(VulkanQueueType::Graphics);
+				auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+				ResourceID commandBufferID = commandPool->AllocateBuffer();
 
-			m_CommandPools.push_back(commandPoolID);
-			m_CommandBuffers.push_back(commandBufferID);
+				m_GraphicsCommandPools.push_back(commandPoolID);
+				m_GraphicsCommandBuffers.push_back(commandBufferID);
+			}
+
+			// Compute command resources
+			{
+				ResourceID commandPoolID = ResourceManager::Allocate<VulkanCommandPool>(VulkanQueueType::Compute);
+				auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+				ResourceID commandBufferID = commandPool->AllocateBuffer();
+
+				m_ComputeCommandPools.push_back(commandPoolID);
+				m_ComputeCommandBuffers.push_back(commandBufferID);
+			}
 		}
 	}
 
@@ -169,11 +182,11 @@ namespace Odyssey
 			Logger::LogError("(renderer 4)");
 		}
 
-		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_CommandPools[s_FrameIndex]);
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_GraphicsCommandPools[s_FrameIndex]);
 		commandPool->Reset();
 
 		// Command buffer begin
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_CommandBuffers[s_FrameIndex]);
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_GraphicsCommandBuffers[s_FrameIndex]);
 		commandBuffer->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
@@ -198,14 +211,15 @@ namespace Odyssey
 			}
 
 			// RenderPass begin
-			auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_CommandBuffers[s_FrameIndex]);
+			auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_GraphicsCommandBuffers[s_FrameIndex]);
 			m_RenderingData->frame = frame;
 			m_RenderingData->renderScene = m_RenderScenes[s_FrameIndex];
 			m_RenderingData->width = width;
 			m_RenderingData->height = height;
 
 			RenderPassParams params;
-			params.commandBuffer = m_CommandBuffers[s_FrameIndex];
+			params.GraphicsCommandBuffer = m_GraphicsCommandBuffers[s_FrameIndex];
+			params.ComputeCommandBuffer = m_ComputeCommandBuffers[s_FrameIndex];
 			params.context = m_Context;
 			params.renderingData = m_RenderingData;
 			params.FrameRT = frame->GetRenderTarget();

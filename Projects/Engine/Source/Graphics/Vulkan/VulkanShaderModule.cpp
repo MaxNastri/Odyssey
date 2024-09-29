@@ -26,12 +26,16 @@ namespace Odyssey
 	{
 		switch (m_ShaderType)
 		{
-			case Odyssey::ShaderType::None:
+			case ShaderType::None:
 				break;
-			case Odyssey::ShaderType::Fragment:
+			case ShaderType::Fragment:
 				return VK_SHADER_STAGE_FRAGMENT_BIT;
-			case Odyssey::ShaderType::Vertex:
+			case ShaderType::Vertex:
 				return VK_SHADER_STAGE_VERTEX_BIT;
+			case ShaderType::Compute:
+				return VK_SHADER_STAGE_COMPUTE_BIT;
+			case ShaderType::Geometry:
+				return VK_SHADER_STAGE_GEOMETRY_BIT;
 			default:
 				break;
 		}

@@ -23,3 +23,11 @@ Entries:
     Type: Odyssey.Mesh
     Path: 'Meshes/Cube.mesh'
     GUID: 4325336624522892849
+  - Name: Particles
+    Type: Odyssey.Shader
+    Path: 'Shaders/Particles.shader'
+    GUID: 16032593712191697003
+  - Name: Particles
+    Type: Odyssey.SourceShader
+    Path: 'Shaders/Source/Particles.hlsl'
+    GUID: 3156967184414869478

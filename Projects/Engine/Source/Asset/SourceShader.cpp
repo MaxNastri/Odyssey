@@ -130,6 +130,7 @@ namespace Odyssey
 		for (size_t i = 0; i < parseData.size(); i++)
 		{
 			ShaderParseData& shaderParse = parseData[i];
+			size_t start = shaderParse.FilePos + shaderParse.Pragma.length();
 			size_t end = std::string::npos;
 
 			if (i < parseData.size() - 1)
@@ -137,10 +138,13 @@ namespace Odyssey
 				ShaderParseData& nextParse = parseData[i + 1];
 
 				if (nextParse.FilePos != std::string::npos)
-					end = nextParse.FilePos - nextParse.Pragma.length();
+				{
+					// Move the end to the beginning of the next pragma and calculate the length from the start
+					end = nextParse.FilePos - start;
+				}
 			}
 
-			m_ShaderCode[shaderParse.ShaderType] = fileContents.substr(shaderParse.FilePos + shaderParse.Pragma.length(), end);
+			m_ShaderCode[shaderParse.ShaderType] = fileContents.substr(start, end);
 		}
 	}
 

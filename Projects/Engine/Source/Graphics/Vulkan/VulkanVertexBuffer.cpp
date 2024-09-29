@@ -27,7 +27,7 @@ namespace Odyssey
 		vertexBuffer->AllocateMemory();
 
 		// Copy the staging buffer into the vertex buffer
-		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetCommandPool());
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
 
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -36,7 +36,7 @@ namespace Odyssey
 		commandBuffer->CopyBufferToBuffer(m_StagingBuffer, m_VertexBuffer, (uint32_t)dataSize);
 		commandBuffer->EndCommands();
 
-		m_Context->SubmitCommandBuffer(commandBufferID);
+		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
@@ -59,7 +59,7 @@ namespace Odyssey
 		stagingBuffer->SetMemory(dataSize, vertices.data());
 
 		// Allocate a commandbuffer
-		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetCommandPool());
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
@@ -68,7 +68,7 @@ namespace Odyssey
 		commandBuffer->CopyBufferToBuffer(m_StagingBuffer, m_VertexBuffer, (uint32_t)dataSize);
 		commandBuffer->EndCommands();
 
-		m_Context->SubmitCommandBuffer(commandBufferID);
+		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 }
