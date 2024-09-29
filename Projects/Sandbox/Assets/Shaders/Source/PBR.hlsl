@@ -157,5 +157,7 @@ float3 CalculateDiffuse(Light light, float3 surfaceNormal)
 {
     float3 lightVector = -normalize(light.Direction.xyz);
     float contribution = max(0.0f, dot(surfaceNormal, lightVector));
+    // Half-lambert equation modified to be cubed instead of squared
+    contribution = pow((contribution * 0.5f) + 0.5f, 3);
     return light.Color.rgb * light.Intensity * contribution;
 }

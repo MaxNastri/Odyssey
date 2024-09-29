@@ -21,7 +21,7 @@ namespace Odyssey
 	OpaquePass::OpaquePass()
 	{
 		m_ClearValue = glm::vec4(0, 0, 0, 1);
-		//m_SubPasses.push_back(std::make_shared<SkyboxSubPass>());
+		m_SubPasses.push_back(std::make_shared<SkyboxSubPass>());
 		m_SubPasses.push_back(std::make_shared<OpaqueSubPass>());
 
 		for (auto& subPass : m_SubPasses)
