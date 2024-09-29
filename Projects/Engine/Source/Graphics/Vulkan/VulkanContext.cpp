@@ -33,6 +33,7 @@ namespace Odyssey
 	{
 		m_CommandPool = ResourceManager::Allocate<VulkanCommandPool>();
 		m_GraphicsQueue = std::make_shared<VulkanQueue>(VulkanQueueType::Graphics, VulkanContext::shared_from_this());
+		m_GraphicsQueue = std::make_shared<VulkanQueue>(VulkanQueueType::Compute, VulkanContext::shared_from_this());
 	}
 
 	void VulkanContext::SubmitCommandBuffer(ResourceID resourceID)

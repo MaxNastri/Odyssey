@@ -106,8 +106,20 @@ namespace Odyssey
 			}
 		}
 
+		// Find the compute queue
+		for (uint32_t i = 0; i < count; i++)
+		{
+			if (queues[i].queueFlags & VK_QUEUE_COMPUTE_BIT)
+			{
+				indices.computeFamily = i;
+				break;
+			}
+
+		}
+
 		free(queues);
 		assert(indices.graphicsFamily.has_value());
+		assert(indices.computeFamily.has_value());
 	}
 
 	bool VulkanPhysicalDevice::IsDeviceSuitable(VkPhysicalDevice device)
@@ -127,7 +139,7 @@ namespace Odyssey
 			case VulkanQueueType::Graphics:
 				return indices.graphicsFamily.value();
 			case VulkanQueueType::Compute:
-				break;
+				return indices.computeFamily.value();
 			case VulkanQueueType::Transfer:
 				break;
 			default:

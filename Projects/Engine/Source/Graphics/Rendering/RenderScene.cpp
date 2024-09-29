@@ -20,6 +20,8 @@
 #include "Animator.h"
 #include "Cubemap.h"
 #include "Light.h"
+#include "ParticleSystem.h"
+#include "ParticleBatcher.h"
 
 namespace Odyssey
 {
@@ -156,6 +158,14 @@ namespace Odyssey
 		// Copy the data into the uniform buffer
 		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(LightingBuffer);
 		uniformBuffer->SetMemory(sizeof(LightingData), &LightingData);
+
+		std::vector<ParticleSystem> systems;
+		for (auto entity : scene->GetAllEntitiesWith<ParticleSystem>())
+		{
+			GameObject gameObject = GameObject(scene, entity);
+			systems.push_back(gameObject.GetComponent<ParticleSystem>());
+		}
+		ParticleBatcher::Update(systems);
 
 		SetupDrawcalls(scene);
 	}

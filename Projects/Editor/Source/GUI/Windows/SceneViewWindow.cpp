@@ -163,28 +163,29 @@ namespace Odyssey
 				Camera& camera = m_GameObject.GetComponent<Camera>();
 				ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 
-				glm::mat4 worldMatrix = transform->GetWorldMatrix();
+				glm::mat4 worldMatrix = transform->GetLocalMatrix();
 				glm::mat4 view = camera.GetInverseView();
 				glm::mat4 proj = camera.GetProjection();
 				proj[1][1] *= -1.0f;
 
-				ImGuizmo::AllowAxisFlip(false);
+				ImGuizmo::AllowAxisFlip(SceneViewWindow::AllowFlip);
 				ImGuizmo::SetGizmoSizeClipSpace(0.1f);
 				ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj),
-					(ImGuizmo::OPERATION)op, ImGuizmo::WORLD, glm::value_ptr(worldMatrix));
+					(ImGuizmo::OPERATION)op, SceneViewWindow::IsLocal ? ImGuizmo::LOCAL : ImGuizmo::WORLD, glm::value_ptr(worldMatrix));
 
 				if (ImGuizmo::IsUsing())
 				{
-					glm::vec3 pos, rot, scale;
-					ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(worldMatrix), glm::value_ptr(pos), glm::value_ptr(rot), glm::value_ptr(scale));
-
-					glm::vec3 currentRotation = transform->GetEulerRotation();
-					glm::vec3 diffRotation = rot - currentRotation;
+					glm::vec3 translation;
+					glm::vec3 scale;
+					glm::quat rotation;
+					glm::vec3 skew;
+					glm::vec4 perspective;
+					glm::decompose(worldMatrix, scale, rotation, translation, skew, perspective);
 
 					if (op == ImGuizmo::OPERATION::TRANSLATE)
-						transform->SetPosition(pos);
+						transform->SetPosition(translation);
 					else if (op == ImGuizmo::ROTATE)
-						transform->AddRotation(diffRotation);
+						transform->SetRotation(rotation);
 					else if (op == ImGuizmo::SCALE)
 						transform->SetScale(scale);
 				}

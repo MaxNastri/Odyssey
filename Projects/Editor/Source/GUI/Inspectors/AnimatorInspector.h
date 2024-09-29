@@ -1,4 +1,5 @@
 #pragma once
+#include "Animator.h"
 #include "Inspector.h"
 #include "GameObject.h"
 #include "AssetFieldDrawer.h"

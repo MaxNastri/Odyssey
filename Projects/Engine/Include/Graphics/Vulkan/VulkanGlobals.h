@@ -28,6 +28,7 @@ namespace Odyssey
     struct VulkanQueueFamilies
     {
         std::optional<uint32_t> graphicsFamily;
+        std::optional<uint32_t> computeFamily;
     };
 
     // ALLOCATIONS

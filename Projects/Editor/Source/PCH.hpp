@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <iostream>
 #include <random>
+#include <ranges>
 #include <chrono>
 #include <queue>
 #include <typeindex>
