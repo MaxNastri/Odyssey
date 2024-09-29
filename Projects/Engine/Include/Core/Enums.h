@@ -9,6 +9,7 @@ namespace Odyssey
 		Vertex = 2,
 		Index = 3,
 		Uniform = 4,
+		Storage = 5,
 	};
 
 	enum DescriptorType
@@ -78,5 +79,7 @@ namespace Odyssey
 		None = 0,
 		Fragment = 1,
 		Vertex = 2,
+		Compute = 3,
+		Geometry = 4,
 	};
 }

@@ -24,6 +24,7 @@ namespace Odyssey
 
 	private:
 		void ParseShaderFile(const Path& path);
+		void ParseShaderCode(const std::string& fileContents);
 		void OnFileModified(const Path& path, FileActionType fileAction);
 
 	private:
@@ -34,5 +35,14 @@ namespace Odyssey
 		std::map<ShaderType, std::string> m_ShaderCode;
 		std::unique_ptr<FileTracker> m_FileTracker;
 		bool m_Compiled = false;
+
+	private:
+		inline static std::unordered_map<ShaderType, std::string> ShaderPragmaMap =
+		{
+			{ ShaderType::Vertex, "#pragma Vertex\n" },
+			{ ShaderType::Fragment, "#pragma Fragment\n" },
+			{ ShaderType::Compute, "#pragma Compute\n" },
+			{ ShaderType::Geometry, "#pragma Geometry\n" }
+		};
 	};
 }
