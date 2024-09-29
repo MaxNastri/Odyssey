@@ -10,6 +10,7 @@ namespace Odyssey
 
 	class Animator
 	{
+		CLASS_DECLARATION(Odyssey, Animator)
 	public:
 		Animator() = default;
 		Animator(const GameObject& gameObject);
@@ -60,7 +61,6 @@ namespace Odyssey
 
 	private:
 		bool m_DebugEnabled = false;
-		CLASS_DECLARATION(Animator);
 	};
 
 }

@@ -11,19 +11,7 @@ namespace Odyssey
 		m_GUID = guid;
 		m_Type = assetType;
 		m_OnValueModified = callback;
-
-		std::vector<GUID> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
-		possibleGUIDs.insert(possibleGUIDs.begin(), 0);
-
-		// Find this guid's selected index
-		for (uint32_t i = 0; i < possibleGUIDs.size(); i++)
-		{
-			if (possibleGUIDs[i] == m_GUID)
-			{
-				selectedIndex = i;
-				break;
-			}
-		}
+		SetSelectedIndex();
 	}
 
 	void AssetFieldDrawer::Draw()
@@ -52,8 +40,13 @@ namespace Odyssey
 					if (ImGui::Selectable(displayName.c_str(), isSelected))
 					{
 						selectedIndex = i;
-						m_OnValueModified(possibleGUIDs[selectedIndex]);
-						m_Modified = true;
+						m_GUID = possibleGUIDs[selectedIndex];
+						if (m_OnValueModified)
+						{
+							m_Modified = true;
+							m_OnValueModified(m_GUID);
+							m_Modified = false;
+						}
 					}
 
 					if (isSelected)
@@ -72,14 +65,40 @@ namespace Odyssey
 				{
 					GUID guid = *((GUID*)payload->Data);
 					m_GUID = GUID(guid);
-					m_Modified = true;
-					m_OnValueModified(m_GUID);
+					if (m_OnValueModified)
+					{
+						m_Modified = true;
+						m_OnValueModified(m_GUID);
+						m_Modified = false;
+					}
 					Logger::LogInfo("(AssetFieldDrawer) Accepting D&D payload for mesh asset: " + m_GUID.String());
 				}
 				ImGui::EndDragDropTarget();
 			}
 
 			ImGui::EndTable();
+		}
+	}
+
+	void AssetFieldDrawer::SetGUID(GUID guid)
+	{
+		m_GUID = guid;
+		SetSelectedIndex();
+	}
+
+	void AssetFieldDrawer::SetSelectedIndex()
+	{
+		std::vector<GUID> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
+		possibleGUIDs.insert(possibleGUIDs.begin(), 0);
+
+		// Find this guid's selected index
+		for (uint32_t i = 0; i < possibleGUIDs.size(); i++)
+		{
+			if (possibleGUIDs[i] == m_GUID)
+			{
+				selectedIndex = i;
+				break;
+			}
 		}
 	}
 }

@@ -28,14 +28,11 @@ namespace Odyssey
 		static void AddRing(glm::vec3 center, glm::vec4 majorAxis, glm::vec4 minorAxis, glm::vec4 color);
 
 	public:
-		static std::shared_ptr<Shader> GetShader() { return m_Shader; }
 		static ResourceID GetVertexBuffer();
-		
 		static size_t GetVertexCount() { return m_VertexCount; }
 
 	private:
 		inline static ResourceID m_VertexBufferID;
-		inline static std::shared_ptr<Shader> m_Shader;
 		inline static Settings m_Settings;
 		inline static std::vector<Vertex> m_Vertices;
 		inline static size_t m_VertexCount = 0;

@@ -8,6 +8,7 @@ namespace Odyssey
 
 	class AnimationClip : public Asset
 	{
+		CLASS_DECLARATION(Odyssey, AnimationClip)
 	public:
 		AnimationClip(const Path& assetPath);
 		AnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
@@ -23,8 +24,11 @@ namespace Odyssey
 		size_t GetFrameCount();
 
 	private:
+		void LoadFromSource(std::shared_ptr<SourceModel> source);
 		void SaveToDisk(const Path& assetPath);
-		void LoadFromDisk(const Path& assetPath);
+
+	private:
+		void OnSourceModified();
 
 	private:
 		std::string m_Name;

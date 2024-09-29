@@ -13,7 +13,6 @@ namespace Odyssey
 
 		m_Vertices.resize(m_Settings.MaxVertices);
 		m_VertexBufferID = ResourceManager::Allocate<VulkanVertexBuffer>(m_Vertices);
-		m_Shader = std::make_shared<Shader>(m_Settings.DebugShaderPath);
 	}
 
 	void DebugRenderer::Clear()

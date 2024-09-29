@@ -11,6 +11,7 @@ namespace Odyssey
 
 	class Mesh : public Asset
 	{
+		CLASS_DECLARATION(Odyssey, Mesh)
 	public:
 		Mesh() = default;
 		Mesh(const Path& assetPath);
@@ -21,8 +22,8 @@ namespace Odyssey
 		void Load();
 
 	private:
+		void LoadFromSource(std::shared_ptr<SourceModel> source);
 		void SaveToDisk(const Path& assetPath);
-		void LoadFromDisk(const Path& assetPath);
 
 	public:
 		ResourceID GetVertexBuffer() { return m_VertexBuffer; }

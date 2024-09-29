@@ -43,7 +43,7 @@ namespace Odyssey
 
 	void Project::LoadProject(const Path& projectDirectory)
 	{
-		Path projectSettingsPath = projectDirectory / "ProjectSettings.asset";
+		Path projectSettingsPath = projectDirectory / "ProjectSettings.osettings";
 
 		if (!std::filesystem::exists(projectSettingsPath))
 		{

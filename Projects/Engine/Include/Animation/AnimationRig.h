@@ -8,6 +8,7 @@ namespace Odyssey
 
 	class AnimationRig : public Asset
 	{
+		CLASS_DECLARATION(Odyssey, AnimationRig)
 	public:
 		AnimationRig(const Path& assetPath);
 		AnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> source);
@@ -22,8 +23,11 @@ namespace Odyssey
 		const Bone& GetRootBone() { return m_Bones[m_RootBone]; }
 
 	private:
+		void LoadFromSource(std::shared_ptr<SourceModel> source);
 		void SaveToDisk(const Path& assetPath);
-		void LoadFromDisk(const Path& assetPath);
+
+	private:
+		void OnSourceModified();
 
 	private:
 		std::uint32_t m_RootBone;

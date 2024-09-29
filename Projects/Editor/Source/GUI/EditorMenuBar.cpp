@@ -7,6 +7,7 @@
 #include "EventSystem.h"
 #include "EditorEvents.h"
 #include "Renderer.h"
+#include "SceneSettingsWindow.h"
 
 namespace Odyssey
 {
@@ -51,18 +52,30 @@ namespace Odyssey
 
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu("Imgui"))
+
+		if (ImGui::BeginMenu("Window"))
 		{
+			if (ImGui::MenuItem("Content Browser"))
+				GUIManager::CreateDockableWindow<ContentBrowserWindow>();
+			if (ImGui::MenuItem("Game View"))
+				GUIManager::CreateDockableWindow<GameViewWindow>();
+			if (ImGui::MenuItem("Inspector Window"))
+				GUIManager::CreateDockableWindow<InspectorWindow>();
+			if (ImGui::MenuItem("Scene Hierarchy"))
+				GUIManager::CreateDockableWindow<SceneHierarchyWindow>();
+			if (ImGui::MenuItem("Scene Settings"))
+				GUIManager::CreateDockableWindow<SceneSettingsWindow>();
+			if (ImGui::MenuItem("Scene View"))
+				GUIManager::CreateDockableWindow<SceneViewWindow>();
+
 			if (ImGui::MenuItem("Display Demo Window"))
-			{
 				m_ShowDemoWindow = true;
-			}
+
 			ImGui::EndMenu();
 		}
+
 		if (m_ShowDemoWindow)
-		{
 			ImGui::ShowDemoWindow(&m_ShowDemoWindow);
-		}
 
 		ImGui::EndMainMenuBar();
 	}

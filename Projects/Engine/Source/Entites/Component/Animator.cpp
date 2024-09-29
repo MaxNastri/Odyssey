@@ -10,8 +10,6 @@
 
 namespace Odyssey
 {
-	CLASS_DEFINITION(Odyssey, Animator);
-
 	Animator::Animator(const GameObject& gameObject)
 		: m_GameObject(gameObject)
 	{
@@ -64,7 +62,7 @@ namespace Odyssey
 		m_AnimationRig = animationRigGUID;
 
 		// Load the rig and resize our final poses to match the bone count
-		auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
+		auto rig = AssetManager::LoadAsset<AnimationRig>(m_AnimationRig);
 		m_FinalPoses.clear();
 		m_FinalPoses.resize(rig->GetBones().size());
 		//CreateBoneGameObjects();
@@ -85,7 +83,7 @@ namespace Odyssey
 		DestroyBoneGameObjects();
 
 		// Load the rig and get the bones
-		auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
+		auto rig = AssetManager::LoadAsset<AnimationRig>(m_AnimationRig);
 		const std::vector<Bone>& bones = rig->GetBones();
 
 		// Resize our bone game objects to match
@@ -131,7 +129,7 @@ namespace Odyssey
 	void Animator::ProcessKeys()
 	{
 		// Create storage for our bone keys
-		auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
+		auto rig = AssetManager::LoadAsset<AnimationRig>(m_AnimationRig);
 		const std::vector<Bone>& bones = rig->GetBones();
 
 		double time = m_Playing ? (double)Time::DeltaTime() : 0.0;
@@ -159,7 +157,7 @@ namespace Odyssey
 	void Animator::ProcessTransforms()
 	{
 		// Create storage for our bone keys
-		auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
+		auto rig = AssetManager::LoadAsset<AnimationRig>(m_AnimationRig);
 		const std::vector<Bone>& bones = rig->GetBones();
 
 		double time = m_Playing ? (double)Time::DeltaTime() : 0.0;

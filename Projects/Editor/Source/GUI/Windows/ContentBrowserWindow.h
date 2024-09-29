@@ -7,28 +7,29 @@ namespace Odyssey
 	class ContentBrowserWindow : public DockableWindow
 	{
 	public:
-		ContentBrowserWindow();
+		ContentBrowserWindow(size_t windowID);
 		void Destroy();
 
 	public:
 		virtual void Draw() override;
+		virtual void OnWindowClose() override;
 
 	public:
 		void UpdatePaths();
 
 	private:
 		void HandleContextMenu();
-		void DrawSceneAsset(const std::filesystem::path& assetPath);
-		void DrawSourceAsset(const std::filesystem::path& sourcePath);
-		void DrawAsset(const std::filesystem::path& assetPath);
-		void OnFileAction(const std::filesystem::path& filePath, FileActionType fileAction);
+		void DrawSceneAsset(const Path& assetPath);
+		void DrawSourceAsset(const Path& sourcePath);
+		void DrawAsset(const Path& assetPath);
+		void OnFileAction(const Path& filePath, FileActionType fileAction);
 
 	private: // Pathing
 		bool m_UpdatePaths = true;
-		std::filesystem::path m_AssetsPath;
-		std::filesystem::path m_CurrentPath;
-		std::vector<std::filesystem::path> m_FoldersToDisplay;
-		std::vector<std::filesystem::path> m_FilesToDisplay;
+		Path m_AssetsPath;
+		Path m_CurrentPath;
+		std::vector<Path> m_FoldersToDisplay;
+		std::vector<Path> m_FilesToDisplay;
 		std::unique_ptr<FileTracker> m_FileTracker;
 
 	private: // Context menu

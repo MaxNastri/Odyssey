@@ -11,6 +11,7 @@ namespace Odyssey
 
 	class Texture2D : public Asset
 	{
+		CLASS_DECLARATION(Odyssey, Texture2D)
 	public:
 		Texture2D(const Path& assetPath);
 		Texture2D(const Path& assetPath, TextureFormat format);
@@ -25,9 +26,12 @@ namespace Odyssey
 		GUID GetPixelBufferGUID() { return m_PixelBufferGUID; }
 
 	private:
+		void LoadFromSource(std::shared_ptr<SourceTexture> source);
 		void SaveToDisk(const Path& assetPath);
-		void LoadFromDisk(const Path& assetPath);
-		
+
+	private:
+		void OnSourceModified();
+
 	private:
 		GUID m_PixelBufferGUID;
 		VulkanImageDescription m_TextureDescription;

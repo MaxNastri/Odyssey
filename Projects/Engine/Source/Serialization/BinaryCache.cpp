@@ -11,7 +11,7 @@ namespace Odyssey
 			std::filesystem::create_directories(m_Path);
 
 		TrackingOptions options;
-		options.Direrctory = m_Path;
+		options.TrackingPath = m_Path;
 		options.Extensions = { ".asset" };
 		options.Recursive = true;
 		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileAction(path, fileAction); };

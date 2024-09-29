@@ -1,7 +1,7 @@
 m_SourceAsset: 0
 m_GUID: 11519690897429141827
 m_Name: Monk FBX Rig
-m_Type: AnimationRig
+m_Type: Odyssey.AnimationRig
 Global Matrix: '00: -0.01 01: 0 02: 8.7422775e-10 03: 0 10: 0 11: 0.01 12: 0 13: 0 20: -8.7422775e-10 21: 0 22: -0.01 23: 0 30: 0 31: 0 32: 0 33: 1'
 Bone Count: 75
 Bones:

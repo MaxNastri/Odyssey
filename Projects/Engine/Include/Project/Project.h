@@ -16,6 +16,7 @@ namespace Odyssey
 		const Path& GetUserScriptsDirectory() { return m_ProjectSettings.GetScriptsDirectory(); }
 		const Path& GetUserScriptsProject() { return m_ProjectSettings.GetScriptsProjectPath(); }
 		const Path& GetTempDirectory() { return m_ProjectSettings.GetTempDirectory(); }
+		const Path& GetAssetRegistry() { return m_ProjectSettings.GetAssetRegistryPath(); }
 
 	public:
 		static void CreateNewProject(const std::string& projectName, const Path& projectDirectory);
@@ -31,6 +32,7 @@ namespace Odyssey
 		static const Path& GetActiveUserScriptsDirectory() { return s_ActiveProject->GetUserScriptsDirectory(); }
 		static const Path& GetActiveUserScriptsProject() { return s_ActiveProject->GetUserScriptsProject(); }
 		static const Path& GetActiveTempDirectory() { return s_ActiveProject->GetTempDirectory(); }
+		static const Path& GetActiveAssetRegistry() { return s_ActiveProject->GetAssetRegistry(); }
 
 	private:
 		static void ReplaceProjectName(std::string_view projectName, const Path& path);

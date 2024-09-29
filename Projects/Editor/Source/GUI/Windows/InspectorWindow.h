@@ -13,10 +13,12 @@ namespace Odyssey
 	{
 	public:
 		InspectorWindow() = default;
+		InspectorWindow(size_t windowID) : DockableWindow("InspectorWindow", 0, glm::vec2(0), glm::vec2(0), glm::vec2(0)) { }
 		InspectorWindow(std::shared_ptr<Inspector> inspector);
 
 	public:
 		virtual void Draw() override;
+		virtual void OnWindowClose() override;
 
 	public:
 		void OnGUISelectionChanged(GUISelectionChangedEvent* event);

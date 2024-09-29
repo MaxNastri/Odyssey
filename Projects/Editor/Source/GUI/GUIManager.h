@@ -23,10 +23,50 @@ namespace Odyssey
 
 	public:
 		static void CreateInspectorWindow();
-		static void CreateSceneHierarchyWindow();
-		static void CreateSceneViewWindow();
-		static void CreateGameViewWindow();
-		static void CreateContentBrowserWindow();
+
+	public:
+		template<typename T>
+		static void CreateDockableWindow()
+		{
+			static_assert(std::is_base_of<DockableWindow, T>::value, "T is not a dervied class of DockableWindow.");
+
+			std::type_index windowType = typeid(T);
+
+			size_t windowID = 0;
+
+			// Check if we have an available ID
+			if (!s_WindowIDs[windowType].AvailableIDs.empty())
+			{
+				windowID = s_WindowIDs[windowType].AvailableIDs.top();
+				s_WindowIDs[windowType].AvailableIDs.pop();
+			}
+			else
+			{
+				// Use the next window ID
+				windowID = s_WindowIDs[windowType].NextID;
+				s_WindowIDs[windowType].NextID++;
+			}
+
+			// Create and store the window
+			std::shared_ptr<T> window = std::make_shared<T>(windowID);
+			s_Windows.push_back(window);
+		}
+
+		template<typename T> 
+		static void DestroyDockableWindow(T* destroyWindow)
+		{
+			std::type_index windowType = typeid(T);
+
+			for (size_t i = 0; i < s_Windows.size(); i++)
+			{
+				if (s_Windows[i].get() == destroyWindow)
+				{
+					s_WindowIDs[windowType].AvailableIDs.push(destroyWindow->GetID());
+					s_Windows.erase(s_Windows.begin() + i);
+					break;
+				}
+			}
+		}
 
 	public:
 		static void Update();
@@ -34,8 +74,6 @@ namespace Odyssey
 
 	public:
 		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
-		static std::shared_ptr<SceneViewWindow> GetSceneViewWindow(uint32_t index) { return s_SceneViews[index]; }
-		static std::shared_ptr<GameViewWindow> GetGameViewWindow(uint32_t index) { return s_GameViews[index]; }
 
 	private:
 		static void SetDarkThemeColors();
@@ -44,10 +82,15 @@ namespace Odyssey
 		inline static EditorMenuBar s_MenuBar;
 		inline static EditorActionsBar s_ActionsBar;
 
+		struct WindowID
+		{
+		public:
+			size_t NextID;
+			std::priority_queue<size_t, std::vector<size_t>, std::greater<size_t>> AvailableIDs;
+		};
 		// Windows
 		inline static std::vector<std::shared_ptr<DockableWindow>> s_Windows;
-		inline static std::vector<std::shared_ptr<SceneViewWindow>> s_SceneViews;
-		inline static std::vector<std::shared_ptr<GameViewWindow>> s_GameViews;
+		inline static std::unordered_map<std::type_index, WindowID> s_WindowIDs;
 		inline static int32_t selectedObject = -1;
 		inline static std::shared_ptr<ImguiPass> m_GUIPass;
 	};

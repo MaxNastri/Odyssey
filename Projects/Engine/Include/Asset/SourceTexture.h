@@ -3,11 +3,13 @@
 #include "Enums.h"
 #include "TextureImporter.h"
 #include "BinaryBuffer.h"
+#include "FileTracker.h"
 
 namespace Odyssey
 {
 	class SourceTexture : public SourceAsset
 	{
+		CLASS_DECLARATION(Odyssey, SourceTexture)
 	public:
 		SourceTexture() = default;
 		SourceTexture(const Path& sourcePath);
@@ -19,9 +21,12 @@ namespace Odyssey
 		int32_t GetChannels() { return m_Channels; }
 
 	private:
+		void LoadTexture();
+		void OnFileModified(const Path& path, FileActionType fileAction);
+
+	private:
 		int32_t m_Width, m_Height, m_Channels;
-		TextureType m_TextureType;
 		BinaryBuffer m_PixelBuffer;
-		TextureImporter m_Importer;
+		std::unique_ptr<FileTracker> m_FileTracker;
 	};
 }

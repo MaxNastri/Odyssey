@@ -1,12 +1,10 @@
 #pragma once
 #include "Inspector.h"
-#include "GUID.h"
+#include "SourceModel.h"
 #include "StringDrawer.h"
 
 namespace Odyssey
 {
-	class SourceModel;
-
 	class SourceModelInspector : public Inspector
 	{
 	public:

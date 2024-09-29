@@ -2,11 +2,13 @@
 #include "Asset.h"
 #include "BinaryBuffer.h"
 #include "Enums.h"
+#include "FileTracker.h"
 
 namespace Odyssey
 {
 	class SourceShader : public SourceAsset
 	{
+		CLASS_DECLARATION(Odyssey, SourceShader)
 	public:
 		SourceShader() = default;
 		SourceShader(const Path& sourcePath);
@@ -22,6 +24,7 @@ namespace Odyssey
 
 	private:
 		void ParseShaderFile(const Path& path);
+		void OnFileModified(const Path& path, FileActionType fileAction);
 
 	private:
 		std::string m_ShaderName;
@@ -29,6 +32,7 @@ namespace Odyssey
 		std::string m_VertexShaderCode;
 		std::string m_FragmentShaderCode;
 		std::map<ShaderType, std::string> m_ShaderCode;
+		std::unique_ptr<FileTracker> m_FileTracker;
 		bool m_Compiled = false;
 	};
 }

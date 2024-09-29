@@ -69,6 +69,7 @@ project "Odyssey.Editor"
     
     defines {
         "FBXSDK_SHARED",
+        "ODYSSEY_EDITOR",
     }
 
     filter { "system:windows" }

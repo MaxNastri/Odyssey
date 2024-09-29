@@ -7,11 +7,12 @@
 #include "Camera.h"
 #include "Renderer.h"
 #include "VulkanRenderTexture.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
-	GameViewWindow::GameViewWindow()
-		: DockableWindow("Game View",
+	GameViewWindow::GameViewWindow(size_t windowID)
+		: DockableWindow("Game View", windowID,
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		// Rendering stuff
@@ -55,6 +56,11 @@ namespace Odyssey
 
 		if (m_MainCamera)
 			m_MainCamera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+	}
+
+	void GameViewWindow::OnWindowClose()
+	{
+		GUIManager::DestroyDockableWindow(this);
 	}
 
 	void GameViewWindow::OnSceneLoaded(SceneLoadedEvent* event)

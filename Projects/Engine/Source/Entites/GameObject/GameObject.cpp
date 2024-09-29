@@ -6,11 +6,10 @@
 #include "Transform.h"
 #include "ScriptComponent.h"
 #include "Animator.h"
+#include "Light.h"
 
 namespace Odyssey
 {
-	CLASS_DEFINITION(Odyssey, GameObject);
-
 	GameObject::GameObject(Scene* scene, entt::entity entity)
 	{
 		m_Entity = entity;
@@ -49,6 +48,9 @@ namespace Odyssey
 
 		if (ScriptComponent* userScript = TryGetComponent<ScriptComponent>())
 			userScript->Serialize(componentsNode);
+
+		if (Light* light = TryGetComponent<Light>())
+			light->Serialize(componentsNode);
 	}
 
 	void GameObject::Deserialize(SerializationNode& node)
@@ -98,6 +100,11 @@ namespace Odyssey
 			{
 				ScriptComponent& script = AddComponent<ScriptComponent>();
 				script.Deserialize(componentNode);
+			}
+			else if (componentType == Light::Type)
+			{
+				Light& light = AddComponent<Light>();
+				light.Deserialize(componentNode);
 			}
 		}
 	}

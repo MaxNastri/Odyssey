@@ -19,6 +19,7 @@ namespace Odyssey
 	{
 		glm::mat4 inverseView;
 		glm::mat4 ViewProjection;
+		glm::vec4 ViewPosition;
 	};
 
 	struct ObjectUniformData
@@ -46,6 +47,25 @@ namespace Odyssey
 				Bones[i] = bindposes[i];
 			}
 		}
+	};
+
+	struct alignas(16) SceneLight
+	{
+	public:
+		glm::vec4 Position;
+		glm::vec4 Direction;
+		glm::vec4 Color;
+		uint32_t Type;
+		float Intensity;
+		float Range;
+	};
+
+	struct alignas(16) LightingData
+	{
+	public:
+		glm::vec4 AmbientColor;
+		std::array<SceneLight, 16> SceneLights;
+		uint32_t LightCount;
 	};
 
 	struct SetPass
@@ -85,12 +105,16 @@ namespace Odyssey
 		CameraUniformData cameraData;
 		ObjectUniformData objectData;
 		SkinningData SkinningData;
+		LightingData LightingData;
 		Camera* m_MainCamera = nullptr;
+
+		ResourceID SkyboxCubemap;
 
 		// Descriptor buffer for per-scene data
 		std::vector<ResourceID> cameraDataBuffers;
 		std::vector<ResourceID> perObjectUniformBuffers;
 		std::vector<ResourceID> skinningBuffers;
+		ResourceID LightingBuffer;
 
 		ResourceID m_DescriptorLayout;
 
@@ -98,6 +122,7 @@ namespace Odyssey
 		uint32_t m_NextUniformBuffer = 0;
 		uint32_t m_NextCameraBuffer = 0;
 		const uint32_t Max_Uniform_Buffers = 128;
-		inline static constexpr uint32_t MAX_CAMERAS = 4;
+		inline static constexpr uint32_t MAX_CAMERAS = 12;
+		inline static constexpr uint32_t MAX_LIGHTS = 16;
 	};
 }

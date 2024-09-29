@@ -12,9 +12,17 @@
 #include "MeshInspector.h"
 #include "Texture2DInspector.h"
 #include "Events.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
+	std::map<std::string, std::function<std::shared_ptr<Inspector>(GUID)>> s_CreateInspectorFuncs;
+	template<typename T>
+	static void RegisterInspectorType(const std::string& assetType)
+	{
+		s_CreateInspectorFuncs[assetType] = [](GUID guid) { return std::make_shared<T>(guid); };
+	}
+
 	InspectorWindow::InspectorWindow(std::shared_ptr<Inspector> inspector)
 	{
 		m_Inspector = inspector;
@@ -23,6 +31,16 @@ namespace Odyssey
 
 		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
 			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
+
+		RegisterInspectorType<GameObjectInspector>(GameObject::Type);
+		RegisterInspectorType<MaterialInspector>(Material::Type);
+		RegisterInspectorType<TextureInspector>(Texture2D::Type);
+		RegisterInspectorType<ShaderInspector>(Shader::Type);
+		RegisterInspectorType<MeshInspector>(Mesh::Type);
+
+		RegisterInspectorType<SourceShaderInspector>(SourceShader::Type);
+		RegisterInspectorType<SourceModelInspector>(SourceModel::Type);
+		RegisterInspectorType<SourceTextureInspector>(SourceTexture::Type);
 	}
 
 	void InspectorWindow::Draw()
@@ -43,29 +61,19 @@ namespace Odyssey
 		ImGui::End();
 	}
 
+	void InspectorWindow::OnWindowClose()
+	{
+		GUIManager::DestroyDockableWindow(this);
+	}
+
 	void InspectorWindow::OnGUISelectionChanged(GUISelectionChangedEvent* event)
 	{
-		// TODO: Convert this to use ClassName::Type
-		// Components/GameObject are setup like this but not assets
 		GUISelection& selection = event->Selection;
-
-		if (selection.Type == GameObject::Type)
-			// TODO: Pass game object GUID here
-			m_Inspector = std::make_shared<GameObjectInspector>(selection.GUID);
-		else if (selection.Type == "Material")
-			m_Inspector = std::make_shared<MaterialInspector>(selection.GUID);
-		else if (selection.Type == "SourceShader")
-			m_Inspector = std::make_shared<SourceShaderInspector>(selection.GUID);
-		else if (selection.Type == "SourceModel")
-			m_Inspector = std::make_shared<SourceModelInspector>(selection.GUID);
-		else if (selection.Type == "SourceTexture")
-			m_Inspector = std::make_shared<SourceTextureInspector>(selection.GUID);
-		else if (selection.Type == "Shader")
-			m_Inspector = std::make_shared<ShaderInspector>(selection.GUID);
-		else if (selection.Type == "Mesh")
-			m_Inspector = std::make_shared<MeshInspector>(selection.GUID);
-		else if (selection.Type == "Texture2D")
-			m_Inspector = std::make_shared<TextureInspector>(selection.GUID);
+		if (s_CreateInspectorFuncs.contains(selection.Type))
+		{
+			auto& createFunc = s_CreateInspectorFuncs[selection.Type];
+			m_Inspector = createFunc(selection.GUID);
+		}
 	}
 
 	void InspectorWindow::OnSceneLoaded(SceneLoadedEvent* event)

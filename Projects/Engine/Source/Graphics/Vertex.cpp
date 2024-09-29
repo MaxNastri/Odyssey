@@ -106,69 +106,19 @@ namespace Odyssey
 		description.offset = offsetof(Vertex, TexCoord0);
 		attributeDescriptions.push_back(description);
 
-		// TexCoord1
-		description.binding = 0;
-		description.location = 5;
-		description.format = VK_FORMAT_R32G32_SFLOAT;
-		description.offset = offsetof(Vertex, TexCoord1);
-		attributeDescriptions.push_back(description);
-
-		// TexCoord2
-		description.binding = 0;
-		description.location = 6;
-		description.format = VK_FORMAT_R32G32_SFLOAT;
-		description.offset = offsetof(Vertex, TexCoord2);
-		attributeDescriptions.push_back(description);
-
-		// TexCoord3
-		description.binding = 0;
-		description.location = 7;
-		description.format = VK_FORMAT_R32G32_SFLOAT;
-		description.offset = offsetof(Vertex, TexCoord3);
-		attributeDescriptions.push_back(description);
-
-		// TexCoord4
-		description.binding = 0;
-		description.location = 8;
-		description.format = VK_FORMAT_R32G32_SFLOAT;
-		description.offset = offsetof(Vertex, TexCoord4);
-		attributeDescriptions.push_back(description);
-
-		// TexCoord5
-		description.binding = 0;
-		description.location = 9;
-		description.format = VK_FORMAT_R32G32_SFLOAT;
-		description.offset = offsetof(Vertex, TexCoord5);
-		attributeDescriptions.push_back(description);
-
-		// TexCoord6
-		description.binding = 0;
-		description.location = 10;
-		description.format = VK_FORMAT_R32G32_SFLOAT;
-		description.offset = offsetof(Vertex, TexCoord6);
-		attributeDescriptions.push_back(description);
-
-		// TexCoord7
-		description.binding = 0;
-		description.location = 11;
-		description.format = VK_FORMAT_R32G32_SFLOAT;
-		description.offset = offsetof(Vertex, TexCoord7);
-		attributeDescriptions.push_back(description);
-
 		// Bone Indices
 		description.binding = 0;
-		description.location = 12;
+		description.location = 5;
 		description.format = VK_FORMAT_R32G32B32A32_SFLOAT;
 		description.offset = offsetof(Vertex, BoneIndices);
 		attributeDescriptions.push_back(description);
 
 		// Bone Weights
 		description.binding = 0;
-		description.location = 13;
+		description.location = 6;
 		description.format = VK_FORMAT_R32G32B32A32_SFLOAT;
 		description.offset = offsetof(Vertex, BoneWeights);
 		attributeDescriptions.push_back(description);
-
 
 		return attributeDescriptions;
 	}

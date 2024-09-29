@@ -4,6 +4,7 @@
 #include "AssetDatabase.h"
 #include "BinaryCache.h"
 #include "GUID.h"
+#include "AssetRegistry.hpp"
 
 namespace Odyssey
 {
@@ -15,6 +16,7 @@ namespace Odyssey
 	class Scene;
 	class Texture2D;
 	class AnimationClip;
+	class Cubemap;
 
 	class SourceAsset;
 	class SourceShader;
@@ -24,44 +26,75 @@ namespace Odyssey
 	class AssetManager
 	{
 	public:
-		static void CreateDatabase(const Path& assetsDirectory, const Path& cacheDirectory);
+		static void CreateDatabase(const Path& assetsDirectory, const Path& projectRegistryPath, std::vector<Path>& additionalRegistries);
 
 	public:
-		static std::shared_ptr<SourceShader> CreateSourceShader(const Path& sourcePath);
-		static std::shared_ptr<SourceModel> CreateSourceModel(const Path& sourcePath);
+		template<typename T, typename... Args>
+		static std::shared_ptr<T> CreateAsset(const Path& assetPath, Args&&... params)
+		{
+			static_assert(std::is_base_of<Asset, T>::value, "T is not a dervied class of Asset.");
 
-	public:
-		static std::shared_ptr<Material> CreateMaterial(const Path& assetPath);
-		static std::shared_ptr<Mesh> CreateMesh();
-		static std::shared_ptr<Mesh> CreateMesh(const Path& assetPath);
-		static std::shared_ptr<Mesh> CreateMesh(const Path& assetPath, std::shared_ptr<SourceModel> source);
-		static std::shared_ptr<Shader> CreateShader(const Path& assetPath);
-		static std::shared_ptr<Shader> CreateShader(const Path& assetPath, std::shared_ptr<SourceShader> source);
-		static std::shared_ptr<Texture2D> CreateTexture2D(const Path& assetPath, std::shared_ptr<SourceTexture> sourceTexture);
-		static std::shared_ptr<AnimationRig> CreateAnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
-		static std::shared_ptr<AnimationClip> CreateAnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
-	public:
-		static std::shared_ptr<SourceShader> LoadSourceShader(GUID guid);
-		static std::shared_ptr<SourceModel> LoadSourceModel(GUID guid);
-		static std::shared_ptr<SourceTexture> LoadSourceTexture(GUID guid);
+			// Create a new material asset
+			GUID guid = GUID::New();
+			std::shared_ptr<T> asset = s_Assets.Add<T>(guid, assetPath, std::forward<Args>(params)...);
 
-	public:
-		static std::shared_ptr<Material> LoadMaterial(const Path& assetPath);
-		static std::shared_ptr<Mesh> LoadMesh(const Path& assetPath);
-		static std::shared_ptr<Shader> LoadShader(const Path& assetPath);
-		static std::shared_ptr<Texture2D> LoadTexture2D(const Path& assetPath);
-	public:
-		static std::shared_ptr<Material> LoadMaterialByGUID(GUID guid);
-		static std::shared_ptr<Mesh> LoadMeshByGUID(GUID guid);
-		static std::shared_ptr<Shader> LoadShaderByGUID(GUID guid);
-		static std::shared_ptr<Texture2D> LoadTexture2DByGUID(GUID guid);
-		static std::shared_ptr<AnimationRig> LoadAnimationRig(GUID guid);
-		static std::shared_ptr<AnimationClip> LoadAnimationClip(GUID guid);
+			// Set asset data
+			asset->Guid = guid;
+			asset->SetName("Default");
+			asset->SetType(T::Type);
 
-	public:
-		static GUID CreateBinaryAsset(BinaryBuffer& buffer);
-		static BinaryBuffer LoadBinaryAsset(GUID guid);
-		static void WriteBinaryAsset(GUID guid, BinaryBuffer& buffer);
+			// Save to disk
+			asset->Save();
+
+			return asset;
+		}
+
+		template<typename T>
+		static std::shared_ptr<T> LoadSourceAsset(GUID guid)
+		{
+			static_assert(std::is_base_of<SourceAsset, T>::value, "T is not a dervied class of SourceAsset.");
+
+			// Check if this asset has already been loaded
+			if (s_LoadedAssets.contains(guid))
+				return s_SourceAssets.Get<T>(guid);
+
+			// Load the source asset
+			Path sourcePath = s_AssetDatabase->GUIDToAssetPath(guid);
+			std::shared_ptr<T> sourceAsset = s_SourceAssets.Add<T>(guid, sourcePath);
+
+			// Set the metadata for the source asset
+			const auto& metadata = s_AssetDatabase->GetMetadata(guid);
+			sourceAsset->SetMetadata(guid, metadata.AssetName, metadata.AssetType);
+
+			// Track the source asset as loaded
+			s_LoadedAssets.emplace(guid);
+
+			return sourceAsset;
+		}
+
+		template<typename T>
+		static std::shared_ptr<T> LoadAsset(const Path& assetPath)
+		{
+			// Convert the path to a guid and load the asset
+			return LoadAsset(s_AssetDatabase->AssetPathToGUID(assetPath));
+		}
+
+		template<typename T>
+		static std::shared_ptr<T> LoadAsset(GUID guid)
+		{
+			// Check if the asset is already loaded
+			if (s_LoadedAssets.contains(guid))
+				return s_Assets.Get<T>(guid);
+
+			// Track the asset
+			s_LoadedAssets.emplace(guid);
+
+			// Convert the guid to a path
+			Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
+
+			// Load and return the asset
+			return s_Assets.Add<T>(guid, assetPath);
+		}
 
 	public:
 		static std::vector<GUID> GetAssetsOfType(const std::string& assetType);
@@ -78,19 +111,7 @@ namespace Odyssey
 		inline static Path s_AssetsDirectory;
 		inline static std::unique_ptr<AssetDatabase> s_AssetDatabase;
 		inline static AssetList s_Assets;
-		inline static std::set<GUID> s_LoadedAssets;
-
-	private: // Source Assets
-		inline static std::unique_ptr<AssetDatabase> s_SourceAssetDatabase;
 		inline static SourceAssetList s_SourceAssets;
-		inline static std::set<GUID> s_LoadedSourceAssets;
-
-	private: // Binary Assets
-		inline static std::unique_ptr<BinaryCache> s_BinaryCache;
-
-	private: // Const
-		inline static std::string s_AssetExtension = ".asset";
-		inline static std::string s_MetaFileExtension = ".meta";
-
+		inline static std::set<GUID> s_LoadedAssets;
 	};
 }

@@ -8,18 +8,19 @@
 #include "Project.h"
 #include "EventSystem.h"
 #include "EditorEvents.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
-	ContentBrowserWindow::ContentBrowserWindow()
-		: DockableWindow("Content Browser",
+	ContentBrowserWindow::ContentBrowserWindow(size_t windowID)
+		: DockableWindow("Content Browser", windowID,
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		m_AssetsPath = Project::GetActiveAssetsDirectory();
 		m_CurrentPath = m_AssetsPath;
 		
 		TrackingOptions options;
-		options.Direrctory = m_AssetsPath;
+		options.TrackingPath = m_AssetsPath;
 		options.Extensions = { ".asset", ".glsl", ".meta" };
 		options.Recursive = true;
 		options.IncludeDirectoryChanges = true;
@@ -88,6 +89,11 @@ namespace Odyssey
 		End();
 	}
 
+	void ContentBrowserWindow::OnWindowClose()
+	{
+		GUIManager::DestroyDockableWindow(this);
+	}
+
 	void ContentBrowserWindow::UpdatePaths()
 	{
 		m_UpdatePaths = false;
@@ -120,7 +126,6 @@ namespace Odyssey
 			{
 				if (ImGui::MenuItem("Material"))
 				{
-					AssetManager::CreateMaterial(Path("Assets/Materials/MyMaterial.mat"));
 				}
 				if (ImGui::MenuItem("Scene"))
 				{

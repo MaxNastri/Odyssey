@@ -1,0 +1,9 @@
+ProjectName: %ProjectName%
+AssetsDirectory: 'Assets'
+CacheDirectory: 'Cache'
+TempDirectory: 'Cache/Temp'
+LogsDirectory: 'Logs'
+ScriptsDirectory: 'Assets/Scripts'
+CodeDirectory: 'Assets/Scripts/Source'
+ScriptsProjectPath: 'Assets/Scripts/%ProjectName%.csproj'
+AssetRegistryPath: 'Assets/AssetRegistry.osettings'

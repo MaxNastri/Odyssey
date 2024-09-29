@@ -1,9 +1,0 @@
-m_SourceAsset: 13794650480514420553
-m_GUID: 11814388763712791360
-m_Name: Skybox
-m_Type: Shader
-m_Shaders:
-  - ShaderType: 1
-    ShaderCode: 5414094840103273973
-  - ShaderType: 2
-    ShaderCode: 6146171236002124062

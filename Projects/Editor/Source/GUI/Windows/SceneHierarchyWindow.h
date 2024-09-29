@@ -12,10 +12,11 @@ namespace Odyssey
 	class SceneHierarchyWindow : public DockableWindow
 	{
 	public:
-		SceneHierarchyWindow();
+		SceneHierarchyWindow(size_t windowID);
 
 	public:
 		virtual void Draw() override;
+		virtual void OnWindowClose() override;
 
 	public:
 		void OnSceneLoaded(SceneLoadedEvent* event);

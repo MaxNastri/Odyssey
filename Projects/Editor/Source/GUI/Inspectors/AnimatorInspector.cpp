@@ -1,5 +1,6 @@
 #include "AnimatorInspector.h"
 #include "Animator.h"
+#include "AnimationClip.h"
 #include "imgui.h"
 
 namespace Odyssey
@@ -13,10 +14,10 @@ namespace Odyssey
 			GUID rigGUID = animator->GetRig();
 			GUID clipGUID = animator->GetClip();
 
-			m_RigDrawer = AssetFieldDrawer("Rig", rigGUID, "AnimationRig",
+			m_RigDrawer = AssetFieldDrawer("Rig", rigGUID, AnimationRig::Type,
 				[this](GUID guid) { OnRigModified(guid); });
 
-			m_ClipDrawer = AssetFieldDrawer("Clip", clipGUID, "AnimationClip",
+			m_ClipDrawer = AssetFieldDrawer("Clip", clipGUID, AnimationClip::Type,
 				[this](GUID guid) { OnClipModified(guid); });
 
 			m_DebugEnabledDrawer = BoolDrawer("Debug", false,

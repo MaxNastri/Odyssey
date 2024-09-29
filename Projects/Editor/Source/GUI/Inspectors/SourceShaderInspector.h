@@ -1,13 +1,12 @@
 #pragma once
 #include "Inspector.h"
+#include "SourceShader.h"
 #include "StringDrawer.h"
 #include "IntDrawer.h"
 #include "BoolDrawer.h"
 
 namespace Odyssey
 {
-	class SourceShader;
-
 	class SourceShaderInspector : public Inspector
 	{
 	public:

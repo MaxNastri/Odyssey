@@ -1,13 +1,12 @@
 #pragma once
 #include "Inspector.h"
+#include "Shader.h"
 #include "AssetFieldDrawer.h"
 #include "StringDrawer.h"
 #include "IntDrawer.h"
 
 namespace Odyssey
 {
-	class Shader;
-
 	class ShaderInspector : public Inspector
 	{
 	public:

@@ -169,7 +169,7 @@ namespace Odyssey::InternalCalls
 
 	uint32_t Mesh_GetVertexCount(uint64_t guid)
 	{
-		if (std::shared_ptr<Mesh> mesh = AssetManager::LoadMeshByGUID(GUID(guid)))
+		if (std::shared_ptr<Mesh> mesh = AssetManager::LoadAsset<Mesh>(GUID(guid)))
 			return mesh->GetVertexCount();
 
 		return 0;

@@ -8,7 +8,7 @@ namespace Odyssey
 	{
 		m_Image = ResourceManager::Allocate<VulkanImage>(description);
 		auto image = ResourceManager::GetResource<VulkanImage>(m_Image);
-		image->SetData(buffer);
+		image->SetData(buffer, description.ArrayDepth);
 
 		m_Sampler = ResourceManager::Allocate<VulkanTextureSampler>();
 		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(m_Sampler);
@@ -17,6 +17,7 @@ namespace Odyssey
 		descriptor.imageLayout = image->GetLayout();
 		descriptor.sampler = sampler->GetSamplerVK();
 	}
+
 	VkWriteDescriptorSet VulkanTexture::GetDescriptorInfo()
 	{
 		VkWriteDescriptorSet writeSet{};

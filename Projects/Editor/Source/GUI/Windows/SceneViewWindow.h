@@ -12,22 +12,26 @@ namespace Odyssey
 	class Transform;
 	class VulkanRenderTexture;
 	class VulkanTextureSampler;
+	struct GUISelectionChangedEvent;
 
 	class SceneViewWindow : public DockableWindow
 	{
 	public:
-		SceneViewWindow();
+		SceneViewWindow(size_t windowID);
 		void Destroy();
 
 	public:
 		virtual void Update() override;
 		virtual void Draw() override;
 		virtual void OnWindowResize() override;
+		virtual void OnWindowClose() override;
 
 	public:
 		std::shared_ptr<OpaquePass> GetRenderPass() { return m_SceneViewPass; }
-		void SetSelectedGameObject(GameObject* gameObject) { m_SelectedObject = gameObject; }
+
+	private:
 		void OnSceneLoaded(SceneLoadedEvent* event);
+		void OnGUISelectionChanged(GUISelectionChangedEvent* event);
 
 	private:
 		void CreateRenderTexture();
@@ -38,6 +42,7 @@ namespace Odyssey
 
 	private: // Event listener
 		std::shared_ptr<IEventListener> m_SceneLoadedListener;
+		std::shared_ptr<IEventListener> m_GUISelectionListener;
 
 	private: // Camera stuff
 		GameObject m_GameObject;
@@ -51,7 +56,8 @@ namespace Odyssey
 		ResourceID m_RTSampler;
 
 	private: // Gizmos
-		GameObject* m_SelectedObject = nullptr;
+		Scene* m_ActiveScene;
+		GameObject m_SelectedGO;
 		uint32_t op = 7;
 	};
 }

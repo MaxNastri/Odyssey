@@ -5,38 +5,76 @@
 
 namespace Odyssey
 {
-	AssetDatabase::AssetDatabase(SearchOptions& searchOptions)
+	AssetDatabase::AssetDatabase(SearchOptions& searchOptions, AssetRegistry& projectRegistry, const std::vector<AssetRegistry>& additionalRegistries)
+		: m_ProjectRegistry(projectRegistry)
 	{
 		m_SearchOptions = searchOptions;
 
+		std::vector<Path> supportedExtensions;
+		
+		for (auto& extension : s_AssetExtensions)
+		{
+			supportedExtensions.push_back(extension);
+		}
+
+		for (auto& [extension, sourceType] : s_SourceAssetExtensionsToType)
+		{
+			supportedExtensions.push_back(extension);
+		}
+
 		// Create a file tracker based on the search options so we can detect any file changes
 		TrackingOptions options;
-		options.Direrctory = searchOptions.Root;
-		options.Extensions = searchOptions.Extensions;
+		options.TrackingPath = searchOptions.Root;
+		options.Extensions = supportedExtensions;
 		options.Recursive = true;
 		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileAction(path, fileAction); };
 		m_FileTracker = std::make_unique<FileTracker>(options);
 
+		AddRegistry(projectRegistry);
+
+		for (const AssetRegistry& registry : additionalRegistries)
+		{
+			AddRegistry(registry);
+		}
 		Scan();
 	}
 
 	void AssetDatabase::Scan()
 	{
-		if (m_SearchOptions.SourceAssetsOnly)
-			ScanForSourceAssets();
-		else
-			ScanForAssets();
+		ScanForAssets();
+		ScanForSourceAssets();
+	}
+
+	AssetRegistry AssetDatabase::CreateRegistry()
+	{
+		AssetRegistry registry;
+
+		for (auto& [guid, metadata] : m_GUIDToMetadata)
+		{
+			Path relativePath = std::filesystem::relative(metadata.AssetPath, m_SearchOptions.Root);
+			registry.AddAsset(metadata.AssetName, metadata.AssetType, relativePath, guid);
+		}
+
+		return registry;
+	}
+
+	void AssetDatabase::AddRegistry(const AssetRegistry& registry)
+	{
+		for (auto& entry : registry.Entries)
+		{
+			bool sourceAsset = !s_AssetExtensions.contains(entry.Path.extension().string());
+			AddAsset(entry.Guid, registry.RootDirectory / entry.Path, entry.Path.filename().replace_extension().string(), entry.Type, sourceAsset);
+		}
 	}
 
 	void AssetDatabase::ScanForAssets()
 	{
-		// Clear the existing lookups
-		m_GUIDToMetadata.clear();
-		m_AssetPathToGUID.clear();
-		m_AssetPathToGUID.clear();
-
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(m_SearchOptions.Root))
 		{
+			// Skip assets we are already tracking
+			if (m_AssetPathToGUID.contains(dirEntry))
+				continue;
+
 			bool excluded = false;
 
 			if (!m_SearchOptions.ExclusionPaths.empty())
@@ -62,7 +100,7 @@ namespace Odyssey
 
 			if (dirEntry.is_regular_file())
 			{
-				for (const auto& searchExt : m_SearchOptions.Extensions)
+				for (const auto& searchExt : s_AssetExtensions)
 				{
 					// Check if this is a valid extension
 					if (extension == searchExt)
@@ -78,7 +116,11 @@ namespace Odyssey
 							root.ReadData("m_GUID", guid.Ref());
 							root.ReadData("m_Type", type);
 							root.ReadData("m_Name", name);
-							AddAsset(guid, path, name, type);
+							AddAsset(guid, path, name, type, false);
+
+							Path relativePath = std::filesystem::relative(path, m_ProjectRegistry.RootDirectory);
+							m_ProjectRegistry.AddAsset(name, type, path, guid);
+							m_ProjectRegistry.Save();
 						}
 					}
 				}
@@ -88,62 +130,43 @@ namespace Odyssey
 
 	void AssetDatabase::ScanForSourceAssets()
 	{
-		// Clear the existing lookups
-		m_GUIDToMetadata.clear();
-		m_AssetPathToGUID.clear();
-		m_AssetPathToGUID.clear();
-
 		for (const auto& dirEntry : std::filesystem::recursive_directory_iterator(m_SearchOptions.Root))
 		{
+			// Skip assets we are already tracking
+			if (m_AssetPathToGUID.contains(dirEntry))
+				continue;
+
 			auto assetPath = dirEntry.path();
 			auto extension = assetPath.extension().string();
-			auto metaPath = assetPath;
-			metaPath = metaPath.replace_extension(s_MetaFileExtension);
 
 			// Check if the file extension is a valid source asset
 			if (dirEntry.is_regular_file() && s_SourceAssetExtensionsToType.contains(extension))
 			{
-				if (std::filesystem::exists(metaPath))
-				{
-					// Deserialize the meta file
-					// Add the asset to the database with the source file extension
-					if (AssetDeserializer deserializer = AssetDeserializer(metaPath))
-					{
-						SourceAsset sourceAsset = SourceAsset::CreateFromMetafile(metaPath);
+				std::string name = assetPath.filename().replace_extension("").string();
+				std::string type = s_SourceAssetExtensionsToType[extension];
 
-						if (sourceAsset.HasMetadata())
-						{
-							AddAsset(sourceAsset.GetGUID(), sourceAsset.GetPath(), sourceAsset.GetName(), sourceAsset.GetType());
-						}
-					}
-				}
-				else
-				{
-					std::string name = assetPath.filename().replace_extension("").string();
-					std::string type = s_SourceAssetExtensionsToType[extension];
+				// Add the source asset to the database
+				GUID guid = GUID::New();
+				AddAsset(guid, assetPath, name, type, true);
 
-					// Create a temporary source asset so we can serialize the metadata
-					SourceAsset asset(assetPath);
-					asset.SetMetadata(GUID::New(), name, type);
-					asset.SerializeMetadata();
-
-					// Add the source asset to the database
-					AddAsset(asset.GetGUID(), assetPath, name, type);
-				}
+				Path relativePath = std::filesystem::relative(assetPath, m_ProjectRegistry.RootDirectory);
+				m_ProjectRegistry.AddAsset(name, type, assetPath, guid);
+				m_ProjectRegistry.Save();
 			}
 		}
 	}
 
-	void AssetDatabase::AddAsset(GUID guid, const Path& path, const std::string& assetName, const std::string& assetType)
+	void AssetDatabase::AddAsset(GUID guid, const Path& path, const std::string& assetName, const std::string& assetType, bool sourceAsset)
 	{
 		if (!m_GUIDToMetadata.contains(guid))
-			m_GUIDToMetadata[guid] = AssetMetadata(path, assetName, assetType);
+			m_GUIDToMetadata[guid] = AssetMetadata(path, assetName, assetType, sourceAsset);
 
 		if (!m_AssetPathToGUID.contains(path))
 			m_AssetPathToGUID[path] = guid;
 
 		// No contains check since we are storing multiple guids per asset type
 		m_AssetTypeToGUIDs[assetType].push_back(guid);
+
 	}
 
 	bool AssetDatabase::Contains(GUID& guid)
@@ -154,6 +177,14 @@ namespace Odyssey
 	bool AssetDatabase::Contains(const Path& path)
 	{
 		return m_AssetPathToGUID.contains(path);
+	}
+
+	bool AssetDatabase::IsSourceAsset(const Path& path)
+	{
+		if (m_AssetPathToGUID.contains(path) && m_GUIDToMetadata.contains(m_AssetPathToGUID[path]))
+			return m_GUIDToMetadata[m_AssetPathToGUID[path]].IsSourceAsset;
+
+		return false;
 	}
 
 	Path AssetDatabase::GUIDToAssetPath(GUID guid)
@@ -195,7 +226,12 @@ namespace Odyssey
 
 		return std::vector<GUID>();
 	}
-	
+
+	const AssetMetadata& AssetDatabase::GetMetadata(GUID guid)
+	{
+		return m_GUIDToMetadata[guid];
+	}
+
 	void AssetDatabase::OnFileAction(const Path& filename, FileActionType fileAction)
 	{
 		if (fileAction != FileActionType::None && fileAction != FileActionType::Modified)

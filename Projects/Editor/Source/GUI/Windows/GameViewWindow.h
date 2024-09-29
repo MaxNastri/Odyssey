@@ -13,12 +13,13 @@ namespace Odyssey
 	class GameViewWindow : public DockableWindow
 	{
 	public:
-		GameViewWindow();
+		GameViewWindow(size_t windowID);
 		void Destroy();
 
 	public:
 		virtual void Draw() override;
 		virtual void OnWindowResize() override;
+		virtual void OnWindowClose() override;
 
 	private:
 		void OnSceneLoaded(SceneLoadedEvent* event);

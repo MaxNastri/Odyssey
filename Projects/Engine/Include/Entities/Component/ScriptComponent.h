@@ -35,6 +35,6 @@ namespace Odyssey
 		uint32_t m_ScriptID;
 		GameObject m_GameObject;
 		ManagedHandle m_Handle;
-		CLASS_DECLARATION(ScriptComponent);
+		CLASS_DECLARATION(Odyssey, ScriptComponent)
 	};
 }

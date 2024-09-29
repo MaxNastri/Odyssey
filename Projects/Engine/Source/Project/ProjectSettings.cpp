@@ -3,14 +3,14 @@
 
 namespace Odyssey
 {
-	ProjectSettings::ProjectSettings(const std::string& projectName, const std::filesystem::path& projectDirectory)
+	ProjectSettings::ProjectSettings(const std::string& projectName, const Path& projectDirectory)
 	{
 		m_ProjectName = projectName;
-		m_Path = projectDirectory / projectName / "ProjectSettings.asset";
+		m_Path = projectDirectory / projectName / "ProjectSettings.osettings";
 		m_ProjectDirectory = projectDirectory;
 	}
 
-	ProjectSettings::ProjectSettings(const std::filesystem::path& settingsPath)
+	ProjectSettings::ProjectSettings(const Path& settingsPath)
 	{
 		m_Path = settingsPath;
 		m_ProjectDirectory = m_Path.parent_path();
@@ -29,14 +29,15 @@ namespace Odyssey
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
 
-		root.WriteData("m_ProjectName", m_ProjectName);
-		root.WriteData("m_AssetsDirectory", m_AssetsDirectory.string());
-		root.WriteData("m_CacheDirectory", m_CacheDirectory.string());
-		root.WriteData("m_TempDirectory", m_TempDirectory.string());
-		root.WriteData("m_LogsDirectory", m_LogsDirectory.string());
-		root.WriteData("m_ScriptsDirectory", m_ScriptsDirectory.string());
-		root.WriteData("m_CodeDirectory", m_CodeDirectory.string());
-		root.WriteData("m_ScriptsProjectPath", m_ScriptsProjectPath.string());
+		root.WriteData("ProjectName", m_ProjectName);
+		root.WriteData("AssetsDirectory", m_AssetsDirectory.string());
+		root.WriteData("CacheDirectory", m_CacheDirectory.string());
+		root.WriteData("TempDirectory", m_TempDirectory.string());
+		root.WriteData("LogsDirectory", m_LogsDirectory.string());
+		root.WriteData("ScriptsDirectory", m_ScriptsDirectory.string());
+		root.WriteData("CodeDirectory", m_CodeDirectory.string());
+		root.WriteData("ScriptsProjectPath", m_ScriptsProjectPath.string());
+		root.WriteData("AssetRegistryPath", m_AssetRegistryPath.string());
 		serializer.WriteToDisk(m_Path);
 	}
 
@@ -57,15 +58,17 @@ namespace Odyssey
 			std::string scriptsDirectory;
 			std::string codeDirectory;
 			std::string scriptsProjectPath;
+			std::string assetRegistryPath;
 
-			root.ReadData("m_ProjectName", m_ProjectName);
-			root.ReadData("m_AssetsDirectory", assetsDirectory);
-			root.ReadData("m_CacheDirectory", cacheDirectory);
-			root.ReadData("m_TempDirectory", tempDirectory);
-			root.ReadData("m_LogsDirectory", logsDirectory);
-			root.ReadData("m_ScriptsDirectory", scriptsDirectory);
-			root.ReadData("m_CodeDirectory", codeDirectory);
-			root.ReadData("m_ScriptsProjectPath", scriptsProjectPath);
+			root.ReadData("ProjectName", m_ProjectName);
+			root.ReadData("AssetsDirectory", assetsDirectory);
+			root.ReadData("CacheDirectory", cacheDirectory);
+			root.ReadData("TempDirectory", tempDirectory);
+			root.ReadData("LogsDirectory", logsDirectory);
+			root.ReadData("ScriptsDirectory", scriptsDirectory);
+			root.ReadData("CodeDirectory", codeDirectory);
+			root.ReadData("ScriptsProjectPath", scriptsProjectPath);
+			root.ReadData("AssetRegistryPath", assetRegistryPath);
 
 			// Convert them back into paths
 			m_AssetsDirectory = assetsDirectory;
@@ -75,6 +78,7 @@ namespace Odyssey
 			m_ScriptsDirectory = scriptsDirectory;
 			m_CodeDirectory = codeDirectory;
 			m_ScriptsProjectPath = scriptsProjectPath;
+			m_AssetRegistryPath = assetRegistryPath;
 
 			// Generate paths including the project directory
 			m_FullAssetsDirectory = m_ProjectDirectory / m_AssetsDirectory;
@@ -84,6 +88,7 @@ namespace Odyssey
 			m_FullScriptsDirectory = m_ProjectDirectory / m_ScriptsDirectory;
 			m_FullCodeDirectory = m_ProjectDirectory / m_CodeDirectory;
 			m_FullScriptsProjectPath = m_ProjectDirectory / m_ScriptsProjectPath;
+			m_FullAssetRegistryPath = m_ProjectDirectory / m_AssetRegistryPath;
 
 			std::filesystem::create_directories(m_FullAssetsDirectory);
 			std::filesystem::create_directories(m_FullCacheDirectory);

@@ -1,12 +1,13 @@
 #include "MeshInspector.h"
 #include "AssetManager.h"
 #include "Mesh.h"
+#include "SourceModel.h"
 
 namespace Odyssey
 {
 	MeshInspector::MeshInspector(GUID guid)
 	{
-		if (m_Mesh = AssetManager::LoadMeshByGUID(guid))
+		if (m_Mesh = AssetManager::LoadAsset<Mesh>(guid))
 		{
 			m_GUIDDrawer = StringDrawer("GUID", m_Mesh->GetGUID().String(), nullptr, true);
 			m_NameDrawer = StringDrawer("Name", m_Mesh->GetName(),
@@ -14,7 +15,7 @@ namespace Odyssey
 			m_TypeDrawer = StringDrawer("Type", m_Mesh->GetType(), nullptr, true);
 			m_VertexCountDrawer = StringDrawer("Vertex Count", std::to_string(m_Mesh->GetVertexCount()), nullptr, true);
 			m_IndexCountDrawer = StringDrawer("Index Count", std::to_string(m_Mesh->GetIndexCount()), nullptr, true);
-			m_SourceMeshDrawer = AssetFieldDrawer("Source Asset", m_Mesh->GetSoureAsset(), "SourceModel",
+			m_SourceMeshDrawer = AssetFieldDrawer("Source Asset", m_Mesh->GetSoureAsset(), SourceModel::Type,
 				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
 		}
 	}

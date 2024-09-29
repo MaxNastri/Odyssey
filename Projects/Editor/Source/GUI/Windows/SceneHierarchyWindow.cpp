@@ -10,11 +10,12 @@
 #include "PropertiesComponent.h"
 #include "EditorComponents.h"
 #include "RawBuffer.hpp"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
-	SceneHierarchyWindow::SceneHierarchyWindow()
-		: DockableWindow("Scene Hierarchy",
+	SceneHierarchyWindow::SceneHierarchyWindow(size_t windowID)
+		: DockableWindow("Scene Hierarchy", windowID,
 			glm::vec2(0, 0), glm::vec2(400, 450), glm::vec2(2, 2))
 	{
 		m_Scene = SceneManager::GetActiveScene();
@@ -54,6 +55,11 @@ namespace Odyssey
 			m_Deferred = nullptr;
 		}
 		End();
+	}
+
+	void SceneHierarchyWindow::OnWindowClose()
+	{
+		GUIManager::DestroyDockableWindow(this);
 	}
 
 	void SceneHierarchyWindow::OnSceneLoaded(SceneLoadedEvent* event)

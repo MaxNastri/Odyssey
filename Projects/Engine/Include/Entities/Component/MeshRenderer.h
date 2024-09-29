@@ -29,6 +29,6 @@ namespace Odyssey
 		GameObject m_GameObject;
 		GUID m_Mesh;
 		GUID m_Material;
-		CLASS_DECLARATION(MeshRenderer);
+		CLASS_DECLARATION(Odyssey, MeshRenderer)
 	};
 }

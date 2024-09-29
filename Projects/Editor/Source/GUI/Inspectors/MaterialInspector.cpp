@@ -9,7 +9,7 @@ namespace Odyssey
 {
 	MaterialInspector::MaterialInspector(GUID guid)
 	{
-		if (m_Material = AssetManager::LoadMaterialByGUID(guid))
+		if (m_Material = AssetManager::LoadAsset<Material>(guid))
 		{
 			GUID shaderGUID;
 			GUID textureGUID;
@@ -25,10 +25,10 @@ namespace Odyssey
 
 			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), nullptr, true);
 
-			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, "Shader",
+			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type,
 				[this](GUID guid) { OnShaderModified(guid); });
 
-			m_TextureDrawer = AssetFieldDrawer("Texture", textureGUID, "Texture2D",
+			m_TextureDrawer = AssetFieldDrawer("Texture", textureGUID, Texture2D::Type,
 				[this](GUID guid) { OnTextureModified(guid); });
 		}
 	}
@@ -62,7 +62,7 @@ namespace Odyssey
 	{
 		if (m_Material)
 		{
-			if (auto vertShader = AssetManager::LoadShaderByGUID(guid))
+			if (auto vertShader = AssetManager::LoadAsset<Shader>(guid))
 				m_Material->SetShader(vertShader);
 
 			m_Modified = true;
@@ -73,7 +73,7 @@ namespace Odyssey
 	{
 		if (m_Material)
 		{
-			if (auto texture = AssetManager::LoadTexture2DByGUID(guid))
+			if (auto texture = AssetManager::LoadAsset<Texture2D>(guid))
 				m_Material->SetTexture(texture);
 
 			m_Modified = true;

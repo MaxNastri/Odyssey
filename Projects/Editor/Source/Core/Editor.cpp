@@ -11,6 +11,8 @@
 #include "Project.h"
 #include "Renderer.h"
 #include "DebugRenderer.h"
+#include "SceneSettingsWindow.h"
+#include "AssetRegistry.hpp"
 
 namespace Odyssey
 {
@@ -31,7 +33,11 @@ namespace Odyssey
 		// Load the default project
 		Project::LoadProject("C:/Git/Odyssey/Projects/Sandbox");
 
-		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveCacheDirectory());
+		std::vector<Path> registries = 
+		{
+			"Resources/AssetRegistry.osettings"
+		};
+		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveAssetRegistry(), registries);
 
 		// Create the renderer
 		RendererConfig config = { .EnableIMGUI = true };
@@ -40,12 +46,10 @@ namespace Odyssey
 
 		// Setup debug renderer
 		DebugRenderer::Settings debugSettings;
-		debugSettings.DebugShaderPath = "Resources/Shaders/Debug.asset";
 		debugSettings.MaxVertices = 128000;
 		DebugRenderer::Init(debugSettings);
 
 		GUIManager::Initialize();
-
 
 		// Build the user assembly
 		ScriptCompiler::Settings settings;
@@ -81,6 +85,7 @@ namespace Odyssey
 			{
 				m_TimeSinceLastUpdate = 0.0f;
 
+				FileTracker::Dispatch();
 				// Process any changes made to the user's managed dll
 				m_ScriptCompiler->Process();
 				DebugRenderer::Clear();
@@ -109,10 +114,11 @@ namespace Odyssey
 	void Editor::SetupEditorGUI()
 	{
 		GUIManager::CreateInspectorWindow();
-		GUIManager::CreateSceneHierarchyWindow();
-		GUIManager::CreateSceneViewWindow();
-		GUIManager::CreateGameViewWindow();
-		GUIManager::CreateContentBrowserWindow();
+		GUIManager::CreateDockableWindow<GameViewWindow>();
+		GUIManager::CreateDockableWindow<SceneViewWindow>();
+		GUIManager::CreateDockableWindow<ContentBrowserWindow>();
+		GUIManager::CreateDockableWindow<SceneHierarchyWindow>();
+		GUIManager::CreateDockableWindow<SceneSettingsWindow>();
 	}
 
 	void Editor::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event)

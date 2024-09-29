@@ -1,27 +1,27 @@
 #include "AnimationClip.h"
 #include "SourceModel.h"
 #include "FBXModelImporter.h"
+#include "AssetManager.h"
 
 namespace Odyssey
 {
 	AnimationClip::AnimationClip(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		LoadFromDisk(assetPath);
+		if (auto source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
+		{
+			source->AddOnModifiedListener([this]() { OnSourceModified(); });
+			LoadFromSource(source);
+		}
 	}
 
 	AnimationClip::AnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel)
 		: Asset(assetPath)
 	{
-		const AnimationImportData& animationData = sourceModel->GetImporter()->GetAnimationData();
+		sourceModel->AddOnModifiedListener([this]() { OnSourceModified(); });
 
-		m_Name = animationData.Name;
-		m_Duration = animationData.Duration;
-
-		for (auto& [boneName, boneKeyframe] : animationData.BoneKeyframes)
-		{
-			m_BoneKeyframes[boneName] = BoneKeyframe(boneKeyframe);
-		}
+		SetSourceAsset(sourceModel->GetGUID());
+		LoadFromSource(sourceModel);
 	}
 
 	void AnimationClip::Save()
@@ -31,7 +31,8 @@ namespace Odyssey
 
 	void AnimationClip::Load()
 	{
-		LoadFromDisk(m_AssetPath);
+		if (auto source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
+			LoadFromSource(source);
 	}
 
 	double AnimationClip::GetFrameTime(size_t frameIndex)
@@ -50,6 +51,21 @@ namespace Odyssey
 			return boneKeyframe.GetPositionKeys().size();
 		}
 		return 0;
+	}
+
+	void AnimationClip::LoadFromSource(std::shared_ptr<SourceModel> source)
+	{
+		const AnimationImportData& animationData = source->GetImporter()->GetAnimationData();
+
+		m_Name = animationData.Name;
+		m_Duration = animationData.Duration;
+
+		m_BoneKeyframes.clear();
+
+		for (auto& [boneName, boneKeyframe] : animationData.BoneKeyframes)
+		{
+			m_BoneKeyframes[boneName] = BoneKeyframe(boneKeyframe);
+		}
 	}
 
 	void AnimationClip::SaveToDisk(const Path& assetPath)
@@ -109,87 +125,8 @@ namespace Odyssey
 		serializer.WriteToDisk(assetPath);
 	}
 
-	void AnimationClip::LoadFromDisk(const Path& assetPath)
+	void AnimationClip::OnSourceModified()
 	{
-		AssetDeserializer deserializer(assetPath);
-		if (deserializer.IsValid())
-		{
-			SerializationNode root = deserializer.GetRoot();
-
-			root.ReadData("Name", m_Name);
-			root.ReadData("Duration", m_Duration);
-
-			size_t boneKeyframeCount = 0;
-			root.ReadData("Bone Keyframe Count", boneKeyframeCount);
-
-			SerializationNode keyframesNode = root.GetNode("Bone Keyframes");
-			assert(keyframesNode.IsSequence());
-			assert(keyframesNode.HasChildren());
-
-			for (size_t i = 0; i < keyframesNode.ChildCount(); i++)
-			{
-				SerializationNode keyframeNode = keyframesNode.GetChild(i);
-				assert(keyframeNode.IsMap());
-
-
-				// Read and set the name
-				std::string boneName;
-				keyframeNode.ReadData("Bone Name", boneName);
-
-				auto& boneKeyframe = m_BoneKeyframes[boneName];
-				boneKeyframe.SetBoneName(boneName);
-
-				SerializationNode positionsNode = keyframeNode.GetNode("Position Keys");
-				assert(positionsNode.IsSequence());
-				assert(positionsNode.HasChildren());
-
-				for (size_t posIndex = 0; posIndex < positionsNode.ChildCount(); posIndex++)
-				{
-					SerializationNode positionNode = positionsNode.GetChild(posIndex);
-					assert(positionNode.IsMap());
-
-					// Read and set each position key
-					float time;
-					glm::vec3 value;
-					positionNode.ReadData("Time", time);
-					positionNode.ReadData("Value", value);
-					boneKeyframe.AddPositionKey(time, value);
-				}
-
-				SerializationNode rotationsNode = keyframeNode.GetNode("Rotation Keys");
-				assert(rotationsNode.IsSequence());
-				assert(rotationsNode.HasChildren());
-
-				for (size_t rotIndex = 0; rotIndex < rotationsNode.ChildCount(); rotIndex++)
-				{
-					SerializationNode rotationNode = rotationsNode.GetChild(rotIndex);
-					assert(rotationNode.IsMap());
-
-					// Read and set each position key
-					float time;
-					glm::quat value;
-					rotationNode.ReadData("Time", time);
-					rotationNode.ReadData("Value", value);
-					boneKeyframe.AddRotationKey(time, value);
-				}
-
-				SerializationNode scalesNode = keyframeNode.GetNode("Scale Keys");
-				assert(scalesNode.IsSequence());
-				assert(scalesNode.HasChildren());
-
-				for (size_t scaleIndex = 0; scaleIndex < scalesNode.ChildCount(); scaleIndex++)
-				{
-					SerializationNode scaleNode = scalesNode.GetChild(scaleIndex);
-					assert(scaleNode.IsMap());
-
-					// Read and set each position key
-					float time;
-					glm::vec3 value;
-					scaleNode.ReadData("Time", time);
-					scaleNode.ReadData("Value", value);
-					boneKeyframe.AddScaleKey(time, value);
-				}
-			}
-		}
+		Load();
 	}
 }

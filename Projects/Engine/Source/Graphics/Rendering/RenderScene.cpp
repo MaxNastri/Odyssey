@@ -18,6 +18,8 @@
 #include "VulkanGraphicsPipeline.h"
 #include "AssetManager.h"
 #include "Animator.h"
+#include "Cubemap.h"
+#include "Light.h"
 
 namespace Odyssey
 {
@@ -30,7 +32,8 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
 		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
 		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
-		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 3);
+		descriptorLayout->AddBinding("Lighting Data", DescriptorType::Uniform, ShaderStage::Fragment, 3);
+		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 4);
 		descriptorLayout->Apply();
 
 		// Camera uniform buffer
@@ -80,6 +83,17 @@ namespace Odyssey
 
 			skinningBuffers.push_back(uboID);
 		}
+
+		// Skinning buffers
+		uint32_t lightSize = sizeof(LightingData);
+
+		// Allocate the UBO
+		LightingBuffer = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 3, lightSize);
+
+		// Write the per-object data into the ubo
+		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(LightingBuffer);
+		uniformBuffer->AllocateMemory();
+		uniformBuffer->SetMemory(lightSize, &LightingData);
 	}
 
 	void RenderScene::Destroy()
@@ -114,6 +128,35 @@ namespace Odyssey
 			}
 		}
 
+		EnvironmentSettings envSettings = scene->GetEnvironmentSettings();
+		if (envSettings.Skybox)
+		{
+			auto skyboxTexture = AssetManager::LoadAsset<Cubemap>(envSettings.Skybox);
+			SkyboxCubemap = skyboxTexture->GetTexture();
+		}
+
+		for (auto entity : scene->GetAllEntitiesWith<Light>())
+		{
+			GameObject gameObject = GameObject(scene, entity);
+			Light& light = gameObject.GetComponent<Light>();
+
+			SceneLight& sceneLight = LightingData.SceneLights[LightingData.LightCount];
+			sceneLight.Type = (uint32_t)light.GetType();
+			sceneLight.Position = glm::vec4(light.GetPosition(), 1.0f);
+			sceneLight.Direction = glm::vec4(light.GetDirection(), 1.0f);
+			sceneLight.Color = glm::vec4(light.GetColor(), 1.0f);
+			sceneLight.Intensity = light.GetIntensity();
+			sceneLight.Range = light.GetRange();
+			LightingData.LightCount++;
+		}
+
+		// Set the ambient color from the environment settings
+		LightingData.AmbientColor = glm::vec4(scene->GetEnvironmentSettings().AmbientColor, 1.0f);
+
+		// Copy the data into the uniform buffer
+		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(LightingBuffer);
+		uniformBuffer->SetMemory(sizeof(LightingData), &LightingData);
+
 		SetupDrawcalls(scene);
 	}
 
@@ -128,12 +171,14 @@ namespace Odyssey
 		m_NextUniformBuffer = 0;
 		m_NextCameraBuffer = 0;
 		m_MainCamera = nullptr;
+		LightingData.LightCount = 0;
 	}
 
 	uint32_t RenderScene::SetCameraData(Camera* camera)
 	{
 		cameraData.inverseView = camera->GetInverseView();
 		cameraData.ViewProjection = camera->GetProjection() * cameraData.inverseView;
+		cameraData.ViewPosition = glm::vec4(camera->GetView()[3][0], camera->GetView()[3][1], camera->GetView()[3][2], 1.0f);
 
 		uint32_t index = m_NextCameraBuffer;
 		uint32_t sceneUniformSize = sizeof(cameraData);
@@ -160,11 +205,11 @@ namespace Odyssey
 			setPasses.push_back(SetPass());
 			SetPass& setPass = setPasses[setPasses.size() - 1];
 
-			auto material = AssetManager::LoadMaterialByGUID(meshRenderer.GetMaterial());
+			auto material = AssetManager::LoadAsset<Material>(meshRenderer.GetMaterial());
 			setPass.SetMaterial(material, m_DescriptorLayout);
 
 			// Create the drawcall data
-			if (auto mesh = AssetManager::LoadMeshByGUID(meshRenderer.GetMesh()))
+			if (auto mesh = AssetManager::LoadAsset<Mesh>(meshRenderer.GetMesh()))
 			{
 				Drawcall drawcall;
 				drawcall.VertexBufferID = mesh->GetVertexBuffer();

@@ -1,0 +1,105 @@
+Entries:
+  - Name: Monk
+    Type: Odyssey.Texture2D
+    Path: Textures/Monk_CCC.asset
+    GUID: 379771950876182716
+  - Name: 'PBR Non-Skinned'
+    Type: Odyssey.Material
+    Path: 'Materials/Default - NonSkinned.asset'
+    GUID: 942766181068811554
+  - Name: PBR
+    Type: Odyssey.Material
+    Path: Materials/PBR.asset
+    GUID: 942766181068811557
+  - Name: Monk FBX Clip
+    Type: Odyssey.AnimationClip
+    Path: 'Animation/Monk-FBX-Clip.asset'
+    GUID: 1480094622537577134
+  - Name: Monk GLTF Clip
+    Type: Odyssey.AnimationClip
+    Path: 'Animation/Monk-GLTF-Clip.asset'
+    GUID: 3096668997398545466
+  - Name: Monk GLTF Mesh
+    Type: Odyssey.Mesh
+    Path: 'Meshes/Monk-GLTF-Mesh.asset'
+    GUID: 6097754839605078965
+  - Name: PBR
+    Type: Odyssey.Shader
+    Path: Shaders/PBR.asset
+    GUID: 9634657926911688453
+  - Name: Monk FBX Rig
+    Type: Odyssey.AnimationRig
+    Path: 'Animation/Monk-FBX-Rig.asset'
+    GUID: 11519690897429141827
+  - Name: Monk GLTF Rig
+    Type: Odyssey.AnimationRig
+    Path: 'Animation/Monk-GLTF-Rig.asset'
+    GUID: 13737335248766018432
+  - Name: Monk FBX Mesh
+    Type: Odyssey.Mesh
+    Path: 'Meshes/Monk-FBX.asset'
+    GUID: 13759854750235908315
+  - Name: Molten
+    Type: Odyssey.Cubemap
+    Path: Textures/Skybox/Molten.asset
+    GUID: 16662637833593679810
+  - Name: example
+    Type: Odyssey.SourceTexture
+    Path: Textures/Skybox/example.png
+    GUID: 397722758389800740
+  - Name: Monk
+    Type: Odyssey.SourceModel
+    Path: Models/Monk.gltf
+    GUID: 3270948376729727283
+  - Name: Kachujin_specular
+    Type: Odyssey.SourceTexture
+    Path: Models/Capoeira.fbm/Kachujin_specular.png
+    GUID: 7299573490149890267
+  - Name: Kachujin_diffuse_body
+    Type: Odyssey.SourceTexture
+    Path: Models/Capoeira.fbm/Kachujin_diffuse_body.png
+    GUID: 8175636576157770894
+  - Name: PBR
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/PBR.hlsl
+    GUID: 8792030590727510300
+  - Name: Kachujin_normal
+    Type: Odyssey.SourceTexture
+    Path: Models/Capoeira.fbm/Kachujin_normal.png
+    GUID: 9561603051015759961
+  - Name: Capoeira
+    Type: Odyssey.SourceModel
+    Path: Models/Capoeira.fbx
+    GUID: 12861167884330528575
+  - Name: Kachujin_diffuse
+    Type: Odyssey.SourceTexture
+    Path: Textures/Kachujin_diffuse.png
+    GUID: 17785645852077111092
+  - Name: Kachujin_diffuse
+    Type: Odyssey.SourceTexture
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Models/Capoeira.fbm/Kachujin_diffuse.png'
+    GUID: 3391686428449141831
+  - Name: Cube
+    Type: Odyssey.SourceModel
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Models/Cube.fbx'
+    GUID: 9086862285100025922
+  - Name: Cube
+    Type: Odyssey.Mesh
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Meshes/Cube.mesh'
+    GUID: 16688031995771648164
+  - Name: Monk
+    Type: Odyssey.SourceModel
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Models/Monk.glb'
+    GUID: 4568083940301679466
+  - Name: Monk GLTF2 Clip
+    Type: Odyssey.AnimationClip
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/Monk-GLTF-Clip2.asset'
+    GUID: 3950234663794449367
+  - Name: Monk GLTF2 Rig
+    Type: Odyssey.AnimationRig
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/Monk-GLTF-Rig2.asset'
+    GUID: 13775651864520599129
+  - Name: Monk GLTF2
+    Type: Odyssey.Mesh
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Meshes/Monk-GLTF-Mesh2.mesh'
+    GUID: 13511586946249507819

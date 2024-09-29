@@ -1,12 +1,11 @@
 #pragma once
 #include "Inspector.h"
+#include "Texture2D.h"
 #include "AssetFieldDrawer.h"
 #include "StringDrawer.h"
 
 namespace Odyssey
 {
-	class Texture2D;
-
 	class TextureInspector : public Inspector
 	{
 	public:
