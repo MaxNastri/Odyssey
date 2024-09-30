@@ -178,6 +178,7 @@ namespace Odyssey
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();
 		info.DescriptorLayout = m_DescriptorLayout;
+		info.UseParticle = true;
 
 		m_ComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
@@ -187,24 +188,29 @@ namespace Odyssey
 	void ParticleSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
 		auto renderScene = params.renderingData->renderScene;
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.ComputeCommandBuffer);
-		commandBuffer->BeginCommands();
+		auto computeCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.ComputeCommandBuffer);
+		auto graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		computeCommandBuffer->BeginCommands();
 
 		glm::mat4 world = glm::mat4(1.0f);
 		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(m_ModelUBO);
 		uniformBuffer->SetMemory(sizeof(glm::mat4), &world);
 
 		// Bind our graphics pipeline
-		commandBuffer->BindComputePipeline(m_ComputePipeline);
+		computeCommandBuffer->BindComputePipeline(m_ComputePipeline);
 
 		m_PushDescriptors->Clear();
 		m_PushDescriptors->AddUniformBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
 		m_PushDescriptors->AddUniformBuffer(m_ModelUBO, 1);
 		m_PushDescriptors->AddStorageBuffer(ParticleBatcher::GetStorageBuffer(), 5);
 
-		commandBuffer->PushDescriptorsCompute(m_PushDescriptors.get(), m_ComputePipeline);
-		commandBuffer->Dispatch(16384 / 256, 1, 1);
-		commandBuffer->EndCommands();
-		commandBuffer->SubmitCompute();
+		computeCommandBuffer->PushDescriptorsCompute(m_PushDescriptors.get(), m_ComputePipeline);
+		computeCommandBuffer->Dispatch(16384 / 256, 1, 1);
+		computeCommandBuffer->EndCommands();
+		computeCommandBuffer->SubmitCompute();
+
+		graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
+		graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
+		graphicsCommandBuffer->Draw(10 * 6, 1, 0, 0);
 	}
 }

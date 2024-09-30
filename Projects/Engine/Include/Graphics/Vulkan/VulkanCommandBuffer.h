@@ -43,6 +43,7 @@ namespace Odyssey
 		void TransitionLayouts(ResourceID imageID, VkImageLayout newLayout);
 		void CopyBufferToImage(ResourceID bufferID, ResourceID imageID, uint32_t width, uint32_t height);
 		void BindVertexBuffer(ResourceID vertexBufferID);
+		void BindBufferAsVertexBuffer(ResourceID storageBufferID);
 		void CopyBufferToBuffer(ResourceID source, ResourceID destination, uint32_t dataSize);
 		void BindIndexBuffer(ResourceID indexBufferID);
 		void BindDescriptorSet(ResourceID descriptorSetID, ResourceID pipelineID);

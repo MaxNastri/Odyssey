@@ -9,23 +9,25 @@ struct Particle
     float SizeOverLifetime;
 };
 
-RWStructuredBuffer<Particle> ParticleBuffer : register(u5);
+RWStructuredBuffer<Particle> ParticleBuffer : register(b5);
 
 [numthreads(256, 1, 1)]
-void main(uint3 GlobalInvocationID : SV_DispatchThreadID, uint3 LocalInvocationID : SV_GroupThreadID)
+void main(uint3 id : SV_DispatchThreadID)
 {
-    uint index = GlobalInvocationID.x;
     float dt = (1.0f / 144.0f);
-    ParticleBuffer[index].Lifetime += dt;
-    ParticleBuffer[index].Position += ParticleBuffer[index].Velocity * dt;
+    ParticleBuffer[id.x].Lifetime += dt;
+    ParticleBuffer[id.x].Position += ParticleBuffer[id.x].Velocity * dt;
 }
 #pragma Vertex
-struct VertexInput
+struct Particle
 {
-    float3 Position : POSITION;
-    float4 Color : COLOR;
+    float4 Position;
+    float4 Color;
+    float4 Velocity;
+    float Lifetime;
+    float Size;
+    float SizeOverLifetime;
 };
-
 struct VertexOutput
 {
     float4 Position : SV_Position;
@@ -44,13 +46,31 @@ cbuffer ModelData : register(b1)
     float4x4 Model;
 }
 
-VertexOutput main(VertexInput input)
+StructuredBuffer<Particle> ParticleBufferVS : register(b5);
+
+VertexOutput main(uint id : SV_VertexID)
 {
+    Particle particle = ParticleBufferVS[id / 6];
+    
     VertexOutput output;
-    float4 position = float4(input.Position, 1.0f);
-    output.Position = mul(Model, position);
+    
+    float2 offsets[6] =
+    {
+        float2(-1, 1), // 0
+        float2(1, 1), // 1
+        float2(-1, -1), // 2
+        float2(-1, -1), // 3
+        float2(1, 1), // 4
+        float2(1, -1), // 5
+    };
+    
+    float3 camRight = View[0].xyz;
+    float3 camUp = View[1].xyz;
+    float2 offset = offsets[id % 6];
+    
+    output.Position = float4(particle.Position.xyz + (camRight * offset.x * (0.5f * 0.5f)) + (camUp * offset.y * (0.5f * 0.5f)), 1.0f);
     output.Position = mul(ViewProjection, output.Position);
-    output.Color = input.Color;
+    output.Color = particle.Color;
     return output;
 }
 

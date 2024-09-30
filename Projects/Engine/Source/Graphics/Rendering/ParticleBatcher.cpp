@@ -13,6 +13,12 @@ namespace Odyssey
 		m_StorageBuffer = ResourceManager::Allocate<VulkanStorageBuffer>(BufferType::Storage, 0, m_BufferSize);
 		m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, m_BufferSize);
 
+		for (size_t i = 0; i < 100; i++)
+		{
+			m_Particles[i].Position = glm::vec4(i * 2, 0.0f, 0.0f, 1.0f);
+			m_Particles[i].Velocity = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+		}
+
 		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
 		stagingBuffer->AllocateMemory();
 		stagingBuffer->SetMemory(m_BufferSize, m_Particles.data());
@@ -32,6 +38,7 @@ namespace Odyssey
 
 		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
+
 	}
 
 	void ParticleBatcher::Shutdown()

@@ -32,6 +32,8 @@ namespace Odyssey
 		auto type = settings.ShaderType == ShaderType::Vertex ? shaderc_vertex_shader : shaderc_fragment_shader;
 		if (settings.ShaderType == ShaderType::Compute)
 			type = shaderc_compute_shader;
+		if (settings.ShaderType == ShaderType::Geometry)
+			type = shaderc_geometry_shader;
 
 		shaderc::SpvCompilationResult result =
 			compiler.CompileGlslToSpv(settings.ShaderCode, type, settings.ShaderName.c_str(), compilerOptions);

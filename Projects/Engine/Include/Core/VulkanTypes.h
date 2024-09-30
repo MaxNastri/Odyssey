@@ -10,6 +10,8 @@ namespace Odyssey
 		std::map<ShaderType, ResourceID> Shaders;
 		ResourceID DescriptorLayout;
 		bool Triangles = true;
+		bool Strips = false;
 		bool WriteDepth = true;
+		bool UseParticle = false;
 	};
 }

@@ -5,6 +5,7 @@
 #include "Vertex.h"
 #include "VulkanDescriptorLayout.h"
 #include "ResourceManager.h"
+#include "ParticleSystem.h"
 
 namespace Odyssey
 {
@@ -54,18 +55,36 @@ namespace Odyssey
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-		VkVertexInputBindingDescription bindingDescription = Vertex::GetBindingDescription();
-		vertexInputInfo.vertexBindingDescriptionCount = 1;
-		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+		VkVertexInputBindingDescription bindingDescription{};
+		std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions{};
 
-		std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
-		vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
-		vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
+		if (info.UseParticle)
+		{
+			bindingDescription = Particle::GetBindingDescription();
+			vertexInputInfo.vertexBindingDescriptionCount = 1;
+			vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+
+			vertexAttributeDescriptions = Particle::GetAttributeDescriptions();
+			vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
+			vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
+		}
+		else
+		{
+			bindingDescription = Vertex::GetBindingDescription();
+			vertexInputInfo.vertexBindingDescriptionCount = 1;
+			vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+
+			vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
+			vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
+			vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
+		}
 
 		// Input Assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		inputAssembly.topology = info.Triangles ? VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST : VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+		if (info.Strips)
+			inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
 		// Rasterizer

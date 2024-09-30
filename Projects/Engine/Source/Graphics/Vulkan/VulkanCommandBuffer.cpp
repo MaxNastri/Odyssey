@@ -15,6 +15,7 @@
 #include "VulkanDescriptorLayout.h"
 #include "VulkanUniformBuffer.h"
 #include "VulkanPushDescriptors.h"
+#include "VulkanStorageBuffer.h"
 
 namespace Odyssey
 {
@@ -201,6 +202,14 @@ namespace Odyssey
 		auto vertexBuffer = ResourceManager::GetResource<VulkanVertexBuffer>(vertexBufferID);
 		auto buffer = ResourceManager::GetResource<VulkanBuffer>(vertexBuffer->GetBuffer());
 		vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, &(buffer->buffer), offsets);
+	}
+
+	void VulkanCommandBuffer::BindBufferAsVertexBuffer(ResourceID storageBufferID)
+	{
+		VkDeviceSize offsets[] = { 0 };
+		auto storageBuffer = ResourceManager::GetResource<VulkanStorageBuffer>(storageBufferID);
+		auto buffer = storageBuffer->buffer;
+		vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, &(buffer), offsets);
 	}
 
 	void VulkanCommandBuffer::CopyBufferToBuffer(ResourceID source, ResourceID destination, uint32_t dataSize)
