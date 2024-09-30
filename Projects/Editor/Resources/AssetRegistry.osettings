@@ -31,3 +31,11 @@ Entries:
     Type: Odyssey.SourceShader
     Path: 'Shaders/Source/Particles.hlsl'
     GUID: 3156967184414869478
+  - Name: ParticleEmitter
+    Type: Odyssey.SourceShader
+    Path: 'Shaders/Source/ParticleEmitter.hlsl'
+    GUID: 6212201915190309476
+  - Name: ParticleEmitter
+    Type: Odyssey.Shader
+    Path: 'Shaders/ParticleEmitter.shader'
+    GUID: 8940240242710108428

@@ -8,7 +8,6 @@ namespace Odyssey
 	class VulkanBuffer;
 	class VulkanContext;
 	class VulkanCommandPool;
-	class VulkanDescriptorSet;
 	class VulkanDescriptorLayout;
 	class VulkanGraphicsPipeline;
 	class VulkanImage;
@@ -44,10 +43,10 @@ namespace Odyssey
 		void BindVertexBuffer(ResourceID vertexBufferID);
 		void CopyBufferToBuffer(ResourceID source, ResourceID destination, size_t dataSize);
 		void BindIndexBuffer(ResourceID indexBufferID);
-		void BindDescriptorSet(ResourceID descriptorSetID, ResourceID pipelineID);
 		void PushDescriptorsGraphics(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
 		void PushDescriptorsCompute(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
 		void Dispatch(uint32_t groupX, uint32_t groupY, uint32_t groupZ);
+
 	public:
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
 		const VkCommandBuffer* GetCommandBufferRef() { return &m_CommandBuffer; }

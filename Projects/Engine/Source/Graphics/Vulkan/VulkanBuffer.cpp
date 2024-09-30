@@ -36,6 +36,7 @@ namespace Odyssey
 		{
 			case BufferType::None:
 				Logger::LogError("[VulkanBuffer] Cannot convert BufferType::None.");
+				break;
 			case BufferType::Uniform:
 				return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			case BufferType::Storage:
@@ -132,6 +133,23 @@ namespace Odyssey
 		commandPool->ReleaseBuffer(commandBufferID);
 
 		ResourceManager::Destroy(stagingBufferID);
+	}
+
+	void VulkanBuffer::CopyBufferMemory(void* dst)
+	{
+		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
+		// Map, copy and unmap the buffer memory
+		VkResult err = vkMapMemory(device, bufferMemory, 0, m_Size, 0, &bufferMemoryMapped);
+
+		memcpy(dst, bufferMemoryMapped, static_cast<size_t>(m_Size));
+
+		VkMappedMemoryRange range[1] = {};
+		range[0].sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+		range[0].memory = bufferMemory;
+		range[0].size = m_Size;
+		err = vkFlushMappedMemoryRanges(device, 1, range);
+
+		vkUnmapMemory(device, bufferMemory);
 	}
 
 	uint64_t VulkanBuffer::GetAddress()

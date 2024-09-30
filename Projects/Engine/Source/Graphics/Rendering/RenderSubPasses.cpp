@@ -165,7 +165,9 @@ namespace Odyssey
 		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
 		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
 		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
-		descriptorLayout->AddBinding("Particle Data", DescriptorType::Storage, ShaderStage::Compute, 5);
+		descriptorLayout->AddBinding("Particle Buffer", DescriptorType::Storage, ShaderStage::Compute, 2);
+		descriptorLayout->AddBinding("Counter Buffer", DescriptorType::Storage, ShaderStage::Compute, 3);
+		descriptorLayout->AddBinding("Alive Buffer", DescriptorType::Storage, ShaderStage::Compute, 4);
 		descriptorLayout->Apply();
 
 		m_ModelUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(glm::mat4));
@@ -184,30 +186,36 @@ namespace Odyssey
 
 	void ParticleSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
-		auto renderScene = params.renderingData->renderScene;
-		auto computeCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.ComputeCommandBuffer);
-		auto graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
-		computeCommandBuffer->BeginCommands();
+		uint32_t aliveCount = ParticleBatcher::AliveCount();
+		if (aliveCount > 0)
+		{
+			auto renderScene = params.renderingData->renderScene;
+			auto computeCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.ComputeCommandBuffer);
+			auto graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+			computeCommandBuffer->BeginCommands();
 
-		glm::mat4 world = glm::mat4(1.0f);
-		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_ModelUBO);
-		uniformBuffer->CopyData(sizeof(glm::mat4), &world);
+			glm::mat4 world = glm::mat4(1.0f);
+			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_ModelUBO);
+			uniformBuffer->CopyData(sizeof(glm::mat4), &world);
 
-		// Bind our graphics pipeline
-		computeCommandBuffer->BindComputePipeline(m_ComputePipeline);
+			// Bind our graphics pipeline
+			computeCommandBuffer->BindComputePipeline(m_ComputePipeline);
 
-		m_PushDescriptors->Clear();
-		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
-		m_PushDescriptors->AddBuffer(m_ModelUBO, 1);
-		m_PushDescriptors->AddBuffer(ParticleBatcher::GetStorageBuffer(), 5);
+			m_PushDescriptors->Clear();
+			m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
+			m_PushDescriptors->AddBuffer(m_ModelUBO, 1);
+			m_PushDescriptors->AddBuffer(ParticleBatcher::GetParticleBuffer(), 2);
+			m_PushDescriptors->AddBuffer(ParticleBatcher::GetCounterBuffer(), 3);
+			m_PushDescriptors->AddBuffer(ParticleBatcher::GetAliveBuffer(), 4);
 
-		computeCommandBuffer->PushDescriptorsCompute(m_PushDescriptors.get(), m_ComputePipeline);
-		computeCommandBuffer->Dispatch(16384 / 256, 1, 1);
-		computeCommandBuffer->EndCommands();
-		computeCommandBuffer->SubmitCompute();
+			computeCommandBuffer->PushDescriptorsCompute(m_PushDescriptors.get(), m_ComputePipeline);
+			computeCommandBuffer->Dispatch(std::max(aliveCount / 256, (uint32_t)1), 1, 1);
+			computeCommandBuffer->EndCommands();
+			computeCommandBuffer->SubmitCompute();
 
-		graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
-		graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
-		graphicsCommandBuffer->Draw(10 * 6, 1, 0, 0);
+			graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
+			graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
+			graphicsCommandBuffer->Draw(aliveCount * 6, 1, 0, 0);
+		}
 	}
 }

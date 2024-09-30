@@ -19,6 +19,7 @@ namespace Odyssey
 	public:
 		void CopyData(VkDeviceSize size, const void* data);
 		void UploadData(const void* data, VkDeviceSize size);
+		void CopyBufferMemory(void* dst);
 
 	public:
 		VkDeviceMemory GetMemory() { return bufferMemory; }

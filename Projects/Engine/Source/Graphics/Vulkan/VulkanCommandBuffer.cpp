@@ -9,7 +9,6 @@
 #include "VulkanImage.h"
 #include "ResourceManager.h"
 #include "VulkanRenderTexture.h"
-#include "VulkanDescriptorSet.h"
 #include "VulkanDescriptorLayout.h"
 #include "VulkanPushDescriptors.h"
 
@@ -216,13 +215,6 @@ namespace Odyssey
 	{
 		auto indexBuffer = ResourceManager::GetResource<VulkanBuffer>(indexBufferID);
 		vkCmdBindIndexBuffer(m_CommandBuffer, indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT32);
-	}
-
-	void VulkanCommandBuffer::BindDescriptorSet(ResourceID descriptorSetID, ResourceID pipelineID)
-	{
-		auto descriptorSet = ResourceManager::GetResource<VulkanDescriptorSet>(descriptorSetID);
-		auto pipeline = ResourceManager::GetResource<VulkanGraphicsPipeline>(pipelineID);
-		vkCmdBindDescriptorSets(m_CommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->GetLayout(), 0, descriptorSet->GetCount(), descriptorSet->GetDescriptorSets().data(), 0, nullptr);
 	}
 
 	void VulkanCommandBuffer::PushDescriptorsGraphics(VulkanPushDescriptors* descriptors, ResourceID pipelineID)

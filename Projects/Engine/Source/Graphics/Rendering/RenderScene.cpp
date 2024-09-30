@@ -8,7 +8,6 @@
 #include "Shader.h"
 #include "ResourceManager.h"
 #include "Texture2D.h"
-#include "VulkanDescriptorPool.h"
 #include "GameObject.h"
 #include "VulkanShaderModule.h"
 #include "VulkanDescriptorLayout.h"

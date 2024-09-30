@@ -9,15 +9,29 @@ struct Particle
     float SizeOverLifetime;
 };
 
-RWStructuredBuffer<Particle> ParticleBuffer : register(b5);
+static const uint ALIVE_COUNT_OFFSET = 0;
+static const uint DEAD_COUNT_OFFSET = ALIVE_COUNT_OFFSET + 4;
 
+RWStructuredBuffer<Particle> ParticleBuffer : register(b2);
+RWByteAddressBuffer CounterBuffer : register(b3);
+RWStructuredBuffer<uint> AliveBuffer : register(b4);
+
+// Per particle
 [numthreads(256, 1, 1)]
 void main(uint3 id : SV_DispatchThreadID)
 {
+    uint aliveCount = CounterBuffer.Load(ALIVE_COUNT_OFFSET);
+    
+    if (id.x >= aliveCount)
+        return;
+    
+    uint particleIndex = AliveBuffer[id.x];
     float dt = (1.0f / 144.0f);
-    ParticleBuffer[id.x].Lifetime += dt;
-    ParticleBuffer[id.x].Position += ParticleBuffer[id.x].Velocity * dt;
+    Particle particle = ParticleBuffer[particleIndex];
+    particle.Lifetime += dt;
+    particle.Position += particle.Velocity * dt;
 }
+
 #pragma Vertex
 struct Particle
 {
@@ -47,11 +61,14 @@ cbuffer ModelData : register(b1)
     float4x4 Model;
 }
 
-StructuredBuffer<Particle> ParticleBufferVS : register(b5);
+StructuredBuffer<Particle> ParticleBufferVS : register(b2);
+StructuredBuffer<uint> AliveBuffer : register(b4);
 
 VertexOutput main(uint id : SV_VertexID)
 {
-    Particle particle = ParticleBufferVS[id / 6];
+    uint aliveIndex = id / 6;
+    uint particleIndex = AliveBuffer[aliveIndex];
+    Particle particle = ParticleBufferVS[particleIndex];
     
     VertexOutput output;
     

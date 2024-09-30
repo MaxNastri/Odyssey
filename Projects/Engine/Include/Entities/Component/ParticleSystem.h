@@ -45,6 +45,18 @@ namespace Odyssey
 		}
 	};
 
+	struct ParticleEmitterData
+	{
+		float4 Position;
+		float4 Color;
+		float4 Velocity;
+		float Lifetime;
+		float Size;
+		float Speed;
+		uint EmitCount;
+		uint EmitterIndex;
+	};
+
 	class ParticleSystem
 	{
 		CLASS_DECLARATION(Odyssey, ParticleSystem)
@@ -57,6 +69,10 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
+		ParticleEmitterData& GetEmitterData() { return emitterData; }
+
+	public:
+		ParticleEmitterData emitterData;
 		float Duration = 0.0f;
 		// Particles spawned per sec
 		uint32_t EmissionRate = 0;
