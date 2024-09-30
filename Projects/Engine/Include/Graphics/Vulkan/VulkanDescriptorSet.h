@@ -15,7 +15,7 @@ namespace Odyssey
 	class VulkanDescriptorSet : public Resource
 	{
 	public:
-		VulkanDescriptorSet(std::shared_ptr<VulkanContext> context, DescriptorType descriptorType, ResourceID descriptorPoolID, ResourceID descriptorLayoutID, uint32_t count);
+		VulkanDescriptorSet(ResourceID id, std::shared_ptr<VulkanContext> context, DescriptorType descriptorType, ResourceID descriptorPoolID, ResourceID descriptorLayoutID, uint32_t count);
 
 	public:
 		void SetBuffer(ResourceID bufferID, uint32_t bindingIndex, uint32_t arrayElement = 0);

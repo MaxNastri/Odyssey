@@ -3,10 +3,6 @@
 
 namespace Odyssey
 {
-	class Mesh;
-	class VulkanVertexBuffer;
-	class VulkanIndexBuffer;
-
 	struct Drawcall
 	{
 	public:

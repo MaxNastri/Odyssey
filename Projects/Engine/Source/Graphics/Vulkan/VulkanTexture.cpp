@@ -4,7 +4,13 @@
 
 namespace Odyssey
 {
-	VulkanTexture::VulkanTexture(std::shared_ptr<VulkanContext> context, VulkanImageDescription description, BinaryBuffer& buffer)
+	VulkanTexture::VulkanTexture(ResourceID id)
+		: Resource(id)
+	{
+	}
+
+	VulkanTexture::VulkanTexture(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription description, BinaryBuffer& buffer)
+		: Resource(id)
 	{
 		m_Image = ResourceManager::Allocate<VulkanImage>(description);
 		auto image = ResourceManager::GetResource<VulkanImage>(m_Image);

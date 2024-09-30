@@ -7,8 +7,6 @@
 #include "VulkanComputePipeline.h"
 #include "VulkanBuffer.h"
 #include "VulkanImage.h"
-#include "VulkanVertexBuffer.h"
-#include "VulkanIndexBuffer.h"
 #include "ResourceManager.h"
 #include "VulkanRenderTexture.h"
 #include "VulkanDescriptorSet.h"
@@ -19,7 +17,8 @@
 
 namespace Odyssey
 {
-	VulkanCommandBuffer::VulkanCommandBuffer(std::shared_ptr<VulkanContext> context, ResourceID commandPoolID)
+	VulkanCommandBuffer::VulkanCommandBuffer(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID commandPoolID)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_CommandPool = commandPoolID;
@@ -199,9 +198,8 @@ namespace Odyssey
 	void VulkanCommandBuffer::BindVertexBuffer(ResourceID vertexBufferID)
 	{
 		VkDeviceSize offsets[] = { 0 };
-		auto vertexBuffer = ResourceManager::GetResource<VulkanVertexBuffer>(vertexBufferID);
-		auto buffer = ResourceManager::GetResource<VulkanBuffer>(vertexBuffer->GetBuffer());
-		vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, &(buffer->buffer), offsets);
+		auto vertexBuffer = ResourceManager::GetResource<VulkanBuffer>(vertexBufferID);
+		vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, &(vertexBuffer->buffer), offsets);
 	}
 
 	void VulkanCommandBuffer::BindBufferAsVertexBuffer(ResourceID storageBufferID)
@@ -226,9 +224,8 @@ namespace Odyssey
 
 	void VulkanCommandBuffer::BindIndexBuffer(ResourceID indexBufferID)
 	{
-		auto indexBuffer = ResourceManager::GetResource<VulkanIndexBuffer>(indexBufferID);
-		auto buffer = ResourceManager::GetResource<VulkanBuffer>(indexBuffer->GetIndexBuffer());
-		vkCmdBindIndexBuffer(m_CommandBuffer, buffer->buffer, 0, VK_INDEX_TYPE_UINT32);
+		auto indexBuffer = ResourceManager::GetResource<VulkanBuffer>(indexBufferID);
+		vkCmdBindIndexBuffer(m_CommandBuffer, indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT32);
 	}
 
 	void VulkanCommandBuffer::BindDescriptorSet(ResourceID descriptorSetID, ResourceID pipelineID)

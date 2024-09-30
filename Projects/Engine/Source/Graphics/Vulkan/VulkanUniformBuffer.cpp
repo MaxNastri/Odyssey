@@ -3,8 +3,8 @@
 
 namespace Odyssey
 {
-	VulkanUniformBuffer::VulkanUniformBuffer(std::shared_ptr<VulkanContext> context, BufferType bufferType, uint32_t bindingIndex, VkDeviceSize size)
-		: VulkanBuffer(context, bufferType, size)
+	VulkanUniformBuffer::VulkanUniformBuffer(ResourceID id, std::shared_ptr<VulkanContext> context, BufferType bufferType, uint32_t bindingIndex, VkDeviceSize size)
+		: VulkanBuffer(id, context, bufferType, size)
 	{
 		m_BindingIndex = bindingIndex;
 

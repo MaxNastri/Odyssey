@@ -6,7 +6,7 @@ namespace Odyssey
 	class VulkanUniformBuffer : public VulkanBuffer
 	{
 	public:
-		VulkanUniformBuffer(std::shared_ptr<VulkanContext> context, BufferType bufferType, uint32_t bindingIndex, VkDeviceSize size);
+		VulkanUniformBuffer(ResourceID id, std::shared_ptr<VulkanContext> context, BufferType bufferType, uint32_t bindingIndex, VkDeviceSize size);
 
 	public:
 		VkWriteDescriptorSet GetDescriptorInfo();

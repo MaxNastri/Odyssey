@@ -10,7 +10,7 @@ namespace Odyssey
 	class VulkanComputePipeline : public Resource
 	{
 	public:
-		VulkanComputePipeline(std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info);
+		VulkanComputePipeline(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info);
 		void Destroy();
 
 	public:

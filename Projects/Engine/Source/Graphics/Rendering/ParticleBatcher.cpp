@@ -20,11 +20,9 @@ namespace Odyssey
 		}
 
 		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
-		stagingBuffer->AllocateMemory();
-		stagingBuffer->SetMemory(m_BufferSize, m_Particles.data());
+		stagingBuffer->CopyData(m_BufferSize, m_Particles.data());
 
 		auto storageBuffer = ResourceManager::GetResource<VulkanStorageBuffer>(m_StorageBuffer);
-		storageBuffer->AllocateMemory();
 
 		ResourceID commandPoolID = ResourceManager::Allocate<VulkanCommandPool>(VulkanQueueType::Compute);
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);

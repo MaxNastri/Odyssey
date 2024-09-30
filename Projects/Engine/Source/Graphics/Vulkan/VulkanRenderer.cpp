@@ -8,8 +8,6 @@
 #include "VulkanWindow.h"
 #include "VulkanBuffer.h"
 #include "VulkanQueue.h"
-#include "VulkanVertexBuffer.h"
-#include "VulkanIndexBuffer.h"
 #include "VulkanImage.h"
 #include "VulkanRenderTexture.h"
 #include "ResourceManager.h"

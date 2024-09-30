@@ -2,8 +2,8 @@
 
 namespace Odyssey
 {
-	VulkanStorageBuffer::VulkanStorageBuffer(std::shared_ptr<VulkanContext> context, BufferType bufferType, uint32_t bindingIndex, VkDeviceSize size)
-		: VulkanBuffer(context, bufferType, size)
+	VulkanStorageBuffer::VulkanStorageBuffer(ResourceID id, std::shared_ptr<VulkanContext> context, BufferType bufferType, uint32_t bindingIndex, VkDeviceSize size)
+		: VulkanBuffer(id, context, bufferType, size)
 	{
 		m_BindingIndex = bindingIndex;
 

@@ -46,7 +46,8 @@ namespace Odyssey
 		}
 	}
 
-	VulkanDescriptorLayout::VulkanDescriptorLayout(std::shared_ptr<VulkanContext> context)
+	VulkanDescriptorLayout::VulkanDescriptorLayout(ResourceID id, std::shared_ptr<VulkanContext> context)
+		: Resource(id)
 	{
 		m_Context = context;
 	}

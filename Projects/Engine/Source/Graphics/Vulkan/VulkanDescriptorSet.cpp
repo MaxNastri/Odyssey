@@ -8,7 +8,8 @@
 
 namespace Odyssey
 {
-	VulkanDescriptorSet::VulkanDescriptorSet(std::shared_ptr<VulkanContext> context, DescriptorType descriptorType, ResourceID descriptorPoolID, ResourceID descriptorLayoutID, uint32_t count)
+	VulkanDescriptorSet::VulkanDescriptorSet(ResourceID id, std::shared_ptr<VulkanContext> context, DescriptorType descriptorType, ResourceID descriptorPoolID, ResourceID descriptorLayoutID, uint32_t count)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_Count = count;

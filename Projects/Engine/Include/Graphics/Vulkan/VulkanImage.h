@@ -28,8 +28,8 @@ namespace Odyssey
 	class VulkanImage : public Resource
 	{
 	public:
-		VulkanImage(std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc);
-		VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, uint32_t channels, VkFormat format);
+		VulkanImage(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc);
+		VulkanImage(ResourceID id, std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, uint32_t channels, VkFormat format);
 		void Destroy();
 
 	public:

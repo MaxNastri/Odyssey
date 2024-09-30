@@ -11,7 +11,7 @@ namespace Odyssey
 	class VulkanTextureSampler : public Resource
 	{
 	public:
-		VulkanTextureSampler(std::shared_ptr<VulkanContext> context);
+		VulkanTextureSampler(ResourceID id, std::shared_ptr<VulkanContext> context);
 		void Destroy();
 
 	public:

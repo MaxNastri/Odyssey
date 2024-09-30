@@ -7,7 +7,8 @@
 
 namespace Odyssey
 {
-	VulkanComputePipeline::VulkanComputePipeline(std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info)
+	VulkanComputePipeline::VulkanComputePipeline(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info)
+		: Resource(id)
 	{
 		m_Context = context;
 		CreateLayout(info);

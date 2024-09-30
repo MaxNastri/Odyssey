@@ -28,6 +28,7 @@ struct Particle
     float Size;
     float SizeOverLifetime;
 };
+
 struct VertexOutput
 {
     float4 Position : SV_Position;
@@ -56,19 +57,19 @@ VertexOutput main(uint id : SV_VertexID)
     
     float2 offsets[6] =
     {
-        float2(-1, 1), // 0
-        float2(1, 1), // 1
-        float2(-1, -1), // 2
-        float2(-1, -1), // 3
-        float2(1, 1), // 4
-        float2(1, -1), // 5
+        float2(-1, 1),
+        float2(1, 1),
+        float2(-1, -1),
+        float2(-1, -1),
+        float2(1, 1),
+        float2(1, -1),
     };
     
     float3 camRight = View[0].xyz;
     float3 camUp = View[1].xyz;
     float2 offset = offsets[id % 6];
     
-    output.Position = float4(particle.Position.xyz + (camRight * offset.x * (0.5f * 0.5f)) + (camUp * offset.y * (0.5f * 0.5f)), 1.0f);
+    output.Position = float4(particle.Position.xyz + (camRight * offset.x * (particle.Size * 0.5f)) + (camUp * offset.y * (particle.Size * 0.5f)), 1.0f);
     output.Position = mul(ViewProjection, output.Position);
     output.Color = particle.Color;
     return output;

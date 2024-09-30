@@ -12,7 +12,7 @@ namespace Odyssey
 	class VulkanDescriptorLayout : public Resource
 	{
 	public:
-		VulkanDescriptorLayout(std::shared_ptr<VulkanContext> context);
+		VulkanDescriptorLayout(ResourceID id, std::shared_ptr<VulkanContext> context);
 		void Destroy();
 
 	public:

@@ -9,7 +9,8 @@
 
 namespace Odyssey
 {
-	VulkanShaderModule::VulkanShaderModule(std::shared_ptr<VulkanContext> context, ShaderType shaderType, BinaryBuffer& codeBuffer)
+	VulkanShaderModule::VulkanShaderModule(ResourceID id, std::shared_ptr<VulkanContext> context, ShaderType shaderType, BinaryBuffer& codeBuffer)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_ShaderType = shaderType;

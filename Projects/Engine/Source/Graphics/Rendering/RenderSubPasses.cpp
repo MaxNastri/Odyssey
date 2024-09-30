@@ -70,7 +70,7 @@ namespace Odyssey
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();
 		info.DescriptorLayout = m_DescriptorLayout;
-		info.Triangles = false;
+		info.Topology = Topology::LineList;
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
@@ -124,8 +124,7 @@ namespace Odyssey
 		// Write the camera data into the ubo memory
 		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
 		glm::mat4 identity = glm::mat4(1.0f);
-		uniformBuffer->AllocateMemory();
-		uniformBuffer->SetMemory(sizeof(glm::mat4), &identity);
+		uniformBuffer->CopyData(sizeof(glm::mat4), &identity);
 	}
 
 	void SkyboxSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
@@ -140,7 +139,7 @@ namespace Odyssey
 		glm::mat4 world = subPassData.Camera->GetView();
 		glm::mat4 posOnly = glm::translate(glm::mat4(1.0f), glm::vec3(world[3][0], world[3][1], world[3][2]));
 		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
-		uniformBuffer->SetMemory(sizeof(glm::mat4), &posOnly);
+		uniformBuffer->CopyData(sizeof(glm::mat4), &posOnly);
 
 		// Bind our graphics pipeline
 		commandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
@@ -171,14 +170,13 @@ namespace Odyssey
 
 		m_ModelUBO = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 1, sizeof(glm::mat4));
 		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(m_ModelUBO);
-		uniformBuffer->AllocateMemory();
 
 		m_Shader = AssetManager::LoadAsset<Shader>(s_ParticleShaderGUID);
 
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();
 		info.DescriptorLayout = m_DescriptorLayout;
-		info.UseParticle = true;
+		info.BindVertexAttributeDescriptions = false;
 
 		m_ComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
@@ -194,7 +192,7 @@ namespace Odyssey
 
 		glm::mat4 world = glm::mat4(1.0f);
 		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(m_ModelUBO);
-		uniformBuffer->SetMemory(sizeof(glm::mat4), &world);
+		uniformBuffer->CopyData(sizeof(glm::mat4), &world);
 
 		// Bind our graphics pipeline
 		computeCommandBuffer->BindComputePipeline(m_ComputePipeline);

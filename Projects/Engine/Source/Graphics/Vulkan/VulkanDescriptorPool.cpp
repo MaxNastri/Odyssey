@@ -4,7 +4,13 @@
 
 namespace Odyssey
 {
-	VulkanDescriptorPool::VulkanDescriptorPool(std::shared_ptr<VulkanContext> context, DescriptorType poolType, uint32_t descriptorCount, uint32_t maxSets)
+	VulkanDescriptorPool::VulkanDescriptorPool(ResourceID id)
+		: Resource(id)
+	{
+	}
+
+	VulkanDescriptorPool::VulkanDescriptorPool(ResourceID id, std::shared_ptr<VulkanContext> context, DescriptorType poolType, uint32_t descriptorCount, uint32_t maxSets)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_DescriptorType = poolType;

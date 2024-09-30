@@ -13,8 +13,8 @@ namespace Odyssey
 	class VulkanDescriptorPool : public Resource
 	{
 	public:
-		VulkanDescriptorPool() = default;
-		VulkanDescriptorPool(std::shared_ptr<VulkanContext> context, DescriptorType poolType, uint32_t descriptorCount, uint32_t maxSets);
+		VulkanDescriptorPool(ResourceID id);
+		VulkanDescriptorPool(ResourceID id, std::shared_ptr<VulkanContext> context, DescriptorType poolType, uint32_t descriptorCount, uint32_t maxSets);
 
 	public:
 		void Destroy();

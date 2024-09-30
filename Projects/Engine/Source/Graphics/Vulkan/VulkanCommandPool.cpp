@@ -5,7 +5,13 @@
 
 namespace Odyssey
 {
-    VulkanCommandPool::VulkanCommandPool(std::shared_ptr<VulkanContext> context, VulkanQueueType queue)
+    VulkanCommandPool::VulkanCommandPool(ResourceID id)
+        : Resource(id)
+    {
+    }
+
+    VulkanCommandPool::VulkanCommandPool(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanQueueType queue)
+        : Resource(id)
     {
         m_Context = context;
         uint32_t queueIndex = m_Context->GetPhysicalDevice()->GetFamilyIndex(queue);

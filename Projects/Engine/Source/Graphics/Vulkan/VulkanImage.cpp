@@ -10,7 +10,8 @@
 
 namespace Odyssey
 {
-	VulkanImage::VulkanImage(std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc)
+	VulkanImage::VulkanImage(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_Width = desc.Width;
@@ -86,7 +87,8 @@ namespace Odyssey
 		}
 	}
 
-	VulkanImage::VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, uint32_t channels, VkFormat format)
+	VulkanImage::VulkanImage(ResourceID id, std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, uint32_t channels, VkFormat format)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_Image = image;
@@ -133,15 +135,11 @@ namespace Odyssey
 	void VulkanImage::SetData(BinaryBuffer& buffer)
 	{
 		if (!m_StagingBuffer.IsValid())
-		{
 			m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
-			auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
-			stagingBuffer->AllocateMemory();
-		}
 
 		// Set the staging buffer's memory
 		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
-		stagingBuffer->SetMemory(buffer.GetSize(), buffer.GetData().data());
+		stagingBuffer->CopyData(buffer.GetSize(), buffer.GetData().data());
 
 		// Generate a copy region for this new set of data
 		VkBufferImageCopy bufferCopyRegion = {};
@@ -176,15 +174,11 @@ namespace Odyssey
 		size_t offset = buffer.GetSize() / arrayDepth;
 
 		if (!m_StagingBuffer.IsValid())
-		{
 			m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
-			auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
-			stagingBuffer->AllocateMemory();
-		}
 
 		// Set the staging buffer's memory
 		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
-		stagingBuffer->SetMemory(buffer.GetSize(), buffer.GetData().data());
+		stagingBuffer->CopyData(buffer.GetSize(), buffer.GetData().data());
 
 		// Generate a copy region for this new set of data
 		for (size_t i = 0; i < arrayDepth; i++)

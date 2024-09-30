@@ -14,11 +14,8 @@ namespace Odyssey
 		ResourceID Add(Args... params)
 		{
 			// Add the resource to the free list
-			ResourceID resourceID = m_Resources.Add<T>(std::forward<Args>(params)...);
-
-			// Set the resource ID
-			auto resource = Get(resourceID);
-			resource->m_ResourceID = resourceID;
+			ResourceID resourceID = m_Resources.Peek();
+			m_Resources.Add<T>(resourceID, std::forward<Args>(params)...);
 
 			return resourceID;
 		}

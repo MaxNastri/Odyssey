@@ -4,14 +4,29 @@
 
 namespace Odyssey
 {
+	enum class Topology
+	{
+		LineList = 1,
+		TriangleList = 2,
+		TriangleStrip = 3,
+	};
+
+	enum class CullMode
+	{
+		None = 0,
+		Back = 1,
+		Front = 2,
+	};
+
 	struct VulkanPipelineInfo
 	{
 	public:
 		std::map<ShaderType, ResourceID> Shaders;
 		ResourceID DescriptorLayout;
-		bool Triangles = true;
-		bool Strips = false;
+		Topology Topology = Topology::TriangleList;
+		CullMode CullMode = CullMode::None;
+		bool FrontCCW = false;
 		bool WriteDepth = true;
-		bool UseParticle = false;
+		bool BindVertexAttributeDescriptions = true;
 	};
 }

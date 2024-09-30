@@ -9,7 +9,39 @@
 
 namespace Odyssey
 {
-	VulkanGraphicsPipeline::VulkanGraphicsPipeline(std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info)
+
+	VkPrimitiveTopology ConvertTopology(Topology topology)
+	{
+		switch (topology)
+		{
+			case Topology::LineList:
+				return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+			case Topology::TriangleList:
+				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+			case Topology::TriangleStrip:
+				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+			default:
+				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		}
+	}
+
+	VkCullModeFlags ConvertCullMode(CullMode cullMode)
+	{
+		switch (cullMode)
+		{
+			case CullMode::None:
+				return VK_CULL_MODE_NONE;
+			case CullMode::Back:
+				return VK_CULL_MODE_BACK_BIT;
+			case CullMode::Front:
+				return VK_CULL_MODE_FRONT_BIT;
+			default:
+				return VK_CULL_MODE_NONE;
+		}
+	}
+
+	VulkanGraphicsPipeline::VulkanGraphicsPipeline(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info)
+		: Resource(id)
 	{
 		m_Context = context;
 
@@ -58,17 +90,7 @@ namespace Odyssey
 		VkVertexInputBindingDescription bindingDescription{};
 		std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions{};
 
-		if (info.UseParticle)
-		{
-			bindingDescription = Particle::GetBindingDescription();
-			vertexInputInfo.vertexBindingDescriptionCount = 1;
-			vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-
-			vertexAttributeDescriptions = Particle::GetAttributeDescriptions();
-			vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
-			vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
-		}
-		else
+		if (info.BindVertexAttributeDescriptions)
 		{
 			bindingDescription = Vertex::GetBindingDescription();
 			vertexInputInfo.vertexBindingDescriptionCount = 1;
@@ -82,9 +104,7 @@ namespace Odyssey
 		// Input Assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		inputAssembly.topology = info.Triangles ? VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST : VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-		if (info.Strips)
-			inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+		inputAssembly.topology = ConvertTopology(info.Topology);
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
 		// Rasterizer
@@ -95,8 +115,8 @@ namespace Odyssey
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
 		// TODO: Convert this to be dynamically set based on config/per material
-		rasterizer.cullMode = VK_CULL_MODE_NONE;// VK_CULL_MODE_BACK_BIT;
-		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+		rasterizer.cullMode = ConvertCullMode(info.CullMode);
+		rasterizer.frontFace = info.FrontCCW ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 		rasterizer.depthBiasConstantFactor = 0.0f; // Optional
 		rasterizer.depthBiasClamp = 0.0f; // Optional

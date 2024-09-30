@@ -13,14 +13,13 @@ namespace Odyssey
 	class VulkanGraphicsPipeline;
 	class VulkanImage;
 	class VulkanIndexBuffer;
-	class VulkanVertexBuffer;
 	class VulkanUniformBuffer;
 	class VulkanPushDescriptors;
 
 	class VulkanCommandBuffer : public Resource
 	{
 	public:
-		VulkanCommandBuffer(std::shared_ptr<VulkanContext> context, ResourceID commandPoolID);
+		VulkanCommandBuffer(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID commandPoolID);
 		virtual void Destroy() override;
 
 	public:

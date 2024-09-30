@@ -5,7 +5,8 @@
 
 namespace Odyssey
 {
-	VulkanTextureSampler::VulkanTextureSampler(std::shared_ptr<VulkanContext> context)
+	VulkanTextureSampler::VulkanTextureSampler(ResourceID id, std::shared_ptr<VulkanContext> context)
+		: Resource(id)
 	{
 		m_Context = context;
 

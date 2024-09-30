@@ -12,7 +12,8 @@
 
 namespace Odyssey
 {
-	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height)
+	VulkanRenderTexture::VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_Width = width;
@@ -42,7 +43,8 @@ namespace Odyssey
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
-	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height, TextureFormat format)
+	VulkanRenderTexture::VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height, TextureFormat format)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_Width = width;
@@ -74,7 +76,8 @@ namespace Odyssey
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
-	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, ResourceID imageID, TextureFormat format)
+	VulkanRenderTexture::VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID imageID, TextureFormat format)
+		: Resource(id)
 	{
 		m_Context = context;
 

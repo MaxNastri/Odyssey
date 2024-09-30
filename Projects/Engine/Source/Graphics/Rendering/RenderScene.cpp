@@ -7,8 +7,6 @@
 #include "Material.h"
 #include "Shader.h"
 #include "ResourceManager.h"
-#include "VulkanVertexBuffer.h"
-#include "VulkanIndexBuffer.h"
 #include "VulkanUniformBuffer.h"
 #include "Texture2D.h"
 #include "VulkanDescriptorPool.h"
@@ -48,8 +46,7 @@ namespace Odyssey
 
 			// Write the camera data into the ubo memory
 			auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
-			uniformBuffer->AllocateMemory();
-			uniformBuffer->SetMemory(cameraDataSize, &cameraData);
+			uniformBuffer->CopyData(cameraDataSize, &cameraData);
 
 			cameraDataBuffers.push_back(uboID);
 		}
@@ -64,8 +61,7 @@ namespace Odyssey
 
 			// Write the per-object data into the ubo
 			auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
-			uniformBuffer->AllocateMemory();
-			uniformBuffer->SetMemory(perObjectUniformSize, &objectData);
+			uniformBuffer->CopyData(perObjectUniformSize, &objectData);
 
 			perObjectUniformBuffers.push_back(uboID);
 		}
@@ -80,8 +76,7 @@ namespace Odyssey
 
 			// Write the per-object data into the ubo
 			auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
-			uniformBuffer->AllocateMemory();
-			uniformBuffer->SetMemory(skinningSize, &SkinningData);
+			uniformBuffer->CopyData(skinningSize, &SkinningData);
 
 			skinningBuffers.push_back(uboID);
 		}
@@ -94,8 +89,7 @@ namespace Odyssey
 
 		// Write the per-object data into the ubo
 		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(LightingBuffer);
-		uniformBuffer->AllocateMemory();
-		uniformBuffer->SetMemory(lightSize, &LightingData);
+		uniformBuffer->CopyData(lightSize, &LightingData);
 	}
 
 	void RenderScene::Destroy()
@@ -157,7 +151,7 @@ namespace Odyssey
 
 		// Copy the data into the uniform buffer
 		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(LightingBuffer);
-		uniformBuffer->SetMemory(sizeof(LightingData), &LightingData);
+		uniformBuffer->CopyData(sizeof(LightingData), &LightingData);
 
 		std::vector<ParticleSystem> systems;
 		for (auto entity : scene->GetAllEntitiesWith<ParticleSystem>())
@@ -194,7 +188,7 @@ namespace Odyssey
 		uint32_t sceneUniformSize = sizeof(cameraData);
 
 		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(cameraDataBuffers[m_NextCameraBuffer]);
-		uniformBuffer->SetMemory(sceneUniformSize, &cameraData);
+		uniformBuffer->CopyData(sceneUniformSize, &cameraData);
 
 		m_NextCameraBuffer++;
 		return index;
@@ -233,7 +227,7 @@ namespace Odyssey
 				objectData.world = transform.GetWorldMatrix();
 				ResourceID uboID = perObjectUniformBuffers[drawcall.UniformBufferIndex];
 				auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
-				uniformBuffer->SetMemory(perObjectSize, &objectData);
+				uniformBuffer->CopyData(perObjectSize, &objectData);
 
 				if (auto animator = gameObject.TryGetComponent<Animator>())
 				{
@@ -242,7 +236,7 @@ namespace Odyssey
 
 					ResourceID skinningID = skinningBuffers[drawcall.UniformBufferIndex];
 					auto skinningBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(skinningID);
-					skinningBuffer->SetMemory(skinningSize, &SkinningData);
+					skinningBuffer->CopyData(skinningSize, &SkinningData);
 				}
 			}
 		}

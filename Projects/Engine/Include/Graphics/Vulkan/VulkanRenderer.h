@@ -17,9 +17,7 @@ namespace Odyssey
 	class VulkanCommandBuffer;
 	class VulkanContext;
 	class VulkanFrame;
-	class VulkanIndexBuffer;
 	class VulkanRenderTexture;
-	class VulkanVertexBuffer;
 	class VulkanWindow;
 
 	class VulkanRenderer
