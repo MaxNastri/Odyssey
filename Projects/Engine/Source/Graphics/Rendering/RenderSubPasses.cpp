@@ -9,10 +9,10 @@
 #include "VulkanDescriptorLayout.h"
 #include "VulkanGraphicsPipeline.h"
 #include "Mesh.h"
-#include "VulkanUniformBuffer.h"
 #include "AssetManager.h"
 #include "VulkanComputePipeline.h"
 #include "ParticleBatcher.h"
+#include "VulkanBuffer.h"
 
 namespace Odyssey
 {
@@ -37,10 +37,10 @@ namespace Odyssey
 				// Add the camera and per object data to the push descriptors
 				uint32_t uboIndex = drawcall.UniformBufferIndex;
 				m_PushDescriptors->Clear();
-				m_PushDescriptors->AddUniformBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
-				m_PushDescriptors->AddUniformBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
-				m_PushDescriptors->AddUniformBuffer(renderScene->skinningBuffers[uboIndex], 2);
-				m_PushDescriptors->AddUniformBuffer(renderScene->LightingBuffer, 3);
+				m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
+				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
+				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
+				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 3);
 
 				// Add textures, if they are set
 				if (setPass.Texture.IsValid())
@@ -86,7 +86,7 @@ namespace Odyssey
 		// Push the camera descriptors
 		auto renderScene = params.renderingData->renderScene;
 		m_PushDescriptors->Clear();
-		m_PushDescriptors->AddUniformBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
+		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
 
 		// Push the descriptors into the command buffer
 		commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
@@ -119,10 +119,10 @@ namespace Odyssey
 		m_CubeMesh = AssetManager::LoadAsset<Mesh>(s_CubeMeshGUID);
 
 		// Allocate the UBO
-		uboID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 1, sizeof(glm::mat4));
+		uboID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(glm::mat4));
 
 		// Write the camera data into the ubo memory
-		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
+		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
 		glm::mat4 identity = glm::mat4(1.0f);
 		uniformBuffer->CopyData(sizeof(glm::mat4), &identity);
 	}
@@ -138,15 +138,15 @@ namespace Odyssey
 
 		glm::mat4 world = subPassData.Camera->GetView();
 		glm::mat4 posOnly = glm::translate(glm::mat4(1.0f), glm::vec3(world[3][0], world[3][1], world[3][2]));
-		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
+		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
 		uniformBuffer->CopyData(sizeof(glm::mat4), &posOnly);
 
 		// Bind our graphics pipeline
 		commandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
 
 		m_PushDescriptors->Clear();
-		m_PushDescriptors->AddUniformBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
-		m_PushDescriptors->AddUniformBuffer(uboID, 1);
+		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
+		m_PushDescriptors->AddBuffer(uboID, 1);
 
 		m_PushDescriptors->AddTexture(renderScene->SkyboxCubemap, 3);
 
@@ -168,8 +168,7 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Particle Data", DescriptorType::Storage, ShaderStage::Compute, 5);
 		descriptorLayout->Apply();
 
-		m_ModelUBO = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 1, sizeof(glm::mat4));
-		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(m_ModelUBO);
+		m_ModelUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(glm::mat4));
 
 		m_Shader = AssetManager::LoadAsset<Shader>(s_ParticleShaderGUID);
 
@@ -191,16 +190,16 @@ namespace Odyssey
 		computeCommandBuffer->BeginCommands();
 
 		glm::mat4 world = glm::mat4(1.0f);
-		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(m_ModelUBO);
+		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_ModelUBO);
 		uniformBuffer->CopyData(sizeof(glm::mat4), &world);
 
 		// Bind our graphics pipeline
 		computeCommandBuffer->BindComputePipeline(m_ComputePipeline);
 
 		m_PushDescriptors->Clear();
-		m_PushDescriptors->AddUniformBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
-		m_PushDescriptors->AddUniformBuffer(m_ModelUBO, 1);
-		m_PushDescriptors->AddStorageBuffer(ParticleBatcher::GetStorageBuffer(), 5);
+		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
+		m_PushDescriptors->AddBuffer(m_ModelUBO, 1);
+		m_PushDescriptors->AddBuffer(ParticleBatcher::GetStorageBuffer(), 5);
 
 		computeCommandBuffer->PushDescriptorsCompute(m_PushDescriptors.get(), m_ComputePipeline);
 		computeCommandBuffer->Dispatch(16384 / 256, 1, 1);

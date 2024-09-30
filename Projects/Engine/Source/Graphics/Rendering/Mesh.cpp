@@ -70,8 +70,11 @@ namespace Odyssey
 		if (m_VertexBuffer)
 			ResourceManager::Destroy(m_VertexBuffer);
 
+		// Allocate the vertex buffer
 		size_t dataSize = m_Vertices.size() * sizeof(m_Vertices[0]);
 		m_VertexBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Vertex, dataSize);
+
+		// Upload the vertices to the GPU
 		auto vertexBuffer = ResourceManager::GetResource<VulkanBuffer>(m_VertexBuffer);
 		vertexBuffer->UploadData(vertices.data(), dataSize);
 	}

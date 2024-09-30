@@ -8,6 +8,43 @@
 
 namespace Odyssey
 {
+	inline static VkBufferUsageFlags GetUsageFlags(BufferType bufferType)
+	{
+		switch (bufferType)
+		{
+			case Odyssey::BufferType::None:
+				Logger::LogError("Cannot get usage flags from buffer type: NONE");
+				return 0;
+			case Odyssey::BufferType::Staging:
+				return VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+			case Odyssey::BufferType::Vertex:
+				return VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+			case Odyssey::BufferType::Index:
+				return VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+			case BufferType::Uniform:
+				return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+			case BufferType::Storage:
+				return VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+		}
+
+		return 0;
+	}
+
+	inline static VkDescriptorType ConvertDescriptorType(BufferType bufferType)
+	{
+		switch (bufferType)
+		{
+			case BufferType::None:
+				Logger::LogError("[VulkanBuffer] Cannot convert BufferType::None.");
+			case BufferType::Uniform:
+				return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			case BufferType::Storage:
+				return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		}
+
+		return (VkDescriptorType)0;
+	}
+
 	VulkanBuffer::VulkanBuffer(ResourceID id, std::shared_ptr<VulkanContext> context, BufferType bufferType, VkDeviceSize size)
 		: Resource(id)
 	{
@@ -29,6 +66,13 @@ namespace Odyssey
 			return;
 		}
 
+		if (bufferType == BufferType::Uniform || bufferType == BufferType::Storage)
+		{
+			m_Descriptor.buffer = buffer;
+			m_Descriptor.range = VK_WHOLE_SIZE;
+			m_Descriptor.offset = 0;
+		}
+
 		AllocateMemory();
 	}
 
@@ -41,9 +85,7 @@ namespace Odyssey
 		bufferMemory = VK_NULL_HANDLE;
 		buffer = VK_NULL_HANDLE;
 	}
-
-
-
+	
 	void VulkanBuffer::CopyData(VkDeviceSize size, const void* data)
 	{
 		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
@@ -100,6 +142,20 @@ namespace Odyssey
 		return vkGetBufferDeviceAddress(m_Context->GetDeviceVK(), &addressInfo);
 	}
 
+	VkWriteDescriptorSet VulkanBuffer::GetDescriptorInfo()
+	{
+		assert(m_BufferType == BufferType::Uniform || m_BufferType == BufferType::Storage);
+
+		VkWriteDescriptorSet writeSet{};
+		writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		writeSet.dstSet = 0;
+		writeSet.dstBinding = 0;
+		writeSet.descriptorCount = 1;
+		writeSet.descriptorType = ConvertDescriptorType(m_BufferType);
+		writeSet.pBufferInfo = &m_Descriptor;
+		return writeSet;
+	}
+
 	void VulkanBuffer::AllocateMemory()
 	{
 		VkMemoryRequirements memoryRequirements;
@@ -153,26 +209,5 @@ namespace Odyssey
 		throw std::runtime_error("failed to find suitable memory type!");
 	}
 
-	VkBufferUsageFlags VulkanBuffer::GetUsageFlags(BufferType bufferType)
-	{
-		switch (bufferType)
-		{
-
-			case Odyssey::BufferType::None:
-				Logger::LogError("Cannot get usage flags from buffer type: NONE");
-				return 0;
-			case Odyssey::BufferType::Staging:
-				return VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-			case Odyssey::BufferType::Vertex:
-				return VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-			case Odyssey::BufferType::Index:
-				return VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
-			case BufferType::Uniform:
-				return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-			case BufferType::Storage:
-				return VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-		}
-
-		return 0;
-	}
+	
 }

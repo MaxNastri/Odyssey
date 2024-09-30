@@ -1,21 +1,13 @@
 #include "VulkanPushDescriptors.h"
-#include "VulkanUniformBuffer.h"
-#include "VulkanStorageBuffer.h"
+#include "VulkanBuffer.h"
 #include "VulkanTexture.h"
 #include "ResourceManager.h"
 
 namespace Odyssey
 {
-	void VulkanPushDescriptors::AddUniformBuffer(ResourceID bufferID, uint32_t bindingIndex)
+	void VulkanPushDescriptors::AddBuffer(ResourceID bufferID, uint32_t bindingIndex)
 	{
-		auto buffer = ResourceManager::GetResource<VulkanUniformBuffer>(bufferID);
-		m_WriteDescriptors.push_back(buffer->GetDescriptorInfo());
-		m_WriteDescriptors[m_WriteDescriptors.size() - 1].dstBinding = bindingIndex;
-	}
-
-	void VulkanPushDescriptors::AddStorageBuffer(ResourceID bufferID, uint32_t bindingIndex)
-	{
-		auto buffer = ResourceManager::GetResource<VulkanStorageBuffer>(bufferID);
+		auto buffer = ResourceManager::GetResource<VulkanBuffer>(bufferID);
 		m_WriteDescriptors.push_back(buffer->GetDescriptorInfo());
 		m_WriteDescriptors[m_WriteDescriptors.size() - 1].dstBinding = bindingIndex;
 	}

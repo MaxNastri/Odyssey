@@ -4,16 +4,12 @@
 
 namespace Odyssey
 {
-	class VulkanUniformBuffer;
-	class VulkanTexture;
-
 	class VulkanPushDescriptors
 	{
 	public:
 		VulkanPushDescriptors() = default;
 	public:
-		void AddUniformBuffer(ResourceID bufferID, uint32_t bindingIndex);
-		void AddStorageBuffer(ResourceID bufferID, uint32_t bindingIndex);
+		void AddBuffer(ResourceID bufferID, uint32_t bindingIndex);
 		void AddTexture(ResourceID textureID, uint32_t bindingIndex);
 		void Clear();
 
