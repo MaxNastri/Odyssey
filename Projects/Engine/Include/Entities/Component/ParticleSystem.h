@@ -10,7 +10,6 @@ namespace Odyssey
 		glm::vec4 Color = glm::vec4(1.0f);
 		glm::vec4 Velocity = glm::vec4(0.0f, 0.1f, 0.0f, 0.0f);
 		float Lifetime = 0.0f;
-		float MaxLifetime = 0.0f;
 		float Size = 0.25f;
 		float Speed = 0.25f;
 	};
@@ -20,8 +19,9 @@ namespace Odyssey
 		float4 Position = glm::vec4(0,0,0,1);
 		float4 Color = glm::vec4(1,0,0,1);
 		float4 Velocity = glm::vec4(0,0.1f,0,0);
+		float3 Rnd = glm::vec3(0.0f);
 		float Lifetime = 3.0f;
-		float Size = 0.025f;
+		float Size = 1.0f;
 		float Speed = 3.0f;
 		uint32_t EmitCount = 1;
 		uint32_t EmitterIndex = 0;

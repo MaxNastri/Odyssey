@@ -15,6 +15,7 @@ namespace Odyssey
 
 	public:
 		static void Update(std::vector<ParticleSystem>& systems);
+		static void SwapBuffers();
 
 	public:
 		static ResourceID GetParticleBuffer() { return m_ParticleBuffer; }
@@ -30,6 +31,7 @@ namespace Odyssey
 			uint32_t DeadCount = 0;
 			uint32_t AlivePreSimCount = 0;
 			uint32_t AlivePostSimCount = 0;
+			uint32_t TestCount = 0;
 		};
 
 	private:
@@ -67,6 +69,8 @@ namespace Odyssey
 		inline static ResourceID s_EmitterBuffer;
 		inline static size_t s_EmitterBufferSize;
 
+	private:
+		inline static bool s_Run = false;
 		// Shader
 		// Compute pipeline
 		// Push descriptors

@@ -4,7 +4,6 @@ namespace Odyssey
 {
 	ParticleSystem::ParticleSystem(const GameObject& gameObject)
 	{
-
 	}
 
 	void ParticleSystem::Serialize(SerializationNode& node)

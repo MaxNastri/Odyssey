@@ -213,13 +213,14 @@ namespace Odyssey
 			m_PushDescriptors->AddBuffer(ParticleBatcher::GetDeadBuffer(), 6);
 
 			computeCommandBuffer->PushDescriptorsCompute(m_PushDescriptors.get(), m_ComputePipeline);
-			computeCommandBuffer->Dispatch(1, 1, 1);
+			computeCommandBuffer->Dispatch(std::ceil((float)aliveCount / (float)256), 1, 1);
 			computeCommandBuffer->EndCommands();
 			computeCommandBuffer->SubmitCompute();
 
 			graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
 			graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
 			graphicsCommandBuffer->Draw(aliveCount * 6, 1, 0, 0);
+
 		}
 	}
 }

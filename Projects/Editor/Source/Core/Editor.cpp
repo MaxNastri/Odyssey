@@ -13,6 +13,7 @@
 #include "DebugRenderer.h"
 #include "SceneSettingsWindow.h"
 #include "AssetRegistry.hpp"
+#include "ParticleBatcher.h"
 
 namespace Odyssey
 {
@@ -99,6 +100,8 @@ namespace Odyssey
 
 				running = Renderer::Update();
 				Renderer::Render();
+
+				ParticleBatcher::SwapBuffers();
 			}
 		}
 
@@ -114,7 +117,7 @@ namespace Odyssey
 	void Editor::SetupEditorGUI()
 	{
 		GUIManager::CreateInspectorWindow();
-		GUIManager::CreateDockableWindow<GameViewWindow>();
+		//GUIManager::CreateDockableWindow<GameViewWindow>();
 		GUIManager::CreateDockableWindow<SceneViewWindow>();
 		GUIManager::CreateDockableWindow<ContentBrowserWindow>();
 		GUIManager::CreateDockableWindow<SceneHierarchyWindow>();

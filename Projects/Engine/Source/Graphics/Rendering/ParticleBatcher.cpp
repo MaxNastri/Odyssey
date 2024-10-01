@@ -87,8 +87,12 @@ namespace Odyssey
 	void ParticleBatcher::Update(std::vector<ParticleSystem>& systems)
 	{
 		if (systems.size() == 0)
+		{
+			s_Run = false;
 			return;
+		}
 
+		s_Run = true;
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(s_CommandPool);
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -100,44 +104,25 @@ namespace Odyssey
 
 		for (auto& particleSystem : systems)
 		{
-			static uint frameCount = 0;
-			if (frameCount++ > 10)
-			{
-				frameCount = 0;
-				uint32_t spawn = (uint32_t)(std::ceil(particleSystem.EmissionRate * Time::DeltaTime()));
-				auto emitterBuffer = ResourceManager::GetResource<VulkanBuffer>(s_EmitterBuffer);
-				auto& emitterData = particleSystem.GetEmitterData();
-				emitterData.EmitCount = spawn;
-				emitterBuffer->CopyData(s_EmitterBufferSize, &emitterData);
+			uint32_t spawn = (uint32_t)(std::ceil(particleSystem.EmissionRate * Time::DeltaTime()));
+			auto emitterBuffer = ResourceManager::GetResource<VulkanBuffer>(s_EmitterBuffer);
+			auto& emitterData = particleSystem.GetEmitterData();
+			emitterData.EmitCount = 10;
+			emitterData.Rnd.x = (float)rand() / (float)RAND_MAX;
+			emitterData.Rnd.y = (float)rand() / (float)RAND_MAX;
+			emitterData.Rnd.z = (float)rand() / (float)RAND_MAX;
+			emitterBuffer->CopyData(s_EmitterBufferSize, &emitterData);
 
-				s_PushDescriptors->Clear();
-				s_PushDescriptors->AddBuffer(m_ParticleBuffer, 2);
-				s_PushDescriptors->AddBuffer(m_CounterBuffer, 3);
-				s_PushDescriptors->AddBuffer(m_AlivePreSimBuffer, 4);
-				s_PushDescriptors->AddBuffer(m_AlivePostSimBuffer, 5);
-				s_PushDescriptors->AddBuffer(m_DeadBuffer, 6);
-				s_PushDescriptors->AddBuffer(s_EmitterBuffer, 7);
+			s_PushDescriptors->Clear();
+			s_PushDescriptors->AddBuffer(m_ParticleBuffer, 2);
+			s_PushDescriptors->AddBuffer(m_CounterBuffer, 3);
+			s_PushDescriptors->AddBuffer(m_AlivePreSimBuffer, 4);
+			s_PushDescriptors->AddBuffer(m_AlivePostSimBuffer, 5);
+			s_PushDescriptors->AddBuffer(m_DeadBuffer, 6);
+			s_PushDescriptors->AddBuffer(s_EmitterBuffer, 7);
 
-				commandBuffer->PushDescriptorsCompute(s_PushDescriptors.get(), s_ComputePipeline);
-				commandBuffer->Dispatch(spawn, 1, 1);
-
-				auto counterBuffer = ResourceManager::GetResource<VulkanBuffer>(ParticleBatcher::GetCounterBuffer());
-				counterBuffer->CopyBufferMemory(&s_ParticleCounts);
-				auto alivePreSimBuffer = ResourceManager::GetResource<VulkanBuffer>(m_AlivePreSimBuffer);
-				alivePreSimBuffer->CopyBufferMemory(m_AlivePreSimList.data());
-
-				auto alivePostSimBuffer = ResourceManager::GetResource<VulkanBuffer>(m_AlivePostSimBuffer);
-				alivePostSimBuffer->CopyBufferMemory(m_AlivePostSimList.data());
-
-				std::swap(s_ParticleCounts.AlivePreSimCount, s_ParticleCounts.AlivePostSimCount);
-				std::swap(m_AlivePreSimList, m_AlivePostSimList);
-
-				s_ParticleCounts.AlivePostSimCount = 0;
-				counterBuffer->UploadData(&s_ParticleCounts, m_CounterBufferSize);
-				alivePreSimBuffer->UploadData(m_AlivePreSimList.data(), m_ListBufferSize);
-				alivePostSimBuffer->UploadData(m_AlivePostSimList.data(), m_ListBufferSize);
-
-			}
+			commandBuffer->PushDescriptorsCompute(s_PushDescriptors.get(), s_ComputePipeline);
+			commandBuffer->Dispatch(std::ceil((float)emitterData.EmitCount / 64.0f), 1, 1);
 		}
 
 		// End commands
@@ -146,6 +131,31 @@ namespace Odyssey
 		commandPool->ReleaseBuffer(commandBufferID);
 
 		auto counterBuffer = ResourceManager::GetResource<VulkanBuffer>(ParticleBatcher::GetCounterBuffer());
-		counterBuffer->CopyBufferMemory(&s_ParticleCounts);	
+		counterBuffer->CopyBufferMemory(&s_ParticleCounts);
+	}
+
+	void ParticleBatcher::SwapBuffers()
+	{
+		if (s_Run)
+		{
+			auto alivePreSimBuffer = ResourceManager::GetResource<VulkanBuffer>(m_AlivePreSimBuffer);
+			alivePreSimBuffer->CopyBufferMemory(m_AlivePreSimList.data());
+
+			auto counterBuffer = ResourceManager::GetResource<VulkanBuffer>(ParticleBatcher::GetCounterBuffer());
+			counterBuffer->CopyBufferMemory(&s_ParticleCounts);
+
+			auto alivePostSimBuffer = ResourceManager::GetResource<VulkanBuffer>(m_AlivePostSimBuffer);
+			alivePostSimBuffer->CopyBufferMemory(m_AlivePostSimList.data());
+
+			Logger::LogInfo(std::format("[ParticelBatcher] Dead:{}, AlivePre: {}, AlivePost: {}, Test: {}", s_ParticleCounts.DeadCount, s_ParticleCounts.AlivePreSimCount, s_ParticleCounts.AlivePostSimCount, s_ParticleCounts.TestCount));
+
+			std::swap(s_ParticleCounts.AlivePreSimCount, s_ParticleCounts.AlivePostSimCount);
+			std::swap(m_AlivePreSimList, m_AlivePostSimList);
+
+			s_ParticleCounts.AlivePostSimCount = 0;
+			counterBuffer->UploadData(&s_ParticleCounts, m_CounterBufferSize);
+			alivePreSimBuffer->UploadData(m_AlivePreSimList.data(), m_ListBufferSize);
+			alivePostSimBuffer->UploadData(m_AlivePostSimList.data(), m_ListBufferSize);
+		}
 	}
 }

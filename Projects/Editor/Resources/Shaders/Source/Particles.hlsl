@@ -5,7 +5,6 @@ struct Particle
     float4 Color;
     float4 Velocity;
     float Lifetime;
-    float MaxLifetime;
     float Size;
     float Speed;
 };
@@ -15,7 +14,8 @@ static const uint Subtract = -1;
 
 static const uint DEAD_COUNT_OFFSET = 0;
 static const uint ALIVE_PRE_SIM_COUNT_OFFSET = DEAD_COUNT_OFFSET + 4;
-static const uint ALIVE_POST_SIM_COUNT_OFFSET = ALIVE_PRE_SIM_COUNT_OFFSET + 4;
+static const uint ALIVE_POST_SIM_COUNT_OFFSET = DEAD_COUNT_OFFSET + 8;
+static const uint TEST_COUNT_OFFSET = DEAD_COUNT_OFFSET + 12;
 
 RWStructuredBuffer<Particle> ParticleBuffer : register(b2);
 RWByteAddressBuffer CounterBuffer : register(b3);
@@ -35,13 +35,16 @@ void main(uint3 id : SV_DispatchThreadID)
     uint particleIndex = AliveBufferPreSim[id.x];
     float dt = (1.0f / 144.0f);
     Particle particle = ParticleBuffer[particleIndex];
-    particle.Lifetime += dt;
+    particle.Lifetime -= dt;
     
-    if (particle.Lifetime > particle.MaxLifetime)
+    if (particle.Lifetime <= 0.0f)
     {
         // Increment the dead count
         uint deadCount;
         CounterBuffer.InterlockedAdd(DEAD_COUNT_OFFSET, Add, deadCount);
+        
+        uint testCount;
+        CounterBuffer.InterlockedAdd(TEST_COUNT_OFFSET, Add, testCount);
         
         // Assign the particle index to the dead buffer
         DeadBuffer[deadCount] = particleIndex;
@@ -66,7 +69,6 @@ struct Particle
     float4 Color;
     float4 Velocity;
     float Lifetime;
-    float MaxLifetime;
     float Size;
     float Speed;
 };
@@ -92,6 +94,8 @@ cbuffer ModelData : register(b1)
 StructuredBuffer<Particle> ParticleBufferVS : register(b2);
 StructuredBuffer<uint> AliveBuffer : register(b4);
 
+static const float BillBoardSize = 0.125f;
+
 VertexOutput main(uint id : SV_VertexID)
 {
     uint aliveIndex = id / 6;
@@ -102,12 +106,12 @@ VertexOutput main(uint id : SV_VertexID)
     
     float2 offsets[6] =
     {
-        float2(-1, 1),
-        float2(1, 1),
-        float2(-1, -1),
-        float2(-1, -1),
-        float2(1, 1),
-        float2(1, -1),
+        float2(-BillBoardSize, BillBoardSize),
+        float2(BillBoardSize, BillBoardSize),
+        float2(-BillBoardSize, -BillBoardSize),
+        float2(-BillBoardSize, -BillBoardSize),
+        float2(BillBoardSize, BillBoardSize),
+        float2(BillBoardSize, -BillBoardSize),
     };
     
     float3 camRight = View[0].xyz;

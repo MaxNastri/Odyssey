@@ -5,7 +5,6 @@ struct Particle
     float4 Color;
     float4 Velocity;
     float Lifetime;
-    float MaxLifetime;
     float Size;
     float Speed;
 };
@@ -28,11 +27,17 @@ cbuffer EmitterData : register(b7)
     float4 Position;
     float4 Color;
     float4 Velocity;
+    float3 Rnd;
     float Lifetime;
     float Size;
     float Speed;
     uint EmitCount;
     uint EmitterIndex;
+}
+
+float random(float uv)
+{
+    return frac(sin(uv) * 43758.5453123);
 }
 
 [numthreads(64, 1, 1)]
@@ -52,11 +57,10 @@ void main(uint3 id : SV_DispatchThreadID)
 
     // Construct a particle based on the emitter's params
     Particle particle;
-    particle.Position = Position;
+    particle.Position = float4(Rnd.x, Rnd.y, Rnd.z, 0.0f);
     particle.Color = Color;
     particle.Velocity = Velocity;
-    particle.Lifetime = 0.0f;
-    particle.MaxLifetime = Lifetime;
+    particle.Lifetime = Lifetime;
     particle.Size = Size;
     particle.Speed = Speed;
     
