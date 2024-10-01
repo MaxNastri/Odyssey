@@ -19,13 +19,17 @@ namespace Odyssey
 	public:
 		static ResourceID GetParticleBuffer() { return m_ParticleBuffer; }
 		static ResourceID GetCounterBuffer() { return m_CounterBuffer; }
-		static ResourceID GetAliveBuffer() { return m_AliveBuffer; }
-		static uint32_t AliveCount() { return s_ParticleCounts.AliveCount; }
+		static ResourceID GetAlivePreSimBuffer() { return m_AlivePreSimBuffer; }
+		static ResourceID GetAlivePostSimBuffer() { return m_AlivePostSimBuffer; }
+		static ResourceID GetDeadBuffer() { return m_DeadBuffer; }
+		static uint32_t AliveCount() { return s_ParticleCounts.AlivePreSimCount; }
+
 	private:
 		struct ParticleCounts
 		{
-			uint32_t AliveCount = 0;
 			uint32_t DeadCount = 0;
+			uint32_t AlivePreSimCount = 0;
+			uint32_t AlivePostSimCount = 0;
 		};
 
 	private:
@@ -48,9 +52,16 @@ namespace Odyssey
 		inline static size_t m_CounterBufferSize = 0;
 
 	private:
-		inline static ResourceID m_AliveBuffer;
-		inline static ResourceID m_DeadBuffer;
 		inline static size_t m_ListBufferSize = 0;
+
+		inline static std::array<uint32_t, MAX_PARTICLES> m_AlivePreSimList;
+		inline static ResourceID m_AlivePreSimBuffer;
+		
+		inline static std::array<uint32_t, MAX_PARTICLES> m_AlivePostSimList;
+		inline static ResourceID m_AlivePostSimBuffer;
+
+		inline static std::array<uint32_t, MAX_PARTICLES> m_DeadList;
+		inline static ResourceID m_DeadBuffer;
 
 	private:
 		inline static ResourceID s_EmitterBuffer;

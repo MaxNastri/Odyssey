@@ -167,7 +167,9 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
 		descriptorLayout->AddBinding("Particle Buffer", DescriptorType::Storage, ShaderStage::Compute, 2);
 		descriptorLayout->AddBinding("Counter Buffer", DescriptorType::Storage, ShaderStage::Compute, 3);
-		descriptorLayout->AddBinding("Alive Buffer", DescriptorType::Storage, ShaderStage::Compute, 4);
+		descriptorLayout->AddBinding("Alive Pre-Sim Buffer", DescriptorType::Storage, ShaderStage::Compute, 4);
+		descriptorLayout->AddBinding("Alive Post-Sim Buffer", DescriptorType::Storage, ShaderStage::Compute, 5);
+		descriptorLayout->AddBinding("Dead Buffer", DescriptorType::Storage, ShaderStage::Compute, 6);
 		descriptorLayout->Apply();
 
 		m_ModelUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(glm::mat4));
@@ -206,10 +208,12 @@ namespace Odyssey
 			m_PushDescriptors->AddBuffer(m_ModelUBO, 1);
 			m_PushDescriptors->AddBuffer(ParticleBatcher::GetParticleBuffer(), 2);
 			m_PushDescriptors->AddBuffer(ParticleBatcher::GetCounterBuffer(), 3);
-			m_PushDescriptors->AddBuffer(ParticleBatcher::GetAliveBuffer(), 4);
+			m_PushDescriptors->AddBuffer(ParticleBatcher::GetAlivePreSimBuffer(), 4);
+			m_PushDescriptors->AddBuffer(ParticleBatcher::GetAlivePostSimBuffer(), 5);
+			m_PushDescriptors->AddBuffer(ParticleBatcher::GetDeadBuffer(), 6);
 
 			computeCommandBuffer->PushDescriptorsCompute(m_PushDescriptors.get(), m_ComputePipeline);
-			computeCommandBuffer->Dispatch(std::max(aliveCount / 256, (uint32_t)1), 1, 1);
+			computeCommandBuffer->Dispatch(1, 1, 1);
 			computeCommandBuffer->EndCommands();
 			computeCommandBuffer->SubmitCompute();
 

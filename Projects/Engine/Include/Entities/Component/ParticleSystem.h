@@ -10,51 +10,21 @@ namespace Odyssey
 		glm::vec4 Color = glm::vec4(1.0f);
 		glm::vec4 Velocity = glm::vec4(0.0f, 0.1f, 0.0f, 0.0f);
 		float Lifetime = 0.0f;
-		float Size = 1.0f;
-		float SizeOverLifetime = 0.0f;
-
-		static VkVertexInputBindingDescription GetBindingDescription()
-		{
-			VkVertexInputBindingDescription bindingDescription;
-			bindingDescription.binding = 0;
-			bindingDescription.stride = sizeof(Particle);
-			bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-			return bindingDescription;
-		}
-
-		static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions()
-		{
-			std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-
-			VkVertexInputAttributeDescription description{};
-
-			// Position
-			description.binding = 0;
-			description.location = 0;
-			description.format = VK_FORMAT_R32G32B32_SFLOAT;
-			description.offset = offsetof(Particle, Position);
-			attributeDescriptions.push_back(description);
-
-			description.binding = 0;
-			description.location = 1;
-			description.format = VK_FORMAT_R32G32B32_SFLOAT;
-			description.offset = offsetof(Particle, Color);
-			attributeDescriptions.push_back(description);
-
-			return attributeDescriptions;
-		}
+		float MaxLifetime = 0.0f;
+		float Size = 0.25f;
+		float Speed = 0.25f;
 	};
 
 	struct ParticleEmitterData
 	{
-		float4 Position;
-		float4 Color;
-		float4 Velocity;
-		float Lifetime;
-		float Size;
-		float Speed;
-		uint EmitCount;
-		uint EmitterIndex;
+		float4 Position = glm::vec4(0,0,0,1);
+		float4 Color = glm::vec4(1,0,0,1);
+		float4 Velocity = glm::vec4(0,0.1f,0,0);
+		float Lifetime = 3.0f;
+		float Size = 0.025f;
+		float Speed = 3.0f;
+		uint32_t EmitCount = 1;
+		uint32_t EmitterIndex = 0;
 	};
 
 	class ParticleSystem
@@ -75,7 +45,7 @@ namespace Odyssey
 		ParticleEmitterData emitterData;
 		float Duration = 0.0f;
 		// Particles spawned per sec
-		uint32_t EmissionRate = 0;
+		uint32_t EmissionRate = 10;
 		bool Loop = false;
 
 	private:
