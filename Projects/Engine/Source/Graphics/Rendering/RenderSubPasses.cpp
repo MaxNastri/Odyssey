@@ -213,7 +213,7 @@ namespace Odyssey
 			m_PushDescriptors->AddBuffer(ParticleBatcher::GetDeadBuffer(), 6);
 
 			computeCommandBuffer->PushDescriptorsCompute(m_PushDescriptors.get(), m_ComputePipeline);
-			computeCommandBuffer->Dispatch(std::ceil((float)aliveCount / (float)256), 1, 1);
+			computeCommandBuffer->Dispatch((uint32_t)std::ceil((float)aliveCount / (float)256), 1, 1);
 			computeCommandBuffer->EndCommands();
 			computeCommandBuffer->SubmitCompute();
 

@@ -7,7 +7,7 @@
 #include "ScriptComponent.h"
 #include "Animator.h"
 #include "Light.h"
-#include "ParticleSystem.h"
+#include "ParticleEmitter.h"
 
 namespace Odyssey
 {
@@ -53,7 +53,7 @@ namespace Odyssey
 		if (Light* light = TryGetComponent<Light>())
 			light->Serialize(componentsNode);
 
-		if (ParticleSystem* particleSystem = TryGetComponent<ParticleSystem>())
+		if (ParticleEmitter* particleSystem = TryGetComponent<ParticleEmitter>())
 			particleSystem->Serialize(componentsNode);
 	}
 
@@ -110,9 +110,9 @@ namespace Odyssey
 				Light& light = AddComponent<Light>();
 				light.Deserialize(componentNode);
 			}
-			else if (componentType == ParticleSystem::Type)
+			else if (componentType == ParticleEmitter::Type)
 			{
-				ParticleSystem& particleSystem = AddComponent<ParticleSystem>();
+				ParticleEmitter& particleSystem = AddComponent<ParticleEmitter>();
 				particleSystem.Deserialize(componentNode);
 			}
 		}

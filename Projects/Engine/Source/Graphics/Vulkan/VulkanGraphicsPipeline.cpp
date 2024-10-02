@@ -5,7 +5,6 @@
 #include "Vertex.h"
 #include "VulkanDescriptorLayout.h"
 #include "ResourceManager.h"
-#include "ParticleSystem.h"
 
 namespace Odyssey
 {

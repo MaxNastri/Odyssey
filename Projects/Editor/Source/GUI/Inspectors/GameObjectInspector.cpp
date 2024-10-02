@@ -11,7 +11,7 @@
 #include "ScriptingManager.h"
 #include "AnimatorInspector.h"
 #include "LightInspector.h"
-#include "ParticleSystemInspector.h"
+#include "ParticleEmitterInspector.h"
 
 namespace Odyssey
 {
@@ -54,7 +54,7 @@ namespace Odyssey
 		RegisterComponentType<Light, LightInspector>(2);
 		RegisterComponentType<MeshRenderer, MeshRendererInspector>(3);
 		RegisterComponentType<Animator, AnimatorInspector>(4);
-		RegisterComponentType<ParticleSystem, ParticleSystemInspector>(5);
+		RegisterComponentType<ParticleEmitter, ParticleEmitterInspector>(5);
 
 		CreateInspectors();
 	}

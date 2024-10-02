@@ -1,5 +1,5 @@
 #pragma once
-#include "ParticleSystem.h"
+#include "ParticleEmitter.h"
 #include "Resource.h"
 
 namespace Odyssey
@@ -14,7 +14,7 @@ namespace Odyssey
 		static void Shutdown();
 
 	public:
-		static void Update(std::vector<ParticleSystem>& systems);
+		static void Update();
 		static void SwapBuffers();
 
 	public:

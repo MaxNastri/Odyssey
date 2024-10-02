@@ -435,7 +435,7 @@ namespace Odyssey
 
 		for (int i = 0; i < node->GetChildCount(); i++)
 		{
-			ProcessBoneHierarchy(node->GetChild(i), m_RigData.Bones.size(), parentIndex);
+			ProcessBoneHierarchy(node->GetChild(i), (int32_t)m_RigData.Bones.size(), parentIndex);
 		}
 	}
 
