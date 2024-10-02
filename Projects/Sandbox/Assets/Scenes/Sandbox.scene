@@ -46,11 +46,12 @@ GameObjects:
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
         Duration: 1
+        Material: 831665292157922468
         Emission Rate: 1000
         Color: 'x: 0.39857626 y: 0 z: 1 w: 1'
         Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
         Lifetime: 'x: 2.5 y: 5'
-        Size: 'x: 0.25 y: 0.35'
+        Size: 'x: 4.75 y: 4.75'
         Speed: 'x: 2 y: 3'
   - Name: Sun
     GUID: 1496534082370822112

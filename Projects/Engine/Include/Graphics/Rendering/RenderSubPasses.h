@@ -6,6 +6,7 @@ namespace Odyssey
 {
 	class Mesh;
 	class Shader;
+	class Texture2D;
 	class VulkanPushDescriptors;
 
 	struct RenderSubPassData
@@ -76,6 +77,8 @@ namespace Odyssey
 		std::shared_ptr<VulkanPushDescriptors> m_PushDescriptors;
 		ResourceID m_ModelUBO;
 		std::shared_ptr<Shader> m_Shader;
+		std::shared_ptr<Texture2D> m_ParticleTexture;
 		inline static const GUID& s_ParticleShaderGUID = 16032593712191697003;
+		inline static const GUID& s_ParticleTextureGUID = 488672041793267412;
 	};
 }

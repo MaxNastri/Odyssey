@@ -70,6 +70,7 @@ namespace Odyssey
 
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		deviceFeatures.geometryShader = true;
+		deviceFeatures.logicOp = true;
 
 		VkDeviceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

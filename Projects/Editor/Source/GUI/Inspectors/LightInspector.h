@@ -27,7 +27,7 @@ namespace Odyssey
 		GameObject m_GameObject;
 
 		IntDrawer<uint32_t> m_LightTypeDrawer;
-		ColorDrawer m_ColorDrawer;
+		Color3Drawer m_ColorDrawer;
 		FloatDrawer m_IntensityDrawer;
 		FloatDrawer m_RangeDrawer;
 	};

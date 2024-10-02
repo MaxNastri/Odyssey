@@ -1,5 +1,6 @@
 #include "ParticleEmitterInspector.h"
 #include "RangeSlider.h"
+#include "Material.h"
 
 namespace Odyssey
 {
@@ -11,18 +12,20 @@ namespace Odyssey
 		{
 			m_LoopDrawer = BoolDrawer("Loop", emitter->Loop,
 				[this](bool loop) { OnLoopModified(loop); });
-			m_DurationDrawer = FloatDrawer("Duration", emitter->Duration,
+			m_DurationDrawer = FloatDrawer("Duration", emitter->GetDuration(),
 				[this](float duration) { OnDurationModified(duration); });
 			m_EmissionRateDrawer = IntDrawer<uint32_t>("Emission Rate", emitter->EmissionRate,
 				[this](uint32_t emissionRate) { OnEmissionRateModified(emissionRate); });
+			m_MaterialDrawer = AssetFieldDrawer("Material", emitter->GetMaterial(), Material::Type,
+				[this](GUID material) { OnMaterialModified(material); });
 			m_LifetimeDrawer = RangeSlider("Lifetime", emitter->GetLifetime(), float2(0.1f, 10.0f), 0.1f,
 				[this](float2 lifetime) { OnLifetimeModified(lifetime); });
 			m_SizeDrawer = RangeSlider("Size", emitter->GetSize(), float2(0.1f, 10.0f), 0.1f,
 				[this](float2 size) { OnSizeModified(size); });
 			m_SpeedDrawer = RangeSlider("Speed", emitter->GetSpeed(), float2(0.1f, 10.0f), 0.1f,
 				[this](float2 speed) { OnSpeedModified(speed); });
-			m_ColorDrawer = ColorDrawer("Particle Color", emitter->GetColor(),
-				[this](glm::vec3 color) { OnColorModified(color); });
+			m_ColorDrawer = Color4Drawer("Particle Color", emitter->GetColor(),
+				[this](float4 color) { OnColorModified(color); });
 		}
 	}
 
@@ -37,6 +40,7 @@ namespace Odyssey
 			m_LifetimeDrawer.Draw();
 			m_SizeDrawer.Draw();
 			m_SpeedDrawer.Draw();
+			m_MaterialDrawer.Draw();
 		}
 	}
 
@@ -49,7 +53,7 @@ namespace Odyssey
 	void ParticleEmitterInspector::OnDurationModified(float duration)
 	{
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
-			emitter->Duration = duration;
+			emitter->SetDuration(duration);
 	}
 
 	void ParticleEmitterInspector::OnEmissionRateModified(uint32_t emissionRate)
@@ -58,13 +62,19 @@ namespace Odyssey
 			emitter->EmissionRate = emissionRate;
 	}
 
+	void ParticleEmitterInspector::OnMaterialModified(GUID material)
+	{
+		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetMaterial(material);
+	}
+
 	void ParticleEmitterInspector::OnLifetimeModified(float2 lifetime)
 	{
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
 			emitter->SetLifetime(lifetime);
 	}
 
-	void ParticleEmitterInspector::OnColorModified(float3 color)
+	void ParticleEmitterInspector::OnColorModified(float4 color)
 	{
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
 			emitter->SetColor(color);

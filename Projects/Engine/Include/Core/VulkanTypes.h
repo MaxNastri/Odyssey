@@ -28,5 +28,6 @@ namespace Odyssey
 		bool FrontCCW = false;
 		bool WriteDepth = true;
 		bool BindVertexAttributeDescriptions = true;
+		bool AlphaBlend = false;
 	};
 }

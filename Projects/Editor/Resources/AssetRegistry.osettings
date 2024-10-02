@@ -23,11 +23,11 @@ Entries:
     Type: Odyssey.Mesh
     Path: 'Meshes/Cube.mesh'
     GUID: 4325336624522892849
-  - Name: Particles
+  - Name: Particle Render
     Type: Odyssey.Shader
     Path: 'Shaders/ParticleRender.shader'
     GUID: 16032593712191697003
-  - Name: Particles
+  - Name: Particle Render
     Type: Odyssey.SourceShader
     Path: 'Shaders/Source/ParticleRender.hlsl'
     GUID: 3156967184414869478
@@ -47,3 +47,15 @@ Entries:
     Type: Odyssey.Shader
     Path: 'Shaders/ParticleSimulation.shader'
     GUID: 7831351134810913572
+  - Name: Soft Particle
+    Type: Odyssey.Texture2D
+    Path: 'Textures/SoftParticle.asset'
+    GUID: 488672041793267412
+  - Name: Soft Particle
+    Type: Odyssey.SourceTexture
+    Path: 'Textures/Source/SoftParticle.png'
+    GUID: 812973823681236833
+  - Name: Particles
+    Type: Odyssey.Material
+    Path: 'Materials/Particles.asset'
+    GUID: 831665292157922468

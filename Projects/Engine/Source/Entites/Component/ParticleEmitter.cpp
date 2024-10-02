@@ -15,7 +15,8 @@ namespace Odyssey
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
 		componentNode.WriteData("Type", ParticleEmitter::Type);
-		componentNode.WriteData("Duration", Duration);
+		componentNode.WriteData("Duration", m_Duration);
+		componentNode.WriteData("Material", m_Material.CRef());
 		componentNode.WriteData("Emission Rate", EmissionRate);
 		componentNode.WriteData("Color", emitterData.Color);
 		componentNode.WriteData("Velocity", emitterData.Velocity);
@@ -26,8 +27,9 @@ namespace Odyssey
 
 	void ParticleEmitter::Deserialize(SerializationNode& node)
 	{
-		node.ReadData("Duration", Duration);
+		node.ReadData("Duration", m_Duration);
 		node.ReadData("Emission Rate", EmissionRate);
+		node.ReadData("Material", m_Material.Ref());
 		node.ReadData("Color", emitterData.Color);
 		node.ReadData("Velocity", emitterData.Velocity);
 		node.ReadData("Lifetime", emitterData.Lifetime);
@@ -37,7 +39,6 @@ namespace Odyssey
 
 	ParticleEmitterData& ParticleEmitter::GetEmitterData()
 	{
-		// TODO: insert return statement here
 		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
 		{
 			glm::mat4 world = transform->GetWorldMatrix();

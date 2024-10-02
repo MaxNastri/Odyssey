@@ -13,6 +13,7 @@
 #include "VulkanComputePipeline.h"
 #include "ParticleBatcher.h"
 #include "VulkanBuffer.h"
+#include "Texture2D.h"
 
 namespace Odyssey
 {
@@ -165,17 +166,21 @@ namespace Odyssey
 		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
 		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
 		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
-		descriptorLayout->AddBinding("Particle Buffer", DescriptorType::Storage, ShaderStage::Compute, 2);
-		descriptorLayout->AddBinding("Alive Pre-Sim Buffer", DescriptorType::Storage, ShaderStage::Compute, 4);
+		descriptorLayout->AddBinding("Particle Buffer", DescriptorType::Storage, ShaderStage::Vertex, 2);
+		descriptorLayout->AddBinding("Particle Texture", DescriptorType::Sampler, ShaderStage::Fragment, 3);
+		descriptorLayout->AddBinding("Alive Pre-Sim Buffer", DescriptorType::Storage, ShaderStage::Vertex, 4);
 		descriptorLayout->Apply();
 
 		m_ModelUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(glm::mat4));
 		m_Shader = AssetManager::LoadAsset<Shader>(s_ParticleShaderGUID);
+		m_ParticleTexture = AssetManager::LoadAsset<Texture2D>(s_ParticleTextureGUID);
 
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();
 		info.DescriptorLayout = m_DescriptorLayout;
 		info.BindVertexAttributeDescriptions = false;
+		info.AlphaBlend = true;
+		info.WriteDepth = false;
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
@@ -197,6 +202,7 @@ namespace Odyssey
 			m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
 			m_PushDescriptors->AddBuffer(m_ModelUBO, 1);
 			m_PushDescriptors->AddBuffer(ParticleBatcher::GetParticleBuffer(), 2);
+			m_PushDescriptors->AddTexture(m_ParticleTexture->GetTexture(), 3);
 			m_PushDescriptors->AddBuffer(ParticleBatcher::GetAlivePreSimBuffer(), 4);
 
 			graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);

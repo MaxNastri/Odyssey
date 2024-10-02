@@ -43,23 +43,29 @@ namespace Odyssey
 		void Update(float deltaTime);
 
 	public:
+		void SetDuration(float duration) { m_Duration = duration; }
 		void SetLifetime(float2 lifetime) { emitterData.Lifetime = lifetime; }
+		void SetMaterial(GUID material) { m_Material = material; }
 		void SetSize(float2 size) { emitterData.Size = size; }
 		void SetSpeed(float2 speed) { emitterData.Speed = speed; }
-		void SetColor(float3 color) { emitterData.Color = float4(color, 1.0f); }
+		void SetColor(float4 color) { emitterData.Color = color; }
 
 	public:
-		float3 GetColor() { return emitterData.Color; }
+		float GetDuration() { return m_Duration; }
+		float4 GetColor() { return emitterData.Color; }
 		float2 GetLifetime() { return emitterData.Lifetime; }
+		GUID GetMaterial() { return m_Material; }
 		float2 GetSize() { return emitterData.Size; }
 		float2 GetSpeed() { return emitterData.Speed; }
 
 	public:
 		ParticleEmitterData emitterData;
-		float Duration = 1.0f;
-		// Particles spawned per sec
 		uint32_t EmissionRate = 100;
 		bool Loop = false;
+
+	private:
+		float m_Duration = 1.0f;
+		GUID m_Material;
 
 	private:
 		float m_EmissionTime;

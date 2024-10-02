@@ -99,8 +99,6 @@ namespace Odyssey
 
 		// Fire the resize event if we have resized
 		if (m_WindowResized)
-		{
 			OnWindowResize();
-		}
 	}
 }

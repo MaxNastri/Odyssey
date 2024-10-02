@@ -6,6 +6,7 @@
 #include "IntDrawer.h"
 #include "RangeSlider.h"
 #include "ColorDrawer.h"
+#include "AssetFieldDrawer.h"
 
 namespace Odyssey
 {
@@ -22,8 +23,9 @@ namespace Odyssey
 		void OnLoopModified(bool loop);
 		void OnDurationModified(float duration);
 		void OnEmissionRateModified(uint32_t emissionRate);
+		void OnMaterialModified(GUID material);
 		void OnLifetimeModified(float2 lifetime);
-		void OnColorModified(float3 color);
+		void OnColorModified(float4 color);
 		void OnSizeModified(float2 size);
 		void OnSpeedModified(float2 color);
 
@@ -32,9 +34,10 @@ namespace Odyssey
 		BoolDrawer m_LoopDrawer;
 		FloatDrawer m_DurationDrawer;
 		IntDrawer<uint32_t> m_EmissionRateDrawer;
+		AssetFieldDrawer m_MaterialDrawer;
 		RangeSlider m_LifetimeDrawer;
 		RangeSlider m_SizeDrawer;
 		RangeSlider m_SpeedDrawer;
-		ColorDrawer m_ColorDrawer;
+		Color4Drawer m_ColorDrawer;
 	};
 }

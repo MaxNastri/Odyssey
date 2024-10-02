@@ -16,7 +16,7 @@ namespace Odyssey
 		: DockableWindow("Content Browser", windowID,
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
-		m_AssetsPath = Project::GetActiveAssetsDirectory();
+		m_AssetsPath = windowID % 2 == 0 ? Project::GetActiveAssetsDirectory() : "Resources";
 		m_CurrentPath = m_AssetsPath;
 		
 		TrackingOptions options;

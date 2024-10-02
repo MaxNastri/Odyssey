@@ -25,7 +25,7 @@ namespace Odyssey
 
 	private:
 		AssetFieldDrawer m_SkyboxDrawer;
-		ColorDrawer m_AmbientColorDrawer;
+		Color3Drawer m_AmbientColorDrawer;
 
 	private:
 		Scene* m_Scene;

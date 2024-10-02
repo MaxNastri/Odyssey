@@ -21,6 +21,5 @@ namespace Odyssey
 				s_PendingDestroys.erase(s_PendingDestroys.begin() + i);
 			}
 		}
-		int debug = 0;
 	}
 }

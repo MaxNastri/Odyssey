@@ -22,7 +22,7 @@ namespace Odyssey
 			[this](GUID skyboxGUID) { OnSkyboxChanged(skyboxGUID); });
 
 		glm::vec3 ambientColor = m_Scene ? m_Scene->GetEnvironmentSettings().AmbientColor : glm::vec3(0.0f);
-		m_AmbientColorDrawer = ColorDrawer("Ambient Color", ambientColor,
+		m_AmbientColorDrawer = Color3Drawer("Ambient Color", ambientColor,
 			[this](glm::vec3 color) { OnAmbientColorChanged(color); });
 	}
 

@@ -58,19 +58,19 @@ namespace Odyssey
 		inline static ResourceID s_SimComputePipeline;
 		inline static std::shared_ptr<Shader> s_SimShader;
 
-	private:
+	private: // Particle buffer
 		inline static constexpr size_t MAX_PARTICLES = 16384;
 		inline static std::array<Particle, MAX_PARTICLES> m_Particles;
 		inline static ResourceID m_ParticleBuffer;
 		inline static size_t m_ParticleBufferSize = 0;
 
-	private:
+	private: // Counter buffer
 		inline static ParticleCounts s_ParticleCounts;
 		inline static ResourceID m_CounterBuffer;
 		inline static size_t m_CounterBufferSize = 0;
 		inline static uint32_t m_CurrentFrameAlive = 0;
 
-	private:
+	private: // Dead/Alive buffers
 		inline static size_t m_ListBufferSize = 0;
 
 		inline static std::array<uint32_t, MAX_PARTICLES> m_AlivePreSimList;
@@ -81,8 +81,5 @@ namespace Odyssey
 
 		inline static std::array<uint32_t, MAX_PARTICLES> m_DeadList;
 		inline static ResourceID m_DeadBuffer;
-
-	private:
-		inline static bool s_SwapBuffers = false;
 	};
 }
