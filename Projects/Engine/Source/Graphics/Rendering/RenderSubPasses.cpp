@@ -166,14 +166,10 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
 		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
 		descriptorLayout->AddBinding("Particle Buffer", DescriptorType::Storage, ShaderStage::Compute, 2);
-		descriptorLayout->AddBinding("Counter Buffer", DescriptorType::Storage, ShaderStage::Compute, 3);
 		descriptorLayout->AddBinding("Alive Pre-Sim Buffer", DescriptorType::Storage, ShaderStage::Compute, 4);
-		descriptorLayout->AddBinding("Alive Post-Sim Buffer", DescriptorType::Storage, ShaderStage::Compute, 5);
-		descriptorLayout->AddBinding("Dead Buffer", DescriptorType::Storage, ShaderStage::Compute, 6);
 		descriptorLayout->Apply();
 
 		m_ModelUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(glm::mat4));
-
 		m_Shader = AssetManager::LoadAsset<Shader>(s_ParticleShaderGUID);
 
 		VulkanPipelineInfo info;
@@ -181,7 +177,6 @@ namespace Odyssey
 		info.DescriptorLayout = m_DescriptorLayout;
 		info.BindVertexAttributeDescriptions = false;
 
-		m_ComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
 	}
@@ -192,35 +187,21 @@ namespace Odyssey
 		if (aliveCount > 0)
 		{
 			auto renderScene = params.renderingData->renderScene;
-			auto computeCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.ComputeCommandBuffer);
 			auto graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
-			computeCommandBuffer->BeginCommands();
 
 			glm::mat4 world = glm::mat4(1.0f);
 			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_ModelUBO);
 			uniformBuffer->CopyData(sizeof(glm::mat4), &world);
 
-			// Bind our graphics pipeline
-			computeCommandBuffer->BindComputePipeline(m_ComputePipeline);
-
 			m_PushDescriptors->Clear();
 			m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
 			m_PushDescriptors->AddBuffer(m_ModelUBO, 1);
 			m_PushDescriptors->AddBuffer(ParticleBatcher::GetParticleBuffer(), 2);
-			m_PushDescriptors->AddBuffer(ParticleBatcher::GetCounterBuffer(), 3);
 			m_PushDescriptors->AddBuffer(ParticleBatcher::GetAlivePreSimBuffer(), 4);
-			m_PushDescriptors->AddBuffer(ParticleBatcher::GetAlivePostSimBuffer(), 5);
-			m_PushDescriptors->AddBuffer(ParticleBatcher::GetDeadBuffer(), 6);
-
-			computeCommandBuffer->PushDescriptorsCompute(m_PushDescriptors.get(), m_ComputePipeline);
-			computeCommandBuffer->Dispatch((uint32_t)std::ceil((float)aliveCount / (float)256), 1, 1);
-			computeCommandBuffer->EndCommands();
-			computeCommandBuffer->SubmitCompute();
 
 			graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
 			graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
 			graphicsCommandBuffer->Draw(aliveCount * 6, 1, 0, 0);
-
 		}
 	}
 }

@@ -100,8 +100,6 @@ namespace Odyssey
 
 				running = Renderer::Update();
 				Renderer::Render();
-
-				ParticleBatcher::SwapBuffers();
 			}
 		}
 

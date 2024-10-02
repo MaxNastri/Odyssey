@@ -25,11 +25,11 @@ Entries:
     GUID: 4325336624522892849
   - Name: Particles
     Type: Odyssey.Shader
-    Path: 'Shaders/Particles.shader'
+    Path: 'Shaders/ParticleRender.shader'
     GUID: 16032593712191697003
   - Name: Particles
     Type: Odyssey.SourceShader
-    Path: 'Shaders/Source/Particles.hlsl'
+    Path: 'Shaders/Source/ParticleRender.hlsl'
     GUID: 3156967184414869478
   - Name: ParticleEmitter
     Type: Odyssey.SourceShader
@@ -39,3 +39,11 @@ Entries:
     Type: Odyssey.Shader
     Path: 'Shaders/ParticleEmitter.shader'
     GUID: 8940240242710108428
+  - Name: Particle Simulation
+    Type: Odyssey.SourceShader
+    Path: 'Shaders/Source/ParticleSimulation.hlsl'
+    GUID: 4123209115191309476
+  - Name: Particle Simulation
+    Type: Odyssey.Shader
+    Path: 'Shaders/ParticleSimulation.shader'
+    GUID: 7831351134810913572

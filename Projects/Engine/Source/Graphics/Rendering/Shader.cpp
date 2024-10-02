@@ -112,36 +112,6 @@ namespace Odyssey
 		}
 	}
 
-	void Shader::LoadFromDisk(const Path& assetPath)
-	{
-		//AssetDeserializer deserializer(assetPath);
-		//if (deserializer.IsValid())
-		//{
-		//	SerializationNode root = deserializer.GetRoot();
-		//	SerializationNode shadersNode = root.GetNode("m_Shaders");
-		//
-		//	assert(shadersNode.IsSequence());
-		//	assert(shadersNode.HasChildren());
-		//
-		//	for (size_t i = 0; i < shadersNode.ChildCount(); ++i)
-		//	{
-		//		SerializationNode shaderNode = shadersNode.GetChild(i);
-		//		assert(shaderNode.IsMap());
-		//
-		//		// Read in the shader type
-		//		uint32_t shaderType = 0;
-		//		shaderNode.ReadData("ShaderType", shaderType);
-		//
-		//		// Get the code GUID
-		//		auto& shaderData = m_Shaders[(ShaderType)shaderType];
-		//		shaderNode.ReadData("ShaderCode", shaderData.CodeGUID.Ref());
-		//
-		//		if (shaderData.CodeGUID)
-		//			shaderData.CodeBuffer = AssetManager::LoadBinaryAsset(shaderData.CodeGUID);
-		//	}
-		//}
-	}
-
 	void Shader::SaveToDisk(const Path& path)
 	{
 		AssetSerializer serializer;
@@ -149,16 +119,6 @@ namespace Odyssey
 
 		// Serialize metadata first
 		SerializeMetadata(serializer);
-
-		SerializationNode shaders = root.CreateSequenceNode("m_Shaders");
-		for (auto& [shaderType, shaderData] : m_Shaders)
-		{
-			SerializationNode shaderNode = shaders.AppendChild();
-			shaderNode.SetMap();
-			shaderNode.WriteData("ShaderType", (uint32_t)shaderType);
-			shaderNode.WriteData("ShaderCode", shaderData.CodeGUID.CRef());
-		}
-
 		serializer.WriteToDisk(path);
 	}
 

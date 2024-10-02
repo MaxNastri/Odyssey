@@ -28,7 +28,7 @@ namespace Odyssey
 
 	void ParticleEmitterInspector::Draw()
 	{
-		if (ImGui::CollapsingHeader("Particle System", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Particle Emitter", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			m_LoopDrawer.Draw();
 			m_DurationDrawer.Draw();

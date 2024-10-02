@@ -15,6 +15,11 @@ namespace Odyssey
 
 	public:
 		static void Update();
+
+	private:
+		static void InitEmitResources();
+		static void InitSimulationResources();
+
 		static void SwapBuffers();
 
 	public:
@@ -23,7 +28,7 @@ namespace Odyssey
 		static ResourceID GetAlivePreSimBuffer() { return m_AlivePreSimBuffer; }
 		static ResourceID GetAlivePostSimBuffer() { return m_AlivePostSimBuffer; }
 		static ResourceID GetDeadBuffer() { return m_DeadBuffer; }
-		static uint32_t AliveCount() { return s_ParticleCounts.AlivePreSimCount; }
+		static uint32_t AliveCount() { return m_CurrentFrameAlive; }
 
 	private:
 		struct ParticleCounts
@@ -34,13 +39,24 @@ namespace Odyssey
 			uint32_t TestCount = 0;
 		};
 
-	private:
-		inline static const GUID& s_EmitShaderGUID = 8940240242710108428;
-		inline static ResourceID s_DescriptorLayout;
-		inline static ResourceID s_ComputePipeline;
-		inline static std::shared_ptr<Shader> s_EmitShader;
+	private: // Shared
 		inline static ResourceID s_CommandPool;
 		inline static std::shared_ptr<VulkanPushDescriptors> s_PushDescriptors;
+		inline static std::shared_ptr<VulkanPushDescriptors> s_SimPushDescriptors;
+
+	private: // Emit pass
+		inline static const GUID& s_EmitShaderGUID = 8940240242710108428;
+		inline static ResourceID s_EmitDescriptorLayout;
+		inline static ResourceID s_EmitComputePipeline;
+		inline static std::shared_ptr<Shader> s_EmitShader;
+		inline static ResourceID s_EmitterBuffer;
+		inline static size_t s_EmitterBufferSize;
+
+	private: // Simulation pass
+		inline static const GUID& s_SimShaderGUID = 7831351134810913572;
+		inline static ResourceID s_SimDescriptorLayout;
+		inline static ResourceID s_SimComputePipeline;
+		inline static std::shared_ptr<Shader> s_SimShader;
 
 	private:
 		inline static constexpr size_t MAX_PARTICLES = 16384;
@@ -52,6 +68,7 @@ namespace Odyssey
 		inline static ParticleCounts s_ParticleCounts;
 		inline static ResourceID m_CounterBuffer;
 		inline static size_t m_CounterBufferSize = 0;
+		inline static uint32_t m_CurrentFrameAlive = 0;
 
 	private:
 		inline static size_t m_ListBufferSize = 0;
@@ -66,16 +83,6 @@ namespace Odyssey
 		inline static ResourceID m_DeadBuffer;
 
 	private:
-		inline static ResourceID s_EmitterBuffer;
-		inline static size_t s_EmitterBufferSize;
-
-	private:
-		inline static bool s_Run = false;
-		// Shader
-		// Compute pipeline
-		// Push descriptors
-		// Descriptor layout
-		// Some way to get compute command buffer
-
+		inline static bool s_SwapBuffers = false;
 	};
 }

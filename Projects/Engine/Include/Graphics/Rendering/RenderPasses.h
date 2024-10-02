@@ -23,7 +23,6 @@ namespace Odyssey
 		std::shared_ptr<VulkanContext> context;
 		std::shared_ptr<PerFrameRenderingData> renderingData;
 		ResourceID GraphicsCommandBuffer;
-		ResourceID ComputeCommandBuffer;
 		ResourceID FrameRT;
 	};
 

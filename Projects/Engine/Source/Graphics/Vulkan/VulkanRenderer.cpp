@@ -59,16 +59,6 @@ namespace Odyssey
 				m_GraphicsCommandPools.push_back(commandPoolID);
 				m_GraphicsCommandBuffers.push_back(commandBufferID);
 			}
-
-			// Compute command resources
-			{
-				ResourceID commandPoolID = ResourceManager::Allocate<VulkanCommandPool>(VulkanQueueType::Compute);
-				auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
-				ResourceID commandBufferID = commandPool->AllocateBuffer();
-
-				m_ComputeCommandPools.push_back(commandPoolID);
-				m_ComputeCommandBuffers.push_back(commandBufferID);
-			}
 		}
 	}
 
@@ -217,7 +207,6 @@ namespace Odyssey
 
 			RenderPassParams params;
 			params.GraphicsCommandBuffer = m_GraphicsCommandBuffers[s_FrameIndex];
-			params.ComputeCommandBuffer = m_ComputeCommandBuffers[s_FrameIndex];
 			params.context = m_Context;
 			params.renderingData = m_RenderingData;
 			params.FrameRT = frame->GetRenderTarget();

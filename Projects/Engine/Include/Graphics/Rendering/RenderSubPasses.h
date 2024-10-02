@@ -71,7 +71,6 @@ namespace Odyssey
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
 
 	private:
-		ResourceID m_ComputePipeline;
 		ResourceID m_GraphicsPipeline;
 		ResourceID m_DescriptorLayout;
 		std::shared_ptr<VulkanPushDescriptors> m_PushDescriptors;
