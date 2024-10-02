@@ -41,6 +41,7 @@ namespace Odyssey
 		static void PushRenderPass(std::shared_ptr<RenderPass> renderPass);
 		static void SetDrawGUIListener(std::function<void(void)> listener);
 		static int64_t AddImguiTexture(ResourceID renderTextureID, ResourceID samplerID);
+		static void DestroyImguiTexture(int64_t imguiHandle);
 		static std::shared_ptr<VulkanWindow> GetWindow();
 
 	public:

@@ -43,6 +43,10 @@ namespace Odyssey
 	{
 		return s_RendererAPI->GetImGui()->AddTexture(renderTextureID, samplerID);
 	}
+	void Renderer::DestroyImguiTexture(int64_t imguiHandle)
+	{
+		s_RendererAPI->GetImGui()->RemoveTexture(imguiHandle);
+	}
 	std::shared_ptr<VulkanWindow> Renderer::GetWindow()
 	{
 		return s_RendererAPI->GetWindow();

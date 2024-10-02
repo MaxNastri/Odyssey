@@ -82,6 +82,7 @@ namespace Odyssey
 
 	bool VulkanRenderer::Update()
 	{
+		m_Imgui->Update();
 		return m_Window->Update();
 	}
 

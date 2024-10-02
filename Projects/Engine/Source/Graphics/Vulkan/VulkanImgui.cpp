@@ -63,6 +63,7 @@ namespace Odyssey
 			}, &init_info.Instance);
 		ImGui_ImplVulkan_Init(&init_info, initInfo.renderPass);
 	}
+
 	void VulkanImgui::SubmitDraws()
 	{
 		ImGui_ImplVulkan_NewFrame();
@@ -73,6 +74,14 @@ namespace Odyssey
 		// Invoke the draw listener callback
 		if (m_DrawGUIListener)
 			m_DrawGUIListener();
+	}
+
+	void VulkanImgui::Update()
+	{
+		for (auto& destroy : m_PendingDestroys)
+			destroy();
+
+		m_PendingDestroys.clear();
 	}
 
 	void VulkanImgui::Render(ResourceID commandBufferID)
@@ -113,7 +122,13 @@ namespace Odyssey
 
 	void VulkanImgui::RemoveTexture(uint64_t id)
 	{
-		ImGui_ImplVulkan_RemoveTexture(reinterpret_cast<VkDescriptorSet>(id));
+		uint64_t cached = id;
+		m_PendingDestroys.push_back(
+			[this, cached]()
+			{
+				ImGui_ImplVulkan_RemoveTexture(reinterpret_cast<VkDescriptorSet>(cached));
+			}
+		);
 	}
 
 	void VulkanImgui::SetFont(Path fontFile, float fontSize)
