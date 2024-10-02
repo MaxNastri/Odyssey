@@ -55,7 +55,10 @@ namespace Odyssey
 		CreateRenderTexture();
 
 		if (m_MainCamera)
-			m_MainCamera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+		{
+			if (Camera* camera = m_MainCamera.TryGetComponent<Camera>())
+				camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+		}
 	}
 
 	void GameViewWindow::OnWindowClose()
@@ -70,7 +73,10 @@ namespace Odyssey
 			GameObject gameObject = GameObject(event->loadedScene, entity);
 			Camera& camera = gameObject.GetComponent<Camera>();
 			if (camera.IsMainCamera())
+			{
+				m_MainCamera = gameObject;
 				camera.SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+			}
 		}
 	}
 

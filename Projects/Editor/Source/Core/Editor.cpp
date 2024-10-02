@@ -115,7 +115,7 @@ namespace Odyssey
 	void Editor::SetupEditorGUI()
 	{
 		GUIManager::CreateInspectorWindow();
-		//GUIManager::CreateDockableWindow<GameViewWindow>();
+		GUIManager::CreateDockableWindow<GameViewWindow>();
 		GUIManager::CreateDockableWindow<SceneViewWindow>();
 		GUIManager::CreateDockableWindow<ContentBrowserWindow>();
 		GUIManager::CreateDockableWindow<SceneHierarchyWindow>();
