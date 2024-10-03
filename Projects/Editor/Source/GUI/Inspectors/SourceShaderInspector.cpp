@@ -17,7 +17,7 @@ namespace Odyssey
 			m_ShaderLanguageDrawer = StringDrawer("Shader Language", m_Shader->GetShaderLanguage(), nullptr, true);
 			m_CompiledDrawer = BoolDrawer("Compiled", m_Shader->IsCompiled(), nullptr, true);
 			m_DstAssetPathDrawer = StringDrawer("Destination Asset Path", m_DstAssetPath,
-				[this](const std::string& assetPath) { OnDstAssetPathChanged(assetPath); });
+				[this](std::string_view assetPath) { OnDstAssetPathChanged(assetPath); });
 
 			m_ShaderNameDrawer.SetLabelWidth(0.5f);
 			m_ShaderLanguageDrawer.SetLabelWidth(0.5f);

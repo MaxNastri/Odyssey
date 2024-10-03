@@ -3,7 +3,6 @@
 #include "TransformInspector.h"
 #include "CameraInspector.h"
 #include "UserScriptInspector.h"
-#include "StringDrawer.h"
 #include "GUID.h"
 
 namespace Odyssey
@@ -24,7 +23,7 @@ namespace Odyssey
 
 	private:
 		void CreateInspectors();
-		void OnNameChanged(const std::string& name);
+		void OnNameChanged(std::string_view name);
 
 	private:
 		GameObject m_Target;

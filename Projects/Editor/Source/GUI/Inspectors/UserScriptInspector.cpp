@@ -1,15 +1,8 @@
 #include "UserScriptInspector.h"
-#include "FloatDrawer.h"
-#include "DoubleDrawer.h"
-#include "BoolDrawer.h"
-#include "IntDrawer.h"
-#include "StringDrawer.h"
+#include "PropertyDrawers.h"
 #include "ScriptComponent.h"
 #include "imgui.h"
 #include "ScriptingManager.h"
-#include "EntityFieldDrawer.h"
-#include "AssetFieldDrawer.h"
-#include "Vector3Drawer.h"
 
 namespace Odyssey
 {
@@ -19,7 +12,6 @@ namespace Odyssey
 
 		if (ScriptComponent* scriptComponent = m_GameObject.TryGetComponent<ScriptComponent>())
 		{
-			// TODO FIX THIS
 			ScriptMetadata& metadata = ScriptingManager::GetScriptMetadata(scriptComponent->GetScriptID());
 			displayName = metadata.Name;
 
@@ -184,18 +176,12 @@ namespace Odyssey
 	{
 		std::string initialValue = "";
 
-		// Check if the field storage has a valid string before assigning it
-		//if (fieldStorage.TryGetValue<Coral::String>(storedValue))
-		//{
-		//	initialValue = storedValue;
-		//}
-
 		auto drawer = std::make_shared<StringDrawer>(fieldStorage.Name, initialValue,
-			[this, scriptID, fieldID](const std::string& newValue) { OnStringFieldChanged(scriptID, fieldID, newValue); });
+			[this, scriptID, fieldID](std::string_view newValue) { OnStringFieldChanged(scriptID, fieldID, newValue); });
 		drawers.push_back(drawer);
 	}
 
-	void UserScriptInspector::OnStringFieldChanged(uint32_t scriptID, uint32_t fieldID, const std::string& newValue)
+	void UserScriptInspector::OnStringFieldChanged(uint32_t scriptID, uint32_t fieldID, std::string_view newValue)
 	{
 		auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
 

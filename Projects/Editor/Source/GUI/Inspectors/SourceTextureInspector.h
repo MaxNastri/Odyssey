@@ -1,8 +1,7 @@
 #pragma once
 #include "Inspector.h"
 #include "SourceTexture.h"
-#include "AssetFieldDrawer.h"
-#include "StringDrawer.h"
+#include "PropertyDrawers.h"
 
 namespace Odyssey
 {
@@ -16,7 +15,7 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	private:
-		void OnAssetPathChanged(const std::string& assetPath) { m_AssetPath = assetPath; }
+		void OnAssetPathChanged(std::string_view assetPath) { m_AssetPath = assetPath; }
 
 	private:
 		std::shared_ptr<SourceTexture> m_Texture;

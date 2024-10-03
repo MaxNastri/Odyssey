@@ -2,8 +2,7 @@
 #include "Animator.h"
 #include "Inspector.h"
 #include "GameObject.h"
-#include "AssetFieldDrawer.h"
-#include "BoolDrawer.h"
+#include "PropertyDrawers.h"
 
 namespace Odyssey
 {

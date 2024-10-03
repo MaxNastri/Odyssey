@@ -11,7 +11,7 @@ namespace Odyssey
 		{
 			m_GUIDDrawer = StringDrawer("GUID", m_Shader->GetGUID().String(), nullptr, true);
 			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(),
-				[this](const std::string& name) { OnNameChanged(name); });
+				[this](std::string_view name) { OnNameChanged(name); });
 			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSoureAsset(), SourceShader::Type,
 				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
 		}
@@ -26,7 +26,7 @@ namespace Odyssey
 		if (ImGui::Button("Compile"))
 			m_Shader->Recompile();
 	}
-	void ShaderInspector::OnNameChanged(const std::string& name)
+	void ShaderInspector::OnNameChanged(std::string_view name)
 	{
 		if (m_Shader)
 		{

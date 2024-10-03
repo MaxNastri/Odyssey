@@ -1,5 +1,4 @@
 #include "ParticleEmitterInspector.h"
-#include "RangeSlider.h"
 #include "Material.h"
 
 namespace Odyssey
@@ -24,7 +23,7 @@ namespace Odyssey
 				[this](float2 size) { OnSizeModified(size); });
 			m_SpeedDrawer = RangeSlider("Speed", emitter->GetSpeed(), float2(0.1f, 10.0f), 0.1f,
 				[this](float2 speed) { OnSpeedModified(speed); });
-			m_ColorDrawer = Color4Drawer("Particle Color", emitter->GetColor(),
+			m_ColorDrawer = ColorPicker("Particle Color", emitter->GetColor(),
 				[this](float4 color) { OnColorModified(color); });
 		}
 	}

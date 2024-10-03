@@ -34,7 +34,7 @@ namespace Odyssey
 	public:
 		const std::string& GetName();
 		GUID GetGUID();
-		void SetName(const std::string& name);
+		void SetName(std::string_view name);
 		void SetGUID(GUID guid);
 
 	public:

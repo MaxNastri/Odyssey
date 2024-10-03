@@ -1,12 +1,7 @@
 #pragma once
 #include "ParticleEmitter.h"
 #include "Inspector.h"
-#include "BoolDrawer.h"
-#include "FloatDrawer.h"
-#include "IntDrawer.h"
-#include "RangeSlider.h"
-#include "ColorDrawer.h"
-#include "AssetFieldDrawer.h"
+#include "PropertyDrawers.h"
 
 namespace Odyssey
 {
@@ -38,6 +33,6 @@ namespace Odyssey
 		RangeSlider m_LifetimeDrawer;
 		RangeSlider m_SizeDrawer;
 		RangeSlider m_SpeedDrawer;
-		Color4Drawer m_ColorDrawer;
+		ColorPicker m_ColorDrawer;
 	};
 }

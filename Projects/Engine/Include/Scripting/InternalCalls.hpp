@@ -59,7 +59,8 @@ namespace Odyssey::InternalCalls
 	void GameObject_SetName(uint64_t guid, Coral::String name)
 	{
 		GameObject gameObject = GetGameObject(guid);
-		gameObject.SetName(name);
+		std::string nameStr = name;
+		gameObject.SetName(nameStr);
 	}
 
 	void GameObject_AddComponent(uint64_t guid, Coral::ReflectionType componentType)

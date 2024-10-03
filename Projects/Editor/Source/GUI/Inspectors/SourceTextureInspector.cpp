@@ -15,7 +15,7 @@ namespace Odyssey
 			m_TextureNameDrawer = StringDrawer("Texture Name", m_Texture->GetName(), nullptr, true);
 
 			m_AssetPathDrawer = StringDrawer("Asset Path", m_AssetPath,
-				[this](const std::string& assetPath) { OnAssetPathChanged(assetPath); });
+				[this](std::string_view assetPath) { OnAssetPathChanged(assetPath); });
 		}
 	}
 

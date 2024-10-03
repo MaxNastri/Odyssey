@@ -11,7 +11,7 @@ namespace Odyssey
 		{
 			m_GUIDDrawer = StringDrawer("GUID", m_Mesh->GetGUID().String(), nullptr, true);
 			m_NameDrawer = StringDrawer("Name", m_Mesh->GetName(),
-				[this](const std::string& name) { OnNameChanged(name); });
+				[this](std::string_view name) { OnNameChanged(name); });
 			m_TypeDrawer = StringDrawer("Type", m_Mesh->GetType(), nullptr, true);
 			m_VertexCountDrawer = StringDrawer("Vertex Count", std::to_string(m_Mesh->GetVertexCount()), nullptr, true);
 			m_IndexCountDrawer = StringDrawer("Index Count", std::to_string(m_Mesh->GetIndexCount()), nullptr, true);
@@ -28,7 +28,7 @@ namespace Odyssey
 		m_IndexCountDrawer.Draw();
 		m_SourceMeshDrawer.Draw();
 	}
-	void MeshInspector::OnNameChanged(const std::string& name)
+	void MeshInspector::OnNameChanged(std::string_view name)
 	{
 		if (m_Mesh)
 		{

@@ -134,7 +134,7 @@ namespace Odyssey
 		userScriptInspectors.clear();
 
 		m_NameDrawer = StringDrawer("Name", m_Target.GetName(),
-			[this](const std::string& name) { OnNameChanged(name); });
+			[this](std::string_view name) { OnNameChanged(name); });
 
 		for (auto& [className, createInspectorFunc] : s_CreateInspectorFuncs)
 		{
@@ -152,7 +152,7 @@ namespace Odyssey
 		}
 	}
 
-	void GameObjectInspector::OnNameChanged(const std::string& name)
+	void GameObjectInspector::OnNameChanged(std::string_view name)
 	{
 		if (m_Target.HasComponent<PropertiesComponent>())
 			m_Target.SetName(name);

@@ -1,9 +1,7 @@
 #pragma once
 #include "Inspector.h"
 #include "SourceShader.h"
-#include "StringDrawer.h"
-#include "IntDrawer.h"
-#include "BoolDrawer.h"
+#include "PropertyDrawers.h"
 
 namespace Odyssey
 {
@@ -17,7 +15,7 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	private:
-		void OnDstAssetPathChanged(const std::string& assetPath) { m_DstAssetPath = assetPath; }
+		void OnDstAssetPathChanged(std::string_view assetPath) { m_DstAssetPath = assetPath; }
 
 	private:
 		std::shared_ptr<SourceShader> m_Shader;

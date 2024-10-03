@@ -148,7 +148,7 @@ namespace Odyssey
 		return GetComponent<PropertiesComponent>().GUID;
 	}
 
-	void GameObject::SetName(const std::string& name)
+	void GameObject::SetName(std::string_view name)
 	{
 		GetComponent<PropertiesComponent>().Name = name;
 	}
