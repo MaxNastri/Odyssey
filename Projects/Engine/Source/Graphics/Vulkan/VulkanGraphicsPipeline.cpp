@@ -151,7 +151,7 @@ namespace Odyssey
 			colorBlendAttachment.blendEnable = VK_TRUE;
 			colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 			colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-			colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+			colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
 			colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
 			colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 			colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
@@ -169,9 +169,9 @@ namespace Odyssey
 		colorBlending.attachmentCount = 1;
 		colorBlending.pAttachments = &colorBlendAttachment;
 		colorBlending.blendConstants[0] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
-		colorBlending.blendConstants[1] = info.AlphaBlend ? 1.0f :0.0f; // Optional
-		colorBlending.blendConstants[2] = info.AlphaBlend ? 1.0f :0.0f; // Optional
-		colorBlending.blendConstants[3] = info.AlphaBlend ? 1.0f :0.0f; // Optional
+		colorBlending.blendConstants[1] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
+		colorBlending.blendConstants[2] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
+		colorBlending.blendConstants[3] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
 
 		VkFormat colorAttachmentFormat = VK_FORMAT_R8G8B8A8_UNORM;
 		VkFormat depthAttachmentFormat = VK_FORMAT_D24_UNORM_S8_UINT;

@@ -20,7 +20,8 @@ namespace Odyssey
 		void OnEmissionRateModified(uint32_t emissionRate);
 		void OnMaterialModified(GUID material);
 		void OnLifetimeModified(float2 lifetime);
-		void OnColorModified(float4 color);
+		void OnStartColorModified(float4 color);
+		void OnEndColorModified(float4 color);
 		void OnSizeModified(float2 size);
 		void OnSpeedModified(float2 color);
 
@@ -33,6 +34,7 @@ namespace Odyssey
 		RangeSlider m_LifetimeDrawer;
 		RangeSlider m_SizeDrawer;
 		RangeSlider m_SpeedDrawer;
-		ColorPicker m_ColorDrawer;
+		ColorPicker m_StartColorDrawer;
+		ColorPicker m_EndColorDrawer;
 	};
 }

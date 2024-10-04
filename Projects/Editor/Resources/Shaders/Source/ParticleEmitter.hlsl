@@ -4,7 +4,7 @@ struct Particle
     float4 Position;
     float4 Color;
     float4 Velocity;
-    float Lifetime;
+    float2 Lifetime;
     float Size;
     float Speed;
 };
@@ -25,7 +25,8 @@ RWStructuredBuffer<uint> DeadBuffer : register(b6);
 cbuffer EmitterData : register(b7)
 {
     float4 Position;
-    float4 Color;
+    float4 StartColor;
+    float4 EndColor;
     float4 Velocity;
     float4 Rnd;
     float2 Lifetime;
@@ -116,11 +117,12 @@ void main(uint3 id : SV_DispatchThreadID)
     uint particleIndex = DeadBuffer[deadCount - 1];
     Particle particle = ParticleBuffer[particleIndex];
     
+    float lifetime = lerp(Lifetime.x, Lifetime.y, Rnd.w);
     // Construct a particle based on the emitter's params
     particle.Position = Position + float4(Rnd.x, Rnd.y, Rnd.z, 0.0f);
-    particle.Color = Color;
+    particle.Color = StartColor;
     particle.Velocity = Velocity;
-    particle.Lifetime = lerp(Lifetime.x, Lifetime.y, Rnd.w);
+    particle.Lifetime = float2(lifetime, lifetime);
     particle.Size = lerp(Size.x, Size.y, Rnd.w);
     particle.Speed = lerp(Speed.x, Speed.y, Rnd.w);
     

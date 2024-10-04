@@ -23,8 +23,10 @@ namespace Odyssey
 				[this](float2 size) { OnSizeModified(size); });
 			m_SpeedDrawer = RangeSlider("Speed", emitter->GetSpeed(), float2(0.1f, 10.0f), 0.1f,
 				[this](float2 speed) { OnSpeedModified(speed); });
-			m_ColorDrawer = ColorPicker("Particle Color", emitter->GetColor(),
-				[this](float4 color) { OnColorModified(color); });
+			m_StartColorDrawer = ColorPicker("Start Color", emitter->GetStartColor(),
+				[this](float4 color) { OnStartColorModified(color); });
+			m_EndColorDrawer = ColorPicker("End Color", emitter->GetEndColor(),
+				[this](float4 color) { OnEndColorModified(color); });
 		}
 	}
 
@@ -35,7 +37,8 @@ namespace Odyssey
 			m_LoopDrawer.Draw();
 			m_DurationDrawer.Draw();
 			m_EmissionRateDrawer.Draw();
-			m_ColorDrawer.Draw();
+			m_StartColorDrawer.Draw();
+			m_EndColorDrawer.Draw();
 			m_LifetimeDrawer.Draw();
 			m_SizeDrawer.Draw();
 			m_SpeedDrawer.Draw();
@@ -73,10 +76,16 @@ namespace Odyssey
 			emitter->SetLifetime(lifetime);
 	}
 
-	void ParticleEmitterInspector::OnColorModified(float4 color)
+	void ParticleEmitterInspector::OnStartColorModified(float4 color)
 	{
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
-			emitter->SetColor(color);
+			emitter->SetStartColor(color);
+	}
+
+	void ParticleEmitterInspector::OnEndColorModified(float4 color)
+	{
+		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetEndColor(color);
 	}
 
 	void ParticleEmitterInspector::OnSizeModified(float2 size)

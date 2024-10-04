@@ -4,7 +4,7 @@ struct Particle
     float4 Position;
     float4 Color;
     float4 Velocity;
-    float Lifetime;
+    float2 Lifetime;
     float Size;
     float Speed;
 };
@@ -23,6 +23,20 @@ RWStructuredBuffer<uint> AliveBufferPreSim : register(b4);
 RWStructuredBuffer<uint> AliveBufferPostSim : register(b5);
 RWStructuredBuffer<uint> DeadBuffer : register(b6);
 
+cbuffer EmitterData : register(b7)
+{
+    float4 Position;
+    float4 StartColor;
+    float4 EndColor;
+    float4 Velocity;
+    float4 Rnd;
+    float2 Lifetime;
+    float2 Size;
+    float2 Speed;
+    uint EmitCount;
+    uint EmitterIndex;
+}
+
 // Per particle
 [numthreads(256, 1, 1)]
 void main(uint3 id : SV_DispatchThreadID)
@@ -35,9 +49,9 @@ void main(uint3 id : SV_DispatchThreadID)
     uint particleIndex = AliveBufferPreSim[id.x];
     float dt = (1.0f / 144.0f);
     Particle particle = ParticleBuffer[particleIndex];
-    particle.Lifetime -= dt;
+    particle.Lifetime.x -= dt;
     
-    if (particle.Lifetime <= 0.0f)
+    if (particle.Lifetime.x <= 0.0f)
     {
         // Increment the dead count
         uint deadCount;
@@ -52,6 +66,7 @@ void main(uint3 id : SV_DispatchThreadID)
     }
     
     // Sim the particle and assign it back to the buffer
+    particle.Color = lerp(StartColor, EndColor, (particle.Lifetime.y - particle.Lifetime.x) / particle.Lifetime.y);
     particle.Position += particle.Velocity * particle.Speed * dt;
     ParticleBuffer[particleIndex] = particle;
     

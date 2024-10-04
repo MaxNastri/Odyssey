@@ -18,7 +18,8 @@ namespace Odyssey
 		componentNode.WriteData("Duration", m_Duration);
 		componentNode.WriteData("Material", m_Material.CRef());
 		componentNode.WriteData("Emission Rate", EmissionRate);
-		componentNode.WriteData("Color", emitterData.Color);
+		componentNode.WriteData("Start Color", emitterData.StartColor);
+		componentNode.WriteData("End Color", emitterData.EndColor);
 		componentNode.WriteData("Velocity", emitterData.Velocity);
 		componentNode.WriteData("Lifetime", emitterData.Lifetime);
 		componentNode.WriteData("Size", emitterData.Size);
@@ -30,7 +31,8 @@ namespace Odyssey
 		node.ReadData("Duration", m_Duration);
 		node.ReadData("Emission Rate", EmissionRate);
 		node.ReadData("Material", m_Material.Ref());
-		node.ReadData("Color", emitterData.Color);
+		node.ReadData("Start Color", emitterData.StartColor);
+		node.ReadData("End Color", emitterData.EndColor);
 		node.ReadData("Velocity", emitterData.Velocity);
 		node.ReadData("Lifetime", emitterData.Lifetime);
 		node.ReadData("Size", emitterData.Size);

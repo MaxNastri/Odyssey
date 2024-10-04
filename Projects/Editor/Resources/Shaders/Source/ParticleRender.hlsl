@@ -4,7 +4,7 @@ struct Particle
     float4 Position;
     float4 Color;
     float4 Velocity;
-    float Lifetime;
+    float2 Lifetime;
     float Size;
     float Speed;
 };

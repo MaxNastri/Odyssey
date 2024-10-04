@@ -147,6 +147,7 @@ namespace Odyssey
 			s_PushDescriptors->AddBuffer(ParticleBatcher::GetAlivePreSimBuffer(), 4);
 			s_PushDescriptors->AddBuffer(ParticleBatcher::GetAlivePostSimBuffer(), 5);
 			s_PushDescriptors->AddBuffer(ParticleBatcher::GetDeadBuffer(), 6);
+			s_PushDescriptors->AddBuffer(s_EmitterBuffer, 7);
 
 			// Push the descriptors and dispatch
 			uint32_t groups = (uint32_t)(std::ceil(s_ParticleCounts.AlivePreSimCount / 256.0f));
@@ -201,6 +202,7 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Alive Pre-Sim Buffer", DescriptorType::Storage, ShaderStage::Compute, 4);
 		descriptorLayout->AddBinding("Alive Post-Sim Buffer", DescriptorType::Storage, ShaderStage::Compute, 5);
 		descriptorLayout->AddBinding("Dead Buffer", DescriptorType::Storage, ShaderStage::Compute, 6);
+		descriptorLayout->AddBinding("Emitter Data", DescriptorType::Uniform, ShaderStage::Compute, 7);
 		descriptorLayout->Apply();
 
 		// Load the emit shader by GUID

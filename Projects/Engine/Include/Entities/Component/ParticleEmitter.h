@@ -6,10 +6,10 @@ namespace Odyssey
 {
 	struct alignas(16) Particle
 	{
-		glm::vec4 Position;
-		glm::vec4 Color;
-		glm::vec4 Velocity;
-		float Lifetime;
+		float4 Position;
+		float4 Color;
+		float4 Velocity;
+		float2 Lifetime;
 		float Size;
 		float Speed;
 	};
@@ -17,7 +17,8 @@ namespace Odyssey
 	struct ParticleEmitterData
 	{
 		float4 Position = glm::vec4(0,0,0,1);
-		float4 Color = glm::vec4(1,0,0,1);
+		float4 StartColor = glm::vec4(1,0,0,1);
+		float4 EndColor = glm::vec4(1,0,0,1);
 		float4 Velocity = glm::vec4(0,0.1f,0,0);
 		float4 Rnd = float4(0.0f);
 		float2 Lifetime = float2(1.0f, 5.0f);
@@ -48,11 +49,13 @@ namespace Odyssey
 		void SetMaterial(GUID material) { m_Material = material; }
 		void SetSize(float2 size) { emitterData.Size = size; }
 		void SetSpeed(float2 speed) { emitterData.Speed = speed; }
-		void SetColor(float4 color) { emitterData.Color = color; }
+		void SetStartColor(float4 color) { emitterData.StartColor = color; }
+		void SetEndColor(float4 color) { emitterData.EndColor = color; }
 
 	public:
 		float GetDuration() { return m_Duration; }
-		float4 GetColor() { return emitterData.Color; }
+		float4 GetStartColor() { return emitterData.StartColor; }
+		float4 GetEndColor() { return emitterData.EndColor; }
 		float2 GetLifetime() { return emitterData.Lifetime; }
 		GUID GetMaterial() { return m_Material; }
 		float2 GetSize() { return emitterData.Size; }
