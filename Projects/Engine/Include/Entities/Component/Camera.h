@@ -12,7 +12,11 @@ namespace Odyssey
 	public:
 		Camera() = default;
 		Camera(const GameObject& gameObject);
+
+	public:
 		void Awake();
+
+	public:
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 

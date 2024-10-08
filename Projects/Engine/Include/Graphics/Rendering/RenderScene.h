@@ -101,24 +101,25 @@ namespace Odyssey
 		void SetupDrawcalls(Scene* scene);
 
 	public:
-		// Data structs
+		// Uniform structs
 		CameraUniformData cameraData;
 		ObjectUniformData objectData;
 		SkinningData SkinningData;
 		LightingData LightingData;
+
+		// Scene objects
 		Camera* m_MainCamera = nullptr;
-
 		ResourceID SkyboxCubemap;
+		std::vector<SetPass> setPasses;
+		std::vector<GUID> ParticleEmitters;
 
-		// Descriptor buffer for per-scene data
+		// Scene uniform buffers
 		std::vector<ResourceID> cameraDataBuffers;
 		std::vector<ResourceID> perObjectUniformBuffers;
 		std::vector<ResourceID> skinningBuffers;
 		ResourceID LightingBuffer;
-
 		ResourceID m_DescriptorLayout;
 
-		std::vector<SetPass> setPasses;
 		uint32_t m_NextUniformBuffer = 0;
 		uint32_t m_NextCameraBuffer = 0;
 		const uint32_t Max_Uniform_Buffers = 128;

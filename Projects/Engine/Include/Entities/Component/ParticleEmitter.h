@@ -40,6 +40,9 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
+		GameObject& GetGameObject() { return m_GameObject; }
+
+	public:
 		ParticleEmitterData& GetEmitterData();
 		void Update(float deltaTime);
 
@@ -73,6 +76,7 @@ namespace Odyssey
 	private:
 		float m_EmissionTime;
 		uint32_t m_EmissionCount;
+
 	private:
 		GameObject m_GameObject;
 		uint32_t m_ParticleCount;

@@ -23,11 +23,6 @@ cbuffer SceneData : register(b0)
     float4 ViewPos;
 }
 
-cbuffer ModelData : register(b1)
-{
-    float4x4 Model;
-}
-
 StructuredBuffer<Particle> ParticleBufferVS : register(b2);
 StructuredBuffer<uint> AliveBuffer : register(b4);
 

@@ -165,7 +165,6 @@ namespace Odyssey
 		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
 		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
 		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
 		descriptorLayout->AddBinding("Particle Buffer", DescriptorType::Storage, ShaderStage::Vertex, 2);
 		descriptorLayout->AddBinding("Particle Texture", DescriptorType::Sampler, ShaderStage::Fragment, 3);
 		descriptorLayout->AddBinding("Alive Pre-Sim Buffer", DescriptorType::Storage, ShaderStage::Vertex, 4);
@@ -188,22 +187,22 @@ namespace Odyssey
 
 	void ParticleSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
-		uint32_t aliveCount = ParticleBatcher::AliveCount();
-		if (aliveCount > 0)
-		{
-			auto renderScene = params.renderingData->renderScene;
-			auto graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		auto renderScene = params.renderingData->renderScene;
+		auto graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
-			glm::mat4 world = glm::mat4(1.0f);
-			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_ModelUBO);
-			uniformBuffer->CopyData(sizeof(glm::mat4), &world);
+		const std::vector<size_t>& drawList = ParticleBatcher::GetDrawList();
+
+		for (size_t index : drawList)
+		{
+			uint32_t aliveCount = ParticleBatcher::GetAliveCount(index);
+			ResourceID particleBuffer = ParticleBatcher::GetParticleBuffer(index);
+			ResourceID aliveBuffer = ParticleBatcher::GetAliveBuffer(index);
 
 			m_PushDescriptors->Clear();
 			m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
-			m_PushDescriptors->AddBuffer(m_ModelUBO, 1);
-			m_PushDescriptors->AddBuffer(ParticleBatcher::GetParticleBuffer(), 2);
+			m_PushDescriptors->AddBuffer(particleBuffer, 2);
 			m_PushDescriptors->AddTexture(m_ParticleTexture->GetTexture(), 3);
-			m_PushDescriptors->AddBuffer(ParticleBatcher::GetAlivePreSimBuffer(), 4);
+			m_PushDescriptors->AddBuffer(aliveBuffer, 4);
 
 			graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
 			graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);

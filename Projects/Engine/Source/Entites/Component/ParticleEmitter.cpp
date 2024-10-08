@@ -1,5 +1,6 @@
 #include "ParticleEmitter.h"
 #include "Transform.h"
+#include "ParticleBatcher.h"
 
 namespace Odyssey
 {

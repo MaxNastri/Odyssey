@@ -1,6 +1,7 @@
 #pragma once
 #include "ParticleEmitter.h"
 #include "Resource.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
@@ -16,21 +17,24 @@ namespace Odyssey
 	public:
 		static void Update();
 
+		static void RegisterEmitter(ParticleEmitter* emitter);
+		static void DeregisterEmtter(ParticleEmitter* emitter);
+
+	public:
+		static const std::vector<size_t>& GetDrawList() { return s_DrawList; }
+		static uint32_t GetAliveCount(size_t index);
+		static ResourceID GetParticleBuffer(size_t index);
+		static ResourceID GetAliveBuffer(size_t index);
+
 	private:
 		static void InitEmitResources();
 		static void InitSimulationResources();
-
-		static void SwapBuffers();
-
-	public:
-		static ResourceID GetParticleBuffer() { return m_ParticleBuffer; }
-		static ResourceID GetCounterBuffer() { return m_CounterBuffer; }
-		static ResourceID GetAlivePreSimBuffer() { return m_AlivePreSimBuffer; }
-		static ResourceID GetAlivePostSimBuffer() { return m_AlivePostSimBuffer; }
-		static ResourceID GetDeadBuffer() { return m_DeadBuffer; }
-		static uint32_t AliveCount() { return m_CurrentFrameAlive; }
+		static void SwapBuffers(size_t index);
 
 	private:
+		inline static constexpr size_t MAX_PARTICLES = 16384;
+		inline static constexpr size_t MAX_EMITTERS = 124;
+
 		struct ParticleCounts
 		{
 			uint32_t DeadCount = 0;
@@ -38,6 +42,33 @@ namespace Odyssey
 			uint32_t AlivePostSimCount = 0;
 			uint32_t TestCount = 0;
 		};
+
+		struct PerEmitterResources
+		{
+			// Data storage
+			std::array<Particle, MAX_PARTICLES> ParticleData;
+			std::array<uint32_t, MAX_PARTICLES> AlivePreSimList;
+			std::array<uint32_t, MAX_PARTICLES> AlivePostSimList;
+			std::array<uint32_t, MAX_PARTICLES> DeadList;
+			ParticleCounts ParticleCounts;
+
+			// Buffers
+			ResourceID EmitterBuffer;
+			ResourceID ParticleBuffer;
+			ResourceID AlivePreSimBuffer;
+			ResourceID AlivePostSimBuffer;
+			ResourceID DeadBuffer;
+			ResourceID CounterBuffer;
+
+			// Frame data
+			uint32_t CurrentFrameAliveCount = 0;
+		};
+
+	private: // Emitter resources
+		inline static std::map<GameObject, size_t> s_EntityToResourceIndex;
+		inline static std::queue<size_t> s_ResourceIndices;
+		inline static std::array<PerEmitterResources, MAX_EMITTERS> s_EmitterResources;
+		inline static std::vector<size_t> s_DrawList;
 
 	private: // Shared
 		inline static ResourceID s_CommandPool;
@@ -49,8 +80,6 @@ namespace Odyssey
 		inline static ResourceID s_EmitDescriptorLayout;
 		inline static ResourceID s_EmitComputePipeline;
 		inline static std::shared_ptr<Shader> s_EmitShader;
-		inline static ResourceID s_EmitterBuffer;
-		inline static size_t s_EmitterBufferSize;
 
 	private: // Simulation pass
 		inline static const GUID& s_SimShaderGUID = 7831351134810913572;
@@ -58,28 +87,10 @@ namespace Odyssey
 		inline static ResourceID s_SimComputePipeline;
 		inline static std::shared_ptr<Shader> s_SimShader;
 
-	private: // Particle buffer
-		inline static constexpr size_t MAX_PARTICLES = 16384;
-		inline static std::array<Particle, MAX_PARTICLES> m_Particles;
-		inline static ResourceID m_ParticleBuffer;
+	private: // Buffer sizes
+		inline static size_t s_EmitterBufferSize;
 		inline static size_t m_ParticleBufferSize = 0;
-
-	private: // Counter buffer
-		inline static ParticleCounts s_ParticleCounts;
-		inline static ResourceID m_CounterBuffer;
 		inline static size_t m_CounterBufferSize = 0;
-		inline static uint32_t m_CurrentFrameAlive = 0;
-
-	private: // Dead/Alive buffers
 		inline static size_t m_ListBufferSize = 0;
-
-		inline static std::array<uint32_t, MAX_PARTICLES> m_AlivePreSimList;
-		inline static ResourceID m_AlivePreSimBuffer;
-		
-		inline static std::array<uint32_t, MAX_PARTICLES> m_AlivePostSimList;
-		inline static ResourceID m_AlivePostSimBuffer;
-
-		inline static std::array<uint32_t, MAX_PARTICLES> m_DeadList;
-		inline static ResourceID m_DeadBuffer;
 	};
 }

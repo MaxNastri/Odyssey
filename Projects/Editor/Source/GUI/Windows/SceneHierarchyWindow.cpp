@@ -39,7 +39,8 @@ namespace Odyssey
 			// Note: Their children will be drawn recursively
 			for (auto& node : sceneRoot->Children)
 			{
-				DrawSceneNode(node);
+				if (node)
+					DrawSceneNode(node);
 			}
 
 			if (m_CursorInContentRegion && m_Interactions.empty())
@@ -124,7 +125,9 @@ namespace Odyssey
 		{
 			if (ImGui::Button("Delete"))
 			{
-				m_Deferred = [this, &gameObject] { gameObject.Destroy(); };
+				gameObject.Destroy();
+				ImGui::EndPopup();
+				return false;
 			}
 
 			ImGui::EndPopup();

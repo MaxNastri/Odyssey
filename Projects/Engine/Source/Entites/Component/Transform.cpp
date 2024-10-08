@@ -141,7 +141,7 @@ namespace Odyssey
 		glm::mat4 worldMatrix = m_LocalMatrix;
 
 		GameObject parent = m_GameObject.GetParent();
-		while (parent)
+		while (parent.IsValid())
 		{
 			Transform& parentTransform = parent.GetComponent<Transform>();
 			worldMatrix = parentTransform.GetLocalMatrix() * worldMatrix;

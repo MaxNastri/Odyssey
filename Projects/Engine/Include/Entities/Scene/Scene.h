@@ -48,6 +48,10 @@ namespace Odyssey
 		void SaveToDisk(const Path& assetPath);
 		void LoadFromDisk(const Path& assetPath);
 
+	private:
+		void OnParticleEmitterCreate(entt::registry& registry, entt::entity entity);
+		void OnParticleEmitterDestroy(entt::registry& registry, entt::entity entity);
+
 	public:
 		template<typename... Components>
 		auto GetAllEntitiesWith()
