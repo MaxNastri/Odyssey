@@ -15,14 +15,14 @@
 
 
 //------------------------------------------------------------------------------
-# ifndef IMGUI_DEFINE_MATH_OPERATORS
-#     define IMGUI_DEFINE_MATH_OPERATORS
-# endif
 # include "imgui_node_editor.h"
 
 
 //------------------------------------------------------------------------------
 # include <imgui.h>
+#ifndef IMGUI_DEFINE_MATH_OPERATORS
+# define IMGUI_DEFINE_MATH_OPERATORS
+#endif
 # include <imgui_internal.h>
 # include "imgui_extra_math.h"
 # include "imgui_bezier_math.h"
@@ -435,7 +435,7 @@ struct Node final: Object
     virtual bool IsSelectable() override { return true; }
 
     virtual void Draw(ImDrawList* drawList, DrawFlags flags = None) override final;
-    void DrawBorder(ImDrawList* drawList, ImU32 color, float thickness = 1.0f, float offset = 0.0f);
+    void DrawBorder(ImDrawList* drawList, ImU32 color, float thickness = 1.0f);
 
     void GetGroupedNodes(std::vector<Node*>& result, bool append = false);
 
@@ -886,8 +886,6 @@ private:
 
     void NavigateTo(const ImRect& target, float duration = -1.0f, NavigationReason reason = NavigationReason::Unknown);
 
-    float GetNextZoom(float steps);
-    float MatchSmoothZoom(float steps);
     float MatchZoom(int steps, float fallbackZoom);
     int MatchZoomIndex(int direction);
 
@@ -1087,6 +1085,19 @@ struct CreateItemAction final : EditorAction
 
     int       m_LastChannel = -1;
 
+    // Used to draw last dragged link when it's dropped to open popup
+    PinKind   m_lastStartPinKind;
+    ImRect    m_lastStartPivot;
+    ImVec2    m_lastStartDir;
+    float     m_lastStartPinCorners;
+    float     m_lastStartPinStrength;
+
+    PinKind   m_lastEndPinKind;
+    ImRect    m_lastEndPivot;
+    ImVec2    m_lastEndDir;
+    float     m_lastEndPinCorners;
+    float     m_lastEndPinStrength;
+    //--------------------------------
 
     CreateItemAction(EditorContext* editor);
 
@@ -1113,6 +1124,8 @@ struct CreateItemAction final : EditorAction
 
     Result QueryLink(PinId* startId, PinId* endId);
     Result QueryNode(PinId* pinId);
+
+    void DrawLastLink();
 
 private:
     bool m_IsInGlobalSpace;
@@ -1369,6 +1382,7 @@ struct EditorContext
     bool IsFocused();
     bool IsHovered() const;
     bool IsHoveredWithoutOverlapp() const;
+    void EnableUserInput(bool enable);
     bool CanAcceptUserInput() const;
 
     void MakeDirty(SaveReasonFlags reason);
@@ -1461,7 +1475,7 @@ struct EditorContext
     float AlignPointToGrid(float p) const
     {
         if (!ImGui::GetIO().KeyAlt)
-            return p - ImFmod(p, 16.0f);
+            return p - ImFmod(p, m_Style.GridSnap);
         else
             return p;
     }
@@ -1473,10 +1487,14 @@ struct EditorContext
 
     ImDrawList* GetDrawList() { return m_DrawList; }
 
-private:
+    /// Draw link for the last drag action, used to draw link when
+    /// "Create New Node" popup is active after dropping link drag.
+    void DrawLastLink();
+
     void LoadSettings();
     void SaveSettings();
 
+private:
     Control BuildControl(bool allowOffscreen);
 
     void ShowMetrics(const Control& control);
@@ -1489,6 +1507,7 @@ private:
     bool                m_IsFirstFrame;
     bool                m_IsFocused;
     bool                m_IsHovered;
+	bool                m_UserInputEnabled;
     bool                m_IsHoveredWithoutOverlapp;
 
     bool                m_ShortcutsEnabled;

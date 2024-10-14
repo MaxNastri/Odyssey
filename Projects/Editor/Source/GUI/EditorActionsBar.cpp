@@ -22,7 +22,7 @@ namespace Odyssey
 		ImGuiWindowClass window_class;
 		window_class.DockNodeFlagsOverrideSet =
 			ImGuiDockNodeFlags_NoTabBar |
-			ImGuiDockNodeFlags_NoDockingSplit |
+			//ImGuiDockNodeFlags_NoDockingSplit |
 			ImGuiDockNodeFlags_NoResize;
 
 		ImGui::SetNextWindowClass(&window_class);

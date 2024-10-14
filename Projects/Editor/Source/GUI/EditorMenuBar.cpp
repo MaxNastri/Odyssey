@@ -8,6 +8,7 @@
 #include "EditorEvents.h"
 #include "Renderer.h"
 #include "SceneSettingsWindow.h"
+#include "AnimationWindow.h"
 
 namespace Odyssey
 {
@@ -55,6 +56,8 @@ namespace Odyssey
 
 		if (ImGui::BeginMenu("Window"))
 		{
+			if (ImGui::MenuItem("Animation Window"))
+				GUIManager::CreateDockableWindow<AnimationWindow>();
 			if (ImGui::MenuItem("Content Browser"))
 				GUIManager::CreateDockableWindow<ContentBrowserWindow>();
 			if (ImGui::MenuItem("Game View"))

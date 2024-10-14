@@ -24,18 +24,12 @@
 // SOFTWARE.
 //
 
+#include "ImGuizmo.h"
 
-// Undef from Windows.h
-#undef min
-#undef max
-
-#include "imgui.h"
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
-#include "imgui_internal.h"
-#include "ImGuizmo.h"
-
+#include <imgui/imgui_internal.h>
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <malloc.h>
@@ -1458,6 +1452,10 @@ namespace ImGuizmo
 
 	static bool CanActivate()
 	{
+		// Check for modifiers
+		//if (Hazel::Input::IsKeyDown(HZ_KEY_LEFT_ALT) || Hazel::Input::IsKeyDown(HZ_KEY_LEFT_SHIFT) || Hazel::Input::IsKeyDown(HZ_KEY_LEFT_CONTROL))
+		//	return false;
+
 		if (ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered() && !ImGui::IsAnyItemActive())
 		{
 			return true;

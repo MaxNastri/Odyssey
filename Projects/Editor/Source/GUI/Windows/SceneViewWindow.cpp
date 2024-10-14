@@ -55,7 +55,7 @@ namespace Odyssey
 		// Reset the camera controller use flag before updating the camera controller
 		m_CameraControllerInUse = false;
 
-		if (m_GameObject)
+		if (m_GameObject.IsValid())
 			UpdateCameraController();
 
 		if (!m_CameraControllerInUse)
@@ -83,7 +83,7 @@ namespace Odyssey
 		DestroyRenderTexture();
 		CreateRenderTexture();
 
-		if (m_GameObject)
+		if (m_GameObject.IsValid())
 		{
 			if (Camera* camera = m_GameObject.TryGetComponent<Camera>())
 				camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
@@ -151,7 +151,7 @@ namespace Odyssey
 
 	void SceneViewWindow::RenderGizmos()
 	{
-		if (m_SelectedGO)
+		if (m_SelectedGO.IsValid())
 		{
 			if (Transform* transform = m_SelectedGO.TryGetComponent<Transform>())
 			{

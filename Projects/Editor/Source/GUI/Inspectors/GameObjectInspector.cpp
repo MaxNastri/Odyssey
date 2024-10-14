@@ -62,7 +62,7 @@ namespace Odyssey
 	void GameObjectInspector::Draw()
 	{
 		// Don't draw unless we have a target
-		if (!m_Target)
+		if (!m_Target.IsValid())
 			return;
 
 		if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
@@ -85,8 +85,6 @@ namespace Odyssey
 
 		if (ImGui::BeginPopup("Add Component Popup"))
 		{
-			ImGui::SeparatorText("Components");
-
 			auto kv = std::views::keys(s_AddComponentFuncs);
 			std::vector<std::string> possibleComponents{ kv.begin(), kv.end() };
 

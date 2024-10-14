@@ -54,7 +54,7 @@ namespace Odyssey
 		DestroyRenderTexture();
 		CreateRenderTexture();
 
-		if (m_MainCamera)
+		if (m_MainCamera.IsValid())
 		{
 			if (Camera* camera = m_MainCamera.TryGetComponent<Camera>())
 				camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);

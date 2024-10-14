@@ -188,7 +188,7 @@ namespace Odyssey
 
 				GUID guid = *((GUID*)payload->Data);
 				GameObject gameObject = m_Scene->GetGameObject(guid);
-				if (gameObject.GetParent())
+				if (gameObject.GetParent().IsValid())
 					gameObject.RemoveParent();
 			}
 			ImGui::EndDragDropTarget();

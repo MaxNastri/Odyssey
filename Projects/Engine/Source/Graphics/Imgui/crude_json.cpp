@@ -1,4 +1,4 @@
-// Crude implementation of JSON value object and parser.
+﻿// Crude implementation of JSON value object and parser.
 //
 // VERSION 0.1
 //
@@ -561,7 +561,7 @@ private:
             if (end != hex.c_str() + hex.size())
                 return false;
 
-            c = static_cast<int>(v);
+            c = v;
             return true;
         }
 
