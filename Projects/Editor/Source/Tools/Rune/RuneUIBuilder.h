@@ -1,64 +1,97 @@
 #pragma once
 #include "Node.h"
 #include "Pin.h"
+#include "Resource.h"
+#include "GUID.h"
 
-namespace Odyssey::Rune
+namespace Odyssey
 {
-    typedef uintptr_t PinId;
+	class Texture2D;
 
-	class RuneUIBuilder
+	namespace Rune
 	{
-    public:
-        RuneUIBuilder(uint64_t texture = 0, int32_t textureWidth = 0, uint64_t textureHeight = 0);
+		class RuneUIBuilder
+		{
+		public:
+			RuneUIBuilder();
 
-        void Begin(NodeId id);
-        void DrawNode(Node* node);
-        void End();
+		public:
+			void Begin(NodeId id);
+			void DrawNode(Node* node);
+			void End();
 
-        void Header(float4 color = float4(1.0f));
-        void EndHeader();
+		public:
+			void BeginHeader(float4 color = float4(1.0f));
+			void EndHeader();
 
-        void Input(PinId id);
-        void EndInput();
+		public:
+			void BeginInput(PinId id);
+			void EndInput();
 
-        void Middle();
+		public:
+			void Middle();
 
-        void Output(PinId id);
-        void EndOutput();
+		public:
+			void BeginOutput(PinId id);
+			void EndOutput();
 
-    private:
-        void DrawSimpleNode(Node* node);
+		private:
+			void DrawSimpleNode(Node* node);
+			void DrawTreeNode(Node* node);
 
-    private:
-        enum class Stage
-        {
-            Invalid,
-            Begin,
-            Header,
-            Content,
-            Input,
-            Output,
-            Middle,
-            End
-        };
+		private:
+			enum class Stage
+			{
+				Invalid,
+				Begin,
+				Header,
+				Content,
+				Input,
+				Output,
+				Middle,
+				End
+			};
 
-        bool SetStage(Stage stage);
+			bool SetStage(Stage stage);
 
-        void Pin(PinId id, PinIO pinIO);
-        void EndPin();
+		private:
+			bool IsPinLinked(const Pin& pin);
+			void DrawPinIcon(const Pin& pin, bool connected, float alpha);
+			void BeginPin(PinId id, PinIO pinIO);
+			void EndPin();
 
-        uint64_t HeaderTextureId;
-        int32_t         HeaderTextureWidth;
-        int32_t         HeaderTextureHeight;
-        NodeId      CurrentNodeId;
-        Stage       CurrentStage;
-        float4       HeaderColor;
-        float2      NodeMin;
-        float2      NodeMax;
-        float2      HeaderMin;
-        float2      HeaderMax;
-        float2      ContentMin;
-        float2      ContentMax;
-        bool        HasHeader;
-	};
+		private:
+			static float3 GetIconColor(PinType pinType);
+
+		private:
+			struct Header
+			{
+				std::shared_ptr<Texture2D> Texture;
+				uint64_t TextureID;
+				float4 Color;
+				float2 Min;
+				float2 Max;
+				bool HasHeader = false;
+			};
+
+			struct DrawingState
+			{
+				bool HasHeader = false;
+				Stage CurrentStage;
+				NodeId CurrentNodeID;
+				float2 NodeMin;
+				float2 NodeMax;
+				float2 ContentMin;
+				float2 ContentMax;
+			};
+
+			Header m_Header;
+			DrawingState m_DrawingState;
+
+		private:
+			inline static const GUID& Header_Texture_GUID = 980123767453938719;
+			inline static constexpr float2 Pin_Icon_Size = float2(24.0f);
+			inline static constexpr float3 Pin_Inner_Color = float3(0.12f);
+		};
+	}
 }

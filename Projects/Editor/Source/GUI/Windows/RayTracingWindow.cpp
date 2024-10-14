@@ -282,7 +282,7 @@ namespace Odyssey
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
 		m_RenderTexture = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
 		m_RTSampler = ResourceManager::Allocate<VulkanTextureSampler>();
-		m_RenderTextureID = Renderer::AddImguiTexture(m_RenderTexture, m_RTSampler);
+		m_RenderTextureID = Renderer::AddImguiRenderTexture(m_RenderTexture, m_RTSampler);
 	}
 
 	void RayTracingWindow::DestroyRenderTexture()

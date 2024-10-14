@@ -59,3 +59,11 @@ Entries:
     Type: Odyssey.Material
     Path: 'Materials/Particles.asset'
     GUID: 831665292157922468
+  - Name: Blueprint Background
+    Type: Odyssey.Texture2D
+    Path: 'Textures/BlueprintBackground.asset'
+    GUID: 980123767453938719
+  - Name: Blueprint Background
+    Type: Odyssey.SourceTexture
+    Path: 'Textures/Source/BlueprintBackground.png'
+    GUID: 901283857934219837

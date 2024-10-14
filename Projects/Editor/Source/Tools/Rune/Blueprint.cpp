@@ -26,11 +26,15 @@ namespace Odyssey::Rune
 		ImguiExt::SetCurrentEditor(m_Context);
 
 
-		m_Nodes.emplace_back(m_NextID++, "InputAction Fire", float4(255, 128, 128, 1.0f));
-		m_Nodes.back().Inputs.emplace_back(m_NextID++, "InFlow", PinType::Flow);
-		m_Nodes.back().Inputs.emplace_back(m_NextID++, "Input", PinType::Float);
-		m_Nodes.back().Outputs.emplace_back(m_NextID++, "OutFlow", PinType::Flow);
-		m_Nodes.back().Outputs.emplace_back(m_NextID++, "Output", PinType::Float);
+		Node& bpNode = m_Nodes.emplace_back(m_NextID++, "BP Example", float4(1.0f, 0.5f, 0.5f, 1.0f));
+		bpNode.Inputs.emplace_back(m_NextID++, "InFlow", PinType::Flow);
+		bpNode.Inputs.emplace_back(m_NextID++, "Input", PinType::Float);
+		bpNode.Outputs.emplace_back(m_NextID++, "OutFlow", PinType::Flow);
+		bpNode.Outputs.emplace_back(m_NextID++, "Output", PinType::Float);
+
+		Node& branchNode = m_Nodes.emplace_back(m_NextID++, "Branch Example", float4(1.0f, 1.0f, 1.0f, 1.0f));
+		branchNode.Type = NodeType::Tree;
+		branchNode.Inputs.emplace_back(m_NextID++, "", PinType::Flow);
 
 		// Build nodes
 		BuildNodes();
@@ -56,6 +60,7 @@ namespace Odyssey::Rune
 
 		RuneUIBuilder builder;
 		builder.DrawNode(&m_Nodes[0]);
+		builder.DrawNode(&m_Nodes[1]);
 		ImguiExt::End();
 	}
 

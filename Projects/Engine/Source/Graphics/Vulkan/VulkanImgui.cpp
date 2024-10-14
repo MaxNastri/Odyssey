@@ -8,6 +8,7 @@
 #include "Events.h"
 #include "VulkanContext.h"
 #include "VulkanRenderTexture.h"
+#include "VulkanTexture.h"
 #include "VulkanTextureSampler.h"
 
 namespace Odyssey
@@ -107,9 +108,22 @@ namespace Odyssey
 		}
 	}
 
-	uint64_t VulkanImgui::AddTexture(ResourceID textureID, ResourceID samplerID)
+	uint64_t VulkanImgui::AddTexture(ResourceID textureID)
 	{
-		auto texture = ResourceManager::GetResource<VulkanRenderTexture>(textureID);
+		auto texture = ResourceManager::GetResource<VulkanTexture>(textureID);
+		auto image = ResourceManager::GetResource<VulkanImage>(texture->GetImage());
+		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(texture->GetSampler());
+
+		VkSampler samplerVk = sampler->GetSamplerVK();
+		VkImageView view = image->GetImageView();
+		VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+		return reinterpret_cast<uint64_t>(ImGui_ImplVulkan_AddTexture(samplerVk, view, layout));
+	}
+
+	uint64_t VulkanImgui::AddRenderTexture(ResourceID renderTextureID, ResourceID samplerID)
+	{
+		auto texture = ResourceManager::GetResource<VulkanRenderTexture>(renderTextureID);
 		auto image = ResourceManager::GetResource<VulkanImage>(texture->GetImage());
 		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(samplerID);
 

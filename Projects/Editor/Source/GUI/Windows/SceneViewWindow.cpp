@@ -133,7 +133,7 @@ namespace Odyssey
 		m_ColorRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
 		m_DepthRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
 		m_RTSampler = ResourceManager::Allocate<VulkanTextureSampler>();
-		m_RenderTextureID = Renderer::AddImguiTexture(m_ColorRT, m_RTSampler);
+		m_RenderTextureID = Renderer::AddImguiRenderTexture(m_ColorRT, m_RTSampler);
 	}
 
 	void SceneViewWindow::DestroyRenderTexture()

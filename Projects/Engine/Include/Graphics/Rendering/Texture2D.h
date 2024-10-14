@@ -23,7 +23,8 @@ namespace Odyssey
 
 	public:
 		ResourceID GetTexture() { return m_Texture; }
-		GUID GetPixelBufferGUID() { return m_PixelBufferGUID; }
+		uint32_t GetWidth() { return m_TextureDescription.Width; }
+		uint32_t GetHeight() { return m_TextureDescription.Height; }
 
 	private:
 		void LoadFromSource(std::shared_ptr<SourceTexture> source);

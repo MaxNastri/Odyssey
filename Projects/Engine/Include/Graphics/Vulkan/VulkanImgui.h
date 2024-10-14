@@ -43,7 +43,8 @@ namespace Odyssey
 		void SetDrawGUIListener(std::function<void(void)> listener) { m_DrawGUIListener = listener; }
 
 	public:
-		uint64_t AddTexture(ResourceID textureID, ResourceID samplerID);
+		uint64_t AddTexture(ResourceID textureID);
+		uint64_t AddRenderTexture(ResourceID renderTextureID, ResourceID samplerID);
 		void RemoveTexture(uint64_t id);
 		void SetFont(Path fontFile, float fontSize);
 

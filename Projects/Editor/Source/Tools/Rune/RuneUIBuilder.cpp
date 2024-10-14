@@ -2,83 +2,56 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_node_editor.h"
-namespace ImguiExt = ax::NodeEditor;
+#include "widgets.h"
+#include "Renderer.h"
+#include "AssetManager.h"
+#include "ResourceManager.h"
+#include "Texture2D.h"
 
 namespace Odyssey::Rune
 {
-	RuneUIBuilder::RuneUIBuilder(uint64_t texture, int32_t textureWidth, uint64_t textureHeight)
-		: HeaderTextureId(texture), HeaderTextureWidth(textureWidth), HeaderTextureHeight(textureHeight),
-		CurrentNodeId(0), CurrentStage(Stage::Invalid), HasHeader(false)
-	{
+    namespace ImguiExt = ax::NodeEditor;
 
+	RuneUIBuilder::RuneUIBuilder()
+	{
+        m_DrawingState.CurrentNodeID = 0;
+        m_DrawingState.CurrentStage = Stage::Invalid;
+
+        m_Header.Texture = AssetManager::LoadAsset<Texture2D>(Header_Texture_GUID);
+        m_Header.TextureID = Renderer::AddImguiTexture(m_Header.Texture);
 	}
 
 	void RuneUIBuilder::Begin(NodeId id)
 	{
-		HasHeader = false;
-		HeaderMin = HeaderMax = float2(0.0f);
+        m_DrawingState.HasHeader = false;
+        m_Header.Min = m_Header.Max = float2(0.0f);
 
 		ImguiExt::PushStyleVar(ImguiExt::StyleVar_NodePadding, ImVec4(8, 4, 8, 8));
 
 		ImguiExt::BeginNode(id);
 
 		ImGui::PushID(id);
-		CurrentNodeId = id;
+        m_DrawingState.CurrentNodeID = id;
 
 		SetStage(Stage::Begin);
 	}
 
-    static bool Splitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2, float splitter_long_axis_size = -1.0f)
-    {
-        using namespace ImGui;
-        ImGuiContext& g = *GImGui;
-        ImGuiWindow* window = g.CurrentWindow;
-        ImGuiID id = window->GetID("##Splitter");
-        ImRect bb;
-
-        float2 cursorPos = float2(window->DC.CursorPos.x, window->DC.CursorPos.y);
-        ImVec2 itemSize = CalcItemSize(split_vertically ? ImVec2(thickness, splitter_long_axis_size) : ImVec2(splitter_long_axis_size, thickness), 0.0f, 0.0f);;
-        float2 min = cursorPos + (split_vertically ? float2(*size1, 0.0f) : float2(0.0f, *size1));
-        float2 max = min + float2(itemSize.x, itemSize.y);
-        bb.Min = ImVec2(min.x, min.y);
-        bb.Max = ImVec2(max.x, max.y);
-        return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2, 0.0f);
-    }
-
-    static void ShowLeftPane(float paneWidth)
-    {
-        auto& io = ImGui::GetIO();
-
-        ImGui::BeginChild("Selection", ImVec2(paneWidth, 0));
-
-        paneWidth = ImGui::GetContentRegionAvail().x;
-
-        static bool showStyleEditor = false;
-        ImGui::BeginHorizontal("Style Editor", ImVec2(paneWidth, 0));
-        ImGui::Spring(0.0f, 0.0f);
-        if (ImGui::Button("Zoom to Content"))
-            ImguiExt::NavigateToContent();
-        ImGui::Spring(0.0f);
-        //if (ImGui::Button("Show Flow"))
-        //{
-        //    for (auto& link : m_Links)
-        //        ed::Flow(link.ID);
-        //}
-        ImGui::Spring();
-        if (ImGui::Button("Edit Style"))
-            showStyleEditor = true;
-        ImGui::EndHorizontal();
-
-        ImGui::EndChild();
-    }
-
     void RuneUIBuilder::DrawNode(Node* node)
     {
-        static float leftPaneWidth = 400.0f;
-        static float rightPaneWidth = 800.0f;
-        Splitter(true, 4.0f, &leftPaneWidth, &rightPaneWidth, 50.0f, 50.0f);
-        ShowLeftPane(leftPaneWidth - 4.0f);
-        DrawSimpleNode(node);
+        switch (node->Type)
+        {
+            case NodeType::None:
+                return;
+            case NodeType::Blueprint:
+            case NodeType::Simple:
+                DrawSimpleNode(node);
+            case NodeType::Comment:
+                return;
+            case NodeType::Tree:
+                DrawTreeNode(node);
+            default:
+                break;
+        }
     }
 
 	void RuneUIBuilder::End()
@@ -91,18 +64,18 @@ namespace Odyssey::Rune
         {
             const float halfBorderWidth = ImguiExt::GetStyle().NodeBorderWidth * 0.5f;
             int32_t alpha = (int32_t)(255 * ImGui::GetStyle().Alpha);
-            ImColor headerColor = ImColor(HeaderColor.r, HeaderColor.g, HeaderColor.b, HeaderColor.a);
+            ImColor headerColor = ImColor(m_Header.Color.r, m_Header.Color.g, m_Header.Color.b, m_Header.Color.a);
 
-            ImDrawList* drawList = ImguiExt::GetNodeBackgroundDrawList(CurrentNodeId);
+            ImDrawList* drawList = ImguiExt::GetNodeBackgroundDrawList(m_DrawingState.CurrentNodeID);
 
-            if ((HeaderMax.x > HeaderMin.x) && (HeaderMax.y > HeaderMin.y) && HeaderTextureId)
+            if ((m_Header.Max.x > m_Header.Min.x) && (m_Header.Max.y > m_Header.Min.y) && m_Header.Texture)
             {
-                const auto uv = ImVec2(
-                    (HeaderMax.x - HeaderMin.x) / (float)(4.0f * HeaderTextureWidth),
-                    (HeaderMax.y - HeaderMin.y) / (float)(4.0f * HeaderTextureHeight));
+                const ImVec2 uv = ImVec2(
+                    (m_Header.Max.x - m_Header.Min.x) / (float)(4.0f * m_Header.Texture->GetWidth()),
+                    (m_Header.Max.y - m_Header.Min.y) / (float)(4.0f * m_Header.Texture->GetHeight()));
 
-                float2 fMin = HeaderMin - float2(8 - halfBorderWidth, 4 - halfBorderWidth);
-                float2 fMax = HeaderMax + float2(8 - halfBorderWidth, 0);
+                float2 fMin = m_Header.Min - float2(8 - halfBorderWidth, 4 - halfBorderWidth);
+                float2 fMax = m_Header.Max + float2(8 - halfBorderWidth, 0);
                 ImVec2 min = ImVec2(fMin.x, fMin.y);
                 ImVec2 max = ImVec2(fMax.x, fMax.y);
                 ImVec2 uvMin = ImVec2(0.0f, 0.0f);
@@ -111,22 +84,22 @@ namespace Odyssey::Rune
 #else
                 ImDrawFlags drawFlags = 1 | 2;
 #endif
-                drawList->AddImageRounded((ImTextureID)HeaderTextureId,
+                drawList->AddImageRounded((ImTextureID)m_Header.TextureID,
                     min, max,
                     uvMin, uv,
                     headerColor, ImguiExt::GetStyle().NodeRounding, drawFlags);
 
-                if (ContentMin.y > HeaderMax.y)
+                if (m_DrawingState.ContentMin.y > m_Header.Max.y)
                 {
                     drawList->AddLine(
-                        ImVec2(HeaderMin.x - (8 - halfBorderWidth), HeaderMax.y - 0.5f),
-                        ImVec2(HeaderMax.x + (8 - halfBorderWidth), HeaderMax.y - 0.5f),
+                        ImVec2(m_Header.Min.x - (8 - halfBorderWidth), m_Header.Max.y - 0.5f),
+                        ImVec2(m_Header.Max.x + (8 - halfBorderWidth), m_Header.Max.y - 0.5f),
                         ImColor(255, 255, 255, 96 * alpha / (3 * 255)), 1.0f);
                 }
             }
         }
 
-        CurrentNodeId = 0;
+        m_DrawingState.CurrentNodeID = 0;
 
         ImGui::PopID();
 
@@ -135,9 +108,9 @@ namespace Odyssey::Rune
         SetStage(Stage::Invalid);
 	}
 
-    void RuneUIBuilder::Header(float4 color)
+    void RuneUIBuilder::BeginHeader(float4 color)
     {
-        HeaderColor = color;
+        m_Header.Color = color;
         SetStage(Stage::Header);
     }
 
@@ -146,24 +119,55 @@ namespace Odyssey::Rune
         SetStage(Stage::Content);
     }
 
-    void RuneUIBuilder::Input(PinId id)
+    void RuneUIBuilder::BeginInput(PinId id)
     {
-        if (CurrentStage == Stage::Begin)
+        if (m_DrawingState.CurrentStage == Stage::Begin)
             SetStage(Stage::Content);
 
-        const auto applyPadding = (CurrentStage == Stage::Input);
+        const auto applyPadding = (m_DrawingState.CurrentStage == Stage::Input);
 
         SetStage(Stage::Input);
 
         if (applyPadding)
             ImGui::Spring(0);
 
-        Pin(id, PinIO::Input);
+        BeginPin(id, PinIO::Input);
 
         ImGui::BeginHorizontal(id);
     }
 
     void RuneUIBuilder::EndInput()
+    {
+        ImGui::EndHorizontal();
+        EndPin();
+    }
+
+    void RuneUIBuilder::Middle()
+    {
+        if (m_DrawingState.CurrentStage == Stage::Begin)
+            SetStage(Stage::Content);
+
+        SetStage(Stage::Middle);
+    }
+
+    void RuneUIBuilder::BeginOutput(PinId id)
+    {
+        if (m_DrawingState.CurrentStage == Stage::Begin)
+            SetStage(Stage::Content);
+
+        bool applyPadding = m_DrawingState.CurrentStage == Stage::Output;
+
+        SetStage(Stage::Output);
+
+        if (applyPadding)
+            ImGui::Spring(0);
+
+        BeginPin(id, PinIO::Output);
+
+        ImGui::BeginHorizontal(id);
+    }
+
+    void RuneUIBuilder::EndOutput()
     {
         ImGui::EndHorizontal();
         EndPin();
@@ -190,7 +194,7 @@ namespace Odyssey::Rune
         // Only blueprints draw a header
         if (isBlueprint)
         {
-            Header(node->Color);
+            BeginHeader(node->Color);
             ImGui::Spring(0);
             ImGui::TextUnformatted(node->Name.c_str());
             ImGui::Spring(1);
@@ -235,16 +239,15 @@ namespace Odyssey::Rune
             EndHeader();
         }
 
-
         for (auto& input : node->Inputs)
         {
-            auto alpha = ImGui::GetStyle().Alpha;
+            float alpha = ImGui::GetStyle().Alpha;
             //if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
             //    alpha = alpha * (48.0f / 255.0f);
 
-            Input(input.ID);
+            BeginInput(input.ID);
             ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-            //DrawPinIcon(input, IsPinLinked(input.ID), (int)(alpha * 255));
+            DrawPinIcon(input, IsPinLinked(input), alpha);
             ImGui::Spring(0);
             if (!input.Name.empty())
             {
@@ -260,16 +263,198 @@ namespace Odyssey::Rune
             EndInput();
         }
 
+        for (auto& output : node->Outputs)
+        {
+            if (!isSimple && output.Type == PinType::Delegate)
+                continue;
+
+            auto alpha = ImGui::GetStyle().Alpha;
+            //if (newLinkPin && !CanCreateLink(newLinkPin, &output) && &output != newLinkPin)
+            //    alpha = alpha * (48.0f / 255.0f);
+
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
+            BeginOutput(output.ID);
+            if (output.Type == PinType::String)
+            {
+                static char buffer[128] = "Edit Me\nMultiline!";
+                static bool wasActive = false;
+
+                ImGui::PushItemWidth(100.0f);
+                ImGui::InputText("##edit", buffer, 127);
+                ImGui::PopItemWidth();
+                if (ImGui::IsItemActive() && !wasActive)
+                {
+                    ImguiExt::EnableShortcuts(false);
+                    wasActive = true;
+                }
+                else if (!ImGui::IsItemActive() && wasActive)
+                {
+                    ImguiExt::EnableShortcuts(true);
+                    wasActive = false;
+                }
+                ImGui::Spring(0);
+            }
+
+            if (!output.Name.empty())
+            {
+                ImGui::Spring(0);
+                ImGui::TextUnformatted(output.Name.c_str());
+            }
+
+            ImGui::Spring(0);
+            DrawPinIcon(output, IsPinLinked(output), alpha);
+            ImGui::PopStyleVar();
+            EndOutput();
+        }
+
         End();
+    }
+
+    void RuneUIBuilder::DrawTreeNode(Node* node)
+    {
+        if (node->Type != NodeType::Tree)
+            return;
+
+        const float rounding = 5.0f;
+        const float padding = 12.0f;
+
+        const auto pinBackground = ImguiExt::GetStyle().Colors[ImguiExt::StyleColor_NodeBg];
+
+        ImguiExt::PushStyleColor(ImguiExt::StyleColor_NodeBg, ImColor(128, 128, 128, 200));
+        ImguiExt::PushStyleColor(ImguiExt::StyleColor_NodeBorder, ImColor(32, 32, 32, 200));
+        ImguiExt::PushStyleColor(ImguiExt::StyleColor_PinRect, ImColor(60, 180, 255, 150));
+        ImguiExt::PushStyleColor(ImguiExt::StyleColor_PinRectBorder, ImColor(60, 180, 255, 150));
+
+        ImguiExt::PushStyleVar(ImguiExt::StyleVar_NodePadding, ImVec4(0, 0, 0, 0));
+        ImguiExt::PushStyleVar(ImguiExt::StyleVar_NodeRounding, rounding);
+        ImguiExt::PushStyleVar(ImguiExt::StyleVar_SourceDirection, ImVec2(0.0f, 1.0f));
+        ImguiExt::PushStyleVar(ImguiExt::StyleVar_TargetDirection, ImVec2(0.0f, -1.0f));
+        ImguiExt::PushStyleVar(ImguiExt::StyleVar_LinkStrength, 0.0f);
+        ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinBorderWidth, 1.0f);
+        ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinRadius, 5.0f);
+        ImguiExt::BeginNode(node->ID);
+
+        ImGui::BeginVertical(node->ID);
+        ImGui::BeginHorizontal("inputs");
+        ImGui::Spring(0, padding * 2);
+
+        ImRect inputsRect;
+        int inputAlpha = 200;
+        if (!node->Inputs.empty())
+        {
+            auto& pin = node->Inputs[0];
+            ImGui::Dummy(ImVec2(0, padding));
+            ImGui::Spring(1, 0);
+            inputsRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+
+            ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinArrowSize, 10.0f);
+            ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinArrowWidth, 10.0f);
+#if IMGUI_VERSION_NUM > 18101
+            ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinCorners, ImDrawFlags_RoundCornersBottom);
+#else
+            ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinCorners, 12);
+#endif
+            ImguiExt::BeginPin(pin.ID, ImguiExt::PinKind::Input);
+            ImguiExt::PinPivotRect(inputsRect.GetTL(), inputsRect.GetBR());
+            ImguiExt::PinRect(inputsRect.GetTL(), inputsRect.GetBR());
+            ImguiExt::EndPin();
+            ImguiExt::PopStyleVar(3);
+
+            //if (newLinkPin && !CanCreateLink(newLinkPin, &pin) && &pin != newLinkPin)
+            //    inputAlpha = (int)(255 * ImGui::GetStyle().Alpha * (48.0f / 255.0f));
+        }
+        else
+            ImGui::Dummy(ImVec2(0, padding));
+
+        ImGui::Spring(0, padding * 2);
+        ImGui::EndHorizontal();
+
+        ImGui::BeginHorizontal("content_frame");
+        ImGui::Spring(1, padding);
+
+        ImGui::BeginVertical("content", ImVec2(0.0f, 0.0f));
+        ImGui::Dummy(ImVec2(160, 0));
+        ImGui::Spring(1);
+        ImGui::TextUnformatted(node->Name.c_str());
+        ImGui::Spring(1);
+        ImGui::EndVertical();
+        auto contentRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+
+        ImGui::Spring(1, padding);
+        ImGui::EndHorizontal();
+
+        ImGui::BeginHorizontal("outputs");
+        ImGui::Spring(0, padding * 2);
+
+        ImRect outputsRect;
+        int outputAlpha = 200;
+        if (!node->Outputs.empty())
+        {
+            auto& pin = node->Outputs[0];
+            ImGui::Dummy(ImVec2(0, padding));
+            ImGui::Spring(1, 0);
+            outputsRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+
+#if IMGUI_VERSION_NUM > 18101
+            ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinCorners, ImDrawFlags_RoundCornersTop);
+#else
+            ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinCorners, 3);
+#endif
+            ImguiExt::BeginPin(pin.ID, ImguiExt::PinKind::Output);
+            ImguiExt::PinPivotRect(outputsRect.GetTL(), outputsRect.GetBR());
+            ImguiExt::PinRect(outputsRect.GetTL(), outputsRect.GetBR());
+            ImguiExt::EndPin();
+            ImguiExt::PopStyleVar();
+
+            //if (newLinkPin && !CanCreateLink(newLinkPin, &pin) && &pin != newLinkPin)
+            //    outputAlpha = (int)(255 * ImGui::GetStyle().Alpha * (48.0f / 255.0f));
+        }
+        else
+            ImGui::Dummy(ImVec2(0, padding));
+
+        ImGui::Spring(0, padding * 2);
+        ImGui::EndHorizontal();
+
+        ImGui::EndVertical();
+
+        ImguiExt::EndNode();
+        ImguiExt::PopStyleVar(7);
+        ImguiExt::PopStyleColor(4);
+
+        auto drawList = ImguiExt::GetNodeBackgroundDrawList(node->ID);
+        const ImDrawFlags topRoundCornersFlags = ImDrawFlags_RoundCornersTop;
+        const ImDrawFlags bottomRoundCornersFlags = ImDrawFlags_RoundCornersBottom;
+
+        {
+            float2 inTopLeft = float2(inputsRect.GetTL().x, inputsRect.GetTL().y);
+
+            float2 outTopLeft = float2(outputsRect.GetTL().x, outputsRect.GetTL().y);
+            float2 outBotRight = float2(outputsRect.GetBR().x, outputsRect.GetBR().y);
+
+            drawList->AddRectFilled(ImVec2(inTopLeft.x, inTopLeft.y + 1), inputsRect.GetBR(),
+                IM_COL32((int)(255 * pinBackground.x), (int)(255 * pinBackground.y), (int)(255 * pinBackground.z), inputAlpha), 4.0f, bottomRoundCornersFlags);
+            drawList->AddRect(ImVec2(inTopLeft.x, inTopLeft.y + 1), inputsRect.GetBR(),
+                IM_COL32((int)(255 * pinBackground.x), (int)(255 * pinBackground.y), (int)(255 * pinBackground.z), inputAlpha), 4.0f, bottomRoundCornersFlags);
+            drawList->AddRectFilled(outputsRect.GetTL(), ImVec2(outBotRight.x, outBotRight.y - 1),
+                IM_COL32((int)(255 * pinBackground.x), (int)(255 * pinBackground.y), (int)(255 * pinBackground.z), outputAlpha), 4.0f, topRoundCornersFlags);
+            drawList->AddRect(outputsRect.GetTL(), ImVec2(outBotRight.x, outBotRight.y - 1),
+                IM_COL32((int)(255 * pinBackground.x), (int)(255 * pinBackground.y), (int)(255 * pinBackground.z), outputAlpha), 4.0f, topRoundCornersFlags);
+            
+            drawList->AddRectFilled(contentRect.GetTL(), contentRect.GetBR(), IM_COL32(24, 64, 128, 200), 0.0f);
+            drawList->AddRect(
+                contentRect.GetTL(),
+                contentRect.GetBR(),
+                IM_COL32(48, 128, 255, 100), 0.0f);
+        }
     }
 
     bool RuneUIBuilder::SetStage(Stage stage)
     {
-        if (stage == CurrentStage)
+        if (stage == m_DrawingState.CurrentStage)
             return false;
 
-        auto oldStage = CurrentStage;
-        CurrentStage = stage;
+        Stage oldStage = m_DrawingState.CurrentStage;
+        m_DrawingState.CurrentStage = stage;
 
         ImVec2 cursor;
         switch (oldStage)
@@ -279,8 +464,8 @@ namespace Odyssey::Rune
 
             case Stage::Header:
                 ImGui::EndHorizontal();
-                HeaderMin = float2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMin().y);
-                HeaderMax = float2(ImGui::GetItemRectMax().x, ImGui::GetItemRectMax().y);
+                m_Header.Min = float2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMin().y);
+                m_Header.Max = float2(ImGui::GetItemRectMax().x, ImGui::GetItemRectMax().y);
 
                 // spacing between header and content
                 ImGui::Spring(0, ImGui::GetStyle().ItemSpacing.y * 2.0f);
@@ -337,7 +522,7 @@ namespace Odyssey::Rune
                 break;
 
             case Stage::Header:
-                HasHeader = true;
+                m_DrawingState.HasHeader = true;
 
                 ImGui::BeginHorizontal("header");
                 break;
@@ -356,7 +541,7 @@ namespace Odyssey::Rune
                 ImguiExt::PushStyleVar(ImguiExt::StyleVar_PivotAlignment, ImVec2(0, 0.5f));
                 ImguiExt::PushStyleVar(ImguiExt::StyleVar_PivotSize, ImVec2(0, 0));
 
-                if (!HasHeader)
+                if (!m_DrawingState.HasHeader)
                     ImGui::Spring(1, 0);
                 break;
 
@@ -375,7 +560,7 @@ namespace Odyssey::Rune
                 ImguiExt::PushStyleVar(ImguiExt::StyleVar_PivotAlignment, ImVec2(1.0f, 0.5f));
                 ImguiExt::PushStyleVar(ImguiExt::StyleVar_PivotSize, ImVec2(0, 0));
 
-                if (!HasHeader)
+                if (!m_DrawingState.HasHeader)
                     ImGui::Spring(1, 0);
                 break;
 
@@ -384,13 +569,13 @@ namespace Odyssey::Rune
                     ImGui::Spring(1, 0);
                 if (oldStage != Stage::Begin)
                     ImGui::EndHorizontal();
-                ContentMin = float2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMin().y);
-                ContentMax = float2(ImGui::GetItemRectMax().x, ImGui::GetItemRectMax().y);
+                m_DrawingState.ContentMin = float2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMin().y);
+                m_DrawingState.ContentMax = float2(ImGui::GetItemRectMax().x, ImGui::GetItemRectMax().y);
 
                 //ImGui::Spring(0);
                 ImGui::EndVertical();
-                NodeMin = float2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMin().y);
-                NodeMax = float2(ImGui::GetItemRectMax().x, ImGui::GetItemRectMax().y);
+                m_DrawingState.NodeMin = float2(ImGui::GetItemRectMin().x, ImGui::GetItemRectMin().y);
+                m_DrawingState.NodeMax = float2(ImGui::GetItemRectMax().x, ImGui::GetItemRectMax().y);
                 break;
 
             case Stage::Invalid:
@@ -400,7 +585,60 @@ namespace Odyssey::Rune
         return true;
     }
 
-    void RuneUIBuilder::Pin(PinId id, PinIO pinIO)
+    bool RuneUIBuilder::IsPinLinked(const Pin& pin)
+    {
+        if (!pin.ID)
+            return false;
+
+        // TODO: IMPLEMENT SOMEWHERE
+
+        return false;
+    }
+
+    void RuneUIBuilder::DrawPinIcon(const Pin& pin, bool connected, float alpha)
+    {
+        using namespace ImGui::Widgets;
+
+        IconType iconType;
+        float4  color = float4(GetIconColor(pin.Type), alpha);
+        
+        switch (pin.Type)
+        {
+            case PinType::Flow:
+                iconType = IconType::Flow;
+                break;
+            case PinType::Bool:
+                iconType = IconType::Circle;
+                break;
+            case PinType::Int:
+                iconType = IconType::Circle;
+                break;
+            case PinType::Float:
+                iconType = IconType::Circle;
+                break;
+            case PinType::String:
+                iconType = IconType::Circle;
+                break;
+            case PinType::Object:
+                iconType = IconType::Circle;
+                break;
+            case PinType::Function:
+                iconType = IconType::Circle;
+                break;
+            case PinType::Delegate:
+                iconType = IconType::Square;
+                break;
+            default:
+                return;
+        }
+
+        ImColor pinColor = ImColor(color.r, color.g, color.b, color.a);
+        ImColor pinInnerColor = ImColor(Pin_Inner_Color.r, Pin_Inner_Color.g, Pin_Inner_Color.b, alpha);
+
+        ImGui::Widgets::Icon(ImVec2(Pin_Icon_Size.x, Pin_Icon_Size.y), iconType, connected, pinColor, pinInnerColor);
+    }
+
+    void RuneUIBuilder::BeginPin(PinId id, PinIO pinIO)
     {
         ImguiExt::BeginPin(id, pinIO == PinIO::Input ? ImguiExt::PinKind::Input : ImguiExt::PinKind::Output);
     }
@@ -412,5 +650,21 @@ namespace Odyssey::Rune
         // #debug
         // ImGui::GetWindowDrawList()->AddRectFilled(
         //     ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 0, 0, 64));
+    }
+
+    float3 RuneUIBuilder::GetIconColor(PinType pinType)
+    {
+        switch (pinType)
+        {
+            default:
+            case PinType::Flow:     return float3(1.0f, 1.0f, 1.0f);
+            case PinType::Bool:     return float3(0.86f, 0.18f, 0.18f);
+            case PinType::Int:      return float3(0.26f, 0.79f, 0.61f);
+            case PinType::Float:    return float3(0.57f, 0.88f, 0.29f);
+            case PinType::String:   return float3(0.48f, 0.08f, 0.6f);
+            case PinType::Object:   return float3(0.2f, 0.59f, 0.84f);
+            case PinType::Function: return float3(0.86f, 0.0f, 0.72f);
+            case PinType::Delegate: return float3(1.0f, 0.18f, 0.18f);
+        }
     }
 }
