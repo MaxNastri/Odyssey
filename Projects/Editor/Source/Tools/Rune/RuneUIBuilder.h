@@ -10,55 +10,51 @@ namespace Odyssey
 
 	namespace Rune
 	{
+		class Blueprint;
+
 		class RuneUIBuilder
 		{
 		public:
 			RuneUIBuilder();
 
 		public:
-			void Begin(NodeId id);
-			void DrawNode(Node* node);
-			void End();
+			void DrawBlueprint(Blueprint* blueprint);
 
-		public:
+		private:
+			enum class Stage { Invalid, Begin, Header, Content, Input, Output, Middle, End };
+
+		private:
+			void BeginNode(NodeId id);
+			void EndNode();
+
+		private:
 			void BeginHeader(float4 color = float4(1.0f));
 			void EndHeader();
 
-		public:
+		private:
 			void BeginInput(PinId id);
 			void EndInput();
 
-		public:
-			void Middle();
-
-		public:
+		private:
 			void BeginOutput(PinId id);
 			void EndOutput();
 
 		private:
+			void BeginPin(PinId id, PinIO pinIO);
+			void EndPin();
+
+		private:
+			void DrawNode(Node* node);
 			void DrawSimpleNode(Node* node);
 			void DrawTreeNode(Node* node);
 
 		private:
-			enum class Stage
-			{
-				Invalid,
-				Begin,
-				Header,
-				Content,
-				Input,
-				Output,
-				Middle,
-				End
-			};
-
+			void Middle();
 			bool SetStage(Stage stage);
 
 		private:
 			bool IsPinLinked(const Pin& pin);
 			void DrawPinIcon(const Pin& pin, bool connected, float alpha);
-			void BeginPin(PinId id, PinIO pinIO);
-			void EndPin();
 
 		private:
 			static float3 GetIconColor(PinType pinType);
@@ -85,6 +81,7 @@ namespace Odyssey
 				float2 ContentMax;
 			};
 
+		private:
 			Header m_Header;
 			DrawingState m_DrawingState;
 

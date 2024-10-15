@@ -7,24 +7,7 @@ namespace Odyssey::Rune
 {
 	Blueprint::Blueprint()
 	{
-		// Init the node editor
-		ImguiExt::Config config;
-		config.SettingsFile = "Blueprints.json";
-		config.UserPointer = this;
-		config.LoadNodeSettings = [](ImguiExt::NodeId nodeId, char* data, void* userPointer)
-			{
-				Blueprint* blueprint = static_cast<Blueprint*>(userPointer);
-				return blueprint->LoadNodeSettings(nodeId.Get(), data);
-			};
-		config.SaveNodeSettings = [](ImguiExt::NodeId nodeId, const char* data, size_t size, ImguiExt::SaveReasonFlags reason, void* userPointer)
-			{
-				Blueprint* blueprint = static_cast<Blueprint*>(userPointer);
-				return blueprint->SaveNodeSettings(nodeId.Get(), data, size);
-			};
-
-		m_Context = ImguiExt::CreateEditor(&config);
-		ImguiExt::SetCurrentEditor(m_Context);
-
+		InitNodeEditor();
 
 		Node& bpNode = m_Nodes.emplace_back(m_NextID++, "BP Example", float4(1.0f, 0.5f, 0.5f, 1.0f));
 		bpNode.Inputs.emplace_back(m_NextID++, "InFlow", PinType::Flow);
@@ -32,15 +15,18 @@ namespace Odyssey::Rune
 		bpNode.Outputs.emplace_back(m_NextID++, "OutFlow", PinType::Flow);
 		bpNode.Outputs.emplace_back(m_NextID++, "Output", PinType::Float);
 
+		Node& bp2Node = m_Nodes.emplace_back(m_NextID++, "BP Example 2", float4(0.0f, 1.5f, 0.5f, 1.0f));
+		bp2Node.Inputs.emplace_back(m_NextID++, "InFlow", PinType::Flow);
+		bp2Node.Inputs.emplace_back(m_NextID++, "Input", PinType::Float);
+		bp2Node.Outputs.emplace_back(m_NextID++, "OutFlow", PinType::Flow);
+		bp2Node.Outputs.emplace_back(m_NextID++, "Output", PinType::Float);
+
 		Node& branchNode = m_Nodes.emplace_back(m_NextID++, "Branch Example", float4(1.0f, 1.0f, 1.0f, 1.0f));
 		branchNode.Type = NodeType::Tree;
 		branchNode.Inputs.emplace_back(m_NextID++, "", PinType::Flow);
 
 		// Build nodes
 		BuildNodes();
-
-		// Navigate to the node editor
-		ImguiExt::NavigateToContent();
 	}
 
 	Blueprint::~Blueprint()
@@ -56,12 +42,57 @@ namespace Odyssey::Rune
 	{
 		ImguiExt::SetCurrentEditor(m_Context);
 
-		ImguiExt::Begin("Blueprint");
+		ImguiExt::Begin(m_Name.c_str());
 
-		RuneUIBuilder builder;
-		builder.DrawNode(&m_Nodes[0]);
-		builder.DrawNode(&m_Nodes[1]);
+		m_Builder.DrawBlueprint(this);
+
+		if (ImguiExt::BeginCreate())
+		{
+			ImguiExt::PinId input, output;
+			if (ImguiExt::QueryNewLink(&input, &output))
+			{
+				if (input && output)
+				{
+					if (ImguiExt::AcceptNewItem())
+					{
+						m_Links.push_back(Link(m_NextID++, input.Get(), output.Get()));
+					}
+				}
+				else
+				{
+					ImguiExt::RejectNewItem();
+				}
+			}
+		}
+		ImguiExt::EndCreate();
+
 		ImguiExt::End();
+		ImguiExt::SetCurrentEditor(nullptr);
+	}
+
+	void Blueprint::InitNodeEditor()
+	{
+		// Init the node editor
+		ImguiExt::Config config;
+		config.SettingsFile = "Blueprints.json";
+		config.UserPointer = this;
+		config.LoadNodeSettings = [](ImguiExt::NodeId nodeId, char* data, void* userPointer)
+			{
+				Blueprint* blueprint = static_cast<Blueprint*>(userPointer);
+				return blueprint->LoadNodeSettings(nodeId.Get(), data);
+			};
+		config.SaveNodeSettings = [](ImguiExt::NodeId nodeId, const char* data, size_t size, ImguiExt::SaveReasonFlags reason, void* userPointer)
+			{
+				Blueprint* blueprint = static_cast<Blueprint*>(userPointer);
+				return blueprint->SaveNodeSettings(nodeId.Get(), data, size);
+			};
+
+		// Create the editor and set it as the current
+		m_Context = ImguiExt::CreateEditor(&config);
+		ImguiExt::SetCurrentEditor(m_Context);
+
+		// Navigate to the node editor
+		ImguiExt::NavigateToContent();
 	}
 
 	void Blueprint::BuildNodes()

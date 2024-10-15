@@ -2,18 +2,18 @@
 
 namespace Odyssey::Rune
 {
-	typedef uintptr_t LinkId;
+	typedef uint64_t LinkId;
 
 	struct Link
 	{
 	public:
 		LinkId ID;
-		int32_t StartPinID;
-		int32_t EndPinID;
+		uint64_t StartPinID;
+		uint64_t EndPinID;
 		float3 Color;
 
 	public:
-		Link(LinkId id, int32_t startPinID, int32_t endPinID)
+		Link(LinkId id, uint64_t startPinID, uint64_t endPinID)
 			: ID(id), StartPinID(startPinID), EndPinID(endPinID), Color(1.0f)
 		{
 

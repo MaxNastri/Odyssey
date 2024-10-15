@@ -1,5 +1,5 @@
 #include "AnimationWindow.h"
-#include "imgui.h"
+#include "GUIManager.h"
 
 namespace Odyssey
 {
@@ -15,10 +15,16 @@ namespace Odyssey
 
 	void AnimationWindow::Draw()
 	{
+		if (!Begin())
+			return;
+
 		bp.Update();
+
+		End();
 	}
 
 	void AnimationWindow::OnWindowClose()
 	{
+		GUIManager::DestroyDockableWindow(this);
 	}
 }

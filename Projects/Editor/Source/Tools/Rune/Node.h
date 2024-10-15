@@ -12,7 +12,7 @@ namespace Odyssey::Rune
 		Comment = 4,
 	};
 
-	typedef uintptr_t NodeId;
+	typedef uint64_t NodeId;
 
 	struct Node
 	{

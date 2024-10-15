@@ -1,4 +1,5 @@
 #include "RuneUIBuilder.h"
+#include "Blueprint.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_node_editor.h"
@@ -21,7 +22,23 @@ namespace Odyssey::Rune
         m_Header.TextureID = Renderer::AddImguiTexture(m_Header.Texture);
 	}
 
-	void RuneUIBuilder::Begin(NodeId id)
+    void RuneUIBuilder::DrawBlueprint(Blueprint* blueprint)
+    {
+        auto& nodes = blueprint->GetNodes();
+        for (Node& node : nodes)
+        {
+            DrawNode(&node);
+        }
+
+        auto& links = blueprint->GetLinks();
+        for (Link& link : links)
+        {
+            ImColor color = ImColor(link.Color.r, link.Color.g, link.Color.b, 1.0f);
+            ImguiExt::Link(link.ID, link.StartPinID, link.EndPinID, color, 2.0f);
+        }
+    }
+
+	void RuneUIBuilder::BeginNode(NodeId id)
 	{
         m_DrawingState.HasHeader = false;
         m_Header.Min = m_Header.Max = float2(0.0f);
@@ -30,31 +47,13 @@ namespace Odyssey::Rune
 
 		ImguiExt::BeginNode(id);
 
-		ImGui::PushID(id);
+		ImGui::PushID((int32_t)id);
         m_DrawingState.CurrentNodeID = id;
 
 		SetStage(Stage::Begin);
 	}
 
-    void RuneUIBuilder::DrawNode(Node* node)
-    {
-        switch (node->Type)
-        {
-            case NodeType::None:
-                return;
-            case NodeType::Blueprint:
-            case NodeType::Simple:
-                DrawSimpleNode(node);
-            case NodeType::Comment:
-                return;
-            case NodeType::Tree:
-                DrawTreeNode(node);
-            default:
-                break;
-        }
-    }
-
-	void RuneUIBuilder::End()
+	void RuneUIBuilder::EndNode()
 	{
         SetStage(Stage::End);
 
@@ -133,21 +132,13 @@ namespace Odyssey::Rune
 
         BeginPin(id, PinIO::Input);
 
-        ImGui::BeginHorizontal(id);
+        ImGui::BeginHorizontal((int32_t)id);
     }
 
     void RuneUIBuilder::EndInput()
     {
         ImGui::EndHorizontal();
         EndPin();
-    }
-
-    void RuneUIBuilder::Middle()
-    {
-        if (m_DrawingState.CurrentStage == Stage::Begin)
-            SetStage(Stage::Content);
-
-        SetStage(Stage::Middle);
     }
 
     void RuneUIBuilder::BeginOutput(PinId id)
@@ -164,13 +155,45 @@ namespace Odyssey::Rune
 
         BeginPin(id, PinIO::Output);
 
-        ImGui::BeginHorizontal(id);
+        ImGui::BeginHorizontal((int32_t)id);
     }
 
     void RuneUIBuilder::EndOutput()
     {
         ImGui::EndHorizontal();
         EndPin();
+    }
+
+    void RuneUIBuilder::BeginPin(PinId id, PinIO pinIO)
+    {
+        ImguiExt::BeginPin(id, pinIO == PinIO::Input ? ImguiExt::PinKind::Input : ImguiExt::PinKind::Output);
+    }
+
+    void RuneUIBuilder::EndPin()
+    {
+        ImguiExt::EndPin();
+
+        // #debug
+        // ImGui::GetWindowDrawList()->AddRectFilled(
+        //     ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 0, 0, 64));
+    }
+
+    void RuneUIBuilder::DrawNode(Node* node)
+    {
+        switch (node->Type)
+        {
+            case NodeType::None:
+                return;
+            case NodeType::Blueprint:
+            case NodeType::Simple:
+                DrawSimpleNode(node);
+            case NodeType::Comment:
+                return;
+            case NodeType::Tree:
+                DrawTreeNode(node);
+            default:
+                break;
+        }
     }
 
     void RuneUIBuilder::DrawSimpleNode(Node* node)
@@ -189,7 +212,7 @@ namespace Odyssey::Rune
             }
         }
 
-        Begin(node->ID);
+        BeginNode(node->ID);
 
         // Only blueprints draw a header
         if (isBlueprint)
@@ -215,7 +238,7 @@ namespace Odyssey::Rune
                     ImguiExt::BeginPin(output.ID, ImguiExt::PinKind::Output);
                     ImguiExt::PinPivotAlignment(ImVec2(1.0f, 0.5f));
                     ImguiExt::PinPivotSize(ImVec2(0, 0));
-                    ImGui::BeginHorizontal(output.ID);
+                    ImGui::BeginHorizontal((int32_t)output.ID);
                     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
                     if (!output.Name.empty())
                     {
@@ -307,7 +330,7 @@ namespace Odyssey::Rune
             EndOutput();
         }
 
-        End();
+        EndNode();
     }
 
     void RuneUIBuilder::DrawTreeNode(Node* node)
@@ -334,7 +357,7 @@ namespace Odyssey::Rune
         ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinRadius, 5.0f);
         ImguiExt::BeginNode(node->ID);
 
-        ImGui::BeginVertical(node->ID);
+        ImGui::BeginVertical((int32_t)node->ID);
         ImGui::BeginHorizontal("inputs");
         ImGui::Spring(0, padding * 2);
 
@@ -446,6 +469,14 @@ namespace Odyssey::Rune
                 contentRect.GetBR(),
                 IM_COL32(48, 128, 255, 100), 0.0f);
         }
+    }
+
+    void RuneUIBuilder::Middle()
+    {
+        if (m_DrawingState.CurrentStage == Stage::Begin)
+            SetStage(Stage::Content);
+
+        SetStage(Stage::Middle);
     }
 
     bool RuneUIBuilder::SetStage(Stage stage)
@@ -636,20 +667,6 @@ namespace Odyssey::Rune
         ImColor pinInnerColor = ImColor(Pin_Inner_Color.r, Pin_Inner_Color.g, Pin_Inner_Color.b, alpha);
 
         ImGui::Widgets::Icon(ImVec2(Pin_Icon_Size.x, Pin_Icon_Size.y), iconType, connected, pinColor, pinInnerColor);
-    }
-
-    void RuneUIBuilder::BeginPin(PinId id, PinIO pinIO)
-    {
-        ImguiExt::BeginPin(id, pinIO == PinIO::Input ? ImguiExt::PinKind::Input : ImguiExt::PinKind::Output);
-    }
-
-    void RuneUIBuilder::EndPin()
-    {
-        ImguiExt::EndPin();
-
-        // #debug
-        // ImGui::GetWindowDrawList()->AddRectFilled(
-        //     ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 0, 0, 64));
     }
 
     float3 RuneUIBuilder::GetIconColor(PinType pinType)
