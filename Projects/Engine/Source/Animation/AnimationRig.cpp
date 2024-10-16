@@ -1,6 +1,5 @@
 #include "AnimationRig.h"
 #include "SourceModel.h"
-#include "FBXModelImporter.h"
 #include "AssetManager.h"
 
 namespace Odyssey

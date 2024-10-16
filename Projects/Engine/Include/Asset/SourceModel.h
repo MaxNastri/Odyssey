@@ -1,6 +1,5 @@
 #pragma once
 #include "Asset.h"
-#include "FBXModelImporter.h"
 #include "GLTFAssetImporter.h"
 
 namespace Odyssey

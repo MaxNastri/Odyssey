@@ -24,9 +24,14 @@ namespace Odyssey::Rune
 		bp2Node->Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
 		bp2Node->Outputs.emplace_back(GetNextID(), "Output", PinType::Float);
 
+		auto& stringNode = m_Nodes.emplace_back(std::make_shared<SimpleNode>(GetNextID(), ""));
+		stringNode->Outputs.emplace_back(GetNextID(), "Message", PinType::String);
+
 		auto& treeNode = m_Nodes.emplace_back(std::make_shared<TreeNode>(GetNextID(), "Tree Example"));
 		treeNode->Inputs.emplace_back(GetNextID(), "InFlow", PinType::Flow);
 		treeNode->Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
+
+		auto& groupNode = m_Nodes.emplace_back(std::make_shared<GroupNode>(GetNextID(), "Group Example"));
 
 		// Build nodes
 		BuildNodes();

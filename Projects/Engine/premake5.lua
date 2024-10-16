@@ -53,7 +53,6 @@ project "Odyssey.Engine"
         "%{wks.location}/Vendor/Vulkan/Include/",
         "%{wks.location}/Vendor/efsw/include/efsw",
         "%{wks.location}/Vendor/entt/include/",
-        "%{wks.location}/Vendor/FBX/include/",
         "%{wks.location}/Vendor/tinygltf/Include/",
     }
 
@@ -73,7 +72,6 @@ project "Odyssey.Engine"
         "spirv-cross-reflect.lib",
         "spirv-cross-util.lib",
         "efsw-static-debug.lib",
-        "libfbxsdk.lib",
     }
 
     
@@ -81,7 +79,7 @@ project "Odyssey.Engine"
 
     filter { "system:windows" }
         prebuildcommands {
-			'{COPYFILE} "%{wks.location}/Vendor/glfw3/lib/glfw3.lib" "%{cfg.targetdir}"',
+			'{COPYFILE} "%{wks.location}/Vendor/glfw3/lib/Debug/glfw3.lib" "%{cfg.targetdir}"',
         }
 	filter {}
 
@@ -92,7 +90,6 @@ project "Odyssey.Engine"
         "_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING",
         "VK_NO_PROTOTYPES",
         "IMGUI_DEFINE_MATH_OPERATORS",
-        "FBXSDK_SHARED",
     }
 
     filter "action:vs*"

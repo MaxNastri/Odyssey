@@ -64,18 +64,15 @@ project "Odyssey.Editor"
         "spirv-cross-reflect.lib",
         "spirv-cross-util.lib",
         "efsw-static-debug.lib",
-        "libfbxsdk",
     }
     
     defines {
-        "FBXSDK_SHARED",
         "ODYSSEY_EDITOR",
     }
 
     filter { "system:windows" }
         postbuildcommands {
             '{COPYFILE} "%{wks.location}/Vendor/Coral/Build/Debug/Coral.Managed.dll", "%{cfg.targetdir}"',
-            '{COPYFILE} "%{wks.location}/Vendor/FBX/Lib/Debug/libfbxsdk.dll", "%{cfg.targetdir}"',
             '{COPYFILE} "%{wks.location}/Vendor/Coral/Coral.Managed/Coral.Managed.runtimeconfig.json", "%{cfg.targetdir}"',
         }
 

@@ -17,7 +17,7 @@ Entries:
     GUID: 14856991710712284328
   - Name: Cube
     Type: Odyssey.SourceModel
-    Path: 'Meshes/Source/Cube.fbx'
+    Path: 'Meshes/Source/Cube.glb'
     GUID: 17688292389720890448
   - Name: Cube
     Type: Odyssey.Mesh

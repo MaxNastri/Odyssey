@@ -4651,13 +4651,13 @@ bool ed::CreateItemAction::Process(const Control& control)
         m_lastStartPinKind = candidate.m_StartPin->m_Kind;
         m_lastStartPivot = candidate.m_StartPin->m_Pivot;
         m_lastStartDir = candidate.m_StartPin->m_Dir;
-        m_lastStartPinCorners = candidate.m_StartPin->m_Corners;
+        m_lastStartPinCorners = (float)candidate.m_StartPin->m_Corners;
         m_lastStartPinStrength = candidate.m_StartPin->m_Strength;
 
         m_lastEndPinKind = candidate.m_EndPin->m_Kind;
         m_lastEndPivot = candidate.m_EndPin->m_Pivot;
         m_lastEndDir = candidate.m_EndPin->m_Dir;
-        m_lastEndPinCorners = candidate.m_EndPin->m_Corners;
+        m_lastEndPinCorners = (float)candidate.m_EndPin->m_Corners;
         m_lastEndPinStrength = candidate.m_EndPin->m_Strength;
 #endif
     }
@@ -4900,13 +4900,13 @@ void ed::CreateItemAction::DrawLastLink()
     ed::Pin startPin(Editor, 0, m_lastStartPinKind);
     startPin.m_Pivot = m_lastStartPivot;
     startPin.m_Dir = m_lastStartDir;
-    startPin.m_Corners = m_lastStartPinCorners;
+    startPin.m_Corners = (int)m_lastStartPinCorners;
     startPin.m_Strength = m_lastStartPinStrength;
 
     ed::Pin endPin(Editor, 0, m_lastEndPinKind);
     endPin.m_Pivot = m_lastEndPivot;
     endPin.m_Dir = m_lastEndDir;
-    endPin.m_Corners = m_lastEndPinCorners;
+    endPin.m_Corners = (int)m_lastEndPinCorners;
     endPin.m_Strength = m_lastEndPinStrength;
 
     ed::Link candidate(Editor, 0);

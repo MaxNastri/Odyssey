@@ -24,11 +24,6 @@ namespace Odyssey::Rune
 
 	public:
 		virtual void Draw(RuneUIBuilder* builder) = 0;
-
-	protected:
-		void DrawPin(const Pin& pin, bool connected, float alpha);
-		float3 GetPinColor(PinType pinType);
-
 	};
 
 	struct BlueprintNode : Node
@@ -38,6 +33,28 @@ namespace Odyssey::Rune
 
 	public:
 		virtual void Draw(RuneUIBuilder* builder) override;
+	};
+
+	struct SimpleNode : Node
+	{
+	public:
+		SimpleNode(NodeId id, std::string_view name, float4 color = float4(1.0f));
+
+	public:
+		virtual void Draw(RuneUIBuilder* builder) override;
+	};
+
+	struct GroupNode : Node
+	{
+	public:
+		GroupNode(NodeId id, std::string_view name, float4 color = float4(1.0f));
+
+	public:
+		virtual void Draw(RuneUIBuilder* builder) override;
+
+	private:
+		inline static constexpr float Group_Alpha = 0.75f;
+		inline static constexpr float Group_Background_Color = 0.75f;
 	};
 
 	struct TreeNode : Node

@@ -23,7 +23,6 @@ namespace Odyssey
 		StringDrawer m_GUIDDrawer;
 		StringDrawer m_NameDrawer;
 		StringDrawer m_TypeDrawer;
-		StringDrawer m_PixelDataGUID;
 		AssetFieldDrawer m_SourceAssetDrawer;
 
 	};
