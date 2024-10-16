@@ -31,43 +31,42 @@ project "Odyssey.Editor"
         "Source/**.hlsl",
     }
 
-    externalincludedirs {
-        "%{wks.location}/Projects/Engine/Include",
-        "%{wks.location}/Projects/Engine/Include/**",
-        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral",
-        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**",
-        "%{wks.location}/Vendor/Vulkan/Include/",
-        "%{wks.location}/Vendor/efsw/include/efsw",
-        "%{wks.location}/Vendor/entt/include/",
-        "%{wks.location}/Vendor/FBX/include/",
-        "%{wks.location}/Vendor/tinygltf/Include/",
-    }
-    
     includedirs {
         "Source",
         "Source/**",
     }
 
+    externalincludedirs {
+        "%{wks.location}/Projects/Engine/Include",
+        "%{wks.location}/Projects/Engine/Include/**",
+        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral",
+        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**",
+        --"%{wks.location}/Vendor/Vulkan/Include/",
+        "%{wks.location}/Vendor/efsw/include/efsw",
+        "%{wks.location}/Vendor/entt/include/",
+        "%{wks.location}/Vendor/tinygltf/Include/",
+    }
+
     libdirs {
         "%{cfg.targetdir}",
-        "%{wks.location}/Vendor/Vulkan/Lib/",
+        --"%{wks.location}/Vendor/Vulkan/Lib/",
         "%{wks.location}/Vendor/efsw/lib/",
-        "%{wks.location}/Vendor/FBX/Lib/Debug",
     }
 
     links {
         "Odyssey.Engine.lib",
-        "shaderc_combined.lib",
-        "spirv-cross-core.lib",
-        "spirv-cross-glsl.lib",
-        "spirv-cross-hlsl.lib",
-        "spirv-cross-reflect.lib",
-        "spirv-cross-util.lib",
+        --"shaderc_combined.lib",
+        --"spirv-cross-core.lib",
+        --"spirv-cross-glsl.lib",
+        --"spirv-cross-hlsl.lib",
+        --"spirv-cross-reflect.lib",
+        --"spirv-cross-util.lib",
         "efsw-static-debug.lib",
     }
     
     defines {
         "ODYSSEY_EDITOR",
+        "VK_NO_PROTOTYPES"
     }
 
     filter { "system:windows" }
@@ -84,9 +83,9 @@ project "Odyssey.Editor"
         runtime "Debug"
 		symbols "On"
         defines { "ODYSSEY_DEBUG" }
-	filter {}
-
+        ProcessDependencies("Debug")
+        
     filter { "configurations:Release" }
         runtime "Release"
         defines { "ODYSSEY_RELEASE" }
-	filter {}
+        ProcessDependencies("Release")

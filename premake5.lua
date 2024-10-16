@@ -1,3 +1,4 @@
+include "Dependencies.lua"
 premake.api.addAllowed("debuggertype", "NativeWithManagedCore")
 
 workspace "Odyssey"

@@ -48,9 +48,11 @@ project "Odyssey.Engine"
         "%{wks.location}/Vendor/Coral/NetCore/",
     }
 
+    IncludeDependencies()
+
     externalincludedirs {
-        "%{wks.location}/Vendor/glfw3/",
-        "%{wks.location}/Vendor/Vulkan/Include/",
+        --"%{wks.location}/Vendor/glfw3/",
+        --"%{wks.location}/Vendor/Vulkan/Include/",
         "%{wks.location}/Vendor/efsw/include/efsw",
         "%{wks.location}/Vendor/entt/include/",
         "%{wks.location}/Vendor/tinygltf/Include/",
@@ -58,30 +60,23 @@ project "Odyssey.Engine"
 
     libdirs {
         "%{cfg.targetdir}",
-        "%{wks.location}/Vendor/Vulkan/Lib/",
+        --"%{wks.location}/Vendor/Vulkan/Lib/",
         "%{wks.location}/Vendor/efsw/lib/",
-        "%{wks.location}/Vendor/FBX/Lib/Debug",
     }
 
     links {
-        "glfw3.lib",
-        "shaderc_combined.lib",
-        "spirv-cross-core.lib",
-        "spirv-cross-glsl.lib",
-        "spirv-cross-hlsl.lib",
-        "spirv-cross-reflect.lib",
-        "spirv-cross-util.lib",
+        --"glfw3.lib",
+        --"shaderc_combined.lib",
+        --"spirv-cross-core.lib",
+        --"spirv-cross-glsl.lib",
+        --"spirv-cross-hlsl.lib",
+        --"spirv-cross-reflect.lib",
+        --"spirv-cross-util.lib",
         "efsw-static-debug.lib",
     }
 
     
 	filter "files:Source/**.c"
-
-    filter { "system:windows" }
-        prebuildcommands {
-			'{COPYFILE} "%{wks.location}/Vendor/glfw3/lib/Debug/glfw3.lib" "%{cfg.targetdir}"',
-        }
-	filter {}
 
     defines {
         "GLM_FORCE_DEPTH_ZERO_TO_ONE",
