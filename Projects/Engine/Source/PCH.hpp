@@ -24,8 +24,6 @@
 	#include <Windows.h>
 #endif
 
-#include "coreclr_delegates.h"
-#include "hostfxr.h"
 #include "glm.h"
 #include "Utils.h"
 #include "Globals.h"

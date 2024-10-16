@@ -4,4 +4,4 @@
 	branch = main
 [submodule "Vendor/efsw"]
 	path = Vendor/efsw
-	url = https://github.com/Kold011/efsw.git
+	url = https://github.com/Kold011/efsw

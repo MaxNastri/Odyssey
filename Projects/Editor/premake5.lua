@@ -6,23 +6,18 @@ project "Odyssey.Editor"
     language "C++"
     cppdialect "C++20"
     kind "ConsoleApp"
+    architecture "x86_64"
     staticruntime "Off"
     debuggertype "NativeWithManagedCore"
     dependson "Odyssey.Engine"
 
-    architecture "x86_64"
-    
     flags { "MultiProcessorCompile" }
     
     pchheader "PCH.hpp"
     pchsource "Source/PCH.cpp"
 
     forceincludes { "PCH.hpp" }
-
-    filter { "action:xcode4" }
-        pchheader "Source/PCH.hpp"
-    filter { }
-
+    
     files {
         "Source/**.h",
         "Source/**.inl",
@@ -39,34 +34,14 @@ project "Odyssey.Editor"
     externalincludedirs {
         "%{wks.location}/Projects/Engine/Include",
         "%{wks.location}/Projects/Engine/Include/**",
-        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral",
-        "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral/**",
-        --"%{wks.location}/Vendor/Vulkan/Include/",
-        "%{wks.location}/Vendor/efsw/include/efsw",
-        "%{wks.location}/Vendor/entt/include/",
-        "%{wks.location}/Vendor/tinygltf/Include/",
     }
-
-    libdirs {
-        "%{cfg.targetdir}",
-        --"%{wks.location}/Vendor/Vulkan/Lib/",
-        "%{wks.location}/Vendor/efsw/lib/",
-    }
-
+    
     links {
-        "Odyssey.Engine.lib",
-        --"shaderc_combined.lib",
-        --"spirv-cross-core.lib",
-        --"spirv-cross-glsl.lib",
-        --"spirv-cross-hlsl.lib",
-        --"spirv-cross-reflect.lib",
-        --"spirv-cross-util.lib",
-        "efsw-static-debug.lib",
+        "Odyssey.Engine",
     }
     
     defines {
-        "ODYSSEY_EDITOR",
-        "VK_NO_PROTOTYPES"
+        "ODYSSEY_EDITOR"
     }
 
     filter { "system:windows" }
@@ -76,7 +51,7 @@ project "Odyssey.Editor"
         }
 
     filter "action:vs*"
-        linkoptions { "/ignore:4098", "/ignore:4099" } -- NOTE(Peter): Disable no PDB found warning
+        linkoptions { "/ignore:4098", "/ignore:4099" } -- Disable no PDB found warning
         disablewarnings { "4068" } -- Disable "Unknown #pragma mark warning"
         
     filter { "configurations:Debug" }

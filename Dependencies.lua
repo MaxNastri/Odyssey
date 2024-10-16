@@ -42,15 +42,27 @@ VULKAN_SDK = os.getenv("VULKAN_SDK")
 ]]--
 
 Dependencies = {
+	Coral = {
+		LibName = "Coral.Native",
+		LibDir = "%{wks.location}/Vendor/Coral/Build/%{cfg.buildcfg}/",
+		IncludeDir = "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral",
+	},
 	GLFW = {
 		LibName = "glfw3",
 		LibDir = "%{wks.location}/Vendor/GLFW/bin/%{cfg.buildcfg}/",
-		IncludeDir = "%{wks.location}/Vendor/GLFW/",
+		IncludeDir = "%{wks.location}/Vendor/GLFW",
 	},
-	Vulkan = {
-		LibName = "glfw3",
-		LibDir = "%{wks.location}/Vendor/Vulkan/Lib/%{cfg.buildcfg}/",
-		IncludeDir = "%{wks.location}/Vendor/Vulkan/Include/",
+	EFSW = {
+		LibName = "efsw-static",
+		DebugLibName = "efsw-static-debug",
+		LibDir = "%{wks.location}/Vendor/efsw/Lib/%{cfg.buildcfg}/",
+		IncludeDir = "%{wks.location}/Vendor/efsw/include/efsw",
+	},
+	Entt = {
+		IncludeDir = "%{wks.location}/Vendor/entt/include",
+	},
+	TinyGLTF = {
+		IncludeDir = "%{wks.location}/Vendor/tinygltf/Include",
 	},
 	ShaderC = {
 		LibName = "shaderc_combined",
@@ -69,6 +81,11 @@ Dependencies = {
 	},
 	SPIRVCrossUtil = {
 		LibName = "spirv-cross-util",
+	},
+	Vulkan = {
+		LibName = "glfw3",
+		LibDir = "%{wks.location}/Vendor/Vulkan/Lib/%{cfg.buildcfg}/",
+		IncludeDir = "%{wks.location}/Vendor/Vulkan/Include",
 	},
 }
 
