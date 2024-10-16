@@ -12,17 +12,21 @@ namespace Odyssey::Rune
 	{
 		InitNodeEditor();
 
-		Node& bpNode = m_Nodes.emplace_back(GetNextID(), "BP Example", float4(1.0f, 0.5f, 0.5f, 1.0f));
-		bpNode.Inputs.emplace_back(GetNextID(), "InFlow", PinType::Flow);
-		bpNode.Inputs.emplace_back(GetNextID(), "Input", PinType::Float);
-		bpNode.Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
-		bpNode.Outputs.emplace_back(GetNextID(), "Output", PinType::Float);
+		auto& blueprintNode = m_Nodes.emplace_back(std::make_shared<BlueprintNode>(GetNextID(), "BP Example", float4(1.0f, 0.5f, 0.5f, 1.0f)));
+		blueprintNode->Inputs.emplace_back(GetNextID(), "InFlow", PinType::Flow);
+		blueprintNode->Inputs.emplace_back(GetNextID(), "Input", PinType::Float);
+		blueprintNode->Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
+		blueprintNode->Outputs.emplace_back(GetNextID(), "Output", PinType::Float);
 
-		Node& bp2Node = m_Nodes.emplace_back(GetNextID(), "BP Example 2", float4(0.0f, 1.5f, 0.5f, 1.0f));
-		bp2Node.Inputs.emplace_back(GetNextID(), "InFlow", PinType::Flow);
-		bp2Node.Inputs.emplace_back(GetNextID(), "Input", PinType::Float);
-		bp2Node.Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
-		bp2Node.Outputs.emplace_back(GetNextID(), "Output", PinType::Float);
+		auto& bp2Node = m_Nodes.emplace_back(std::make_shared<BlueprintNode>(GetNextID(), "BP Example 2", float4(0.0f, 1.5f, 0.5f, 1.0f)));
+		bp2Node->Inputs.emplace_back(GetNextID(), "InFlow", PinType::Flow);
+		bp2Node->Inputs.emplace_back(GetNextID(), "Input", PinType::Float);
+		bp2Node->Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
+		bp2Node->Outputs.emplace_back(GetNextID(), "Output", PinType::Float);
+
+		auto& treeNode = m_Nodes.emplace_back(std::make_shared<TreeNode>(GetNextID(), "Tree Example"));
+		treeNode->Inputs.emplace_back(GetNextID(), "InFlow", PinType::Flow);
+		treeNode->Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
 
 		// Build nodes
 		BuildNodes();
@@ -103,8 +107,8 @@ namespace Odyssey::Rune
 
 	void Blueprint::BuildNodes()
 	{
-		for (Node& node : m_Nodes)
-			BuildNode(&node);
+		for (auto& node : m_Nodes)
+			BuildNode(node.get());
 	}
 
 	void Blueprint::BuildNode(Node* node)
@@ -166,8 +170,11 @@ namespace Odyssey::Rune
 				{
 					if (ImguiExt::AcceptNewItem())
 					{
+						startPin->Linked = true;
+						endPin->Linked = true;
+
 						Link& newLink = m_Links.emplace_back(Link(GetNextID(), start.Get(), end.Get()));
-						newLink.Color = RuneUIBuilder::GetIconColor(startPin->Type);
+						newLink.Color = startPin->GetColor();
 					}
 				}
 			}
@@ -207,7 +214,7 @@ namespace Odyssey::Rune
 		{
 			if (ImguiExt::AcceptDeletedItem())
 			{
-				auto foundID = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeID](Node& node) { return node.ID == nodeID.Get(); });
+				auto foundID = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeID](auto& node) { return node->ID == nodeID.Get(); });
 				if (foundID != m_Nodes.end())
 					m_Nodes.erase(foundID);
 			}
@@ -220,7 +227,15 @@ namespace Odyssey::Rune
 			{
 				auto foundID = std::find_if(m_Links.begin(), m_Links.end(), [linkID](Link& link) { return link.ID == linkID.Get(); });
 				if (foundID != m_Links.end())
+				{
+					if (Pin* startPin = FindPin((*foundID).StartPinID))
+						startPin->Linked = false;
+
+					if (Pin* endPin = FindPin((*foundID).EndPinID))
+						endPin->Linked = false;
+
 					m_Links.erase(foundID);
+				}
 			}
 		}
 	}
@@ -250,7 +265,7 @@ namespace Odyssey::Rune
 			if (node)
 			{
 				ImGui::Text("ID: %d3", node->ID);
-				ImGui::Text("Type: %s", node->Type == NodeType::Blueprint ? "Blueprint" : (node->Type == NodeType::Tree ? "Tree" : "Comment"));
+				ImGui::Text("Name: %s", node->Name);
 				ImGui::Text("Inputs: %d3", (int)node->Inputs.size());
 				ImGui::Text("Outputs: %d3", (int)node->Outputs.size());
 			}
@@ -306,10 +321,10 @@ namespace Odyssey::Rune
 
 	Node* Blueprint::FindNode(NodeId nodeID)
 	{
-		for (Node& node : m_Nodes)
+		for (auto& node : m_Nodes)
 		{
-			if (node.ID == nodeID)
-				return &node;
+			if (node->ID == nodeID)
+				return node.get();
 		}
 
 		return nullptr;
@@ -331,15 +346,15 @@ namespace Odyssey::Rune
 		if (!pinID)
 			return nullptr;
 
-		for (Node& node : m_Nodes)
+		for (auto& node : m_Nodes)
 		{
-			for (Pin& input : node.Inputs)
+			for (Pin& input : node->Inputs)
 			{
 				if (input.ID == pinID)
 					return &input;
 			}
 
-			for (Pin& output : node.Outputs)
+			for (Pin& output : node->Outputs)
 			{
 				if (output.ID == pinID)
 					return &output;

@@ -1,5 +1,5 @@
 #pragma once
-#include "Node.h"
+#include "RuneNodes.h"
 #include "Link.h"
 #include "RuneUIBuilder.h"
 
@@ -21,7 +21,7 @@ namespace Odyssey::Rune
 		void Update();
 
 	public:
-		std::vector<Node>& GetNodes() { return m_Nodes; }
+		std::vector<std::shared_ptr<Node>>& GetNodes() { return m_Nodes; }
 		std::vector<Link>& GetLinks() { return m_Links; }
 		std::string_view GetName() { return m_Name; }
 
@@ -50,7 +50,7 @@ namespace Odyssey::Rune
 		RuneUIBuilder m_Builder;
 		ImguiExt::EditorContext* m_Context = nullptr;
 		std::string m_Name;
-		std::vector<Node> m_Nodes;
+		std::vector<std::shared_ptr<Node>> m_Nodes;
 		std::vector<Link> m_Links;
 		uint64_t m_NextID = 1;
 		bool m_CreatingNewNode = false;
