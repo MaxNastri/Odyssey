@@ -75,10 +75,8 @@ project "Odyssey.Engine"
         "efsw-static-debug.lib",
     }
 
-    
-	filter "files:Source/**.c"
-
     defines {
+        "CORAL_WINDOWS",
         "GLM_FORCE_DEPTH_ZERO_TO_ONE",
         "GLM_FORCE_LEFT_HANDED",
         "YAML_CPP_STATIC_DEFINE",
@@ -91,9 +89,6 @@ project "Odyssey.Engine"
         linkoptions { "/ignore:4099", "/ignore:4006" } -- NOTE(Peter): Disable no PDB found warning
         disablewarnings { "4068" } -- Disable "Unknown #pragma mark warning"
         
-    filter { "system:windows" }
-		defines { "CORAL_WINDOWS" }
-
     filter { "configurations:Debug" }
         runtime "Debug"
         symbols "On"
