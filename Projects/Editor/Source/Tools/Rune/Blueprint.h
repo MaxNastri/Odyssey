@@ -56,9 +56,6 @@ namespace Odyssey::Rune
 		bool m_CreatingNewNode = false;
 
 	private:
-		bool m_FirstFrame = true;
-		int m_NextLinkId = 0;
-	private:
 		inline static constexpr float4 Reject_Link_Color = float4(1.0f, 0.0f, 0.0f, 1.0f);
 		inline static constexpr float4 Incompatible_Link_Color = float4(0.17f, 0.12f, 0.12f, 0.70f);
 		inline static constexpr float4 New_Node_Text_Color = float4(0.12f, 0.17f, 0.12f, 0.70f);

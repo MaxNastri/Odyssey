@@ -76,23 +76,6 @@ namespace Odyssey::Rune
 		ImguiExt::SetCurrentEditor(nullptr);
 	}
 
-	void ImGuiEx_BeginColumn()
-	{
-		ImGui::BeginGroup();
-	}
-
-	void ImGuiEx_NextColumn()
-	{
-		ImGui::EndGroup();
-		ImGui::SameLine();
-		ImGui::BeginGroup();
-	}
-
-	void ImGuiEx_EndColumn()
-	{
-		ImGui::EndGroup();
-	}
-
 	void Blueprint::InitNodeEditor()
 	{
 		// Init the node editor
@@ -159,6 +142,12 @@ namespace Odyssey::Rune
 				if (startPin == endPin)
 				{
 					// Reject connecting a pin to itself
+					ImguiExt::RejectNewItem(Reject_Link_Color, 2.0f);
+				}
+				else if (startPin->Node == endPin->Node)
+				{
+					// Reject connecting pins within the same node
+					m_Builder.DrawLabel("x Incompatible Node", Incompatible_Link_Color);
 					ImguiExt::RejectNewItem(Reject_Link_Color, 2.0f);
 				}
 				else if (startPin->IO == endPin->IO)
@@ -238,16 +227,81 @@ namespace Odyssey::Rune
 
 	void Blueprint::CheckContextMenus()
 	{
-		ImguiExt::NodeId contextNode;
+		static ImguiExt::NodeId contextNode;
+		static ImguiExt::PinId contextPin;
+		static ImguiExt::LinkId contextLink;
 
 		if (ImguiExt::ShowNodeContextMenu(&contextNode))
 			ImGui::OpenPopup("Node Context Menu");
-		else if (ImguiExt::ShowNodeContextMenu(&contextNode))
+		else if (ImguiExt::ShowPinContextMenu(&contextPin))
 			ImGui::OpenPopup("Pin Context Menu");
-		else if (ImguiExt::ShowNodeContextMenu(&contextNode))
+		else if (ImguiExt::ShowLinkContextMenu(&contextLink))
 			ImGui::OpenPopup("Link Context Menu");
 		else if (ImguiExt::ShowBackgroundContextMenu())
 			ImGui::OpenPopup("Create New Node");
+
+		if (ImGui::BeginPopup("Node Context Menu"))
+		{
+			Node* node = FindNode(contextNode.Get());
+
+			ImGui::TextUnformatted("Node Context Menu");
+			ImGui::Separator();
+
+			if (node)
+			{
+				ImGui::Text("ID: %d3", node->ID);
+				ImGui::Text("Type: %s", node->Type == NodeType::Blueprint ? "Blueprint" : (node->Type == NodeType::Tree ? "Tree" : "Comment"));
+				ImGui::Text("Inputs: %d3", (int)node->Inputs.size());
+				ImGui::Text("Outputs: %d3", (int)node->Outputs.size());
+			}
+
+			ImGui::Separator();
+			if (ImGui::MenuItem("Delete"))
+				ed::DeleteNode(contextNode);
+			ImGui::EndPopup();
+		}
+
+		if (ImGui::BeginPopup("Pin Context Menu"))
+		{
+			Pin* pin = FindPin(contextPin.Get());
+
+			ImGui::TextUnformatted("Pin Context Menu");
+			ImGui::Separator();
+			if (pin)
+			{
+				ImGui::Text("ID: %d3", pin->ID);
+				if (pin->Node)
+					ImGui::Text("Node: %d3", pin->Node->ID);
+				else
+					ImGui::Text("Node: %s", "<none>");
+			}
+			else
+				ImGui::Text("Unknown pin: %d3", contextPin);
+
+			ImGui::EndPopup();
+		}
+
+		if (ImGui::BeginPopup("Link Context Menu"))
+		{
+			Link* link = FindLink(contextLink.Get());
+
+			ImGui::TextUnformatted("Link Context Menu");
+			ImGui::Separator();
+			if (link)
+			{
+				ImGui::Text("ID: %d3", link->ID);
+				ImGui::Text("From: %d3", link->StartPinID);
+				ImGui::Text("To: %d3", link->EndPinID);
+			}
+			else
+				ImGui::Text("Unknown link: %d3", contextLink);
+
+			ImGui::Separator();
+			if (ImGui::MenuItem("Delete"))
+				ed::DeleteLink(contextLink);
+
+			ImGui::EndPopup();
+		}
 	}
 
 	Node* Blueprint::FindNode(NodeId nodeID)
