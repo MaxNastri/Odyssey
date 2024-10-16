@@ -31,16 +31,20 @@ namespace Odyssey::Rune
 		void BuildNode(Node* node);
 
 	private:
-		void UpdateCreation();
-		void UpdateDeletion();
+		void CheckNewLinks();
+		void CheckNewNodes();
+		void CheckDeletions();
+		void CheckContextMenus();
 
 	private:
 		Node* FindNode(NodeId nodeID);
 		Link* FindLink(LinkId linkID);
+		Pin* FindPin(PinId pinID);
 
 	private:
 		size_t LoadNodeSettings(NodeId nodeId, char* data);
 		bool SaveNodeSettings(NodeId nodeId, const char* data, size_t size);
+		uint64_t GetNextID() { return m_NextID++; }
 
 	private:
 		RuneUIBuilder m_Builder;
@@ -48,6 +52,15 @@ namespace Odyssey::Rune
 		std::string m_Name;
 		std::vector<Node> m_Nodes;
 		std::vector<Link> m_Links;
-		uint64_t m_NextID = 0;
+		uint64_t m_NextID = 1;
+		bool m_CreatingNewNode = false;
+
+	private:
+		bool m_FirstFrame = true;
+		int m_NextLinkId = 0;
+	private:
+		inline static constexpr float4 Reject_Link_Color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+		inline static constexpr float4 Incompatible_Link_Color = float4(0.17f, 0.12f, 0.12f, 0.70f);
+		inline static constexpr float4 New_Node_Text_Color = float4(0.12f, 0.17f, 0.12f, 0.70f);
 	};
 }

@@ -38,6 +38,43 @@ namespace Odyssey::Rune
         }
     }
 
+    void RuneUIBuilder::DrawLabel(const char* label, float4 color)
+    {
+        ImGui::SetCursorPosY(ImGui::GetCursorPosY() - ImGui::GetTextLineHeight());
+        float2 size = ImGui::CalcTextSize(label);
+        
+        float2 padding = ImGui::GetStyle().FramePadding;
+        float2 spacing = ImGui::GetStyle().ItemSpacing;
+        float2 cursorPos = ImGui::GetCursorPos();
+        float2 cursorScreenPos = ImGui::GetCursorScreenPos();
+        float2 offset = float2(spacing.x, -spacing.y);
+
+        ImGui::SetCursorPos(cursorPos + offset);
+        
+        float2 rectMin = cursorScreenPos - padding + float2(spacing.x, 0.0f);
+        float2 rectMax = cursorScreenPos + size + float2(spacing.x + padding.x, 0.0f);
+        
+        auto drawList = ImGui::GetWindowDrawList();
+        drawList->AddRectFilled(rectMin, rectMax, ImColor(color.r, color.g, color.b, color.a), size.y * 0.15f);
+        ImGui::TextUnformatted(label);
+    }
+
+    float3 RuneUIBuilder::GetIconColor(PinType pinType)
+    {
+        switch (pinType)
+        {
+            default:
+            case PinType::Flow:     return float3(1.0f, 1.0f, 1.0f);
+            case PinType::Bool:     return float3(0.86f, 0.18f, 0.18f);
+            case PinType::Int:      return float3(0.26f, 0.79f, 0.61f);
+            case PinType::Float:    return float3(0.57f, 0.88f, 0.29f);
+            case PinType::String:   return float3(0.48f, 0.08f, 0.6f);
+            case PinType::Object:   return float3(0.2f, 0.59f, 0.84f);
+            case PinType::Function: return float3(0.86f, 0.0f, 0.72f);
+            case PinType::Delegate: return float3(1.0f, 0.18f, 0.18f);
+        }
+    }
+
 	void RuneUIBuilder::BeginNode(NodeId id)
 	{
         m_DrawingState.HasHeader = false;
@@ -73,10 +110,8 @@ namespace Odyssey::Rune
                     (m_Header.Max.x - m_Header.Min.x) / (float)(4.0f * m_Header.Texture->GetWidth()),
                     (m_Header.Max.y - m_Header.Min.y) / (float)(4.0f * m_Header.Texture->GetHeight()));
 
-                float2 fMin = m_Header.Min - float2(8 - halfBorderWidth, 4 - halfBorderWidth);
-                float2 fMax = m_Header.Max + float2(8 - halfBorderWidth, 0);
-                ImVec2 min = ImVec2(fMin.x, fMin.y);
-                ImVec2 max = ImVec2(fMax.x, fMax.y);
+                float2 min = m_Header.Min - float2(8.0f - halfBorderWidth, 4.0f - halfBorderWidth);
+                float2 max = m_Header.Max + float2(8.0f - halfBorderWidth, 0.0f);
                 ImVec2 uvMin = ImVec2(0.0f, 0.0f);
 #if IMGUI_VERSION_NUM > 18101
                 ImDrawFlags drawFlags = ImDrawFlags_RoundCornersTop;
@@ -631,7 +666,7 @@ namespace Odyssey::Rune
         using namespace ImGui::Widgets;
 
         IconType iconType;
-        float4  color = float4(GetIconColor(pin.Type), alpha);
+        float4 color = float4(GetIconColor(pin.Type), alpha);
         
         switch (pin.Type)
         {
@@ -669,19 +704,4 @@ namespace Odyssey::Rune
         ImGui::Widgets::Icon(ImVec2(Pin_Icon_Size.x, Pin_Icon_Size.y), iconType, connected, pinColor, pinInnerColor);
     }
 
-    float3 RuneUIBuilder::GetIconColor(PinType pinType)
-    {
-        switch (pinType)
-        {
-            default:
-            case PinType::Flow:     return float3(1.0f, 1.0f, 1.0f);
-            case PinType::Bool:     return float3(0.86f, 0.18f, 0.18f);
-            case PinType::Int:      return float3(0.26f, 0.79f, 0.61f);
-            case PinType::Float:    return float3(0.57f, 0.88f, 0.29f);
-            case PinType::String:   return float3(0.48f, 0.08f, 0.6f);
-            case PinType::Object:   return float3(0.2f, 0.59f, 0.84f);
-            case PinType::Function: return float3(0.86f, 0.0f, 0.72f);
-            case PinType::Delegate: return float3(1.0f, 0.18f, 0.18f);
-        }
-    }
 }

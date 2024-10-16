@@ -35,6 +35,11 @@ namespace Odyssey
         return Window::GetWindowPos() + glm::vec2(mouseX, mouseY);
     }
 
+    bool Input::IsMouseDragging()
+    {
+        return GetMouseButtonDown(MouseButton::Left) && mouseAxisH > 0.0 && mouseAxisV > 0.0;
+    }
+
     void Input::Update()
     {
         prevMouseX = mouseX;

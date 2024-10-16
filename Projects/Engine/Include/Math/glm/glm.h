@@ -13,7 +13,6 @@
 #include "glm.hpp"
 #include "ext.hpp"
 #include <glm/gtx/matrix_decompose.hpp>
-
 using namespace glm;
 
 namespace Odyssey

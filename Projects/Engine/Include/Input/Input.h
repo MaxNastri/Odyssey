@@ -24,6 +24,7 @@ namespace Odyssey
 		static double GetMouseAxisVerticle() { return mouseAxisV; }
 		static glm::vec2 GetMousePosition() { return glm::vec2(mouseX, mouseY); }
 		static glm::vec2 GetScreenSpaceMousePosition();
+		static bool IsMouseDragging();
 
 	public:
 		static void Update();

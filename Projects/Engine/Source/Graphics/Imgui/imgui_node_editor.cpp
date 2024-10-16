@@ -2381,10 +2381,9 @@ ed::Control ed::EditorContext::BuildControl(bool allowOffscreen)
         if (!ItemAdd(bb, id))
             return -1;
 
-        auto buttonIndex = ImGui::GetCurrentContext()->ActiveIdMouseButton;
-
         bool hovered, held;
-        bool pressed = ButtonBehavior(bb, id, &hovered, &held, extraFlags);
+        bool pressed = ButtonBehavior(bb, id, &hovered, &held, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_PressedOnClick);
+        auto buttonIndex = ImGui::GetCurrentContext()->ActiveIdMouseButton;
 
         return pressed ? buttonIndex : -1;
     };

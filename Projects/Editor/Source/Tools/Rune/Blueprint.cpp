@@ -5,25 +5,24 @@
 
 namespace Odyssey::Rune
 {
+	namespace ed = ax::NodeEditor;
+
 	Blueprint::Blueprint()
+		: m_Name("Blueprint")
 	{
 		InitNodeEditor();
 
-		Node& bpNode = m_Nodes.emplace_back(m_NextID++, "BP Example", float4(1.0f, 0.5f, 0.5f, 1.0f));
-		bpNode.Inputs.emplace_back(m_NextID++, "InFlow", PinType::Flow);
-		bpNode.Inputs.emplace_back(m_NextID++, "Input", PinType::Float);
-		bpNode.Outputs.emplace_back(m_NextID++, "OutFlow", PinType::Flow);
-		bpNode.Outputs.emplace_back(m_NextID++, "Output", PinType::Float);
+		Node& bpNode = m_Nodes.emplace_back(GetNextID(), "BP Example", float4(1.0f, 0.5f, 0.5f, 1.0f));
+		bpNode.Inputs.emplace_back(GetNextID(), "InFlow", PinType::Flow);
+		bpNode.Inputs.emplace_back(GetNextID(), "Input", PinType::Float);
+		bpNode.Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
+		bpNode.Outputs.emplace_back(GetNextID(), "Output", PinType::Float);
 
-		Node& bp2Node = m_Nodes.emplace_back(m_NextID++, "BP Example 2", float4(0.0f, 1.5f, 0.5f, 1.0f));
-		bp2Node.Inputs.emplace_back(m_NextID++, "InFlow", PinType::Flow);
-		bp2Node.Inputs.emplace_back(m_NextID++, "Input", PinType::Float);
-		bp2Node.Outputs.emplace_back(m_NextID++, "OutFlow", PinType::Flow);
-		bp2Node.Outputs.emplace_back(m_NextID++, "Output", PinType::Float);
-
-		Node& branchNode = m_Nodes.emplace_back(m_NextID++, "Branch Example", float4(1.0f, 1.0f, 1.0f, 1.0f));
-		branchNode.Type = NodeType::Tree;
-		branchNode.Inputs.emplace_back(m_NextID++, "", PinType::Flow);
+		Node& bp2Node = m_Nodes.emplace_back(GetNextID(), "BP Example 2", float4(0.0f, 1.5f, 0.5f, 1.0f));
+		bp2Node.Inputs.emplace_back(GetNextID(), "InFlow", PinType::Flow);
+		bp2Node.Inputs.emplace_back(GetNextID(), "Input", PinType::Float);
+		bp2Node.Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
+		bp2Node.Outputs.emplace_back(GetNextID(), "Output", PinType::Float);
 
 		// Build nodes
 		BuildNodes();
@@ -40,34 +39,58 @@ namespace Odyssey::Rune
 
 	void Blueprint::Update()
 	{
+		// Set this blueprint in the node editor
 		ImguiExt::SetCurrentEditor(m_Context);
-
 		ImguiExt::Begin(m_Name.c_str());
 
+		// Draw the blueprint
 		m_Builder.DrawBlueprint(this);
 
-		if (ImguiExt::BeginCreate())
+		if (!m_CreatingNewNode)
 		{
-			ImguiExt::PinId input, output;
-			if (ImguiExt::QueryNewLink(&input, &output))
+			// Check if we should create new nodes or links
+			if (ImguiExt::BeginCreate())
 			{
-				if (input && output)
-				{
-					if (ImguiExt::AcceptNewItem())
-					{
-						m_Links.push_back(Link(m_NextID++, input.Get(), output.Get()));
-					}
-				}
-				else
-				{
-					ImguiExt::RejectNewItem();
-				}
+				CheckNewNodes();
+				CheckNewLinks();
 			}
-		}
-		ImguiExt::EndCreate();
 
+			ImguiExt::EndCreate();
+
+			// Check if we should delete any nodes or links
+			if (ImguiExt::BeginDelete())
+				CheckDeletions();
+
+			ImguiExt::EndDelete();
+		}
+
+		ImguiExt::Suspend();
+
+		// Check the state of context menu popups
+		CheckContextMenus();
+
+		ImguiExt::Resume();
+
+		// End the node editor
 		ImguiExt::End();
 		ImguiExt::SetCurrentEditor(nullptr);
+	}
+
+	void ImGuiEx_BeginColumn()
+	{
+		ImGui::BeginGroup();
+	}
+
+	void ImGuiEx_NextColumn()
+	{
+		ImGui::EndGroup();
+		ImGui::SameLine();
+		ImGui::BeginGroup();
+	}
+
+	void ImGuiEx_EndColumn()
+	{
+		ImGui::EndGroup();
 	}
 
 	void Blueprint::InitNodeEditor()
@@ -116,6 +139,117 @@ namespace Odyssey::Rune
 		}
 	}
 
+	void Blueprint::CheckNewLinks()
+	{
+		ImguiExt::PinId start, end;
+
+		if (ImguiExt::QueryNewLink(&start, &end))
+		{
+			Pin* startPin = FindPin(start.Get());
+			Pin* endPin = FindPin(end.Get());
+
+			if (startPin->IO == PinIO::Input)
+			{
+				std::swap(startPin, endPin);
+				std::swap(start, end);
+			}
+
+			if (startPin && endPin)
+			{
+				if (startPin == endPin)
+				{
+					// Reject connecting a pin to itself
+					ImguiExt::RejectNewItem(Reject_Link_Color, 2.0f);
+				}
+				else if (startPin->IO == endPin->IO)
+				{
+					// Reject connecting pins of different types
+					m_Builder.DrawLabel("x Incompatible Pin IO", Incompatible_Link_Color);
+					ImguiExt::RejectNewItem(Reject_Link_Color, 2.0f);
+				}
+				else if (startPin->Type != endPin->Type)
+				{
+					// Reject connecting pins of different types
+					m_Builder.DrawLabel("x Incompatible Pin Type", Incompatible_Link_Color);
+					ImguiExt::RejectNewItem(Reject_Link_Color, 2.0f);
+				}
+				else
+				{
+					if (ImguiExt::AcceptNewItem())
+					{
+						Link& newLink = m_Links.emplace_back(Link(GetNextID(), start.Get(), end.Get()));
+						newLink.Color = RuneUIBuilder::GetIconColor(startPin->Type);
+					}
+				}
+			}
+		}
+	}
+
+	void Blueprint::CheckNewNodes()
+	{
+		ImguiExt::PinId pinID;
+
+		if (ImguiExt::QueryNewNode(&pinID))
+		{
+			if (Pin* newLinkPin = FindPin(pinID.Get()))
+				m_Builder.DrawLabel("+ Create Node", New_Node_Text_Color);
+
+			if (ImguiExt::AcceptNewItem())
+			{
+				ImguiExt::Suspend();
+				m_CreatingNewNode = true;
+				ImGui::OpenPopup("Create New Node");
+				ImguiExt::Resume();
+			}
+		}
+		else
+		{
+			m_CreatingNewNode = false;
+		}
+	}
+
+	void Blueprint::CheckDeletions()
+	{
+		ImguiExt::NodeId nodeID = 0;
+		ImguiExt::LinkId linkID = 0;
+
+		// Search for deleted nodes
+		while (ImguiExt::QueryDeletedNode(&nodeID))
+		{
+			if (ImguiExt::AcceptDeletedItem())
+			{
+				auto foundID = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeID](Node& node) { return node.ID == nodeID.Get(); });
+				if (foundID != m_Nodes.end())
+					m_Nodes.erase(foundID);
+			}
+		}
+
+		// Search for deleted links
+		while (ImguiExt::QueryDeletedLink(&linkID))
+		{
+			if (ImguiExt::AcceptDeletedItem())
+			{
+				auto foundID = std::find_if(m_Links.begin(), m_Links.end(), [linkID](Link& link) { return link.ID == linkID.Get(); });
+				if (foundID != m_Links.end())
+					m_Links.erase(foundID);
+			}
+		}
+	}
+
+	void Blueprint::CheckContextMenus()
+	{
+		ImguiExt::NodeId contextNode;
+
+		if (ImguiExt::ShowNodeContextMenu(&contextNode))
+			ImGui::OpenPopup("Node Context Menu");
+		else if (ImguiExt::ShowNodeContextMenu(&contextNode))
+			ImGui::OpenPopup("Pin Context Menu");
+		else if (ImguiExt::ShowNodeContextMenu(&contextNode))
+			ImGui::OpenPopup("Link Context Menu");
+		else if (ImguiExt::ShowBackgroundContextMenu())
+			ImGui::OpenPopup("Create New Node");
+	}
+
 	Node* Blueprint::FindNode(NodeId nodeID)
 	{
 		for (Node& node : m_Nodes)
@@ -133,6 +267,29 @@ namespace Odyssey::Rune
 		{
 			if (link.ID == linkID)
 				return &link;
+		}
+
+		return nullptr;
+	}
+
+	Pin* Blueprint::FindPin(PinId pinID)
+	{
+		if (!pinID)
+			return nullptr;
+
+		for (Node& node : m_Nodes)
+		{
+			for (Pin& input : node.Inputs)
+			{
+				if (input.ID == pinID)
+					return &input;
+			}
+
+			for (Pin& output : node.Outputs)
+			{
+				if (output.ID == pinID)
+					return &output;
+			}
 		}
 
 		return nullptr;

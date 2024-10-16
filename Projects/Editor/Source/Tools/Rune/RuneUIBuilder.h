@@ -19,6 +19,10 @@ namespace Odyssey
 
 		public:
 			void DrawBlueprint(Blueprint* blueprint);
+			void DrawLabel(const char* label, float4 color);
+
+		public:
+			static float3 GetIconColor(PinType pinType);
 
 		private:
 			enum class Stage { Invalid, Begin, Header, Content, Input, Output, Middle, End };
@@ -56,8 +60,6 @@ namespace Odyssey
 			bool IsPinLinked(const Pin& pin);
 			void DrawPinIcon(const Pin& pin, bool connected, float alpha);
 
-		private:
-			static float3 GetIconColor(PinType pinType);
 
 		private:
 			struct Header

@@ -66,7 +66,7 @@ inline T ImCubicBezierDt(const T& p0, const T& p1, const T& p2, const T& p3, flo
     const auto c = t * t;
     const auto d = 2 * t * a;
 
-    return -3 * p0 * b + 3 * p1 * (b - d) + 3 * p2 * (d - c) + 3 * p3 * c;
+    return -3.0f * p0 * b + 3.0f * p1 * (b - d) + 3.0f * p2 * (d - c) + 3.0f * p3 * c;
 }
 
 template <typename T>
@@ -239,10 +239,10 @@ inline ImCubicBezierSplitResultT<T> ImCubicBezierSplit(const ImCubicBezierPoints
 
 inline ImRect ImCubicBezierBoundingRect(const ImVec2& p0, const ImVec2& p1, const ImVec2& p2, const ImVec2& p3)
 {
-    auto a = 3 * p3 - 9 * p2 + 9 * p1 - 3 * p0;
-    auto b = 6 * p0 - 12 * p1 + 6 * p2;
-    auto c = 3 * p1 - 3 * p0;
-    auto delta_squared = ImMul(b, b) - 4 * ImMul(a, c);
+    auto a = 3.0f * p3 - 9.0f * p2 + 9.0f * p1 - 3.0f * p0;
+    auto b = 6.0f * p0 - 12.0f * p1 + 6.0f * p2;
+    auto c = 3.0f * p1 - 3.0f * p0;
+    auto delta_squared = ImMul(b, b) - 4.0f * ImMul(a, c);
 
     auto tl = ImMin(p0, p3);
     auto rb = ImMax(p0, p3);
@@ -408,9 +408,9 @@ inline ImCubicBezierIntersectResult ImCubicBezierLineIntersect(const ImVec2& p0,
     //             c3                  c2                c1       c0
 
     // Calculate the coefficients
-    auto c3 =     -p0 + 3 * p1 - 3 * p2 + p3;
-    auto c2 =  3 * p0 - 6 * p1 + 3 * p2;
-    auto c1 = -3 * p0 + 3 * p1;
+    auto c3 =     -p0 + 3.0f * p1 - 3.0f * p2 + p3;
+    auto c2 =  3.0f * p0 - 6.0f * p1 + 3.0f * p2;
+    auto c1 = -3.0f * p0 + 3.0f * p1;
     auto c0 =      p0;
 
     // Convert line to normal form: ax + by + c = 0
