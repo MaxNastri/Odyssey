@@ -61,5 +61,9 @@ namespace Odyssey::Rune
 		std::string m_Name;
 		std::vector<std::shared_ptr<Node>> m_Nodes;
 		std::vector<Link> m_Links;
+
+	private: // Menu overrides
+		const std::string Create_Node_Menu = "My Create Node";
+		uint32_t m_CreateNodeMenuID = 117;
 	};
 }

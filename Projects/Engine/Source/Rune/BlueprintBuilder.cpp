@@ -8,6 +8,7 @@
 #include "AssetManager.h"
 #include "Texture2D.h"
 #include "Enum.hpp"
+#include "Utils.h"
 
 namespace Odyssey::Rune
 {
@@ -305,6 +306,34 @@ namespace Odyssey::Rune
 		//     ImGui::GetItemRectMin(), ImGui::GetItemRectMax(), IM_COL32(255, 0, 0, 64));
 	}
 
+	void BlueprintBuilder::OverrideNodeMenu(std::string_view menuName, uint32_t menuID)
+	{
+		m_UIOverrides.NodeMenu = menuName;
+		m_UIOverrides.NodeMenuID = menuID;
+		m_UIOverrides.NodeMenuSet = true;
+	}
+
+	void BlueprintBuilder::OverridePinMenu(std::string_view menuName, uint32_t menuID)
+	{
+		m_UIOverrides.PinMenu = menuName;
+		m_UIOverrides.PinMenuID = menuID;
+		m_UIOverrides.PinMenuSet = true;
+	}
+
+	void BlueprintBuilder::OverrideLinkMenu(std::string_view menuName, uint32_t menuID)
+	{
+		m_UIOverrides.LinkMenu = menuName;
+		m_UIOverrides.LinkMenuID = menuID;
+		m_UIOverrides.LinkMenuSet = true;
+	}
+
+	void BlueprintBuilder::OverrideCreateNodeMenu(std::string_view menuName, uint32_t menuID)
+	{
+		m_UIOverrides.CreateNodeMenu = menuName;
+		m_UIOverrides.CreateNodeMenuID = menuID;
+		m_UIOverrides.CreateNodeMenuSet = true;
+	}
+
 	void BlueprintBuilder::CheckNewLinks()
 	{
 		ImguiExt::PinId start, end;
@@ -371,7 +400,11 @@ namespace Odyssey::Rune
 				m_DrawingState.ActiveLinkPin = nullptr;
 
 				ImguiExt::Suspend();
-				ImGui::OpenPopup("Create New Node");
+
+				ImGui::PushOverrideID(m_UIOverrides.CreateNodeMenuID);
+				ImGui::OpenPopup(m_UIOverrides.CreateNodeMenu.c_str());
+				ImGui::PopID();
+
 				ImguiExt::Resume();
 			}
 		}
@@ -409,19 +442,33 @@ namespace Odyssey::Rune
 
 		// Check if we need to display a context menu
 		if (ImguiExt::ShowNodeContextMenu(&contextNode))
-			ImGui::OpenPopup("Node Context Menu");
+		{
+			ImGui::PushOverrideID(m_UIOverrides.NodeMenuID);
+			ImGui::OpenPopup(m_UIOverrides.NodeMenu.c_str());
+			ImGui::PopID();
+		}
 		else if (ImguiExt::ShowPinContextMenu(&contextPin))
-			ImGui::OpenPopup("Pin Context Menu");
+		{
+			ImGui::PushOverrideID(m_UIOverrides.PinMenuID);
+			ImGui::OpenPopup(m_UIOverrides.PinMenu.c_str());
+			ImGui::PopID();
+		}
 		else if (ImguiExt::ShowLinkContextMenu(&contextLink))
-			ImGui::OpenPopup("Link Context Menu");
+		{
+			ImGui::PushOverrideID(m_UIOverrides.LinkMenuID);
+			ImGui::OpenPopup(m_UIOverrides.LinkMenu.c_str());
+			ImGui::PopID();
+		}
 		else if (ImguiExt::ShowBackgroundContextMenu())
 		{
-			ImGui::OpenPopup("Create New Node");
+			ImGui::PushOverrideID(m_UIOverrides.CreateNodeMenuID);
+			ImGui::OpenPopup(m_UIOverrides.CreateNodeMenu.c_str());
+			ImGui::PopID();
 			m_DrawingState.NewNodeLinkPin = nullptr;
 		}
 
-		// Node context menu
-		if (ImGui::BeginPopup("Node Context Menu"))
+		// Open the node menu if not overriden
+		if (!m_UIOverrides.NodeMenuSet && ImGui::BeginPopup(m_UIOverrides.NodeMenu.c_str()))
 		{
 			Node* node = m_Blueprint->FindNode(contextNode.Get());
 
@@ -442,8 +489,8 @@ namespace Odyssey::Rune
 			ImGui::EndPopup();
 		}
 
-		// Pin context menu
-		if (ImGui::BeginPopup("Pin Context Menu"))
+		// Open the pin menu if not overriden
+		if (!m_UIOverrides.PinMenuSet && ImGui::BeginPopup(m_UIOverrides.PinMenu.c_str()))
 		{
 			Pin* pin = m_Blueprint->FindPin(contextPin.Get());
 
@@ -471,8 +518,8 @@ namespace Odyssey::Rune
 			ImGui::EndPopup();
 		}
 
-		// Link context menu
-		if (ImGui::BeginPopup("Link Context Menu"))
+		// Open the link menu if not overriden
+		if (!m_UIOverrides.LinkMenuSet && ImGui::BeginPopup(m_UIOverrides.LinkMenu.c_str()))
 		{
 			Link* link = m_Blueprint->FindLink(contextLink.Get());
 
@@ -494,33 +541,43 @@ namespace Odyssey::Rune
 			ImGui::EndPopup();
 		}
 
-		if (ImGui::BeginPopup("Create New Node"))
+		// Open the create node menu if not overriden
+		if (!m_UIOverrides.CreateNodeMenuSet)
 		{
-			ImGui::TextUnformatted("Create New Node");
-			ImGui::Separator();
-
-			std::shared_ptr<Node> node;
-
-			if (ImGui::MenuItem("Branch"))
-				node = m_Blueprint->AddNode<BranchNode>("Branch");
-			if (ImGui::MenuItem("Simple"))
-				node = m_Blueprint->AddNode<SimpleNode>("Simple");
-			if (ImGui::MenuItem("Group"))
-				node = m_Blueprint->AddNode<GroupNode>("Group");
-			if (ImGui::MenuItem("Tree"))
-				node = m_Blueprint->AddNode<TreeNode>("Tree");
-
-			if (node)
+			if (ImGui::BeginPopup(m_UIOverrides.CreateNodeMenu.c_str()))
 			{
-				ConnectNewNode(node.get());
-				m_DrawingState.CreatingNewNode = false;
-			}
+				ImGui::TextUnformatted("Create New Node");
+				ImGui::Separator();
 
-			ImGui::EndPopup();
+				std::shared_ptr<Node> node;
+
+				if (ImGui::MenuItem("Branch"))
+					node = m_Blueprint->AddNode<BranchNode>("Branch");
+				if (ImGui::MenuItem("Simple"))
+					node = m_Blueprint->AddNode<SimpleNode>("Simple");
+				if (ImGui::MenuItem("Group"))
+					node = m_Blueprint->AddNode<GroupNode>("Group");
+				if (ImGui::MenuItem("Tree"))
+					node = m_Blueprint->AddNode<TreeNode>("Tree");
+
+				if (node)
+				{
+					ConnectNewNode(node.get());
+					m_DrawingState.CreatingNewNode = false;
+				}
+
+				ImGui::EndPopup();
+			}
 		}
-		else
+		// Create node menu is overriden and the popup is not open
+		else 
 		{
-			m_DrawingState.CreatingNewNode = false;
+			ImGui::PushOverrideID(m_UIOverrides.CreateNodeMenuID);
+
+			if (!ImGui::IsPopupOpen(m_UIOverrides.CreateNodeMenu.c_str()))
+				m_DrawingState.CreatingNewNode = false;
+
+			ImGui::PopID();
 		}
 	}
 

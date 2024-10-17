@@ -1,5 +1,6 @@
 #include "Blueprint.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "imgui_node_editor.h"
 #include "BlueprintBuilder.h"
 #include "Enum.hpp"
@@ -9,6 +10,8 @@ namespace Odyssey::Rune
 	Blueprint::Blueprint()
 		: m_Name("Blueprint"), m_Builder(this)
 	{
+		m_Builder.OverrideCreateNodeMenu(Create_Node_Menu, m_CreateNodeMenuID);
+
 		auto& blueprintNode = m_Nodes.emplace_back(std::make_shared<BlueprintNode>("BP Example"));
 
 		auto& bp2Node = m_Nodes.emplace_back(std::make_shared<BlueprintNode>("BP Example 2"));
@@ -31,6 +34,28 @@ namespace Odyssey::Rune
 	void Blueprint::Update()
 	{
 		m_Builder.DrawBlueprint();
+
+		ImGui::PushOverrideID(m_CreateNodeMenuID);
+		if (ImGui::BeginPopup(Create_Node_Menu.c_str()))
+		{
+			ImGui::TextUnformatted("Create New Node");
+			ImGui::Separator();
+
+			std::shared_ptr<Node> node;
+
+			if (ImGui::MenuItem("Branch"))
+				node = AddNode<BranchNode>("Branch");
+			if (ImGui::MenuItem("Simple"))
+				node = AddNode<SimpleNode>("Simple");
+			if (ImGui::MenuItem("Group"))
+				node = AddNode<GroupNode>("Group");
+
+			if (node)
+				m_Builder.ConnectNewNode(node.get());
+
+			ImGui::EndPopup();
+		}
+		ImGui::PopID();
 	}
 
 	void Blueprint::AddLink(Pin* start, Pin* end)

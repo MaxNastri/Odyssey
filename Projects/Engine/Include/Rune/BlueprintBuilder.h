@@ -44,6 +44,12 @@ namespace Odyssey
 			void EndOutput();
 			void EndPin();
 
+		public:
+			void OverrideNodeMenu(std::string_view menuName, uint32_t menuID);
+			void OverridePinMenu(std::string_view menuName, uint32_t menuID);
+			void OverrideLinkMenu(std::string_view menuName, uint32_t menuID);
+			void OverrideCreateNodeMenu(std::string_view menuName, uint32_t menuID);
+
 		private:
 			void CheckNewLinks();
 			void CheckNewNodes();
@@ -82,10 +88,21 @@ namespace Odyssey
 
 			struct UIOverrides
 			{
-				std::string NodeContextMenu = "Default Node Context Menu";
-				std::string PinContextMenu = "Default Pin Context Menu";
-				std::string LinkContextMenu = "Default Link Context Menu";
-				std::string CreateNodeContextMenu = "Default Create Node Context Menu";
+				std::string NodeMenu = "Default Node Menu";
+				uint32_t NodeMenuID = 0;
+				bool NodeMenuSet = false;
+
+				std::string PinMenu = "Default Pin Menu";
+				uint32_t PinMenuID = 0;
+				bool PinMenuSet = false;
+
+				std::string LinkMenu = "Default Link Menu";
+				uint32_t LinkMenuID = 0;
+				bool LinkMenuSet = false;
+
+				std::string CreateNodeMenu = "Default Create Node Menu";
+				uint32_t CreateNodeMenuID = 0;
+				bool CreateNodeMenuSet = false;
 			};
 
 		private:
@@ -93,7 +110,7 @@ namespace Odyssey
 			Blueprint* m_Blueprint = nullptr;
 			Header m_Header;
 			DrawingState m_DrawingState;
-
+			UIOverrides m_UIOverrides;
 		private:
 			inline static const GUID& Header_Texture_GUID = 980123767453938719;
 
