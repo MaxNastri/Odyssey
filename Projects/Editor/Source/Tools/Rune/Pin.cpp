@@ -5,8 +5,8 @@
 
 namespace Odyssey::Rune
 {
-	Pin::Pin(std::string_view name, PinType type)
-		: ID(GetNextID()), Name(name), Node(nullptr), IO(PinIO::Input), Type(type)
+	Pin::Pin(std::string_view name, PinType type, bool modifiable)
+		: ID(GetNextID()), Name(name), Node(nullptr), IO(PinIO::Input), Type(type), Modifiable(modifiable)
 	{
 
 	}

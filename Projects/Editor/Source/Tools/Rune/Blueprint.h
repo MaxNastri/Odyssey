@@ -42,6 +42,9 @@ namespace Odyssey::Rune
 		Pin* FindPin(PinId pinID);
 
 	private:
+		void BreakLinks(Pin* pin);
+
+	private:
 		size_t LoadNodeSettings(NodeId nodeId, char* data);
 		bool SaveNodeSettings(NodeId nodeId, const char* data, size_t size);
 
@@ -53,6 +56,7 @@ namespace Odyssey::Rune
 		std::vector<Link> m_Links;
 		bool m_CreatingNewNode = false;
 		Pin* m_NewNodeLinkPin = nullptr;
+		Pin* m_NewLinkPin = nullptr;
 
 	private:
 		inline static constexpr float4 Reject_Link_Color = float4(1.0f, 0.0f, 0.0f, 1.0f);

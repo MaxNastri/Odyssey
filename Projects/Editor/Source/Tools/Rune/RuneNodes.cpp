@@ -22,7 +22,7 @@ namespace Odyssey::Rune
 
 	}
 
-	void BlueprintNode::Draw(RuneUIBuilder* builder)
+	void BlueprintNode::Draw(RuneUIBuilder* builder, Pin* activeLinkPin)
 	{
 		builder->BeginNode(ID);
 
@@ -53,9 +53,10 @@ namespace Odyssey::Rune
 					if (output.Type != PinType::Delegate)
 						continue;
 
-					auto alpha = ImGui::GetStyle().Alpha;
-					//if (newLinkPin && !CanCreateLink(newLinkPin, &output) && &output != newLinkPin)
-					//    alpha = alpha * (48.0f / 255.0f);
+					float alpha = ImGui::GetStyle().Alpha;
+
+					if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &output) && &output != activeLinkPin)
+					    alpha = alpha * (48.0f / 255.0f);
 
 					ImguiExt::BeginPin(output.ID, ImguiExt::PinKind::Output);
 					ImguiExt::PinPivotAlignment(ImVec2(1.0f, 0.5f));
@@ -67,7 +68,9 @@ namespace Odyssey::Rune
 						ImGui::TextUnformatted(output.Name.c_str());
 						ImGui::Spring(0);
 					}
-					//DrawPinIcon(output, IsPinLinked(output.ID), (int)(alpha * 255));
+
+					output.Draw(alpha);
+
 					ImGui::Spring(0, ImGui::GetStyle().ItemSpacing.x / 2);
 					ImGui::EndHorizontal();
 					ImGui::PopStyleVar();
@@ -89,8 +92,9 @@ namespace Odyssey::Rune
 		for (auto& input : Inputs)
 		{
 			float alpha = ImGui::GetStyle().Alpha;
-			//if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
-			//    alpha = alpha * (48.0f / 255.0f);
+
+			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &input) && &input != activeLinkPin)
+			    alpha = alpha * (48.0f / 255.0f);
 
 			builder->BeginInput(input.ID);
 
@@ -116,8 +120,8 @@ namespace Odyssey::Rune
 				continue;
 
 			auto alpha = ImGui::GetStyle().Alpha;
-			//if (newLinkPin && !CanCreateLink(newLinkPin, &output) && &output != newLinkPin)
-			//    alpha = alpha * (48.0f / 255.0f);
+			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &output) && &output != activeLinkPin)
+			    alpha = alpha * (48.0f / 255.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
 
 			builder->BeginOutput(output.ID);
@@ -162,11 +166,11 @@ namespace Odyssey::Rune
 	BranchNode::BranchNode(std::string_view name)
 		: BlueprintNode(name)
 	{
-		Inputs.emplace_back(Pin("", PinType::Flow));
-		Inputs.emplace_back(Pin("Condition", PinType::Bool));
+		Inputs.emplace_back(Pin("", PinType::Flow, false));
+		Inputs.emplace_back(Pin("Condition", PinType::Bool, false));
 
-		Outputs.emplace_back(Pin("True", PinType::Flow));
-		Outputs.emplace_back(Pin("False", PinType::Flow));
+		Outputs.emplace_back(Pin("True", PinType::Flow, false));
+		Outputs.emplace_back(Pin("False", PinType::Flow, false));
 	}
 
 	SimpleNode::SimpleNode(std::string_view name, float4 color)
@@ -175,7 +179,7 @@ namespace Odyssey::Rune
 
 	}
 
-	void SimpleNode::Draw(RuneUIBuilder* builder)
+	void SimpleNode::Draw(RuneUIBuilder* builder, Pin* activeLinkPin)
 	{
 		builder->BeginNode(ID);
 
@@ -183,8 +187,9 @@ namespace Odyssey::Rune
 		for (auto& input : Inputs)
 		{
 			float alpha = ImGui::GetStyle().Alpha;
-			//if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
-			//    alpha = alpha * (48.0f / 255.0f);
+
+			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &input) && &input != activeLinkPin)
+			    alpha = alpha * (48.0f / 255.0f);
 
 			builder->BeginInput(input.ID);
 
@@ -225,8 +230,9 @@ namespace Odyssey::Rune
 				continue;
 
 			auto alpha = ImGui::GetStyle().Alpha;
-			//if (newLinkPin && !CanCreateLink(newLinkPin, &output) && &output != newLinkPin)
-			//    alpha = alpha * (48.0f / 255.0f);
+			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &output) && &output != activeLinkPin)
+			    alpha = alpha * (48.0f / 255.0f);
+
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
 
 			builder->BeginOutput(output.ID);
@@ -274,7 +280,7 @@ namespace Odyssey::Rune
 		Size = float2(200, 200);
 	}
 
-	void GroupNode::Draw(RuneUIBuilder* builder)
+	void GroupNode::Draw(RuneUIBuilder* builder, Pin* activeLinkPin)
 	{
 		// Init style and colors
 		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, Group_Alpha);
@@ -340,7 +346,7 @@ namespace Odyssey::Rune
 
 	}
 
-	void TreeNode::Draw(RuneUIBuilder* builder)
+	void TreeNode::Draw(RuneUIBuilder* builder, Pin* activeLinkPin)
 	{
 		const ImVec4 pinBackground = ImguiExt::GetStyle().Colors[ImguiExt::StyleColor_NodeBg];
 
@@ -391,8 +397,8 @@ namespace Odyssey::Rune
 
 				ImguiExt::PopStyleVar(3);
 
-				//if (newLinkPin && !CanCreateLink(newLinkPin, &pin) && &pin != newLinkPin)
-				//    inputAlpha = (int)(255 * ImGui::GetStyle().Alpha * (48.0f / 255.0f));
+				if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &pin) && &pin != activeLinkPin)
+				    inputAlpha = ImGui::GetStyle().Alpha * (48.0f / 255.0f);
 			}
 			else
 			{
@@ -442,8 +448,8 @@ namespace Odyssey::Rune
 
 				ImguiExt::PopStyleVar();
 
-				//if (newLinkPin && !CanCreateLink(newLinkPin, &pin) && &pin != newLinkPin)
-				//    outputAlpha = (int)(255 * ImGui::GetStyle().Alpha * (48.0f / 255.0f));
+				if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &pin) && &pin != activeLinkPin)
+				    outputAlpha = ImGui::GetStyle().Alpha * (48.0f / 255.0f);
 			}
 			else
 			{
@@ -483,7 +489,6 @@ namespace Odyssey::Rune
 				drawList->AddRect(outputsRect.GetTL(), ImVec2(outBotRight.x, outBotRight.y - 1), outputPinColor, 4.0f, topRoundCornersFlags);
 
 				// Content
-				// IM_COL32(24, 64, 128, 200), 0.0f)
 				ImColor contentBackground = ImColor(Color.r, Color.g, Color.b, Color.a);
 				ImColor contentOutline = ImColor(Color.r * 2.0f, Color.g * 2.0f, Color.b * 2.0f, Color.a * 0.5f);
 				drawList->AddRectFilled(contentRect.GetTL(), contentRect.GetBR(), contentBackground, 0.0f);

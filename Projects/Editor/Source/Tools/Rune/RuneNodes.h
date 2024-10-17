@@ -23,7 +23,7 @@ namespace Odyssey::Rune
 		Node(std::string_view name, float4 color = float4(1.0f));
 
 	public:
-		virtual void Draw(RuneUIBuilder* builder) = 0;
+		virtual void Draw(RuneUIBuilder* builder, Pin* activeLinkPin) = 0;
 	};
 
 	struct BlueprintNode : Node
@@ -32,7 +32,7 @@ namespace Odyssey::Rune
 		BlueprintNode(std::string_view name, float4 color = float4(1.0f, 0.0f, 0.0f, 1.0f));
 
 	public:
-		virtual void Draw(RuneUIBuilder* builder) override;
+		virtual void Draw(RuneUIBuilder* builder, Pin* activeLinkPin) override;
 	};
 
 	struct BranchNode : public BlueprintNode
@@ -46,7 +46,7 @@ namespace Odyssey::Rune
 		SimpleNode(std::string_view name, float4 color = float4(1.0f));
 
 	public:
-		virtual void Draw(RuneUIBuilder* builder) override;
+		virtual void Draw(RuneUIBuilder* builder, Pin* activeLinkPin) override;
 	};
 
 	struct GroupNode : Node
@@ -55,7 +55,7 @@ namespace Odyssey::Rune
 		GroupNode(std::string_view name, float4 color = float4(1.0f));
 
 	public:
-		virtual void Draw(RuneUIBuilder* builder) override;
+		virtual void Draw(RuneUIBuilder* builder, Pin* activeLinkPin) override;
 
 	private:
 		inline static constexpr float Group_Alpha = 0.75f;
@@ -68,7 +68,7 @@ namespace Odyssey::Rune
 		TreeNode(std::string_view name, float4 color = float4(0.1f, 0.25f, 0.5f, 0.8f));
 
 	public:
-		virtual void Draw(RuneUIBuilder* builder) override;
+		virtual void Draw(RuneUIBuilder* builder, Pin* activeLinkPin) override;
 
 	private:
 		inline static constexpr float Rounding = 5.0f;

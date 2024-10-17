@@ -24,18 +24,6 @@ namespace Odyssey::Rune
 
     void RuneUIBuilder::DrawBlueprint(Blueprint* blueprint)
     {
-        auto& nodes = blueprint->GetNodes();
-        for (auto& node : nodes)
-        {
-            node->Draw(this);
-        }
-
-        auto& links = blueprint->GetLinks();
-        for (Link& link : links)
-        {
-            ImColor color = ImColor(link.Color.r, link.Color.g, link.Color.b, 1.0f);
-            ImguiExt::Link(link.ID, link.StartPinID, link.EndPinID, color, 2.0f);
-        }
     }
 
     void RuneUIBuilder::DrawLabel(const char* label, float4 color)

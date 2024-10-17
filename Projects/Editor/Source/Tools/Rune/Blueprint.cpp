@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "imgui_node_editor.h"
 #include "RuneUIBuilder.h"
+#include "Enum.hpp"
 
 namespace Odyssey::Rune
 {
@@ -18,7 +19,7 @@ namespace Odyssey::Rune
 		blueprintNode->Outputs.emplace_back( "OutFlow", PinType::Flow);
 		blueprintNode->Outputs.emplace_back("Output", PinType::Float);
 
-		auto& bp2Node = m_Nodes.emplace_back(std::make_shared<BlueprintNode>("BP Example 2", float4(0.0f, 1.5f, 0.5f, 1.0f)));
+		auto& bp2Node = m_Nodes.emplace_back(std::make_shared<BlueprintNode>("BP Example 2", float4(0.0f, 1.0f, 0.5f, 1.0f)));
 		bp2Node->Inputs.emplace_back("InFlow", PinType::Flow);
 		bp2Node->Inputs.emplace_back("Input", PinType::Float);
 		bp2Node->Outputs.emplace_back("OutFlow", PinType::Flow);
@@ -55,7 +56,17 @@ namespace Odyssey::Rune
 		ImguiExt::Begin(m_Name.c_str());
 
 		// Draw the blueprint
-		m_Builder.DrawBlueprint(this);
+
+		for (auto& node : m_Nodes)
+		{
+			node->Draw(&m_Builder, m_NewLinkPin);
+		}
+
+		for (Link& link : m_Links)
+		{
+			ImColor color = ImColor(link.Color.r, link.Color.g, link.Color.b, 1.0f);
+			ImguiExt::Link(link.ID, link.StartPinID, link.EndPinID, color, 2.0f);
+		}
 
 		if (!m_CreatingNewNode)
 		{
@@ -64,6 +75,10 @@ namespace Odyssey::Rune
 			{
 				CheckNewNodes();
 				CheckNewLinks();
+			}
+			else
+			{
+				m_NewLinkPin = nullptr;
 			}
 
 			ImguiExt::EndCreate();
@@ -144,6 +159,8 @@ namespace Odyssey::Rune
 			Pin* startPin = FindPin(start.Get());
 			Pin* endPin = FindPin(end.Get());
 
+			m_NewLinkPin = startPin ? startPin : endPin;
+
 			if (startPin->IO == PinIO::Input)
 			{
 				std::swap(startPin, endPin);
@@ -196,13 +213,14 @@ namespace Odyssey::Rune
 
 		if (ImguiExt::QueryNewNode(&pinID))
 		{
-			if (Pin* newLinkPin = FindPin(pinID.Get()))
+			if (m_NewLinkPin = FindPin(pinID.Get()))
 				m_Builder.DrawLabel("+ Create Node", New_Node_Text_Color);
 
 			if (ImguiExt::AcceptNewItem())
 			{
 				m_CreatingNewNode = true;
 				m_NewNodeLinkPin = FindPin(pinID.Get());
+				m_NewLinkPin = nullptr;
 
 				ImguiExt::Suspend();
 				ImGui::OpenPopup("Create New Node");
@@ -298,6 +316,21 @@ namespace Odyssey::Rune
 			ImGui::Separator();
 			if (pin)
 			{
+				if (pin->Modifiable && ImGui::BeginMenu("Modify"))
+				{
+					auto entries = Enum::GetEntries<PinType>();
+
+					for (auto& [pinType, typeName] : entries)
+					{
+						if (ImGui::MenuItem(typeName.data()))
+						{
+							pin->Type = pinType;
+							BreakLinks(pin);
+						}
+					}
+
+					ImGui::EndMenu();
+				}
 				ImGui::Text("ID: %d3", pin->ID);
 				if (pin->Node)
 					ImGui::Text("Node: %d3", pin->Node->ID);
@@ -431,6 +464,31 @@ namespace Odyssey::Rune
 		}
 
 		return nullptr;
+	}
+
+	void Blueprint::BreakLinks(Pin* pin)
+	{
+		std::vector<size_t> removals;
+
+		for (size_t i = 0; i < m_Links.size(); i++)
+		{
+			Link& link = m_Links[i];
+
+			if (link.StartPinID == pin->ID || link.EndPinID == pin->ID)
+			{
+				Pin* start = FindPin(link.StartPinID);
+				Pin* end = FindPin(link.EndPinID);
+
+				start->Linked = false;
+				end->Linked = false;
+
+				removals.push_back(i);
+			}
+		}
+
+		// Reverse so we go from back to front while erasing
+		for (int32_t i = removals.size() - 1; i >= 0; i--)
+			m_Links.erase(m_Links.begin() + removals[i]);
 	}
 
 	size_t Blueprint::LoadNodeSettings(NodeId nodeId, char* data)

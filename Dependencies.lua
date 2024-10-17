@@ -61,6 +61,9 @@ Dependencies = {
 	Entt = {
 		IncludeDir = "%{wks.location}/Vendor/entt/include",
 	},
+	MagicEnum = {
+		IncludeDir = "%{wks.location}/Vendor/magic_enum/Include",
+	},
 	TinyGLTF = {
 		IncludeDir = "%{wks.location}/Vendor/tinygltf/Include",
 	},

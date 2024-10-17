@@ -35,9 +35,10 @@ namespace Odyssey::Rune
 		PinIO IO;
 		PinType Type;
 		bool Linked = false;
+		bool Modifiable = true;
 
 	public:
-		Pin(std::string_view name, PinType type);
+		Pin(std::string_view name, PinType type, bool modifiable = true);
 
 	public:
 		static bool CanCreateLink(Pin* a, Pin* b);
