@@ -23,7 +23,7 @@ namespace Odyssey
         VkResult err = vkCreateCommandPool(m_Context->GetDevice()->GetLogicalDevice(), &info, allocator, &commandPool);
         if (!check_vk_result(err))
         {
-            Logger::LogError("(cpool 1)");
+            Log::Error("(cpool 1)");
         }
     }
 
@@ -54,7 +54,7 @@ namespace Odyssey
         VkResult err = vkResetCommandPool(m_Context->GetDevice()->GetLogicalDevice(), commandPool, 0);
         if (!check_vk_result(err))
         {
-            Logger::LogError("(cpool 2)");
+            Log::Error("(cpool 2)");
         }
     }
 

@@ -4,7 +4,7 @@
 #include "VulkanPhysicalDevice.h"
 #include "VulkanCommandPool.h"
 #include "Vulkancommandbuffer.h"
-#include <Logger.h>
+#include <Log.h>
 #include "ResourceManager.h"
 #include "VulkanBuffer.h"
 
@@ -44,7 +44,7 @@ namespace Odyssey
 
 			if (vkCreateImage(device, &imageInfo, allocator, &m_Image) != VK_SUCCESS)
 			{
-				Logger::LogError("[VulkanImage] Failed to create image");
+				Log::Error("[VulkanImage] Failed to create image");
 				return;
 			}
 		}
@@ -61,7 +61,7 @@ namespace Odyssey
 
 			if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
 			{
-				Logger::LogError("(VulkanImage) Failed to allocate image memory");
+				Log::Error("(VulkanImage) Failed to allocate image memory");
 				return;
 			}
 
@@ -81,7 +81,7 @@ namespace Odyssey
 
 			if (vkCreateImageView(device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
 			{
-				Logger::LogError("(VulkanImage) Failed to create image view.");
+				Log::Error("(VulkanImage) Failed to create image view.");
 				return;
 			}
 		}
@@ -115,7 +115,7 @@ namespace Odyssey
 
 			if (vkCreateImageView(context->GetDeviceVK(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
 			{
-				Logger::LogError("(VulkanImage) Failed to create image view.");
+				Log::Error("(VulkanImage) Failed to create image view.");
 				return;
 			}
 		}

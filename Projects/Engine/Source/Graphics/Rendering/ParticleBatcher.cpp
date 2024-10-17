@@ -109,7 +109,7 @@ namespace Odyssey
 
 			if (!s_EntityToResourceIndex.contains(gameObject))
 			{
-				Logger::LogError("[ParticleBatcher] Attempting to update un-registered emitter: " + gameObject.GetName() + ".");
+				Log::Error("[ParticleBatcher] Attempting to update un-registered emitter: " + gameObject.GetName() + ".");
 				return;
 			}
 

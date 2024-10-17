@@ -33,7 +33,7 @@ namespace Odyssey
 		VkResult err = vkAllocateCommandBuffers(m_Context->GetDevice()->GetLogicalDevice(), &info, &m_CommandBuffer);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(VulkanCommandBuffer) ctor");
+			Log::Error("(VulkanCommandBuffer) ctor");
 		}
 	}
 
@@ -52,7 +52,7 @@ namespace Odyssey
 		VkResult err = vkBeginCommandBuffer(m_CommandBuffer, &begin_info);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(commandbuf 2)");
+			Log::Error("(commandbuf 2)");
 		}
 	}
 
@@ -61,7 +61,7 @@ namespace Odyssey
 		VkResult err = vkEndCommandBuffer(m_CommandBuffer);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(commandbuf 3)");
+			Log::Error("(commandbuf 3)");
 		}
 	}
 

@@ -1,5 +1,5 @@
 #include "Input.h"
-#include "Logger.h"
+#include "Log.h"
 #include "Window.h"
 
 namespace Odyssey

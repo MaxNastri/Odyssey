@@ -5,7 +5,7 @@
 #define VK_NO_PROTOTYPES
 #endif
 #include "volk.h"
-#include <Logger.h>
+#include <Log.h>
 #include <format>
 
 // DEFINES
@@ -38,7 +38,7 @@ namespace Odyssey
     // DEBUGGING
     static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData)
     {
-        Logger::LogError("[vulkan] Debug report: " + std::string(pMessage));
+        Log::Error("[vulkan] Debug report: " + std::string(pMessage));
         return VK_FALSE;
     }
 
@@ -49,7 +49,7 @@ namespace Odyssey
             return true;
         }
 
-        Logger::LogError("[vulkan] Error: VkResult = " + std::to_string((uint64_t)err));
+        Log::Error("[vulkan] Error: VkResult = " + std::to_string((uint64_t)err));
         return false;
     }
 }

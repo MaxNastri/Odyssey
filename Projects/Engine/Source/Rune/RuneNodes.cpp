@@ -353,8 +353,8 @@ namespace Odyssey::Rune
 	TreeNode::TreeNode(std::string_view name, float4 color)
 		: Node(name, color)
 	{
-		Inputs.emplace_back("Input", PinType::Flow);
-		Outputs.emplace_back("Output", PinType::Flow);
+		Inputs.emplace_back("Input", PinType::Flow, false);
+		Outputs.emplace_back("Output", PinType::Flow, false);
 	}
 
 	void TreeNode::Draw(BlueprintBuilder* builder, Pin* activeLinkPin)

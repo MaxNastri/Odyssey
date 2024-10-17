@@ -2,7 +2,7 @@
 #include <shaderc/shaderc.hpp>
 #include <fstream>
 #include <filesystem>
-#include "Logger.h"
+#include "Log.h"
 
 namespace Odyssey
 {
@@ -15,7 +15,7 @@ namespace Odyssey
 		switch (settings.ShaderLanguage)
 		{
 		case ShaderLanguage::NONE:
-			Logger::LogError("[ShaderCompiler] Invalid shader language detected: " + settings.ShaderName);
+			Log::Error("[ShaderCompiler] Invalid shader language detected: " + settings.ShaderName);
 			break;
 		case ShaderLanguage::GLSL:
 			compilerOptions.SetSourceLanguage(shaderc_source_language_glsl);
@@ -40,8 +40,8 @@ namespace Odyssey
 
 		if (result.GetCompilationStatus() != shaderc_compilation_status_success)
 		{
-			Logger::LogError("[ShaderCompiler] Failed to compile shader: " + settings.ShaderName);
-			Logger::LogError("[ShaderCompiler] " + result.GetErrorMessage());
+			Log::Error("[ShaderCompiler] Failed to compile shader: " + settings.ShaderName);
+			Log::Error("[ShaderCompiler] " + result.GetErrorMessage());
 			return false;
 		}
 

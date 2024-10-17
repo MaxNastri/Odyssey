@@ -11,7 +11,7 @@ namespace Odyssey::Rune
 		Blueprint();
 
 	public:
-		void Update();
+		virtual void Update() = 0;
 
 	public:
 		template<typename T, typename... Args>
@@ -44,26 +44,22 @@ namespace Odyssey::Rune
 		std::vector<Link>& GetLinks() { return m_Links; }
 		std::string_view GetName() { return m_Name; }
 
-	private:
+	protected:
 		void BuildNodes();
 		void BuildNode(Node* node);
 
-	private:
+	protected:
 		void BreakLinks(Pin* pin);
 
-	private:
+	protected:
 		friend class BlueprintBuilder;
 		size_t LoadNodeSettings(NodeId nodeId, char* data);
 		bool SaveNodeSettings(NodeId nodeId, const char* data, size_t size);
 
-	private:
-		BlueprintBuilder m_Builder;
+	protected:
+		std::unique_ptr<BlueprintBuilder> m_Builder;
 		std::string m_Name;
 		std::vector<std::shared_ptr<Node>> m_Nodes;
 		std::vector<Link> m_Links;
-
-	private: // Menu overrides
-		const std::string Create_Node_Menu = "My Create Node";
-		uint32_t m_CreateNodeMenuID = 117;
 	};
 }

@@ -85,6 +85,9 @@ Dependencies = {
 	SPIRVCrossUtil = {
 		LibName = "spirv-cross-util",
 	},
+	Spdlog = {
+		IncludeDir = "%{wks.location}/Vendor/spdlog/Include",
+	},
 	Vulkan = {
 		LibName = "glfw3",
 		LibDir = "%{wks.location}/Vendor/Vulkan/Lib/%{cfg.buildcfg}/",

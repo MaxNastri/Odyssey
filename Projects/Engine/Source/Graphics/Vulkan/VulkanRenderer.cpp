@@ -122,7 +122,7 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(renderer 1)");
+			Log::Error("(renderer 1)");
 		}
 
 		s_PreviousFrame = s_FrameIndex;
@@ -153,7 +153,7 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(renderer 2)");
+			Log::Error("(renderer 2)");
 		}
 
 		VulkanFrame& frame = m_Frames[s_FrameIndex];
@@ -161,14 +161,14 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(renderer 3)");
+			Log::Error("(renderer 3)");
 		}
 
 		err = vkResetFences(vkDevice, 1, &frame.fence);
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(renderer 4)");
+			Log::Error("(renderer 4)");
 		}
 
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_GraphicsCommandPools[s_FrameIndex]);
@@ -247,7 +247,7 @@ namespace Odyssey
 				VkResult err = vkWaitForFences(m_Context->GetDeviceVK(), 1, &(m_Frames[s_PreviousFrame].fence), VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
 				if (!check_vk_result(err))
 				{
-					Logger::LogError("(graphnode 0)");
+					Log::Error("(graphnode 0)");
 				}
 				ResourceManager::Flush();
 			}
@@ -255,7 +255,7 @@ namespace Odyssey
 			VkResult err = vkQueueSubmit(m_Context->GetGraphicsQueueVK(), 1, &submitInfo, frame->fence);
 			if (!check_vk_result(err))
 			{
-				Logger::LogError("(graphnode 1)");
+				Log::Error("(graphnode 1)");
 			}
 		}
 	}

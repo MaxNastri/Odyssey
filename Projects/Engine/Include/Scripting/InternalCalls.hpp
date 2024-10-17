@@ -4,7 +4,7 @@
 #include "GameObject.h"
 #include "String.hpp"
 #include "glm.h"
-#include "Logger.h"
+#include "Log.h"
 #include "OdysseyTime.h"
 #include "AssetManager.h"
 #include "Mesh.h"
@@ -29,7 +29,7 @@ namespace Odyssey
 		}
 		else
 		{
-			Logger::LogError(std::format("No C# component class found for {}!", componentType));
+			Log::Error(std::format("No C# component class found for {}!", componentType));
 		}
 	}
 }

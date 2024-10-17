@@ -3,7 +3,7 @@
 #include "VulkanDevice.h"
 #include "VulkanBuffer.h"
 #include "ResourceManager.h"
-#include <Logger.h>
+#include <Log.h>
 #include "volk.h"
 #include "VulkanImage.h"
 

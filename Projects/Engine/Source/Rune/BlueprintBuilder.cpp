@@ -20,10 +20,10 @@ namespace Odyssey::Rune
 		// Init the node editor
 		ImguiExt::Config config;
 		config.SettingsFile = "Blueprints.json";
-		config.UserPointer = this;
+		config.UserPointer = m_Blueprint;
 		config.LoadNodeSettings = [](ImguiExt::NodeId nodeId, char* data, void* userPointer)
 			{
-				Blueprint* blueprint = static_cast<Blueprint*>(userPointer);
+				auto blueprint = static_cast<Blueprint*>(userPointer);
 				return blueprint->LoadNodeSettings(nodeId.Get(), data);
 			};
 		config.SaveNodeSettings = [](ImguiExt::NodeId nodeId, const char* data, size_t size, ImguiExt::SaveReasonFlags reason, void* userPointer)
@@ -57,12 +57,15 @@ namespace Odyssey::Rune
 		}
 	}
 
-	void BlueprintBuilder::DrawBlueprint()
+	void BlueprintBuilder::Begin()
 	{
 		// Set this blueprint in the node editor
 		ImguiExt::SetCurrentEditor(m_Context);
 		ImguiExt::Begin(m_Blueprint->GetName().data());
+	}
 
+	void BlueprintBuilder::DrawBlueprint()
+	{
 		// Draw the nodes
 		auto& nodes = m_Blueprint->GetNodes();
 		for (auto& node : nodes)
@@ -108,10 +111,6 @@ namespace Odyssey::Rune
 		CheckContextMenus();
 
 		ImguiExt::Resume();
-
-		// End the node editor
-		ImguiExt::End();
-		ImguiExt::SetCurrentEditor(nullptr);
 	}
 
 	void BlueprintBuilder::DrawLabel(const char* label, float4 color)
@@ -135,8 +134,17 @@ namespace Odyssey::Rune
 		ImGui::TextUnformatted(label);
 	}
 
+	void BlueprintBuilder::End()
+	{
+		// End the node editor
+		ImguiExt::End();
+		ImguiExt::SetCurrentEditor(nullptr);
+	}
+
 	void BlueprintBuilder::ConnectNewNode(Node* node)
 	{
+		ImguiExt::SetCurrentEditor(m_Context);
+
 		node->SetPosition(m_DrawingState.MousePos);
 
 		Pin* startPin = m_DrawingState.NewNodeLinkPin;
@@ -158,6 +166,8 @@ namespace Odyssey::Rune
 				}
 			}
 		}
+
+		ImguiExt::SetCurrentEditor(nullptr);
 	}
 
 	void BlueprintBuilder::BeginNode(NodeId id)
@@ -443,28 +453,52 @@ namespace Odyssey::Rune
 		// Check if we need to display a context menu
 		if (ImguiExt::ShowNodeContextMenu(&contextNode))
 		{
-			ImGui::PushOverrideID(m_UIOverrides.NodeMenuID);
+			// Push the ID override for custom menus
+			if (m_UIOverrides.NodeMenuSet)
+				ImGui::PushOverrideID(m_UIOverrides.NodeMenuID);
+
 			ImGui::OpenPopup(m_UIOverrides.NodeMenu.c_str());
-			ImGui::PopID();
+
+			// Pop the ID override for custom menus
+			if (m_UIOverrides.NodeMenuSet)
+				ImGui::PopID();
 		}
 		else if (ImguiExt::ShowPinContextMenu(&contextPin))
 		{
-			ImGui::PushOverrideID(m_UIOverrides.PinMenuID);
+			// Push the ID override for custom menus
+			if (m_UIOverrides.PinMenuSet)
+				ImGui::PushOverrideID(m_UIOverrides.PinMenuID);
+
 			ImGui::OpenPopup(m_UIOverrides.PinMenu.c_str());
-			ImGui::PopID();
+
+			// Pop the ID override for custom menus
+			if (m_UIOverrides.PinMenuSet)
+				ImGui::PopID();
 		}
 		else if (ImguiExt::ShowLinkContextMenu(&contextLink))
 		{
-			ImGui::PushOverrideID(m_UIOverrides.LinkMenuID);
+			// Push the ID override for custom menus
+			if (m_UIOverrides.LinkMenuSet)
+				ImGui::PushOverrideID(m_UIOverrides.LinkMenuID);
+
 			ImGui::OpenPopup(m_UIOverrides.LinkMenu.c_str());
-			ImGui::PopID();
+
+			// Pop the ID override for custom menus
+			if (m_UIOverrides.LinkMenuSet)
+				ImGui::PopID();
 		}
 		else if (ImguiExt::ShowBackgroundContextMenu())
 		{
-			ImGui::PushOverrideID(m_UIOverrides.CreateNodeMenuID);
+			// Push the ID override for custom menus
+			if (m_UIOverrides.CreateNodeMenuSet)
+				ImGui::PushOverrideID(m_UIOverrides.CreateNodeMenuID);
+
 			ImGui::OpenPopup(m_UIOverrides.CreateNodeMenu.c_str());
-			ImGui::PopID();
 			m_DrawingState.NewNodeLinkPin = nullptr;
+
+			// Pop the ID override for custom menus
+			if (m_UIOverrides.CreateNodeMenuSet)
+				ImGui::PopID();
 		}
 
 		// Open the node menu if not overriden
@@ -570,7 +604,7 @@ namespace Odyssey::Rune
 			}
 		}
 		// Create node menu is overriden and the popup is not open
-		else 
+		else
 		{
 			ImGui::PushOverrideID(m_UIOverrides.CreateNodeMenuID);
 

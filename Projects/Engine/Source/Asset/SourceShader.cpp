@@ -70,7 +70,7 @@ namespace Odyssey
 		std::ifstream file(path, std::ios::ate);
 		if (!file.is_open())
 		{
-			Logger::LogError("[SourceShader] Unable to open shader file: " + path.string());
+			Log::Error("[SourceShader] Unable to open shader file: " + path.string());
 			return;
 		}
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "DockableWindow.h"
-#include "Blueprint.h"
+#include "AnimationBlueprint.h"
 
 namespace Odyssey
 {
@@ -15,6 +15,6 @@ namespace Odyssey
 		virtual void OnWindowClose() override;
 
 	private:
-		Rune::Blueprint bp;
+		AnimationBlueprint bp;
 	};
 }

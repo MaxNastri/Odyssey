@@ -1,5 +1,5 @@
 #include "SourceModel.h"
-#include "Logger.h"
+#include "Log.h"
 
 namespace Odyssey
 {
@@ -10,6 +10,6 @@ namespace Odyssey
 			m_ModelImporter = std::make_unique<GLTFAssetImporter>();
 
 		if (!m_ModelImporter || !m_ModelImporter->Import(sourcePath))
-			Logger::LogError(std::format("Failed to import model: {}", sourcePath.string()));
+			Log::Error(std::format("Failed to import model: {}", sourcePath.string()));
 	}
 }

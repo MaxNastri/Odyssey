@@ -2,60 +2,12 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_node_editor.h"
-#include "BlueprintBuilder.h"
-#include "Enum.hpp"
 
 namespace Odyssey::Rune
 {
 	Blueprint::Blueprint()
-		: m_Name("Blueprint"), m_Builder(this)
+		: m_Name("Blueprint")
 	{
-		m_Builder.OverrideCreateNodeMenu(Create_Node_Menu, m_CreateNodeMenuID);
-
-		auto& blueprintNode = m_Nodes.emplace_back(std::make_shared<BlueprintNode>("BP Example"));
-
-		auto& bp2Node = m_Nodes.emplace_back(std::make_shared<BlueprintNode>("BP Example 2"));
-		bp2Node->Color = float4(0.0f, 1.0f, 0.0f, 1.0f);
-		bp2Node->Inputs.emplace_back("Speed", PinType::Float);
-		bp2Node->Outputs.emplace_back("YourMom", PinType::Float);
-
-		auto& stringNode = m_Nodes.emplace_back(std::make_shared<SimpleNode>(""));
-		stringNode->Outputs[0].Modify("Message", PinType::String);
-
-		auto& treeNode = m_Nodes.emplace_back(std::make_shared<TreeNode>("Tree Example"));;
-		auto& groupNode = m_Nodes.emplace_back(std::make_shared<GroupNode>("Group Example"));
-		auto& branchNode = m_Nodes.emplace_back(std::make_shared<BlueprintNode>("Branch Example"));
-		CreateBranchNode(branchNode);
-
-		// Build nodes
-		BuildNodes();
-	}
-
-	void Blueprint::Update()
-	{
-		m_Builder.DrawBlueprint();
-
-		ImGui::PushOverrideID(m_CreateNodeMenuID);
-		if (ImGui::BeginPopup(Create_Node_Menu.c_str()))
-		{
-			ImGui::TextUnformatted("Create New Node");
-			ImGui::Separator();
-
-			std::shared_ptr<Node> node;
-
-			if (ImGui::MenuItem("Branch"))
-				node = AddNode<BranchNode>("Branch");
-			if (ImGui::MenuItem("Simple"))
-				node = AddNode<SimpleNode>("Simple");
-			if (ImGui::MenuItem("Group"))
-				node = AddNode<GroupNode>("Group");
-
-			if (node)
-				m_Builder.ConnectNewNode(node.get());
-
-			ImGui::EndPopup();
-		}
-		ImGui::PopID();
 	}
 
 	void Blueprint::AddLink(Pin* start, Pin* end)

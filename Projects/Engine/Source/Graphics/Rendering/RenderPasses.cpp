@@ -2,7 +2,7 @@
 #include "VulkanCommandBuffer.h"
 #include "VulkanImage.h"
 #include "VulkanRenderTexture.h"
-#include "Logger.h"
+#include "Log.h"
 #include "PerFrameRenderingData.h"
 #include "Drawcall.h"
 #include "RenderScene.h"
@@ -52,7 +52,7 @@ namespace Odyssey
 		}
 		else
 		{
-			Logger::LogError("(OpaquePass) Invalid render target for opaque pass.");
+			Log::Error("(OpaquePass) Invalid render target for opaque pass.");
 			return;
 		}
 
@@ -182,7 +182,7 @@ namespace Odyssey
 		// Make sure the RT is valid
 		if (!m_ColorRT.IsValid())
 		{
-			Logger::LogError("(OpaquePass) Invalid render target for OpaquePass");
+			Log::Error("(OpaquePass) Invalid render target for OpaquePass");
 			return;
 		}
 

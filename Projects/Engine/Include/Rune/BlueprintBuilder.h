@@ -1,7 +1,5 @@
 #pragma once
 #include "RuneNodes.h"
-#include "Pin.h"
-#include "Resource.h"
 #include "GUID.h"
 
 namespace ax::NodeEditor
@@ -21,12 +19,15 @@ namespace Odyssey
 		class BlueprintBuilder
 		{
 		public:
+			BlueprintBuilder() = default;
 			BlueprintBuilder(Blueprint* blueprint);
 			~BlueprintBuilder();
 
 		public:
+			void Begin();
 			void DrawBlueprint();
 			void DrawLabel(const char* label, float4 color);
+			void End();
 
 		public:
 			void ConnectNewNode(Node* node);

@@ -101,7 +101,7 @@ namespace Odyssey
 		err = vkEnumerateInstanceExtensionProperties(nullptr, &properties_count, properties.data());
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(context 1)");
+			Log::Error("(context 1)");
 		}
 
 		// Enable required extensions
@@ -130,7 +130,7 @@ namespace Odyssey
 		err = vkCreateInstance(&create_info, allocator, &instance);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(context 2)");
+			Log::Error("(context 2)");
 		}
 
 		// Setup the debug report callback
@@ -145,7 +145,7 @@ namespace Odyssey
 		err = vkCreateDebugReportCallbackEXT(instance, &debug_report_ci, allocator, &debugReport);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(context 3)");
+			Log::Error("(context 3)");
 		}
 	}
 

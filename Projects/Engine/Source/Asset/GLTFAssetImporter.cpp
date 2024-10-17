@@ -5,7 +5,7 @@
 #define TINYGLTF_NO_EXTERNAL_IMAGE
 #define TINYGLTF_USE_CPP14
 #include "tiny_gltf.h"
-#include "Logger.h"
+#include "Log.h"
 #include "Vertex.h"
 
 namespace Odyssey
@@ -48,14 +48,14 @@ namespace Odyssey
 
 		if (!warning.empty())
 		{
-			Logger::LogWarning(std::format("Warning detected while importing GLTF asset: {}", filePath.string()));
-			Logger::LogWarning(warning);
+			Log::Warning(std::format("Warning detected while importing GLTF asset: {}", filePath.string()));
+			Log::Warning(warning);
 		}
 
 		if (!error.empty())
 		{
-			Logger::LogWarning(std::format("Error detected while importing GLTF asset: {}", filePath.string()));
-			Logger::LogWarning(error);
+			Log::Warning(std::format("Error detected while importing GLTF asset: {}", filePath.string()));
+			Log::Warning(error);
 			return false;
 		}
 

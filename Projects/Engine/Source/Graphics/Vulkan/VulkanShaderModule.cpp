@@ -1,7 +1,7 @@
 #include "VulkanShaderModule.h"
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
-#include <Logger.h>
+#include <Log.h>
 #include "volk.h"
 #include <shaderc/shaderc.hpp>
 #include "AssetManager.h"
@@ -54,7 +54,7 @@ namespace Odyssey
 
 		if (vkCreateShaderModule(m_Context->GetDevice()->GetLogicalDevice(), &createInfo, nullptr, &m_ShaderModule) != VK_SUCCESS)
 		{
-			Logger::LogError("[VulkanShader] Failed to create shader module.");
+			Log::Error("[VulkanShader] Failed to create shader module.");
 		}
 	}
 }

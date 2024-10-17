@@ -32,7 +32,7 @@ namespace Odyssey
 
 		if (vkCreateComputePipelines(m_Context->GetDevice()->GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_ComputePipeline) != VK_SUCCESS)
 		{
-			Logger::LogError("[VulkanComputePipeline] Failed to create graphics pipeline.");
+			Log::Error("[VulkanComputePipeline] Failed to create graphics pipeline.");
 			return;
 		}
 	}
@@ -60,7 +60,7 @@ namespace Odyssey
 
 		if (vkCreatePipelineLayout(m_Context->GetDevice()->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
 		{
-			Logger::LogError("[VulkanGraphicsPipeline] Failed to create pipeline layout.");
+			Log::Error("[VulkanGraphicsPipeline] Failed to create pipeline layout.");
 			return;
 		}
 	}

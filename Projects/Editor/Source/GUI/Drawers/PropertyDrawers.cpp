@@ -1,7 +1,7 @@
 #include "PropertyDrawers.h"
 #include "imgui_internal.h"
 #include "AssetManager.h"
-#include "Logger.h"
+#include "Log.h"
 
 namespace Odyssey
 {
@@ -65,7 +65,7 @@ namespace Odyssey
 					if (m_OnValueModified)
 						m_OnValueModified(m_GUID);
 
-					Logger::LogInfo("(AssetFieldDrawer) Accepting D&D payload for mesh asset: " + m_GUID.String());
+					Log::Info("(AssetFieldDrawer) Accepting D&D payload for mesh asset: " + m_GUID.String());
 				}
 				ImGui::EndDragDropTarget();
 			}
@@ -254,7 +254,7 @@ namespace Odyssey
 					if (m_OnValueModified)
 						m_OnValueModified(m_GUID);
 
-					Logger::LogInfo("(AssetFieldDrawer) Accepting Entity payload: " + m_GUID.String());
+					Log::Info("(AssetFieldDrawer) Accepting Entity payload: " + m_GUID.String());
 				}
 				ImGui::EndDragDropTarget();
 			}

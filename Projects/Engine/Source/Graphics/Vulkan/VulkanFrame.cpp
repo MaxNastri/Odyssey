@@ -43,7 +43,7 @@ namespace Odyssey
 		VkResult err = vkCreateFence(m_Context->GetDeviceVK(), &info, allocator, &fence);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(frame 1)");
+			Log::Error("(frame 1)");
 		}
 	}
 
@@ -55,13 +55,13 @@ namespace Odyssey
 		VkResult err = vkCreateSemaphore(m_Context->GetDeviceVK(), &info, allocator, &imageAcquiredSemaphore);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(frame 2)");
+			Log::Error("(frame 2)");
 		}
 
 		err = vkCreateSemaphore(m_Context->GetDeviceVK(), &info, allocator, &renderCompleteSemaphore);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(frame 3)");
+			Log::Error("(frame 3)");
 		}
 	}
 }

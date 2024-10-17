@@ -2,7 +2,7 @@
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
 #include "VulkanPhysicalDevice.h"
-#include <Logger.h>
+#include <Log.h>
 #include "ResourceManager.h"
 #include "VulkanCommandPool.h"
 
@@ -13,7 +13,7 @@ namespace Odyssey
 		switch (bufferType)
 		{
 			case Odyssey::BufferType::None:
-				Logger::LogError("Cannot get usage flags from buffer type: NONE");
+				Log::Error("Cannot get usage flags from buffer type: NONE");
 				return 0;
 			case Odyssey::BufferType::Staging:
 				return VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
@@ -35,7 +35,7 @@ namespace Odyssey
 		switch (bufferType)
 		{
 			case BufferType::None:
-				Logger::LogError("[VulkanBuffer] Cannot convert BufferType::None.");
+				Log::Error("[VulkanBuffer] Cannot convert BufferType::None.");
 				break;
 			case BufferType::Uniform:
 				return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -63,7 +63,7 @@ namespace Odyssey
 
 		if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
 		{
-			Logger::LogError("[VulkanBuffer] Failed to create vulkan buffer!");
+			Log::Error("[VulkanBuffer] Failed to create vulkan buffer!");
 			return;
 		}
 
@@ -199,7 +199,7 @@ namespace Odyssey
 
 		if (vkAllocateMemory(m_Context->GetDeviceVK(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
 		{
-			Logger::LogError("[VulkanBuffer] Failed to allocate buffer memory!");
+			Log::Error("[VulkanBuffer] Failed to allocate buffer memory!");
 			return;
 		}
 

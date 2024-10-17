@@ -19,7 +19,7 @@ namespace Odyssey
 		VkResult err = vkDeviceWaitIdle(logicalDevice);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(device 1)");
+			Log::Error("(device 1)");
 		}
 	}
 
@@ -84,7 +84,7 @@ namespace Odyssey
 		VkResult err = vkCreateDevice(vkPhysicalDevice, &create_info, allocator, &logicalDevice);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(device 2)");
+			Log::Error("(device 2)");
 		}
 
 		volkLoadDevice(logicalDevice);

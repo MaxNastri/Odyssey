@@ -1,7 +1,7 @@
 #include "VulkanDescriptorLayout.h"
 #include "VulkanContext.h"
 #include "volk.h"
-#include "Logger.h"
+#include "Log.h"
 
 namespace Odyssey
 {
@@ -10,7 +10,7 @@ namespace Odyssey
 		switch (type)
 		{
 			case DescriptorType::None:
-				Logger::LogError("(VulkanDescriptorLayout) Cannot convert descriptor type None");
+				Log::Error("(VulkanDescriptorLayout) Cannot convert descriptor type None");
 				return (VkDescriptorType)0;
 			case DescriptorType::Uniform:
 				return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -19,7 +19,7 @@ namespace Odyssey
 			case DescriptorType::Storage:
 				return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 			default:
-				Logger::LogError("(VulkanDescriptorLayout) Cannot convert descriptor type None");
+				Log::Error("(VulkanDescriptorLayout) Cannot convert descriptor type None");
 				return (VkDescriptorType)0;
 
 		}
@@ -30,7 +30,7 @@ namespace Odyssey
 		switch (shaderStage)
 		{
 			case ShaderStage::None:
-				Logger::LogError("(VulkanDescriptorLayout) Cannot convert shader stage None");
+				Log::Error("(VulkanDescriptorLayout) Cannot convert shader stage None");
 				return (VkDescriptorType)0;
 			case ShaderStage::Fragment:
 				return VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -41,7 +41,7 @@ namespace Odyssey
 			case ShaderStage::Geometry:
 				return VK_SHADER_STAGE_GEOMETRY_BIT;
 			default:
-				Logger::LogError("(VulkanDescriptorLayout) Cannot convert shader stage None");
+				Log::Error("(VulkanDescriptorLayout) Cannot convert shader stage None");
 				return (VkDescriptorType)0;
 		}
 	}
@@ -77,7 +77,7 @@ namespace Odyssey
 
 		if (vkCreateDescriptorSetLayout(m_Context->GetDeviceVK(), &descriptor_layout_create_info, nullptr, &m_Layout) != VK_SUCCESS)
 		{
-			Logger::LogError("(VulkanDescriptorLayout) Could not create descriptor set layout.");
+			Log::Error("(VulkanDescriptorLayout) Could not create descriptor set layout.");
 		}
 	}
 }

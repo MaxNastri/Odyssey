@@ -179,7 +179,7 @@ namespace Odyssey
 		VkResult err = vkCreateDescriptorPool(m_Context->GetDeviceVK(), &pool_info, allocator, &descriptorPool);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(imgui 3)");
+			Log::Error("(imgui 3)");
 		}
 	}
 
@@ -206,13 +206,13 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(imgui 1)");
+			Log::Error("(imgui 1)");
 		}
 
 		err = vkDeviceWaitIdle(m_Context->GetDeviceVK());
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(imgui 2)");
+			Log::Error("(imgui 2)");
 		}
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();

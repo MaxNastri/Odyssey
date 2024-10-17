@@ -28,7 +28,7 @@ namespace Odyssey
         VkResult err = vkDeviceWaitIdle(m_Context->GetDeviceVK());
         if (!check_vk_result(err))
         {
-            Logger::LogError("(Swapchain 1)");
+            Log::Error("(Swapchain 1)");
         }
 
 		minImageCount = GetMinImageCount(surface->GetPresentMode());
@@ -57,7 +57,7 @@ namespace Odyssey
         err = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_Context->GetPhysicalDeviceVK(), vkSurface, &cap);
         if (!check_vk_result(err))
         {
-            Logger::LogError("(Swapchain 2)");
+            Log::Error("(Swapchain 2)");
         }
         if (info.minImageCount < cap.minImageCount)
             info.minImageCount = cap.minImageCount;
@@ -78,13 +78,13 @@ namespace Odyssey
         err = vkCreateSwapchainKHR(m_Context->GetDeviceVK(), &info, allocator, &swapchain);
         if (!check_vk_result(err))
         {
-            Logger::LogError("(Swapchain 3)");
+            Log::Error("(Swapchain 3)");
         }
 
         err = vkGetSwapchainImagesKHR(m_Context->GetDeviceVK(), swapchain, &imageCount, nullptr);
         if (!check_vk_result(err))
         {
-            Logger::LogError("(Swapchain 4)");
+            Log::Error("(Swapchain 4)");
         }
 	}
 
@@ -108,7 +108,7 @@ namespace Odyssey
         backbufferImages.resize(imageCount);
         if (vkGetSwapchainImagesKHR(m_Context->GetDeviceVK(), swapchain, &imageCount, backbufferImages.data()) != VK_SUCCESS)
         {
-            Logger::LogError("(VulkanSwapchain) Cannot retrieve swapchain images.");
+            Log::Error("(VulkanSwapchain) Cannot retrieve swapchain images.");
             return;
         }
 
