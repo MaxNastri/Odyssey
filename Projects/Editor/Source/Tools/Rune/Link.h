@@ -1,4 +1,5 @@
 #pragma once
+#include "Rune.hpp"
 
 namespace Odyssey::Rune
 {
@@ -13,8 +14,8 @@ namespace Odyssey::Rune
 		float3 Color;
 
 	public:
-		Link(LinkId id, uint64_t startPinID, uint64_t endPinID)
-			: ID(id), StartPinID(startPinID), EndPinID(endPinID), Color(1.0f)
+		Link(uint64_t startPinID, uint64_t endPinID)
+			: ID(GetNextID()), StartPinID(startPinID), EndPinID(endPinID), Color(1.0f)
 		{
 
 		}

@@ -12,26 +12,28 @@ namespace Odyssey::Rune
 	{
 		InitNodeEditor();
 
-		auto& blueprintNode = m_Nodes.emplace_back(std::make_shared<BlueprintNode>(GetNextID(), "BP Example", float4(1.0f, 0.5f, 0.5f, 1.0f)));
-		blueprintNode->Inputs.emplace_back(GetNextID(), "InFlow", PinType::Flow);
-		blueprintNode->Inputs.emplace_back(GetNextID(), "Input", PinType::Float);
-		blueprintNode->Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
-		blueprintNode->Outputs.emplace_back(GetNextID(), "Output", PinType::Float);
+		auto& blueprintNode = m_Nodes.emplace_back(std::make_shared<BlueprintNode>("BP Example", float4(1.0f, 0.5f, 0.5f, 1.0f)));
+		blueprintNode->Inputs.emplace_back("InFlow", PinType::Flow);
+		blueprintNode->Inputs.emplace_back("Input", PinType::Float);
+		blueprintNode->Outputs.emplace_back( "OutFlow", PinType::Flow);
+		blueprintNode->Outputs.emplace_back("Output", PinType::Float);
 
-		auto& bp2Node = m_Nodes.emplace_back(std::make_shared<BlueprintNode>(GetNextID(), "BP Example 2", float4(0.0f, 1.5f, 0.5f, 1.0f)));
-		bp2Node->Inputs.emplace_back(GetNextID(), "InFlow", PinType::Flow);
-		bp2Node->Inputs.emplace_back(GetNextID(), "Input", PinType::Float);
-		bp2Node->Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
-		bp2Node->Outputs.emplace_back(GetNextID(), "Output", PinType::Float);
+		auto& bp2Node = m_Nodes.emplace_back(std::make_shared<BlueprintNode>("BP Example 2", float4(0.0f, 1.5f, 0.5f, 1.0f)));
+		bp2Node->Inputs.emplace_back("InFlow", PinType::Flow);
+		bp2Node->Inputs.emplace_back("Input", PinType::Float);
+		bp2Node->Outputs.emplace_back("OutFlow", PinType::Flow);
+		bp2Node->Outputs.emplace_back("Output", PinType::Float);
 
-		auto& stringNode = m_Nodes.emplace_back(std::make_shared<SimpleNode>(GetNextID(), ""));
-		stringNode->Outputs.emplace_back(GetNextID(), "Message", PinType::String);
+		auto& stringNode = m_Nodes.emplace_back(std::make_shared<SimpleNode>(""));
+		stringNode->Outputs.emplace_back("Message", PinType::String);
 
-		auto& treeNode = m_Nodes.emplace_back(std::make_shared<TreeNode>(GetNextID(), "Tree Example"));
-		treeNode->Inputs.emplace_back(GetNextID(), "InFlow", PinType::Flow);
-		treeNode->Outputs.emplace_back(GetNextID(), "OutFlow", PinType::Flow);
+		auto& treeNode = m_Nodes.emplace_back(std::make_shared<TreeNode>("Tree Example"));
+		treeNode->Inputs.emplace_back("InFlow", PinType::Flow);
+		treeNode->Outputs.emplace_back("OutFlow", PinType::Flow);
 
-		auto& groupNode = m_Nodes.emplace_back(std::make_shared<GroupNode>(GetNextID(), "Group Example"));
+		auto& groupNode = m_Nodes.emplace_back(std::make_shared<GroupNode>("Group Example"));
+
+		auto branchNode = m_Nodes.emplace_back(std::make_shared<BranchNode>("Branch Example"));
 
 		// Build nodes
 		BuildNodes();
@@ -73,10 +75,12 @@ namespace Odyssey::Rune
 			ImguiExt::EndDelete();
 		}
 
+		float2 mousePos = ImGui::GetMousePos();
+
 		ImguiExt::Suspend();
 
 		// Check the state of context menu popups
-		CheckContextMenus();
+		CheckContextMenus(mousePos);
 
 		ImguiExt::Resume();
 
@@ -178,7 +182,7 @@ namespace Odyssey::Rune
 						startPin->Linked = true;
 						endPin->Linked = true;
 
-						Link& newLink = m_Links.emplace_back(Link(GetNextID(), start.Get(), end.Get()));
+						Link& newLink = m_Links.emplace_back(Link(start.Get(), end.Get()));
 						newLink.Color = startPin->GetColor();
 					}
 				}
@@ -197,8 +201,10 @@ namespace Odyssey::Rune
 
 			if (ImguiExt::AcceptNewItem())
 			{
-				ImguiExt::Suspend();
 				m_CreatingNewNode = true;
+				m_NewNodeLinkPin = FindPin(pinID.Get());
+
+				ImguiExt::Suspend();
 				ImGui::OpenPopup("Create New Node");
 				ImguiExt::Resume();
 			}
@@ -245,7 +251,7 @@ namespace Odyssey::Rune
 		}
 	}
 
-	void Blueprint::CheckContextMenus()
+	void Blueprint::CheckContextMenus(float2 mousePos)
 	{
 		static ImguiExt::NodeId contextNode;
 		static ImguiExt::PinId contextPin;
@@ -258,7 +264,10 @@ namespace Odyssey::Rune
 		else if (ImguiExt::ShowLinkContextMenu(&contextLink))
 			ImGui::OpenPopup("Link Context Menu");
 		else if (ImguiExt::ShowBackgroundContextMenu())
+		{
 			ImGui::OpenPopup("Create New Node");
+			m_NewNodeLinkPin = nullptr;
+		}
 
 		if (ImGui::BeginPopup("Node Context Menu"))
 		{
@@ -321,6 +330,61 @@ namespace Odyssey::Rune
 				ed::DeleteLink(contextLink);
 
 			ImGui::EndPopup();
+		}
+
+		if (ImGui::BeginPopup("Create New Node"))
+		{
+			ImGui::TextUnformatted("Create New Node");
+			ImGui::Separator();
+			std::shared_ptr<Node> node;
+
+			if (ImGui::MenuItem("Branch"))
+				node = m_Nodes.emplace_back(std::make_shared<BranchNode>("Branch"));
+			if (ImGui::MenuItem("Simple"))
+				node = m_Nodes.emplace_back(std::make_shared<SimpleNode>("Simple"));
+			if (ImGui::MenuItem("Group"))
+				node = m_Nodes.emplace_back(std::make_shared<GroupNode>("Group"));
+			if (ImGui::MenuItem("Tree"))
+				node = m_Nodes.emplace_back(std::make_shared<TreeNode>("Tree"));
+
+			if (node)
+			{
+				BuildNode(node.get());
+				BuildNodes();
+				m_CreatingNewNode = false;
+
+				ImguiExt::SetNodePosition(node->ID, mousePos);
+
+				if (auto startPin = m_NewNodeLinkPin)
+				{
+					auto& pins = startPin->IO == PinIO::Input ? node->Outputs : node->Inputs;
+
+					for (Pin& pin : pins)
+					{
+						if (Pin::CanCreateLink(startPin, &pin))
+						{
+							Pin* endPin = &pin;
+
+							if (startPin->IO == PinIO::Input)
+								std::swap(startPin, endPin);
+
+							startPin->Linked = true;
+							endPin->Linked = true;
+
+							Link& link = m_Links.emplace_back(Link(startPin->ID, endPin->ID));
+							link.Color = startPin->GetColor();
+
+							break;
+						}
+					}
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+		else
+		{
+			m_CreatingNewNode = false;
 		}
 	}
 

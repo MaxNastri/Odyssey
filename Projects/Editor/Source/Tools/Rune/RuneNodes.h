@@ -20,7 +20,7 @@ namespace Odyssey::Rune
 		std::string SavedState;
 
 	public:
-		Node(NodeId id, std::string_view name, float4 color = float4(1.0f));
+		Node(std::string_view name, float4 color = float4(1.0f));
 
 	public:
 		virtual void Draw(RuneUIBuilder* builder) = 0;
@@ -29,16 +29,21 @@ namespace Odyssey::Rune
 	struct BlueprintNode : Node
 	{
 	public:
-		BlueprintNode(NodeId id, std::string_view name, float4 color = float4(1.0f, 0.0f, 0.0f, 1.0f));
+		BlueprintNode(std::string_view name, float4 color = float4(1.0f, 0.0f, 0.0f, 1.0f));
 
 	public:
 		virtual void Draw(RuneUIBuilder* builder) override;
 	};
 
+	struct BranchNode : public BlueprintNode
+	{
+		BranchNode(std::string_view name);
+	};
+
 	struct SimpleNode : Node
 	{
 	public:
-		SimpleNode(NodeId id, std::string_view name, float4 color = float4(1.0f));
+		SimpleNode(std::string_view name, float4 color = float4(1.0f));
 
 	public:
 		virtual void Draw(RuneUIBuilder* builder) override;
@@ -47,7 +52,7 @@ namespace Odyssey::Rune
 	struct GroupNode : Node
 	{
 	public:
-		GroupNode(NodeId id, std::string_view name, float4 color = float4(1.0f));
+		GroupNode(std::string_view name, float4 color = float4(1.0f));
 
 	public:
 		virtual void Draw(RuneUIBuilder* builder) override;
@@ -60,7 +65,7 @@ namespace Odyssey::Rune
 	struct TreeNode : Node
 	{
 	public:
-		TreeNode(NodeId id, std::string_view name, float4 color = float4(0.1f, 0.25f, 0.5f, 0.8f));
+		TreeNode(std::string_view name, float4 color = float4(0.1f, 0.25f, 0.5f, 0.8f));
 
 	public:
 		virtual void Draw(RuneUIBuilder* builder) override;

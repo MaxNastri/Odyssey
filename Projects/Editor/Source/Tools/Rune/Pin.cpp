@@ -1,13 +1,19 @@
 #include "Pin.h"
+#include "Rune.hpp"
 #include "imgui.h"
 #include "widgets.h"
 
 namespace Odyssey::Rune
 {
-	Pin::Pin(PinId id, std::string_view name, PinType type)
-		: ID(id), Name(name), Node(nullptr), IO(PinIO::Input), Type(type)
+	Pin::Pin(std::string_view name, PinType type)
+		: ID(GetNextID()), Name(name), Node(nullptr), IO(PinIO::Input), Type(type)
 	{
 
+	}
+
+	bool Pin::CanCreateLink(Pin* a, Pin* b)
+	{
+		return (a && b) && (a != b) && (a->IO != b->IO) && (a->Type == b->Type) && (a->Node != b->Node);
 	}
 
 	void Pin::Draw(float alpha)

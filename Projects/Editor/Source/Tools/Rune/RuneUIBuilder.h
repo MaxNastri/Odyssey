@@ -45,15 +45,10 @@ namespace Odyssey
 			void EndPin();
 
 		public:
-			//void DrawNode(Node* node);
-			//void DrawSimpleNode(Node* node);
-			//void DrawTreeNode(Node* node);
-
-		public:
 			void Middle();
 			bool SetStage(Stage stage);
 
-		public:
+		private:
 			struct Header
 			{
 				std::shared_ptr<Texture2D> Texture;
@@ -75,11 +70,11 @@ namespace Odyssey
 				float2 ContentMax;
 			};
 
-		public:
+		private:
 			Header m_Header;
 			DrawingState m_DrawingState;
 
-		public:
+		private:
 			inline static const GUID& Header_Texture_GUID = 980123767453938719;
 		};
 	}

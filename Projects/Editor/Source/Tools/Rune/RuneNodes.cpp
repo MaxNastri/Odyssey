@@ -1,4 +1,5 @@
 #include "RuneNodes.h"
+#include "Rune.hpp"
 #include "RuneUIBuilder.h"
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -9,14 +10,14 @@ namespace Odyssey::Rune
 {
 	namespace ImguiExt = ax::NodeEditor;
 
-	Node::Node(NodeId id, std::string_view name, float4 color)
-		: ID(id), Name(name), Color(color), Size(0.0f)
+	Node::Node(std::string_view name, float4 color)
+		: ID(GetNextID()), Name(name), Color(color), Size(0.0f)
 	{
 
 	}
 
-	BlueprintNode::BlueprintNode(NodeId id, std::string_view name, float4 color)
-		: Node(id, name, color)
+	BlueprintNode::BlueprintNode(std::string_view name, float4 color)
+		: Node(name, color)
 	{
 
 	}
@@ -103,12 +104,6 @@ namespace Odyssey::Rune
 				ImGui::Spring(0);
 			}
 
-			if (input.Type == PinType::Bool)
-			{
-				ImGui::Button("Hello");
-				ImGui::Spring(0);
-			}
-
 			ImGui::PopStyleVar();
 
 			builder->EndInput();
@@ -164,9 +159,20 @@ namespace Odyssey::Rune
 		builder->EndNode();
 	}
 
-	SimpleNode::SimpleNode(NodeId id, std::string_view name, float4 color)
-		: Node(id, name, color)
+	BranchNode::BranchNode(std::string_view name)
+		: BlueprintNode(name)
 	{
+		Inputs.emplace_back(Pin("", PinType::Flow));
+		Inputs.emplace_back(Pin("Condition", PinType::Bool));
+
+		Outputs.emplace_back(Pin("True", PinType::Flow));
+		Outputs.emplace_back(Pin("False", PinType::Flow));
+	}
+
+	SimpleNode::SimpleNode(std::string_view name, float4 color)
+		: Node(name, color)
+	{
+
 	}
 
 	void SimpleNode::Draw(RuneUIBuilder* builder)
@@ -262,8 +268,8 @@ namespace Odyssey::Rune
 		builder->EndNode();
 	}
 
-	GroupNode::GroupNode(NodeId id, std::string_view name, float4 color)
-		: Node(id, name, color)
+	GroupNode::GroupNode(std::string_view name, float4 color)
+		: Node(name, color)
 	{
 		Size = float2(200, 200);
 	}
@@ -280,7 +286,7 @@ namespace Odyssey::Rune
 
 		// Group content
 		{
-			ImGui::PushID(ID);
+			ImGui::PushID((int)ID);
 			ImGui::BeginVertical("content");
 			ImGui::BeginHorizontal("horizontal");
 			ImGui::Spring(1);
@@ -328,8 +334,8 @@ namespace Odyssey::Rune
 		ImguiExt::EndGroupHint();
 	}
 
-	TreeNode::TreeNode(NodeId id, std::string_view name, float4 color)
-		: Node(id, name, color)
+	TreeNode::TreeNode(std::string_view name, float4 color)
+		: Node(name, color)
 	{
 
 	}

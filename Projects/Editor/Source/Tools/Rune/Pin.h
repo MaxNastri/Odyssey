@@ -37,7 +37,10 @@ namespace Odyssey::Rune
 		bool Linked = false;
 
 	public:
-		Pin(PinId id, std::string_view name, PinType type);
+		Pin(std::string_view name, PinType type);
+
+	public:
+		static bool CanCreateLink(Pin* a, Pin* b);
 
 	public:
 		void Draw(float alpha = 1.0f);
