@@ -4,9 +4,6 @@ namespace Odyssey
 {
 	static constexpr double s_Epsilon = 0.000001;
 
-
-	// time = 0.3
-	// array = {0.0, 0.6}
 	void BoneKeyframe::AddPositionKey(double time, glm::vec3 value)
 	{
 		for (size_t i = 0; i < m_PositionKeys.size(); i++)

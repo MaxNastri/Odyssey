@@ -1,0 +1,106 @@
+#pragma once
+#include "RuneNodes.h"
+#include "Pin.h"
+#include "Resource.h"
+#include "GUID.h"
+
+namespace ax::NodeEditor
+{
+	struct EditorContext;
+}
+namespace ImguiExt = ax::NodeEditor;
+
+namespace Odyssey
+{
+	class Texture2D;
+
+	namespace Rune
+	{
+		class Blueprint;
+
+		class BlueprintBuilder
+		{
+		public:
+			BlueprintBuilder(Blueprint* blueprint);
+			~BlueprintBuilder();
+
+		public:
+			void DrawBlueprint();
+			void DrawLabel(const char* label, float4 color);
+
+		public:
+			void ConnectNewNode(Node* node);
+
+		public:
+			void BeginNode(NodeId id);
+			void BeginHeader(float4 color = float4(1.0f));
+			void BeginInput(PinId id);
+			void BeginOutput(PinId id);
+			void BeginPin(PinId id, PinIO pinIO);
+			void Middle();
+			void EndNode();
+			void EndHeader();
+			void EndInput();
+			void EndOutput();
+			void EndPin();
+
+		private:
+			void CheckNewLinks();
+			void CheckNewNodes();
+			void CheckDeletions();
+			void CheckContextMenus();
+
+		private:
+			enum class Stage { Invalid, Begin, Header, Content, Input, Output, Middle, End };
+			bool SetStage(Stage stage);
+
+		private:
+			struct Header
+			{
+				std::shared_ptr<Texture2D> Texture;
+				uint64_t TextureID;
+				float4 Color;
+				float2 Min;
+				float2 Max;
+				bool HasHeader = false;
+			};
+
+			struct DrawingState
+			{
+				bool HasHeader = false;
+				Stage CurrentStage;
+				NodeId CurrentNodeID;
+				float2 NodeMin;
+				float2 NodeMax;
+				float2 ContentMin;
+				float2 ContentMax;
+				float2 MousePos;
+				bool CreatingNewNode = false;
+				Pin* NewNodeLinkPin = nullptr;
+				Pin* ActiveLinkPin = nullptr;
+			};
+
+			struct UIOverrides
+			{
+				std::string NodeContextMenu = "Default Node Context Menu";
+				std::string PinContextMenu = "Default Pin Context Menu";
+				std::string LinkContextMenu = "Default Link Context Menu";
+				std::string CreateNodeContextMenu = "Default Create Node Context Menu";
+			};
+
+		private:
+			ImguiExt::EditorContext* m_Context = nullptr;
+			Blueprint* m_Blueprint = nullptr;
+			Header m_Header;
+			DrawingState m_DrawingState;
+
+		private:
+			inline static const GUID& Header_Texture_GUID = 980123767453938719;
+
+		private:
+			inline static constexpr float4 Reject_Link_Color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+			inline static constexpr float4 Incompatible_Link_Color = float4(0.17f, 0.12f, 0.12f, 0.70f);
+			inline static constexpr float4 New_Node_Text_Color = float4(0.12f, 0.17f, 0.12f, 0.70f);
+		};
+	}
+}

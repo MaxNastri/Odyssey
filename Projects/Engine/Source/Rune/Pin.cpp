@@ -48,4 +48,10 @@ namespace Odyssey::Rune
 
 		ImGui::Widgets::Icon(ImVec2(Icon_Size.x, Icon_Size.y), iconType, Linked, pinColor, pinInnerColor);
 	}
+
+	void Pin::Modify(std::string_view name, PinType type)
+	{
+		Name = name;
+		Type = type;
+	}
 }

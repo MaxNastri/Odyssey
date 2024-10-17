@@ -12,7 +12,6 @@ namespace Odyssey
 		AnimationClipTimeline(GUID animationClip);
 
 	public:
-		const std::unordered_map<std::string, glm::mat4>& BlendKeysOld(double dt);
 		const std::map<std::string, BlendKey>& BlendKeys(double dt);
 
 	public:

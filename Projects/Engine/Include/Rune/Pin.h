@@ -45,6 +45,11 @@ namespace Odyssey::Rune
 
 	public:
 		void Draw(float alpha = 1.0f);
+
+	public:
+		void Modify(std::string_view name, PinType type);
+
+	public:
 		float3 GetColor() { return Pin_Colors[Type]; }
 
 	private:

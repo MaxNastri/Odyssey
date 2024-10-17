@@ -1,6 +1,6 @@
 #include "RuneNodes.h"
 #include "Rune.hpp"
-#include "RuneUIBuilder.h"
+#include "BlueprintBuilder.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imgui_node_editor.h"
@@ -16,13 +16,20 @@ namespace Odyssey::Rune
 
 	}
 
+	void Node::SetPosition(float2 position)
+	{
+		if (position != float2(0.0f))
+			ImguiExt::SetNodePosition(ID, position);
+	}
+
 	BlueprintNode::BlueprintNode(std::string_view name, float4 color)
 		: Node(name, color)
 	{
-
+		Inputs.emplace_back("Input", PinType::Flow);
+		Outputs.emplace_back("Output", PinType::Flow);
 	}
 
-	void BlueprintNode::Draw(RuneUIBuilder* builder, Pin* activeLinkPin)
+	void BlueprintNode::Draw(BlueprintBuilder* builder, Pin* activeLinkPin)
 	{
 		builder->BeginNode(ID);
 
@@ -163,9 +170,12 @@ namespace Odyssey::Rune
 		builder->EndNode();
 	}
 
-	BranchNode::BranchNode(std::string_view name)
-		: BlueprintNode(name)
+	BranchNode::BranchNode(std::string_view name, float4 color)
+		: BlueprintNode(name, color)
 	{
+		Inputs.clear();
+		Outputs.clear();
+
 		Inputs.emplace_back(Pin("", PinType::Flow, false));
 		Inputs.emplace_back(Pin("Condition", PinType::Bool, false));
 
@@ -176,10 +186,10 @@ namespace Odyssey::Rune
 	SimpleNode::SimpleNode(std::string_view name, float4 color)
 		: Node(name, color)
 	{
-
+		Outputs.emplace_back(Pin("Value", PinType::Bool, true));
 	}
 
-	void SimpleNode::Draw(RuneUIBuilder* builder, Pin* activeLinkPin)
+	void SimpleNode::Draw(BlueprintBuilder* builder, Pin* activeLinkPin)
 	{
 		builder->BeginNode(ID);
 
@@ -280,7 +290,7 @@ namespace Odyssey::Rune
 		Size = float2(200, 200);
 	}
 
-	void GroupNode::Draw(RuneUIBuilder* builder, Pin* activeLinkPin)
+	void GroupNode::Draw(BlueprintBuilder* builder, Pin* activeLinkPin)
 	{
 		// Init style and colors
 		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, Group_Alpha);
@@ -343,10 +353,11 @@ namespace Odyssey::Rune
 	TreeNode::TreeNode(std::string_view name, float4 color)
 		: Node(name, color)
 	{
-
+		Inputs.emplace_back("Input", PinType::Flow);
+		Outputs.emplace_back("Output", PinType::Flow);
 	}
 
-	void TreeNode::Draw(RuneUIBuilder* builder, Pin* activeLinkPin)
+	void TreeNode::Draw(BlueprintBuilder* builder, Pin* activeLinkPin)
 	{
 		const ImVec4 pinBackground = ImguiExt::GetStyle().Colors[ImguiExt::StyleColor_NodeBg];
 
