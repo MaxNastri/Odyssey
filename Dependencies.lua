@@ -95,7 +95,7 @@ Dependencies = {
 	},
 }
 
--- NOTE(Peter): Probably don't touch these functions unless you know what you're doing (or just ask me if you need help extending them)
+-- Probably don't touch these functions unless you know what you're doing
 
 function LinkDependency(table, is_debug, target)
 

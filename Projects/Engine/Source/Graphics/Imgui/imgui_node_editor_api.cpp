@@ -571,6 +571,11 @@ void ax::NodeEditor::NavigateToContent(float duration)
     s_Editor->NavigateTo(s_Editor->GetContentBounds(), true, duration);
 }
 
+void ax::NodeEditor::NavigateToContent(bool zoomIn, float duration)
+{
+    s_Editor->NavigateTo(s_Editor->GetContentBounds(), zoomIn, duration);
+}
+
 void ax::NodeEditor::NavigateToSelection(bool zoomIn, float duration)
 {
     s_Editor->NavigateTo(s_Editor->GetSelectionBounds(), zoomIn, duration);

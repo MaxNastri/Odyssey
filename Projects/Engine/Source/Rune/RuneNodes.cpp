@@ -63,7 +63,7 @@ namespace Odyssey::Rune
 					float alpha = ImGui::GetStyle().Alpha;
 
 					if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &output) && &output != activeLinkPin)
-					    alpha = alpha * (48.0f / 255.0f);
+						alpha = alpha * (48.0f / 255.0f);
 
 					ImguiExt::BeginPin(output.ID, ImguiExt::PinKind::Output);
 					ImguiExt::PinPivotAlignment(ImVec2(1.0f, 0.5f));
@@ -101,7 +101,7 @@ namespace Odyssey::Rune
 			float alpha = ImGui::GetStyle().Alpha;
 
 			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &input) && &input != activeLinkPin)
-			    alpha = alpha * (48.0f / 255.0f);
+				alpha = alpha * (48.0f / 255.0f);
 
 			builder->BeginInput(input.ID);
 
@@ -128,7 +128,7 @@ namespace Odyssey::Rune
 
 			auto alpha = ImGui::GetStyle().Alpha;
 			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &output) && &output != activeLinkPin)
-			    alpha = alpha * (48.0f / 255.0f);
+				alpha = alpha * (48.0f / 255.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
 
 			builder->BeginOutput(output.ID);
@@ -199,7 +199,7 @@ namespace Odyssey::Rune
 			float alpha = ImGui::GetStyle().Alpha;
 
 			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &input) && &input != activeLinkPin)
-			    alpha = alpha * (48.0f / 255.0f);
+				alpha = alpha * (48.0f / 255.0f);
 
 			builder->BeginInput(input.ID);
 
@@ -241,7 +241,7 @@ namespace Odyssey::Rune
 
 			auto alpha = ImGui::GetStyle().Alpha;
 			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &output) && &output != activeLinkPin)
-			    alpha = alpha * (48.0f / 255.0f);
+				alpha = alpha * (48.0f / 255.0f);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
 
@@ -359,7 +359,6 @@ namespace Odyssey::Rune
 
 	void TreeNode::Draw(BlueprintBuilder* builder, Pin* activeLinkPin)
 	{
-		const ImVec4 pinBackground = ImguiExt::GetStyle().Colors[ImguiExt::StyleColor_NodeBg];
 
 		ImRect inputsRect;
 		ImRect contentRect;
@@ -367,6 +366,23 @@ namespace Odyssey::Rune
 		float outputAlpha = 0.8f;
 		float inputAlpha = 0.8f;
 
+		PushStyle();
+
+		ImguiExt::BeginNode(ID);
+
+		DrawInputs(activeLinkPin);
+		DrawContent(activeLinkPin);
+		DrawOutputs(activeLinkPin);
+
+		ImguiExt::EndNode();
+
+		PopStyle();
+
+		DrawBackground(activeLinkPin);
+	}
+
+	void TreeNode::PushStyle()
+	{
 		// Init style and colors
 		ImguiExt::PushStyleColor(ImguiExt::StyleColor_NodeBg, ImColor(128, 128, 128, 200));
 		ImguiExt::PushStyleColor(ImguiExt::StyleColor_NodeBorder, ImColor(32, 32, 32, 200));
@@ -380,131 +396,132 @@ namespace Odyssey::Rune
 		ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinBorderWidth, 1.0f);
 		ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinRadius, PinRadius);
 
-		// Start the node
-		ImguiExt::BeginNode(ID);
+	}
 
-		// Inputs
+	void TreeNode::DrawInputs(Pin* activeLinkPin)
+	{
+		ImGui::BeginVertical((int32_t)ID);
+		ImGui::BeginHorizontal("inputs");
+		ImGui::Spring(0, Padding * 2);
+
+		if (!Inputs.empty())
 		{
-			ImGui::BeginVertical((int32_t)ID);
-			ImGui::BeginHorizontal("inputs");
-			ImGui::Spring(0, Padding * 2);
+			auto& pin = Inputs[0];
+			ImGui::Dummy(ImVec2(0, Padding));
+			ImGui::Spring(1, 0);
 
-			if (!Inputs.empty())
-			{
-				auto& pin = Inputs[0];
-				ImGui::Dummy(ImVec2(0, Padding));
-				ImGui::Spring(1, 0);
+			m_InputsRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 
-				inputsRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+			ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinArrowSize, 10.0f);
+			ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinArrowWidth, 10.0f);
+			ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinCorners, ImDrawFlags_RoundCornersBottom);
 
-				ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinArrowSize, 10.0f);
-				ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinArrowWidth, 10.0f);
-				ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinCorners, ImDrawFlags_RoundCornersBottom);
+			ImguiExt::BeginPin(pin.ID, ImguiExt::PinKind::Input);
+			ImguiExt::PinPivotRect(m_InputsRect.GetTL(), m_InputsRect.GetBR());
+			ImguiExt::PinRect(m_InputsRect.GetTL(), m_InputsRect.GetBR());
+			ImguiExt::EndPin();
 
-				ImguiExt::BeginPin(pin.ID, ImguiExt::PinKind::Input);
-				ImguiExt::PinPivotRect(inputsRect.GetTL(), inputsRect.GetBR());
-				ImguiExt::PinRect(inputsRect.GetTL(), inputsRect.GetBR());
-				ImguiExt::EndPin();
+			ImguiExt::PopStyleVar(3);
 
-				ImguiExt::PopStyleVar(3);
+			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &pin) && &pin != activeLinkPin)
+				m_InputAlpha = ImGui::GetStyle().Alpha * (48.0f / 255.0f);
+		}
+		else
+		{
+			ImGui::Dummy(ImVec2(0, Padding));
+		}
+	}
 
-				if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &pin) && &pin != activeLinkPin)
-				    inputAlpha = ImGui::GetStyle().Alpha * (48.0f / 255.0f);
-			}
-			else
-			{
-				ImGui::Dummy(ImVec2(0, Padding));
-			}
+	void TreeNode::DrawContent(Pin* activeLinkPin)
+	{
+		ImGui::Spring(0, Padding * 2);
+		ImGui::EndHorizontal();
+
+		ImGui::BeginHorizontal("ContentFrame");
+		ImGui::Spring(1, Padding);
+
+		ImGui::BeginVertical("Content", ImVec2(0.0f, 0.0f));
+		ImGui::Dummy(ImVec2(160, 0));
+		ImGui::Spring(1);
+		ImGui::TextUnformatted(Name.c_str());
+		ImGui::Spring(1);
+		ImGui::EndVertical();
+		m_ContentRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+
+		ImGui::Spring(1, Padding);
+		ImGui::EndHorizontal();
+	}
+
+	void TreeNode::DrawOutputs(Pin* activeLinkPin)
+	{
+		ImGui::BeginHorizontal("outputs");
+		ImGui::Spring(0, Padding * 2);
+
+		if (!Outputs.empty())
+		{
+			auto& pin = Outputs[0];
+			ImGui::Dummy(ImVec2(0, Padding));
+			ImGui::Spring(1, 0);
+			m_OutputsRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+
+			ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinCorners, ImDrawFlags_RoundCornersTop);
+
+			ImguiExt::BeginPin(pin.ID, ImguiExt::PinKind::Output);
+			ImguiExt::PinPivotRect(m_OutputsRect.GetTL(), m_OutputsRect.GetBR());
+			ImguiExt::PinRect(m_OutputsRect.GetTL(), m_OutputsRect.GetBR());
+			ImguiExt::EndPin();
+
+			ImguiExt::PopStyleVar();
+
+			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &pin) && &pin != activeLinkPin)
+				m_OutputAlpha = ImGui::GetStyle().Alpha * (48.0f / 255.0f);
+		}
+		else
+		{
+			ImGui::Dummy(ImVec2(0, Padding));
 		}
 
-		// Content
+		ImGui::Spring(0, Padding * 2);
+		ImGui::EndHorizontal();
+
+		ImGui::EndVertical();
+	}
+
+	void TreeNode::DrawBackground(Pin* activeLinkPin)
+	{
+		const ImVec4 pinBackground = ImguiExt::GetStyle().Colors[ImguiExt::StyleColor_NodeBg];
+
+		auto drawList = ImguiExt::GetNodeBackgroundDrawList(ID);
+		const ImDrawFlags topRoundCornersFlags = ImDrawFlags_RoundCornersTop;
+		const ImDrawFlags bottomRoundCornersFlags = ImDrawFlags_RoundCornersBottom;
+
 		{
-			ImGui::Spring(0, Padding * 2);
-			ImGui::EndHorizontal();
+			float2 inTopLeft = float2(m_InputsRect.GetTL().x, m_InputsRect.GetTL().y);
+			float2 outTopLeft = float2(m_OutputsRect.GetTL().x, m_OutputsRect.GetTL().y);
+			float2 outBotRight = float2(m_OutputsRect.GetBR().x, m_OutputsRect.GetBR().y);
 
-			ImGui::BeginHorizontal("ContentFrame");
-			ImGui::Spring(1, Padding);
+			ImColor inputPinColor = ImColor(pinBackground.x, pinBackground.y, pinBackground.z, m_InputAlpha);
+			ImColor outputPinColor = ImColor(pinBackground.x, pinBackground.y, pinBackground.z, m_OutputAlpha);
 
-			ImGui::BeginVertical("Content", ImVec2(0.0f, 0.0f));
-			ImGui::Dummy(ImVec2(160, 0));
-			ImGui::Spring(1);
-			ImGui::TextUnformatted(Name.c_str());
-			ImGui::Spring(1);
-			ImGui::EndVertical();
-			contentRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+			// Inputs
+			drawList->AddRectFilled(ImVec2(inTopLeft.x, inTopLeft.y + 1), m_InputsRect.GetBR(), inputPinColor, 4.0f, bottomRoundCornersFlags);
+			drawList->AddRect(ImVec2(inTopLeft.x, inTopLeft.y + 1), m_InputsRect.GetBR(), inputPinColor, 4.0f, bottomRoundCornersFlags);
 
-			ImGui::Spring(1, Padding);
-			ImGui::EndHorizontal();
+			// Outputs
+			drawList->AddRectFilled(m_OutputsRect.GetTL(), ImVec2(outBotRight.x, outBotRight.y - 1), outputPinColor, 4.0f, topRoundCornersFlags);
+			drawList->AddRect(m_OutputsRect.GetTL(), ImVec2(outBotRight.x, outBotRight.y - 1), outputPinColor, 4.0f, topRoundCornersFlags);
+
+			// Content
+			ImColor contentBackground = ImColor(Color.r, Color.g, Color.b, Color.a);
+			ImColor contentOutline = ImColor(Color.r * 2.0f, Color.g * 2.0f, Color.b * 2.0f, Color.a * 0.5f);
+			drawList->AddRectFilled(m_ContentRect.GetTL(), m_ContentRect.GetBR(), contentBackground, 0.0f);
+			drawList->AddRect(m_ContentRect.GetTL(), m_ContentRect.GetBR(), contentOutline, 0.0f);
 		}
+	}
 
-		// Outputs
-		{
-
-			ImGui::BeginHorizontal("outputs");
-			ImGui::Spring(0, Padding * 2);
-
-			if (!Outputs.empty())
-			{
-				auto& pin = Outputs[0];
-				ImGui::Dummy(ImVec2(0, Padding));
-				ImGui::Spring(1, 0);
-				outputsRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
-
-				ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinCorners, ImDrawFlags_RoundCornersTop);
-
-				ImguiExt::BeginPin(pin.ID, ImguiExt::PinKind::Output);
-				ImguiExt::PinPivotRect(outputsRect.GetTL(), outputsRect.GetBR());
-				ImguiExt::PinRect(outputsRect.GetTL(), outputsRect.GetBR());
-				ImguiExt::EndPin();
-
-				ImguiExt::PopStyleVar();
-
-				if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &pin) && &pin != activeLinkPin)
-				    outputAlpha = ImGui::GetStyle().Alpha * (48.0f / 255.0f);
-			}
-			else
-			{
-				ImGui::Dummy(ImVec2(0, Padding));
-			}
-
-			ImGui::Spring(0, Padding * 2);
-			ImGui::EndHorizontal();
-
-			ImGui::EndVertical();
-		}
-
-		ImguiExt::EndNode();
+	void TreeNode::PopStyle()
+	{
 		ImguiExt::PopStyleVar(7);
 		ImguiExt::PopStyleColor(4);
-
-		// Drawing
-		{
-			auto drawList = ImguiExt::GetNodeBackgroundDrawList(ID);
-			const ImDrawFlags topRoundCornersFlags = ImDrawFlags_RoundCornersTop;
-			const ImDrawFlags bottomRoundCornersFlags = ImDrawFlags_RoundCornersBottom;
-
-			{
-				float2 inTopLeft = float2(inputsRect.GetTL().x, inputsRect.GetTL().y);
-				float2 outTopLeft = float2(outputsRect.GetTL().x, outputsRect.GetTL().y);
-				float2 outBotRight = float2(outputsRect.GetBR().x, outputsRect.GetBR().y);
-
-				ImColor inputPinColor = ImColor(pinBackground.x, pinBackground.y, pinBackground.z, inputAlpha);
-				ImColor outputPinColor = ImColor(pinBackground.x, pinBackground.y, pinBackground.z, outputAlpha);
-
-				// Inputs
-				drawList->AddRectFilled(ImVec2(inTopLeft.x, inTopLeft.y + 1), inputsRect.GetBR(), inputPinColor, 4.0f, bottomRoundCornersFlags);
-				drawList->AddRect(ImVec2(inTopLeft.x, inTopLeft.y + 1), inputsRect.GetBR(), inputPinColor, 4.0f, bottomRoundCornersFlags);
-
-				// Outputs
-				drawList->AddRectFilled(outputsRect.GetTL(), ImVec2(outBotRight.x, outBotRight.y - 1), outputPinColor, 4.0f, topRoundCornersFlags);
-				drawList->AddRect(outputsRect.GetTL(), ImVec2(outBotRight.x, outBotRight.y - 1), outputPinColor, 4.0f, topRoundCornersFlags);
-
-				// Content
-				ImColor contentBackground = ImColor(Color.r, Color.g, Color.b, Color.a);
-				ImColor contentOutline = ImColor(Color.r * 2.0f, Color.g * 2.0f, Color.b * 2.0f, Color.a * 0.5f);
-				drawList->AddRectFilled(contentRect.GetTL(), contentRect.GetBR(), contentBackground, 0.0f);
-				drawList->AddRect(contentRect.GetTL(), contentRect.GetBR(), contentOutline, 0.0f);
-			}
-		}
 	}
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Pin.h"
+#include "imgui_internal.h"
 
 namespace Odyssey::Rune
 {
@@ -75,9 +76,6 @@ namespace Odyssey::Rune
 
 	struct TreeNode : Node
 	{
-	private:
-		inline static constexpr float4 Default_Color = float4(0.1f, 0.25f, 0.5f, 0.8f);
-
 	public:
 		TreeNode(std::string_view name, float4 color = Default_Color);
 
@@ -85,6 +83,22 @@ namespace Odyssey::Rune
 		virtual void Draw(BlueprintBuilder* builder, Pin* activeLinkPin) override;
 
 	protected:
+		virtual void PushStyle();
+		virtual void DrawInputs(Pin* activeLinkPin);
+		virtual void DrawContent(Pin* activeLinkPin);
+		virtual void DrawOutputs(Pin* activeLinkPin);
+		virtual void DrawBackground(Pin* activeLinkPin);
+		virtual void PopStyle();
+
+	protected:
+		ImRect m_InputsRect;
+		ImRect m_ContentRect;
+		ImRect m_OutputsRect;
+		float m_OutputAlpha = 0.8f;
+		float m_InputAlpha = 0.8f;
+
+	protected:
+		inline static constexpr float4 Default_Color = float4(0.1f, 0.25f, 0.5f, 0.8f);
 		inline static constexpr float Rounding = 5.0f;
 		inline static constexpr float Padding = 12.0f;
 		inline static constexpr float PinRadius = 5.0f;

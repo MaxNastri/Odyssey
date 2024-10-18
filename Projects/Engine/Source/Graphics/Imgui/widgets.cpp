@@ -339,5 +339,21 @@ namespace ImGui
 				}
 			}
 		}
+
+		bool Splitter(bool verticalSplit, float thickness, float2& size, float2 minSize)
+		{
+			using namespace ImGui;
+			const float longAxisSize = -1.0f;
+
+			ImGuiContext& g = *GImGui;
+			ImGuiWindow* window = g.CurrentWindow;
+			ImGuiID id = window->GetID("##Splitter");
+
+			ImRect bounds;
+			bounds.Min = window->DC.CursorPos + (verticalSplit ? ImVec2(size.x, 0.0f) : ImVec2(0.0f, size.x));
+			bounds.Max = bounds.Min + CalcItemSize(verticalSplit ? ImVec2(thickness, longAxisSize) : ImVec2(longAxisSize, thickness), 0.0f, 0.0f);
+			
+			return SplitterBehavior(bounds, id, verticalSplit ? ImGuiAxis_X : ImGuiAxis_Y, &size.x, &size.y, minSize.x, minSize.y, 0.0f);
+		}
 	}
 }

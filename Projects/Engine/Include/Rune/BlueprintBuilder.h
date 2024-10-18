@@ -24,6 +24,7 @@ namespace Odyssey
 			~BlueprintBuilder();
 
 		public:
+			void SetEditor();
 			void Begin();
 			void DrawBlueprint();
 			void DrawLabel(const char* label, float4 color);
@@ -31,6 +32,7 @@ namespace Odyssey
 
 		public:
 			void ConnectNewNode(Node* node);
+			void NavigateToContent(bool zoomIn = false);
 
 		public:
 			void BeginNode(NodeId id);

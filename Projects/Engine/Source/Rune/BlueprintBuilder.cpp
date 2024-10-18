@@ -57,6 +57,11 @@ namespace Odyssey::Rune
 		}
 	}
 
+	void BlueprintBuilder::SetEditor()
+	{
+		ImguiExt::SetCurrentEditor(m_Context);
+	}
+
 	void BlueprintBuilder::Begin()
 	{
 		// Set this blueprint in the node editor
@@ -168,6 +173,11 @@ namespace Odyssey::Rune
 		}
 
 		ImguiExt::SetCurrentEditor(nullptr);
+	}
+
+	void BlueprintBuilder::NavigateToContent(bool zoomIn)
+	{
+		ImguiExt::NavigateToContent(zoomIn);
 	}
 
 	void BlueprintBuilder::BeginNode(NodeId id)
