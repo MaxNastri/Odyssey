@@ -12,6 +12,12 @@ namespace Odyssey
 
 	void AnimationWindow::Destroy()
 	{
+
+	}
+
+	void AnimationWindow::Update()
+	{
+		bp.Update();
 	}
 
 	void AnimationWindow::Draw()
@@ -19,7 +25,7 @@ namespace Odyssey
 		if (!Begin())
 			return;
 
-		bp.Update();
+		bp.Draw();
 
 		End();
 	}

@@ -339,7 +339,7 @@ namespace Odyssey
 			}
 
 			float mouseH = (float)Input::GetMouseAxisHorizontal();
-			float mouseV = (float)Input::GetMouseAxisVerticle();
+			float mouseV = (float)Input::GetMouseAxisVertical();
 
 			if (mouseH != 0.0f || mouseV != 0.0f)
 			{

@@ -11,7 +11,8 @@ namespace Odyssey::Rune
 		Blueprint();
 
 	public:
-		virtual void Update() = 0;
+		virtual void Update() { };
+		virtual void Draw() = 0;
 
 	public:
 		template<typename T, typename... Args>

@@ -79,7 +79,7 @@ namespace Odyssey
         keyInput[KeyState::Down][key] = false;
     }
 
-    void Input::RegisterMouseMove(double x, double y)
+    void Input::RegisterMouseMove(float x, float y)
     {
         prevMouseX = mouseX;
         prevMouseY = mouseY;
@@ -91,7 +91,7 @@ namespace Odyssey
         mouseAxisV = (mouseY - prevMouseY);
     }
 
-    void Input::RegisterMousePosition(double x, double y, bool entered)
+    void Input::RegisterMousePosition(float x, float y, bool entered)
     {
         if (entered)
         {

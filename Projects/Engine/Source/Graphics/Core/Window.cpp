@@ -103,14 +103,14 @@ namespace Odyssey
 
 	void Window::MouseMoveCallback(GLFWwindow* window, double x, double y)
 	{
-		Input::RegisterMouseMove(x, y);
+		Input::RegisterMouseMove((float)x, (float)y);
 	}
 
 	void Window::MouseEnteredCallback(GLFWwindow* window, int entered)
 	{
 		double xPos, yPos;
 		glfwGetCursorPos(window, &xPos, &yPos);
-		Input::RegisterMousePosition(xPos, yPos, entered);
+		Input::RegisterMousePosition((float)xPos, (float)yPos, entered);
 	}
 
 	void Window::MouseButtonClicked(GLFWwindow* window, int button, int action, int mods)

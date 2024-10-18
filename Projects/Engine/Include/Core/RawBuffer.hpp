@@ -39,6 +39,8 @@ namespace Odyssey
 			m_Size = size;
 
 			m_Data = new Byte[m_Size];
+
+			ZeroMemory(m_Data, size);
 		}
 		void Free()
 		{
@@ -70,6 +72,11 @@ namespace Odyssey
 			Byte* buffer = new Byte[size];
 			memcpy(buffer, (Byte*)m_Data + offset, size);
 			return buffer;
+		}
+
+		void Write(const void* data)
+		{
+			Write(data, m_Size);
 		}
 
 		void Write(const void* data, uint64_t size, uint64_t offset = 0)
