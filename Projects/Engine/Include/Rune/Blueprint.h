@@ -31,7 +31,7 @@ namespace Odyssey::Rune
 		}
 
 	public:
-		void AddLink(Pin* start, Pin* end);
+		virtual void AddLink(Pin* start, Pin* end);
 		void DeleteNode(NodeId nodeID);
 		void DeleteLink(LinkId linkID);
 

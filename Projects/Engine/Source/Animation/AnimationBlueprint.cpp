@@ -3,6 +3,7 @@
 #include "imgui_internal.h"
 #include "widgets.h"
 #include "AnimationNodes.h"
+#include "AnimationProperty.hpp"
 #include "Input.h"
 
 namespace Odyssey
@@ -62,14 +63,40 @@ namespace Odyssey
 			std::shared_ptr<Node> node;
 
 			if (ImGui::MenuItem("Animation State"))
-				node = AddNode<BranchNode>("Branch");
+				node = AddNode<AnimationStateNode>("State");
 
 			if (node)
 				m_Builder->ConnectNewNode(node.get());
 
 			ImGui::EndPopup();
 		}
+		ImGui::PopID();
 
+		ImGui::PushOverrideID(m_AddLinkMenuID);
+		if (ImGui::BeginPopup("Add Link Menu"))
+		{
+			static std::string name = "Hello";
+
+			ImGui::Text("Edit name:");
+			ImGui::InputText("##edit", name.data(), name.size());
+			if (ImGui::Button("Apply"))
+			{
+				Blueprint::AddLink(m_PendingLinkStart, m_PendingLinkEnd);
+				ImGui::CloseCurrentPopup();
+			}
+			if (ImGui::Button("Close"))
+				ImGui::CloseCurrentPopup();
+			ImGui::EndPopup();
+		}
+		ImGui::PopID();
+	}
+
+	void AnimationBlueprint::AddLink(Pin* start, Pin* end)
+	{
+		m_PendingLinkStart = start;
+		m_PendingLinkEnd = end;
+		ImGui::PushOverrideID(m_AddLinkMenuID);
+		ImGui::OpenPopup("Add Link Menu");
 		ImGui::PopID();
 	}
 
@@ -277,5 +304,10 @@ namespace Odyssey
 		}
 
 		ImGui::EndChild();
+	}
+
+	void AnimationBlueprint::DrawAddAnimationLinkPopup()
+	{
+
 	}
 }

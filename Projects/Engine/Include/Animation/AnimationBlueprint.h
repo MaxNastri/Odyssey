@@ -1,51 +1,11 @@
 #pragma once
 #include "Blueprint.h"
-#include "RawBuffer.hpp"
 
 namespace Odyssey
 {
 	using namespace Rune;
 
-	enum class AnimationPropertyType
-	{
-		None = 0,
-		Float = 1,
-		Int = 2,
-		Bool = 3,
-		Trigger = 4,
-	};
-
-	struct AnimationProperty
-	{
-		std::string Name;
-		AnimationPropertyType Type;
-		RawBuffer ValueBuffer;
-
-	public:
-		AnimationProperty(std::string_view name, AnimationPropertyType type)
-			: Name(name), Type(type)
-		{
-			switch (type)
-			{
-				case AnimationPropertyType::None:
-					break;
-				case AnimationPropertyType::Float:
-					ValueBuffer.Allocate(sizeof(float));
-					break;
-				case AnimationPropertyType::Int:
-					ValueBuffer.Allocate(sizeof(int32_t));
-					break;
-				case AnimationPropertyType::Bool:
-					ValueBuffer.Allocate(sizeof(bool));
-					break;
-				case AnimationPropertyType::Trigger:
-					ValueBuffer.Allocate(sizeof(bool));
-					break;
-				default:
-					break;
-			}
-		}
-	};
+	struct AnimationProperty;
 
 	class AnimationBlueprint : public Rune::Blueprint
 	{
@@ -57,6 +17,13 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	public:
+		virtual void AddLink(Pin* start, Pin* end) override;
+
+	private:
+		Pin* m_PendingLinkStart = nullptr;
+		Pin* m_PendingLinkEnd = nullptr;
+
+	public:
 		bool SetBool(const std::string& name, bool value);
 		bool SetFloat(const std::string& name, float value);
 		bool SetInt(const std::string& name, int32_t value);
@@ -66,9 +33,9 @@ namespace Odyssey
 		void ClearTriggers();
 		void EvalulateGraph();
 		void DrawPropertiesPanel();
+		void DrawAddAnimationLinkPopup();
 
 	private:
-		//std::map<std::string, Property> m_Properties;
 		std::vector<std::shared_ptr<AnimationProperty>> m_Properties;
 		std::map<std::string, std::shared_ptr<AnimationProperty>> m_PropertyMap;
 
@@ -84,5 +51,6 @@ namespace Odyssey
 	private:
 		const std::string Create_Node_Menu = "My Create Node";
 		uint32_t m_CreateNodeMenuID = 117;
+		uint32_t m_AddLinkMenuID = 118;
 	};
 }

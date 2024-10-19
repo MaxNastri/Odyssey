@@ -1,5 +1,5 @@
 #include "RuneNodes.h"
-#include "Rune.hpp"
+#include "RuneInternal.h"
 #include "BlueprintBuilder.h"
 #include "imgui.h"
 #include "imgui_internal.h"

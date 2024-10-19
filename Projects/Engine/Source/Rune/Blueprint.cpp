@@ -12,6 +12,8 @@ namespace Odyssey::Rune
 
 	void Blueprint::AddLink(Pin* start, Pin* end)
 	{
+		bool allowLink = false;
+
 		start->Linked = true;
 		end->Linked = true;
 

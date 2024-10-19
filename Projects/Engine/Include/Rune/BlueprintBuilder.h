@@ -114,6 +114,7 @@ namespace Odyssey
 			Header m_Header;
 			DrawingState m_DrawingState;
 			UIOverrides m_UIOverrides;
+
 		private:
 			inline static const GUID& Header_Texture_GUID = 980123767453938719;
 
