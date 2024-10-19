@@ -3,6 +3,8 @@
 #include "AnimationBlueprint.h"
 #include "AnimationNodes.h"
 #include "Input.h"
+#include "magic_enum.hpp"
+#include "AnimationState.h"
 
 namespace Odyssey
 {
@@ -66,7 +68,7 @@ namespace Odyssey
 			{
 				auto& animProperty = properties[i];
 
-				ImGui::PushID(i);
+				ImGui::PushID((int32_t)i);
 
 				// Name column
 				ImGui::TableNextColumn();
@@ -248,8 +250,8 @@ namespace Odyssey
 
 	void AddAnimationLinkMenu::Open()
 	{
-		// Clear the buffer of any previous data
-		ZeroMemory(m_Buffer, ARRAYSIZE(m_Buffer));
+		// Clear any previous data
+		Clear();
 
 		// Open the popup menu
 		ImGui::PushOverrideID(ID);
@@ -265,19 +267,133 @@ namespace Odyssey
 		{
 			ImGui::Text("Select Property:");
 
-			// Send focus to the input text by default
-			if (ImGui::IsItemHovered() || (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !Input::GetMouseButtonDown(MouseButton::Left)))
-				ImGui::SetKeyboardFocusHere(0);
+			auto& properties = blueprint->GetProperties();
+			const std::string display = m_SelectedProperty >= 0 ? properties[m_SelectedProperty]->Name : "";
 
-			ImGui::InputText("##edit", m_Buffer, ARRAYSIZE(m_Buffer));
-
-			if (ImGui::Button("Add") || Input::GetKeyDown(KeyCode::Enter) || Input::GetKeyDown(KeyCode::KeypadEnter))
+			if (ImGui::BeginCombo("##PropertyCombo", display.c_str()))
 			{
-				blueprint->ConfirmPendingLink();
-				ImGui::CloseCurrentPopup();
+				for (size_t i = 0; i < properties.size(); i++)
+				{
+					auto& animProperty = properties[i];
+
+					const bool selected = m_SelectedProperty == i;
+					const std::string& name = animProperty->Name;
+
+					if (ImGui::Selectable(name.c_str(), selected))
+					{
+						m_SelectedProperty = (int32_t)i;
+						m_InputValue.Allocate(sizeof(animProperty->ValueBuffer.GetSize()));
+
+						// Triggers will always compare against true, so write it by default
+						if (animProperty->Type == AnimationPropertyType::Trigger)
+						{
+							const bool trigger = true;
+							m_InputValue.Write(&trigger);
+							m_SelectedComparisonOp = magic_enum::enum_integer(ComparisonOp::Equal);
+						}
+						else if (animProperty->Type == AnimationPropertyType::Bool)
+						{
+							// Assign a default comparison op of Equal for bools
+							m_SelectedComparisonOp = magic_enum::enum_integer(ComparisonOp::Equal);
+						}
+					}
+
+					if (selected)
+						ImGui::SetItemDefaultFocus();
+				}
+
+				ImGui::EndCombo();
 			}
 
-			ImGui::SameLine();
+			// Only show the comparison op dropdown when a valid property is selected
+			// Skip the comparison op UI for triggers
+			if (m_SelectedProperty >= 0 && properties[m_SelectedProperty]->Type != AnimationPropertyType::Trigger)
+			{
+				// For bools always force the comparison op to Equals
+				if (properties[m_SelectedProperty]->Type == AnimationPropertyType::Bool)
+					m_SelectedComparisonOp = magic_enum::enum_integer(ComparisonOp::Equal);
+
+				// Get the display string
+				const std::string comparisonOp = m_SelectedComparisonOp >= 0 ?
+					Comparison_Op_Display[m_SelectedComparisonOp] : "";
+
+				if (ImGui::BeginCombo("##CompareOpCombo", comparisonOp.c_str()))
+				{
+					// Skip the dropdown selection for bools
+					if (properties[m_SelectedProperty]->Type != AnimationPropertyType::Bool)
+					{
+						for (size_t i = 0; i < Comparison_Op_Display.size(); i++)
+						{
+							const bool selected = m_SelectedComparisonOp == i;
+							std::string_view display = Comparison_Op_Display[i];
+
+							if (ImGui::Selectable(display.data(), selected))
+								m_SelectedComparisonOp = (int32_t)i;
+						}
+					}
+
+					ImGui::EndCombo();
+				}
+			}
+
+			if (m_SelectedProperty >= 0 && m_SelectedComparisonOp >= 0)
+			{
+				auto& animProperty = properties[m_SelectedProperty];
+
+				switch (animProperty->Type)
+				{
+					case AnimationPropertyType::Float:
+					{
+						float data = m_InputValue.Read<float>();
+
+						if (ImGui::InputFloat("##InputLabel", &data))
+							m_InputValue.Write(&data);
+
+						break;
+					}
+					case AnimationPropertyType::Int:
+					{
+						int32_t data = m_InputValue.Read<int32_t>();
+
+						if (ImGui::InputScalar("##InputLabel", ImGuiDataType_S32, &data))
+							m_InputValue.Write(&data);
+
+						break;
+					}
+					case AnimationPropertyType::Bool:
+					{
+						bool data = m_InputValue.Read<bool>();
+						const std::string boolValue = data ? "True" : "False";
+
+						if (ImGui::BeginCombo("##BoolCombo", boolValue.c_str()))
+						{
+							if (ImGui::Selectable("True", data))
+							{
+								const bool trueValue = true;
+								m_InputValue.Write(&trueValue);
+							}
+							if (ImGui::Selectable("False", !data))
+							{
+								const bool falseValue = false;
+								m_InputValue.Write(&falseValue);
+							}
+
+							ImGui::EndCombo();
+						}
+
+						break;
+					}
+				}
+
+				// Only allow the add button when the other 2 fields are filled
+				if (ImGui::Button("Add") || Input::GetKeyDown(KeyCode::Enter) || Input::GetKeyDown(KeyCode::KeypadEnter))
+				{
+					blueprint->ConfirmPendingLink();
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::SameLine();
+			}
 
 			if (ImGui::Button("Cancel") || Input::GetKeyDown(KeyCode::Escape))
 				ImGui::CloseCurrentPopup();
@@ -286,5 +402,13 @@ namespace Odyssey
 		}
 
 		ImGui::PopID();
+	}
+
+	void AddAnimationLinkMenu::Clear()
+	{
+		ZeroMemory(m_Buffer, ARRAYSIZE(m_Buffer));
+		m_SelectedProperty = -1;
+		m_SelectedComparisonOp = -1;
+		m_InputValue.Free();
 	}
 }

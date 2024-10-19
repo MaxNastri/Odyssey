@@ -6,12 +6,11 @@ namespace Odyssey
 {
 	enum class ComparisonOp
 	{
-		None = 0,
-		Less = 1,
-		LessOrEqual = 2,
-		Equal = 3,
-		Greater = 4,
-		GreaterOrEqual = 5,
+		Less = 0,
+		LessOrEqual = 1,
+		Equal = 2,
+		Greater = 3,
+		GreaterOrEqual = 4,
 	};
 
 	class AnimationState;

@@ -63,7 +63,18 @@ namespace Odyssey
 		void Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI);
 
 	private:
+		void Clear();
+
+	private:
 		char m_Buffer[128] = "";
+		int32_t m_SelectedProperty = -1;
+		int32_t m_SelectedComparisonOp = -1;
+		RawBuffer m_InputValue;
+
+		inline static std::array<std::string,5> Comparison_Op_Display =
+		{
+			"<", "<=", "=", ">", ">="
+		};
 	};
 
 	struct AnimationBlueprintUI

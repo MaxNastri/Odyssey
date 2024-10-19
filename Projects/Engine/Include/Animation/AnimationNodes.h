@@ -11,6 +11,7 @@ namespace Odyssey
 	protected:
 		virtual void PushStyle() override;
 		virtual void DrawContent(Rune::Pin* activeLinkPin) override;
+		virtual void DrawOutputs(Rune::Pin* activeLinkPin) override;
 		virtual void PopStyle() override;
 
 	private:

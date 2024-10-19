@@ -9,7 +9,7 @@ namespace Odyssey
 	AnimationBlueprint::AnimationBlueprint()
 		: Blueprint()
 	{
-		m_Builder = std::make_unique<BlueprintBuilder>(this);
+		m_Builder = std::make_shared<BlueprintBuilder>(this);
 		m_Builder->OverrideCreateNodeMenu(CreateNodeMenu::Name, CreateNodeMenu::ID);
 
 		AddProperty("Jumping", AnimationPropertyType::Bool);
@@ -47,6 +47,11 @@ namespace Odyssey
 
 		// End building the UI
 		m_Builder->End();
+	}
+
+	void AnimationBlueprint::OnNodeAdded(std::shared_ptr<Node> node)
+	{
+		m_Builder->ConnectNewNode(node.get());
 	}
 
 	void AnimationBlueprint::AddLink(Pin* start, Pin* end)

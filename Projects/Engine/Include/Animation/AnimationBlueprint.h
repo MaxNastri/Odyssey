@@ -18,6 +18,7 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	public:
+		virtual void OnNodeAdded(std::shared_ptr<Node> node) override;
 		virtual void AddLink(Pin* start, Pin* end) override;
 		void ConfirmPendingLink();
 		void ClearPendingLink();
@@ -41,16 +42,11 @@ namespace Odyssey
 		void EvalulateGraph();
 
 	private:
+		std::shared_ptr<BlueprintBuilder> m_Builder;
 		std::vector<std::shared_ptr<AnimationProperty>> m_Properties;
-		std::map<std::string, std::shared_ptr<AnimationProperty>> m_PropertyMap;
+		std::unordered_map<std::string, std::shared_ptr<AnimationProperty>> m_PropertyMap;
 
 	private:
 		AnimationBlueprintUI m_UI;
-
-	private:
-		const std::string Create_Node_Menu = "My Create Node";
-		uint32_t m_CreateNodeMenuID = 117;
-		uint32_t m_AddLinkMenuID = 118;
-		uint32_t m_AddPropertyMenuID = 119;
 	};
 }

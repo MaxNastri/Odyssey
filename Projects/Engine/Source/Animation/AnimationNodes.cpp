@@ -1,5 +1,6 @@
 #include "AnimationNodes.h"
 #include "OdysseyTime.h"
+#include "imgui_node_editor.h"
 
 namespace Odyssey
 {
@@ -25,6 +26,18 @@ namespace Odyssey
 		float2 size = float2(m_ContentRect.GetWidth(), m_ContentRect.GetHeight() * Progress_Bar_Height);
 		ImGui::SetCursorPos(m_ContentRect.GetBL() + Progress_Bar_Padding);
 		ImGui::ProgressBar(m_Progress, size, "");
+	}
+	void AnimationStateNode::DrawOutputs(Rune::Pin* activeLinkPin)
+	{
+		namespace ImguiExt = ax::NodeEditor;
+
+		ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinArrowSize, 10.0f);
+		ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinArrowWidth, 10.0f);
+
+		TreeNode::DrawOutputs(activeLinkPin);
+
+		ImguiExt::PopStyleVar(2);
+
 	}
 	void AnimationStateNode::PopStyle()
 	{

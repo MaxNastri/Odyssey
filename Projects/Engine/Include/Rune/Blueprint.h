@@ -26,12 +26,13 @@ namespace Odyssey::Rune
 			// Rebuild the node connections
 			BuildNode(node.get());
 			BuildNodes();
-			m_Builder->ConnectNewNode(node.get());
+			OnNodeAdded(node);
 
 			return node;
 		}
 
 	public:
+		virtual void OnNodeAdded(std::shared_ptr<Node> node) { }
 		virtual void AddLink(Pin* start, Pin* end);
 		void DeleteNode(NodeId nodeID);
 		void DeleteLink(LinkId linkID);
@@ -59,7 +60,6 @@ namespace Odyssey::Rune
 		bool SaveNodeSettings(NodeId nodeId, const char* data, size_t size);
 
 	protected:
-		std::unique_ptr<BlueprintBuilder> m_Builder;
 		std::string m_Name;
 		std::vector<std::shared_ptr<Node>> m_Nodes;
 		std::vector<Link> m_Links;
