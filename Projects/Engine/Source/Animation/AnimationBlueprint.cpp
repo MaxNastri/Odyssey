@@ -1,6 +1,4 @@
 #include "AnimationBlueprint.h"
-#include "imgui.h"
-#include "imgui_internal.h"
 #include "widgets.h"
 #include "AnimationNodes.h"
 #include "AnimationProperty.hpp"
@@ -164,7 +162,7 @@ namespace Odyssey
 		constexpr float2 buttonSize = float2(25.0f, 25.0f);
 		constexpr float splitPadding = 4.0f;
 
-		ImGui::Widgets::Splitter(true, splitPadding, m_PropertiesPanel.Size, m_PropertiesPanel.MinSize);
+		ImGui::Splitter(true, splitPadding, m_PropertiesPanel.Size, m_PropertiesPanel.MinSize);
 
 		ImGui::BeginChild("Properties", float2(m_PropertiesPanel.Size.x - splitPadding, 0.0f));
 		ImGui::BeginHorizontal("Property Editor");
@@ -216,27 +214,28 @@ namespace Odyssey
 		// Table (2 columns like property drawers)
 		// Re-orderable selections (see Demo)
 
-		float labelWidth = 0.0f;
-
-		for (size_t i = 0; i < m_Properties.size(); i++)
-		{
-			float2 nameSize = ImGui::CalcTextSize(m_Properties[i]->Name.c_str());
-			labelWidth = std::max(labelWidth, nameSize.x);
-		}
+		float inputWidth = 100.0f;
+		float inputPos = panelWidth - inputWidth - style.FramePadding.x;
+		float labelWidth = inputPos - style.ItemSpacing.x;
 
 		labelWidth = (labelWidth + style.FramePadding.x + style.ItemSpacing.x) / panelWidth;
 
 		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_SizingMask_))
 		{
-			ImGui::TableSetupColumn("##empty", 0, labelWidth);
-
 			for (size_t i = 0; i < m_Properties.size(); i++)
 			{
 				auto& animProperty = m_Properties[i];
 
+				ImGui::PushID(i);
+
 				// Name column
 				ImGui::TableNextColumn();
-				ImGui::Selectable(animProperty->Name.c_str());
+
+				char buffer[128] = "";
+				animProperty->Name.copy(buffer, 128);
+
+				if (ImGui::SelectableInput("##PropertyLabel", false, ImGuiSelectableFlags_SpanAllColumns, buffer, ARRAYSIZE(buffer)))
+					animProperty->Name = buffer;
 
 				if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
 				{
@@ -252,19 +251,16 @@ namespace Odyssey
 				// Widget column
 				ImGui::TableNextColumn();
 
-				float inputWidth = 100.0f;
-				float position = panelWidth - inputWidth - style.FramePadding.x;
-				ImGui::SetCursorPosX(position);
+				ImGui::SetCursorPosX(inputPos);
 				ImGui::SetNextItemWidth(inputWidth);
 
-				ImGui::PushID(i);
 				switch (animProperty->Type)
 				{
 					case AnimationPropertyType::Float:
 					{
 						float data = animProperty->ValueBuffer.Read<float>();
 						
-						if (ImGui::InputFloat("##label", &data))
+						if (ImGui::InputFloat("##InputLabel", &data))
 							animProperty->ValueBuffer.Write(&data, sizeof(float));
 
 						break;
@@ -273,7 +269,7 @@ namespace Odyssey
 					{
 						int32_t data = animProperty->ValueBuffer.Read<int32_t>();
 
-						if (ImGui::InputScalar("##label", ImGuiDataType_S32, &data))
+						if (ImGui::InputScalar("##InputLabel", ImGuiDataType_S32, &data))
 							animProperty->ValueBuffer.Write(&data, sizeof(int32_t));
 
 						break;
@@ -282,7 +278,7 @@ namespace Odyssey
 					{
 						bool data = animProperty->ValueBuffer.Read<bool>();
 
-						if (ImGui::Checkbox("##label", &data))
+						if (ImGui::Checkbox("##InputLabel", &data))
 							animProperty->ValueBuffer.Write(&data, sizeof(bool));
 
 						break;
@@ -291,7 +287,7 @@ namespace Odyssey
 					{
 						bool data = animProperty->ValueBuffer.Read<bool>();
 						int radio = data;
-						if (data = ImGui::RadioButton("##label", &radio, 1))
+						if (data = ImGui::RadioButton("##InputLabel", &radio, 1))
 							animProperty->ValueBuffer.Write(&data, sizeof(bool));
 
 						break;

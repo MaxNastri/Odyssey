@@ -18,7 +18,7 @@ namespace Odyssey::Rune
 
 	void Pin::Draw(float alpha)
 	{
-		using namespace ImGui::Widgets;
+		using namespace ImGui;
 
 		IconType iconType;
 		float4 color = float4(Pin_Colors[Type], alpha);
@@ -46,7 +46,7 @@ namespace Odyssey::Rune
 		ImColor pinColor = ImColor(color.r, color.g, color.b, color.a);
 		ImColor pinInnerColor = ImColor(Inner_Color.r, Inner_Color.g, Inner_Color.b, alpha);
 
-		ImGui::Widgets::Icon(ImVec2(Icon_Size.x, Icon_Size.y), iconType, Linked, pinColor, pinInnerColor);
+		ImGui::Icon(ImVec2(Icon_Size.x, Icon_Size.y), iconType, Linked, pinColor, pinInnerColor);
 	}
 
 	void Pin::Modify(std::string_view name, PinType type)
