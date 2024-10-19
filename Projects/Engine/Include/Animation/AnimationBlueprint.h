@@ -1,5 +1,6 @@
 #pragma once
 #include "Blueprint.h"
+#include "AnimationBlueprintUI.h"
 
 namespace Odyssey
 {
@@ -18,12 +19,18 @@ namespace Odyssey
 
 	public:
 		virtual void AddLink(Pin* start, Pin* end) override;
+		void ConfirmPendingLink();
+		void ClearPendingLink();
+
+	public:
+		std::vector<std::shared_ptr<AnimationProperty>>& GetProperties() { return m_Properties; }
 
 	private:
 		Pin* m_PendingLinkStart = nullptr;
 		Pin* m_PendingLinkEnd = nullptr;
 
 	public:
+		void AddProperty(std::string_view name, AnimationPropertyType type);
 		bool SetBool(const std::string& name, bool value);
 		bool SetFloat(const std::string& name, float value);
 		bool SetInt(const std::string& name, int32_t value);
@@ -32,25 +39,18 @@ namespace Odyssey
 	private:
 		void ClearTriggers();
 		void EvalulateGraph();
-		void DrawPropertiesPanel();
-		void DrawAddAnimationLinkPopup();
 
 	private:
 		std::vector<std::shared_ptr<AnimationProperty>> m_Properties;
 		std::map<std::string, std::shared_ptr<AnimationProperty>> m_PropertyMap;
 
 	private:
-		struct PropertiesPanel
-		{
-		public:
-			float2 Size = float2(400.0f, 800.0f);
-			float2 MinSize = float2(50.0f, 50.0f);
-		};
-		PropertiesPanel m_PropertiesPanel;
+		AnimationBlueprintUI m_UI;
 
 	private:
 		const std::string Create_Node_Menu = "My Create Node";
 		uint32_t m_CreateNodeMenuID = 117;
 		uint32_t m_AddLinkMenuID = 118;
+		uint32_t m_AddPropertyMenuID = 119;
 	};
 }

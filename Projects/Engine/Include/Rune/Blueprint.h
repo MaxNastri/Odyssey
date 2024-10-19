@@ -26,6 +26,7 @@ namespace Odyssey::Rune
 			// Rebuild the node connections
 			BuildNode(node.get());
 			BuildNodes();
+			m_Builder->ConnectNewNode(node.get());
 
 			return node;
 		}
