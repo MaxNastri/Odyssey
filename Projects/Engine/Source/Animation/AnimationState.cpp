@@ -1,4 +1,5 @@
 #include "AnimationState.h"
+#include "AnimationNodes.h"
 
 namespace Odyssey
 {
@@ -89,7 +90,7 @@ namespace Odyssey
 		return false;
 	}
 
-	AnimationState::AnimationState(Rune::Node* node)
+	AnimationState::AnimationState(std::shared_ptr<Node> node)
 		: m_Node(node)
 	{
 
@@ -104,6 +105,16 @@ namespace Odyssey
 		}
 
 		return nullptr;
+	}
+
+	std::string_view AnimationState::GetName()
+	{
+		return m_Node->Name;
+	}
+
+	GUID AnimationState::GetClip()
+	{
+		return m_AnimationClip;
 	}
 
 	std::shared_ptr<AnimationLink> AnimationState::AddLink(AnimationState* connectedState, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer targetValue)

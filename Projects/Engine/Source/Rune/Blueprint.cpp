@@ -21,7 +21,7 @@ namespace Odyssey::Rune
 		newLink.Color = start->GetColor();
 	}
 
-	void Blueprint::DeleteNode(NodeId nodeID)
+	void Blueprint::DeleteNode(NodeID nodeID)
 	{
 		auto foundNode = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeID](auto& node) { return node->ID == nodeID; });
 		if (foundNode != m_Nodes.end())
@@ -43,7 +43,7 @@ namespace Odyssey::Rune
 		}
 	}
 
-	Node* Blueprint::FindNode(NodeId nodeID)
+	Node* Blueprint::FindNode(NodeID nodeID)
 	{
 		for (auto& node : m_Nodes)
 		{
@@ -134,7 +134,7 @@ namespace Odyssey::Rune
 			m_Links.erase(m_Links.begin() + removals[i]);
 	}
 
-	size_t Blueprint::LoadNodeSettings(NodeId nodeId, char* data)
+	size_t Blueprint::LoadNodeSettings(NodeID nodeId, char* data)
 	{
 		auto node = FindNode(nodeId);
 
@@ -148,7 +148,7 @@ namespace Odyssey::Rune
 		return node->State.size();
 	}
 
-	bool Blueprint::SaveNodeSettings(NodeId nodeId, const char* data, size_t size)
+	bool Blueprint::SaveNodeSettings(NodeID nodeId, const char* data, size_t size)
 	{
 		// Find the node
 		auto node = FindNode(nodeId);

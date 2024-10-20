@@ -4,13 +4,13 @@
 
 namespace Odyssey::Rune
 {
-	typedef uint64_t NodeId;
+	typedef uint64_t NodeID;
 	class BlueprintBuilder;
 
 	struct Node
 	{
 	public:
-		NodeId ID;
+		NodeID ID;
 		std::string Name;
 		std::vector<Pin> Inputs;
 		std::vector<Pin> Outputs;

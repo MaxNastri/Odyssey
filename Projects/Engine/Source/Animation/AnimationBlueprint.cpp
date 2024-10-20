@@ -1,4 +1,6 @@
 #include "AnimationBlueprint.h"
+#include "AnimationState.h"
+#include "AnimationNodes.h"
 
 namespace Odyssey
 {
@@ -22,6 +24,20 @@ namespace Odyssey
 	void AnimationBlueprint::Update()
 	{
 		ClearTriggers();
+	}
+
+	void AnimationBlueprint::AddAnimationState(std::string name)
+	{
+		auto node = AddNode<AnimationStateNode>(name);
+		m_States[node->ID] = std::make_shared<AnimationState>(node);
+	}
+
+	std::shared_ptr<AnimationState> AnimationBlueprint::GetAnimationState(NodeID nodeID)
+	{
+		if (m_States.contains(nodeID))
+			return m_States[nodeID];
+
+		return nullptr;
 	}
 
 	void AnimationBlueprint::AddProperty(std::string_view name, AnimationPropertyType type)
@@ -68,6 +84,11 @@ namespace Odyssey
 			return true;
 		}
 		return false;
+	}
+
+	void AnimationBlueprint::OnNodeAdded(std::shared_ptr<Node> node)
+	{
+		m_States[node->ID] = std::make_shared<AnimationState>(node);
 	}
 
 	void AnimationBlueprint::ClearTriggers()

@@ -1,6 +1,7 @@
 #pragma once
 #include "AnimationBlueprint.h"
 #include "AnimationProperty.hpp"
+#include "PropertyDrawers.h"
 
 namespace Odyssey
 {
@@ -10,6 +11,7 @@ namespace Odyssey
 	}
 	using namespace Rune;
 
+	class AnimationState;
 	class AnimationBlueprint;
 	struct AnimationBlueprintUI;
 
@@ -29,12 +31,18 @@ namespace Odyssey
 	{
 	public:
 		inline static std::string Window_Name = "Node Inspector Panel";
+
 	public:
 		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
 
 	private:
-		float2 Size = float2(400.0f, 800.0f);
+		void OnAnimationClipChanged(GUID guid);
+
+	private:
+		float2 m_Size = float2(400.0f, 800.0f);
 		float2 MinSize = float2(50.0f, 50.0f);
+		std::shared_ptr<AnimationState> m_AnimationState;
+		AssetFieldDrawer m_AnimationClipDrawer;
 	};
 
 	struct SelectPropertyMenu

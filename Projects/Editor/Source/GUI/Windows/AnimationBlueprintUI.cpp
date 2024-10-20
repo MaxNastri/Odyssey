@@ -2,6 +2,7 @@
 #include "imgui.hpp"
 #include "AnimationNodes.h"
 #include "AnimationState.h"
+#include "AnimationClip.h"
 #include "Input.h"
 #include "Enum.hpp"
 
@@ -162,9 +163,29 @@ namespace Odyssey
 		{
 			float2 textSize = ImGui::CalcTextSize("Hello world") * 1.1f;
 			ImGui::FilledRectSpanText("Node Inspector", float4(1.0f), float4(0.15f, 0.15f, 0.15f, 1.0f), textSize.y, float2(1.0f, 0.0f));
-			ImGui::TextUnformatted("Your mom");
+
+			if (ImguiExt::HasSelectionChanged())
+			{
+				ImguiExt::NodeId node;
+				ImguiExt::GetSelectedNodes(&node, 1);
+				m_AnimationState = blueprint->GetAnimationState(node.Get());
+				m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", m_AnimationClipDrawer.GetGUID(), AnimationClip::Type,
+					[this](GUID guid) { OnAnimationClipChanged(guid); });
+			}
+
+			if (m_AnimationState)
+			{
+				ImGui::TextUnformatted(m_AnimationState->GetName().data());
+				m_AnimationClipDrawer.Draw();
+			}
 			ImGui::End();
 		}
+	}
+
+	void NodeInspectorPanel::OnAnimationClipChanged(GUID guid)
+	{
+		if (m_AnimationState)
+			m_AnimationState->SetClip(guid);
 	}
 
 	void SelectPropertyMenu::Open()

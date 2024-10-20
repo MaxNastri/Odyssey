@@ -25,16 +25,18 @@ namespace Odyssey::Rune
 			BuildNode(node.get());
 			BuildNodes();
 
+			OnNodeAdded(node);
+
 			return node;
 		}
 
 	public:
 		void AddLink(Pin* start, Pin* end);
-		void DeleteNode(NodeId nodeID);
+		void DeleteNode(NodeID nodeID);
 		void DeleteLink(LinkId linkID);
 
 	public:
-		Node* FindNode(NodeId nodeID);
+		Node* FindNode(NodeID nodeID);
 		Link* FindLink(LinkId linkID);
 		Pin* FindPin(PinId pinID);
 
@@ -44,16 +46,15 @@ namespace Odyssey::Rune
 		std::string_view GetName() { return m_Name; }
 
 	protected:
+		virtual void OnNodeAdded(std::shared_ptr<Node> node) { }
 		void BuildNodes();
 		void BuildNode(Node* node);
-
-	protected:
 		void BreakLinks(Pin* pin);
 
 	protected:
 		friend class BlueprintBuilder;
-		size_t LoadNodeSettings(NodeId nodeId, char* data);
-		bool SaveNodeSettings(NodeId nodeId, const char* data, size_t size);
+		size_t LoadNodeSettings(NodeID nodeId, char* data);
+		bool SaveNodeSettings(NodeID nodeId, const char* data, size_t size);
 
 	protected:
 		std::string m_Name;

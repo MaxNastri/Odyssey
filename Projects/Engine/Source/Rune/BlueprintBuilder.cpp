@@ -200,7 +200,7 @@ namespace Odyssey::Rune
 		ImguiExt::NavigateToContent(zoomIn);
 	}
 
-	void BlueprintBuilder::BeginNode(NodeId id)
+	void BlueprintBuilder::BeginNode(NodeID id)
 	{
 		m_DrawingState.HasHeader = false;
 		m_Header.Min = m_Header.Max = float2(0.0f);

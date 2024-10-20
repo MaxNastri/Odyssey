@@ -1,9 +1,16 @@
 #pragma once
 #include "Rune.h"
+#include "GUID.h"
 #include "AnimationProperty.hpp"
 
 namespace Odyssey
 {
+	namespace Rune
+	{
+		struct Node;
+	}
+	using namespace Rune;
+
 	enum class ComparisonOp
 	{
 		Less = 0,
@@ -34,22 +41,30 @@ namespace Odyssey
 		ComparisonOp m_CompareOp;
 		RawBuffer m_TargetValue;
 
-		Rune::Link* m_Link;
+		Link* m_Link;
 	};
 
 	class AnimationState
 	{
 	public:
-		AnimationState(Rune::Node* node);
+		AnimationState(std::shared_ptr<Node> node);
 
 	public:
 		AnimationState* Evaluate();
 
 	public:
+		std::string_view GetName();
+		GUID GetClip();
+
+	public:
+		void SetClip(GUID guid) { m_AnimationClip = guid; }
+
+	public:
 		std::shared_ptr<AnimationLink> AddLink(AnimationState* connectedState, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer targetValue);
 
 	private:
-		Rune::Node* m_Node;
+		std::shared_ptr<Node> m_Node;
 		std::vector<std::shared_ptr<AnimationLink>> m_Links;
+		GUID m_AnimationClip;
 	};
 }
