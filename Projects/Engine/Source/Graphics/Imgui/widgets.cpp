@@ -338,7 +338,7 @@ namespace ImGui
 		}
 	}
 
-	bool Splitter(bool verticalSplit, float thickness, float2& size, float2 minSize)
+	bool Splitter(bool verticalSplit, float thickness, float2& size, float2 minSize, float2& minBounds, float2& maxBounds)
 	{
 		using namespace ImGui;
 		const float longAxisSize = -1.0f;
@@ -350,6 +350,9 @@ namespace ImGui
 		ImRect bounds;
 		bounds.Min = window->DC.CursorPos + (verticalSplit ? ImVec2(size.x, 0.0f) : ImVec2(0.0f, size.x));
 		bounds.Max = bounds.Min + CalcItemSize(verticalSplit ? ImVec2(thickness, longAxisSize) : ImVec2(longAxisSize, thickness), 0.0f, 0.0f);
+
+		minBounds = bounds.Min;
+		maxBounds = bounds.Max;
 
 		return SplitterBehavior(bounds, id, verticalSplit ? ImGuiAxis_X : ImGuiAxis_Y, &size.x, &size.y, minSize.x, minSize.y, 0.0f);
 	}
@@ -393,5 +396,48 @@ namespace ImGui
 
 		PopID();
 		return ret;
+	}
+
+	void FilledRectSpan(float4 color, float height, float2 padding)
+	{
+		auto& style = ImGui::GetStyle();
+
+		float2 windowPadding = style.WindowPadding;
+		float2 windowPos = ImGui::GetWindowPos();
+		float2 screenPos = ImGui::GetCursorScreenPos();
+
+		// Get the min and max without window padding
+		float2 min = ImGui::GetWindowContentRegionMin() + windowPos - windowPadding + padding;
+		float2 max = float2((ImGui::GetWindowContentRegionMax() + windowPos).x + windowPadding.x + padding.x, min.y + height);
+
+		// Draw the rect
+		ImGui::GetWindowDrawList()->PushClipRect(min, max);
+		ImGui::GetWindowDrawList()->AddRectFilled(min, max, ImColor(color));
+		ImGui::GetWindowDrawList()->PopClipRect();
+
+		// Set the cursor below the rect
+		ImGui::SetCursorScreenPos(float2(screenPos.x, max.y));
+	}
+
+	void FilledRectSpanText(std::string_view text, float4 textColor, float4 bgColor, float height, float2 padding)
+	{
+		auto& style = ImGui::GetStyle();
+
+		float2 windowPadding = style.WindowPadding - float2(1.0f);
+		float2 windowPos = ImGui::GetWindowPos();
+		float2 screenPos = ImGui::GetCursorScreenPos();
+
+		// Get the min and max without window padding
+		float2 min = ImGui::GetWindowContentRegionMin() + windowPos - windowPadding + padding;
+		float2 max = float2((ImGui::GetWindowContentRegionMax() + windowPos).x + windowPadding.x + padding.x, min.y + height);
+
+		// Draw the rect and text
+		ImGui::GetWindowDrawList()->PushClipRect(min, max);
+		ImGui::GetWindowDrawList()->AddRectFilled(min, max, ImColor(bgColor));
+		ImGui::GetWindowDrawList()->AddText(float2(screenPos.x, min.y), ImColor(textColor), text.data());
+		ImGui::GetWindowDrawList()->PopClipRect();
+
+		// Set the cursor below the rect
+		ImGui::SetCursorScreenPos(float2(screenPos.x, max.y + (style.ItemSpacing.y * 2.0f)));
 	}
 }

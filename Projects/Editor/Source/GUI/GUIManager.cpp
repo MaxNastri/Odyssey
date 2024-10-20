@@ -17,6 +17,7 @@ namespace Odyssey
 {
 	void GUIManager::Initialize()
 	{
+		ImGui::GetStyle().WindowMenuButtonPosition = ImGuiDir_None;
 		GUIManager::SetDarkThemeColors();
 	}
 

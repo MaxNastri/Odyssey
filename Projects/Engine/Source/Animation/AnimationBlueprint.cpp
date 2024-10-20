@@ -37,8 +37,6 @@ namespace Odyssey
 
 		m_UI.Draw(this, m_UI);
 
-		ImGui::SameLine(0.0f, 12.0f);
-
 		// Begin building the UI
 		m_Builder->Begin();
 

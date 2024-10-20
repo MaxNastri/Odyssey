@@ -22,12 +22,40 @@ namespace Odyssey
 
 	void AnimationWindow::Draw()
 	{
-		if (!Begin())
-			return;
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, float2(0.0f, 0.0f));
 
-		bp.Draw();
+		bool active = false;
 
-		End();
+		if (active = Begin())
+		{
+			ImGuiID dockspace_id = ImGui::GetID("AnimationWindowDS");
+
+			if (!ImGui::DockBuilderGetNode(dockspace_id))
+			{
+				ImGui::DockBuilderRemoveNode(dockspace_id);
+				ImGui::DockBuilderAddNode(dockspace_id);
+				ImGui::DockBuilderSetNodeSize(dockspace_id, m_WindowSize);
+				ImGui::DockBuilderFinish(dockspace_id);
+			}
+
+			ImGui::DockSpace(dockspace_id);
+			End();
+		}
+
+		ImGui::PopStyleVar();
+
+		if (active)
+		{
+			ImGuiWindowClass window_class;
+			window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+			ImGui::SetNextWindowClass(&window_class);
+
+			if (ImGui::Begin("Node Editor"))
+			{
+				bp.Draw();
+				ImGui::End();
+			}
+		}
 	}
 
 	void AnimationWindow::OnWindowClose()

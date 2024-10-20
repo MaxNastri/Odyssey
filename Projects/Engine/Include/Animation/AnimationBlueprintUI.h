@@ -8,12 +8,26 @@ namespace Odyssey
 
 	struct PropertiesPanel
 	{
+	public:
+		inline static std::string Window_Name = "Properties Panel";
 	private:
 		float2 Size = float2(400.0f, 800.0f);
 		float2 MinSize = float2(50.0f, 50.0f);
 
 	public:
 		void Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI);
+	};
+
+	struct NodeInspectorPanel
+	{
+	public:
+		inline static std::string Window_Name = "Node Inspector Panel";
+	public:
+		void Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI);
+
+	private:
+		float2 Size = float2(400.0f, 800.0f);
+		float2 MinSize = float2(50.0f, 50.0f);
 	};
 
 	struct SelectPropertyMenu
@@ -84,6 +98,7 @@ namespace Odyssey
 
 	public:
 		PropertiesPanel& GetPropertiesPanel() { return m_PropertiesPanel; }
+		NodeInspectorPanel& GetNodeInspectorPanel() { return m_NodeInspectorPanel; }
 		SelectPropertyMenu& GetSelectPropertyMenu() { return m_SelectPropertyMenu; }
 		AddPropertyMenu& GetAddPropertyMenu() { return m_AddPropertyMenu; }
 		CreateNodeMenu& GetCreateNodeMenu() { return m_CreateNodeMenu; }
@@ -91,6 +106,7 @@ namespace Odyssey
 
 	private:
 		PropertiesPanel m_PropertiesPanel;
+		NodeInspectorPanel m_NodeInspectorPanel;
 		SelectPropertyMenu m_SelectPropertyMenu;
 		AddPropertyMenu m_AddPropertyMenu;
 		CreateNodeMenu m_CreateNodeMenu;
