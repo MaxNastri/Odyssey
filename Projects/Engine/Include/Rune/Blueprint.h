@@ -1,6 +1,5 @@
 #pragma once
-#include "RuneNodes.h"
-#include "Link.h"
+#include "Rune.h"
 #include "BlueprintBuilder.h"
 
 namespace Odyssey::Rune
@@ -12,7 +11,6 @@ namespace Odyssey::Rune
 
 	public:
 		virtual void Update() { };
-		virtual void Draw() = 0;
 
 	public:
 		template<typename T, typename... Args>
@@ -26,14 +24,12 @@ namespace Odyssey::Rune
 			// Rebuild the node connections
 			BuildNode(node.get());
 			BuildNodes();
-			OnNodeAdded(node);
 
 			return node;
 		}
 
 	public:
-		virtual void OnNodeAdded(std::shared_ptr<Node> node) { }
-		virtual void AddLink(Pin* start, Pin* end);
+		void AddLink(Pin* start, Pin* end);
 		void DeleteNode(NodeId nodeID);
 		void DeleteLink(LinkId linkID);
 

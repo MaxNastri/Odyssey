@@ -1,6 +1,6 @@
 #pragma once
 #include "Blueprint.h"
-#include "AnimationBlueprintUI.h"
+#include "AnimationProperty.hpp"
 
 namespace Odyssey
 {
@@ -15,13 +15,6 @@ namespace Odyssey
 
 	public:
 		virtual void Update() override;
-		virtual void Draw() override;
-
-	public:
-		virtual void OnNodeAdded(std::shared_ptr<Node> node) override;
-		virtual void AddLink(Pin* start, Pin* end) override;
-		void ConfirmPendingLink();
-		void ClearPendingLink();
 
 	public:
 		std::vector<std::shared_ptr<AnimationProperty>>& GetProperties() { return m_Properties; }
@@ -42,11 +35,7 @@ namespace Odyssey
 		void EvalulateGraph();
 
 	private:
-		std::shared_ptr<BlueprintBuilder> m_Builder;
 		std::vector<std::shared_ptr<AnimationProperty>> m_Properties;
 		std::unordered_map<std::string, std::shared_ptr<AnimationProperty>> m_PropertyMap;
-
-	private:
-		AnimationBlueprintUI m_UI;
 	};
 }

@@ -1,5 +1,3 @@
-local CoralDotNetPath = os.getenv("CORAL_DOTNET_PATH")
-
 project "Odyssey.Engine"
     language "C++"
     cppdialect "C++20"

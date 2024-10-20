@@ -1,6 +1,6 @@
 #pragma once
 #include "Pin.h"
-#include "imgui_internal.h"
+#include "imgui.hpp"
 
 namespace Odyssey::Rune
 {
@@ -94,8 +94,9 @@ namespace Odyssey::Rune
 		ImRect m_InputsRect;
 		ImRect m_ContentRect;
 		ImRect m_OutputsRect;
-		float m_OutputAlpha = 0.8f;
-		float m_InputAlpha = 0.8f;
+		inline static constexpr float Alpha_Multiplier = 0.8f;
+		float m_OutputAlpha = 1.0f;
+		float m_InputAlpha = 1.0f;
 
 	protected:
 		inline static constexpr float4 Default_Color = float4(0.1f, 0.25f, 0.5f, 0.8f);

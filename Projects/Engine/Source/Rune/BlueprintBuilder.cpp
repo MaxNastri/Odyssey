@@ -1,9 +1,5 @@
 #include "BlueprintBuilder.h"
 #include "Blueprint.h"
-#include "imgui.h"
-#include "imgui_internal.h"
-#include "imgui_node_editor.h"
-#include "widgets.h"
 #include "Renderer.h"
 #include "AssetManager.h"
 #include "Texture2D.h"
@@ -167,12 +163,36 @@ namespace Odyssey::Rune
 					if (startPin->IO == PinIO::Input)
 						std::swap(startPin, endPin);
 
-					m_Blueprint->AddLink(startPin, endPin);
+					// Cache start/end and spawn add link menu override, if exists
+					if (m_UIOverrides.CreateLinkMenuSet)
+					{
+						m_DrawingState.PendingStartPin = startPin;
+						m_DrawingState.PendingEndPin = endPin;
+
+						ImGui::PushOverrideID(m_UIOverrides.CreateLinkMenuID);
+						ImGui::OpenPopup(m_UIOverrides.CreateLinkMenu.c_str());
+						ImGui::PopID();
+					}
+					else
+					{
+						m_Blueprint->AddLink(startPin, endPin);
+					}
 				}
 			}
 		}
 
 		ImguiExt::SetCurrentEditor(nullptr);
+	}
+
+	void BlueprintBuilder::ConfirmPendingLink()
+	{
+		m_Blueprint->AddLink(m_DrawingState.PendingStartPin, m_DrawingState.PendingEndPin);
+		ClearPendingLink();
+	}
+
+	void BlueprintBuilder::ClearPendingLink()
+	{
+		m_DrawingState.PendingStartPin = m_DrawingState.PendingEndPin = nullptr;
 	}
 
 	void BlueprintBuilder::NavigateToContent(bool zoomIn)
@@ -354,6 +374,13 @@ namespace Odyssey::Rune
 		m_UIOverrides.CreateNodeMenuSet = true;
 	}
 
+	void BlueprintBuilder::OverrideCreateLinkMenu(std::string_view menuName, uint32_t menuID)
+	{
+		m_UIOverrides.CreateLinkMenu = menuName;
+		m_UIOverrides.CreateLinkMenuID = menuID;
+		m_UIOverrides.CreateLinkMenuSet = true;
+	}
+
 	void BlueprintBuilder::CheckNewLinks()
 	{
 		ImguiExt::PinId start, end;
@@ -398,7 +425,22 @@ namespace Odyssey::Rune
 				}
 				else if (ImguiExt::AcceptNewItem())
 				{
-					m_Blueprint->AddLink(startPin, endPin);
+					// Cache start/end and spawn add link menu override, if exists
+					if (m_UIOverrides.CreateLinkMenuSet)
+					{
+						m_DrawingState.PendingStartPin = startPin;
+						m_DrawingState.PendingEndPin = endPin;
+
+						ImGui::PushOverrideID(m_UIOverrides.CreateLinkMenuID);
+						ImGui::OpenPopup(m_UIOverrides.CreateLinkMenu.c_str());
+						ImGui::PopID();
+					}
+					else
+					{
+						m_Blueprint->AddLink(startPin, endPin);
+					}
+
+					m_DrawingState.ActiveLinkPin = nullptr;
 				}
 			}
 		}

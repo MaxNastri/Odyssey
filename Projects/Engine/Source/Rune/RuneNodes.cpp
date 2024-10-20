@@ -1,15 +1,10 @@
 #include "RuneNodes.h"
 #include "RuneInternal.h"
 #include "BlueprintBuilder.h"
-#include "imgui.h"
-#include "imgui_internal.h"
-#include "imgui_node_editor.h"
-#include "widgets.h"
+#include "imgui.hpp"
 
 namespace Odyssey::Rune
 {
-	namespace ImguiExt = ax::NodeEditor;
-
 	Node::Node(std::string_view name, float4 color)
 		: ID(GetNextID()), Name(name), Color(color), Size(0.0f)
 	{
@@ -359,13 +354,6 @@ namespace Odyssey::Rune
 
 	void TreeNode::Draw(BlueprintBuilder* builder, Pin* activeLinkPin)
 	{
-
-		ImRect inputsRect;
-		ImRect contentRect;
-		ImRect outputsRect;
-		float outputAlpha = 0.8f;
-		float inputAlpha = 0.8f;
-
 		PushStyle();
 
 		ImguiExt::BeginNode(ID);
@@ -400,6 +388,7 @@ namespace Odyssey::Rune
 
 	void TreeNode::DrawInputs(Pin* activeLinkPin)
 	{
+		m_InputAlpha = ImGui::GetStyle().Alpha * Alpha_Multiplier;
 		ImGui::BeginVertical((int32_t)ID);
 		ImGui::BeginHorizontal("inputs");
 		ImGui::Spring(0, Padding * 2);
@@ -454,6 +443,8 @@ namespace Odyssey::Rune
 
 	void TreeNode::DrawOutputs(Pin* activeLinkPin)
 	{
+		m_OutputAlpha = ImGui::GetStyle().Alpha * Alpha_Multiplier;
+
 		ImGui::BeginHorizontal("outputs");
 		ImGui::Spring(0, Padding * 2);
 

@@ -1,5 +1,3 @@
-local CoralDotNetPath = os.getenv("CORAL_DOTNET_PATH")
-
 include "DebuggerTypeExtension.lua"
 
 project "Odyssey.Editor"
@@ -41,7 +39,8 @@ project "Odyssey.Editor"
     }
     
     defines {
-        "ODYSSEY_EDITOR"
+        "ODYSSEY_EDITOR",
+        "IMGUI_DEFINE_MATH_OPERATORS",
     }
 
     filter { "system:windows" }

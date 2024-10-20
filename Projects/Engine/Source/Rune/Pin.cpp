@@ -1,7 +1,6 @@
 #include "Pin.h"
 #include "RuneInternal.h"
-#include "imgui.h"
-#include "widgets.h"
+#include "imgui.hpp"
 
 namespace Odyssey::Rune
 {

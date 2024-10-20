@@ -1,9 +1,14 @@
 #pragma once
 #include "DockableWindow.h"
-#include "AnimationBlueprint.h"
+#include "AnimationBlueprintUI.h"
 
 namespace Odyssey
 {
+	namespace Rune
+	{
+		class BlueprintBuilder;
+	}
+
 	class AnimationWindow : public DockableWindow
 	{
 	public:
@@ -17,5 +22,7 @@ namespace Odyssey
 
 	private:
 		AnimationBlueprint bp;
+		AnimationBlueprintUI m_UI;
+		std::shared_ptr<BlueprintBuilder> m_Builder;
 	};
 }

@@ -8,6 +8,9 @@ namespace Odyssey
 		: DockableWindow("Animation Window", windowID,
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
+		m_Builder = std::make_shared<BlueprintBuilder>(&bp);
+		m_Builder->OverrideCreateNodeMenu(CreateNodeMenu::Name, CreateNodeMenu::ID);
+		m_Builder->OverrideCreateLinkMenu(AddAnimationLinkMenu::Name, AddAnimationLinkMenu::ID);
 	}
 
 	void AnimationWindow::Destroy()
@@ -52,7 +55,18 @@ namespace Odyssey
 
 			if (ImGui::Begin("Node Editor"))
 			{
-				bp.Draw();
+				m_Builder->SetEditor();
+
+				m_UI.Draw(&bp, m_Builder.get());
+
+				// Begin building the UI
+				m_Builder->Begin();
+
+				// Draw the blueprint
+				m_Builder->DrawBlueprint();
+
+				// End building the UI
+				m_Builder->End();
 				ImGui::End();
 			}
 		}

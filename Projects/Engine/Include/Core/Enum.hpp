@@ -3,7 +3,6 @@
 
 namespace Odyssey::Enum
 {
-
 	template<typename T>
 	inline std::string_view ToString(T value)
 	{
@@ -13,7 +12,13 @@ namespace Odyssey::Enum
 	template<typename T>
 	inline T ToEnum(std::string_view value)
 	{
-		auto ret = magic_enum::enum_cast<T>(value, magic_enum::case_insensitive);
+		return magic_enum::enum_cast<T>(value, magic_enum::case_insensitive);
+	}
+
+	template<typename T>
+	inline int32_t ToInt(T value)
+	{
+		return magic_enum::enum_integer<T>(value);
 	}
 
 	template<typename T>

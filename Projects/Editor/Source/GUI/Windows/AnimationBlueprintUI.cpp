@@ -1,15 +1,13 @@
 #include "AnimationBlueprintUI.h"
-#include "widgets.h"
-#include "imgui_node_editor.h"
-#include "AnimationBlueprint.h"
+#include "imgui.hpp"
 #include "AnimationNodes.h"
-#include "Input.h"
-#include "magic_enum.hpp"
 #include "AnimationState.h"
+#include "Input.h"
+#include "Enum.hpp"
 
 namespace Odyssey
 {
-	void PropertiesPanel::Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI)
+	void PropertiesPanel::Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI)
 	{
 		constexpr float2 buttonSize = float2(25.0f, 25.0f);
 
@@ -33,7 +31,7 @@ namespace Odyssey
 
 			ImGui::SetCursorPosX(addButtonPosition);
 			if (ImGui::Button("+", addButtonSize))
-				blueprintUI.GetSelectPropertyMenu().Open();
+				blueprintUI->GetSelectPropertyMenu().Open();
 
 			// Navigate button
 			float2 navButtonSize = ImGui::CalcTextSize("Navigate") + style.FramePadding + style.ItemSpacing;
@@ -146,13 +144,13 @@ namespace Odyssey
 			}
 
 			// Draw the node inspector panel within the properties panel
-			blueprintUI.GetNodeInspectorPanel().Draw(blueprint, blueprintUI);
+			blueprintUI->GetNodeInspectorPanel().Draw(blueprint, builder, blueprintUI);
 
 			ImGui::End();
 		}
 	}
 
-	void NodeInspectorPanel::Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI)
+	void NodeInspectorPanel::Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI)
 	{
 		ImGuiWindowClass window_class;
 		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
@@ -176,20 +174,20 @@ namespace Odyssey
 		ImGui::PopID();
 	}
 
-	void SelectPropertyMenu::Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI)
+	void SelectPropertyMenu::Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI)
 	{
 		ImGui::PushOverrideID(ID);
 
 		if (ImGui::BeginPopup(Name.c_str()))
 		{
 			if (ImGui::MenuItem("Float"))
-				blueprintUI.GetAddPropertyMenu().Open(AnimationPropertyType::Float);
+				blueprintUI->GetAddPropertyMenu().Open(AnimationPropertyType::Float);
 			if (ImGui::MenuItem("Int"))
-				blueprintUI.GetAddPropertyMenu().Open(AnimationPropertyType::Int);
+				blueprintUI->GetAddPropertyMenu().Open(AnimationPropertyType::Int);
 			if (ImGui::MenuItem("Bool"))
-				blueprintUI.GetAddPropertyMenu().Open(AnimationPropertyType::Bool);
+				blueprintUI->GetAddPropertyMenu().Open(AnimationPropertyType::Bool);
 			if (ImGui::MenuItem("Trigger"))
-				blueprintUI.GetAddPropertyMenu().Open(AnimationPropertyType::Trigger);
+				blueprintUI->GetAddPropertyMenu().Open(AnimationPropertyType::Trigger);
 
 			ImGui::EndPopup();
 		}
@@ -211,7 +209,7 @@ namespace Odyssey
 		ImGui::PopID();
 	}
 
-	void AddPropertyMenu::Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI)
+	void AddPropertyMenu::Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI)
 	{
 		ImGui::PushOverrideID(ID);
 
@@ -244,16 +242,16 @@ namespace Odyssey
 		ImGui::PopID();
 	}
 
-	void AnimationBlueprintUI::Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI)
+	void AnimationBlueprintUI::Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder)
 	{
-		m_PropertiesPanel.Draw(blueprint, blueprintUI);
-		m_SelectPropertyMenu.Draw(blueprint, blueprintUI);
-		m_AddPropertyMenu.Draw(blueprint, blueprintUI);
-		m_CreateNodeMenu.Draw(blueprint, blueprintUI);
-		m_AddAnimationLinkMenu.Draw(blueprint, blueprintUI);
+		m_PropertiesPanel.Draw(blueprint, builder, this);
+		m_SelectPropertyMenu.Draw(blueprint, builder, this);
+		m_AddPropertyMenu.Draw(blueprint, builder, this);
+		m_CreateNodeMenu.Draw(blueprint, builder, this);
+		m_AddAnimationLinkMenu.Draw(blueprint, builder, this);
 	}
 
-	void CreateNodeMenu::Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI)
+	void CreateNodeMenu::Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI)
 	{
 		ImGui::PushOverrideID(ID);
 
@@ -265,7 +263,10 @@ namespace Odyssey
 			std::shared_ptr<Node> node;
 
 			if (ImGui::MenuItem("Animation State"))
+			{
 				node = blueprint->AddNode<AnimationStateNode>("State");
+				builder->ConnectNewNode(node.get());
+			}
 
 			ImGui::EndPopup();
 		}
@@ -284,7 +285,7 @@ namespace Odyssey
 		ImGui::PopID();
 	}
 
-	void AddAnimationLinkMenu::Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI)
+	void AddAnimationLinkMenu::Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI)
 	{
 		ImGui::PushOverrideID(ID);
 
@@ -314,12 +315,12 @@ namespace Odyssey
 						{
 							const bool trigger = true;
 							m_InputValue.Write(&trigger);
-							m_SelectedComparisonOp = magic_enum::enum_integer(ComparisonOp::Equal);
+							m_SelectedComparisonOp = Enum::ToInt(ComparisonOp::Equal);
 						}
 						else if (animProperty->Type == AnimationPropertyType::Bool)
 						{
 							// Assign a default comparison op of Equal for bools
-							m_SelectedComparisonOp = magic_enum::enum_integer(ComparisonOp::Equal);
+							m_SelectedComparisonOp = Enum::ToInt(ComparisonOp::Equal);
 						}
 					}
 
@@ -336,7 +337,7 @@ namespace Odyssey
 			{
 				// For bools always force the comparison op to Equals
 				if (properties[m_SelectedProperty]->Type == AnimationPropertyType::Bool)
-					m_SelectedComparisonOp = magic_enum::enum_integer(ComparisonOp::Equal);
+					m_SelectedComparisonOp = Enum::ToInt(ComparisonOp::Equal);
 
 				// Get the display string
 				const std::string comparisonOp = m_SelectedComparisonOp >= 0 ?
@@ -413,7 +414,8 @@ namespace Odyssey
 				// Only allow the add button when the other 2 fields are filled
 				if (ImGui::Button("Add") || Input::GetKeyDown(KeyCode::Enter) || Input::GetKeyDown(KeyCode::KeypadEnter))
 				{
-					blueprint->ConfirmPendingLink();
+					// builder->connect pending link
+					builder->ConfirmPendingLink();
 					ImGui::CloseCurrentPopup();
 				}
 
@@ -421,7 +423,10 @@ namespace Odyssey
 			}
 
 			if (ImGui::Button("Cancel") || Input::GetKeyDown(KeyCode::Escape))
+			{
+				builder->ClearPendingLink();
 				ImGui::CloseCurrentPopup();
+			}
 
 			ImGui::EndPopup();
 		}

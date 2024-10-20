@@ -1,5 +1,5 @@
 #pragma once
-#include "RuneNodes.h"
+#include "Rune.h"
 #include "GUID.h"
 
 namespace ax::NodeEditor
@@ -32,6 +32,8 @@ namespace Odyssey
 
 		public:
 			void ConnectNewNode(Node* node);
+			void ConfirmPendingLink();
+			void ClearPendingLink();
 			void NavigateToContent(bool zoomIn = false);
 
 		public:
@@ -52,6 +54,7 @@ namespace Odyssey
 			void OverridePinMenu(std::string_view menuName, uint32_t menuID);
 			void OverrideLinkMenu(std::string_view menuName, uint32_t menuID);
 			void OverrideCreateNodeMenu(std::string_view menuName, uint32_t menuID);
+			void OverrideCreateLinkMenu(std::string_view menuName, uint32_t menuID);
 
 		private:
 			void CheckNewLinks();
@@ -87,6 +90,8 @@ namespace Odyssey
 				bool CreatingNewNode = false;
 				Pin* NewNodeLinkPin = nullptr;
 				Pin* ActiveLinkPin = nullptr;
+				Pin* PendingStartPin = nullptr;
+				Pin* PendingEndPin = nullptr;
 			};
 
 			struct UIOverrides
@@ -106,6 +111,10 @@ namespace Odyssey
 				std::string CreateNodeMenu = "Default Create Node Menu";
 				uint32_t CreateNodeMenuID = 0;
 				bool CreateNodeMenuSet = false;
+
+				std::string CreateLinkMenu = "Default Create Node Menu";
+				uint32_t CreateLinkMenuID = 0;
+				bool CreateLinkMenuSet = false;
 			};
 
 		private:

@@ -1,8 +1,15 @@
 #pragma once
+#include "AnimationBlueprint.h"
 #include "AnimationProperty.hpp"
 
 namespace Odyssey
 {
+	namespace Rune
+	{
+		class BlueprintBuilder;
+	}
+	using namespace Rune;
+
 	class AnimationBlueprint;
 	struct AnimationBlueprintUI;
 
@@ -15,7 +22,7 @@ namespace Odyssey
 		float2 MinSize = float2(50.0f, 50.0f);
 
 	public:
-		void Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI);
+		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
 	};
 
 	struct NodeInspectorPanel
@@ -23,7 +30,7 @@ namespace Odyssey
 	public:
 		inline static std::string Window_Name = "Node Inspector Panel";
 	public:
-		void Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI);
+		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
 
 	private:
 		float2 Size = float2(400.0f, 800.0f);
@@ -38,7 +45,7 @@ namespace Odyssey
 
 	public:
 		void Open();
-		void Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI);
+		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
 	};
 
 	struct AddPropertyMenu
@@ -53,7 +60,7 @@ namespace Odyssey
 
 	public:
 		void Open(AnimationPropertyType propertyType);
-		void Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI);
+		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
 	};
 
 	struct CreateNodeMenu
@@ -63,7 +70,7 @@ namespace Odyssey
 		inline static const std::string Name = "Create Node Menu";
 
 	public:
-		void Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI);
+		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
 	};
 
 	struct AddAnimationLinkMenu
@@ -74,7 +81,7 @@ namespace Odyssey
 
 	public:
 		void Open();
-		void Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI);
+		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
 
 	private:
 		void Clear();
@@ -94,7 +101,7 @@ namespace Odyssey
 	struct AnimationBlueprintUI
 	{
 	public:
-		void Draw(AnimationBlueprint* blueprint, AnimationBlueprintUI& blueprintUI);
+		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder);
 
 	public:
 		PropertiesPanel& GetPropertiesPanel() { return m_PropertiesPanel; }
