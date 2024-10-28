@@ -1,5 +1,6 @@
 #pragma once
 #include "Blueprint.h"
+#include "Asset.h"
 #include "AnimationProperty.hpp"
 
 namespace Odyssey
@@ -9,10 +10,20 @@ namespace Odyssey
 	struct AnimationProperty;
 	class AnimationState;
 
-	class AnimationBlueprint : public Rune::Blueprint
+	class AnimationBlueprint : public Blueprint, public Asset
 	{
+		CLASS_DECLARATION(Odyssey, AnimationBlueprint)
 	public:
 		AnimationBlueprint();
+		AnimationBlueprint(const Path& assetPath);
+
+	public:
+		void Save();
+		void Load();
+
+	private:
+		void LoadFromDisk();
+		void SaveToDisk(const Path& assetPath);
 
 	public:
 		virtual void Update() override;

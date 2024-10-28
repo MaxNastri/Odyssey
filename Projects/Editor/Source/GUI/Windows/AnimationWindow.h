@@ -24,5 +24,6 @@ namespace Odyssey
 		AnimationBlueprint m_Blueprint;
 		AnimationBlueprintUI m_UI;
 		std::shared_ptr<BlueprintBuilder> m_Builder;
+		uint32_t m_DockspaceID = 0;
 	};
 }

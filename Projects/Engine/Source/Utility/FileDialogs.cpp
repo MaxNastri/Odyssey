@@ -5,16 +5,20 @@
 #endif // !GLFW_EXPOSE_NATIVE_WIN32
 #include "glfw3native.h"
 #include <commdlg.h>
+#include "Renderer.h"
+#include "VulkanWindow.h"
 
 namespace Odyssey
 {
-	std::string FileDialogs::OpenFile(void* mainWindow, const char* filter)
+	std::string FileDialogs::OpenFile(const char* filter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
-		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)mainWindow);
+
+		void* window = Renderer::GetWindow()->GetNativeWindow();
+		ofn.hwndOwner =  glfwGetWin32Window((GLFWwindow*)window);
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
 		ofn.lpstrFilter = filter;
@@ -28,13 +32,14 @@ namespace Odyssey
 		return std::string();
 	}
 
-	std::string FileDialogs::SaveFile(void* mainWindow, const char* filter)
+	std::string FileDialogs::SaveFile(const char* filter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
-		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)mainWindow);
+		void* window = Renderer::GetWindow()->GetNativeWindow();
+		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)window);
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
 		ofn.lpstrFilter = filter;

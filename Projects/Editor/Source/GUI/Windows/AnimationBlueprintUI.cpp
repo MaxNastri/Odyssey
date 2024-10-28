@@ -5,6 +5,8 @@
 #include "AnimationClip.h"
 #include "Input.h"
 #include "Enum.hpp"
+#include "FileDialogs.h"
+#include "AssetManager.h"
 
 namespace Odyssey
 {
@@ -22,7 +24,8 @@ namespace Odyssey
 			ImGui::FilledRectSpanText("Property Editor", float4(1.0f), float4(0.15f, 0.15f, 0.15f, 1.0f), textSize.y, float2(1.0f, 0.0f));
 
 			ImGui::BeginHorizontal("Property Editor");
-			float panelWidth = ImGui::GetContentRegionAvail().x;
+			float panelWidth = ImGui::GetContentRegionMax().x;
+			float panelHeight = ImGui::GetContentRegionMax().y;
 			float panelLeft = ImGui::GetCursorPosX();
 			auto style = ImGui::GetStyle();
 

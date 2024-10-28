@@ -8,6 +8,7 @@ namespace Odyssey
 		: DockableWindow("Animation Window", windowID,
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
+		m_WindowFlags = ImGuiWindowFlags_MenuBar;
 		m_Builder = std::make_shared<BlueprintBuilder>(&m_Blueprint);
 		m_Builder->OverrideCreateNodeMenu(CreateNodeMenu::Menu_Name, CreateNodeMenu::ID);
 		m_Builder->OverrideCreateLinkMenu(AddAnimationLinkMenu::Menu_Name, AddAnimationLinkMenu::ID);
@@ -27,32 +28,48 @@ namespace Odyssey
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, float2(0.0f, 0.0f));
 
-		bool active = false;
-
-		if (active = Begin())
+		if (Begin())
 		{
-			ImGuiID dockspace_id = ImGui::GetID("AnimationWindowDS");
-
-			if (!ImGui::DockBuilderGetNode(dockspace_id))
+			// Draw the menu bar
+			if (ImGui::BeginMenuBar())
 			{
-				ImGui::DockBuilderRemoveNode(dockspace_id);
-				ImGui::DockBuilderAddNode(dockspace_id);
-				ImGui::DockBuilderSetNodeSize(dockspace_id, m_WindowSize);
-				ImGui::DockBuilderFinish(dockspace_id);
+				if (ImGui::BeginMenu("File"))
+				{
+					if (ImGui::MenuItem("Open Blueprint"))
+					{
+					}
+					else if (ImGui::MenuItem("Save Blueprint"))
+					{
+					}
+					else if (ImGui::MenuItem("Save Blueprint To..."))
+					{
+
+					}
+					ImGui::EndMenu();
+				}
+				ImGui::EndMenuBar();
 			}
 
-			ImGui::DockSpace(dockspace_id);
+			// Host a dockspace for the node editor and it's panels
+			m_DockspaceID = ImGui::GetID("AnimationWindowDS");
+			if (!ImGui::DockBuilderGetNode(m_DockspaceID))
+			{
+				ImGui::DockBuilderRemoveNode(m_DockspaceID);
+				ImGui::DockBuilderAddNode(m_DockspaceID);
+				ImGui::DockBuilderSetNodeSize(m_DockspaceID, m_WindowSize);
+				ImGui::DockBuilderFinish(m_DockspaceID);
+			}
+			ImGui::DockSpace(m_DockspaceID);
 			End();
-		}
 
-		ImGui::PopStyleVar();
+			// Pop the window padding
+			ImGui::PopStyleVar();
 
-		if (active)
-		{
 			ImGuiWindowClass window_class;
 			window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
 			ImGui::SetNextWindowClass(&window_class);
 
+			// Draw the node editor
 			if (ImGui::Begin("Node Editor"))
 			{
 				m_Builder->SetEditor();

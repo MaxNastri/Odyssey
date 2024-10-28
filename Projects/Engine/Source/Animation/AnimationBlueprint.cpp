@@ -5,20 +5,33 @@
 namespace Odyssey
 {
 	AnimationBlueprint::AnimationBlueprint()
-		: Blueprint()
+		: Blueprint(), Asset()
 	{
-		AddProperty("Jumping", AnimationPropertyType::Bool);
-		AddProperty("Speed", AnimationPropertyType::Float);
-		AddProperty("Hit Count", AnimationPropertyType::Int);
-		AddProperty("Swing Weapon", AnimationPropertyType::Trigger);
 
-		for (auto& animProperty : m_Properties)
-		{
-			m_PropertyMap[animProperty->Name] = animProperty;
-		}
+	}
 
-		// Build nodes
-		BuildNodes();
+	AnimationBlueprint::AnimationBlueprint(const Path& assetPath)
+		: Blueprint(), Asset(assetPath)
+	{
+		Load();
+	}
+
+	void AnimationBlueprint::Save()
+	{
+		SaveToDisk(m_AssetPath);
+	}
+
+	void AnimationBlueprint::Load()
+	{
+		LoadFromDisk();
+	}
+
+	void AnimationBlueprint::LoadFromDisk()
+	{
+	}
+
+	void AnimationBlueprint::SaveToDisk(const Path& assetPath)
+	{
 	}
 
 	void AnimationBlueprint::Update()
