@@ -30,10 +30,6 @@ namespace Odyssey
 		node.ReadData("Animation Rig", m_AnimationRig.Ref());
 		node.ReadData("Animation Clip", m_AnimationClip.Ref());
 
-		// Create a timeline for the clip
-		if (m_AnimationClip)
-			m_Timeline = AnimationClipTimeline(m_AnimationClip);
-
 		if (m_AnimationRig)
 			SetRig(m_AnimationRig);
 	}
@@ -71,10 +67,6 @@ namespace Odyssey
 	void Animator::SetClip(GUID animationClipGUID)
 	{
 		m_AnimationClip = animationClipGUID;
-
-		// Create a timeline for the clip
-		if (m_AnimationClip)
-			m_Timeline = AnimationClipTimeline(m_AnimationClip);
 	}
 
 	void Animator::CreateBoneGameObjects()
@@ -130,10 +122,11 @@ namespace Odyssey
 	{
 		// Create storage for our bone keys
 		auto rig = AssetManager::LoadAsset<AnimationRig>(m_AnimationRig);
+		auto clip = AssetManager::LoadAsset<AnimationClip>(m_AnimationClip);
 		const std::vector<Bone>& bones = rig->GetBones();
 
-		double time = m_Playing ? (double)Time::DeltaTime() : 0.0;
-		auto boneKeys = m_Timeline.BlendKeys(time);
+		float time = m_Playing ? Time::DeltaTime() : 0.0f;
+		auto boneKeys = clip->BlendKeys(time);
 
 		glm::mat4 animatorInverse = glm::inverse(m_GameObject.GetComponent<Transform>().GetWorldMatrix());
 		for (size_t i = 0; i < bones.size(); i++)
@@ -170,20 +163,6 @@ namespace Odyssey
 		if (m_DebugEnabled)
 			DebugDrawBones();
 	}
-
-
-	//void Animator::CalculateRootSpaceTransforms()
-	//{
-	//	Scene* scene = m_GameObject.GetScene();
-	//	SceneGraph& sceneGraph = scene->GetSceneGraph();
-	//
-	//	auto rig = AssetManager::LoadAnimationRig(m_AnimationRig);
-	//
-	//	GameObject rootBone = m_BoneGameObjects[rig->GetRootBone().Index];
-	//	auto rootBoneNode = sceneGraph.GetNode(rootBone);
-	//
-	//	for (auto& )
-	//}
 
 	void Animator::DebugDrawBones()
 	{

@@ -1,6 +1,8 @@
 #include "AnimationNodes.h"
-#include "OdysseyTime.h"
 #include "imgui.hpp"
+#include "AssetManager.h"
+#include "AnimationClip.h"
+#include "AnimationState.h"
 
 namespace Odyssey
 {
@@ -8,6 +10,17 @@ namespace Odyssey
 		: TreeNode(name, color)
 	{
 
+	}
+
+	AnimationStateNode::AnimationStateNode(std::string_view name, std::shared_ptr<AnimationState> state, float4 color)
+		: TreeNode(name, color)
+	{
+		SetAnimationState(state);
+	}
+
+	void AnimationStateNode::SetAnimationState(std::shared_ptr<AnimationState> state)
+	{
+		m_AnimationState = state;
 	}
 
 	void AnimationStateNode::PushStyle()
@@ -18,15 +31,20 @@ namespace Odyssey
 
 	void AnimationStateNode::DrawContent(Rune::Pin* activeLinkPin)
 	{
-		m_Progress += Time::DeltaTime();
-		m_Progress = std::fmod(m_Progress, 1.0f);
+		float progress = 0.0f;
+		if (m_AnimationState && m_AnimationState->GetClip())
+		{
+			auto clip = AssetManager::LoadAsset<AnimationClip>(m_AnimationState->GetClip());
+			progress = clip->GetProgress();
+		}
 
 		TreeNode::DrawContent(activeLinkPin);
 
 		float2 size = float2(m_ContentRect.GetWidth(), m_ContentRect.GetHeight() * Progress_Bar_Height);
 		ImGui::SetCursorPos(m_ContentRect.GetBL() + Progress_Bar_Padding);
-		ImGui::ProgressBar(m_Progress, size, "");
+		ImGui::ProgressBar(progress, size, "");
 	}
+
 	void AnimationStateNode::DrawOutputs(Rune::Pin* activeLinkPin)
 	{
 		ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinArrowSize, 10.0f);

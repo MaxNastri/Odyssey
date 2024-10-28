@@ -21,7 +21,7 @@ namespace Odyssey
 		virtual void OnWindowClose() override;
 
 	private:
-		AnimationBlueprint bp;
+		AnimationBlueprint m_Blueprint;
 		AnimationBlueprintUI m_UI;
 		std::shared_ptr<BlueprintBuilder> m_Builder;
 	};

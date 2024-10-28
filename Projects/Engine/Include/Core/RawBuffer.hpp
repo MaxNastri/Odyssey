@@ -15,7 +15,7 @@ namespace Odyssey
 
 		~RawBuffer()
 		{
-			Free();
+			//Free();
 		}
 
 		static RawBuffer Copy(const RawBuffer& other)

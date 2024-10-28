@@ -1,6 +1,7 @@
 #pragma once
 #include "Asset.h"
 #include "BoneKeyframe.hpp"
+#include "AnimationClipTimeline.h"
 
 namespace Odyssey
 {
@@ -18,10 +19,14 @@ namespace Odyssey
 		void Load();
 
 	public:
+		const std::map<std::string, BlendKey>& BlendKeys(float deltaTime);
+
+	public:
 		std::map<std::string, BoneKeyframe>& GetBoneKeyframes() { return m_BoneKeyframes; }
-		double GetDuration() { return m_Duration; }
-		double GetFrameTime(size_t frameIndex);
+		float GetDuration() { return m_Duration; }
+		float GetFrameTime(size_t frameIndex);
 		size_t GetFrameCount();
+		float GetProgress();
 
 	private:
 		void LoadFromSource(std::shared_ptr<SourceModel> source);
@@ -32,7 +37,8 @@ namespace Odyssey
 
 	private:
 		std::string m_Name;
-		double m_Duration;
+		float m_Duration;
 		std::map<std::string, BoneKeyframe> m_BoneKeyframes;
+		AnimationClipTimeline m_Timeline;
 	};
 }

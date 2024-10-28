@@ -90,10 +90,9 @@ namespace Odyssey
 		return false;
 	}
 
-	AnimationState::AnimationState(std::shared_ptr<Node> node)
-		: m_Node(node)
+	AnimationState::AnimationState(GUID animationClip)
 	{
-
+		m_AnimationClip = animationClip;
 	}
 
 	AnimationState* AnimationState::Evaluate()
@@ -109,7 +108,7 @@ namespace Odyssey
 
 	std::string_view AnimationState::GetName()
 	{
-		return m_Node->Name;
+		return "";
 	}
 
 	GUID AnimationState::GetClip()

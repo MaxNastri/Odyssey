@@ -18,81 +18,83 @@ namespace Odyssey
 	struct PropertiesPanel
 	{
 	public:
-		inline static std::string Window_Name = "Properties Panel";
-	private:
-		float2 Size = float2(400.0f, 800.0f);
-		float2 MinSize = float2(50.0f, 50.0f);
+		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
 
 	public:
-		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
+		inline static const std::string Window_Name = "Properties Panel";
+
+	private:
+		float2 m_Size = float2(400.0f, 800.0f);
+		float2 m_MinSize = float2(50.0f, 50.0f);
 	};
 
 	struct NodeInspectorPanel
 	{
-	public:
-		inline static std::string Window_Name = "Node Inspector Panel";
-
 	public:
 		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
 
 	private:
 		void OnAnimationClipChanged(GUID guid);
 
+	public:
+		inline static const std::string Window_Name = "Node Inspector Panel";
+
 	private:
 		float2 m_Size = float2(400.0f, 800.0f);
-		float2 MinSize = float2(50.0f, 50.0f);
+		float2 m_MinSize = float2(50.0f, 50.0f);
 		std::shared_ptr<AnimationState> m_AnimationState;
 		AssetFieldDrawer m_AnimationClipDrawer;
 	};
 
 	struct SelectPropertyMenu
 	{
-	public:
-		inline static const uint32_t ID = 117;
-		inline static const std::string Name = "Select Property Type Menu";
 
 	public:
 		void Open();
 		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
+
+	public:
+		inline static const uint32_t ID = 117;
+		inline static const std::string Menu_Name = "Select Property Type Menu";
 	};
 
 	struct AddPropertyMenu
 	{
 	public:
+		void Open(AnimationPropertyType propertyType);
+		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
+
+	public:
 		inline static const uint32_t ID = 118;
-		inline static const std::string Name = "Add Property Menu";
+		inline static const std::string Menu_Name = "Add Property Menu";
 
 	private:
 		char m_Buffer[128] = "";
-		AnimationPropertyType PropertyType = AnimationPropertyType::None;
-
-	public:
-		void Open(AnimationPropertyType propertyType);
-		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
+		AnimationPropertyType m_PropertyType = AnimationPropertyType::None;
 	};
 
 	struct CreateNodeMenu
 	{
 	public:
-		inline static const uint32_t ID = 119;
-		inline static const std::string Name = "Create Node Menu";
+		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
 
 	public:
-		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
+		inline static const uint32_t ID = 119;
+		inline static const std::string Menu_Name = "Create Node Menu";
 	};
 
 	struct AddAnimationLinkMenu
 	{
-	public:
-		inline static const uint32_t ID = 120;
-		inline static const std::string Name = "Add Animation Link Menu";
-
 	public:
 		void Open();
 		void Draw(AnimationBlueprint* blueprint, BlueprintBuilder* builder, AnimationBlueprintUI* blueprintUI);
 
 	private:
 		void Clear();
+
+	public:
+		inline static const uint32_t ID = 120;
+		inline static const std::string Menu_Name = "Add Animation Link Menu";
 
 	private:
 		char m_Buffer[128] = "";

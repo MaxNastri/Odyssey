@@ -8,9 +8,9 @@ namespace Odyssey
 		: DockableWindow("Animation Window", windowID,
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
-		m_Builder = std::make_shared<BlueprintBuilder>(&bp);
-		m_Builder->OverrideCreateNodeMenu(CreateNodeMenu::Name, CreateNodeMenu::ID);
-		m_Builder->OverrideCreateLinkMenu(AddAnimationLinkMenu::Name, AddAnimationLinkMenu::ID);
+		m_Builder = std::make_shared<BlueprintBuilder>(&m_Blueprint);
+		m_Builder->OverrideCreateNodeMenu(CreateNodeMenu::Menu_Name, CreateNodeMenu::ID);
+		m_Builder->OverrideCreateLinkMenu(AddAnimationLinkMenu::Menu_Name, AddAnimationLinkMenu::ID);
 	}
 
 	void AnimationWindow::Destroy()
@@ -20,7 +20,7 @@ namespace Odyssey
 
 	void AnimationWindow::Update()
 	{
-		bp.Update();
+		m_Blueprint.Update();
 	}
 
 	void AnimationWindow::Draw()
@@ -57,7 +57,7 @@ namespace Odyssey
 			{
 				m_Builder->SetEditor();
 
-				m_UI.Draw(&bp, m_Builder.get());
+				m_UI.Draw(&m_Blueprint, m_Builder.get());
 
 				// Begin building the UI
 				m_Builder->Begin();

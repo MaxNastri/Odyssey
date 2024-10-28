@@ -47,7 +47,8 @@ namespace Odyssey
 	class AnimationState
 	{
 	public:
-		AnimationState(std::shared_ptr<Node> node);
+		AnimationState() = default;
+		AnimationState(GUID animationClip);
 
 	public:
 		AnimationState* Evaluate();
@@ -63,7 +64,6 @@ namespace Odyssey
 		std::shared_ptr<AnimationLink> AddLink(AnimationState* connectedState, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer targetValue);
 
 	private:
-		std::shared_ptr<Node> m_Node;
 		std::vector<std::shared_ptr<AnimationLink>> m_Links;
 		GUID m_AnimationClip;
 	};

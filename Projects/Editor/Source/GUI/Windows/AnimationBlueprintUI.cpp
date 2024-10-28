@@ -191,7 +191,7 @@ namespace Odyssey
 	void SelectPropertyMenu::Open()
 	{
 		ImGui::PushOverrideID(ID);
-		ImGui::OpenPopup(Name.c_str());
+		ImGui::OpenPopup(Menu_Name.c_str());
 		ImGui::PopID();
 	}
 
@@ -199,7 +199,7 @@ namespace Odyssey
 	{
 		ImGui::PushOverrideID(ID);
 
-		if (ImGui::BeginPopup(Name.c_str()))
+		if (ImGui::BeginPopup(Menu_Name.c_str()))
 		{
 			if (ImGui::MenuItem("Float"))
 				blueprintUI->GetAddPropertyMenu().Open(AnimationPropertyType::Float);
@@ -222,11 +222,11 @@ namespace Odyssey
 		ZeroMemory(m_Buffer, ARRAYSIZE(m_Buffer));
 
 		// Cache the property type
-		PropertyType = propertyType;
+		m_PropertyType = propertyType;
 
 		// Open the popup menu
 		ImGui::PushOverrideID(ID);
-		ImGui::OpenPopup(Name.c_str());
+		ImGui::OpenPopup(Menu_Name.c_str());
 		ImGui::PopID();
 	}
 
@@ -234,7 +234,7 @@ namespace Odyssey
 	{
 		ImGui::PushOverrideID(ID);
 
-		if (ImGui::BeginPopup(Name.c_str()))
+		if (ImGui::BeginPopup(Menu_Name.c_str()))
 		{
 			ImGui::Text("Property Name:");
 
@@ -248,7 +248,7 @@ namespace Odyssey
 
 			if (ImGui::Button("Add") || Input::GetKeyDown(KeyCode::Enter) || Input::GetKeyDown(KeyCode::KeypadEnter))
 			{
-				blueprint->AddProperty(m_Buffer, PropertyType);
+				blueprint->AddProperty(m_Buffer, m_PropertyType);
 				ImGui::CloseCurrentPopup();
 			}
 
@@ -276,7 +276,7 @@ namespace Odyssey
 	{
 		ImGui::PushOverrideID(ID);
 
-		if (ImGui::BeginPopup(Name.c_str()))
+		if (ImGui::BeginPopup(Menu_Name.c_str()))
 		{
 			ImGui::TextUnformatted("Create New Node");
 			ImGui::Separator();
@@ -302,7 +302,7 @@ namespace Odyssey
 
 		// Open the popup menu
 		ImGui::PushOverrideID(ID);
-		ImGui::OpenPopup(Name.c_str());
+		ImGui::OpenPopup(Menu_Name.c_str());
 		ImGui::PopID();
 	}
 
@@ -310,7 +310,7 @@ namespace Odyssey
 	{
 		ImGui::PushOverrideID(ID);
 
-		if (ImGui::BeginPopup(Name.c_str()))
+		if (ImGui::BeginPopup(Menu_Name.c_str()))
 		{
 			ImGui::Text("Select Property:");
 
