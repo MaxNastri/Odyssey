@@ -141,7 +141,7 @@ namespace Odyssey
 				Interaction<GameObject> interaction;
 				interaction.Type = InteractionType::DragAndDropTarget;
 				interaction.Target = &gameObject;
-				interaction.Data = RawBuffer::Copy(payload->Data, payload->DataSize);
+				RawBuffer::Copy(interaction.Data, payload->Data, payload->DataSize);
 				m_Interactions.push_back(interaction);
 			}
 			ImGui::EndDragDropTarget();

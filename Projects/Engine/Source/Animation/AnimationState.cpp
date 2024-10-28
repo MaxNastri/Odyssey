@@ -8,7 +8,7 @@ namespace Odyssey
 		m_Property(property), m_CompareOp(compareOp)
 
 	{
-		m_TargetValue = RawBuffer::Copy(targetValue);
+		 RawBuffer::Copy(m_TargetValue, targetValue);
 	}
 
 	bool AnimationLink::Evaluate()

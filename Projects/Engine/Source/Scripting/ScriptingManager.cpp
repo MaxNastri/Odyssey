@@ -109,7 +109,7 @@ namespace Odyssey
 			if (!fieldMetadata.DefaultValue || fieldMetadata.DefaultValue.GetSize() == 0)
 				fieldStorage.ValueBuffer.Allocate(DataTypeSize(fieldMetadata.Type));
 			else
-				fieldStorage.ValueBuffer = RawBuffer::Copy(fieldMetadata.DefaultValue);
+				 RawBuffer::Copy(fieldStorage.ValueBuffer, fieldMetadata.DefaultValue);
 
 			fieldStorage.Instance = nullptr;
 		}
