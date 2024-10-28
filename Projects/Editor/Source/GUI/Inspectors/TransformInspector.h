@@ -1,7 +1,6 @@
 #pragma once
 #include "Inspector.h"
-#include "Vector3Drawer.h"
-#include "PropertyDrawer.h"
+#include "PropertyDrawers.h"
 #include "GameObject.h"
 
 namespace Odyssey

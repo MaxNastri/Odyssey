@@ -19,6 +19,7 @@ namespace Odyssey
 
 	public:
 		BoneKeyframe() = default;
+
 	public:
 		void AddPositionKey(double time, glm::vec3 value);
 		void AddRotationKey(double time, glm::quat value);
@@ -29,14 +30,14 @@ namespace Odyssey
 		void SetBoneName(std::string_view boneName) { m_Name = boneName; }
 
 	public:
+		void SortKeys();
+
+	public:
 		const std::vector<PositionKey>& GetPositionKeys() { return m_PositionKeys; }
 		const std::vector<RotationKey>& GetRotationKeys() { return m_RotationKeys; }
 		const std::vector<ScaleKey>& GetScaleKeys() { return m_ScaleKeys; }
 		const double GetFrameTime(size_t frameIndex) { return m_PositionKeys[frameIndex].Time; }
-
 		std::string_view GetName() { return m_Name; }
-
-		void SortKeys();
 
 	public:
 		glm::mat4 GetKey(double time, bool loop, double duration)
@@ -110,26 +111,6 @@ namespace Odyssey
 			// Return TRS
 			return t * r * s;
 		}
-
-		glm::mat4 BlendKeysOld(size_t prevKey, size_t nextKey, float blendFactor)
-		{
-			glm::vec3 position;
-			glm::quat rotation;
-			glm::vec3 scale = glm::vec3(1,1,1);
-
-			position = glm::mix(m_PositionKeys[prevKey].Value, m_PositionKeys[nextKey].Value, blendFactor);
-			rotation = glm::slerp(m_RotationKeys[prevKey].Value, m_RotationKeys[nextKey].Value, blendFactor);
-			scale = glm::mix(m_ScaleKeys[prevKey].Value, m_ScaleKeys[nextKey].Value, blendFactor);
-
-			// Convert to matrices
-			glm::mat4 t = glm::translate(glm::identity<mat4>(), position);
-			glm::mat4 r = glm::mat4_cast(rotation);
-			glm::mat4 s = glm::scale(glm::identity<mat4>(), scale);
-
-			// Return TRS
-			return t * r * s;
-		}
-
 		BlendKey BlendKeys(size_t prevKey, size_t nextKey, float blendFactor)
 		{
 			BlendKey blendKey;
@@ -138,6 +119,7 @@ namespace Odyssey
 			blendKey.scale = glm::mix(m_ScaleKeys[prevKey].Value, m_ScaleKeys[nextKey].Value, blendFactor);
 			return blendKey;
 		}
+
 	private:
 		template<typename KeyType>
 		void FindKeys(double time, std::vector<KeyType>& keys, KeyType& outPrev, KeyType& outNext, bool loop)

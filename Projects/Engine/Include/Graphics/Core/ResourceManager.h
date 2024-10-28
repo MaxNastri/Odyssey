@@ -1,30 +1,11 @@
 #pragma once
 #include "Enums.h"
-#include "VulkanTypes.h"
-#include "ResourceList.hpp"
-#include "Vertex.h"
-#include "VulkanImage.h"
-#include "BinaryBuffer.h"
+#include "Resource.h"
+#include "FreeList.hpp"
 
 namespace Odyssey
 {
-	class Resource;
-	class VulkanBuffer;
-	class VulkanUniformBuffer;
 	class VulkanContext;
-	class VulkanGraphicsPipeline;
-	class VulkanIndexBuffer;
-	class VulkanShaderModule;
-	class VulkanRenderTexture;
-	class VulkanVertexBuffer;
-	class VulkanCommandPool;
-	class VulkanCommandBuffer;
-	class VulkanDescriptorLayout;
-	class VulkanImage;
-	class VulkanTextureSampler;
-	class VulkanDescriptorPool;
-	class VulkanDescriptorSet;
-	class VulkanTexture;
 
 	class ResourceManager
 	{
@@ -35,13 +16,17 @@ namespace Odyssey
 		template<typename T, typename... Args>
 		static ResourceID Allocate(Args... args)
 		{
-			return s_Resources.Add<T>(s_Context, std::forward<Args>(args)...);
+			static_assert(std::is_base_of<Resource, T>::value, "T is not a dervied class of Resource.");
+			ResourceID id = s_Resources.Peek();
+			s_Resources.Add<T>(id, s_Context, std::forward<Args>(args)...);
+			return id;
 		}
 
 		template<typename T>
 		static std::shared_ptr<T> GetResource(ResourceID resourceID)
 		{
-			return s_Resources.Get<T>(resourceID);
+			static_assert(std::is_base_of<Resource, T>::value, "T is not a dervied class of Resource.");
+			return std::static_pointer_cast<T>(s_Resources[resourceID]);
 		}
 
 		static void Destroy(ResourceID resourceID)
@@ -51,7 +36,7 @@ namespace Odyssey
 
 			auto func = [](ResourceID resourceID)
 				{
-					if (std::shared_ptr<Resource> resource = s_Resources.Get(resourceID))
+					if (std::shared_ptr<Resource> resource = s_Resources[resourceID])
 					{
 						resource->Destroy();
 						s_Resources.Remove(resourceID);
@@ -65,7 +50,7 @@ namespace Odyssey
 
 	private: // Vulkan members
 		inline static std::shared_ptr<VulkanContext> s_Context = nullptr;
-		inline static ResourceList s_Resources;
+		inline static FreeList<Resource> s_Resources;
 
 	private:
 		struct ResourceDeallocation

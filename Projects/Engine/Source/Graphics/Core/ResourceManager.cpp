@@ -1,21 +1,6 @@
 #include "ResourceManager.h"
 #include "Resource.h"
 #include "VulkanContext.h"
-#include "VulkanVertexBuffer.h"
-#include "VulkanIndexBuffer.h"
-#include "VulkanRenderTexture.h"
-#include "VulkanShaderModule.h"
-#include "VulkanGraphicsPipeline.h"
-#include "VulkanBuffer.h"
-#include "VulkanUniformBuffer.h"
-#include "VulkanCommandPool.h"
-#include "VulkanCommandPool.h"
-#include "VulkanDescriptorLayout.h"
-#include "VulkanImage.h"
-#include "VulkanTextureSampler.h"
-#include "VulkanDescriptorPool.h"
-#include "VulkanDescriptorSet.h"
-#include "VulkanTexture.h"
 
 namespace Odyssey
 {
@@ -26,14 +11,15 @@ namespace Odyssey
 
 	void ResourceManager::Flush()
 	{
-		if (s_PendingDestroys.size() > 0)
-		{
-			for (int32_t i = (int32_t)s_PendingDestroys.size() - 1; i >= 0; i--)
-			{
-				s_PendingDestroys[i].Execute();
-			}
+		auto destroys = s_PendingDestroys;
 
-			s_PendingDestroys.clear();
+		if (destroys.size() > 0)
+		{
+			for (int32_t i = (int32_t)destroys.size() - 1; i >= 0; i--)
+			{
+				destroys[i].Execute();
+				s_PendingDestroys.erase(s_PendingDestroys.begin() + i);
+			}
 		}
 	}
 }

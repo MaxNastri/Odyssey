@@ -30,7 +30,6 @@ namespace Odyssey
 
 	private:
 		void LoadFromSource(std::shared_ptr<SourceShader> source);
-		void LoadFromDisk(const Path& path);
 		void SaveToDisk(const Path& path);
 
 	private:

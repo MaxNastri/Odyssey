@@ -47,7 +47,7 @@ namespace Odyssey
 
 		if (!std::filesystem::exists(projectSettingsPath))
 		{
-			Logger::LogError("[ProjectManager] Could not find project settings at " + projectSettingsPath.string());
+			Log::Error("[ProjectManager] Could not find project settings at " + projectSettingsPath.string());
 			return;
 		}
 

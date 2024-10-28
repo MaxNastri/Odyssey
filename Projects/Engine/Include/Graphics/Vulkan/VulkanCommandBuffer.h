@@ -8,31 +8,31 @@ namespace Odyssey
 	class VulkanBuffer;
 	class VulkanContext;
 	class VulkanCommandPool;
-	class VulkanDescriptorSet;
 	class VulkanDescriptorLayout;
 	class VulkanGraphicsPipeline;
 	class VulkanImage;
 	class VulkanIndexBuffer;
-	class VulkanVertexBuffer;
 	class VulkanUniformBuffer;
 	class VulkanPushDescriptors;
 
 	class VulkanCommandBuffer : public Resource
 	{
 	public:
-		VulkanCommandBuffer(std::shared_ptr<VulkanContext> context, ResourceID commandPoolID);
+		VulkanCommandBuffer(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID commandPoolID);
 		virtual void Destroy() override;
 
 	public:
 		void BeginCommands();
 		void EndCommands();
 		void Reset();
-		void Flush();
+		void SubmitGraphics();
+		void SubmitCompute();
 
 	public:
 		void BeginRendering(VkRenderingInfoKHR& renderingInfo);
 		void EndRendering();
-		void BindPipeline(ResourceID pipelineID);
+		void BindGraphicsPipeline(ResourceID pipelineID);
+		void BindComputePipeline(ResourceID pipelineID);
 		void BindViewport(VkViewport viewport);
 		void SetScissor(VkRect2D scissor);
 		void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
@@ -41,10 +41,12 @@ namespace Odyssey
 		void TransitionLayouts(ResourceID imageID, VkImageLayout newLayout);
 		void CopyBufferToImage(ResourceID bufferID, ResourceID imageID, uint32_t width, uint32_t height);
 		void BindVertexBuffer(ResourceID vertexBufferID);
-		void CopyBufferToBuffer(ResourceID source, ResourceID destination, uint32_t dataSize);
+		void CopyBufferToBuffer(ResourceID source, ResourceID destination, size_t dataSize);
 		void BindIndexBuffer(ResourceID indexBufferID);
-		void BindDescriptorSet(ResourceID descriptorSetID, ResourceID pipelineID);
-		void PushDescriptors(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
+		void PushDescriptorsGraphics(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
+		void PushDescriptorsCompute(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
+		void Dispatch(uint32_t groupX, uint32_t groupY, uint32_t groupZ);
+
 	public:
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }
 		const VkCommandBuffer* GetCommandBufferRef() { return &m_CommandBuffer; }

@@ -59,5 +59,10 @@ namespace Odyssey
 		Scene* m_ActiveScene;
 		GameObject m_SelectedGO;
 		uint32_t op = 7;
+
+	public:
+		// TODO: Move these to editor settings file
+		inline static bool AllowFlip = false;
+		inline static bool IsLocal = true;
 	};
 }

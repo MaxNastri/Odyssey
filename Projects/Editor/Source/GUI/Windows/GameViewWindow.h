@@ -2,10 +2,10 @@
 #include "DockableWindow.h"
 #include "Resource.h"
 #include "Events.h"
+#include "GameObject.h"
 
 namespace Odyssey
 {
-	class Camera;
 	class OpaquePass;
 	class VulkanRenderTexture;
 	class VulkanTextureSampler;
@@ -41,6 +41,6 @@ namespace Odyssey
 		std::shared_ptr<IEventListener> m_SceneLoadListener = nullptr;
 	private:
 		std::shared_ptr<OpaquePass> m_GameViewPass;
-		Camera* m_MainCamera = nullptr;
+		GameObject m_MainCamera;
 	};
 }

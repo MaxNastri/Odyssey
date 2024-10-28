@@ -45,7 +45,7 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(phys 1)");
+			Log::Error("(phys 1)");
 		}
 		assert(gpu_count > 0);
 
@@ -56,7 +56,7 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(phys 2)");
+			Log::Error("(phys 2)");
 		}
 
 		// Find the descrete GPU, if it exists
@@ -81,7 +81,7 @@ namespace Odyssey
 		if (physicalDevice == VK_NULL_HANDLE)
 		{
 			// Coulnd't find any GPU
-			Logger::LogError("[VulkanDevice] Unable to find GPU device");
+			Log::Error("[VulkanDevice] Unable to find GPU device");
 			physicalDevice = VK_NULL_HANDLE;
 		}
 	}
@@ -106,8 +106,20 @@ namespace Odyssey
 			}
 		}
 
+		// Find the compute queue
+		for (uint32_t i = 0; i < count; i++)
+		{
+			if (queues[i].queueFlags & VK_QUEUE_COMPUTE_BIT)
+			{
+				indices.computeFamily = i;
+				break;
+			}
+
+		}
+
 		free(queues);
 		assert(indices.graphicsFamily.has_value());
+		assert(indices.computeFamily.has_value());
 	}
 
 	bool VulkanPhysicalDevice::IsDeviceSuitable(VkPhysicalDevice device)
@@ -127,7 +139,7 @@ namespace Odyssey
 			case VulkanQueueType::Graphics:
 				return indices.graphicsFamily.value();
 			case VulkanQueueType::Compute:
-				break;
+				return indices.computeFamily.value();
 			case VulkanQueueType::Transfer:
 				break;
 			default:

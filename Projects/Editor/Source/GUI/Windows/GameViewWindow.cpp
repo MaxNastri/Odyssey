@@ -54,8 +54,11 @@ namespace Odyssey
 		DestroyRenderTexture();
 		CreateRenderTexture();
 
-		if (m_MainCamera)
-			m_MainCamera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+		if (m_MainCamera.IsValid())
+		{
+			if (Camera* camera = m_MainCamera.TryGetComponent<Camera>())
+				camera->SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+		}
 	}
 
 	void GameViewWindow::OnWindowClose()
@@ -70,7 +73,10 @@ namespace Odyssey
 			GameObject gameObject = GameObject(event->loadedScene, entity);
 			Camera& camera = gameObject.GetComponent<Camera>();
 			if (camera.IsMainCamera())
+			{
+				m_MainCamera = gameObject;
 				camera.SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+			}
 		}
 	}
 
@@ -80,7 +86,7 @@ namespace Odyssey
 		m_ColorRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
 		m_DepthRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
 		m_RTSampler = ResourceManager::Allocate<VulkanTextureSampler>();
-		m_RenderTextureID = Renderer::AddImguiTexture(m_ColorRT, m_RTSampler);
+		m_RenderTextureID = Renderer::AddImguiRenderTexture(m_ColorRT, m_RTSampler);
 	}
 
 	void GameViewWindow::DestroyRenderTexture()
@@ -92,10 +98,6 @@ namespace Odyssey
 		if (m_RTSampler)
 			ResourceManager::Destroy(m_RTSampler);
 
-		// Create an IMGui texture handle
-		// TODO: Fix this with render command queue
-		//if (auto renderer = Application::GetRenderer())
-		//	if (auto imgui = renderer->GetImGui())
-		//		imgui->RemoveTexture(m_RenderTextureID);
+		Renderer::DestroyImguiTexture(m_RenderTextureID);
 	}
 }

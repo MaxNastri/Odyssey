@@ -13,6 +13,7 @@
 #include "DebugRenderer.h"
 #include "SceneSettingsWindow.h"
 #include "AssetRegistry.hpp"
+#include "ParticleBatcher.h"
 
 namespace Odyssey
 {

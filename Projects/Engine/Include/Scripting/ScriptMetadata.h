@@ -23,7 +23,7 @@ namespace Odyssey
 			if (ManagedType->IsSZArray())
 			{
 				auto value = temp.GetFieldValue<Coral::Array<T>>(Name);
-				DefaultValue = RawBuffer::Copy(value.Data(), value.ByteLength());
+				RawBuffer::Copy(DefaultValue, value.Data(), value.ByteLength());
 				Coral::Array<T>::Free(value);
 			}
 			else

@@ -17,9 +17,7 @@ namespace Odyssey
 	class VulkanCommandBuffer;
 	class VulkanContext;
 	class VulkanFrame;
-	class VulkanIndexBuffer;
 	class VulkanRenderTexture;
-	class VulkanVertexBuffer;
 	class VulkanWindow;
 
 	class VulkanRenderer
@@ -55,8 +53,8 @@ namespace Odyssey
 		std::shared_ptr<VulkanWindow> m_Window;
 
 	private: // Commands
-		std::vector<ResourceID> m_CommandPools;
-		std::vector<ResourceID> m_CommandBuffers;
+		std::vector<ResourceID> m_GraphicsCommandPools;
+		std::vector<ResourceID> m_GraphicsCommandBuffers;
 
 	private: // Draws
 		std::vector<std::shared_ptr<RenderScene>> m_RenderScenes;

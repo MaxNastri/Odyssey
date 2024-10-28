@@ -7,6 +7,7 @@
 #include "ScriptComponent.h"
 #include "Animator.h"
 #include "Light.h"
+#include "ParticleEmitter.h"
 
 namespace Odyssey
 {
@@ -51,6 +52,9 @@ namespace Odyssey
 
 		if (Light* light = TryGetComponent<Light>())
 			light->Serialize(componentsNode);
+
+		if (ParticleEmitter* particleSystem = TryGetComponent<ParticleEmitter>())
+			particleSystem->Serialize(componentsNode);
 	}
 
 	void GameObject::Deserialize(SerializationNode& node)
@@ -106,6 +110,11 @@ namespace Odyssey
 				Light& light = AddComponent<Light>();
 				light.Deserialize(componentNode);
 			}
+			else if (componentType == ParticleEmitter::Type)
+			{
+				ParticleEmitter& particleSystem = AddComponent<ParticleEmitter>();
+				particleSystem.Deserialize(componentNode);
+			}
 		}
 	}
 
@@ -139,7 +148,7 @@ namespace Odyssey
 		return GetComponent<PropertiesComponent>().GUID;
 	}
 
-	void GameObject::SetName(const std::string& name)
+	void GameObject::SetName(std::string_view name)
 	{
 		GetComponent<PropertiesComponent>().Name = name;
 	}

@@ -2,7 +2,7 @@
 #include "VulkanCommandBuffer.h"
 #include "VulkanImage.h"
 #include "VulkanRenderTexture.h"
-#include "Logger.h"
+#include "Log.h"
 #include "PerFrameRenderingData.h"
 #include "Drawcall.h"
 #include "RenderScene.h"
@@ -23,6 +23,7 @@ namespace Odyssey
 		m_ClearValue = glm::vec4(0, 0, 0, 1);
 		m_SubPasses.push_back(std::make_shared<SkyboxSubPass>());
 		m_SubPasses.push_back(std::make_shared<OpaqueSubPass>());
+		m_SubPasses.push_back(std::make_shared<ParticleSubPass>());
 
 		for (auto& subPass : m_SubPasses)
 		{
@@ -32,7 +33,7 @@ namespace Odyssey
 
 	void OpaquePass::BeginPass(RenderPassParams& params)
 	{
-		ResourceID commandBufferID = params.commandBuffer;
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		ResourceID colorAttachmentImage;
@@ -51,7 +52,7 @@ namespace Odyssey
 		}
 		else
 		{
-			Logger::LogError("(OpaquePass) Invalid render target for opaque pass.");
+			Log::Error("(OpaquePass) Invalid render target for opaque pass.");
 			return;
 		}
 
@@ -172,7 +173,7 @@ namespace Odyssey
 
 	void OpaquePass::EndPass(RenderPassParams& params)
 	{
-		ResourceID commandBufferID = params.commandBuffer;
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		// End dynamic rendering
@@ -181,7 +182,7 @@ namespace Odyssey
 		// Make sure the RT is valid
 		if (!m_ColorRT.IsValid())
 		{
-			Logger::LogError("(OpaquePass) Invalid render target for OpaquePass");
+			Log::Error("(OpaquePass) Invalid render target for OpaquePass");
 			return;
 		}
 
@@ -199,7 +200,7 @@ namespace Odyssey
 
 	void ImguiPass::BeginPass(RenderPassParams& params)
 	{
-		ResourceID commandBufferID = params.commandBuffer;
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		uint32_t width = params.renderingData->width;
@@ -263,12 +264,12 @@ namespace Odyssey
 
 	void ImguiPass::Execute(RenderPassParams& params)
 	{
-		m_Imgui->Render(params.commandBuffer);
+		m_Imgui->Render(params.GraphicsCommandBuffer);
 	}
 
 	void ImguiPass::EndPass(RenderPassParams& params)
 	{
-		ResourceID commandBufferID = params.commandBuffer;
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		// End dynamic rendering

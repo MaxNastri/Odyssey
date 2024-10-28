@@ -3,6 +3,7 @@
 
 namespace Odyssey
 {
+	class Texture2D;
 	class RenderPass;
 	class VulkanRenderer;
 	class VulkanRenderTexture;
@@ -40,7 +41,9 @@ namespace Odyssey
 	public:
 		static void PushRenderPass(std::shared_ptr<RenderPass> renderPass);
 		static void SetDrawGUIListener(std::function<void(void)> listener);
-		static int64_t AddImguiTexture(ResourceID renderTextureID, ResourceID samplerID);
+		static uint64_t AddImguiTexture(std::shared_ptr<Texture2D> texture);
+		static uint64_t AddImguiRenderTexture(ResourceID renderTextureID, ResourceID samplerID);
+		static void DestroyImguiTexture(uint64_t imguiHandle);
 		static std::shared_ptr<VulkanWindow> GetWindow();
 
 	public:

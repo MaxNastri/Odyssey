@@ -17,6 +17,7 @@
 namespace Odyssey
 {
 	std::map<std::string, std::function<std::shared_ptr<Inspector>(GUID)>> s_CreateInspectorFuncs;
+
 	template<typename T>
 	static void RegisterInspectorType(const std::string& assetType)
 	{

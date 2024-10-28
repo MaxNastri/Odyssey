@@ -5,7 +5,7 @@
 #define TINYGLTF_NO_EXTERNAL_IMAGE
 #define TINYGLTF_USE_CPP14
 #include "tiny_gltf.h"
-#include "Logger.h"
+#include "Log.h"
 #include "Vertex.h"
 
 namespace Odyssey
@@ -48,14 +48,14 @@ namespace Odyssey
 
 		if (!warning.empty())
 		{
-			Logger::LogWarning(std::format("Warning detected while importing GLTF asset: {}", filePath.string()));
-			Logger::LogWarning(warning);
+			Log::Warning(std::format("Warning detected while importing GLTF asset: {}", filePath.string()));
+			Log::Warning(warning);
 		}
 
 		if (!error.empty())
 		{
-			Logger::LogWarning(std::format("Error detected while importing GLTF asset: {}", filePath.string()));
-			Logger::LogWarning(error);
+			Log::Warning(std::format("Error detected while importing GLTF asset: {}", filePath.string()));
+			Log::Warning(error);
 			return false;
 		}
 
@@ -514,7 +514,7 @@ namespace Odyssey
 		{
 			FBXBone& bone = m_RigData.Bones[node->name];
 			bone.Name = node->name;
-			bone.Index = m_RigData.BoneCount;
+			bone.Index = (int32_t)m_RigData.BoneCount;
 			bone.NodeIndex = nodeIndex;
 			m_RigData.BoneCount++;
 
@@ -740,7 +740,7 @@ namespace Odyssey
 				}
 			}
 
-			size_t maxFrames = std::ceil(m_AnimationData.Duration * (double)m_AnimationData.FramesPerSecond);
+			size_t maxFrames = (size_t)std::ceil(m_AnimationData.Duration * (double)m_AnimationData.FramesPerSecond);
 			double step = 1.0 / (double)m_AnimationData.FramesPerSecond;
 
 			for (auto& [boneName, boneKeyframe] : m_AnimationData.BoneKeyframes)

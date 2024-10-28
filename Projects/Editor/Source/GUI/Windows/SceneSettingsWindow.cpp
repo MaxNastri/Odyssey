@@ -22,7 +22,7 @@ namespace Odyssey
 			[this](GUID skyboxGUID) { OnSkyboxChanged(skyboxGUID); });
 
 		glm::vec3 ambientColor = m_Scene ? m_Scene->GetEnvironmentSettings().AmbientColor : glm::vec3(0.0f);
-		m_AmbientColorDrawer = ColorDrawer("Ambient Color", ambientColor,
+		m_AmbientColorPicker = ColorPicker("Ambient Color", ambientColor,
 			[this](glm::vec3 color) { OnAmbientColorChanged(color); });
 	}
 
@@ -34,7 +34,7 @@ namespace Odyssey
 		if (m_Scene)
 		{
 			m_SkyboxDrawer.Draw();
-			m_AmbientColorDrawer.Draw();
+			m_AmbientColorPicker.Draw();
 		}
 
 		End();
@@ -49,7 +49,7 @@ namespace Odyssey
 	{
 		m_Scene = event->loadedScene;
 		m_SkyboxDrawer.SetGUID(m_Scene->GetEnvironmentSettings().Skybox);
-		m_AmbientColorDrawer.SetValue(m_Scene->GetEnvironmentSettings().AmbientColor);
+		m_AmbientColorPicker.SetColor(m_Scene->GetEnvironmentSettings().AmbientColor);
 	}
 
 	void SceneSettingsWindow::OnSkyboxChanged(GUID skyboxGUID)

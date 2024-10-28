@@ -9,22 +9,60 @@
 #include "imgui.h"
 #include "PropertiesComponent.h"
 #include "ScriptingManager.h"
-#include "Animator.h"
 #include "AnimatorInspector.h"
 #include "LightInspector.h"
+#include "ParticleEmitterInspector.h"
 
 namespace Odyssey
 {
+	inline static std::unordered_map<std::string, std::function<void(GameObject&)>> s_AddComponentFuncs;
+	inline static std::map<uint32_t, std::function<std::unique_ptr<Inspector>(GameObject&)>> s_CreateInspectorFuncs;
+
+	template<typename ComponentType, typename InspectorType>
+	void RegisterComponentType(uint32_t priority)
+	{
+		static_assert(std::is_base_of<Inspector, InspectorType>::value, "InspectorType is not a dervied class of Inspector.");
+
+		if (!s_AddComponentFuncs.contains(ComponentType::ClassName))
+		{
+			s_AddComponentFuncs[ComponentType::ClassName] = [](GameObject& gameObject)
+				{
+					if (!gameObject.HasComponent<ComponentType>())
+						gameObject.AddComponent<ComponentType>();
+				};
+		}
+
+		if (!s_CreateInspectorFuncs.contains(priority))
+		{
+			s_CreateInspectorFuncs[priority] = [](GameObject& gameObject)
+				{
+					if (gameObject.HasComponent<ComponentType>())
+						return std::make_unique<InspectorType>(gameObject);
+
+					return std::unique_ptr<InspectorType>{};
+				};
+		}
+	}
+
 	GameObjectInspector::GameObjectInspector(GUID guid)
 	{
 		m_Target = SceneManager::GetActiveScene()->GetGameObject(guid);
+
+		// Note: Priority parameter determines the display order
+		RegisterComponentType<Transform, TransformInspector>(0);
+		RegisterComponentType<Camera, CameraInspector>(1);
+		RegisterComponentType<Light, LightInspector>(2);
+		RegisterComponentType<MeshRenderer, MeshRendererInspector>(3);
+		RegisterComponentType<Animator, AnimatorInspector>(4);
+		RegisterComponentType<ParticleEmitter, ParticleEmitterInspector>(5);
+
 		CreateInspectors();
 	}
 
 	void GameObjectInspector::Draw()
 	{
 		// Don't draw unless we have a target
-		if (!m_Target)
+		if (!m_Target.IsValid())
 			return;
 
 		if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
@@ -47,16 +85,8 @@ namespace Odyssey
 
 		if (ImGui::BeginPopup("Add Component Popup"))
 		{
-			ImGui::SeparatorText("Components");
-
-			std::vector<std::string> possibleComponents
-			{
-				"Animator",
-				"Camera",
-				"Light",
-				"Mesh Renderer",
-				"Transform",
-			};
+			auto kv = std::views::keys(s_AddComponentFuncs);
+			std::vector<std::string> possibleComponents{ kv.begin(), kv.end() };
 
 			auto scriptMetadatas = ScriptingManager::GetAllScriptMetadatas();
 
@@ -69,34 +99,14 @@ namespace Odyssey
 
 			for (size_t i = 0; i < possibleComponents.size(); i++)
 			{
-				if (ImGui::Selectable(possibleComponents[i].c_str()))
+				const std::string& componentName = possibleComponents[i];
+				if (ImGui::Selectable(componentName.c_str()))
 				{
 					selected = i;
-					
-					if (selected == 0)
+
+					if (s_AddComponentFuncs.contains(componentName))
 					{
-						if (!m_Target.HasComponent<Animator>())
-							m_Target.AddComponent<Animator>();
-					}
-					else if (selected == 1)
-					{
-						if (!m_Target.HasComponent<Camera>())
-							m_Target.AddComponent<Camera>();
-					}
-					else if (selected == 2)
-					{
-						if (!m_Target.HasComponent<Light>())
-							m_Target.AddComponent<Light>();
-					}
-					else if (selected == 3)
-					{
-						if (!m_Target.HasComponent<MeshRenderer>())
-							m_Target.AddComponent<MeshRenderer>();
-					}
-					else if (selected == 4)
-					{
-						if (!m_Target.HasComponent<Transform>())
-							m_Target.AddComponent<Transform>();
+						s_AddComponentFuncs[componentName](m_Target);
 					}
 					else
 					{
@@ -122,25 +132,14 @@ namespace Odyssey
 		userScriptInspectors.clear();
 
 		m_NameDrawer = StringDrawer("Name", m_Target.GetName(),
-			[this](const std::string& name) { OnNameChanged(name); });
+			[this](std::string_view name) { OnNameChanged(name); });
 
-		if (m_Target.HasComponent<Animator>())
-			m_Inspectors.push_back(std::make_unique<AnimatorInspector>(m_Target));
-
-		if (m_Target.HasComponent<Transform>())
-			m_Inspectors.push_back(std::make_unique<TransformInspector>(m_Target));
-
-		if (m_Target.HasComponent<Camera>())
-			m_Inspectors.push_back(std::make_unique<CameraInspector>(m_Target));
-
-		if (m_Target.HasComponent<MeshRenderer>())
-			m_Inspectors.push_back(std::make_unique<MeshRendererInspector>(m_Target));
-
-		if (m_Target.HasComponent<ScriptComponent>())
-			m_Inspectors.push_back(std::make_unique<UserScriptInspector>(m_Target));
-
-		if (m_Target.HasComponent<Light>())
-			m_Inspectors.push_back(std::make_unique<LightInspector>(m_Target));
+		for (auto& [className, createInspectorFunc] : s_CreateInspectorFuncs)
+		{
+			auto inspector = createInspectorFunc(m_Target);
+			if (inspector)
+				m_Inspectors.push_back(std::move(inspector));
+		}
 	}
 
 	void GameObjectInspector::RefreshUserScripts()
@@ -151,7 +150,7 @@ namespace Odyssey
 		}
 	}
 
-	void GameObjectInspector::OnNameChanged(const std::string& name)
+	void GameObjectInspector::OnNameChanged(std::string_view name)
 	{
 		if (m_Target.HasComponent<PropertiesComponent>())
 			m_Target.SetName(name);

@@ -1,7 +1,6 @@
 #pragma once
 #include "DockableWindow.h"
-#include "AssetFieldDrawer.h"
-#include "ColorDrawer.h"
+#include "PropertyDrawers.h"
 
 namespace Odyssey
 {
@@ -25,7 +24,7 @@ namespace Odyssey
 
 	private:
 		AssetFieldDrawer m_SkyboxDrawer;
-		ColorDrawer m_AmbientColorDrawer;
+		ColorPicker m_AmbientColorPicker;
 
 	private:
 		Scene* m_Scene;

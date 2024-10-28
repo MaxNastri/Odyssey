@@ -17,9 +17,53 @@ Entries:
     GUID: 14856991710712284328
   - Name: Cube
     Type: Odyssey.SourceModel
-    Path: 'Meshes/Source/Cube.fbx'
+    Path: 'Meshes/Source/Cube.glb'
     GUID: 17688292389720890448
   - Name: Cube
     Type: Odyssey.Mesh
     Path: 'Meshes/Cube.mesh'
     GUID: 4325336624522892849
+  - Name: Particle Render
+    Type: Odyssey.Shader
+    Path: 'Shaders/ParticleRender.shader'
+    GUID: 16032593712191697003
+  - Name: Particle Render
+    Type: Odyssey.SourceShader
+    Path: 'Shaders/Source/ParticleRender.hlsl'
+    GUID: 3156967184414869478
+  - Name: ParticleEmitter
+    Type: Odyssey.SourceShader
+    Path: 'Shaders/Source/ParticleEmitter.hlsl'
+    GUID: 6212201915190309476
+  - Name: ParticleEmitter
+    Type: Odyssey.Shader
+    Path: 'Shaders/ParticleEmitter.shader'
+    GUID: 8940240242710108428
+  - Name: Particle Simulation
+    Type: Odyssey.SourceShader
+    Path: 'Shaders/Source/ParticleSimulation.hlsl'
+    GUID: 4123209115191309476
+  - Name: Particle Simulation
+    Type: Odyssey.Shader
+    Path: 'Shaders/ParticleSimulation.shader'
+    GUID: 7831351134810913572
+  - Name: Soft Particle
+    Type: Odyssey.Texture2D
+    Path: 'Textures/SoftParticle.asset'
+    GUID: 488672041793267412
+  - Name: Soft Particle
+    Type: Odyssey.SourceTexture
+    Path: 'Textures/Source/SoftParticle.png'
+    GUID: 812973823681236833
+  - Name: Particles
+    Type: Odyssey.Material
+    Path: 'Materials/Particles.asset'
+    GUID: 831665292157922468
+  - Name: Blueprint Background
+    Type: Odyssey.Texture2D
+    Path: 'Textures/BlueprintBackground.asset'
+    GUID: 980123767453938719
+  - Name: Blueprint Background
+    Type: Odyssey.SourceTexture
+    Path: 'Textures/Source/BlueprintBackground.png'
+    GUID: 901283857934219837

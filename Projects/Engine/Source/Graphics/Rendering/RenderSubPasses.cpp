@@ -9,8 +9,11 @@
 #include "VulkanDescriptorLayout.h"
 #include "VulkanGraphicsPipeline.h"
 #include "Mesh.h"
-#include "VulkanUniformBuffer.h"
 #include "AssetManager.h"
+#include "VulkanComputePipeline.h"
+#include "ParticleBatcher.h"
+#include "VulkanBuffer.h"
+#include "Texture2D.h"
 
 namespace Odyssey
 {
@@ -21,12 +24,12 @@ namespace Odyssey
 
 	void OpaqueSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.commandBuffer);
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 		auto renderScene = params.renderingData->renderScene;
 
 		for (auto& setPass : params.renderingData->renderScene->setPasses)
 		{
-			commandBuffer->BindPipeline(setPass.GraphicsPipeline);
+			commandBuffer->BindGraphicsPipeline(setPass.GraphicsPipeline);
 
 			for (size_t i = 0; i < setPass.Drawcalls.size(); i++)
 			{
@@ -45,7 +48,7 @@ namespace Odyssey
 					m_PushDescriptors->AddTexture(setPass.Texture, 4);
 
 				// Push the descriptors into the command buffer
-				commandBuffer->PushDescriptors(m_PushDescriptors.get(), setPass.GraphicsPipeline);
+				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), setPass.GraphicsPipeline);
 
 				// Set the per-object descriptor buffer offset
 				commandBuffer->BindVertexBuffer(drawcall.VertexBufferID);
@@ -68,7 +71,7 @@ namespace Odyssey
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();
 		info.DescriptorLayout = m_DescriptorLayout;
-		info.Triangles = false;
+		info.Topology = Topology::LineList;
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
@@ -76,10 +79,10 @@ namespace Odyssey
 
 	void DebugSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.commandBuffer);
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
 		// Bind our graphics pipeline
-		commandBuffer->BindPipeline(m_GraphicsPipeline);
+		commandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
 
 		// Push the camera descriptors
 		auto renderScene = params.renderingData->renderScene;
@@ -87,7 +90,7 @@ namespace Odyssey
 		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
 
 		// Push the descriptors into the command buffer
-		commandBuffer->PushDescriptors(m_PushDescriptors.get(), m_GraphicsPipeline);
+		commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
 
 		// Set the per-object descriptor buffer offset
 		commandBuffer->BindVertexBuffer(DebugRenderer::GetVertexBuffer());
@@ -117,13 +120,12 @@ namespace Odyssey
 		m_CubeMesh = AssetManager::LoadAsset<Mesh>(s_CubeMeshGUID);
 
 		// Allocate the UBO
-		uboID = ResourceManager::Allocate<VulkanUniformBuffer>(BufferType::Uniform, 1, sizeof(glm::mat4));
+		uboID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(glm::mat4));
 
 		// Write the camera data into the ubo memory
-		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
+		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
 		glm::mat4 identity = glm::mat4(1.0f);
-		uniformBuffer->AllocateMemory();
-		uniformBuffer->SetMemory(sizeof(glm::mat4), &identity);
+		uniformBuffer->CopyData(sizeof(glm::mat4), &identity);
 	}
 
 	void SkyboxSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
@@ -133,15 +135,15 @@ namespace Odyssey
 		if (!renderScene->SkyboxCubemap.IsValid())
 			return;
 
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.commandBuffer);
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
 		glm::mat4 world = subPassData.Camera->GetView();
 		glm::mat4 posOnly = glm::translate(glm::mat4(1.0f), glm::vec3(world[3][0], world[3][1], world[3][2]));
-		auto uniformBuffer = ResourceManager::GetResource<VulkanUniformBuffer>(uboID);
-		uniformBuffer->SetMemory(sizeof(glm::mat4), &posOnly);
+		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
+		uniformBuffer->CopyData(sizeof(glm::mat4), &posOnly);
 
 		// Bind our graphics pipeline
-		commandBuffer->BindPipeline(m_GraphicsPipeline);
+		commandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
 
 		m_PushDescriptors->Clear();
 		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
@@ -150,10 +152,61 @@ namespace Odyssey
 		m_PushDescriptors->AddTexture(renderScene->SkyboxCubemap, 3);
 
 		// Push the descriptors into the command buffer
-		commandBuffer->PushDescriptors(m_PushDescriptors.get(), m_GraphicsPipeline);
+		commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
 
 		commandBuffer->BindVertexBuffer(m_CubeMesh->GetVertexBuffer());
 		commandBuffer->BindIndexBuffer(m_CubeMesh->GetIndexBuffer());
 		commandBuffer->DrawIndexed(m_CubeMesh->GetIndexCount(), 1, 0, 0, 0);
+	}
+
+	void ParticleSubPass::Setup()
+	{
+		// Create the descriptor layout
+		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
+		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
+		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
+		descriptorLayout->AddBinding("Particle Buffer", DescriptorType::Storage, ShaderStage::Vertex, 2);
+		descriptorLayout->AddBinding("Particle Texture", DescriptorType::Sampler, ShaderStage::Fragment, 3);
+		descriptorLayout->AddBinding("Alive Pre-Sim Buffer", DescriptorType::Storage, ShaderStage::Vertex, 4);
+		descriptorLayout->Apply();
+
+		m_ModelUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(glm::mat4));
+		m_Shader = AssetManager::LoadAsset<Shader>(s_ParticleShaderGUID);
+		m_ParticleTexture = AssetManager::LoadAsset<Texture2D>(s_ParticleTextureGUID);
+
+		VulkanPipelineInfo info;
+		info.Shaders = m_Shader->GetResourceMap();
+		info.DescriptorLayout = m_DescriptorLayout;
+		info.BindVertexAttributeDescriptions = false;
+		info.AlphaBlend = true;
+		info.WriteDepth = false;
+
+		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
+		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
+	}
+
+	void ParticleSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
+	{
+		auto renderScene = params.renderingData->renderScene;
+		auto graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+
+		const std::vector<size_t>& drawList = ParticleBatcher::GetDrawList();
+
+		for (size_t index : drawList)
+		{
+			uint32_t aliveCount = ParticleBatcher::GetAliveCount(index);
+			ResourceID particleBuffer = ParticleBatcher::GetParticleBuffer(index);
+			ResourceID aliveBuffer = ParticleBatcher::GetAliveBuffer(index);
+
+			m_PushDescriptors->Clear();
+			m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
+			m_PushDescriptors->AddBuffer(particleBuffer, 2);
+			m_PushDescriptors->AddTexture(m_ParticleTexture->GetTexture(), 3);
+			m_PushDescriptors->AddBuffer(aliveBuffer, 4);
+
+			graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
+			graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
+			graphicsCommandBuffer->Draw(aliveCount * 6, 1, 0, 0);
+		}
 	}
 }

@@ -8,8 +8,6 @@
 #include "VulkanWindow.h"
 #include "VulkanBuffer.h"
 #include "VulkanQueue.h"
-#include "VulkanVertexBuffer.h"
-#include "VulkanIndexBuffer.h"
 #include "VulkanImage.h"
 #include "VulkanRenderTexture.h"
 #include "ResourceManager.h"
@@ -52,12 +50,15 @@ namespace Odyssey
 
 		for (int i = 0; i < m_Frames.size(); ++i)
 		{
-			ResourceID commandPoolID = ResourceManager::Allocate<VulkanCommandPool>();
-			auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
-			ResourceID commandBufferID = commandPool->AllocateBuffer();
+			// Graphics command resources
+			{
+				ResourceID commandPoolID = ResourceManager::Allocate<VulkanCommandPool>(VulkanQueueType::Graphics);
+				auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+				ResourceID commandBufferID = commandPool->AllocateBuffer();
 
-			m_CommandPools.push_back(commandPoolID);
-			m_CommandBuffers.push_back(commandBufferID);
+				m_GraphicsCommandPools.push_back(commandPoolID);
+				m_GraphicsCommandBuffers.push_back(commandBufferID);
+			}
 		}
 	}
 
@@ -81,6 +82,7 @@ namespace Odyssey
 
 	bool VulkanRenderer::Update()
 	{
+		m_Imgui->Update();
 		return m_Window->Update();
 	}
 
@@ -120,7 +122,7 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(renderer 1)");
+			Log::Error("(renderer 1)");
 		}
 
 		s_PreviousFrame = s_FrameIndex;
@@ -151,7 +153,7 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(renderer 2)");
+			Log::Error("(renderer 2)");
 		}
 
 		VulkanFrame& frame = m_Frames[s_FrameIndex];
@@ -159,21 +161,21 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(renderer 3)");
+			Log::Error("(renderer 3)");
 		}
 
 		err = vkResetFences(vkDevice, 1, &frame.fence);
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(renderer 4)");
+			Log::Error("(renderer 4)");
 		}
 
-		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_CommandPools[s_FrameIndex]);
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_GraphicsCommandPools[s_FrameIndex]);
 		commandPool->Reset();
 
 		// Command buffer begin
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_CommandBuffers[s_FrameIndex]);
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_GraphicsCommandBuffers[s_FrameIndex]);
 		commandBuffer->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
@@ -198,14 +200,14 @@ namespace Odyssey
 			}
 
 			// RenderPass begin
-			auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_CommandBuffers[s_FrameIndex]);
+			auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_GraphicsCommandBuffers[s_FrameIndex]);
 			m_RenderingData->frame = frame;
 			m_RenderingData->renderScene = m_RenderScenes[s_FrameIndex];
 			m_RenderingData->width = width;
 			m_RenderingData->height = height;
 
 			RenderPassParams params;
-			params.commandBuffer = m_CommandBuffers[s_FrameIndex];
+			params.GraphicsCommandBuffer = m_GraphicsCommandBuffers[s_FrameIndex];
 			params.context = m_Context;
 			params.renderingData = m_RenderingData;
 			params.FrameRT = frame->GetRenderTarget();
@@ -245,7 +247,7 @@ namespace Odyssey
 				VkResult err = vkWaitForFences(m_Context->GetDeviceVK(), 1, &(m_Frames[s_PreviousFrame].fence), VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
 				if (!check_vk_result(err))
 				{
-					Logger::LogError("(graphnode 0)");
+					Log::Error("(graphnode 0)");
 				}
 				ResourceManager::Flush();
 			}
@@ -253,7 +255,7 @@ namespace Odyssey
 			VkResult err = vkQueueSubmit(m_Context->GetGraphicsQueueVK(), 1, &submitInfo, frame->fence);
 			if (!check_vk_result(err))
 			{
-				Logger::LogError("(graphnode 1)");
+				Log::Error("(graphnode 1)");
 			}
 		}
 	}

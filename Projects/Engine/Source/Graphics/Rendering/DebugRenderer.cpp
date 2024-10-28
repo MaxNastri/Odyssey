@@ -1,9 +1,9 @@
 #include "DebugRenderer.h"
-#include "VulkanVertexBuffer.h"
 #include "Shader.h"
 #include "ResourceManager.h"
 #include "AssetManager.h"
 #include "Renderer.h"
+#include "VulkanBuffer.h"
 
 namespace Odyssey
 {
@@ -12,7 +12,10 @@ namespace Odyssey
 		m_Settings = settings;
 
 		m_Vertices.resize(m_Settings.MaxVertices);
-		m_VertexBufferID = ResourceManager::Allocate<VulkanVertexBuffer>(m_Vertices);
+		size_t dataSize = m_Vertices.size() * sizeof(m_Vertices[0]);
+		m_VertexBufferID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Vertex, dataSize);
+		auto vertexBuffer = ResourceManager::GetResource<VulkanBuffer>(m_VertexBufferID);
+		vertexBuffer->UploadData(m_Vertices.data(), dataSize);
 	}
 
 	void DebugRenderer::Clear()
@@ -32,7 +35,7 @@ namespace Odyssey
 		const size_t ringSegments = 32;
 		Vertex vertices[ringSegments + 1];
 
-		float angleDelta = glm::two_pi<float>() / float(ringSegments);
+		constexpr float angleDelta = glm::two_pi<float>() / float(ringSegments);
 		float cosDelta = cosf(angleDelta);
 		float sinDelta = sinf(angleDelta);
 
@@ -66,8 +69,9 @@ namespace Odyssey
 	}
 	ResourceID DebugRenderer::GetVertexBuffer()
 	{
-		auto vertexBuffer = ResourceManager::GetResource<VulkanVertexBuffer>(m_VertexBufferID);
-		vertexBuffer->UploadData(m_Vertices);
+		size_t dataSize = m_Vertices.size() * sizeof(m_Vertices[0]);
+		auto vertexBuffer = ResourceManager::GetResource<VulkanBuffer>(m_VertexBufferID);
+		vertexBuffer->UploadData(m_Vertices.data(), dataSize);
 		return m_VertexBufferID;
 	}
 }

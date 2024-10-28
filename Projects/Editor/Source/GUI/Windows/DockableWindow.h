@@ -38,6 +38,7 @@ namespace Odyssey
 		glm::vec2 m_FramePadding;
 		bool m_CursorInContentRegion = false;
 		bool m_WindowResized = false;
+		uint64_t m_WindowFlags = 0;
 
 	};
 }

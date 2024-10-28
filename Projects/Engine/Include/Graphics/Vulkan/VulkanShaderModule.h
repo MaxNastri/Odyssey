@@ -13,7 +13,7 @@ namespace Odyssey
 	class VulkanShaderModule : public Resource
 	{
 	public:
-		VulkanShaderModule(std::shared_ptr<VulkanContext> context, ShaderType shaderType, BinaryBuffer& codeBuffer);
+		VulkanShaderModule(ResourceID id, std::shared_ptr<VulkanContext> context, ShaderType shaderType, BinaryBuffer& codeBuffer);
 		void Destroy();
 
 	public:

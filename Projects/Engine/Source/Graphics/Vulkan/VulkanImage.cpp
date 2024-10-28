@@ -4,13 +4,14 @@
 #include "VulkanPhysicalDevice.h"
 #include "VulkanCommandPool.h"
 #include "Vulkancommandbuffer.h"
-#include <Logger.h>
+#include <Log.h>
 #include "ResourceManager.h"
 #include "VulkanBuffer.h"
 
 namespace Odyssey
 {
-	VulkanImage::VulkanImage(std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc)
+	VulkanImage::VulkanImage(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_Width = desc.Width;
@@ -43,7 +44,7 @@ namespace Odyssey
 
 			if (vkCreateImage(device, &imageInfo, allocator, &m_Image) != VK_SUCCESS)
 			{
-				Logger::LogError("[VulkanImage] Failed to create image");
+				Log::Error("[VulkanImage] Failed to create image");
 				return;
 			}
 		}
@@ -60,7 +61,7 @@ namespace Odyssey
 
 			if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
 			{
-				Logger::LogError("(VulkanImage) Failed to allocate image memory");
+				Log::Error("(VulkanImage) Failed to allocate image memory");
 				return;
 			}
 
@@ -80,13 +81,14 @@ namespace Odyssey
 
 			if (vkCreateImageView(device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
 			{
-				Logger::LogError("(VulkanImage) Failed to create image view.");
+				Log::Error("(VulkanImage) Failed to create image view.");
 				return;
 			}
 		}
 	}
 
-	VulkanImage::VulkanImage(std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, uint32_t channels, VkFormat format)
+	VulkanImage::VulkanImage(ResourceID id, std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, uint32_t channels, VkFormat format)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_Image = image;
@@ -113,7 +115,7 @@ namespace Odyssey
 
 			if (vkCreateImageView(context->GetDeviceVK(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
 			{
-				Logger::LogError("(VulkanImage) Failed to create image view.");
+				Log::Error("(VulkanImage) Failed to create image view.");
 				return;
 			}
 		}
@@ -133,15 +135,11 @@ namespace Odyssey
 	void VulkanImage::SetData(BinaryBuffer& buffer)
 	{
 		if (!m_StagingBuffer.IsValid())
-		{
 			m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
-			auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
-			stagingBuffer->AllocateMemory();
-		}
 
 		// Set the staging buffer's memory
 		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
-		stagingBuffer->SetMemory(buffer.GetSize(), buffer.GetData().data());
+		stagingBuffer->CopyData(buffer.GetSize(), buffer.GetData().data());
 
 		// Generate a copy region for this new set of data
 		VkBufferImageCopy bufferCopyRegion = {};
@@ -158,7 +156,7 @@ namespace Odyssey
 		m_CopyRegions.push_back(bufferCopyRegion);
 
 		// Allocate a command buffer
-		ResourceID commandPoolID = m_Context->GetCommandPool();
+		ResourceID commandPoolID = m_Context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -167,7 +165,7 @@ namespace Odyssey
 		commandBuffer->BeginCommands();
 		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_Width, m_Height);
 		commandBuffer->EndCommands();
-		commandBuffer->Flush();
+		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
@@ -176,15 +174,11 @@ namespace Odyssey
 		size_t offset = buffer.GetSize() / arrayDepth;
 
 		if (!m_StagingBuffer.IsValid())
-		{
 			m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
-			auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
-			stagingBuffer->AllocateMemory();
-		}
 
 		// Set the staging buffer's memory
 		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
-		stagingBuffer->SetMemory(buffer.GetSize(), buffer.GetData().data());
+		stagingBuffer->CopyData(buffer.GetSize(), buffer.GetData().data());
 
 		// Generate a copy region for this new set of data
 		for (size_t i = 0; i < arrayDepth; i++)
@@ -204,7 +198,7 @@ namespace Odyssey
 		}
 
 		// Allocate a command buffer
-		ResourceID commandPoolID = m_Context->GetCommandPool();
+		ResourceID commandPoolID = m_Context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -213,7 +207,7 @@ namespace Odyssey
 		commandBuffer->BeginCommands();
 		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_Width, m_Height);
 		commandBuffer->EndCommands();
-		commandBuffer->Flush();
+		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 

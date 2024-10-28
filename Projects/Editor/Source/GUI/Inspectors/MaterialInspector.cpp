@@ -21,7 +21,7 @@ namespace Odyssey
 				textureGUID = texture2D->GetGUID();
 
 			m_NameDrawer = StringDrawer("Name", m_Material->GetName(),
-				[this](const std::string& name) { OnNameModified(name); });
+				[this](std::string_view name) { OnNameModified(name); });
 
 			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), nullptr, true);
 
@@ -50,7 +50,7 @@ namespace Odyssey
 		}
 	}
 
-	void MaterialInspector::OnNameModified(const std::string& name)
+	void MaterialInspector::OnNameModified(std::string_view name)
 	{
 		if (m_Material)
 			m_Material->SetName(name);

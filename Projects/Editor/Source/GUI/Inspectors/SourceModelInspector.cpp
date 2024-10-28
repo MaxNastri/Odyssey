@@ -17,7 +17,7 @@ namespace Odyssey
 			//m_Drawers.push_back(StringDrawer("Vertex Count", std::to_string(meshData.VertexLists[0].size()), nullptr, true));
 			//m_Drawers.push_back(StringDrawer("Index Count", std::to_string(meshData.IndexLists[0].size()), nullptr, true));
 			m_Drawers.push_back(StringDrawer("Dst Asset Path", "", 
-				[this](const std::string& path) { OnDstPathChanged(path); }, false));
+				[this](std::string_view path) { OnDstPathChanged(path); }, false));
 		}
 	}
 

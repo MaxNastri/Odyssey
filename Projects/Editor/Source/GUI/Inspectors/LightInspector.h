@@ -2,9 +2,7 @@
 #include "Inspector.h"
 #include "Light.h"
 #include "GameObject.h"
-#include "IntDrawer.h"
-#include "FloatDrawer.h"
-#include "ColorDrawer.h"
+#include "PropertyDrawers.h"
 
 namespace Odyssey
 {
@@ -27,7 +25,7 @@ namespace Odyssey
 		GameObject m_GameObject;
 
 		IntDrawer<uint32_t> m_LightTypeDrawer;
-		ColorDrawer m_ColorDrawer;
+		ColorPicker m_ColorPicker;
 		FloatDrawer m_IntensityDrawer;
 		FloatDrawer m_RangeDrawer;
 	};

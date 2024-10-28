@@ -8,6 +8,7 @@
 #include "Events.h"
 #include "VulkanContext.h"
 #include "VulkanRenderTexture.h"
+#include "VulkanTexture.h"
 #include "VulkanTextureSampler.h"
 
 namespace Odyssey
@@ -63,6 +64,7 @@ namespace Odyssey
 			}, &init_info.Instance);
 		ImGui_ImplVulkan_Init(&init_info, initInfo.renderPass);
 	}
+
 	void VulkanImgui::SubmitDraws()
 	{
 		ImGui_ImplVulkan_NewFrame();
@@ -73,6 +75,14 @@ namespace Odyssey
 		// Invoke the draw listener callback
 		if (m_DrawGUIListener)
 			m_DrawGUIListener();
+	}
+
+	void VulkanImgui::Update()
+	{
+		for (auto& destroy : m_PendingDestroys)
+			destroy();
+
+		m_PendingDestroys.clear();
 	}
 
 	void VulkanImgui::Render(ResourceID commandBufferID)
@@ -98,9 +108,22 @@ namespace Odyssey
 		}
 	}
 
-	uint64_t VulkanImgui::AddTexture(ResourceID textureID, ResourceID samplerID)
+	uint64_t VulkanImgui::AddTexture(ResourceID textureID)
 	{
-		auto texture = ResourceManager::GetResource<VulkanRenderTexture>(textureID);
+		auto texture = ResourceManager::GetResource<VulkanTexture>(textureID);
+		auto image = ResourceManager::GetResource<VulkanImage>(texture->GetImage());
+		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(texture->GetSampler());
+
+		VkSampler samplerVk = sampler->GetSamplerVK();
+		VkImageView view = image->GetImageView();
+		VkImageLayout layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+		return reinterpret_cast<uint64_t>(ImGui_ImplVulkan_AddTexture(samplerVk, view, layout));
+	}
+
+	uint64_t VulkanImgui::AddRenderTexture(ResourceID renderTextureID, ResourceID samplerID)
+	{
+		auto texture = ResourceManager::GetResource<VulkanRenderTexture>(renderTextureID);
 		auto image = ResourceManager::GetResource<VulkanImage>(texture->GetImage());
 		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(samplerID);
 
@@ -113,7 +136,13 @@ namespace Odyssey
 
 	void VulkanImgui::RemoveTexture(uint64_t id)
 	{
-		ImGui_ImplVulkan_RemoveTexture(reinterpret_cast<VkDescriptorSet>(id));
+		uint64_t cached = id;
+		m_PendingDestroys.push_back(
+			[this, cached]()
+			{
+				ImGui_ImplVulkan_RemoveTexture(reinterpret_cast<VkDescriptorSet>(cached));
+			}
+		);
 	}
 
 	void VulkanImgui::SetFont(Path fontFile, float fontSize)
@@ -150,14 +179,14 @@ namespace Odyssey
 		VkResult err = vkCreateDescriptorPool(m_Context->GetDeviceVK(), &pool_info, allocator, &descriptorPool);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(imgui 3)");
+			Log::Error("(imgui 3)");
 		}
 	}
 
 	void VulkanImgui::UploadFont()
 	{
 		// Use any command queue
-		ResourceID commandPoolID = m_Context->GetCommandPool();
+		ResourceID commandPoolID = m_Context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -177,13 +206,13 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(imgui 1)");
+			Log::Error("(imgui 1)");
 		}
 
 		err = vkDeviceWaitIdle(m_Context->GetDeviceVK());
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(imgui 2)");
+			Log::Error("(imgui 2)");
 		}
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();

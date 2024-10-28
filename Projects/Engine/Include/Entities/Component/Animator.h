@@ -14,6 +14,7 @@ namespace Odyssey
 	public:
 		Animator() = default;
 		Animator(const GameObject& gameObject);
+
 	public:
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
@@ -39,7 +40,6 @@ namespace Odyssey
 		void DestroyBoneGameObjects();
 		void ProcessKeys();
 		void ProcessTransforms();
-		void CalculateRootSpaceTransforms();
 
 	private:
 		void DebugDrawBones();
@@ -57,7 +57,6 @@ namespace Odyssey
 		std::map<std::string, glm::mat4> m_BoneTransforms;
 		std::vector<glm::mat4> m_FinalPoses;
 		bool m_Playing = false;
-		AnimationClipTimeline m_Timeline;
 
 	private:
 		bool m_DebugEnabled = false;

@@ -12,8 +12,8 @@ namespace Odyssey
 	class VulkanTexture : public Resource
 	{
 	public:
-		VulkanTexture() = default;
-		VulkanTexture(std::shared_ptr<VulkanContext> context, VulkanImageDescription description, BinaryBuffer& buffer);
+		VulkanTexture(ResourceID id);
+		VulkanTexture(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription description, BinaryBuffer& buffer);
 
 	public:
 		ResourceID GetImage() { return m_Image; }

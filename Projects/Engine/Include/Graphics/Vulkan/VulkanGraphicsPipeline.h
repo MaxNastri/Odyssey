@@ -15,7 +15,7 @@ namespace Odyssey
 	class VulkanGraphicsPipeline : public Resource
 	{
 	public:
-		VulkanGraphicsPipeline(std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info);
+		VulkanGraphicsPipeline(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info);
 		void Destroy();
 
 	public:
@@ -24,7 +24,6 @@ namespace Odyssey
 
 	private:
 		void CreateLayout(VulkanPipelineInfo& info);
-
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;

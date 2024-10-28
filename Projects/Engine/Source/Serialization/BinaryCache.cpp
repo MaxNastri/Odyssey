@@ -1,5 +1,5 @@
 #include "BinaryCache.h"
-#include "Logger.h"
+#include "Log.h"
 
 namespace Odyssey
 {
@@ -32,7 +32,7 @@ namespace Odyssey
 		std::ofstream file(assetPath, std::ios::trunc | std::ios::binary);
 		if (!file.is_open())
 		{
-			Logger::LogError("[VulkanShader] Unable to open shader file: " + assetPath.string());
+			Log::Error("[VulkanShader] Unable to open shader file: " + assetPath.string());
 			return;
 		}
 
@@ -87,7 +87,7 @@ namespace Odyssey
 		std::ifstream file(path, std::ios::binary);
 		if (!file.is_open())
 		{
-			Logger::LogError("[VulkanShader] Unable to open shader file: " + path.string());
+			Log::Error("[VulkanShader] Unable to open shader file: " + path.string());
 			return BinaryBuffer();
 		}
 

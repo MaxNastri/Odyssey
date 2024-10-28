@@ -1,7 +1,7 @@
 #include "VulkanShaderModule.h"
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
-#include <Logger.h>
+#include <Log.h>
 #include "volk.h"
 #include <shaderc/shaderc.hpp>
 #include "AssetManager.h"
@@ -9,7 +9,8 @@
 
 namespace Odyssey
 {
-	VulkanShaderModule::VulkanShaderModule(std::shared_ptr<VulkanContext> context, ShaderType shaderType, BinaryBuffer& codeBuffer)
+	VulkanShaderModule::VulkanShaderModule(ResourceID id, std::shared_ptr<VulkanContext> context, ShaderType shaderType, BinaryBuffer& codeBuffer)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_ShaderType = shaderType;
@@ -26,12 +27,16 @@ namespace Odyssey
 	{
 		switch (m_ShaderType)
 		{
-			case Odyssey::ShaderType::None:
+			case ShaderType::None:
 				break;
-			case Odyssey::ShaderType::Fragment:
+			case ShaderType::Fragment:
 				return VK_SHADER_STAGE_FRAGMENT_BIT;
-			case Odyssey::ShaderType::Vertex:
+			case ShaderType::Vertex:
 				return VK_SHADER_STAGE_VERTEX_BIT;
+			case ShaderType::Compute:
+				return VK_SHADER_STAGE_COMPUTE_BIT;
+			case ShaderType::Geometry:
+				return VK_SHADER_STAGE_GEOMETRY_BIT;
 			default:
 				break;
 		}
@@ -49,7 +54,7 @@ namespace Odyssey
 
 		if (vkCreateShaderModule(m_Context->GetDevice()->GetLogicalDevice(), &createInfo, nullptr, &m_ShaderModule) != VK_SUCCESS)
 		{
-			Logger::LogError("[VulkanShader] Failed to create shader module.");
+			Log::Error("[VulkanShader] Failed to create shader module.");
 		}
 	}
 }

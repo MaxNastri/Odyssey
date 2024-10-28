@@ -4,7 +4,7 @@
 #include "GameObject.h"
 #include "String.hpp"
 #include "glm.h"
-#include "Logger.h"
+#include "Log.h"
 #include "OdysseyTime.h"
 #include "AssetManager.h"
 #include "Mesh.h"
@@ -29,7 +29,7 @@ namespace Odyssey
 		}
 		else
 		{
-			Logger::LogError(std::format("No C# component class found for {}!", componentType));
+			Log::Error(std::format("No C# component class found for {}!", componentType));
 		}
 	}
 }
@@ -59,7 +59,8 @@ namespace Odyssey::InternalCalls
 	void GameObject_SetName(uint64_t guid, Coral::String name)
 	{
 		GameObject gameObject = GetGameObject(guid);
-		gameObject.SetName(name);
+		std::string nameStr = name;
+		gameObject.SetName(nameStr);
 	}
 
 	void GameObject_AddComponent(uint64_t guid, Coral::ReflectionType componentType)

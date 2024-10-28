@@ -58,6 +58,13 @@ namespace Odyssey
 			m_FreeIndices.push(index);
 		}
 
+		size_t Peek()
+		{
+			if (m_FreeIndices.size() == 0)
+				Resize();
+			return m_FreeIndices.front();
+		}
+
 	private:
 		void Resize()
 		{

@@ -4,9 +4,6 @@
 
 namespace Odyssey
 {
-	class VulkanUniformBuffer;
-	class VulkanTexture;
-
 	class VulkanPushDescriptors
 	{
 	public:

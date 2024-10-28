@@ -22,15 +22,15 @@ namespace Odyssey
 
 	public:
 		GUID GetGUID() { return Guid; }
-		const std::string& GetName() { return Name; }
-		const std::string& GetType() { return Type; }
+		std::string_view GetName() { return Name; }
+		std::string_view GetType() { return Type; }
 		Path& GetPath() { return m_SourcePath; }
 		bool HasMetadata();
 
 	public:
 		void SetGUID(GUID guid) { Guid = guid; }
-		void SetName(const std::string& name) { Name = name; }
-		void SetType(const std::string& type) { Type = type; }
+		void SetName(std::string_view name) { Name = name; }
+		void SetType(std::string_view type) { Type = type; }
 		void SetMetadata(GUID guid, const std::string& name, const std::string& type);
 
 	public:
@@ -57,8 +57,8 @@ namespace Odyssey
 
 	public:
 		GUID GetGUID() { return Guid; }
-		const std::string& GetName() { return Name; }
-		const std::string& GetType() { return Type; }
+		std::string_view GetName() { return Name; }
+		std::string_view GetType() { return Type; }
 		void SerializeMetadata(AssetSerializer& serializer);
 		void Load();
 
@@ -68,8 +68,8 @@ namespace Odyssey
 
 	public:
 		void SetGUID(GUID guid) { Guid = guid; }
-		void SetName(const std::string& name) { Name = name; }
-		void SetType(const std::string& type) { Type = type; }
+		void SetName(std::string_view name) { Name = name; }
+		void SetType(std::string_view type) { Type = type; }
 		void SetSourceAsset(GUID guid) { m_SourceAsset = guid; }
 
 	public:

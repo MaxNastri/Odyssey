@@ -39,7 +39,8 @@ namespace Odyssey
 			// Note: Their children will be drawn recursively
 			for (auto& node : sceneRoot->Children)
 			{
-				DrawSceneNode(node);
+				if (node)
+					DrawSceneNode(node);
 			}
 
 			if (m_CursorInContentRegion && m_Interactions.empty())
@@ -124,7 +125,9 @@ namespace Odyssey
 		{
 			if (ImGui::Button("Delete"))
 			{
-				m_Deferred = [this, &gameObject] { gameObject.Destroy(); };
+				gameObject.Destroy();
+				ImGui::EndPopup();
+				return false;
 			}
 
 			ImGui::EndPopup();
@@ -138,7 +141,7 @@ namespace Odyssey
 				Interaction<GameObject> interaction;
 				interaction.Type = InteractionType::DragAndDropTarget;
 				interaction.Target = &gameObject;
-				interaction.Data = RawBuffer::Copy(payload->Data, payload->DataSize);
+				RawBuffer::Copy(interaction.Data, payload->Data, payload->DataSize);
 				m_Interactions.push_back(interaction);
 			}
 			ImGui::EndDragDropTarget();
@@ -185,7 +188,7 @@ namespace Odyssey
 
 				GUID guid = *((GUID*)payload->Data);
 				GameObject gameObject = m_Scene->GetGameObject(guid);
-				if (gameObject.GetParent())
+				if (gameObject.GetParent().IsValid())
 					gameObject.RemoveParent();
 			}
 			ImGui::EndDragDropTarget();

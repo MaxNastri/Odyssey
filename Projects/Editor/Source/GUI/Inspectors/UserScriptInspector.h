@@ -1,7 +1,6 @@
 #pragma once
 #include "Inspector.h"
-#include "PropertyDrawer.h"
-#include "IntDrawer.h"
+#include "PropertyDrawers.h"
 #include "GameObject.h"
 #include "ManagedObject.hpp"
 #include "ScriptingManager.h"
@@ -28,7 +27,7 @@ namespace Odyssey
 		void CreateAssetDrawer(const std::string& fieldName, const std::string& assetType, uint32_t scriptID, uint32_t fieldID, GUID initialValue);
 		void CreateDrawerFromProperty(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage);
 		void CreateStringDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage);
-		void OnStringFieldChanged(uint32_t scriptID, uint32_t fieldID, const std::string& newValue);
+		void OnStringFieldChanged(uint32_t scriptID, uint32_t fieldID, std::string_view newValue);
 
 	private:
 		template<typename T>

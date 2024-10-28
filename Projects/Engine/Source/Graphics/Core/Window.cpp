@@ -1,6 +1,6 @@
 #include "Window.h"
 #include "Input.h"
-#include <Logger.h>
+#include <Log.h>
 
 // GLFW3 Includes
 #ifndef GLFW_EXPOSE_NATIVE_WIN32
@@ -79,7 +79,7 @@ namespace Odyssey
 
 	void Window::ErrorCallback(int error, const char* description)
 	{
-		Logger::LogError(std::format("GLFW Error %d: %s\n", error, description));
+		Log::Error(std::format("GLFW Error %d: %s\n", error, description));
 	}
 
 	void Window::KeyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods)
@@ -103,14 +103,14 @@ namespace Odyssey
 
 	void Window::MouseMoveCallback(GLFWwindow* window, double x, double y)
 	{
-		Input::RegisterMouseMove(x, y);
+		Input::RegisterMouseMove((float)x, (float)y);
 	}
 
 	void Window::MouseEnteredCallback(GLFWwindow* window, int entered)
 	{
 		double xPos, yPos;
 		glfwGetCursorPos(window, &xPos, &yPos);
-		Input::RegisterMousePosition(xPos, yPos, entered);
+		Input::RegisterMousePosition((float)xPos, (float)yPos, entered);
 	}
 
 	void Window::MouseButtonClicked(GLFWwindow* window, int button, int action, int mods)

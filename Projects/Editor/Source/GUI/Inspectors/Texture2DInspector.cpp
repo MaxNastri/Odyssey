@@ -11,9 +11,8 @@ namespace Odyssey
 		{
 			m_GUIDDrawer = StringDrawer("GUID", m_Texture->GetGUID().String(), nullptr, true);
 			m_NameDrawer = StringDrawer("Name", m_Texture->GetName(),
-				[this](const std::string& name) { OnNameChanged(name); });
+				[this](std::string_view name) { OnNameChanged(name); });
 			m_TypeDrawer = StringDrawer("Type", m_Texture->GetType(), nullptr, true);
-			m_PixelDataGUID = StringDrawer("Pixel Data", m_Texture->GetPixelBufferGUID().String(), nullptr, true);
 			m_SourceAssetDrawer = AssetFieldDrawer("Source Asset", m_Texture->GetSoureAsset(), SourceTexture::Type,
 				[this](GUID sourceGUID) { OnSourceAssetchanged(sourceGUID); });
 		}
@@ -23,11 +22,10 @@ namespace Odyssey
 		m_GUIDDrawer.Draw();
 		m_TypeDrawer.Draw();
 		m_NameDrawer.Draw();
-		m_PixelDataGUID.Draw();
 		m_SourceAssetDrawer.Draw();
 	}
 
-	void TextureInspector::OnNameChanged(const std::string& name)
+	void TextureInspector::OnNameChanged(std::string_view name)
 	{
 		if (m_Texture)
 		{

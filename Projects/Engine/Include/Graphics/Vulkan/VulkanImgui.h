@@ -37,11 +37,14 @@ namespace Odyssey
 	public:
 		VulkanImgui(std::shared_ptr<VulkanContext> context, const InitInfo& initInfo);
 		void SubmitDraws();
+		void Update();
 		void Render(ResourceID commandBufferID);
 		void PostRender();
 		void SetDrawGUIListener(std::function<void(void)> listener) { m_DrawGUIListener = listener; }
+
 	public:
-		uint64_t AddTexture(ResourceID textureID, ResourceID samplerID);
+		uint64_t AddTexture(ResourceID textureID);
+		uint64_t AddRenderTexture(ResourceID renderTextureID, ResourceID samplerID);
 		void RemoveTexture(uint64_t id);
 		void SetFont(Path fontFile, float fontSize);
 
@@ -54,5 +57,8 @@ namespace Odyssey
 		std::map<int64_t, VkDescriptorSet> m_RenderTextures;
 		VkDescriptorPool descriptorPool;
 		std::function<void(void)> m_DrawGUIListener;
+
+	private:
+		std::vector<std::function<void()>> m_PendingDestroys;
 	};
 }

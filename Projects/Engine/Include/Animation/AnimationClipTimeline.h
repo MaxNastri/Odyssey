@@ -4,21 +4,23 @@
 
 namespace Odyssey
 {
+	class AnimationClip;
 
 	class AnimationClipTimeline
 	{
 	public:
 		AnimationClipTimeline() = default;
-		AnimationClipTimeline(GUID animationClip);
+		~AnimationClipTimeline() = default;
+		AnimationClipTimeline(AnimationClip* animationClip);
 
 	public:
-		const std::unordered_map<std::string, glm::mat4>& BlendKeysOld(double dt);
-		const std::map<std::string, BlendKey>& BlendKeys(double dt);
+		const std::map<std::string, BlendKey>& BlendKeys(float deltaTime);
+		float GetTime() { return m_CurrentTime; }
 
-	public:
-		GUID m_AnimationClip;
-		double m_Duration = 0.0;
-		double m_CurrentTime = 0.0;
+	private:
+		AnimationClip* m_AnimationClip = nullptr;
+		float m_Duration = 0.0;
+		float m_CurrentTime = 0.0;
 		size_t m_PrevFrame = 0;
 		size_t m_NextFrame = 1;
 		std::unordered_map<std::string, glm::mat4> m_BoneKeys;

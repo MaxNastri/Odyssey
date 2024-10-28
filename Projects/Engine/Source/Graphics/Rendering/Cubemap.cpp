@@ -62,9 +62,9 @@ namespace Odyssey
 		combinedBuffer.AppendData(backBuffer.GetData());
 
 		m_TextureDescription.ImageType = ImageType::Cubemap;
-		m_TextureDescription.Width = resolution;
-		m_TextureDescription.Height = resolution;
-		m_TextureDescription.Channels = channels;
+		m_TextureDescription.Width = (uint32_t)resolution;
+		m_TextureDescription.Height = (uint32_t)resolution;
+		m_TextureDescription.Channels = (uint32_t)channels;
 		m_TextureDescription.ArrayDepth = 6;
 
 		m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, combinedBuffer);

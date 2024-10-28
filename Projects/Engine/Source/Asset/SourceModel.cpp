@@ -1,17 +1,15 @@
 #include "SourceModel.h"
-#include "Logger.h"
+#include "Log.h"
 
 namespace Odyssey
 {
 	SourceModel::SourceModel(const Path& sourcePath)
 		: SourceAsset(sourcePath)
 	{
-		if (sourcePath.extension() == ".fbx")
-			m_ModelImporter = std::make_unique<FBXModelImporter>();
-		else if (sourcePath.extension() == ".glb" || sourcePath.extension() == ".gltf")
+		if (sourcePath.extension() == ".glb" || sourcePath.extension() == ".gltf")
 			m_ModelImporter = std::make_unique<GLTFAssetImporter>();
 
-		if (!m_ModelImporter->Import(sourcePath))
-			Logger::LogError(std::format("Failed to import model: {}", sourcePath.string()));
+		if (!m_ModelImporter || !m_ModelImporter->Import(sourcePath))
+			Log::Error(std::format("Failed to import model: {}", sourcePath.string()));
 	}
 }

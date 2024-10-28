@@ -26,7 +26,7 @@ namespace Odyssey
 			sceneNode.WriteData("Entity", node->Entity.GetGUID());
 
 			GUID parent = GUID(0);
-			if (node->Parent && node->Parent->Entity)
+			if (node->Parent && node->Parent->Entity.IsValid())
 				parent = node->Parent->Entity.GetGUID();
 
 			sceneNode.WriteData("Parent", parent);

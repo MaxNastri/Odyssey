@@ -5,8 +5,6 @@
 
 namespace Odyssey
 {
-	class VulkanVertexBuffer;
-	class VulkanIndexBuffer;
 	class SourceModel;
 
 	class Mesh : public Asset

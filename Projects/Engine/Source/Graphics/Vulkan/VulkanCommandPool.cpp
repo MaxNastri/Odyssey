@@ -5,10 +5,16 @@
 
 namespace Odyssey
 {
-    VulkanCommandPool::VulkanCommandPool(std::shared_ptr<VulkanContext> context)
+    VulkanCommandPool::VulkanCommandPool(ResourceID id)
+        : Resource(id)
+    {
+    }
+
+    VulkanCommandPool::VulkanCommandPool(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanQueueType queue)
+        : Resource(id)
     {
         m_Context = context;
-        uint32_t queueIndex = m_Context->GetPhysicalDevice()->GetFamilyIndex(VulkanQueueType::Graphics);
+        uint32_t queueIndex = m_Context->GetPhysicalDevice()->GetFamilyIndex(queue);
 
         VkCommandPoolCreateInfo info = {};
         info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -17,7 +23,7 @@ namespace Odyssey
         VkResult err = vkCreateCommandPool(m_Context->GetDevice()->GetLogicalDevice(), &info, allocator, &commandPool);
         if (!check_vk_result(err))
         {
-            Logger::LogError("(cpool 1)");
+            Log::Error("(cpool 1)");
         }
     }
 
@@ -48,7 +54,7 @@ namespace Odyssey
         VkResult err = vkResetCommandPool(m_Context->GetDevice()->GetLogicalDevice(), commandPool, 0);
         if (!check_vk_result(err))
         {
-            Logger::LogError("(cpool 2)");
+            Log::Error("(cpool 2)");
         }
     }
 

@@ -8,7 +8,39 @@
 
 namespace Odyssey
 {
-	VulkanGraphicsPipeline::VulkanGraphicsPipeline(std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info)
+
+	VkPrimitiveTopology ConvertTopology(Topology topology)
+	{
+		switch (topology)
+		{
+			case Topology::LineList:
+				return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+			case Topology::TriangleList:
+				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+			case Topology::TriangleStrip:
+				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+			default:
+				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		}
+	}
+
+	VkCullModeFlags ConvertCullMode(CullMode cullMode)
+	{
+		switch (cullMode)
+		{
+			case CullMode::None:
+				return VK_CULL_MODE_NONE;
+			case CullMode::Back:
+				return VK_CULL_MODE_BACK_BIT;
+			case CullMode::Front:
+				return VK_CULL_MODE_FRONT_BIT;
+			default:
+				return VK_CULL_MODE_NONE;
+		}
+	}
+
+	VulkanGraphicsPipeline::VulkanGraphicsPipeline(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanPipelineInfo& info)
+		: Resource(id)
 	{
 		m_Context = context;
 
@@ -19,6 +51,10 @@ namespace Odyssey
 
 		for (auto [shaderType, ResourceID] : info.Shaders)
 		{
+			// Skip compute shaders for graphics pipelines
+			if (shaderType == ShaderType::Compute)
+				continue;
+
 			auto shader = ResourceManager::GetResource<VulkanShaderModule>(ResourceID);
 
 			VkPipelineShaderStageCreateInfo shaderStageInfo{};
@@ -50,18 +86,24 @@ namespace Odyssey
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-		VkVertexInputBindingDescription bindingDescription = Vertex::GetBindingDescription();
-		vertexInputInfo.vertexBindingDescriptionCount = 1;
-		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+		VkVertexInputBindingDescription bindingDescription{};
+		std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions{};
 
-		std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
-		vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
-		vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
+		if (info.BindVertexAttributeDescriptions)
+		{
+			bindingDescription = Vertex::GetBindingDescription();
+			vertexInputInfo.vertexBindingDescriptionCount = 1;
+			vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+
+			vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
+			vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
+			vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
+		}
 
 		// Input Assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		inputAssembly.topology = info.Triangles ? VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST : VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+		inputAssembly.topology = ConvertTopology(info.Topology);
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
 		// Rasterizer
@@ -72,8 +114,8 @@ namespace Odyssey
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
 		// TODO: Convert this to be dynamically set based on config/per material
-		rasterizer.cullMode = VK_CULL_MODE_NONE;// VK_CULL_MODE_BACK_BIT;
-		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+		rasterizer.cullMode = ConvertCullMode(info.CullMode);
+		rasterizer.frontFace = info.FrontCCW ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 		rasterizer.depthBiasConstantFactor = 0.0f; // Optional
 		rasterizer.depthBiasClamp = 0.0f; // Optional
@@ -103,34 +145,33 @@ namespace Odyssey
 
 		// Normal color blending
 		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-		colorBlendAttachment.blendEnable = VK_FALSE;
-		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD; // Optional
-		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // Optional
 
-		// ALPHA BLENDING
-		/*colorBlendAttachment.blendEnable = VK_TRUE;
-		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;*/
+		if (info.AlphaBlend)
+		{
+			colorBlendAttachment.blendEnable = VK_TRUE;
+			colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+			colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+			colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE;
+			colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+			colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+			colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+			colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+		}
+		else
+		{
+			colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+			colorBlendAttachment.blendEnable = VK_FALSE;
+		}
 
 		VkPipelineColorBlendStateCreateInfo colorBlending{};
 		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		colorBlending.logicOpEnable = VK_FALSE;
-		colorBlending.logicOp = VK_LOGIC_OP_COPY; // Optional
 		colorBlending.attachmentCount = 1;
 		colorBlending.pAttachments = &colorBlendAttachment;
-		colorBlending.blendConstants[0] = 0.0f; // Optional
-		colorBlending.blendConstants[1] = 0.0f; // Optional
-		colorBlending.blendConstants[2] = 0.0f; // Optional
-		colorBlending.blendConstants[3] = 0.0f; // Optional
+		colorBlending.blendConstants[0] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
+		colorBlending.blendConstants[1] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
+		colorBlending.blendConstants[2] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
+		colorBlending.blendConstants[3] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
 
 		VkFormat colorAttachmentFormat = VK_FORMAT_R8G8B8A8_UNORM;
 		VkFormat depthAttachmentFormat = VK_FORMAT_D24_UNORM_S8_UINT;
@@ -163,7 +204,7 @@ namespace Odyssey
 
 		if (vkCreateGraphicsPipelines(m_Context->GetDevice()->GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_GraphicsPipeline) != VK_SUCCESS)
 		{
-			Logger::LogError("[VulkanGraphicsPipeline] Failed to create graphics pipeline.");
+			Log::Error("[VulkanGraphicsPipeline] Failed to create graphics pipeline.");
 			return;
 		}
 	}
@@ -191,7 +232,7 @@ namespace Odyssey
 
 		if (vkCreatePipelineLayout(m_Context->GetDevice()->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
 		{
-			Logger::LogError("[VulkanGraphicsPipeline] Failed to create pipeline layout.");
+			Log::Error("[VulkanGraphicsPipeline] Failed to create pipeline layout.");
 			return;
 		}
 	}

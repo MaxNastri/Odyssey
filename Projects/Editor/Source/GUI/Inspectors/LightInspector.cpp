@@ -11,7 +11,7 @@ namespace Odyssey
 		{
 			m_LightTypeDrawer = IntDrawer<uint32_t>("Light Type", (uint32_t)light->GetType(),
 				[this](uint32_t lightType) { OnLightTypeChanged(lightType); });
-			m_ColorDrawer = ColorDrawer("Light Color", light->GetColor(),
+			m_ColorPicker = ColorPicker("Light Color", light->GetColor(),
 				[this](glm::vec3 color) { OnColorChanged(color); });
 			m_IntensityDrawer = FloatDrawer("Light Intensity", light->GetIntensity(),
 				[this](float intensity) { OnIntensityChanged(intensity); });
@@ -24,7 +24,7 @@ namespace Odyssey
 		if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			m_LightTypeDrawer.Draw();
-			m_ColorDrawer.Draw();
+			m_ColorPicker.Draw();
 			m_IntensityDrawer.Draw();
 			m_RangeDrawer.Draw();
 		}

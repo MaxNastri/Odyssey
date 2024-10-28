@@ -1,6 +1,5 @@
 #include "Mesh.h"
-#include "VulkanVertexBuffer.h"
-#include "VulkanIndexBuffer.h"
+#include "VulkanBuffer.h"
 #include "ResourceManager.h"
 #include "AssetSerializer.h"
 #include "BinaryBuffer.h"
@@ -71,7 +70,13 @@ namespace Odyssey
 		if (m_VertexBuffer)
 			ResourceManager::Destroy(m_VertexBuffer);
 
-		m_VertexBuffer = ResourceManager::Allocate<VulkanVertexBuffer>(m_Vertices);
+		// Allocate the vertex buffer
+		size_t dataSize = m_Vertices.size() * sizeof(m_Vertices[0]);
+		m_VertexBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Vertex, dataSize);
+
+		// Upload the vertices to the GPU
+		auto vertexBuffer = ResourceManager::GetResource<VulkanBuffer>(m_VertexBuffer);
+		vertexBuffer->UploadData(vertices.data(), dataSize);
 	}
 
 	void Mesh::SetIndices(std::vector<uint32_t>& indices)
@@ -82,6 +87,9 @@ namespace Odyssey
 		if (m_IndexBuffer)
 			ResourceManager::Destroy(m_IndexBuffer);
 
-		m_IndexBuffer = ResourceManager::Allocate<VulkanIndexBuffer>(m_Indices);
+		size_t dataSize = m_Indices.size() * sizeof(m_Indices[0]);
+		m_IndexBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Index, dataSize);
+		auto indexBuffer = ResourceManager::GetResource<VulkanBuffer>(m_IndexBuffer);
+		indexBuffer->UploadData(indices.data(), dataSize);
 	}
 }

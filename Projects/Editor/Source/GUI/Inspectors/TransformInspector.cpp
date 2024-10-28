@@ -26,6 +26,11 @@ namespace Odyssey
 	{
 		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			Transform& transform = m_GameObject.GetComponent<Transform>();
+			positionDrawer.SetValue(transform.GetPosition());
+			rotationDrawer.SetValue(transform.GetEulerRotation());
+			scaleDrawer.SetValue(transform.GetScale());
+
 			positionDrawer.Draw();
 			rotationDrawer.Draw();
 			scaleDrawer.Draw();

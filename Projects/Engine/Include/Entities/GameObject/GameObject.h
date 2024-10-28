@@ -17,8 +17,8 @@ namespace Odyssey
 
 	public:
 		operator entt::entity() const { return m_Entity; }
-		operator bool() const { return m_Scene; }
 		bool Equals(const GameObject& other) { return m_Entity == other.m_Entity && m_Scene == other.m_Scene; }
+		bool IsValid() { return m_Scene; }
 
 	public:
 		void Serialize(SerializationNode& node);
@@ -34,7 +34,7 @@ namespace Odyssey
 	public:
 		const std::string& GetName();
 		GUID GetGUID();
-		void SetName(const std::string& name);
+		void SetName(std::string_view name);
 		void SetGUID(GUID guid);
 
 	public:

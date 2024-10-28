@@ -3,7 +3,7 @@
 #include "VulkanDevice.h"
 #include "VulkanBuffer.h"
 #include "ResourceManager.h"
-#include <Logger.h>
+#include <Log.h>
 #include "volk.h"
 #include "VulkanImage.h"
 
@@ -12,7 +12,8 @@
 
 namespace Odyssey
 {
-	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height)
+	VulkanRenderTexture::VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_Width = width;
@@ -27,7 +28,7 @@ namespace Odyssey
 		m_Image = ResourceManager::Allocate<VulkanImage>(imageDesc);
 
 		// Allocate a command buffer to transition the image layout
-		auto commandPoolID = context->GetCommandPool();
+		auto commandPoolID = context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 		auto commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -36,13 +37,14 @@ namespace Odyssey
 		commandBuffer->BeginCommands();
 		commandBuffer->TransitionLayouts(m_Image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		commandBuffer->EndCommands();
-		commandBuffer->Flush();
+		commandBuffer->SubmitGraphics();
 
 		// Release the command buffer
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
-	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height, TextureFormat format)
+	VulkanRenderTexture::VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height, TextureFormat format)
+		: Resource(id)
 	{
 		m_Context = context;
 		m_Width = width;
@@ -57,7 +59,7 @@ namespace Odyssey
 		m_Image = ResourceManager::Allocate<VulkanImage>(imageDesc);
 
 		// Allocate a command buffer to transition the image layout
-		auto commandPoolID = context->GetCommandPool();
+		auto commandPoolID = context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
 		auto commandBufferID = commandPool->AllocateBuffer();
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -68,13 +70,14 @@ namespace Odyssey
 		commandBuffer->BeginCommands();
 		commandBuffer->TransitionLayouts(m_Image, layout);
 		commandBuffer->EndCommands();
-		commandBuffer->Flush();
+		commandBuffer->SubmitGraphics();
 
 		// Release the command buffer
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
-	VulkanRenderTexture::VulkanRenderTexture(std::shared_ptr<VulkanContext> context, ResourceID imageID, TextureFormat format)
+	VulkanRenderTexture::VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID imageID, TextureFormat format)
+		: Resource(id)
 	{
 		m_Context = context;
 

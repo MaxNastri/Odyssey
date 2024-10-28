@@ -14,7 +14,7 @@ namespace Odyssey
 		VkResult err = glfwCreateWindowSurface(context->GetInstance(), window, allocator, &surface);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(surface 1)");
+			Log::Error("(surface 1)");
 		}
 
 		glfwGetFramebufferSize(window, &width, &height);

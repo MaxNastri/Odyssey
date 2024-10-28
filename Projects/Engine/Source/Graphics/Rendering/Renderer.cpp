@@ -1,5 +1,7 @@
 #include "Renderer.h"
 #include "VulkanRenderer.h"
+#include "ParticleBatcher.h"
+#include "Texture2D.h"
 
 namespace Odyssey
 {
@@ -10,6 +12,8 @@ namespace Odyssey
 
 		if (s_Config.EnableIMGUI)
 			s_RendererAPI->AddImguiPass();
+
+		ParticleBatcher::Init();
 	}
 
 	bool Renderer::Update()
@@ -36,10 +40,22 @@ namespace Odyssey
 	{
 		s_RendererAPI->GetImGui()->SetDrawGUIListener(listener);
 	}
-	int64_t Renderer::AddImguiTexture(ResourceID renderTextureID, ResourceID samplerID)
+
+	uint64_t Renderer::AddImguiTexture(std::shared_ptr<Texture2D> texture)
 	{
-		return s_RendererAPI->GetImGui()->AddTexture(renderTextureID, samplerID);
+		return s_RendererAPI->GetImGui()->AddTexture(texture->GetTexture());
 	}
+
+	uint64_t Renderer::AddImguiRenderTexture(ResourceID renderTextureID, ResourceID samplerID)
+	{
+		return s_RendererAPI->GetImGui()->AddRenderTexture(renderTextureID, samplerID);
+	}
+
+	void Renderer::DestroyImguiTexture(uint64_t textureHandle)
+	{
+		s_RendererAPI->GetImGui()->RemoveTexture(textureHandle);
+	}
+
 	std::shared_ptr<VulkanWindow> Renderer::GetWindow()
 	{
 		return s_RendererAPI->GetWindow();

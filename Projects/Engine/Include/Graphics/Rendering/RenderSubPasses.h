@@ -6,6 +6,7 @@ namespace Odyssey
 {
 	class Mesh;
 	class Shader;
+	class Texture2D;
 	class VulkanPushDescriptors;
 
 	struct RenderSubPassData
@@ -62,5 +63,22 @@ namespace Odyssey
 		std::shared_ptr<Mesh> m_CubeMesh;
 		inline static const GUID& s_SkyboxShaderGUID = 12373133592092994291;
 		inline static const GUID& s_CubeMeshGUID = 4325336624522892849;
+	};
+
+	class ParticleSubPass : public RenderSubPass
+	{
+	public:
+		virtual void Setup() override;
+		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+
+	private:
+		ResourceID m_GraphicsPipeline;
+		ResourceID m_DescriptorLayout;
+		std::shared_ptr<VulkanPushDescriptors> m_PushDescriptors;
+		ResourceID m_ModelUBO;
+		std::shared_ptr<Shader> m_Shader;
+		std::shared_ptr<Texture2D> m_ParticleTexture;
+		inline static const GUID& s_ParticleShaderGUID = 16032593712191697003;
+		inline static const GUID& s_ParticleTextureGUID = 488672041793267412;
 	};
 }

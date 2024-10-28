@@ -1,7 +1,7 @@
 #pragma once
 #include "Inspector.h"
 #include "SourceModel.h"
-#include "StringDrawer.h"
+#include "PropertyDrawers.h"
 
 namespace Odyssey
 {
@@ -15,7 +15,7 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	private:
-		void OnDstPathChanged(const std::string& path) { m_DstPath = path; }
+		void OnDstPathChanged(std::string_view path) { m_DstPath = path; }
 
 	private:
 		std::shared_ptr<SourceModel> m_Model;

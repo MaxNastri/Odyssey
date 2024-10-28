@@ -1,5 +1,5 @@
 #include "ScriptingManager.h"
-#include <Logger.h>
+#include <Log.h>
 #include "Events.h"
 #include "Globals.h"
 #include "ScriptCompiler.h"
@@ -11,7 +11,7 @@ namespace Odyssey
 {
 	void ExceptionCallback(std::string_view exception)
 	{
-		Logger::LogError(exception.data());
+		Log::Error(exception.data());
 	}
 
 	void ScriptingManager::Initialize()
@@ -109,7 +109,7 @@ namespace Odyssey
 			if (!fieldMetadata.DefaultValue || fieldMetadata.DefaultValue.GetSize() == 0)
 				fieldStorage.ValueBuffer.Allocate(DataTypeSize(fieldMetadata.Type));
 			else
-				fieldStorage.ValueBuffer = RawBuffer::Copy(fieldMetadata.DefaultValue);
+				 RawBuffer::Copy(fieldStorage.ValueBuffer, fieldMetadata.DefaultValue);
 
 			fieldStorage.Instance = nullptr;
 		}

@@ -8,6 +8,8 @@
 #include "ScriptComponent.h"
 #include "ScriptingManager.h"
 #include "Animator.h"
+#include "ParticleBatcher.h"
+#include "ParticleEmitter.h"
 
 namespace Odyssey
 {
@@ -18,6 +20,9 @@ namespace Odyssey
 	Scene::Scene(const Path& assetPath)
 		: m_Path(assetPath)
 	{
+		m_Registry.on_construct<ParticleEmitter>().connect<&Scene::OnParticleEmitterCreate>(this);
+		m_Registry.on_destroy<ParticleEmitter>().connect<&Scene::OnParticleEmitterDestroy>(this);
+
 		LoadFromDisk(m_Path);
 	}
 
@@ -217,5 +222,19 @@ namespace Odyssey
 
 			m_SceneGraph.Deserialize(this, root);
 		}
+	}
+
+	void Scene::OnParticleEmitterCreate(entt::registry& registry, entt::entity entity)
+	{
+		GameObject gameObject(this, entity);
+		ParticleEmitter& emitter = gameObject.GetComponent<ParticleEmitter>();
+		ParticleBatcher::RegisterEmitter(&emitter);
+	}
+
+	void Scene::OnParticleEmitterDestroy(entt::registry& registry, entt::entity entity)
+	{
+		GameObject gameObject(this, entity);
+		ParticleEmitter& emitter = gameObject.GetComponent<ParticleEmitter>();
+		ParticleBatcher::DeregisterEmtter(&emitter);
 	}
 }

@@ -1,11 +1,12 @@
 #include "VulkanTextureSampler.h"
 #include "VulkanContext.h"
 #include "volk.h"
-#include <Logger.h>
+#include <Log.h>
 
 namespace Odyssey
 {
-	VulkanTextureSampler::VulkanTextureSampler(std::shared_ptr<VulkanContext> context)
+	VulkanTextureSampler::VulkanTextureSampler(ResourceID id, std::shared_ptr<VulkanContext> context)
+		: Resource(id)
 	{
 		m_Context = context;
 
@@ -29,7 +30,7 @@ namespace Odyssey
 
 		if (vkCreateSampler(m_Context->GetDeviceVK(), &samplerInfo, nullptr, &m_TextureSampler) != VK_SUCCESS)
 		{
-			Logger::LogError("(VulkanTextureSampler) Failed to create texture sampler.");
+			Log::Error("(VulkanTextureSampler) Failed to create texture sampler.");
 			return;
 		}
 	}

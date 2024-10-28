@@ -1,9 +1,7 @@
 #pragma once
 #include "Inspector.h"
 #include "Shader.h"
-#include "AssetFieldDrawer.h"
-#include "StringDrawer.h"
-#include "IntDrawer.h"
+#include "PropertyDrawers.h"
 
 namespace Odyssey
 {
@@ -17,7 +15,7 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	private:
-		void OnNameChanged(const std::string& name);
+		void OnNameChanged(std::string_view name);
 		void OnSourceAssetChanged(GUID sourceGUID);
 
 	private:

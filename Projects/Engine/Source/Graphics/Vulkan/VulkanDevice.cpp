@@ -19,7 +19,7 @@ namespace Odyssey
 		VkResult err = vkDeviceWaitIdle(logicalDevice);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(device 1)");
+			Log::Error("(device 1)");
 		}
 	}
 
@@ -69,6 +69,8 @@ namespace Odyssey
 		dynamic_rendering_feature.pNext = &bufferAddress;
 
 		VkPhysicalDeviceFeatures deviceFeatures{};
+		deviceFeatures.geometryShader = true;
+		deviceFeatures.logicOp = true;
 
 		VkDeviceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -82,7 +84,7 @@ namespace Odyssey
 		VkResult err = vkCreateDevice(vkPhysicalDevice, &create_info, allocator, &logicalDevice);
 		if (!check_vk_result(err))
 		{
-			Logger::LogError("(device 2)");
+			Log::Error("(device 2)");
 		}
 
 		volkLoadDevice(logicalDevice);

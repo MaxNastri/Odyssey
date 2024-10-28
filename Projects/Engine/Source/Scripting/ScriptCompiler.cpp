@@ -1,5 +1,5 @@
 #include "ScriptCompiler.h"
-#include "Logger.h"
+#include "Log.h"
 #include "EventSystem.h"
 #include "Events.h"
 #include "ScriptingManager.h"
@@ -33,7 +33,7 @@ namespace Odyssey
 	{
 		if (buildInProgress)
 		{
-			Logger::LogError("Cannot compile while a build is in progress.");
+			Log::Error("Cannot compile while a build is in progress.");
 			return false;
 		}
 
@@ -89,7 +89,7 @@ namespace Odyssey
 
 			std::ostringstream oss;
 			oss << "Failed to query process. Error code: " << std::hex << err;
-			Odyssey::Logger::LogError(oss.view());
+			Odyssey::Log::Error(oss.view());
 
 			CloseHandle(pi.hProcess);
 			CloseHandle(pi.hThread);
@@ -113,7 +113,7 @@ namespace Odyssey
 				auto err = GetLastError();
 				std::ostringstream oss;
 				oss << "Failed to query process. Error code: " << std::hex << err;
-				Odyssey::Logger::LogError(oss.view());
+				Odyssey::Log::Error(oss.view());
 				buildInProgress = false;
 				return false;
 			}
@@ -138,7 +138,7 @@ namespace Odyssey
 		// Failed build
 		else
 		{
-			Odyssey::Logger::LogError("Failed to build managed scripts!");
+			Odyssey::Log::Error("Failed to build managed scripts!");
 			return false;
 		}
 	}

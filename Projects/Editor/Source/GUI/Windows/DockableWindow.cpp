@@ -20,7 +20,7 @@ namespace Odyssey
 	{
 		ImGui::SetNextWindowSize(ImVec2(m_WindowSize.x, m_WindowSize.y), ImGuiCond_FirstUseEver);
 
-		if (!ImGui::Begin(m_WindowName.c_str(), &m_Open))
+		if (!ImGui::Begin(m_WindowName.c_str(), &m_Open, ImGuiWindowFlags_NoCollapse | (ImGuiWindowFlags)m_WindowFlags))
 		{
 			ImGui::End();
 			return false;
@@ -99,8 +99,6 @@ namespace Odyssey
 
 		// Fire the resize event if we have resized
 		if (m_WindowResized)
-		{
 			OnWindowResize();
-		}
 	}
 }
