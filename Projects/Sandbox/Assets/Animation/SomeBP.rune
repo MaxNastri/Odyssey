@@ -1,8 +1,8 @@
 m_SourceAsset: 0
-m_GUID: 2415673027546570374
+m_GUID: 8452968580703190281
 m_Name: Default
 m_Type: Odyssey.AnimationBlueprint
 Properties:
-  - Name: asd
+  - Name: kjlasdl
     Type: Int
-    Value: 1
+    Value: 4

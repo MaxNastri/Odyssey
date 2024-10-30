@@ -12,7 +12,7 @@
 #include "Renderer.h"
 #include "DebugRenderer.h"
 #include "SceneSettingsWindow.h"
-#include "AssetRegistry.hpp"
+#include "AssetRegistry.h"
 #include "ParticleBatcher.h"
 
 namespace Odyssey
@@ -34,11 +34,11 @@ namespace Odyssey
 		// Load the default project
 		Project::LoadProject("C:/Git/Odyssey/Projects/Sandbox");
 
-		std::vector<Path> registries = 
+		std::vector<Path> engineRegistries = 
 		{
 			"Resources/AssetRegistry.osettings"
 		};
-		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), Project::GetActiveAssetRegistry(), registries);
+		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), engineRegistries);
 
 		// Create the renderer
 		RendererConfig config = { .EnableIMGUI = true };

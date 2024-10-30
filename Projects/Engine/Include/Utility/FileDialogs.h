@@ -5,7 +5,7 @@ namespace Odyssey
 	class FileDialogs
 	{
 	public:
-		static Path OpenFile(const char* filter);
-		static Path SaveFile(const char* filter);
+		static Path OpenFile(std::string_view fileType, const Path& extension);
+		static Path SaveFile(std::string_view fileType, const Path& extension);
 	};
 }

@@ -4,7 +4,8 @@
 namespace Odyssey
 {
 	Project::Project(const ProjectSettings& projectSettings)
-		: m_ProjectSettings(projectSettings)
+		: m_ProjectSettings(projectSettings),
+		m_AssetRegistry(m_ProjectSettings.GetAssetRegistryPath())
 	{
 
 	}

@@ -1,5 +1,6 @@
 #pragma once
 #include "ProjectSettings.h"
+#include "AssetRegistry.h"
 
 namespace Odyssey
 {
@@ -32,7 +33,10 @@ namespace Odyssey
 		static const Path& GetActiveUserScriptsDirectory() { return s_ActiveProject->GetUserScriptsDirectory(); }
 		static const Path& GetActiveUserScriptsProject() { return s_ActiveProject->GetUserScriptsProject(); }
 		static const Path& GetActiveTempDirectory() { return s_ActiveProject->GetTempDirectory(); }
-		static const Path& GetActiveAssetRegistry() { return s_ActiveProject->GetAssetRegistry(); }
+		static const Path& GetActiveAssetRegistryPath() { return s_ActiveProject->GetAssetRegistry(); }
+
+	public:
+		static AssetRegistry& GetActiveAssetRegistry() { return s_ActiveProject->m_AssetRegistry; }
 
 	private:
 		static void ReplaceProjectName(std::string_view projectName, const Path& path);
@@ -40,6 +44,7 @@ namespace Odyssey
 	private:
 		inline static std::shared_ptr<Project> s_ActiveProject;
 		ProjectSettings m_ProjectSettings;
+		AssetRegistry m_AssetRegistry;
 
 	private:
 		static constexpr std::string_view TEMPLATE_DIRECTORY = "Resources/ProjectTemplate";

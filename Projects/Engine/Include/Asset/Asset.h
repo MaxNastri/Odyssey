@@ -11,13 +11,6 @@ namespace Odyssey
 		SourceAsset(const Path& sourcePath);
 
 	public:
-		static SourceAsset CreateFromMetafile(const Path& metaPath);
-
-	public:
-		void SerializeMetadata();
-		void DeserializeMetadata();
-
-	public:
 		void AddOnModifiedListener(std::function<void()> onSourceModified) { m_OnSourceModified.push_back(onSourceModified); }
 
 	public:
@@ -45,7 +38,6 @@ namespace Odyssey
 		std::string m_SourceAsset;
 		std::string m_SourceExtension;
 		Path m_SourcePath;
-		Path m_MetaFilePath;
 		std::vector<std::function<void()>> m_OnSourceModified;
 	};
 
@@ -56,28 +48,28 @@ namespace Odyssey
 		Asset(const Path& assetPath);
 
 	public:
-		GUID GetGUID() { return Guid; }
-		std::string_view GetName() { return Name; }
-		std::string_view GetType() { return Type; }
 		void SerializeMetadata(AssetSerializer& serializer);
 		void Load();
 
 	public:
-		GUID GetSoureAsset() { return m_SourceAsset; }
+		GUID GetGUID() { return m_GUID; }
+		std::string_view GetName() { return m_Name; }
+		std::string_view GetType() { return m_Type; }
+
+	public:
+		GUID GetSourceAsset() { return m_SourceAsset; }
 		Path& GetAssetPath() { return m_AssetPath; }
 
 	public:
-		// TODO: Let the asset manager know our GUID has changed
-		void SetGUID(GUID guid) { Guid = guid; }
-		void SetName(std::string_view name) { Name = name; }
-		void SetType(std::string_view type) { Type = type; }
+		void SetName(std::string_view name);
+		void SetAssetPath(const Path& path);
 		void SetSourceAsset(GUID guid) { m_SourceAsset = guid; }
-		// TODO: Let the asset manager know our path has changed
-		void SetAssetPath(const Path& path) { m_AssetPath = path; }
-	public:
-		GUID Guid;
-		std::string Name;
-		std::string Type;
+
+	protected:
+		friend class AssetManager;
+		GUID m_GUID;
+		std::string m_Name;
+		std::string m_Type;
 
 	protected:
 		Path m_AssetPath;

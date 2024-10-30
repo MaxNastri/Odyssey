@@ -49,7 +49,7 @@ namespace Odyssey
 				}
 				else if (ImGui::MenuItem("Open Blueprint"))
 				{
-					const Path& path = FileDialogs::OpenFile("Animation Blueprint (*.blueprint)\0*.blueprint\0");
+					const Path& path = FileDialogs::OpenFile("Animation Blueprint", ".rune");
 					if (!path.empty())
 						m_Blueprint = AssetManager::LoadAsset<AnimationBlueprint>(path);
 				}
@@ -61,7 +61,7 @@ namespace Odyssey
 					}
 					else
 					{
-						const Path& path = FileDialogs::SaveFile("Animation Blueprint (*.blueprint)\0*.blueprint\0");
+						const Path& path = FileDialogs::SaveFile("Animation Blueprint", ".rune");
 						if (!path.empty())
 						{
 							m_Blueprint->SetAssetPath(path);
@@ -71,9 +71,12 @@ namespace Odyssey
 				}
 				else if (ImGui::MenuItem("Save Blueprint To..."))
 				{
-					const Path& path = FileDialogs::SaveFile("Animation Blueprint (*.blueprint)\0*.blueprint\0");
+					Path path = FileDialogs::SaveFile("Animation Blueprint", ".rune");
 					if (!path.empty())
 					{
+						if (!path.has_extension())
+							path = path / Path(".rune");
+
 						m_Blueprint->SetAssetPath(path);
 						m_Blueprint->Save();
 					}

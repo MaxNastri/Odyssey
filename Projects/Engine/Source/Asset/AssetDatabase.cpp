@@ -63,7 +63,7 @@ namespace Odyssey
 		for (auto& entry : registry.Entries)
 		{
 			bool sourceAsset = !s_AssetExtensions.contains(entry.Path.extension().string());
-			AddAsset(entry.Guid, registry.RootDirectory / entry.Path, entry.Path.filename().replace_extension().string(), entry.Type, sourceAsset);
+			AddRegistryAsset(entry.Guid, registry.RootDirectory / entry.Path, entry.Path.filename().replace_extension().string(), entry.Type, sourceAsset);
 		}
 	}
 
@@ -117,10 +117,6 @@ namespace Odyssey
 							root.ReadData("m_Type", type);
 							root.ReadData("m_Name", name);
 							AddAsset(guid, path, name, type, false);
-
-							Path relativePath = std::filesystem::relative(path, m_ProjectRegistry.RootDirectory);
-							m_ProjectRegistry.AddAsset(name, type, path, guid);
-							m_ProjectRegistry.Save();
 						}
 					}
 				}
@@ -148,10 +144,6 @@ namespace Odyssey
 				// Add the source asset to the database
 				GUID guid = GUID::New();
 				AddAsset(guid, assetPath, name, type, true);
-
-				Path relativePath = std::filesystem::relative(assetPath, m_ProjectRegistry.RootDirectory);
-				m_ProjectRegistry.AddAsset(name, type, assetPath, guid);
-				m_ProjectRegistry.Save();
 			}
 		}
 	}
@@ -161,12 +153,18 @@ namespace Odyssey
 		if (!m_GUIDToMetadata.contains(guid))
 			m_GUIDToMetadata[guid] = AssetMetadata(path, assetName, assetType, sourceAsset);
 
-		if (!m_AssetPathToGUID.contains(path))
+		if (!path.empty() && !m_AssetPathToGUID.contains(path))
 			m_AssetPathToGUID[path] = guid;
 
 		// No contains check since we are storing multiple guids per asset type
 		m_AssetTypeToGUIDs[assetType].push_back(guid);
 
+		if (guid && !path.empty() && !assetName.empty() && !assetType.empty())
+		{
+			Path relativePath = std::filesystem::relative(path, m_ProjectRegistry.RootDirectory);
+			m_ProjectRegistry.AddAsset(assetName, assetType, path, guid);
+			m_ProjectRegistry.Save();
+		}
 	}
 
 	bool AssetDatabase::Contains(GUID& guid)
@@ -185,6 +183,34 @@ namespace Odyssey
 			return m_GUIDToMetadata[m_AssetPathToGUID[path]].IsSourceAsset;
 
 		return false;
+	}
+
+	void AssetDatabase::UpdateAssetName(GUID guid, const std::string& name)
+	{
+		if (m_GUIDToMetadata.contains(guid))
+		{
+			m_GUIDToMetadata[guid].AssetName = name;
+			m_ProjectRegistry.UpdateAssetName(guid, name);
+		}
+	}
+
+	void AssetDatabase::UpdateAssetPath(GUID guid, const Path& path)
+	{
+		if (m_GUIDToMetadata.contains(guid))
+		{
+			// Cache the old path so we can remove it
+			const Path& oldPath = m_GUIDToMetadata[guid].AssetPath;
+
+			// Update the path in our lookups
+			m_GUIDToMetadata[guid].AssetPath = path;
+			m_AssetPathToGUID[path] = guid;
+
+			// Remove the old path
+			m_AssetPathToGUID.erase(oldPath);
+
+			// Update the project registry
+			m_ProjectRegistry.UpdateAssetPath(guid, path);
+		}
 	}
 
 	Path AssetDatabase::GUIDToAssetPath(GUID guid)
@@ -230,6 +256,18 @@ namespace Odyssey
 	const AssetMetadata& AssetDatabase::GetMetadata(GUID guid)
 	{
 		return m_GUIDToMetadata[guid];
+	}
+
+	void AssetDatabase::AddRegistryAsset(GUID guid, const Path& path, const std::string& assetName, const std::string& assetType, bool sourceAsset)
+	{
+		if (!m_GUIDToMetadata.contains(guid))
+			m_GUIDToMetadata[guid] = AssetMetadata(path, assetName, assetType, sourceAsset);
+
+		if (!m_AssetPathToGUID.contains(path))
+			m_AssetPathToGUID[path] = guid;
+
+		// No contains check since we are storing multiple guids per asset type
+		m_AssetTypeToGUIDs[assetType.data()].push_back(guid);
 	}
 
 	void AssetDatabase::OnFileAction(const Path& filename, FileActionType fileAction)

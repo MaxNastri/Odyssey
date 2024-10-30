@@ -10,8 +10,21 @@
 
 namespace Odyssey
 {
-	Path FileDialogs::OpenFile(const char* filter)
+	std::string GetFilter(std::string_view fileType, const Path& extension)
 	{
+		//(*.ext) FileType\0*.ext\0"
+		std::string filter;
+		filter.append(std::format("(*{})", extension.string()));
+		filter.append(std::format(" {}", fileType));
+		filter.push_back('\0');
+		filter.append(std::format("*{}", extension.string()));
+		filter.push_back('\0');
+		return filter;
+	}
+
+	Path FileDialogs::OpenFile(std::string_view fileType, const Path& extension)
+	{
+		std::string filter = GetFilter(fileType, extension);
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -21,19 +34,26 @@ namespace Odyssey
 		ofn.hwndOwner =  glfwGetWin32Window((GLFWwindow*)window);
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
-		ofn.lpstrFilter = filter;
+		ofn.lpstrFilter = filter.c_str();
 		ofn.nFilterIndex = 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 		if (GetOpenFileNameA(&ofn))
 		{
-			return ofn.lpstrFile;
+			Path path = ofn.lpstrFile;
+
+			if (!path.has_extension() && !extension.empty())
+				path = path.replace_extension(extension);
+
+			return path;
 		}
 
 		return std::string();
 	}
 
-	Path FileDialogs::SaveFile(const char* filter)
+	Path FileDialogs::SaveFile(std::string_view fileType, const Path& extension)
 	{
+		std::string filter = GetFilter(fileType, extension);
+
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -42,12 +62,17 @@ namespace Odyssey
 		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)window);
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
-		ofn.lpstrFilter = filter;
+		ofn.lpstrFilter = filter.c_str();
 		ofn.nFilterIndex = 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 		if (GetSaveFileNameA(&ofn))
 		{
-			return ofn.lpstrFile;
+			Path path = ofn.lpstrFile;
+
+			if (!path.has_extension() && !extension.empty())
+				path = path.replace_extension(extension);
+
+			return path;
 		}
 
 		return std::string();

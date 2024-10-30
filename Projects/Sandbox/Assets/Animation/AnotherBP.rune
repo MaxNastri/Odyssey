@@ -1,0 +1,8 @@
+m_SourceAsset: 0
+m_GUID: 12313513881531966499
+m_Name: Default
+m_Type: Odyssey.AnimationBlueprint
+Properties:
+  - Name: FloatEx
+    Type: Float
+    Value: 1.234

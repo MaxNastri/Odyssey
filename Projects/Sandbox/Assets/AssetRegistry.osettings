@@ -107,3 +107,11 @@ Entries:
     Type: Odyssey.AnimationBlueprint
     Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/dsa.blueprint'
     GUID: 2415673027546570374
+  - Name: Default
+    Type: Odyssey.AnimationBlueprint
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/SomeBP.rune'
+    GUID: 8452968580703190281
+  - Name: Default
+    Type: Odyssey.AnimationBlueprint
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/AnotherBP.rune'
+    GUID: 12313513881531966499
