@@ -103,3 +103,7 @@ Entries:
     Type: Odyssey.Mesh
     Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Meshes/Monk-GLTF-Mesh2.mesh'
     GUID: 13511586946249507819
+  - Name: dsa
+    Type: Odyssey.AnimationBlueprint
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/dsa.blueprint'
+    GUID: 2415673027546570374

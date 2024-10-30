@@ -44,7 +44,8 @@ namespace Odyssey
 			asset->SetType(T::Type);
 
 			// Save to disk
-			asset->Save();
+			if (!assetPath.empty())
+				asset->Save();
 
 			return asset;
 		}
@@ -76,7 +77,7 @@ namespace Odyssey
 		static std::shared_ptr<T> LoadAsset(const Path& assetPath)
 		{
 			// Convert the path to a guid and load the asset
-			return LoadAsset(s_AssetDatabase->AssetPathToGUID(assetPath));
+			return LoadAsset<T>(s_AssetDatabase->AssetPathToGUID(assetPath));
 		}
 
 		template<typename T>

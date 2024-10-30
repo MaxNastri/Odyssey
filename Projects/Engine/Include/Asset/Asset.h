@@ -67,11 +67,13 @@ namespace Odyssey
 		Path& GetAssetPath() { return m_AssetPath; }
 
 	public:
+		// TODO: Let the asset manager know our GUID has changed
 		void SetGUID(GUID guid) { Guid = guid; }
 		void SetName(std::string_view name) { Name = name; }
 		void SetType(std::string_view type) { Type = type; }
 		void SetSourceAsset(GUID guid) { m_SourceAsset = guid; }
-
+		// TODO: Let the asset manager know our path has changed
+		void SetAssetPath(const Path& path) { m_AssetPath = path; }
 	public:
 		GUID Guid;
 		std::string Name;

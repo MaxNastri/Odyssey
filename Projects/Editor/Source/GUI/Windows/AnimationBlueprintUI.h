@@ -70,7 +70,7 @@ namespace Odyssey
 
 	private:
 		char m_Buffer[128] = "";
-		AnimationPropertyType m_PropertyType = AnimationPropertyType::None;
+		AnimationPropertyType m_PropertyType;
 	};
 
 	struct CreateNodeMenu

@@ -23,7 +23,7 @@ namespace Odyssey
 			{
 				if (ImGui::MenuItem("Open"))
 				{
-					std::string scenePath = FileDialogs::OpenFile("Odyssey Scene (*.yaml)\0*.yaml\0");
+					const Path& scenePath = FileDialogs::OpenFile("Odyssey Scene (*.yaml)\0*.yaml\0");
 
 					if (!scenePath.empty())
 					{
@@ -36,7 +36,7 @@ namespace Odyssey
 				}
 				if (ImGui::MenuItem("Save As..."))
 				{
-					std::string scenePath = FileDialogs::SaveFile("Odyssey Scene (*.yaml)\0*.yaml\0");
+					const Path& scenePath = FileDialogs::SaveFile("Odyssey Scene (*.yaml)\0*.yaml\0");
 
 					if (!scenePath.empty())
 					{

@@ -1,6 +1,9 @@
 #include "AnimationWindow.h"
+#include "AnimationBlueprint.h"
+#include "AssetManager.h"
 #include "GUIManager.h"
 #include "Input.h"
+#include "FileDialogs.h"
 
 namespace Odyssey
 {
@@ -8,8 +11,9 @@ namespace Odyssey
 		: DockableWindow("Animation Window", windowID,
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
+		m_Blueprint = AssetManager::CreateAsset<AnimationBlueprint>("");
 		m_WindowFlags = ImGuiWindowFlags_MenuBar;
-		m_Builder = std::make_shared<BlueprintBuilder>(&m_Blueprint);
+		m_Builder = std::make_shared<BlueprintBuilder>(m_Blueprint.get());
 		m_Builder->OverrideCreateNodeMenu(CreateNodeMenu::Menu_Name, CreateNodeMenu::ID);
 		m_Builder->OverrideCreateLinkMenu(AddAnimationLinkMenu::Menu_Name, AddAnimationLinkMenu::ID);
 	}
@@ -21,7 +25,7 @@ namespace Odyssey
 
 	void AnimationWindow::Update()
 	{
-		m_Blueprint.Update();
+		m_Blueprint->Update();
 	}
 
 	void AnimationWindow::Draw()
@@ -39,15 +43,40 @@ namespace Odyssey
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Open Blueprint"))
+				if (ImGui::MenuItem("New Blueprint"))
 				{
+					m_Blueprint = AssetManager::CreateAsset<AnimationBlueprint>("");
+				}
+				else if (ImGui::MenuItem("Open Blueprint"))
+				{
+					const Path& path = FileDialogs::OpenFile("Animation Blueprint (*.blueprint)\0*.blueprint\0");
+					if (!path.empty())
+						m_Blueprint = AssetManager::LoadAsset<AnimationBlueprint>(path);
 				}
 				else if (ImGui::MenuItem("Save Blueprint"))
 				{
+					if (!m_Blueprint->GetAssetPath().empty())
+					{
+						m_Blueprint->Save();
+					}
+					else
+					{
+						const Path& path = FileDialogs::SaveFile("Animation Blueprint (*.blueprint)\0*.blueprint\0");
+						if (!path.empty())
+						{
+							m_Blueprint->SetAssetPath(path);
+							m_Blueprint->Save();
+						}
+					}
 				}
 				else if (ImGui::MenuItem("Save Blueprint To..."))
 				{
-
+					const Path& path = FileDialogs::SaveFile("Animation Blueprint (*.blueprint)\0*.blueprint\0");
+					if (!path.empty())
+					{
+						m_Blueprint->SetAssetPath(path);
+						m_Blueprint->Save();
+					}
 				}
 				ImGui::EndMenu();
 			}
@@ -78,7 +107,7 @@ namespace Odyssey
 		{
 			m_Builder->SetEditor();
 
-			m_UI.Draw(&m_Blueprint, m_Builder.get());
+			m_UI.Draw(m_Blueprint.get(), m_Builder.get());
 
 			// Begin building the UI
 			m_Builder->Begin();

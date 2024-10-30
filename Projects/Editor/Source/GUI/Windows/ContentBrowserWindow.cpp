@@ -150,7 +150,7 @@ namespace Odyssey
 
 		if (ImGui::Button(filename.c_str()))
 		{
-			SceneManager::LoadScene(assetPath.string());
+			SceneManager::LoadScene(assetPath);
 		}
 	}
 

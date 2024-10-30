@@ -148,7 +148,7 @@ namespace Odyssey
 				activeScene->OnStopRuntime();
 
 				Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
-				SceneManager::LoadScene(tempPath.string());
+				SceneManager::LoadScene(tempPath);
 				m_UpdateScripts = false;
 				break;
 			}

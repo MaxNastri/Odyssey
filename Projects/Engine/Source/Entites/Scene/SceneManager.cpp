@@ -6,7 +6,7 @@
 
 namespace Odyssey
 {
-	void SceneManager::LoadScene(const std::string& filename)
+	void SceneManager::LoadScene(const Path& filename)
 	{
 		if (activeScene != -1)
 		{

@@ -5,11 +5,10 @@ namespace Odyssey
 {
 	enum class AnimationPropertyType
 	{
-		None = 0,
-		Float = 1,
-		Int = 2,
-		Bool = 3,
-		Trigger = 4,
+		Float = 0,
+		Int = 1,
+		Bool = 2,
+		Trigger = 3,
 	};
 
 	struct AnimationProperty
@@ -19,13 +18,12 @@ namespace Odyssey
 		RawBuffer ValueBuffer;
 
 	public:
+		AnimationProperty() = default;
 		AnimationProperty(std::string_view name, AnimationPropertyType type)
 			: Name(name), Type(type)
 		{
 			switch (type)
 			{
-				case AnimationPropertyType::None:
-					break;
 				case AnimationPropertyType::Float:
 					ValueBuffer.Allocate(sizeof(float));
 					break;

@@ -9,7 +9,7 @@ namespace Odyssey
 	class SceneManager
 	{
 	public:
-		static void LoadScene(const std::string& assetPath);
+		static void LoadScene(const Path& assetPath);
 		static void SaveActiveScene();
 		static void SaveActiveScene(const Path& path);
 		static Scene* GetActiveScene();

@@ -12,7 +12,9 @@ namespace Odyssey::Enum
 	template<typename T>
 	inline T ToEnum(std::string_view value)
 	{
-		return magic_enum::enum_cast<T>(value, magic_enum::case_insensitive);
+		auto convert = magic_enum::enum_cast<T>(value, magic_enum::case_insensitive);
+		assert(convert.has_value());
+		return convert.value();
 	}
 
 	template<typename T>

@@ -10,7 +10,7 @@
 
 namespace Odyssey
 {
-	std::string FileDialogs::OpenFile(const char* filter)
+	Path FileDialogs::OpenFile(const char* filter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
@@ -32,7 +32,7 @@ namespace Odyssey
 		return std::string();
 	}
 
-	std::string FileDialogs::SaveFile(const char* filter)
+	Path FileDialogs::SaveFile(const char* filter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
