@@ -13,6 +13,10 @@ workspace "Odyssey"
 		"_CRT_SECURE_NO_WARNINGS"
 	}
 
+group "Dependencies"
+include "Vendor/Jolt/JoltPhysicsPremake.lua"
+group ""
+
 group "Odyssey"
 include "Projects/Editor"
 include "Projects/Engine"
