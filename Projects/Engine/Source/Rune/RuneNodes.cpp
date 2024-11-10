@@ -6,15 +6,20 @@
 namespace Odyssey::Rune
 {
 	Node::Node(std::string_view name, float4 color)
-		: ID(GetNextID()), Name(name), Color(color), Size(0.0f)
+		: Guid(GUID::New()), Name(name), Color(color), Size(0.0f)
 	{
 
+	}
+
+	Node::Node(GUID guid, std::string_view name, float4 color)
+		: Guid(guid), Name(name), Color(color), Size(0.0f)
+	{
 	}
 
 	void Node::SetPosition(float2 position)
 	{
 		if (position != float2(0.0f))
-			ImguiExt::SetNodePosition(ID, position);
+			ImguiExt::SetNodePosition((uint64_t)Guid, position);
 	}
 
 	BlueprintNode::BlueprintNode(std::string_view name, float4 color)
@@ -26,7 +31,7 @@ namespace Odyssey::Rune
 
 	void BlueprintNode::Draw(BlueprintBuilder* builder, Pin* activeLinkPin)
 	{
-		builder->BeginNode(ID);
+		builder->BeginNode(Guid);
 
 		bool hasOutputDelegates = false;
 
@@ -186,7 +191,7 @@ namespace Odyssey::Rune
 
 	void SimpleNode::Draw(BlueprintBuilder* builder, Pin* activeLinkPin)
 	{
-		builder->BeginNode(ID);
+		builder->BeginNode(Guid);
 
 		// Inputs
 		for (auto& input : Inputs)
@@ -293,11 +298,11 @@ namespace Odyssey::Rune
 		ImguiExt::PushStyleColor(ImguiExt::StyleColor_NodeBorder, ImColor(255, 255, 255, 64));
 
 		// Begin
-		ImguiExt::BeginNode(ID);
+		ImguiExt::BeginNode(Guid.CRef());
 
 		// Group content
 		{
-			ImGui::PushID((int)ID);
+			ImGui::PushID((int)Guid);
 			ImGui::BeginVertical("content");
 			ImGui::BeginHorizontal("horizontal");
 			ImGui::Spring(1);
@@ -317,7 +322,7 @@ namespace Odyssey::Rune
 		ImGui::PopStyleVar();
 
 		// Group Hint
-		if (ImguiExt::BeginGroupHint(ID))
+		if (ImguiExt::BeginGroupHint(Guid.CRef()))
 		{
 			auto bgAlpha = ImGui::GetStyle().Alpha;
 
@@ -352,11 +357,18 @@ namespace Odyssey::Rune
 		Outputs.emplace_back("Output", PinType::Flow, false);
 	}
 
+	TreeNode::TreeNode(GUID guid, std::string_view name, float4 color)
+		: Node(guid, name, color)
+	{
+		Inputs.emplace_back("Input", PinType::Flow, false);
+		Outputs.emplace_back("Output", PinType::Flow, false);
+	}
+
 	void TreeNode::Draw(BlueprintBuilder* builder, Pin* activeLinkPin)
 	{
 		PushStyle();
 
-		ImguiExt::BeginNode(ID);
+		ImguiExt::BeginNode(Guid.CRef());
 
 		DrawInputs(activeLinkPin);
 		DrawContent(activeLinkPin);
@@ -389,7 +401,7 @@ namespace Odyssey::Rune
 	void TreeNode::DrawInputs(Pin* activeLinkPin)
 	{
 		m_InputAlpha = ImGui::GetStyle().Alpha * Alpha_Multiplier;
-		ImGui::BeginVertical((int32_t)ID);
+		ImGui::BeginVertical((int32_t)Guid);
 		ImGui::BeginHorizontal("inputs");
 		ImGui::Spring(0, Padding * 2);
 
@@ -482,7 +494,7 @@ namespace Odyssey::Rune
 	{
 		const ImVec4 pinBackground = ImguiExt::GetStyle().Colors[ImguiExt::StyleColor_NodeBg];
 
-		auto drawList = ImguiExt::GetNodeBackgroundDrawList(ID);
+		auto drawList = ImguiExt::GetNodeBackgroundDrawList(Guid.CRef());
 		const ImDrawFlags topRoundCornersFlags = ImDrawFlags_RoundCornersTop;
 		const ImDrawFlags bottomRoundCornersFlags = ImDrawFlags_RoundCornersBottom;
 

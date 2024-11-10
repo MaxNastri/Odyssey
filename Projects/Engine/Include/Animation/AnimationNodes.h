@@ -11,6 +11,7 @@ namespace Odyssey
 	public:
 		AnimationStateNode(std::string_view name, float4 color = Default_Color);
 		AnimationStateNode(std::string_view name, std::shared_ptr<AnimationState> state, float4 color = Default_Color);
+		AnimationStateNode(GUID guid, std::string_view name, std::shared_ptr<AnimationState> state, float4 color = Default_Color);
 
 	public:
 		void SetAnimationState(std::shared_ptr<AnimationState> state);

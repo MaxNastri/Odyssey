@@ -25,8 +25,6 @@ namespace Odyssey::Rune
 			BuildNode(node.get());
 			BuildNodes();
 
-			OnNodeAdded(node);
-
 			return node;
 		}
 
@@ -46,7 +44,6 @@ namespace Odyssey::Rune
 		std::string_view GetName() { return m_Name; }
 
 	protected:
-		virtual void OnNodeAdded(std::shared_ptr<Node> node) { }
 		void BuildNodes();
 		void BuildNode(Node* node);
 		void BreakLinks(Pin* pin);

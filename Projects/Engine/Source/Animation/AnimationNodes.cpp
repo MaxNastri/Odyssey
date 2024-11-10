@@ -18,6 +18,12 @@ namespace Odyssey
 		SetAnimationState(state);
 	}
 
+	AnimationStateNode::AnimationStateNode(GUID guid, std::string_view name, std::shared_ptr<AnimationState> state, float4 color)
+		: TreeNode(guid, name, color)
+	{
+		SetAnimationState(state);
+	}
+
 	void AnimationStateNode::SetAnimationState(std::shared_ptr<AnimationState> state)
 	{
 		m_AnimationState = state;

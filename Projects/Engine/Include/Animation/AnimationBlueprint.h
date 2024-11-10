@@ -9,6 +9,7 @@ namespace Odyssey
 
 	struct AnimationProperty;
 	class AnimationState;
+	struct AnimationStateNode;
 
 	class AnimationBlueprint : public Blueprint, public Asset
 	{
@@ -29,7 +30,7 @@ namespace Odyssey
 		virtual void Update() override;
 
 	public:
-		void AddAnimationState(std::string name);
+		std::shared_ptr<AnimationStateNode> AddAnimationState(std::string name);
 
 	public:
 		std::vector<std::shared_ptr<AnimationProperty>>& GetProperties() { return m_Properties; }
@@ -41,9 +42,6 @@ namespace Odyssey
 		bool SetFloat(const std::string& name, float value);
 		bool SetInt(const std::string& name, int32_t value);
 		bool SetTrigger(const std::string& name);
-
-	protected:
-		virtual void OnNodeAdded(std::shared_ptr<Node> node) override;
 
 	private:
 		void ClearTriggers();

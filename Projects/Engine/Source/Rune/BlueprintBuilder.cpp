@@ -563,7 +563,7 @@ namespace Odyssey::Rune
 
 			if (node)
 			{
-				ImGui::Text("ID: %d3", node->ID);
+				ImGui::Text("ID: %d3", node->Guid);
 				ImGui::Text("Name: %s", node->Name);
 				ImGui::Text("Inputs: %d3", (int)node->Inputs.size());
 				ImGui::Text("Outputs: %d3", (int)node->Outputs.size());

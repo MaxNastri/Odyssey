@@ -146,12 +146,14 @@ namespace Odyssey
 		ClearTriggers();
 	}
 
-	void AnimationBlueprint::AddAnimationState(std::string name)
+	std::shared_ptr<AnimationStateNode> AnimationBlueprint::AddAnimationState(std::string name)
 	{
 		auto state = std::make_shared<AnimationState>();
 		auto node = AddNode<AnimationStateNode>(name, state);
 
-		m_States[node->ID] = state;
+		m_States[node->Guid] = state;
+
+		return std::static_pointer_cast<AnimationStateNode>(node);
 	}
 
 	std::shared_ptr<AnimationState> AnimationBlueprint::GetAnimationState(NodeID nodeID)
@@ -206,15 +208,6 @@ namespace Odyssey
 			return true;
 		}
 		return false;
-	}
-
-	void AnimationBlueprint::OnNodeAdded(std::shared_ptr<Node> node)
-	{
-		auto state = std::make_shared<AnimationState>();
-		if (auto animationStateNode = std::static_pointer_cast<AnimationStateNode>(node))
-			animationStateNode->SetAnimationState(state);
-
-		m_States[node->ID] = state;
 	}
 
 	void AnimationBlueprint::ClearTriggers()

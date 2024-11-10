@@ -23,7 +23,7 @@ namespace Odyssey::Rune
 
 	void Blueprint::DeleteNode(NodeID nodeID)
 	{
-		auto foundNode = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeID](auto& node) { return node->ID == nodeID; });
+		auto foundNode = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeID](auto& node) { return node->Guid == nodeID; });
 		if (foundNode != m_Nodes.end())
 			m_Nodes.erase(foundNode);
 	}
@@ -47,7 +47,7 @@ namespace Odyssey::Rune
 	{
 		for (auto& node : m_Nodes)
 		{
-			if (node->ID == nodeID)
+			if (node->Guid == nodeID)
 				return node.get();
 		}
 

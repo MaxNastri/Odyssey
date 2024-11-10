@@ -1,6 +1,7 @@
 #pragma once
 #include "Pin.h"
 #include "imgui.hpp"
+#include "GUID.h"
 
 namespace Odyssey::Rune
 {
@@ -10,7 +11,7 @@ namespace Odyssey::Rune
 	struct Node
 	{
 	public:
-		NodeID ID;
+		GUID Guid;
 		std::string Name;
 		std::vector<Pin> Inputs;
 		std::vector<Pin> Outputs;
@@ -22,6 +23,7 @@ namespace Odyssey::Rune
 
 	public:
 		Node(std::string_view name, float4 color = float4(1.0f));
+		Node(GUID guid, std::string_view name, float4 color = float4(1.0f));
 
 	public:
 		virtual void Draw(BlueprintBuilder* builder, Pin* activeLinkPin) = 0;
@@ -78,6 +80,7 @@ namespace Odyssey::Rune
 	{
 	public:
 		TreeNode(std::string_view name, float4 color = Default_Color);
+		TreeNode(GUID guid, std::string_view name, float4 color = Default_Color);
 
 	public:
 		virtual void Draw(BlueprintBuilder* builder, Pin* activeLinkPin) override;
