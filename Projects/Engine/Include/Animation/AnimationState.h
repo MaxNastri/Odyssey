@@ -11,6 +11,12 @@ namespace Odyssey
 	}
 	using namespace Rune;
 
+
+	inline static const std::array<std::string, 5> Comparison_Op_Display =
+	{
+		"<", "<=", "=", ">", ">="
+	};
+
 	enum class ComparisonOp
 	{
 		Less = 0,
