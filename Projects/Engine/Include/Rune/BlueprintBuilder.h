@@ -39,9 +39,9 @@ namespace Odyssey
 		public:
 			void BeginNode(NodeID id);
 			void BeginHeader(float4 color = float4(1.0f));
-			void BeginInput(PinId id);
-			void BeginOutput(PinId id);
-			void BeginPin(PinId id, PinIO pinIO);
+			void BeginInput(GUID guid);
+			void BeginOutput(GUID guid);
+			void BeginPin(GUID guid, PinIO pinIO);
 			void Middle();
 			void EndNode();
 			void EndHeader();

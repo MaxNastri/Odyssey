@@ -1,4 +1,5 @@
 #pragma once
+#include "GUID.h"
 
 namespace Odyssey::Rune
 {
@@ -24,12 +25,10 @@ namespace Odyssey::Rune
 
 	struct Node;
 
-	typedef uintptr_t PinId;
-
 	struct Pin
 	{
 	public:
-		PinId ID;
+		GUID Guid;
 		std::string Name;
 		Node* Node;
 		PinIO IO;

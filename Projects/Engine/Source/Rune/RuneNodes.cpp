@@ -1,5 +1,4 @@
 #include "RuneNodes.h"
-#include "RuneInternal.h"
 #include "BlueprintBuilder.h"
 #include "imgui.hpp"
 
@@ -65,10 +64,10 @@ namespace Odyssey::Rune
 					if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &output) && &output != activeLinkPin)
 						alpha = alpha * (48.0f / 255.0f);
 
-					ImguiExt::BeginPin(output.ID, ImguiExt::PinKind::Output);
+					ImguiExt::BeginPin(output.Guid.CRef(), ImguiExt::PinKind::Output);
 					ImguiExt::PinPivotAlignment(ImVec2(1.0f, 0.5f));
 					ImguiExt::PinPivotSize(ImVec2(0, 0));
-					ImGui::BeginHorizontal((int32_t)output.ID);
+					ImGui::BeginHorizontal((int32_t)output.Guid);
 					ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
 					if (!output.Name.empty())
 					{
@@ -103,7 +102,7 @@ namespace Odyssey::Rune
 			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &input) && &input != activeLinkPin)
 				alpha = alpha * (48.0f / 255.0f);
 
-			builder->BeginInput(input.ID);
+			builder->BeginInput(input.Guid);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
 			input.Draw(alpha);
@@ -131,7 +130,7 @@ namespace Odyssey::Rune
 				alpha = alpha * (48.0f / 255.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
 
-			builder->BeginOutput(output.ID);
+			builder->BeginOutput(output.Guid);
 
 			if (output.Type == PinType::String)
 			{
@@ -201,7 +200,7 @@ namespace Odyssey::Rune
 			if (activeLinkPin && !Pin::CanCreateLink(activeLinkPin, &input) && &input != activeLinkPin)
 				alpha = alpha * (48.0f / 255.0f);
 
-			builder->BeginInput(input.ID);
+			builder->BeginInput(input.Guid);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
 			input.Draw(alpha);
@@ -245,7 +244,7 @@ namespace Odyssey::Rune
 
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
 
-			builder->BeginOutput(output.ID);
+			builder->BeginOutput(output.Guid);
 
 			if (output.Type == PinType::String)
 			{
@@ -417,7 +416,7 @@ namespace Odyssey::Rune
 			ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinArrowWidth, 10.0f);
 			ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinCorners, ImDrawFlags_RoundCornersBottom);
 
-			ImguiExt::BeginPin(pin.ID, ImguiExt::PinKind::Input);
+			ImguiExt::BeginPin(pin.Guid.CRef(), ImguiExt::PinKind::Input);
 			ImguiExt::PinPivotRect(m_InputsRect.GetTL(), m_InputsRect.GetBR());
 			ImguiExt::PinRect(m_InputsRect.GetTL(), m_InputsRect.GetBR());
 			ImguiExt::EndPin();
@@ -469,7 +468,7 @@ namespace Odyssey::Rune
 
 			ImguiExt::PushStyleVar(ImguiExt::StyleVar_PinCorners, ImDrawFlags_RoundCornersTop);
 
-			ImguiExt::BeginPin(pin.ID, ImguiExt::PinKind::Output);
+			ImguiExt::BeginPin(pin.Guid.CRef(), ImguiExt::PinKind::Output);
 			ImguiExt::PinPivotRect(m_OutputsRect.GetTL(), m_OutputsRect.GetBR());
 			ImguiExt::PinRect(m_OutputsRect.GetTL(), m_OutputsRect.GetBR());
 			ImguiExt::EndPin();

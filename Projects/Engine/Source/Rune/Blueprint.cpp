@@ -17,70 +17,70 @@ namespace Odyssey::Rune
 		start->Linked = true;
 		end->Linked = true;
 
-		Link& newLink = m_Links.emplace_back(Link(start->ID, end->ID));
+		Link& newLink = m_Links.emplace_back(Link(start->Guid, end->Guid));
 		newLink.Color = start->GetColor();
 	}
 
-	void Blueprint::DeleteNode(NodeID nodeID)
+	void Blueprint::DeleteNode(GUID nodeGUID)
 	{
-		auto foundNode = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeID](auto& node) { return node->Guid == nodeID; });
+		auto foundNode = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeGUID](auto& node) { return node->Guid == nodeGUID; });
 		if (foundNode != m_Nodes.end())
 			m_Nodes.erase(foundNode);
 	}
 
-	void Blueprint::DeleteLink(LinkId linkID)
+	void Blueprint::DeleteLink(GUID linkGUID)
 	{
-		auto foundID = std::find_if(m_Links.begin(), m_Links.end(), [linkID](Link& link) { return link.ID == linkID; });
+		auto foundID = std::find_if(m_Links.begin(), m_Links.end(), [linkGUID](Link& link) { return link.Guid == linkGUID; });
 		if (foundID != m_Links.end())
 		{
-			if (Pin* startPin = FindPin((*foundID).StartPinID))
+			if (Pin* startPin = FindPin((*foundID).StartPinGUID))
 				startPin->Linked = false;
 
-			if (Pin* endPin = FindPin((*foundID).EndPinID))
+			if (Pin* endPin = FindPin((*foundID).EndPinGUID))
 				endPin->Linked = false;
 
 			m_Links.erase(foundID);
 		}
 	}
 
-	Node* Blueprint::FindNode(NodeID nodeID)
+	Node* Blueprint::FindNode(GUID nodeGUID)
 	{
 		for (auto& node : m_Nodes)
 		{
-			if (node->Guid == nodeID)
+			if (node->Guid == nodeGUID)
 				return node.get();
 		}
 
 		return nullptr;
 	}
 
-	Link* Blueprint::FindLink(LinkId linkID)
+	Link* Blueprint::FindLink(GUID linkGUID)
 	{
 		for (Link& link : m_Links)
 		{
-			if (link.ID == linkID)
+			if (link.Guid == linkGUID)
 				return &link;
 		}
 
 		return nullptr;
 	}
 
-	Pin* Blueprint::FindPin(PinId pinID)
+	Pin* Blueprint::FindPin(GUID pinGUID)
 	{
-		if (!pinID)
+		if (!pinGUID)
 			return nullptr;
 
 		for (auto& node : m_Nodes)
 		{
 			for (Pin& input : node->Inputs)
 			{
-				if (input.ID == pinID)
+				if (input.Guid == pinGUID)
 					return &input;
 			}
 
 			for (Pin& output : node->Outputs)
 			{
-				if (output.ID == pinID)
+				if (output.Guid == pinGUID)
 					return &output;
 			}
 		}
@@ -117,10 +117,10 @@ namespace Odyssey::Rune
 		{
 			Link& link = m_Links[i];
 
-			if (link.StartPinID == pin->ID || link.EndPinID == pin->ID)
+			if (link.StartPinGUID == pin->Guid || link.EndPinGUID == pin->Guid)
 			{
-				Pin* start = FindPin(link.StartPinID);
-				Pin* end = FindPin(link.EndPinID);
+				Pin* start = FindPin(link.StartPinGUID);
+				Pin* end = FindPin(link.EndPinGUID);
 
 				start->Linked = false;
 				end->Linked = false;

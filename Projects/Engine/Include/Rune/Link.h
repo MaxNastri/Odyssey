@@ -1,19 +1,18 @@
 #pragma once
 #include "Pin.h"
+#include "GUID.h"
 
 namespace Odyssey::Rune
 {
-	typedef uint64_t LinkId;
-
 	struct Link
 	{
 	public:
-		LinkId ID;
-		uint64_t StartPinID;
-		uint64_t EndPinID;
+		GUID Guid;
+		GUID StartPinGUID;
+		GUID EndPinGUID;
 		float3 Color;
 
 	public:
-		Link(uint64_t startPinID, uint64_t endPinID);
+		Link(GUID startPinGUID, GUID endPinGUID);
 	};
 }

@@ -79,7 +79,7 @@ namespace Odyssey::Rune
 		for (Link& link : links)
 		{
 			ImColor color = ImColor(link.Color.r, link.Color.g, link.Color.b, 1.0f);
-			ImguiExt::Link(link.ID, link.StartPinID, link.EndPinID, color, 2.0f);
+			ImguiExt::Link(link.Guid.CRef(), link.StartPinGUID.CRef(), link.EndPinGUID.CRef(), color, 2.0f);
 		}
 
 		if (!m_DrawingState.CreatingNewNode)
@@ -221,7 +221,7 @@ namespace Odyssey::Rune
 		SetStage(Stage::Header);
 	}
 
-	void BlueprintBuilder::BeginInput(PinId id)
+	void BlueprintBuilder::BeginInput(GUID guid)
 	{
 		if (m_DrawingState.CurrentStage == Stage::Begin)
 			SetStage(Stage::Content);
@@ -233,12 +233,12 @@ namespace Odyssey::Rune
 		if (applyPadding)
 			ImGui::Spring(0);
 
-		BeginPin(id, PinIO::Input);
+		BeginPin(guid, PinIO::Input);
 
-		ImGui::BeginHorizontal((int32_t)id);
+		ImGui::BeginHorizontal(guid.CRef());
 	}
 
-	void BlueprintBuilder::BeginOutput(PinId id)
+	void BlueprintBuilder::BeginOutput(GUID guid)
 	{
 		if (m_DrawingState.CurrentStage == Stage::Begin)
 			SetStage(Stage::Content);
@@ -250,14 +250,14 @@ namespace Odyssey::Rune
 		if (applyPadding)
 			ImGui::Spring(0);
 
-		BeginPin(id, PinIO::Output);
+		BeginPin(guid, PinIO::Output);
 
-		ImGui::BeginHorizontal((int32_t)id);
+		ImGui::BeginHorizontal(guid.CRef());
 	}
 
-	void BlueprintBuilder::BeginPin(PinId id, PinIO pinIO)
+	void BlueprintBuilder::BeginPin(GUID guid, PinIO pinIO)
 	{
-		ImguiExt::BeginPin(id, pinIO == PinIO::Input ? ImguiExt::PinKind::Input : ImguiExt::PinKind::Output);
+		ImguiExt::BeginPin(guid.CRef(), pinIO == PinIO::Input ? ImguiExt::PinKind::Input : ImguiExt::PinKind::Output);
 	}
 
 	void BlueprintBuilder::Middle()
@@ -614,9 +614,9 @@ namespace Odyssey::Rune
 
 			if (link)
 			{
-				ImGui::Text("ID: %d3", link->ID);
-				ImGui::Text("From: %d3", link->StartPinID);
-				ImGui::Text("To: %d3", link->EndPinID);
+				ImGui::Text("ID: %d3", link->Guid);
+				ImGui::Text("From: %d3", link->StartPinGUID);
+				ImGui::Text("To: %d3", link->EndPinGUID);
 			}
 
 			ImGui::Separator();

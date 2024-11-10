@@ -30,13 +30,13 @@ namespace Odyssey::Rune
 
 	public:
 		void AddLink(Pin* start, Pin* end);
-		void DeleteNode(NodeID nodeID);
-		void DeleteLink(LinkId linkID);
+		void DeleteNode(GUID nodeGUID);
+		void DeleteLink(GUID linkGUID);
 
 	public:
-		Node* FindNode(NodeID nodeID);
-		Link* FindLink(LinkId linkID);
-		Pin* FindPin(PinId pinID);
+		Node* FindNode(GUID nodeGUID);
+		Link* FindLink(GUID linkGUID);
+		Pin* FindPin(GUID pinGUID);
 
 	public:
 		std::vector<std::shared_ptr<Node>>& GetNodes() { return m_Nodes; }
