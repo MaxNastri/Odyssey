@@ -37,7 +37,7 @@ namespace Odyssey
 			void NavigateToContent(bool zoomIn = false);
 
 		public:
-			void BeginNode(NodeID id);
+			void BeginNode(GUID guid);
 			void BeginHeader(float4 color = float4(1.0f));
 			void BeginInput(GUID guid);
 			void BeginOutput(GUID guid);
@@ -81,7 +81,7 @@ namespace Odyssey
 			{
 				bool HasHeader = false;
 				Stage CurrentStage;
-				NodeID CurrentNodeID;
+				GUID CurrentNodeID;
 				float2 NodeMin;
 				float2 NodeMax;
 				float2 ContentMin;

@@ -23,6 +23,9 @@ namespace Odyssey
 		virtual void OnWindowClose() override;
 
 	private:
+		void CreateBuilder();
+
+	private:
 		void DrawPropertiesPanel();
 		void DrawNodeInspectorPanel();
 

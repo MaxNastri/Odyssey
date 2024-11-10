@@ -115,3 +115,7 @@ Entries:
     Type: Odyssey.AnimationBlueprint
     Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/AnotherBP.rune'
     GUID: 12313513881531966499
+  - Name: Default
+    Type: Odyssey.AnimationBlueprint
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/ex3.rune'
+    GUID: 10818724108029830951

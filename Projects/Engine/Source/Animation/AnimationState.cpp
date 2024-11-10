@@ -90,8 +90,14 @@ namespace Odyssey
 		return false;
 	}
 
-	AnimationState::AnimationState(GUID animationClip)
+	AnimationState::AnimationState(std::string_view name)
 	{
+		m_Name = name;
+	}
+
+	AnimationState::AnimationState(std::string_view name, GUID animationClip)
+	{
+		m_Name = name;
 		m_AnimationClip = animationClip;
 	}
 
@@ -108,7 +114,7 @@ namespace Odyssey
 
 	std::string_view AnimationState::GetName()
 	{
-		return "";
+		return m_Name;
 	}
 
 	GUID AnimationState::GetClip()

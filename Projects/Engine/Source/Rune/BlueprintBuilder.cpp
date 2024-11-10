@@ -17,16 +17,16 @@ namespace Odyssey::Rune
 		ImguiExt::Config config;
 		config.SettingsFile = "Blueprints.json";
 		config.UserPointer = m_Blueprint;
-		config.LoadNodeSettings = [](ImguiExt::NodeId nodeId, char* data, void* userPointer)
-			{
-				auto blueprint = static_cast<Blueprint*>(userPointer);
-				return blueprint->LoadNodeSettings(nodeId.Get(), data);
-			};
-		config.SaveNodeSettings = [](ImguiExt::NodeId nodeId, const char* data, size_t size, ImguiExt::SaveReasonFlags reason, void* userPointer)
-			{
-				Blueprint* blueprint = static_cast<Blueprint*>(userPointer);
-				return blueprint->SaveNodeSettings(nodeId.Get(), data, size);
-			};
+		//config.LoadNodeSettings = [](ImguiExt::NodeId nodeId, char* data, void* userPointer)
+		//	{
+		//		auto blueprint = static_cast<Blueprint*>(userPointer);
+		//		return blueprint->LoadNodeSettings(nodeId.Get(), data);
+		//	};
+		//config.SaveNodeSettings = [](ImguiExt::NodeId nodeId, const char* data, size_t size, ImguiExt::SaveReasonFlags reason, void* userPointer)
+		//	{
+		//		Blueprint* blueprint = static_cast<Blueprint*>(userPointer);
+		//		return blueprint->SaveNodeSettings(nodeId.Get(), data, size);
+		//	};
 
 		// Create the editor and set it as the current
 		m_Context = ImguiExt::CreateEditor(&config);
@@ -35,7 +35,7 @@ namespace Odyssey::Rune
 		// Navigate to the node editor
 		ImguiExt::NavigateToContent();
 
-		// Init the drawing staet
+		// Init the drawing state
 		m_DrawingState.CurrentNodeID = 0;
 		m_DrawingState.CurrentStage = Stage::Invalid;
 
@@ -139,7 +139,7 @@ namespace Odyssey::Rune
 	{
 		// End the node editor
 		ImguiExt::End();
-		ImguiExt::SetCurrentEditor(nullptr);
+		//ImguiExt::SetCurrentEditor(nullptr);
 	}
 
 	void BlueprintBuilder::ConnectNewNode(Node* node)
@@ -200,17 +200,17 @@ namespace Odyssey::Rune
 		ImguiExt::NavigateToContent(zoomIn);
 	}
 
-	void BlueprintBuilder::BeginNode(NodeID id)
+	void BlueprintBuilder::BeginNode(GUID guid)
 	{
 		m_DrawingState.HasHeader = false;
 		m_Header.Min = m_Header.Max = float2(0.0f);
 
 		ImguiExt::PushStyleVar(ImguiExt::StyleVar_NodePadding, ImVec4(8, 4, 8, 8));
 
-		ImguiExt::BeginNode(id);
+		ImguiExt::BeginNode(guid.CRef());
 
-		ImGui::PushID((int32_t)id);
-		m_DrawingState.CurrentNodeID = id;
+		ImGui::PushID((int32_t)guid.CRef());
+		m_DrawingState.CurrentNodeID = guid;
 
 		SetStage(Stage::Begin);
 	}
@@ -235,7 +235,7 @@ namespace Odyssey::Rune
 
 		BeginPin(guid, PinIO::Input);
 
-		ImGui::BeginHorizontal(guid.CRef());
+		ImGui::BeginHorizontal((int32_t)guid.CRef());
 	}
 
 	void BlueprintBuilder::BeginOutput(GUID guid)
@@ -252,7 +252,7 @@ namespace Odyssey::Rune
 
 		BeginPin(guid, PinIO::Output);
 
-		ImGui::BeginHorizontal(guid.CRef());
+		ImGui::BeginHorizontal((int32_t)guid.CRef());
 	}
 
 	void BlueprintBuilder::BeginPin(GUID guid, PinIO pinIO)
@@ -280,7 +280,7 @@ namespace Odyssey::Rune
 			int32_t alpha = (int32_t)(255 * ImGui::GetStyle().Alpha);
 			ImColor headerColor = ImColor(m_Header.Color.r, m_Header.Color.g, m_Header.Color.b, m_Header.Color.a);
 
-			ImDrawList* drawList = ImguiExt::GetNodeBackgroundDrawList(m_DrawingState.CurrentNodeID);
+			ImDrawList* drawList = ImguiExt::GetNodeBackgroundDrawList(m_DrawingState.CurrentNodeID.CRef());
 
 			if ((m_Header.Max.x > m_Header.Min.x) && (m_Header.Max.y > m_Header.Min.y) && m_Header.Texture)
 			{

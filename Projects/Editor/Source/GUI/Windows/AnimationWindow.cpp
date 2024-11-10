@@ -17,9 +17,7 @@ namespace Odyssey
 	{
 		m_Blueprint = AssetManager::CreateAsset<AnimationBlueprint>("");
 		m_WindowFlags = ImGuiWindowFlags_MenuBar;
-		m_Builder = std::make_shared<BlueprintBuilder>(m_Blueprint.get());
-		m_Builder->OverrideCreateNodeMenu(Create_Node_Menu_Name, Create_Node_Menu_ID);
-		m_Builder->OverrideCreateLinkMenu(Add_Link_Menu_Name, Add_Link_Menu_ID);
+		CreateBuilder();
 	}
 
 	void AnimationWindow::Destroy()
@@ -50,12 +48,16 @@ namespace Odyssey
 				if (ImGui::MenuItem("New Blueprint"))
 				{
 					m_Blueprint = AssetManager::CreateAsset<AnimationBlueprint>("");
+					CreateBuilder();
 				}
 				else if (ImGui::MenuItem("Open Blueprint"))
 				{
 					const Path& path = FileDialogs::OpenFile("Animation Blueprint", ".rune");
 					if (!path.empty())
+					{
 						m_Blueprint = AssetManager::LoadAsset<AnimationBlueprint>(path);
+						CreateBuilder();
+					}
 				}
 				else if (ImGui::MenuItem("Save Blueprint"))
 				{
@@ -135,6 +137,13 @@ namespace Odyssey
 	void AnimationWindow::OnWindowClose()
 	{
 		GUIManager::DestroyDockableWindow(this);
+	}
+
+	void AnimationWindow::CreateBuilder()
+	{
+		m_Builder = std::make_shared<BlueprintBuilder>(m_Blueprint.get());
+		m_Builder->OverrideCreateNodeMenu(Create_Node_Menu_Name, Create_Node_Menu_ID);
+		m_Builder->OverrideCreateLinkMenu(Add_Link_Menu_Name, Add_Link_Menu_ID);
 	}
 
 	void AnimationWindow::DrawPropertiesPanel()
@@ -298,15 +307,18 @@ namespace Odyssey
 			{
 				ImguiExt::NodeId node;
 				ImguiExt::GetSelectedNodes(&node, 1);
-				m_AnimationState = m_Blueprint->GetAnimationState(node.Get());
+				m_AnimationState = m_Blueprint->GetAnimationState((GUID)node.Get());
 
-				auto onAnimationClipChanged = [this](GUID guid)
-					{
-						if (m_AnimationState)
-							m_AnimationState->SetClip(guid);
-					};
+				if (m_AnimationState)
+				{
+					auto onAnimationClipChanged = [this](GUID guid)
+						{
+							if (m_AnimationState)
+								m_AnimationState->SetClip(guid);
+						};
 
-				m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", m_AnimationClipDrawer.GetGUID(), AnimationClip::Type, onAnimationClipChanged);
+					m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", m_AnimationState->GetClip(), AnimationClip::Type, onAnimationClipChanged);
+				}
 			}
 
 			if (m_AnimationState)

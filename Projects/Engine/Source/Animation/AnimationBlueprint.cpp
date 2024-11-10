@@ -36,7 +36,6 @@ namespace Odyssey
 			SerializationNode root = deserializer.GetRoot();
 
 			SerializationNode propertiesNode = root.GetNode("Properties");
-
 			assert(propertiesNode.IsSequence());
 
 			for (size_t i = 0; i < propertiesNode.ChildCount(); i++)
@@ -86,6 +85,31 @@ namespace Odyssey
 					default:
 						break;
 				}
+			}
+
+			SerializationNode statesNode = root.GetNode("Animation States");
+			assert(statesNode.IsSequence());
+
+			for (size_t i = 0; i < statesNode.ChildCount(); i++)
+			{
+				SerializationNode stateNode = statesNode.GetChild(i);
+				assert(stateNode.IsMap());
+
+				float2 nodePos = float2(0.0f);
+				GUID nodeGUID;
+				GUID clipGUID;
+				std::string stateName;
+
+				stateNode.ReadData("GUID", nodeGUID.Ref());
+				stateNode.ReadData("Name", stateName);
+				stateNode.ReadData("Clip", clipGUID.Ref());
+				stateNode.ReadData("Position", nodePos);
+
+				auto state = std::make_shared<AnimationState>(stateName, clipGUID);
+				auto node = AddNode<AnimationStateNode>(nodeGUID, stateName, state);
+
+				ImguiExt::SetNodePosition(nodeGUID.CRef(), nodePos);
+				m_States[node->Guid] = state;
 			}
 		}
 	}
@@ -138,6 +162,19 @@ namespace Odyssey
 			}
 		}
 
+		SerializationNode statesNode = root.CreateSequenceNode("Animation States");
+		for (auto& [nodeGUID, state] : m_States)
+		{
+			SerializationNode stateNode = statesNode.AppendChild();
+			stateNode.SetMap();
+
+			float2 nodePos = ImguiExt::GetNodePosition((uint64_t)nodeGUID);
+			stateNode.WriteData("GUID", (uint64_t)nodeGUID);
+			stateNode.WriteData("Name", state->GetName());
+			stateNode.WriteData("Clip", state->GetClip());
+			stateNode.WriteData("Position", nodePos);
+		}
+
 		serializer.WriteToDisk(assetPath);
 	}
 
@@ -148,7 +185,7 @@ namespace Odyssey
 
 	std::shared_ptr<AnimationStateNode> AnimationBlueprint::AddAnimationState(std::string name)
 	{
-		auto state = std::make_shared<AnimationState>();
+		auto state = std::make_shared<AnimationState>(name);
 		auto node = AddNode<AnimationStateNode>(name, state);
 
 		m_States[node->Guid] = state;
@@ -156,10 +193,10 @@ namespace Odyssey
 		return std::static_pointer_cast<AnimationStateNode>(node);
 	}
 
-	std::shared_ptr<AnimationState> AnimationBlueprint::GetAnimationState(NodeID nodeID)
+	std::shared_ptr<AnimationState> AnimationBlueprint::GetAnimationState(GUID nodeGUID)
 	{
-		if (m_States.contains(nodeID))
-			return m_States[nodeID];
+		if (m_States.contains(nodeGUID))
+			return m_States[nodeGUID];
 
 		return nullptr;
 	}

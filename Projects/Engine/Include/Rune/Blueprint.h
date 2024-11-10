@@ -14,6 +14,21 @@ namespace Odyssey::Rune
 
 	public:
 		template<typename T, typename... Args>
+		std::shared_ptr<Node> AddNode(Args... args)
+		{
+			static_assert(std::is_base_of<Node, T>::value, "T is not a dervied class of Node.");
+
+			// Create the node
+			std::shared_ptr<Node>& node = m_Nodes.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
+
+			// Rebuild the node connections
+			BuildNode(node.get());
+			BuildNodes();
+
+			return node;
+		}
+
+		template<typename T, typename... Args>
 		std::shared_ptr<Node> AddNode(std::string_view nodeName, Args... args)
 		{
 			static_assert(std::is_base_of<Node, T>::value, "T is not a dervied class of Node.");
@@ -50,8 +65,6 @@ namespace Odyssey::Rune
 
 	protected:
 		friend class BlueprintBuilder;
-		size_t LoadNodeSettings(NodeID nodeId, char* data);
-		bool SaveNodeSettings(NodeID nodeId, const char* data, size_t size);
 
 	protected:
 		std::string m_Name;

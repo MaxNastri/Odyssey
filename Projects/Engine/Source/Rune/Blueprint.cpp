@@ -134,31 +134,31 @@ namespace Odyssey::Rune
 			m_Links.erase(m_Links.begin() + removals[i]);
 	}
 
-	size_t Blueprint::LoadNodeSettings(NodeID nodeId, char* data)
-	{
-		auto node = FindNode(nodeId);
+	//size_t Blueprint::LoadNodeSettings(NodeID nodeId, char* data)
+	//{
+	//	auto node = FindNode(nodeId);
 
-		if (!node)
-			return 0;
+	//	if (!node)
+	//		return 0;
 
-		// Copy the state into the node
-		if (data != nullptr)
-			memcpy(data, node->State.data(), node->State.size());
+	//	// Copy the state into the node
+	//	if (data != nullptr)
+	//		memcpy(data, node->State.data(), node->State.size());
 
-		return node->State.size();
-	}
+	//	return node->State.size();
+	//}
 
-	bool Blueprint::SaveNodeSettings(NodeID nodeId, const char* data, size_t size)
-	{
-		// Find the node
-		auto node = FindNode(nodeId);
+	//bool Blueprint::SaveNodeSettings(NodeID nodeId, const char* data, size_t size)
+	//{
+	//	// Find the node
+	//	auto node = FindNode(nodeId);
 
-		if (!node)
-			return false;
+	//	if (!node)
+	//		return false;
 
-		// Assign the node's state
-		node->State.assign(data, size);
+	//	// Assign the node's state
+	//	node->State.assign(data, size);
 
-		return true;
-	}
+	//	return true;
+	//}
 }

@@ -54,7 +54,8 @@ namespace Odyssey
 	{
 	public:
 		AnimationState() = default;
-		AnimationState(GUID animationClip);
+		AnimationState(std::string_view name);
+		AnimationState(std::string_view name, GUID animationClip);
 
 	public:
 		AnimationState* Evaluate();
@@ -72,5 +73,6 @@ namespace Odyssey
 	private:
 		std::vector<std::shared_ptr<AnimationLink>> m_Links;
 		GUID m_AnimationClip;
+		std::string m_Name;
 	};
 }

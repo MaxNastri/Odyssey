@@ -34,7 +34,7 @@ namespace Odyssey
 
 	public:
 		std::vector<std::shared_ptr<AnimationProperty>>& GetProperties() { return m_Properties; }
-		std::shared_ptr<AnimationState> GetAnimationState(NodeID nodeID);
+		std::shared_ptr<AnimationState> GetAnimationState(GUID nodeGUID);
 
 	public:
 		void AddProperty(std::string_view name, AnimationPropertyType type);
@@ -50,6 +50,6 @@ namespace Odyssey
 	private:
 		std::vector<std::shared_ptr<AnimationProperty>> m_Properties;
 		std::unordered_map<std::string, std::shared_ptr<AnimationProperty>> m_PropertyMap;
-		std::unordered_map<NodeID, std::shared_ptr<AnimationState>> m_States;
+		std::map<GUID, std::shared_ptr<AnimationState>> m_States;
 	};
 }

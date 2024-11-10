@@ -5,7 +5,6 @@
 
 namespace Odyssey::Rune
 {
-	typedef uint64_t NodeID;
 	class BlueprintBuilder;
 
 	struct Node
