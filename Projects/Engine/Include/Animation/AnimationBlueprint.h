@@ -2,6 +2,7 @@
 #include "Blueprint.h"
 #include "Asset.h"
 #include "AnimationProperty.hpp"
+#include "BoneKeyframe.hpp"
 
 namespace Odyssey
 {
@@ -30,6 +31,9 @@ namespace Odyssey
 		virtual void Update() override;
 
 	public:
+		const std::map<std::string, BlendKey>& GetKeyframe();
+
+	public:
 		std::shared_ptr<AnimationStateNode> AddAnimationState(std::string name);
 
 	public:
@@ -51,5 +55,6 @@ namespace Odyssey
 		std::vector<std::shared_ptr<AnimationProperty>> m_Properties;
 		std::unordered_map<std::string, std::shared_ptr<AnimationProperty>> m_PropertyMap;
 		std::map<GUID, std::shared_ptr<AnimationState>> m_States;
+		std::shared_ptr<AnimationState> m_CurrentState;
 	};
 }

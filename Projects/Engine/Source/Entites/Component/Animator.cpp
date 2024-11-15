@@ -1,7 +1,7 @@
 #include "Animator.h"
 #include "AnimationRig.h"
 #include "AssetManager.h"
-#include "AnimationClip.h"
+#include "AnimationBlueprint.h"
 #include "OdysseyTime.h"
 #include "DebugRenderer.h"
 #include "Transform.h"
@@ -20,18 +20,27 @@ namespace Odyssey
 	{
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
+
+		GUID rigGUID = m_Rig->GetGUID();
+		GUID blueprintGUID = m_Blueprint->GetGUID();
+
 		componentNode.WriteData("Type", Animator::Type);
-		componentNode.WriteData("Animation Rig", m_AnimationRig.CRef());
-		componentNode.WriteData("Animation Clip", m_AnimationClip.CRef());
+		componentNode.WriteData("Animation Rig", rigGUID.CRef());
+		componentNode.WriteData("Animation Blueprint", blueprintGUID.CRef());
 	}
 
 	void Animator::Deserialize(SerializationNode& node)
 	{
-		node.ReadData("Animation Rig", m_AnimationRig.Ref());
-		node.ReadData("Animation Clip", m_AnimationClip.Ref());
+		GUID rigGUID;
+		GUID blueprintGUID;
+		node.ReadData("Animation Rig", rigGUID.Ref());
+		node.ReadData("Animation Blueprint", blueprintGUID.Ref());
 
-		if (m_AnimationRig)
-			SetRig(m_AnimationRig);
+		if (rigGUID)
+			SetRig(rigGUID);
+
+		if (blueprintGUID)
+			SetBlueprint(blueprintGUID);
 	}
 
 	void Animator::OnEditorUpdate()
@@ -39,7 +48,7 @@ namespace Odyssey
 		if (m_BoneGameObjects.size() == 0)
 			CreateBoneGameObjects();
 
-		if (m_AnimationClip)
+		if (m_Blueprint)
 			ProcessKeys();
 		else
 			ProcessTransforms();
@@ -47,26 +56,34 @@ namespace Odyssey
 
 	void Animator::Update()
 	{
-		if (m_AnimationClip)
+		if (m_Blueprint)
 			ProcessKeys();
 		else
 			ProcessTransforms();
 	}
 
-	void Animator::SetRig(GUID animationRigGUID)
+	GUID Animator::GetRigAsset()
 	{
-		m_AnimationRig = animationRigGUID;
-
-		// Load the rig and resize our final poses to match the bone count
-		auto rig = AssetManager::LoadAsset<AnimationRig>(m_AnimationRig);
-		m_FinalPoses.clear();
-		m_FinalPoses.resize(rig->GetBones().size());
-		//CreateBoneGameObjects();
+		return m_Rig->GetGUID();
 	}
 
-	void Animator::SetClip(GUID animationClipGUID)
+	GUID Animator::GetBlueprintAsset()
 	{
-		m_AnimationClip = animationClipGUID;
+		return m_Blueprint->GetGUID();
+	}
+
+	void Animator::SetRig(GUID guid)
+	{
+		m_Rig = AssetManager::LoadAsset<AnimationRig>(guid);
+
+		// Resize our final poses to match the bone count
+		m_FinalPoses.clear();
+		m_FinalPoses.resize(m_Rig->GetBones().size());
+	}
+
+	void Animator::SetBlueprint(GUID guid)
+	{
+		m_Blueprint = AssetManager::LoadAsset<AnimationBlueprint>(guid);
 	}
 
 	void Animator::CreateBoneGameObjects()
@@ -75,8 +92,7 @@ namespace Odyssey
 		DestroyBoneGameObjects();
 
 		// Load the rig and get the bones
-		auto rig = AssetManager::LoadAsset<AnimationRig>(m_AnimationRig);
-		const std::vector<Bone>& bones = rig->GetBones();
+		const std::vector<Bone>& bones = m_Rig->GetBones();
 
 		// Resize our bone game objects to match
 		m_BoneGameObjects.resize(bones.size());
@@ -121,12 +137,12 @@ namespace Odyssey
 	void Animator::ProcessKeys()
 	{
 		// Create storage for our bone keys
-		auto rig = AssetManager::LoadAsset<AnimationRig>(m_AnimationRig);
-		auto clip = AssetManager::LoadAsset<AnimationClip>(m_AnimationClip);
-		const std::vector<Bone>& bones = rig->GetBones();
+		const std::vector<Bone>& bones = m_Rig->GetBones();
 
 		float time = m_Playing ? Time::DeltaTime() : 0.0f;
-		auto boneKeys = clip->BlendKeys(time);
+
+		m_Blueprint->Update();
+		auto boneKeys = m_Blueprint->GetKeyframe();
 
 		glm::mat4 animatorInverse = glm::inverse(m_GameObject.GetComponent<Transform>().GetWorldMatrix());
 		for (size_t i = 0; i < bones.size(); i++)
@@ -139,7 +155,7 @@ namespace Odyssey
 			transform.SetPosition(blendKey.position);
 			transform.SetRotation(blendKey.rotation);
 			transform.SetScale(blendKey.scale);
-			glm::mat4 key = rig->GetGlobalMatrix() * animatorInverse * transform.GetWorldMatrix();
+			glm::mat4 key = m_Rig->GetGlobalMatrix() * animatorInverse * transform.GetWorldMatrix();
 			m_FinalPoses[i] = key * bones[i].InverseBindpose;
 
 			if (m_DebugEnabled)
@@ -150,15 +166,12 @@ namespace Odyssey
 	void Animator::ProcessTransforms()
 	{
 		// Create storage for our bone keys
-		auto rig = AssetManager::LoadAsset<AnimationRig>(m_AnimationRig);
-		const std::vector<Bone>& bones = rig->GetBones();
+		const std::vector<Bone>& bones = m_Rig->GetBones();
 
 		double time = m_Playing ? (double)Time::DeltaTime() : 0.0;
 
 		for (size_t i = 0; i < bones.size(); i++)
-		{
-			m_FinalPoses[i] = rig->GetGlobalMatrix();
-		}
+			m_FinalPoses[i] = m_Rig->GetGlobalMatrix();
 
 		if (m_DebugEnabled)
 			DebugDrawBones();

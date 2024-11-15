@@ -17,13 +17,13 @@ namespace Odyssey
 
 	private:
 		void OnRigModified(GUID guid);
-		void OnClipModified(GUID guid);
+		void OnBlueprintModified(GUID guid);
 		void OnDebugEnabledModified(bool enabled);
 
 	private:
 		GameObject m_GameObject;
 		AssetFieldDrawer m_RigDrawer;
-		AssetFieldDrawer m_ClipDrawer;
+		AssetFieldDrawer m_BlueprintDrawer;
 		BoolDrawer m_DebugEnabledDrawer;
 	};
 }

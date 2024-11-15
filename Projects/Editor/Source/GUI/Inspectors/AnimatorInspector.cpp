@@ -1,5 +1,5 @@
 #include "AnimatorInspector.h"
-#include "AnimationClip.h"
+#include "AnimationBlueprint.h"
 #include "imgui.h"
 
 namespace Odyssey
@@ -10,14 +10,11 @@ namespace Odyssey
 
 		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
 		{
-			GUID rigGUID = animator->GetRig();
-			GUID clipGUID = animator->GetClip();
-
-			m_RigDrawer = AssetFieldDrawer("Rig", rigGUID, AnimationRig::Type,
+			m_RigDrawer = AssetFieldDrawer("Rig", animator->GetRigAsset(), AnimationRig::Type,
 				[this](GUID guid) { OnRigModified(guid); });
 
-			m_ClipDrawer = AssetFieldDrawer("Clip", clipGUID, AnimationClip::Type,
-				[this](GUID guid) { OnClipModified(guid); });
+			m_BlueprintDrawer = AssetFieldDrawer("Blueprint", animator->GetBlueprintAsset(), AnimationBlueprint::Type,
+				[this](GUID guid) { OnBlueprintModified(guid); });
 
 			m_DebugEnabledDrawer = BoolDrawer("Debug", false,
 				[this](bool enabled) { OnDebugEnabledModified(enabled); });
@@ -29,7 +26,7 @@ namespace Odyssey
 		if (ImGui::CollapsingHeader("Animator", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			m_RigDrawer.Draw();
-			m_ClipDrawer.Draw();
+			m_BlueprintDrawer.Draw();
 			m_DebugEnabledDrawer.Draw();
 
 			if (ImGui::Button("Play"))
@@ -52,10 +49,10 @@ namespace Odyssey
 			animator->SetRig(guid);
 	}
 
-	void AnimatorInspector::OnClipModified(GUID guid)
+	void AnimatorInspector::OnBlueprintModified(GUID guid)
 	{
 		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
-			animator->SetClip(guid);
+			animator->SetBlueprint(guid);
 	}
 	void AnimatorInspector::OnDebugEnabledModified(bool enabled)
 	{

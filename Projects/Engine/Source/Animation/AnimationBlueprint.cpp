@@ -2,6 +2,7 @@
 #include "AnimationState.h"
 #include "AnimationNodes.h"
 #include "Enum.hpp"
+#include "AnimationClip.h"
 
 namespace Odyssey
 {
@@ -108,7 +109,9 @@ namespace Odyssey
 				auto state = std::make_shared<AnimationState>(stateName, clipGUID);
 				auto node = AddNode<AnimationStateNode>(nodeGUID, stateName, state);
 
-				ImguiExt::SetNodePosition(nodeGUID.CRef(), nodePos);
+				if (!m_CurrentState)
+					m_CurrentState = state;
+
 				m_States[node->Guid] = state;
 			}
 		}
@@ -168,10 +171,12 @@ namespace Odyssey
 			SerializationNode stateNode = statesNode.AppendChild();
 			stateNode.SetMap();
 
+			GUID clipGUID = state->GetClip()->GetGUID();
 			float2 nodePos = ImguiExt::GetNodePosition((uint64_t)nodeGUID);
+
 			stateNode.WriteData("GUID", (uint64_t)nodeGUID);
 			stateNode.WriteData("Name", state->GetName());
-			stateNode.WriteData("Clip", state->GetClip());
+			stateNode.WriteData("Clip", clipGUID);
 			stateNode.WriteData("Position", nodePos);
 		}
 
@@ -183,12 +188,20 @@ namespace Odyssey
 		ClearTriggers();
 	}
 
+	const std::map<std::string, BlendKey>& AnimationBlueprint::GetKeyframe()
+	{
+		return m_CurrentState->Evaluate();
+	}
+
 	std::shared_ptr<AnimationStateNode> AnimationBlueprint::AddAnimationState(std::string name)
 	{
 		auto state = std::make_shared<AnimationState>(name);
 		auto node = AddNode<AnimationStateNode>(name, state);
 
 		m_States[node->Guid] = state;
+
+		if (!m_CurrentState)
+			m_CurrentState = state;
 
 		return std::static_pointer_cast<AnimationStateNode>(node);
 	}

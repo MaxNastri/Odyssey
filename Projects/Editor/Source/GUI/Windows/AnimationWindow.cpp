@@ -317,7 +317,12 @@ namespace Odyssey
 								m_AnimationState->SetClip(guid);
 						};
 
-					m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", m_AnimationState->GetClip(), AnimationClip::Type, onAnimationClipChanged);
+					GUID clipGUID;
+
+					if (auto clip = m_AnimationState->GetClip())
+						clipGUID = clip->GetGUID();
+
+					m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", clipGUID, AnimationClip::Type, onAnimationClipChanged);
 				}
 			}
 

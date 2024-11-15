@@ -1,0 +1,13 @@
+m_SourceAsset: 0
+m_GUID: 9242731602216417912
+m_Name: Monk BP
+m_Type: Odyssey.AnimationBlueprint
+Properties:
+  - Name: Move
+    Type: Trigger
+    Value: 0
+Animation States:
+  - GUID: 6271724127432470386
+    Name: State
+    Clip: 12740900691695561484
+    Position: 'x: -92 y: -50'

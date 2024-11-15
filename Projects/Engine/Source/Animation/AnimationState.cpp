@@ -1,5 +1,8 @@
 #include "AnimationState.h"
 #include "AnimationNodes.h"
+#include "AssetManager.h"
+#include "AnimationClip.h"
+#include "OdysseyTime.h"
 
 namespace Odyssey
 {
@@ -98,18 +101,12 @@ namespace Odyssey
 	AnimationState::AnimationState(std::string_view name, GUID animationClip)
 	{
 		m_Name = name;
-		m_AnimationClip = animationClip;
+		SetClip(animationClip);
 	}
 
-	AnimationState* AnimationState::Evaluate()
+	const std::map<std::string, BlendKey>& AnimationState::Evaluate()
 	{
-		for (auto& link : m_Links)
-		{
-			if (link->Evaluate())
-				return link->GetEndState();
-		}
-
-		return nullptr;
+		return m_AnimationClip->BlendKeys(Time::DeltaTime());
 	}
 
 	std::string_view AnimationState::GetName()
@@ -117,9 +114,14 @@ namespace Odyssey
 		return m_Name;
 	}
 
-	GUID AnimationState::GetClip()
+	std::shared_ptr<AnimationClip> AnimationState::GetClip()
 	{
 		return m_AnimationClip;
+	}
+
+	void AnimationState::SetClip(GUID guid)
+	{
+		m_AnimationClip = AssetManager::LoadAsset<AnimationClip>(guid);
 	}
 
 	std::shared_ptr<AnimationLink> AnimationState::AddLink(AnimationState* connectedState, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer targetValue)

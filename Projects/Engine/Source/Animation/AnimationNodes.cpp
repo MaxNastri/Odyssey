@@ -40,8 +40,7 @@ namespace Odyssey
 		float progress = 0.0f;
 		if (m_AnimationState && m_AnimationState->GetClip())
 		{
-			auto clip = AssetManager::LoadAsset<AnimationClip>(m_AnimationState->GetClip());
-			progress = clip->GetProgress();
+			progress = m_AnimationState->GetClip()->GetProgress();
 		}
 
 		TreeNode::DrawContent(activeLinkPin);

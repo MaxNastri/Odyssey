@@ -94,7 +94,7 @@ Entries:
   - Name: Monk GLTF2 Clip
     Type: Odyssey.AnimationClip
     Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/Monk-GLTF-Clip2.asset'
-    GUID: 3950234663794449367
+    GUID: 12740900691695561484
   - Name: Monk GLTF2 Rig
     Type: Odyssey.AnimationRig
     Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/Monk-GLTF-Rig2.asset'
@@ -103,19 +103,7 @@ Entries:
     Type: Odyssey.Mesh
     Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Meshes/Monk-GLTF-Mesh2.mesh'
     GUID: 13511586946249507819
-  - Name: dsa
+  - Name: Monk BP
     Type: Odyssey.AnimationBlueprint
-    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/dsa.blueprint'
-    GUID: 2415673027546570374
-  - Name: Default
-    Type: Odyssey.AnimationBlueprint
-    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/SomeBP.rune'
-    GUID: 8452968580703190281
-  - Name: Default
-    Type: Odyssey.AnimationBlueprint
-    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/AnotherBP.rune'
-    GUID: 12313513881531966499
-  - Name: Default
-    Type: Odyssey.AnimationBlueprint
-    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/ex3.rune'
-    GUID: 10818724108029830951
+    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/MonkBP.rune'
+    GUID: 9242731602216417912

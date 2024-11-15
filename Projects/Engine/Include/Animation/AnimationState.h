@@ -2,6 +2,7 @@
 #include "Rune.h"
 #include "GUID.h"
 #include "AnimationProperty.hpp"
+#include "BoneKeyframe.hpp"
 
 namespace Odyssey
 {
@@ -27,6 +28,7 @@ namespace Odyssey
 	};
 
 	class AnimationState;
+	class AnimationClip;
 
 	class AnimationLink
 	{
@@ -58,21 +60,21 @@ namespace Odyssey
 		AnimationState(std::string_view name, GUID animationClip);
 
 	public:
-		AnimationState* Evaluate();
+		const std::map<std::string, BlendKey>& Evaluate();
 
 	public:
 		std::string_view GetName();
-		GUID GetClip();
+		std::shared_ptr<AnimationClip> GetClip();
 
 	public:
-		void SetClip(GUID guid) { m_AnimationClip = guid; }
+		void SetClip(GUID guid);
 
 	public:
 		std::shared_ptr<AnimationLink> AddLink(AnimationState* connectedState, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer targetValue);
 
 	private:
 		std::vector<std::shared_ptr<AnimationLink>> m_Links;
-		GUID m_AnimationClip;
+		std::shared_ptr<AnimationClip> m_AnimationClip;
 		std::string m_Name;
 	};
 }
