@@ -62,6 +62,11 @@ namespace Odyssey
 			ProcessTransforms();
 	}
 
+	void Animator::SetFloat(const std::string& propertyName, float value)
+	{
+		m_Blueprint->SetFloat(propertyName, value);
+	}
+
 	GUID Animator::GetRigAsset()
 	{
 		return m_Rig->GetGUID();

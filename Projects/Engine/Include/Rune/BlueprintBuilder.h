@@ -32,6 +32,7 @@ namespace Odyssey
 
 		public:
 			void ConnectNewNode(Node* node);
+			bool GetPendingLinkNodes(GUID& startNode, GUID& endNode);
 			void ConfirmPendingLink();
 			void ClearPendingLink();
 			void NavigateToContent(bool zoomIn = false);

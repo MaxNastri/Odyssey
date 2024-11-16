@@ -27,6 +27,9 @@ namespace Odyssey
 		void Update();
 
 	public:
+		void SetFloat(const std::string& propertyName, float value);
+
+	public:
 		GUID GetRigAsset();
 		GUID GetBlueprintAsset();
 		void SetRig(GUID animationRigGUID);

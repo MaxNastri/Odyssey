@@ -242,7 +242,7 @@ namespace Odyssey
 
 	private:
 		std::function<void(std::string_view)> valueUpdatedCallback;
-		std::string m_Data;
+		char m_Data[128] = "";
 		bool m_ReadOnly = false;
 	};
 

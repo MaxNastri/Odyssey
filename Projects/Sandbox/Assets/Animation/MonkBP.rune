@@ -6,8 +6,15 @@ Properties:
   - Name: Move
     Type: Trigger
     Value: 0
+  - Name: Speed
+    Type: Float
+    Value: 0
 Animation States:
   - GUID: 6271724127432470386
-    Name: State
+    Name: Idle
+    Clip: 6316788137749762478
+    Position: 'x: 0 y: 0'
+  - GUID: 9579378113499642795
+    Name: Cap
     Clip: 12740900691695561484
-    Position: 'x: -92 y: -50'
+    Position: 'x: 4 y: 186'

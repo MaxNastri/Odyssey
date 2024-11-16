@@ -6,7 +6,7 @@
 
 namespace Odyssey
 {
-	AnimationLink::AnimationLink(AnimationState* start, AnimationState* end, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer targetValue)
+	AnimationLink::AnimationLink(std::shared_ptr<AnimationState> start, std::shared_ptr<AnimationState> end, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue)
 		: m_Start(start), m_End(end),
 		m_Property(property), m_CompareOp(compareOp)
 
@@ -122,13 +122,5 @@ namespace Odyssey
 	void AnimationState::SetClip(GUID guid)
 	{
 		m_AnimationClip = AssetManager::LoadAsset<AnimationClip>(guid);
-	}
-
-	std::shared_ptr<AnimationLink> AnimationState::AddLink(AnimationState* connectedState, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer targetValue)
-	{
-		auto& link = m_Links.emplace_back(std::make_shared<AnimationLink>(this, connectedState, property, compareOp, targetValue));
-
-
-		return link;
 	}
 }

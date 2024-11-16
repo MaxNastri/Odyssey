@@ -116,6 +116,7 @@ namespace Odyssey
 							root.ReadData("m_GUID", guid.Ref());
 							root.ReadData("m_Type", type);
 							root.ReadData("m_Name", name);
+
 							AddAsset(guid, path, name, type, false);
 						}
 					}
@@ -162,7 +163,7 @@ namespace Odyssey
 		if (guid && !path.empty() && !assetName.empty() && !assetType.empty())
 		{
 			Path relativePath = std::filesystem::relative(path, m_ProjectRegistry.RootDirectory);
-			m_ProjectRegistry.AddAsset(assetName, assetType, path, guid);
+			m_ProjectRegistry.AddAsset(assetName, assetType, relativePath, guid);
 			m_ProjectRegistry.Save();
 		}
 	}

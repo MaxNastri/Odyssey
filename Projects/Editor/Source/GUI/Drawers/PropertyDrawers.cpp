@@ -330,7 +330,7 @@ namespace Odyssey
 	StringDrawer::StringDrawer(std::string_view label, std::string_view initialValue, std::function<void(std::string_view)> callback, bool readOnly)
 		: PropertyDrawer(label)
 	{
-		m_Data = initialValue;
+		initialValue.copy(m_Data, ARRAYSIZE(m_Data));
 		valueUpdatedCallback = callback;
 		m_ReadOnly = readOnly;
 	}
@@ -347,7 +347,7 @@ namespace Odyssey
 			if (m_ReadOnly)
 				ImGui::BeginDisabled();
 
-			if (ImGui::InputText(m_Label.data(), m_Data.data(), m_Data.size()))
+			if (ImGui::InputText(m_Label.data(), m_Data, IM_ARRAYSIZE(m_Data)))
 			{
 				if (valueUpdatedCallback)
 					valueUpdatedCallback(m_Data);

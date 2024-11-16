@@ -3,6 +3,8 @@
 #include "Asset.h"
 #include "AnimationProperty.hpp"
 #include "BoneKeyframe.hpp"
+#include "RawBuffer.hpp"
+#include "AnimationState.h"
 
 namespace Odyssey
 {
@@ -10,6 +12,7 @@ namespace Odyssey
 
 	struct AnimationProperty;
 	class AnimationState;
+	class AnimationLink;
 	struct AnimationStateNode;
 
 	class AnimationBlueprint : public Blueprint, public Asset
@@ -47,14 +50,17 @@ namespace Odyssey
 		bool SetInt(const std::string& name, int32_t value);
 		bool SetTrigger(const std::string& name);
 
+	public:
+		void AddAnimationLink(GUID startNode, GUID endNode, int32_t propertyIndex, ComparisonOp comparisonOp, RawBuffer& propertyValue);
+
 	private:
 		void ClearTriggers();
-		void EvalulateGraph();
 
 	private:
 		std::vector<std::shared_ptr<AnimationProperty>> m_Properties;
 		std::unordered_map<std::string, std::shared_ptr<AnimationProperty>> m_PropertyMap;
 		std::map<GUID, std::shared_ptr<AnimationState>> m_States;
+		std::map<std::shared_ptr<AnimationState>, std::vector<std::shared_ptr<AnimationLink>>> m_StateToLinks;
 		std::shared_ptr<AnimationState> m_CurrentState;
 	};
 }

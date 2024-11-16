@@ -184,6 +184,19 @@ namespace Odyssey::Rune
 		ImguiExt::SetCurrentEditor(nullptr);
 	}
 
+	bool BlueprintBuilder::GetPendingLinkNodes(GUID& startNode, GUID& endNode)
+	{
+		if (m_DrawingState.PendingStartPin && m_DrawingState.PendingStartPin->Node &&
+			m_DrawingState.PendingEndPin && m_DrawingState.PendingEndPin->Node)
+		{
+			startNode = m_DrawingState.PendingStartPin->Node->Guid;
+			endNode = m_DrawingState.PendingEndPin->Node->Guid;
+			return true;
+		}
+
+		return false;
+	}
+
 	void BlueprintBuilder::ConfirmPendingLink()
 	{
 		m_Blueprint->AddLink(m_DrawingState.PendingStartPin, m_DrawingState.PendingEndPin);

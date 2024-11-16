@@ -190,6 +190,20 @@ namespace Odyssey
 
 	const std::map<std::string, BlendKey>& AnimationBlueprint::GetKeyframe()
 	{
+		if (m_StateToLinks.contains(m_CurrentState))
+		{
+			auto& links = m_StateToLinks[m_CurrentState];
+
+			for (auto& animationLink : links)
+			{
+				if (animationLink->Evaluate())
+				{
+					m_CurrentState = animationLink->GetEndState();
+					break;
+				}
+			}
+		}
+
 		return m_CurrentState->Evaluate();
 	}
 
@@ -260,6 +274,18 @@ namespace Odyssey
 		return false;
 	}
 
+	void AnimationBlueprint::AddAnimationLink(GUID startNode, GUID endNode, int32_t propertyIndex, ComparisonOp comparisonOp, RawBuffer& propertyValue)
+	{
+		if (m_States.contains(startNode) && m_States.contains(endNode))
+		{
+			auto startState = m_States[startNode];
+			auto endState = m_States[endNode];
+			auto animProperty = m_Properties[propertyIndex];
+
+			m_StateToLinks[startState].push_back(std::make_shared<AnimationLink>(startState, endState, animProperty, comparisonOp, propertyValue));
+		}
+	}
+
 	void AnimationBlueprint::ClearTriggers()
 	{
 		const bool clearTrigger = false;
@@ -271,10 +297,5 @@ namespace Odyssey
 				property->ValueBuffer.Write(&clearTrigger);
 			}
 		}
-	}
-
-	void AnimationBlueprint::EvalulateGraph()
-	{
-
 	}
 }

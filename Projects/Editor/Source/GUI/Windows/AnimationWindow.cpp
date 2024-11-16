@@ -436,7 +436,7 @@ namespace Odyssey
 					if (ImGui::Selectable(name.c_str(), selected))
 					{
 						m_SelectedProperty = (int32_t)i;
-						m_AddLinkPropertyValue.Allocate(sizeof(animProperty->ValueBuffer.GetSize()));
+						m_AddLinkPropertyValue.Allocate(animProperty->ValueBuffer.GetSize());
 
 						// Triggers will always compare against true, so write it by default
 						if (animProperty->Type == AnimationPropertyType::Trigger)
@@ -543,7 +543,12 @@ namespace Odyssey
 				if (ImGui::Button("Add") || Input::GetKeyDown(KeyCode::Enter) || Input::GetKeyDown(KeyCode::KeypadEnter))
 				{
 					// builder->connect pending link
-					m_Builder->ConfirmPendingLink();
+					GUID startNode, endNode;
+					if (m_Builder->GetPendingLinkNodes(startNode, endNode))
+					{
+						m_Blueprint->AddAnimationLink(startNode, endNode, m_SelectedProperty, (ComparisonOp)m_SelectedComparisonOp, m_AddLinkPropertyValue);
+						m_Builder->ConfirmPendingLink();
+					}
 					ImGui::CloseCurrentPopup();
 				}
 
