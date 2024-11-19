@@ -389,7 +389,8 @@ void ax::NodeEditor::EndDelete()
 
 void ax::NodeEditor::SetNodePosition(NodeId nodeId, const ImVec2& position)
 {
-    s_Editor->SetNodePosition(nodeId, position);
+    if (s_Editor)
+        s_Editor->SetNodePosition(nodeId, position);
 }
 
 void ax::NodeEditor::SetGroupSize(NodeId nodeId, const ImVec2& size)

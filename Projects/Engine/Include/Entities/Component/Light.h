@@ -5,11 +5,10 @@ namespace Odyssey
 {
 	enum class LightType
 	{
-		None = 0,
-		Directional = 1,
-		Point = 2,
-		Spot = 3,
-		Area = 4,
+		Directional = 0,
+		Point = 1,
+		Spot = 2,
+		Area = 3,
 	};
 
 	class Light
@@ -24,12 +23,14 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
+		void SetEnabled(bool enabled) { m_Enabled = enabled; }
 		void SetType(LightType lightType) { m_Type = lightType; }
 		void SetColor(glm::vec3 color) { m_Color = color; }
 		void SetIntensity(float intensity) { m_Intensity = intensity; }
 		void SetRange(float range) { m_Range = range; }
 
 	public:
+		bool IsEnabled() { return m_Enabled; }
 		LightType GetType() { return m_Type; }
 		glm::vec3 GetColor() { return m_Color; }
 		float GetIntensity() { return m_Intensity; }
@@ -46,6 +47,7 @@ namespace Odyssey
 		float m_Range = 1.0f;
 
 	private:
+		bool m_Enabled = true;
 		GameObject m_GameObject;
 	};
 }

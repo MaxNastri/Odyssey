@@ -17,6 +17,8 @@ namespace Odyssey
 			GUID meshGUID = meshRenderer->GetMesh();
 			GUID materialGUID = meshRenderer->GetMaterial();
 
+			m_MeshRendererEnabled = meshRenderer->IsEnabled();
+
 			m_MeshDrawer = AssetFieldDrawer("Mesh", meshGUID, Mesh::Type,
 				[this](GUID guid) { OnMeshModified(guid); });
 
@@ -27,18 +29,29 @@ namespace Odyssey
 
 	void MeshRendererInspector::Draw()
 	{
-		if (ImGui::CollapsingHeader("MeshRenderer", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_MeshRendererEnabled))
+		{
+			if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
+				meshRenderer->SetEnabled(m_MeshRendererEnabled);
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Mesh Renderer", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			m_MeshDrawer.Draw();
 			m_MaterialDrawer.Draw();
 		}
+
+		ImGui::PopID();
 	}
+
 	void MeshRendererInspector::OnMeshModified(GUID guid)
 	{
 		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
-		{
 			meshRenderer->SetMesh(guid);
-		}
 	}
 
 	void MeshRendererInspector::OnMaterialModified(GUID guid)

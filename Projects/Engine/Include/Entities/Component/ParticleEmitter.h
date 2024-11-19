@@ -47,6 +47,7 @@ namespace Odyssey
 		void Update(float deltaTime);
 
 	public:
+		void SetEnabled(bool enabled) { m_Enabled = enabled; }
 		void SetDuration(float duration) { m_Duration = duration; }
 		void SetLifetime(float2 lifetime) { emitterData.Lifetime = lifetime; }
 		void SetMaterial(GUID material) { m_Material = material; }
@@ -56,6 +57,7 @@ namespace Odyssey
 		void SetEndColor(float4 color) { emitterData.EndColor = color; }
 
 	public:
+		bool IsEnabled() { return m_Enabled; }
 		float GetDuration() { return m_Duration; }
 		float4 GetStartColor() { return emitterData.StartColor; }
 		float4 GetEndColor() { return emitterData.EndColor; }
@@ -70,15 +72,12 @@ namespace Odyssey
 		bool Loop = false;
 
 	private:
+		bool m_Enabled;
+		GameObject m_GameObject;
 		float m_Duration = 1.0f;
 		GUID m_Material;
-
-	private:
 		float m_EmissionTime;
 		uint32_t m_EmissionCount;
-
-	private:
-		GameObject m_GameObject;
 		uint32_t m_ParticleCount;
 		bool m_Playing;
 	};

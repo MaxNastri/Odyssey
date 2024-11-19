@@ -209,6 +209,8 @@ namespace Odyssey
 
 	void EntityFieldDrawer::Draw()
 	{
+		ImGui::PushID(this);
+
 		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 		{
 			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
@@ -216,8 +218,6 @@ namespace Odyssey
 			ImGui::TextUnformatted(m_Label.data());
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(-0.01f);
-
-			ImGui::PushID((void*)this);
 
 			std::string selectedDisplayName = m_SelectedIndex != 0 ? m_PossibleGUIDs[m_SelectedIndex].String() : "None";
 			if (ImGui::BeginCombo("##Empty", selectedDisplayName.c_str()))
@@ -241,8 +241,6 @@ namespace Odyssey
 				ImGui::EndCombo();
 			}
 
-			ImGui::PopID();
-
 			if (ImGui::BeginDragDropTarget())
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
@@ -261,6 +259,8 @@ namespace Odyssey
 
 			ImGui::EndTable();
 		}
+
+		ImGui::PopID();
 	}
 
 	void EntityFieldDrawer::GeneratePossibleGUIDs()
@@ -330,7 +330,7 @@ namespace Odyssey
 	StringDrawer::StringDrawer(std::string_view label, std::string_view initialValue, std::function<void(std::string_view)> callback, bool readOnly)
 		: PropertyDrawer(label)
 	{
-		m_Data = initialValue;
+		initialValue.copy(m_Data, ARRAYSIZE(m_Data));
 		valueUpdatedCallback = callback;
 		m_ReadOnly = readOnly;
 	}
@@ -347,7 +347,7 @@ namespace Odyssey
 			if (m_ReadOnly)
 				ImGui::BeginDisabled();
 
-			if (ImGui::InputText(m_Label.data(), m_Data.data(), m_Data.size()))
+			if (ImGui::InputText(m_Label.data(), m_Data, IM_ARRAYSIZE(m_Data)))
 			{
 				if (valueUpdatedCallback)
 					valueUpdatedCallback(m_Data);

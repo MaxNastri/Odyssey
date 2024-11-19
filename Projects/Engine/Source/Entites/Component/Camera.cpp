@@ -11,8 +11,6 @@ namespace Odyssey
 
 	void Camera::Awake()
 	{
-		m_Width = 1000;
-		m_Height = 1000;
 		// Calculate our matrices
 		CalculateInverseView();
 		CalculateProjection();
@@ -23,6 +21,7 @@ namespace Odyssey
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
 		componentNode.WriteData("Type", Camera::Type);
+		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Field of View", m_FieldOfView);
 		componentNode.WriteData("Near Clip", m_NearClip);
 		componentNode.WriteData("Far Clip", m_FarClip);
@@ -31,13 +30,12 @@ namespace Odyssey
 
 	void Camera::Deserialize(SerializationNode& node)
 	{
+		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Field of View", m_FieldOfView);
 		node.ReadData("Near Clip", m_NearClip);
 		node.ReadData("Far Clip", m_FarClip);
 		node.ReadData("Main Camera", m_MainCamera);
 
-		m_Width = 1000;
-		m_Height = 1000;
 		CalculateProjection();
 	}
 
@@ -56,6 +54,11 @@ namespace Odyssey
 		}
 
 		return m_View;
+	}
+
+	void Camera::SetEnabled(bool enabled)
+	{
+		m_Enabled = enabled;
 	}
 
 	void Camera::SetFieldOfView(float fov)

@@ -23,6 +23,7 @@ namespace Odyssey
 		void OnFarClipChanged(float farClip);
 
 	private:
+		bool m_CameraEnabled;
 		GameObject m_GameObject;
 		FloatDrawer m_FieldOfViewDrawer;
 		FloatDrawer m_NearClipDrawer;

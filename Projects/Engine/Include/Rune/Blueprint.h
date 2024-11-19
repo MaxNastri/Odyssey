@@ -14,6 +14,21 @@ namespace Odyssey::Rune
 
 	public:
 		template<typename T, typename... Args>
+		std::shared_ptr<Node> AddNode(Args... args)
+		{
+			static_assert(std::is_base_of<Node, T>::value, "T is not a dervied class of Node.");
+
+			// Create the node
+			std::shared_ptr<Node>& node = m_Nodes.emplace_back(std::make_shared<T>(std::forward<Args>(args)...));
+
+			// Rebuild the node connections
+			BuildNode(node.get());
+			BuildNodes();
+
+			return node;
+		}
+
+		template<typename T, typename... Args>
 		std::shared_ptr<Node> AddNode(std::string_view nodeName, Args... args)
 		{
 			static_assert(std::is_base_of<Node, T>::value, "T is not a dervied class of Node.");
@@ -25,20 +40,18 @@ namespace Odyssey::Rune
 			BuildNode(node.get());
 			BuildNodes();
 
-			OnNodeAdded(node);
-
 			return node;
 		}
 
 	public:
 		void AddLink(Pin* start, Pin* end);
-		void DeleteNode(NodeID nodeID);
-		void DeleteLink(LinkId linkID);
+		void DeleteNode(GUID nodeGUID);
+		void DeleteLink(GUID linkGUID);
 
 	public:
-		Node* FindNode(NodeID nodeID);
-		Link* FindLink(LinkId linkID);
-		Pin* FindPin(PinId pinID);
+		Node* FindNode(GUID nodeGUID);
+		Link* FindLink(GUID linkGUID);
+		Pin* FindPin(GUID pinGUID);
 
 	public:
 		std::vector<std::shared_ptr<Node>>& GetNodes() { return m_Nodes; }
@@ -46,15 +59,12 @@ namespace Odyssey::Rune
 		std::string_view GetName() { return m_Name; }
 
 	protected:
-		virtual void OnNodeAdded(std::shared_ptr<Node> node) { }
 		void BuildNodes();
 		void BuildNode(Node* node);
 		void BreakLinks(Pin* pin);
 
 	protected:
 		friend class BlueprintBuilder;
-		size_t LoadNodeSettings(NodeID nodeId, char* data);
-		bool SaveNodeSettings(NodeID nodeId, const char* data, size_t size);
 
 	protected:
 		std::string m_Name;

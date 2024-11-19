@@ -18,14 +18,17 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
+		void SetEnabled(bool enabled);
 		void SetMesh(GUID meshGUID);
 		void SetMaterial(GUID materialGUID);
 
 	public:
+		bool IsEnabled() { return m_Enabled; }
 		GUID GetMesh() { return m_Mesh; }
 		GUID GetMaterial() { return m_Material; }
 
 	private:
+		bool m_Enabled;
 		GameObject m_GameObject;
 		GUID m_Mesh;
 		GUID m_Material;

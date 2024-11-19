@@ -2,6 +2,7 @@
 #include "Rune.h"
 #include "GUID.h"
 #include "AnimationProperty.hpp"
+#include "BoneKeyframe.hpp"
 
 namespace Odyssey
 {
@@ -10,6 +11,12 @@ namespace Odyssey
 		struct Node;
 	}
 	using namespace Rune;
+
+
+	inline static const std::array<std::string, 5> Comparison_Op_Display =
+	{
+		"<", "<=", "=", ">", ">="
+	};
 
 	enum class ComparisonOp
 	{
@@ -21,24 +28,29 @@ namespace Odyssey
 	};
 
 	class AnimationState;
+	class AnimationClip;
 
 	class AnimationLink
 	{
 	public:
-		AnimationLink(AnimationState* start, AnimationState* end, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer targetValue);
+		AnimationLink(std::shared_ptr<AnimationState> start, std::shared_ptr<AnimationState> end, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue);
 
 	public:
 		bool Evaluate();
 
 	public:
-		AnimationState* GetEndState() { return m_End; }
+		std::shared_ptr<AnimationState> GetBeginState() { return m_BeginState; }
+		std::shared_ptr<AnimationState> GetEndState() { return m_EndState; }
+		std::shared_ptr<AnimationProperty> GetProperty() { return m_Property; }
+		ComparisonOp GetComparisonOp() { return m_ComparisonOp; }
+		RawBuffer& GetTargetValue() { return m_TargetValue; }
 
 	private:
-		AnimationState* m_Start;
-		AnimationState* m_End;
+		std::shared_ptr<AnimationState> m_BeginState;
+		std::shared_ptr<AnimationState> m_EndState;
 
 		std::shared_ptr<AnimationProperty> m_Property;
-		ComparisonOp m_CompareOp;
+		ComparisonOp m_ComparisonOp;
 		RawBuffer m_TargetValue;
 
 		Link* m_Link;
@@ -48,23 +60,23 @@ namespace Odyssey
 	{
 	public:
 		AnimationState() = default;
-		AnimationState(GUID animationClip);
+		AnimationState(std::string_view name);
+		AnimationState(GUID guid, std::string_view name, GUID animationClip);
 
 	public:
-		AnimationState* Evaluate();
+		const std::map<std::string, BlendKey>& Evaluate();
 
 	public:
 		std::string_view GetName();
-		GUID GetClip();
+		std::shared_ptr<AnimationClip> GetClip();
 
 	public:
-		void SetClip(GUID guid) { m_AnimationClip = guid; }
-
-	public:
-		std::shared_ptr<AnimationLink> AddLink(AnimationState* connectedState, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer targetValue);
+		GUID GetGUID() { return m_GUID; }
+		void SetClip(GUID guid);
 
 	private:
-		std::vector<std::shared_ptr<AnimationLink>> m_Links;
-		GUID m_AnimationClip;
+		std::shared_ptr<AnimationClip> m_AnimationClip;
+		std::string m_Name;
+		GUID m_GUID;
 	};
 }

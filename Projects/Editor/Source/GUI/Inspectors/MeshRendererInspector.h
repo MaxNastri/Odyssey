@@ -25,5 +25,6 @@ namespace Odyssey
 		GameObject m_GameObject;
 		AssetFieldDrawer m_MeshDrawer;
 		AssetFieldDrawer m_MaterialDrawer;
+		bool m_MeshRendererEnabled;
 	};
 }

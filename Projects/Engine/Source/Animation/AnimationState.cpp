@@ -1,11 +1,14 @@
 #include "AnimationState.h"
 #include "AnimationNodes.h"
+#include "AssetManager.h"
+#include "AnimationClip.h"
+#include "OdysseyTime.h"
 
 namespace Odyssey
 {
-	AnimationLink::AnimationLink(AnimationState* start, AnimationState* end, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer targetValue)
-		: m_Start(start), m_End(end),
-		m_Property(property), m_CompareOp(compareOp)
+	AnimationLink::AnimationLink(std::shared_ptr<AnimationState> start, std::shared_ptr<AnimationState> end, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue)
+		: m_BeginState(start), m_EndState(end),
+		m_Property(property), m_ComparisonOp(compareOp)
 
 	{
 		 RawBuffer::Copy(m_TargetValue, targetValue);
@@ -13,7 +16,7 @@ namespace Odyssey
 
 	bool AnimationLink::Evaluate()
 	{
-		switch (m_CompareOp)
+		switch (m_ComparisonOp)
 		{
 			case Odyssey::ComparisonOp::Less:
 			{
@@ -90,37 +93,35 @@ namespace Odyssey
 		return false;
 	}
 
-	AnimationState::AnimationState(GUID animationClip)
+	AnimationState::AnimationState(std::string_view name)
+		: m_Name(name), m_GUID(GUID::New())
 	{
-		m_AnimationClip = animationClip;
+
 	}
 
-	AnimationState* AnimationState::Evaluate()
+	AnimationState::AnimationState(GUID guid, std::string_view name, GUID animationClip)
+		: m_Name(name), m_GUID(guid)
 	{
-		for (auto& link : m_Links)
-		{
-			if (link->Evaluate())
-				return link->GetEndState();
-		}
+		SetClip(animationClip);
+	}
 
-		return nullptr;
+	const std::map<std::string, BlendKey>& AnimationState::Evaluate()
+	{
+		return m_AnimationClip->BlendKeys(Time::DeltaTime());
 	}
 
 	std::string_view AnimationState::GetName()
 	{
-		return "";
+		return m_Name;
 	}
 
-	GUID AnimationState::GetClip()
+	std::shared_ptr<AnimationClip> AnimationState::GetClip()
 	{
 		return m_AnimationClip;
 	}
 
-	std::shared_ptr<AnimationLink> AnimationState::AddLink(AnimationState* connectedState, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer targetValue)
+	void AnimationState::SetClip(GUID guid)
 	{
-		auto& link = m_Links.emplace_back(std::make_shared<AnimationLink>(this, connectedState, property, compareOp, targetValue));
-
-
-		return link;
+		m_AnimationClip = AssetManager::LoadAsset<AnimationClip>(guid);
 	}
 }

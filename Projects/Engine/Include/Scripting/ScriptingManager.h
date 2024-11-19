@@ -27,7 +27,7 @@ namespace Odyssey
 		static void RemoveEntityScript(GUID entityGUID, uint32_t scriptID);
 		static ScriptStorage& GetScriptStorage(GUID guid);
 		static ScriptMetadata& GetScriptMetadata(uint32_t scriptID);
-		static std::vector<ScriptMetadata> GetAllScriptMetadatas();
+		static const std::map<uint32_t, ScriptMetadata>& GetAllScriptMetadatas();
 		static void DestroyInstance(GUID entityGUID);
 	public:
 		template<typename... Args>

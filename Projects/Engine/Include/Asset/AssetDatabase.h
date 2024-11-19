@@ -1,7 +1,7 @@
 #pragma once
 #include "GUID.h"
 #include "FileTracker.h"
-#include "AssetRegistry.hpp"
+#include "AssetRegistry.h"
 
 namespace Odyssey
 {
@@ -44,6 +44,10 @@ namespace Odyssey
 		bool IsSourceAsset(const Path& path);
 
 	public:
+		void UpdateAssetName(GUID guid, const std::string& name);
+		void UpdateAssetPath(GUID guid, const Path& path);
+
+	public:
 		Path GUIDToAssetPath(GUID guid);
 		std::string GUIDToAssetName(GUID guid);
 		std::string GUIDToAssetType(GUID guid);
@@ -52,6 +56,7 @@ namespace Odyssey
 		const AssetMetadata& GetMetadata(GUID guid);
 
 	private:
+		void AddRegistryAsset(GUID guid, const Path& path, const std::string& assetName, const std::string& assetType, bool sourceAsset);
 		void OnFileAction(const Path& filename, FileActionType fileAction);
 
 	protected:
@@ -69,7 +74,7 @@ namespace Odyssey
 	private:
 		inline static std::set<std::string> s_AssetExtensions =
 		{
-			".asset", ".shader", ".mesh", ".prefab",
+			".asset", ".shader", ".mesh", ".prefab", ".rune"
 		};
 
 		inline static std::map<std::string, std::string> s_SourceAssetExtensionsToType =

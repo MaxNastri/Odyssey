@@ -10,16 +10,16 @@
 #include "SourceTexture.h"
 #include "AnimationRig.h"
 #include "AnimationClip.h"
-#include "AssetRegistry.hpp"
+#include "AssetRegistry.h"
+#include "Project.h"
 
 namespace Odyssey
 {
-	void AssetManager::CreateDatabase(const Path& assetsDirectory, const Path& projectRegistryPath, std::vector<Path>& additionalRegistries)
+	void AssetManager::CreateDatabase(const Path& assetsDirectory, std::vector<Path>& additionalRegistries)
 	{
 		s_AssetsDirectory = assetsDirectory;
 
 		std::vector<AssetRegistry> registries;
-		AssetRegistry projectRegistry(projectRegistryPath);
 
 		for (const Path& registry : additionalRegistries)
 		{
@@ -31,7 +31,7 @@ namespace Odyssey
 		assetSearch.Root = s_AssetsDirectory;
 		assetSearch.ExclusionPaths = { };
 
-		s_AssetDatabase = std::make_unique<AssetDatabase>(assetSearch, projectRegistry, registries);
+		s_AssetDatabase = std::make_unique<AssetDatabase>(assetSearch, Project::GetActiveAssetRegistry(), registries);
 	}
 
 	std::vector<GUID> AssetManager::GetAssetsOfType(const std::string& assetType)
@@ -64,6 +64,16 @@ namespace Odyssey
 			return s_AssetDatabase->GUIDToAssetType(guid);
 
 		return std::string();
+	}
+
+	void AssetManager::UpdateAssetName(GUID guid, const std::string& name)
+	{
+		s_AssetDatabase->UpdateAssetName(guid, name);
+	}
+
+	void AssetManager::UpdateAssetPath(GUID guid, const Path& path)
+	{
+		s_AssetDatabase->UpdateAssetPath(guid, path);
 	}
 
 	bool AssetManager::IsSourceAsset(const Path& path)

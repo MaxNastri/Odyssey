@@ -1,5 +1,5 @@
 #include "AnimatorInspector.h"
-#include "AnimationClip.h"
+#include "AnimationBlueprint.h"
 #include "imgui.h"
 
 namespace Odyssey
@@ -10,14 +10,13 @@ namespace Odyssey
 
 		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
 		{
-			GUID rigGUID = animator->GetRig();
-			GUID clipGUID = animator->GetClip();
+			m_AnimatorEnabled = animator->IsEnabled();
 
-			m_RigDrawer = AssetFieldDrawer("Rig", rigGUID, AnimationRig::Type,
+			m_RigDrawer = AssetFieldDrawer("Rig", animator->GetRigAsset(), AnimationRig::Type,
 				[this](GUID guid) { OnRigModified(guid); });
 
-			m_ClipDrawer = AssetFieldDrawer("Clip", clipGUID, AnimationClip::Type,
-				[this](GUID guid) { OnClipModified(guid); });
+			m_BlueprintDrawer = AssetFieldDrawer("Blueprint", animator->GetBlueprintAsset(), AnimationBlueprint::Type,
+				[this](GUID guid) { OnBlueprintModified(guid); });
 
 			m_DebugEnabledDrawer = BoolDrawer("Debug", false,
 				[this](bool enabled) { OnDebugEnabledModified(enabled); });
@@ -26,10 +25,20 @@ namespace Odyssey
 
 	void AnimatorInspector::Draw()
 	{
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_AnimatorEnabled))
+		{
+			if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
+				animator->SetEnabled(m_AnimatorEnabled);
+		}
+
+		ImGui::SameLine();
+
 		if (ImGui::CollapsingHeader("Animator", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			m_RigDrawer.Draw();
-			m_ClipDrawer.Draw();
+			m_BlueprintDrawer.Draw();
 			m_DebugEnabledDrawer.Draw();
 
 			if (ImGui::Button("Play"))
@@ -44,6 +53,8 @@ namespace Odyssey
 					animator->Pause();
 			}
 		}
+
+		ImGui::PopID();
 	}
 
 	void AnimatorInspector::OnRigModified(GUID guid)
@@ -52,14 +63,14 @@ namespace Odyssey
 			animator->SetRig(guid);
 	}
 
-	void AnimatorInspector::OnClipModified(GUID guid)
+	void AnimatorInspector::OnBlueprintModified(GUID guid)
 	{
 		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
-			animator->SetClip(guid);
+			animator->SetBlueprint(guid);
 	}
 	void AnimatorInspector::OnDebugEnabledModified(bool enabled)
 	{
 		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
-			animator->SetDebugEnabled(enabled);
+			animator->SetFloat("Speed", enabled ? 10.0f : 0.0f);
 	}
 }

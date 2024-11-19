@@ -15,14 +15,21 @@ namespace Odyssey
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
 		componentNode.WriteData("Type", MeshRenderer::Type);
+		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("m_Mesh", m_Mesh.CRef());
 		componentNode.WriteData("m_Material", m_Material.CRef());
 	}
 
 	void MeshRenderer::Deserialize(SerializationNode& node)
 	{
+		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("m_Mesh", m_Mesh.Ref());
 		node.ReadData("m_Material", m_Material.Ref());
+	}
+
+	void MeshRenderer::SetEnabled(bool enabled)
+	{
+		m_Enabled = enabled;
 	}
 
 	void MeshRenderer::SetMesh(GUID meshGUID)

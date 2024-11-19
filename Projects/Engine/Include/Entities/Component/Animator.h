@@ -7,6 +7,7 @@
 namespace Odyssey
 {
 	class AnimationRig;
+	class AnimationBlueprint;
 
 	class Animator
 	{
@@ -26,10 +27,15 @@ namespace Odyssey
 		void Update();
 
 	public:
-		GUID GetRig() { return m_AnimationRig; }
-		GUID GetClip() { return m_AnimationClip; }
+		void SetEnabled(bool enabled);
+		void SetFloat(const std::string& propertyName, float value);
+
+	public:
+		bool IsEnabled() { return m_Enabled; }
+		GUID GetRigAsset();
+		GUID GetBlueprintAsset();
 		void SetRig(GUID animationRigGUID);
-		void SetClip(GUID animationClipGUID);
+		void SetBlueprint(GUID animationClipGUID);
 		void SetDebugEnabled(bool enabled) { m_DebugEnabled = enabled; }
 
 	public:
@@ -40,6 +46,7 @@ namespace Odyssey
 		void DestroyBoneGameObjects();
 		void ProcessKeys();
 		void ProcessTransforms();
+		void ResetToBindpose();
 
 	private:
 		void DebugDrawBones();
@@ -47,9 +54,10 @@ namespace Odyssey
 		void DebugDrawBone(const Bone& bone);
 
 	private:
+		bool m_Enabled;
 		GameObject m_GameObject;
-		GUID m_AnimationRig;
-		GUID m_AnimationClip;
+		std::shared_ptr<AnimationRig> m_Rig;
+		std::shared_ptr<AnimationBlueprint> m_Blueprint;
 
 	private:
 		std::vector<GameObject> m_BoneGameObjects;

@@ -16,15 +16,15 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	private:
-		void OnLightTypeChanged(uint32_t lightType);
+		void OnLightTypeChanged(LightType lightType);
 		void OnColorChanged(glm::vec3 color);
 		void OnIntensityChanged(float intensity);
 		void OnRangeChanged(float range);
 
 	private:
+		bool m_LightEnabled;
 		GameObject m_GameObject;
-
-		IntDrawer<uint32_t> m_LightTypeDrawer;
+		EnumDrawer<LightType> m_LightTypeDrawer;
 		ColorPicker m_ColorPicker;
 		FloatDrawer m_IntensityDrawer;
 		FloatDrawer m_RangeDrawer;

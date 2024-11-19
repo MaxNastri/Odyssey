@@ -32,16 +32,17 @@ namespace Odyssey
 
 		public:
 			void ConnectNewNode(Node* node);
+			bool GetPendingLinkNodes(GUID& startNode, GUID& endNode);
 			void ConfirmPendingLink();
 			void ClearPendingLink();
 			void NavigateToContent(bool zoomIn = false);
 
 		public:
-			void BeginNode(NodeID id);
+			void BeginNode(GUID guid);
 			void BeginHeader(float4 color = float4(1.0f));
-			void BeginInput(PinId id);
-			void BeginOutput(PinId id);
-			void BeginPin(PinId id, PinIO pinIO);
+			void BeginInput(GUID guid);
+			void BeginOutput(GUID guid);
+			void BeginPin(GUID guid, PinIO pinIO);
 			void Middle();
 			void EndNode();
 			void EndHeader();
@@ -81,7 +82,7 @@ namespace Odyssey
 			{
 				bool HasHeader = false;
 				Stage CurrentStage;
-				NodeID CurrentNodeID;
+				GUID CurrentNodeID;
 				float2 NodeMin;
 				float2 NodeMax;
 				float2 ContentMin;

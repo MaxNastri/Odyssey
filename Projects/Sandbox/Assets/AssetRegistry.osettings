@@ -11,34 +11,10 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/PBR.asset
     GUID: 942766181068811557
-  - Name: Monk FBX Clip
-    Type: Odyssey.AnimationClip
-    Path: 'Animation/Monk-FBX-Clip.asset'
-    GUID: 1480094622537577134
-  - Name: Monk GLTF Clip
-    Type: Odyssey.AnimationClip
-    Path: 'Animation/Monk-GLTF-Clip.asset'
-    GUID: 3096668997398545466
-  - Name: Monk GLTF Mesh
-    Type: Odyssey.Mesh
-    Path: 'Meshes/Monk-GLTF-Mesh.asset'
-    GUID: 6097754839605078965
   - Name: PBR
     Type: Odyssey.Shader
     Path: Shaders/PBR.asset
     GUID: 9634657926911688453
-  - Name: Monk FBX Rig
-    Type: Odyssey.AnimationRig
-    Path: 'Animation/Monk-FBX-Rig.asset'
-    GUID: 11519690897429141827
-  - Name: Monk GLTF Rig
-    Type: Odyssey.AnimationRig
-    Path: 'Animation/Monk-GLTF-Rig.asset'
-    GUID: 13737335248766018432
-  - Name: Monk FBX Mesh
-    Type: Odyssey.Mesh
-    Path: 'Meshes/Monk-FBX.asset'
-    GUID: 13759854750235908315
   - Name: Molten
     Type: Odyssey.Cubemap
     Path: Textures/Skybox/Molten.asset
@@ -77,29 +53,41 @@ Entries:
     GUID: 17785645852077111092
   - Name: Kachujin_diffuse
     Type: Odyssey.SourceTexture
-    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Models/Capoeira.fbm/Kachujin_diffuse.png'
+    Path: Models/Capoeira.fbm/Kachujin_diffuse.png
     GUID: 3391686428449141831
   - Name: Cube
     Type: Odyssey.SourceModel
-    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Models/Cube.fbx'
+    Path: Models/Cube.fbx
     GUID: 9086862285100025922
   - Name: Cube
     Type: Odyssey.Mesh
-    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Meshes/Cube.mesh'
+    Path: Meshes/Cube.mesh
     GUID: 16688031995771648164
   - Name: Monk
     Type: Odyssey.SourceModel
-    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Models/Monk.glb'
+    Path: Models/Monk.glb
     GUID: 4568083940301679466
-  - Name: Monk GLTF2 Clip
+  - Name: Monk Clip
     Type: Odyssey.AnimationClip
-    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/Monk-GLTF-Clip2.asset'
-    GUID: 3950234663794449367
-  - Name: Monk GLTF2 Rig
+    Path: 'Animation/Monk-Clip.asset'
+    GUID: 12740900691695561484
+  - Name: Monk Rig
     Type: Odyssey.AnimationRig
-    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Animation/Monk-GLTF-Rig2.asset'
+    Path: 'Animation/Monk-Rig.asset'
     GUID: 13775651864520599129
-  - Name: Monk GLTF2
+  - Name: Monk Mesh
     Type: Odyssey.Mesh
-    Path: 'C:/Git/Odyssey/Projects/Sandbox/Assets/Meshes/Monk-GLTF-Mesh2.mesh'
+    Path: 'Meshes/Monk-Mesh.mesh'
     GUID: 13511586946249507819
+  - Name: Monk BP
+    Type: Odyssey.AnimationBlueprint
+    Path: Animation/MonkBP.rune
+    GUID: 9242731602216417912
+  - Name: Idle
+    Type: Odyssey.SourceModel
+    Path: Models/Idle.glb
+    GUID: 15444575938032090787
+  - Name: Idle
+    Type: Odyssey.AnimationClip
+    Path: 'Animation/Idle-Clip.asset'
+    GUID: 6316788137749762478

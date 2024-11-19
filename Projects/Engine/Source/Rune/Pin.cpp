@@ -1,11 +1,10 @@
 #include "Pin.h"
-#include "RuneInternal.h"
 #include "imgui.hpp"
 
 namespace Odyssey::Rune
 {
 	Pin::Pin(std::string_view name, PinType type, bool modifiable)
-		: ID(GetNextID()), Name(name), Node(nullptr), IO(PinIO::Input), Type(type), Modifiable(modifiable)
+		: Guid(GUID::New()), Name(name), Node(nullptr), IO(PinIO::Input), Type(type), Modifiable(modifiable)
 	{
 
 	}

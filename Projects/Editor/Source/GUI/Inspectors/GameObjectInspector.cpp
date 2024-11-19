@@ -12,9 +12,11 @@
 #include "AnimatorInspector.h"
 #include "LightInspector.h"
 #include "ParticleEmitterInspector.h"
+#include "ScriptInspector.h"
 
 namespace Odyssey
 {
+	inline static bool s_ComponentsRegistered = false;
 	inline static std::unordered_map<std::string, std::function<void(GameObject&)>> s_AddComponentFuncs;
 	inline static std::map<uint32_t, std::function<std::unique_ptr<Inspector>(GameObject&)>> s_CreateInspectorFuncs;
 
@@ -23,6 +25,7 @@ namespace Odyssey
 	{
 		static_assert(std::is_base_of<Inspector, InspectorType>::value, "InspectorType is not a dervied class of Inspector.");
 
+		// Register an add component function
 		if (!s_AddComponentFuncs.contains(ComponentType::ClassName))
 		{
 			s_AddComponentFuncs[ComponentType::ClassName] = [](GameObject& gameObject)
@@ -30,10 +33,13 @@ namespace Odyssey
 					if (!gameObject.HasComponent<ComponentType>())
 						gameObject.AddComponent<ComponentType>();
 				};
-		}
 
-		if (!s_CreateInspectorFuncs.contains(priority))
-		{
+			// No duplicate priorities
+			if (s_CreateInspectorFuncs.contains(priority))
+			{
+				Log::Warning("[GameObjectInspector] Duplicate priority (" + std::to_string(priority) + " detected for " + ComponentType::ClassName);
+			}
+
 			s_CreateInspectorFuncs[priority] = [](GameObject& gameObject)
 				{
 					if (gameObject.HasComponent<ComponentType>())
@@ -44,17 +50,36 @@ namespace Odyssey
 		}
 	}
 
+	// Helper function for when we want to register at lowest current priority
+	template<typename ComponentType, typename InspectorType>
+	void RegisterComponentType()
+	{
+		static uint32_t lowPri = 0;
+
+		if (!s_CreateInspectorFuncs.empty())
+		{
+			lowPri = std::prev(s_CreateInspectorFuncs.end())->first + 1;
+		}
+
+		RegisterComponentType<ComponentType, InspectorType>(lowPri);
+	}
+
 	GameObjectInspector::GameObjectInspector(GUID guid)
 	{
 		m_Target = SceneManager::GetActiveScene()->GetGameObject(guid);
 
 		// Note: Priority parameter determines the display order
-		RegisterComponentType<Transform, TransformInspector>(0);
-		RegisterComponentType<Camera, CameraInspector>(1);
-		RegisterComponentType<Light, LightInspector>(2);
-		RegisterComponentType<MeshRenderer, MeshRendererInspector>(3);
-		RegisterComponentType<Animator, AnimatorInspector>(4);
-		RegisterComponentType<ParticleEmitter, ParticleEmitterInspector>(5);
+		if (!s_ComponentsRegistered)
+		{
+			RegisterComponentType<Transform, TransformInspector>();
+			RegisterComponentType<Camera, CameraInspector>();
+			RegisterComponentType<Light, LightInspector>();
+			RegisterComponentType<MeshRenderer, MeshRendererInspector>();
+			RegisterComponentType<Animator, AnimatorInspector>();
+			RegisterComponentType<ParticleEmitter, ParticleEmitterInspector>();
+			RegisterComponentType<ScriptComponent, ScriptInspector>();
+			s_ComponentsRegistered = true;
+		}
 
 		CreateInspectors();
 	}
@@ -88,13 +113,6 @@ namespace Odyssey
 			auto kv = std::views::keys(s_AddComponentFuncs);
 			std::vector<std::string> possibleComponents{ kv.begin(), kv.end() };
 
-			auto scriptMetadatas = ScriptingManager::GetAllScriptMetadatas();
-
-			for (auto& metadata : scriptMetadatas)
-			{
-				possibleComponents.push_back(metadata.Name);
-			}
-
 			uint64_t selected = 0;
 
 			for (size_t i = 0; i < possibleComponents.size(); i++)
@@ -103,22 +121,27 @@ namespace Odyssey
 				if (ImGui::Selectable(componentName.c_str()))
 				{
 					selected = i;
+					s_AddComponentFuncs[componentName](m_Target);
+					CreateInspectors();
+				}
+			}
 
-					if (s_AddComponentFuncs.contains(componentName))
-					{
-						s_AddComponentFuncs[componentName](m_Target);
-					}
-					else
+			// No component was selected
+			if (selected == 0)
+			{
+				auto& scriptMetadatas = ScriptingManager::GetAllScriptMetadatas();
+
+				for (auto& [scriptID, metadata] : scriptMetadatas)
+				{
+					if (ImGui::Selectable(metadata.Name.c_str()))
 					{
 						if (!m_Target.HasComponent<ScriptComponent>())
 							m_Target.AddComponent<ScriptComponent>();
 
 						ScriptComponent& script = m_Target.GetComponent<ScriptComponent>();
-						size_t scriptIndex = i - 4;
-						script.SetScriptID(scriptMetadatas[scriptIndex].ScriptID);
+						script.SetScriptID(metadata.ScriptID);
+						CreateInspectors();
 					}
-
-					CreateInspectors();
 				}
 			}
 

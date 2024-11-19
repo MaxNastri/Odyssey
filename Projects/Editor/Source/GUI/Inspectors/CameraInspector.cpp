@@ -11,6 +11,7 @@ namespace Odyssey
 
 		if (Camera* camera = m_GameObject.TryGetComponent<Camera>())
 		{
+			m_CameraEnabled = camera->IsEnabled();
 			m_FieldOfViewDrawer = FloatDrawer("Field of View", camera->GetFieldOfView(),
 				[this](float fov) { OnFieldOfViewChanged(fov); });
 			
@@ -24,12 +25,24 @@ namespace Odyssey
 
 	void CameraInspector::Draw()
 	{
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_CameraEnabled))
+		{
+			if (Camera* camera = m_GameObject.TryGetComponent<Camera>())
+				camera->SetEnabled(m_CameraEnabled);
+		}
+
+		ImGui::SameLine();
+
 		if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			m_FieldOfViewDrawer.Draw();
 			m_NearClipDrawer.Draw();
 			m_FarClipDrawer.Draw();
 		}
+
+		ImGui::PopID();
 	}
 
 	void CameraInspector::OnFieldOfViewChanged(float fov)

@@ -99,13 +99,16 @@ namespace Odyssey
 
 		for (auto& entity : emitterEntities)
 		{
-			// Start the emit compute pass
-			commandBuffer->BeginCommands();
-			commandBuffer->BindComputePipeline(s_EmitComputePipeline);
-
 			// Get the particle emitter
 			GameObject gameObject = GameObject(scene, entity);
 			ParticleEmitter& emitter = gameObject.GetComponent<ParticleEmitter>();
+
+			if (!emitter.IsEnabled())
+				continue;
+
+			// Start the emit compute pass
+			commandBuffer->BeginCommands();
+			commandBuffer->BindComputePipeline(s_EmitComputePipeline);
 
 			if (!s_EntityToResourceIndex.contains(gameObject))
 			{

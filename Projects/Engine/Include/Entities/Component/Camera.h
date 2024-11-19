@@ -9,6 +9,7 @@ namespace Odyssey
 
 	class Camera
 	{
+		CLASS_DECLARATION(Odyssey, Camera)
 	public:
 		Camera() = default;
 		Camera(const GameObject& gameObject);
@@ -21,6 +22,7 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
+		bool IsEnabled() { return m_Enabled; }
 		bool IsMainCamera() { return m_MainCamera; }
 		glm::mat4 GetProjection() { return m_Projection; }
 		glm::mat4 GetInverseProjection() { return m_InverseProjection; }
@@ -29,6 +31,9 @@ namespace Odyssey
 		float GetFieldOfView() { return m_FieldOfView; }
 		float GetNearClip() { return m_NearClip; }
 		float GetFarClip() { return m_FarClip; }
+
+	public:
+		void SetEnabled(bool enabled);
 		void SetFieldOfView(float fov);
 		void SetNearClip(float nearClip);
 		void SetFarClip(float farClip);
@@ -40,6 +45,7 @@ namespace Odyssey
 		void CalculateInverseView();
 
 	private: // Serialized
+		bool m_Enabled = true;
 		float m_FieldOfView = 45.0f;
 		float m_NearClip = 0.1f;
 		float m_FarClip = 1000.0f;
@@ -51,8 +57,7 @@ namespace Odyssey
 		glm::mat4 m_InverseProjection;
 		glm::mat4 m_View;
 		glm::mat4 m_InverseView;
-		float m_Width;
-		float m_Height;
-		CLASS_DECLARATION(Odyssey, Camera)
+		float m_Width = 1920;
+		float m_Height = 1080;
 	};
 }

@@ -4,7 +4,7 @@
 #include "AssetDatabase.h"
 #include "BinaryCache.h"
 #include "GUID.h"
-#include "AssetRegistry.hpp"
+#include "AssetRegistry.h"
 
 namespace Odyssey
 {
@@ -26,7 +26,7 @@ namespace Odyssey
 	class AssetManager
 	{
 	public:
-		static void CreateDatabase(const Path& assetsDirectory, const Path& projectRegistryPath, std::vector<Path>& additionalRegistries);
+		static void CreateDatabase(const Path& assetsDirectory, std::vector<Path>& additionalRegistries);
 
 	public:
 		template<typename T, typename... Args>
@@ -39,12 +39,15 @@ namespace Odyssey
 			std::shared_ptr<T> asset = s_Assets.Add<T>(guid, assetPath, std::forward<Args>(params)...);
 
 			// Set asset data
-			asset->Guid = guid;
+			asset->m_GUID = guid;
 			asset->SetName("Default");
-			asset->SetType(T::Type);
+			asset->m_Type = T::Type;
 
 			// Save to disk
-			asset->Save();
+			if (!assetPath.empty())
+				asset->Save();
+
+			s_AssetDatabase->AddAsset(guid, assetPath, "Default", T::Type, false);
 
 			return asset;
 		}
@@ -76,7 +79,7 @@ namespace Odyssey
 		static std::shared_ptr<T> LoadAsset(const Path& assetPath)
 		{
 			// Convert the path to a guid and load the asset
-			return LoadAsset(s_AssetDatabase->AssetPathToGUID(assetPath));
+			return LoadAsset<T>(s_AssetDatabase->AssetPathToGUID(assetPath));
 		}
 
 		template<typename T>
@@ -103,6 +106,10 @@ namespace Odyssey
 		static GUID PathToGUID(const Path& path);
 		static std::string GUIDToName(GUID guid);
 		static std::string GUIDToAssetType(GUID guid);
+
+	public:
+		static void UpdateAssetName(GUID guid, const std::string& name);
+		static void UpdateAssetPath(GUID guid, const Path& path);
 
 	public:
 		static bool IsSourceAsset(const Path& path);

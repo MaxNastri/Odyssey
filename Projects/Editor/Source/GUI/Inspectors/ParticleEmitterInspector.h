@@ -26,6 +26,7 @@ namespace Odyssey
 		void OnSpeedModified(float2 color);
 
 	private:
+		bool m_EmitterEnabled;
 		GameObject m_GameObject;
 		BoolDrawer m_LoopDrawer;
 		FloatDrawer m_DurationDrawer;

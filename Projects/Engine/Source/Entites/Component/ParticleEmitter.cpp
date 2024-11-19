@@ -16,6 +16,7 @@ namespace Odyssey
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
 		componentNode.WriteData("Type", ParticleEmitter::Type);
+		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Duration", m_Duration);
 		componentNode.WriteData("Material", m_Material.CRef());
 		componentNode.WriteData("Emission Rate", EmissionRate);
@@ -29,6 +30,7 @@ namespace Odyssey
 
 	void ParticleEmitter::Deserialize(SerializationNode& node)
 	{
+		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Duration", m_Duration);
 		node.ReadData("Emission Rate", EmissionRate);
 		node.ReadData("Material", m_Material.Ref());

@@ -1,6 +1,8 @@
 #include "AnimationBlueprint.h"
 #include "AnimationState.h"
 #include "AnimationNodes.h"
+#include "Enum.h"
+#include "AnimationClip.h"
 
 namespace Odyssey
 {
@@ -28,10 +30,268 @@ namespace Odyssey
 
 	void AnimationBlueprint::LoadFromDisk()
 	{
+		AssetDeserializer deserializer(m_AssetPath);
+
+		if (deserializer.IsValid())
+		{
+			SerializationNode root = deserializer.GetRoot();
+
+			SerializationNode propertiesNode = root.GetNode("Properties");
+			assert(propertiesNode.IsSequence());
+
+			for (size_t i = 0; i < propertiesNode.ChildCount(); i++)
+			{
+				SerializationNode propertyNode = propertiesNode.GetChild(i);
+				assert(propertyNode.IsMap());
+
+				auto& animProperty = m_Properties.emplace_back(std::make_shared<AnimationProperty>());
+
+				std::string enumStr;
+				propertyNode.ReadData("Name", animProperty->Name);
+				propertyNode.ReadData("Type", enumStr);
+				animProperty->Type = Enum::ToEnum<AnimationPropertyType>(enumStr);
+
+				m_PropertyMap[animProperty->Name] = animProperty;
+
+				switch (animProperty->Type)
+				{
+					case AnimationPropertyType::Trigger:
+					case AnimationPropertyType::Bool:
+					{
+						bool value = false;
+						propertyNode.ReadData("Value", value);
+
+						animProperty->ValueBuffer.Allocate(sizeof(bool));
+						animProperty->ValueBuffer.Write(&value);
+						break;
+					}
+					case AnimationPropertyType::Float:
+					{
+						float value = 0.0f;
+						propertyNode.ReadData("Value", value);
+
+						animProperty->ValueBuffer.Allocate(sizeof(float));
+						animProperty->ValueBuffer.Write(&value);
+						break;
+					}
+					case AnimationPropertyType::Int:
+					{
+						int32_t value = 0;
+						propertyNode.ReadData("Value", value);
+
+						animProperty->ValueBuffer.Allocate(sizeof(int32_t));
+						animProperty->ValueBuffer.Write(&value);
+						break;
+					}
+					default:
+						break;
+				}
+			}
+
+			SerializationNode statesNode = root.GetNode("Animation States");
+			assert(statesNode.IsSequence());
+
+			for (size_t i = 0; i < statesNode.ChildCount(); i++)
+			{
+				SerializationNode stateNode = statesNode.GetChild(i);
+				assert(stateNode.IsMap());
+
+				float2 nodePos = float2(0.0f);
+				GUID nodeGUID;
+				GUID clipGUID;
+				std::string stateName;
+
+				stateNode.ReadData("GUID", nodeGUID.Ref());
+				stateNode.ReadData("Name", stateName);
+				stateNode.ReadData("Clip", clipGUID.Ref());
+				stateNode.ReadData("Position", nodePos);
+
+				auto state = std::make_shared<AnimationState>(nodeGUID, stateName, clipGUID);
+				auto node = AddNode<AnimationStateNode>(nodeGUID, stateName, state);
+				node->SetInitialPosition(nodePos);
+
+				if (!m_CurrentState)
+					m_CurrentState = state;
+
+				m_States[node->Guid] = state;
+			}
+
+			SerializationNode linksNode = root.GetNode("Animation Links");
+			assert(linksNode.IsSequence());
+
+			for (size_t i = 0; i < linksNode.ChildCount(); i++)
+			{
+				SerializationNode linkNode = linksNode.GetChild(i);
+				assert(linkNode.IsMap());
+
+				GUID beginGUID;
+				GUID endGUID;
+				std::string propertyName;
+				std::string comparisonName;
+				RawBuffer valueBuffer;
+
+				linkNode.ReadData("Begin State", beginGUID.Ref());
+				linkNode.ReadData("End State", endGUID.Ref());
+				linkNode.ReadData("Property", propertyName);
+				linkNode.ReadData("Comparison", comparisonName);
+
+				auto& beginState = m_States[beginGUID];
+				auto& endState = m_States[endGUID];
+				auto& property = m_PropertyMap[propertyName];
+				ComparisonOp comparisonOp = Enum::ToEnum<ComparisonOp>(comparisonName);
+
+				switch (property->Type)
+				{
+					case AnimationPropertyType::Trigger:
+					case AnimationPropertyType::Bool:
+					{
+						bool value = false;
+						linkNode.ReadData("Value", value);
+
+						valueBuffer.Allocate(sizeof(bool));
+						valueBuffer.Write(&value);
+						break;
+					}
+					case AnimationPropertyType::Float:
+					{
+						float value = 0.0f;
+						linkNode.ReadData("Value", value);
+
+						valueBuffer.Allocate(sizeof(float));
+						valueBuffer.Write(&value);
+						break;
+					}
+					case AnimationPropertyType::Int:
+					{
+						int32_t value = 0;
+						linkNode.ReadData("Value", value);
+
+						valueBuffer.Allocate(sizeof(int32_t));
+						valueBuffer.Write(&value);
+						break;
+					}
+					default:
+						break;
+				}
+
+				m_StateToLinks[beginState].push_back(std::make_shared<AnimationLink>(beginState, endState, property, comparisonOp, valueBuffer));
+
+				// Add a link between the start/end nodes
+				Node* beginNode = FindNode(beginGUID);
+				Node* endNode = FindNode(endGUID);
+				AddLink(&(beginNode->Outputs[0]), &(endNode->Inputs[0]));
+			}
+		}
 	}
 
 	void AnimationBlueprint::SaveToDisk(const Path& assetPath)
 	{
+		if (assetPath.empty())
+			return;
+
+		AssetSerializer serializer;
+		SerializationNode root = serializer.GetRoot();
+
+		// Serialize the asset metadata first
+		SerializeMetadata(serializer);
+
+		SerializationNode propertiesNode = root.CreateSequenceNode("Properties");
+		for (auto& property : m_Properties)
+		{
+			SerializationNode propertyNode = propertiesNode.AppendChild();
+			propertyNode.SetMap();
+
+			std::string_view typeName = Enum::ToString<AnimationPropertyType>(property->Type);
+			propertyNode.WriteData("Name", property->Name);
+			propertyNode.WriteData("Type", typeName);
+
+			switch (property->Type)
+			{
+				case AnimationPropertyType::Trigger:
+				case AnimationPropertyType::Bool:
+				{
+					bool value = property->ValueBuffer.Read<bool>();
+					propertyNode.WriteData("Value", value);
+					break;
+				}
+				case AnimationPropertyType::Float:
+				{
+					float value = property->ValueBuffer.Read<float>();
+					propertyNode.WriteData("Value", value);
+					break;
+				}
+				case AnimationPropertyType::Int:
+				{
+					int32_t value = property->ValueBuffer.Read<int32_t>();
+					propertyNode.WriteData("Value", value);
+					break;
+				}
+				default:
+					break;
+			}
+		}
+
+		SerializationNode statesNode = root.CreateSequenceNode("Animation States");
+		for (auto& [nodeGUID, state] : m_States)
+		{
+			SerializationNode stateNode = statesNode.AppendChild();
+			stateNode.SetMap();
+
+			GUID clipGUID = state->GetClip()->GetGUID();
+			float2 nodePos = ImguiExt::GetNodePosition((uint64_t)nodeGUID);
+
+			stateNode.WriteData("GUID", (uint64_t)nodeGUID);
+			stateNode.WriteData("Name", state->GetName());
+			stateNode.WriteData("Clip", clipGUID);
+			stateNode.WriteData("Position", nodePos);
+		}
+
+		SerializationNode linksNode = root.CreateSequenceNode("Animation Links");
+		for (auto& [animState, animLinks] : m_StateToLinks)
+		{
+			for (std::shared_ptr<AnimationLink> animLink : animLinks)
+			{
+				SerializationNode linkNode = linksNode.AppendChild();
+				linkNode.SetMap();
+
+				GUID beginState = animLink->GetBeginState()->GetGUID();
+				GUID endState = animLink->GetEndState()->GetGUID();
+				std::shared_ptr<AnimationProperty> linkProperty = animLink->GetProperty();
+
+				std::string_view comparison = Enum::ToString<ComparisonOp>(animLink->GetComparisonOp());
+				linkNode.WriteData("Begin State", beginState.CRef());
+				linkNode.WriteData("End State", endState.CRef());
+				linkNode.WriteData("Property", linkProperty->Name);
+				linkNode.WriteData("Comparison", comparison);
+
+				switch (linkProperty->Type)
+				{
+					case AnimationPropertyType::Trigger:
+					case AnimationPropertyType::Bool:
+					{
+						bool value = linkProperty->ValueBuffer.Read<bool>();
+						linkNode.WriteData("Value", value);
+						break;
+					}
+					case AnimationPropertyType::Float:
+					{
+						float value = linkProperty->ValueBuffer.Read<float>();
+						linkNode.WriteData("Value", value);
+						break;
+					}
+					case AnimationPropertyType::Int:
+					{
+						int32_t value = linkProperty->ValueBuffer.Read<int32_t>();
+						linkNode.WriteData("Value", value);
+						break;
+					}
+					default:
+						break;
+				}
+			}
+		}
+
+		serializer.WriteToDisk(assetPath);
 	}
 
 	void AnimationBlueprint::Update()
@@ -39,18 +299,42 @@ namespace Odyssey
 		ClearTriggers();
 	}
 
-	void AnimationBlueprint::AddAnimationState(std::string name)
+	const std::map<std::string, BlendKey>& AnimationBlueprint::GetKeyframe()
 	{
-		auto state = std::make_shared<AnimationState>();
-		auto node = AddNode<AnimationStateNode>(name, state);
+		if (m_StateToLinks.contains(m_CurrentState))
+		{
+			auto& links = m_StateToLinks[m_CurrentState];
 
-		m_States[node->ID] = state;
+			for (auto& animationLink : links)
+			{
+				if (animationLink->Evaluate())
+				{
+					m_CurrentState = animationLink->GetEndState();
+					break;
+				}
+			}
+		}
+
+		return m_CurrentState->Evaluate();
 	}
 
-	std::shared_ptr<AnimationState> AnimationBlueprint::GetAnimationState(NodeID nodeID)
+	std::shared_ptr<AnimationStateNode> AnimationBlueprint::AddAnimationState(std::string name)
 	{
-		if (m_States.contains(nodeID))
-			return m_States[nodeID];
+		auto state = std::make_shared<AnimationState>(name);
+		auto node = AddNode<AnimationStateNode>(name, state);
+
+		m_States[node->Guid] = state;
+
+		if (!m_CurrentState)
+			m_CurrentState = state;
+
+		return std::static_pointer_cast<AnimationStateNode>(node);
+	}
+
+	std::shared_ptr<AnimationState> AnimationBlueprint::GetAnimationState(GUID nodeGUID)
+	{
+		if (m_States.contains(nodeGUID))
+			return m_States[nodeGUID];
 
 		return nullptr;
 	}
@@ -101,13 +385,16 @@ namespace Odyssey
 		return false;
 	}
 
-	void AnimationBlueprint::OnNodeAdded(std::shared_ptr<Node> node)
+	void AnimationBlueprint::AddAnimationLink(GUID startNode, GUID endNode, int32_t propertyIndex, ComparisonOp comparisonOp, RawBuffer& propertyValue)
 	{
-		auto state = std::make_shared<AnimationState>();
-		if (auto animationStateNode = std::static_pointer_cast<AnimationStateNode>(node))
-			animationStateNode->SetAnimationState(state);
+		if (m_States.contains(startNode) && m_States.contains(endNode))
+		{
+			auto startState = m_States[startNode];
+			auto endState = m_States[endNode];
+			auto animProperty = m_Properties[propertyIndex];
 
-		m_States[node->ID] = state;
+			m_StateToLinks[startState].push_back(std::make_shared<AnimationLink>(startState, endState, animProperty, comparisonOp, propertyValue));
+		}
 	}
 
 	void AnimationBlueprint::ClearTriggers()
@@ -121,10 +408,5 @@ namespace Odyssey
 				property->ValueBuffer.Write(&clearTrigger);
 			}
 		}
-	}
-
-	void AnimationBlueprint::EvalulateGraph()
-	{
-
 	}
 }

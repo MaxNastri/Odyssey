@@ -455,12 +455,11 @@ namespace Odyssey
 
 	void GLTFAssetImporter::LoadRigData(const Model* model)
 	{
-		m_RigData.GlobalMatrix = glm::scale(glm::identity<mat4>(), glm::vec3(m_Settings.Scale, m_Settings.Scale, m_Settings.Scale));
+		m_RigData.ScaleOffset = glm::scale(mat4(1.0f), glm::vec3(m_Settings.Scale));
 
 		if (m_Settings.ConvertLH)
 		{
-			glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0, 1, 0));
-			m_RigData.GlobalMatrix = rotation * m_RigData.GlobalMatrix;
+			m_RigData.RotationOffset = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0, 1, 0));
 		}
 
 		for (size_t s = 0; s < model->skins.size(); s++)

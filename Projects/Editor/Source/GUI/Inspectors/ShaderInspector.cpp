@@ -12,7 +12,7 @@ namespace Odyssey
 			m_GUIDDrawer = StringDrawer("GUID", m_Shader->GetGUID().String(), nullptr, true);
 			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(),
 				[this](std::string_view name) { OnNameChanged(name); });
-			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSoureAsset(), SourceShader::Type,
+			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSourceAsset(), SourceShader::Type,
 				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
 		}
 	}

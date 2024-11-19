@@ -52,6 +52,11 @@ Dependencies = {
 		LibDir = "%{wks.location}/Vendor/GLFW/bin/%{cfg.buildcfg}/",
 		IncludeDir = "%{wks.location}/Vendor/GLFW",
 	},
+	JoltPhysics = {
+		LibName = "JoltPhysics",
+		LibDir = "%{wks.location}/Vendor/Jolt/bin/%{cfg.buildcfg}/JoltPhysics",
+		IncludeDir = "%{wks.location}/Vendor/Jolt/JoltPhysics",
+	},
 	EFSW = {
 		LibName = "efsw-static",
 		DebugLibName = "efsw-static-debug",

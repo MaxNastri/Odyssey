@@ -45,7 +45,7 @@ namespace Odyssey
 					m_Lock.Lock(LockState::Write);
 					m_WaitingCallbacks.push_back([this, fileAction]() { m_Options.Callback(fileAction.Filename, (FileActionType)fileAction.Action); });
 					m_Lock.Unlock(LockState::Write);
-				}	
+				}
 			}
 		}
 		else if (m_TrackingMode == TrackingMode::Directory)
@@ -74,16 +74,9 @@ namespace Odyssey
 
 			if (m_Options.Callback && (isDirectory || extensionMatch))
 			{
-				Path fullpath = fileAction.Directory / fileAction.Filename;
-				if (!isDirectory && fileAction.Action == efsw::Action::Add && std::filesystem::file_size(fullpath) == 0)
-					return;
-
-				if (m_Options.Callback)
-				{
-					m_Lock.Lock(LockState::Write);
-					m_WaitingCallbacks.push_back([this, fileAction]() { m_Options.Callback(fileAction.Filename, (FileActionType)fileAction.Action); });
-					m_Lock.Unlock(LockState::Write);
-				}
+				m_Lock.Lock(LockState::Write);
+				m_WaitingCallbacks.push_back([this, fileAction]() { m_Options.Callback(fileAction.Filename, (FileActionType)fileAction.Action); });
+				m_Lock.Unlock(LockState::Write);
 			}
 		}
 	}

@@ -3,7 +3,7 @@
 #include "Renderer.h"
 #include "AssetManager.h"
 #include "Texture2D.h"
-#include "Enum.hpp"
+#include "Enum.h"
 #include "Utils.h"
 
 namespace Odyssey::Rune
@@ -17,25 +17,20 @@ namespace Odyssey::Rune
 		ImguiExt::Config config;
 		config.SettingsFile = "Blueprints.json";
 		config.UserPointer = m_Blueprint;
-		config.LoadNodeSettings = [](ImguiExt::NodeId nodeId, char* data, void* userPointer)
-			{
-				auto blueprint = static_cast<Blueprint*>(userPointer);
-				return blueprint->LoadNodeSettings(nodeId.Get(), data);
-			};
-		config.SaveNodeSettings = [](ImguiExt::NodeId nodeId, const char* data, size_t size, ImguiExt::SaveReasonFlags reason, void* userPointer)
-			{
-				Blueprint* blueprint = static_cast<Blueprint*>(userPointer);
-				return blueprint->SaveNodeSettings(nodeId.Get(), data, size);
-			};
 
 		// Create the editor and set it as the current
 		m_Context = ImguiExt::CreateEditor(&config);
 		ImguiExt::SetCurrentEditor(m_Context);
 
+		for (auto& node : blueprint->m_Nodes)
+		{
+			ImguiExt::SetNodePosition((uint64_t)node->Guid, node->GetInitialPosition());
+		}
+
 		// Navigate to the node editor
 		ImguiExt::NavigateToContent();
 
-		// Init the drawing staet
+		// Init the drawing state
 		m_DrawingState.CurrentNodeID = 0;
 		m_DrawingState.CurrentStage = Stage::Invalid;
 
@@ -79,7 +74,7 @@ namespace Odyssey::Rune
 		for (Link& link : links)
 		{
 			ImColor color = ImColor(link.Color.r, link.Color.g, link.Color.b, 1.0f);
-			ImguiExt::Link(link.ID, link.StartPinID, link.EndPinID, color, 2.0f);
+			ImguiExt::Link(link.Guid.CRef(), link.StartPinGUID.CRef(), link.EndPinGUID.CRef(), color, 2.0f);
 		}
 
 		if (!m_DrawingState.CreatingNewNode)
@@ -139,14 +134,15 @@ namespace Odyssey::Rune
 	{
 		// End the node editor
 		ImguiExt::End();
-		ImguiExt::SetCurrentEditor(nullptr);
+		//ImguiExt::SetCurrentEditor(nullptr);
 	}
 
 	void BlueprintBuilder::ConnectNewNode(Node* node)
 	{
 		ImguiExt::SetCurrentEditor(m_Context);
 
-		node->SetPosition(m_DrawingState.MousePos);
+		node->SetInitialPosition(m_DrawingState.MousePos);
+		ImguiExt::SetNodePosition((uint64_t)node->Guid, m_DrawingState.MousePos);
 
 		Pin* startPin = m_DrawingState.NewNodeLinkPin;
 
@@ -184,6 +180,19 @@ namespace Odyssey::Rune
 		ImguiExt::SetCurrentEditor(nullptr);
 	}
 
+	bool BlueprintBuilder::GetPendingLinkNodes(GUID& startNode, GUID& endNode)
+	{
+		if (m_DrawingState.PendingStartPin && m_DrawingState.PendingStartPin->Node &&
+			m_DrawingState.PendingEndPin && m_DrawingState.PendingEndPin->Node)
+		{
+			startNode = m_DrawingState.PendingStartPin->Node->Guid;
+			endNode = m_DrawingState.PendingEndPin->Node->Guid;
+			return true;
+		}
+
+		return false;
+	}
+
 	void BlueprintBuilder::ConfirmPendingLink()
 	{
 		m_Blueprint->AddLink(m_DrawingState.PendingStartPin, m_DrawingState.PendingEndPin);
@@ -200,17 +209,17 @@ namespace Odyssey::Rune
 		ImguiExt::NavigateToContent(zoomIn);
 	}
 
-	void BlueprintBuilder::BeginNode(NodeID id)
+	void BlueprintBuilder::BeginNode(GUID guid)
 	{
 		m_DrawingState.HasHeader = false;
 		m_Header.Min = m_Header.Max = float2(0.0f);
 
 		ImguiExt::PushStyleVar(ImguiExt::StyleVar_NodePadding, ImVec4(8, 4, 8, 8));
 
-		ImguiExt::BeginNode(id);
+		ImguiExt::BeginNode(guid.CRef());
 
-		ImGui::PushID((int32_t)id);
-		m_DrawingState.CurrentNodeID = id;
+		ImGui::PushID((int32_t)guid.CRef());
+		m_DrawingState.CurrentNodeID = guid;
 
 		SetStage(Stage::Begin);
 	}
@@ -221,7 +230,7 @@ namespace Odyssey::Rune
 		SetStage(Stage::Header);
 	}
 
-	void BlueprintBuilder::BeginInput(PinId id)
+	void BlueprintBuilder::BeginInput(GUID guid)
 	{
 		if (m_DrawingState.CurrentStage == Stage::Begin)
 			SetStage(Stage::Content);
@@ -233,12 +242,12 @@ namespace Odyssey::Rune
 		if (applyPadding)
 			ImGui::Spring(0);
 
-		BeginPin(id, PinIO::Input);
+		BeginPin(guid, PinIO::Input);
 
-		ImGui::BeginHorizontal((int32_t)id);
+		ImGui::BeginHorizontal((int32_t)guid.CRef());
 	}
 
-	void BlueprintBuilder::BeginOutput(PinId id)
+	void BlueprintBuilder::BeginOutput(GUID guid)
 	{
 		if (m_DrawingState.CurrentStage == Stage::Begin)
 			SetStage(Stage::Content);
@@ -250,14 +259,14 @@ namespace Odyssey::Rune
 		if (applyPadding)
 			ImGui::Spring(0);
 
-		BeginPin(id, PinIO::Output);
+		BeginPin(guid, PinIO::Output);
 
-		ImGui::BeginHorizontal((int32_t)id);
+		ImGui::BeginHorizontal((int32_t)guid.CRef());
 	}
 
-	void BlueprintBuilder::BeginPin(PinId id, PinIO pinIO)
+	void BlueprintBuilder::BeginPin(GUID guid, PinIO pinIO)
 	{
-		ImguiExt::BeginPin(id, pinIO == PinIO::Input ? ImguiExt::PinKind::Input : ImguiExt::PinKind::Output);
+		ImguiExt::BeginPin(guid.CRef(), pinIO == PinIO::Input ? ImguiExt::PinKind::Input : ImguiExt::PinKind::Output);
 	}
 
 	void BlueprintBuilder::Middle()
@@ -280,7 +289,7 @@ namespace Odyssey::Rune
 			int32_t alpha = (int32_t)(255 * ImGui::GetStyle().Alpha);
 			ImColor headerColor = ImColor(m_Header.Color.r, m_Header.Color.g, m_Header.Color.b, m_Header.Color.a);
 
-			ImDrawList* drawList = ImguiExt::GetNodeBackgroundDrawList(m_DrawingState.CurrentNodeID);
+			ImDrawList* drawList = ImguiExt::GetNodeBackgroundDrawList(m_DrawingState.CurrentNodeID.CRef());
 
 			if ((m_Header.Max.x > m_Header.Min.x) && (m_Header.Max.y > m_Header.Min.y) && m_Header.Texture)
 			{
@@ -563,7 +572,7 @@ namespace Odyssey::Rune
 
 			if (node)
 			{
-				ImGui::Text("ID: %d3", node->ID);
+				ImGui::Text("ID: %d3", node->Guid);
 				ImGui::Text("Name: %s", node->Name);
 				ImGui::Text("Inputs: %d3", (int)node->Inputs.size());
 				ImGui::Text("Outputs: %d3", (int)node->Outputs.size());
@@ -614,9 +623,9 @@ namespace Odyssey::Rune
 
 			if (link)
 			{
-				ImGui::Text("ID: %d3", link->ID);
-				ImGui::Text("From: %d3", link->StartPinID);
-				ImGui::Text("To: %d3", link->EndPinID);
+				ImGui::Text("ID: %d3", link->Guid);
+				ImGui::Text("From: %d3", link->StartPinGUID);
+				ImGui::Text("To: %d3", link->EndPinGUID);
 			}
 
 			ImGui::Separator();

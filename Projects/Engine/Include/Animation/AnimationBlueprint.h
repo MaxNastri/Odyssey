@@ -2,6 +2,9 @@
 #include "Blueprint.h"
 #include "Asset.h"
 #include "AnimationProperty.hpp"
+#include "BoneKeyframe.hpp"
+#include "RawBuffer.hpp"
+#include "AnimationState.h"
 
 namespace Odyssey
 {
@@ -9,6 +12,8 @@ namespace Odyssey
 
 	struct AnimationProperty;
 	class AnimationState;
+	class AnimationLink;
+	struct AnimationStateNode;
 
 	class AnimationBlueprint : public Blueprint, public Asset
 	{
@@ -29,11 +34,14 @@ namespace Odyssey
 		virtual void Update() override;
 
 	public:
-		void AddAnimationState(std::string name);
+		const std::map<std::string, BlendKey>& GetKeyframe();
+
+	public:
+		std::shared_ptr<AnimationStateNode> AddAnimationState(std::string name);
 
 	public:
 		std::vector<std::shared_ptr<AnimationProperty>>& GetProperties() { return m_Properties; }
-		std::shared_ptr<AnimationState> GetAnimationState(NodeID nodeID);
+		std::shared_ptr<AnimationState> GetAnimationState(GUID nodeGUID);
 
 	public:
 		void AddProperty(std::string_view name, AnimationPropertyType type);
@@ -42,16 +50,17 @@ namespace Odyssey
 		bool SetInt(const std::string& name, int32_t value);
 		bool SetTrigger(const std::string& name);
 
-	protected:
-		virtual void OnNodeAdded(std::shared_ptr<Node> node) override;
+	public:
+		void AddAnimationLink(GUID startNode, GUID endNode, int32_t propertyIndex, ComparisonOp comparisonOp, RawBuffer& propertyValue);
 
 	private:
 		void ClearTriggers();
-		void EvalulateGraph();
 
 	private:
 		std::vector<std::shared_ptr<AnimationProperty>> m_Properties;
 		std::unordered_map<std::string, std::shared_ptr<AnimationProperty>> m_PropertyMap;
-		std::unordered_map<NodeID, std::shared_ptr<AnimationState>> m_States;
+		std::map<GUID, std::shared_ptr<AnimationState>> m_States;
+		std::map<std::shared_ptr<AnimationState>, std::vector<std::shared_ptr<AnimationLink>>> m_StateToLinks;
+		std::shared_ptr<AnimationState> m_CurrentState;
 	};
 }

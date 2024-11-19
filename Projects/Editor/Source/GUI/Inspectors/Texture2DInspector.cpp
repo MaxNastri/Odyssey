@@ -13,7 +13,7 @@ namespace Odyssey
 			m_NameDrawer = StringDrawer("Name", m_Texture->GetName(),
 				[this](std::string_view name) { OnNameChanged(name); });
 			m_TypeDrawer = StringDrawer("Type", m_Texture->GetType(), nullptr, true);
-			m_SourceAssetDrawer = AssetFieldDrawer("Source Asset", m_Texture->GetSoureAsset(), SourceTexture::Type,
+			m_SourceAssetDrawer = AssetFieldDrawer("Source Asset", m_Texture->GetSourceAsset(), SourceTexture::Type,
 				[this](GUID sourceGUID) { OnSourceAssetchanged(sourceGUID); });
 		}
 	}
