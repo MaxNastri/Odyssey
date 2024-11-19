@@ -59,6 +59,7 @@ namespace Odyssey
 			}
 		}
 	private:
+		bool m_ScriptEnabled;
 		GameObject m_GameObject;
 		std::string displayName;
 		std::vector<std::shared_ptr<PropertyDrawer>> drawers;

@@ -12,6 +12,8 @@ namespace Odyssey
 
 		if (ScriptComponent* scriptComponent = m_GameObject.TryGetComponent<ScriptComponent>())
 		{
+			m_ScriptEnabled = scriptComponent->IsEnabled();
+
 			ScriptMetadata& metadata = ScriptingManager::GetScriptMetadata(scriptComponent->GetScriptID());
 			displayName = metadata.Name;
 
@@ -28,19 +30,31 @@ namespace Odyssey
 
 	void ScriptInspector::Draw()
 	{
-		if (ImGui::CollapsingHeader(("Script - " + displayName).c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_ScriptEnabled))
+		{
+			if (ScriptComponent* script = m_GameObject.TryGetComponent<ScriptComponent>())
+				script->SetEnabled(m_ScriptEnabled);
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader(("Script Component: " + displayName).c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			for (const auto& drawer : drawers)
 				drawer->Draw();
 		}
+
+		ImGui::PopID();
 	}
 
 	void ScriptInspector::UpdateFields()
 	{
 		drawers.clear();
-		if (ScriptComponent* userScript = m_GameObject.TryGetComponent<ScriptComponent>())
+		if (ScriptComponent* script = m_GameObject.TryGetComponent<ScriptComponent>())
 		{
-			InitializeDrawers(userScript);
+			InitializeDrawers(script);
 		}
 	}
 

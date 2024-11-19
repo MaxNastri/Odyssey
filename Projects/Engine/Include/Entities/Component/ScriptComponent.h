@@ -20,10 +20,17 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
+		void SetEnabled(bool enabled);
 		void SetScriptID(uint32_t scriptID);
-		uint32_t GetScriptID() { return m_ScriptID; }
 		void SetManagedHandle(ManagedHandle handle) { m_Handle = handle; }
+
+	public:
+		bool IsEnabled() { return m_Enabled; }
+		uint32_t GetScriptID() { return m_ScriptID; }
+
+	public:
 		void ClearManagedHandle() { m_Handle.Clear(); }
+
 	private:
 		void SerializeNativeTypes(SerializationNode& node, FieldStorage& storage);
 		bool SerializeNativeString(SerializationNode& node, FieldStorage& storage);
@@ -31,7 +38,7 @@ namespace Odyssey
 		bool DeserializeNativeString(SerializationNode& node, FieldStorage& storage);
 
 	private:
-		FileID m_FileID;
+		bool m_Enabled = true;
 		uint32_t m_ScriptID;
 		GameObject m_GameObject;
 		ManagedHandle m_Handle;
