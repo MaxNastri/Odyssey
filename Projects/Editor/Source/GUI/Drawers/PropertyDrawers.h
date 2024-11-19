@@ -2,6 +2,7 @@
 #include "GUIElement.h"
 #include "GUID.h"
 #include "imgui.h"
+#include "EditorWidgets.h"
 
 namespace Odyssey
 {
@@ -122,6 +123,45 @@ namespace Odyssey
 		std::vector<GUID> m_PossibleGUIDs;
 	};
 
+	template<typename T>
+	class EnumDrawer : public PropertyDrawer
+	{
+	public:
+		EnumDrawer() = default;
+		EnumDrawer(std::string_view label, T initialValue, std::function<void(T)> callback)
+			: m_EnumMenu(initialValue)
+		{
+			m_Label = label;
+			m_OnValueModified = callback;
+		}
+
+	public:
+		virtual void Draw() override
+		{
+			ImGui::PushID(this);
+
+			if (ImGui::BeginTable("##Table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
+			{
+				ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
+				ImGui::TableNextColumn();
+				ImGui::TextUnformatted(m_Label.data());
+				ImGui::TableNextColumn();
+				ImGui::PushItemWidth(-0.01f);
+
+				if (m_EnumMenu.Draw())
+					m_OnValueModified(m_EnumMenu.GetValue());
+
+				ImGui::EndTable();
+			}
+
+			ImGui::PopID();
+		}
+
+	private:
+		std::function<void(T)> m_OnValueModified;
+		EnumComboMenu<T> m_EnumMenu;
+	};
+
 	class FloatDrawer : public PropertyDrawer
 	{
 	public:
@@ -137,7 +177,6 @@ namespace Odyssey
 		float stepFast = 0.0f;
 		float data;
 	};
-
 
 	template <typename T>
 	class IntDrawer : public PropertyDrawer
@@ -210,7 +249,6 @@ namespace Odyssey
 		T data;
 		bool m_ReadOnly = false;
 	};
-
 
 	class RangeSlider : public PropertyDrawer
 	{

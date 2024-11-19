@@ -1,5 +1,6 @@
 #include "Light.h"
 #include "Transform.h"
+#include "Enum.hpp"
 
 namespace Odyssey
 {
@@ -14,7 +15,8 @@ namespace Odyssey
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
 		componentNode.WriteData("Type", Light::Type);
-		componentNode.WriteData("Light Type", (uint32_t)m_Type);
+		componentNode.WriteData("Enabled", m_Enabled);
+		componentNode.WriteData("Light Type", Enum::ToString<LightType>(m_Type));
 		componentNode.WriteData("Color", m_Color);
 		componentNode.WriteData("Intensity", m_Intensity);
 		componentNode.WriteData("Range", m_Range);
@@ -22,13 +24,14 @@ namespace Odyssey
 
 	void Light::Deserialize(SerializationNode& node)
 	{
-		uint32_t lightType = 0;
+		std::string lightType;
+		node.ReadData("Enable", m_Enabled);
 		node.ReadData("Light Type", lightType);
 		node.ReadData("Color", m_Color);
 		node.ReadData("Intensity", m_Intensity);
 		node.ReadData("Range", m_Range);
 
-		m_Type = (LightType)lightType;
+		m_Type = Enum::ToEnum<LightType>(lightType);
 	}
 
 	glm::vec3 Light::GetPosition()

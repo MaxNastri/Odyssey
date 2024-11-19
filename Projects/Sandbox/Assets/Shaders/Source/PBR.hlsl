@@ -81,9 +81,9 @@ SkinningOutput SkinVertex(VertexInput input)
 }
 
 #pragma Fragment
-#define DIRECTIONAL_LIGHT 1
-#define POINT_LIGHT 2
-#define SPOT_LIGHT 3
+#define DIRECTIONAL_LIGHT 0
+#define POINT_LIGHT 1
+#define SPOT_LIGHT 2
 
 struct PixelInput
 {

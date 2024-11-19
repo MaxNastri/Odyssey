@@ -134,14 +134,17 @@ namespace Odyssey
 			GameObject gameObject = GameObject(scene, entity);
 			Light& light = gameObject.GetComponent<Light>();
 
-			SceneLight& sceneLight = LightingData.SceneLights[LightingData.LightCount];
-			sceneLight.Type = (uint32_t)light.GetType();
-			sceneLight.Position = glm::vec4(light.GetPosition(), 1.0f);
-			sceneLight.Direction = glm::vec4(light.GetDirection(), 1.0f);
-			sceneLight.Color = glm::vec4(light.GetColor(), 1.0f);
-			sceneLight.Intensity = light.GetIntensity();
-			sceneLight.Range = light.GetRange();
-			LightingData.LightCount++;
+			if (light.IsEnabled())
+			{
+				SceneLight& sceneLight = LightingData.SceneLights[LightingData.LightCount];
+				sceneLight.Type = (uint32_t)light.GetType();
+				sceneLight.Position = glm::vec4(light.GetPosition(), 1.0f);
+				sceneLight.Direction = glm::vec4(light.GetDirection(), 1.0f);
+				sceneLight.Color = glm::vec4(light.GetColor(), 1.0f);
+				sceneLight.Intensity = light.GetIntensity();
+				sceneLight.Range = light.GetRange();
+				LightingData.LightCount++;
+			}
 		}
 
 		// Set the ambient color from the environment settings

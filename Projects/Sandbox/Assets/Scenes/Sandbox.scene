@@ -30,7 +30,7 @@ GameObjects:
         Rotation: 'x: 0 y: 90 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.Light
-        Light Type: 1
+        Light Type: Directional
         Color: 'x: 0.68327403 y: 0.33798966 z: 0.33798966'
         Intensity: 1
         Range: 1

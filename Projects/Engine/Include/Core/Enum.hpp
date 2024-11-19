@@ -30,8 +30,9 @@ namespace Odyssey::Enum
 	}
 
 	template<typename T>
-	inline auto GetNameSequence()
+	inline std::vector<std::string> GetNameSequence()
 	{
-		return magic_enum::enum_names<T>();
+		auto sequence = magic_enum::enum_names<T>();
+		return std::vector<std::string>(sequence.begin(), sequence.end());
 	}
 }

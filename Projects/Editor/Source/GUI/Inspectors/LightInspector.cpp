@@ -9,8 +9,9 @@ namespace Odyssey
 
 		if (Light* light = m_GameObject.TryGetComponent<Light>())
 		{
-			m_LightTypeDrawer = IntDrawer<uint32_t>("Light Type", (uint32_t)light->GetType(),
-				[this](uint32_t lightType) { OnLightTypeChanged(lightType); });
+			m_LightEnabled = light->IsEnabled();
+			m_LightTypeDrawer = EnumDrawer<LightType>("Light Type", light->GetType(),
+				[this](LightType lightType) { OnLightTypeChanged(lightType); });
 			m_ColorPicker = ColorPicker("Light Color", light->GetColor(),
 				[this](glm::vec3 color) { OnColorChanged(color); });
 			m_IntensityDrawer = FloatDrawer("Light Intensity", light->GetIntensity(),
@@ -21,6 +22,16 @@ namespace Odyssey
 	}
 	void LightInspector::Draw()
 	{
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_LightEnabled))
+		{
+			if (Light* light = m_GameObject.TryGetComponent<Light>())
+				light->SetEnabled(m_LightEnabled);
+		}
+
+		ImGui::SameLine();
+
 		if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			m_LightTypeDrawer.Draw();
@@ -28,11 +39,14 @@ namespace Odyssey
 			m_IntensityDrawer.Draw();
 			m_RangeDrawer.Draw();
 		}
+
+		ImGui::PopID();
 	}
-	void LightInspector::OnLightTypeChanged(uint32_t lightType)
+
+	void LightInspector::OnLightTypeChanged(LightType lightType)
 	{
 		if (Light* light = m_GameObject.TryGetComponent<Light>())
-			light->SetType((LightType)lightType);
+			light->SetType(lightType);
 	}
 
 	void LightInspector::OnColorChanged(glm::vec3 color)
