@@ -115,7 +115,7 @@ namespace Odyssey
 			GameObject gameObject = GameObject(scene, entity);
 			Camera& camera = gameObject.GetComponent<Camera>();
 
-			if (camera.IsMainCamera())
+			if (camera.IsEnabled() && camera.IsMainCamera())
 			{
 				m_MainCamera = &camera;
 				SetCameraData(m_MainCamera);
