@@ -28,7 +28,7 @@ namespace Odyssey
 
 	void UserScriptInspector::Draw()
 	{
-		if (ImGui::CollapsingHeader(displayName.c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader(("Script - " + displayName).c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			for (const auto& drawer : drawers)
 				drawer->Draw();

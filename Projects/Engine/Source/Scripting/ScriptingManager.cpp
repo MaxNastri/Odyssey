@@ -269,11 +269,9 @@ namespace Odyssey
 		return m_ScriptMetdata.at(scriptID);
 	}
 
-	std::vector<ScriptMetadata> ScriptingManager::GetAllScriptMetadatas()
+	const std::map<uint32_t, ScriptMetadata>& ScriptingManager::GetAllScriptMetadatas()
 	{
-		auto valueView = std::views::values(m_ScriptMetdata);
-		std::vector<ScriptMetadata> values{ valueView.begin(), valueView.end() };
-		return values;
+		return m_ScriptMetdata;
 	}
 
 	void ScriptingManager::DestroyInstance(GUID entityGUID)
