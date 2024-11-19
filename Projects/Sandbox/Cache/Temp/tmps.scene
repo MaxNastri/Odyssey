@@ -21,7 +21,7 @@ GameObjects:
         Type: Odyssey.ScriptComponent
         Fields:
           - Name: Target
-            Value: 15322439001782158818
+            Value: 0
           - Name: ScaleDirection
             Value: 'x: 0.001 y: 0.001 z: 0.001'
           - Name: PosDirection

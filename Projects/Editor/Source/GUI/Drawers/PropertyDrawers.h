@@ -114,19 +114,7 @@ namespace Odyssey
 		virtual void Draw() override;
 
 	private:
-		void GeneratePossibleEntities();
-
-	private:
-		struct EntityData
-		{
-		public:
-			std::string GameObjectName;
-			GUID GameObjectGUID;
-		};
-		GUID m_GUID = 0;
-		std::string m_TypeName;
-		uint64_t m_SelectedIndex = 0;
-		std::vector<EntityData> m_Entities;
+		EntityDropdown m_Dropdown;
 		std::function<void(GUID)> m_OnValueModified;
 	};
 
@@ -166,7 +154,7 @@ namespace Odyssey
 
 	private:
 		std::function<void(T)> m_OnValueModified;
-		EnumComboMenu<T> m_EnumMenu;
+		EnumDropdown<T> m_EnumMenu;
 	};
 
 	class FloatDrawer : public PropertyDrawer

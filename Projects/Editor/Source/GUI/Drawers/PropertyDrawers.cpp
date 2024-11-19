@@ -203,12 +203,10 @@ namespace Odyssey
 	}
 
 	EntityFieldDrawer::EntityFieldDrawer(std::string_view label, GUID guid, const std::string& typeName, std::function<void(GUID)> callback)
+		: m_Dropdown(guid, typeName)
 	{
 		m_Label = label;
-		m_GUID = guid;
-		m_TypeName = typeName;
 		m_OnValueModified = callback;
-		GeneratePossibleEntities();
 	}
 
 	void EntityFieldDrawer::Draw()
@@ -218,82 +216,20 @@ namespace Odyssey
 		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 		{
 			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
+
 			ImGui::TableNextColumn();
 			ImGui::TextUnformatted(m_Label.data());
+
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(-0.01f);
 
-			std::string selectedDisplayName = m_Entities[m_SelectedIndex].GameObjectName;
-
-			if (ImGui::BeginCombo("##Empty", selectedDisplayName.c_str()))
-			{
-				for (int32_t i = 0; i < m_Entities.size(); i++)
-				{
-					const bool isSelected = m_SelectedIndex == i;
-					std::string displayName = m_Entities[i].GameObjectName;
-
-					if (ImGui::Selectable(displayName.c_str(), isSelected))
-					{
-						m_SelectedIndex = i;
-
-						if (m_OnValueModified)
-							m_OnValueModified(m_Entities[m_SelectedIndex].GameObjectGUID);
-					}
-
-					if (isSelected)
-						ImGui::SetItemDefaultFocus();
-				}
-				ImGui::EndCombo();
-			}
-
-			if (ImGui::BeginDragDropTarget())
-			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
-				{
-					// Validate typing
-					uint64_t* payloadData = (uint64_t*)payload->Data;
-					m_GUID = GUID(*payloadData);
-					GeneratePossibleEntities();
-
-					if (m_OnValueModified)
-						m_OnValueModified(m_GUID);
-
-					Log::Info("(AssetFieldDrawer) Accepting Entity payload: " + m_GUID.String());
-				}
-				ImGui::EndDragDropTarget();
-			}
+			if (m_Dropdown.Draw() && m_OnValueModified)
+				m_OnValueModified(m_Dropdown.GetEntity());
 
 			ImGui::EndTable();
 		}
 
 		ImGui::PopID();
-	}
-
-	void EntityFieldDrawer::GeneratePossibleEntities()
-	{
-		Scene* scene = SceneManager::GetActiveScene();
-
-		m_Entities.clear();
-
-		m_Entities.push_back({ "None", 0 });
-
-		if (m_TypeName == Transform::Type)
-		{
-			for (auto entity : scene->GetAllEntitiesWith<Transform>())
-			{
-				GameObject gameObject = GameObject(scene, entity);
-
-				// Skip any game objects marked to not show in the hierarchy
-				if (EditorPropertiesComponent* properties = gameObject.TryGetComponent<EditorPropertiesComponent>())
-					if (!properties->ShowInHierarchy)
-						continue;
-
-				m_Entities.push_back({ gameObject.GetName(), gameObject.GetGUID() });
-
-				if (gameObject.GetGUID() == m_GUID)
-					m_SelectedIndex = m_Entities.size() - 1;
-			}
-		}
 	}
 
 	FloatDrawer::FloatDrawer(std::string_view label, float initialValue, std::function<void(float)> callback)

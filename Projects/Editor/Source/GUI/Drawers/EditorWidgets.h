@@ -1,17 +1,17 @@
 #pragma once
 #include "GUIElement.h"
 #include "imgui.h"
-#include "Light.h"
+#include "GUID.h"
 #include "Enum.h"
 
 namespace Odyssey
 {
 	template<typename T>
-	class EnumComboMenu
+	class EnumDropdown
 	{
 	public:
-		EnumComboMenu() = default;
-		EnumComboMenu(T initialValue)
+		EnumDropdown() = default;
+		EnumDropdown(T initialValue)
 		{
 			m_DisplayNames = Enum::GetNameSequence<T>();
 			m_Value = initialValue;
@@ -35,7 +35,7 @@ namespace Odyssey
 
 					if (ImGui::Selectable(name.data(), isSelected))
 					{
-						m_Value = Enum::ToEnum<LightType>(name);
+						m_Value = Enum::ToEnum<T>(name);
 						m_Selected = i;
 						modified = true;
 						break;
@@ -56,5 +56,33 @@ namespace Odyssey
 		T m_Value;
 		std::vector<std::string> m_DisplayNames;
 		size_t m_Selected = 0;
+	};
+
+	class EntityDropdown
+	{
+	public:
+		EntityDropdown(GUID initialValue, const std::string& typeName);
+
+	public:
+		bool Draw();
+
+	public:
+		GUID GetEntity() { return m_SelectedEntity; }
+
+	private:
+		void GeneratePossibleEntities();
+
+	private:
+		struct EntityData
+		{
+		public:
+			std::string GameObjectName;
+			GUID GameObjectGUID;
+		};
+
+		std::string m_TypeName;
+		std::vector<EntityData> m_Entities;
+		GUID m_SelectedEntity;
+		uint64_t m_SelectedIndex = 0;
 	};
 }
