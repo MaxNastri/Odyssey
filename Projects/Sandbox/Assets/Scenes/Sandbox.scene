@@ -12,6 +12,7 @@ GameObjects:
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
+        Enabled: 1
         Duration: 1
         Material: 0
         Emission Rate: 100
@@ -30,6 +31,7 @@ GameObjects:
         Rotation: 'x: 0 y: 90 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.Light
+        Enabled: 1
         Light Type: Directional
         Color: 'x: 0.68327403 y: 0.33798966 z: 0.33798966'
         Intensity: 1
@@ -42,6 +44,7 @@ GameObjects:
         Animation Rig: 13775651864520599129
         Animation Blueprint: 9242731602216417912
       - Type: Odyssey.MeshRenderer
+        Enabled: 1
         m_Mesh: 13511586946249507819
         m_Material: 942766181068811557
       - Type: Odyssey.Transform
@@ -49,6 +52,7 @@ GameObjects:
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
+        Enabled: 1
         Duration: 1
         Material: 831665292157922468
         Emission Rate: 200
@@ -63,6 +67,7 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Camera
+        Enabled: 1
         Field of View: 45
         Near Clip: 0.1
         Far Clip: 1000
@@ -71,8 +76,7 @@ GameObjects:
         Position: 'x: -1 y: 2 z: -2'
         Rotation: 'x: 45 y: 45 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
-      - m_FileID: 3449596229
-        m_ScriptID: 2015860154
+      - m_ScriptID: 2015860154
         Type: Odyssey.ScriptComponent
         Fields:
           - Name: Target

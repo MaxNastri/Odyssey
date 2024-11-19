@@ -28,7 +28,7 @@ namespace Odyssey
 		GUID GetMaterial() { return m_Material; }
 
 	private:
-		bool m_Enabled;
+		bool m_Enabled = true;
 		GameObject m_GameObject;
 		GUID m_Mesh;
 		GUID m_Material;
