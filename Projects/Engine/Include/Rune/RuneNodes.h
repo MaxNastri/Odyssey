@@ -28,7 +28,11 @@ namespace Odyssey::Rune
 		virtual void Draw(BlueprintBuilder* builder, Pin* activeLinkPin) = 0;
 
 	public:
-		void SetPosition(float2 position);
+		float2 GetInitialPosition() { return m_InitialPosition; }
+		void SetInitialPosition(float2 position);
+
+	private:
+		float2 m_InitialPosition;
 	};
 
 	struct BlueprintNode : Node

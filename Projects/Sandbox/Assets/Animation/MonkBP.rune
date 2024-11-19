@@ -17,4 +17,10 @@ Animation States:
   - GUID: 9579378113499642795
     Name: Cap
     Clip: 12740900691695561484
-    Position: 'x: 4 y: 186'
+    Position: 'x: 4 y: 154'
+Animation Links:
+  - Begin State: 6271724127432470386
+    End State: 9579378113499642795
+    Property: Speed
+    Comparison: Greater
+    Value: 0

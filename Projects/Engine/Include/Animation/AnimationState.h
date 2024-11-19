@@ -39,14 +39,18 @@ namespace Odyssey
 		bool Evaluate();
 
 	public:
-		std::shared_ptr<AnimationState> GetEndState() { return m_End; }
+		std::shared_ptr<AnimationState> GetBeginState() { return m_BeginState; }
+		std::shared_ptr<AnimationState> GetEndState() { return m_EndState; }
+		std::shared_ptr<AnimationProperty> GetProperty() { return m_Property; }
+		ComparisonOp GetComparisonOp() { return m_ComparisonOp; }
+		RawBuffer& GetTargetValue() { return m_TargetValue; }
 
 	private:
-		std::shared_ptr<AnimationState> m_Start;
-		std::shared_ptr<AnimationState> m_End;
+		std::shared_ptr<AnimationState> m_BeginState;
+		std::shared_ptr<AnimationState> m_EndState;
 
 		std::shared_ptr<AnimationProperty> m_Property;
-		ComparisonOp m_CompareOp;
+		ComparisonOp m_ComparisonOp;
 		RawBuffer m_TargetValue;
 
 		Link* m_Link;
@@ -57,7 +61,7 @@ namespace Odyssey
 	public:
 		AnimationState() = default;
 		AnimationState(std::string_view name);
-		AnimationState(std::string_view name, GUID animationClip);
+		AnimationState(GUID guid, std::string_view name, GUID animationClip);
 
 	public:
 		const std::map<std::string, BlendKey>& Evaluate();
@@ -67,10 +71,12 @@ namespace Odyssey
 		std::shared_ptr<AnimationClip> GetClip();
 
 	public:
+		GUID GetGUID() { return m_GUID; }
 		void SetClip(GUID guid);
 
 	private:
 		std::shared_ptr<AnimationClip> m_AnimationClip;
 		std::string m_Name;
+		GUID m_GUID;
 	};
 }

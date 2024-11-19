@@ -17,20 +17,15 @@ namespace Odyssey::Rune
 		ImguiExt::Config config;
 		config.SettingsFile = "Blueprints.json";
 		config.UserPointer = m_Blueprint;
-		//config.LoadNodeSettings = [](ImguiExt::NodeId nodeId, char* data, void* userPointer)
-		//	{
-		//		auto blueprint = static_cast<Blueprint*>(userPointer);
-		//		return blueprint->LoadNodeSettings(nodeId.Get(), data);
-		//	};
-		//config.SaveNodeSettings = [](ImguiExt::NodeId nodeId, const char* data, size_t size, ImguiExt::SaveReasonFlags reason, void* userPointer)
-		//	{
-		//		Blueprint* blueprint = static_cast<Blueprint*>(userPointer);
-		//		return blueprint->SaveNodeSettings(nodeId.Get(), data, size);
-		//	};
 
 		// Create the editor and set it as the current
 		m_Context = ImguiExt::CreateEditor(&config);
 		ImguiExt::SetCurrentEditor(m_Context);
+
+		for (auto& node : blueprint->m_Nodes)
+		{
+			ImguiExt::SetNodePosition((uint64_t)node->Guid, node->GetInitialPosition());
+		}
 
 		// Navigate to the node editor
 		ImguiExt::NavigateToContent();
@@ -146,7 +141,8 @@ namespace Odyssey::Rune
 	{
 		ImguiExt::SetCurrentEditor(m_Context);
 
-		node->SetPosition(m_DrawingState.MousePos);
+		node->SetInitialPosition(m_DrawingState.MousePos);
+		ImguiExt::SetNodePosition((uint64_t)node->Guid, m_DrawingState.MousePos);
 
 		Pin* startPin = m_DrawingState.NewNodeLinkPin;
 

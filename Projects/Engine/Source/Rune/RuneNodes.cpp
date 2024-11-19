@@ -15,10 +15,9 @@ namespace Odyssey::Rune
 	{
 	}
 
-	void Node::SetPosition(float2 position)
+	void Node::SetInitialPosition(float2 position)
 	{
-		if (position != float2(0.0f))
-			ImguiExt::SetNodePosition((uint64_t)Guid, position);
+		m_InitialPosition = position;
 	}
 
 	BlueprintNode::BlueprintNode(std::string_view name, float4 color)
