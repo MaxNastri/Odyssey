@@ -3,7 +3,7 @@
 #include "AssetManager.h"
 #include "GUIManager.h"
 #include "Input.h"
-#include "Enum.hpp"
+#include "Enum.h"
 #include "FileDialogs.h"
 #include "AnimationClip.h"
 #include "AnimationState.h"

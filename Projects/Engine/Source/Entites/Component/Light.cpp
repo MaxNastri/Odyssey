@@ -1,6 +1,6 @@
 #include "Light.h"
 #include "Transform.h"
-#include "Enum.hpp"
+#include "Enum.h"
 
 namespace Odyssey
 {

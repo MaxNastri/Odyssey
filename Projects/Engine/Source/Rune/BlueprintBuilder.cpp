@@ -3,7 +3,7 @@
 #include "Renderer.h"
 #include "AssetManager.h"
 #include "Texture2D.h"
-#include "Enum.hpp"
+#include "Enum.h"
 #include "Utils.h"
 
 namespace Odyssey::Rune

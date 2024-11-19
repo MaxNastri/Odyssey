@@ -1,7 +1,7 @@
 #include "AnimationBlueprint.h"
 #include "AnimationState.h"
 #include "AnimationNodes.h"
-#include "Enum.hpp"
+#include "Enum.h"
 #include "AnimationClip.h"
 
 namespace Odyssey

@@ -2,7 +2,7 @@
 #include "GUIElement.h"
 #include "imgui.h"
 #include "Light.h"
-#include "Enum.hpp"
+#include "Enum.h"
 
 namespace Odyssey
 {
