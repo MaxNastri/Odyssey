@@ -9,6 +9,7 @@ namespace Odyssey
 
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
 		{
+			m_EmitterEnabled = emitter->IsEnabled();
 			m_LoopDrawer = BoolDrawer("Loop", emitter->Loop,
 				[this](bool loop) { OnLoopModified(loop); });
 			m_DurationDrawer = FloatDrawer("Duration", emitter->GetDuration(),
@@ -32,6 +33,16 @@ namespace Odyssey
 
 	void ParticleEmitterInspector::Draw()
 	{
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_EmitterEnabled))
+		{
+			if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
+				emitter->SetEnabled(m_EmitterEnabled);
+		}
+
+		ImGui::SameLine();
+
 		if (ImGui::CollapsingHeader("Particle Emitter", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			m_LoopDrawer.Draw();
@@ -44,6 +55,7 @@ namespace Odyssey
 			m_SpeedDrawer.Draw();
 			m_MaterialDrawer.Draw();
 		}
+		ImGui::PopID();
 	}
 
 	void ParticleEmitterInspector::OnLoopModified(bool loop)

@@ -48,18 +48,21 @@ namespace Odyssey
 		if (m_BoneGameObjects.size() == 0)
 			CreateBoneGameObjects();
 
-		if (m_Blueprint)
+		Update();
+	}
+
+	void Animator::Update()
+	{
+		if (m_Enabled && m_Blueprint)
 			ProcessKeys();
 		else
 			ProcessTransforms();
 	}
 
-	void Animator::Update()
+	void Animator::SetEnabled(bool enabled)
 	{
-		if (m_Blueprint)
-			ProcessKeys();
-		else
-			ProcessTransforms();
+		m_Enabled = enabled;
+		ResetToBindpose();
 	}
 
 	void Animator::SetFloat(const std::string& propertyName, float value)
@@ -141,7 +144,6 @@ namespace Odyssey
 
 	void Animator::ProcessKeys()
 	{
-		// Create storage for our bone keys
 		const std::vector<Bone>& bones = m_Rig->GetBones();
 
 		float time = m_Playing ? Time::DeltaTime() : 0.0f;
@@ -156,11 +158,12 @@ namespace Odyssey
 			const std::string& boneName = bones[i].Name;
 			BlendKey& blendKey = boneKeys[boneName];
 
-			auto& transform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
-			transform.SetPosition(blendKey.position);
-			transform.SetRotation(blendKey.rotation);
-			transform.SetScale(blendKey.scale);
-			glm::mat4 key = m_Rig->GetGlobalMatrix() * animatorInverse * transform.GetWorldMatrix();
+			Transform& boneTransform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
+			boneTransform.SetPosition(blendKey.position);
+			boneTransform.SetRotation(blendKey.rotation);
+			boneTransform.SetScale(blendKey.scale);
+
+			glm::mat4 key = m_Rig->GetGlobalMatrix() * animatorInverse * boneTransform.GetWorldMatrix();
 			m_FinalPoses[i] = key * bones[i].InverseBindpose;
 
 			if (m_DebugEnabled)
@@ -170,16 +173,31 @@ namespace Odyssey
 
 	void Animator::ProcessTransforms()
 	{
-		// Create storage for our bone keys
 		const std::vector<Bone>& bones = m_Rig->GetBones();
 
-		double time = m_Playing ? (double)Time::DeltaTime() : 0.0;
+		for (size_t i = 0; i < bones.size(); i++)
+		{
+			const std::string& boneName = bones[i].Name;
+
+			Transform& boneTransform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
+			m_FinalPoses[i] = m_Rig->GetRotationOffset() * boneTransform.GetWorldMatrix();
+		}
+	}
+
+	void Animator::ResetToBindpose()
+	{
+		const std::vector<Bone>& bones = m_Rig->GetBones();
 
 		for (size_t i = 0; i < bones.size(); i++)
-			m_FinalPoses[i] = m_Rig->GetGlobalMatrix();
+		{
+			const std::string& boneName = bones[i].Name;
 
-		if (m_DebugEnabled)
-			DebugDrawBones();
+			Transform& boneTransform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
+			boneTransform.SetLocalMatrix(mat4(1.0f));
+
+			glm::mat4 key = m_Rig->GetRotationOffset() * boneTransform.GetWorldMatrix();
+			m_FinalPoses[i] = key;
+		}
 	}
 
 	void Animator::DebugDrawBones()

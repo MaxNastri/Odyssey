@@ -40,7 +40,8 @@ namespace Odyssey
 	{
 		std::vector<BoneInfluence> ControlPointInfluences;
 		std::unordered_map<std::string, FBXBone> Bones;
-		glm::mat4 GlobalMatrix;
+		glm::mat4 RotationOffset = glm::mat4(1.0f);
+		glm::mat4 ScaleOffset = glm::mat4(1.0f);
 		size_t BoneCount = 0;
 	};
 

@@ -10,6 +10,8 @@ namespace Odyssey
 
 		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
 		{
+			m_AnimatorEnabled = animator->IsEnabled();
+
 			m_RigDrawer = AssetFieldDrawer("Rig", animator->GetRigAsset(), AnimationRig::Type,
 				[this](GUID guid) { OnRigModified(guid); });
 
@@ -23,6 +25,16 @@ namespace Odyssey
 
 	void AnimatorInspector::Draw()
 	{
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_AnimatorEnabled))
+		{
+			if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
+				animator->SetEnabled(m_AnimatorEnabled);
+		}
+
+		ImGui::SameLine();
+
 		if (ImGui::CollapsingHeader("Animator", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			m_RigDrawer.Draw();
@@ -41,6 +53,8 @@ namespace Odyssey
 					animator->Pause();
 			}
 		}
+
+		ImGui::PopID();
 	}
 
 	void AnimatorInspector::OnRigModified(GUID guid)

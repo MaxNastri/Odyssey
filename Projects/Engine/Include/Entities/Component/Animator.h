@@ -27,9 +27,11 @@ namespace Odyssey
 		void Update();
 
 	public:
+		void SetEnabled(bool enabled);
 		void SetFloat(const std::string& propertyName, float value);
 
 	public:
+		bool IsEnabled() { return m_Enabled; }
 		GUID GetRigAsset();
 		GUID GetBlueprintAsset();
 		void SetRig(GUID animationRigGUID);
@@ -44,6 +46,7 @@ namespace Odyssey
 		void DestroyBoneGameObjects();
 		void ProcessKeys();
 		void ProcessTransforms();
+		void ResetToBindpose();
 
 	private:
 		void DebugDrawBones();
@@ -51,6 +54,7 @@ namespace Odyssey
 		void DebugDrawBone(const Bone& bone);
 
 	private:
+		bool m_Enabled;
 		GameObject m_GameObject;
 		std::shared_ptr<AnimationRig> m_Rig;
 		std::shared_ptr<AnimationBlueprint> m_Blueprint;

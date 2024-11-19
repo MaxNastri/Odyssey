@@ -21,6 +21,7 @@ namespace Odyssey
 		void OnDebugEnabledModified(bool enabled);
 
 	private:
+		bool m_AnimatorEnabled;
 		GameObject m_GameObject;
 		AssetFieldDrawer m_RigDrawer;
 		AssetFieldDrawer m_BlueprintDrawer;

@@ -1,5 +1,5 @@
 #pragma once
-#include "ModelAssetImporter.hpp"
+#include "ModelAssetImporter.h"
 
 namespace tinygltf
 {

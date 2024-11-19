@@ -43,7 +43,9 @@ namespace Odyssey
 		m_Bones.clear();
 		m_Bones.resize(boneMap.size());
 
-		m_GlobalMatrix = rigData.GlobalMatrix;
+		m_RotationOffset = rigData.RotationOffset;
+		m_ScaleOffset = rigData.ScaleOffset;
+		m_GlobalMatrix = m_RotationOffset * m_ScaleOffset;
 
 		for (auto& [boneName, bone] : boneMap)
 		{
@@ -66,21 +68,21 @@ namespace Odyssey
 		// Serialize the asset metadata first
 		SerializeMetadata(serializer);
 
-		root.WriteData("Root Bone", m_RootBone);
-		root.WriteData("Global Matrix", m_GlobalMatrix);
-		root.WriteData("Bone Count", m_Bones.size());
-
-		SerializationNode bonesNode = root.CreateSequenceNode("Bones");
-		
-		for (auto& bone : m_Bones)
-		{
-			SerializationNode boneNode = bonesNode.AppendChild();
-			boneNode.SetMap();
-			boneNode.WriteData("Name", bone.Name);
-			boneNode.WriteData("Index", bone.Index);
-			boneNode.WriteData("Parent Index", bone.ParentIndex);
-			boneNode.WriteData("Inverse Bindpose", bone.InverseBindpose);
-		}
+		//root.WriteData("Root Bone", m_RootBone);
+		//root.WriteData("Global Matrix", m_GlobalMatrix);
+		//root.WriteData("Bone Count", m_Bones.size());
+		//
+		//SerializationNode bonesNode = root.CreateSequenceNode("Bones");
+		//
+		//for (auto& bone : m_Bones)
+		//{
+		//	SerializationNode boneNode = bonesNode.AppendChild();
+		//	boneNode.SetMap();
+		//	boneNode.WriteData("Name", bone.Name);
+		//	boneNode.WriteData("Index", bone.Index);
+		//	boneNode.WriteData("Parent Index", bone.ParentIndex);
+		//	boneNode.WriteData("Inverse Bindpose", bone.InverseBindpose);
+		//}
 
 		serializer.WriteToDisk(assetPath);
 	}
