@@ -11,11 +11,11 @@ namespace Odyssey
 	class PropertyDrawer;
 	class ScriptComponent;
 
-	class UserScriptInspector : public Inspector
+	class ScriptInspector : public Inspector
 	{
 	public:
-		UserScriptInspector() = default;
-		UserScriptInspector(GameObject& go);
+		ScriptInspector() = default;
+		ScriptInspector(GameObject& go);
 
 	public:
 		virtual void Draw() override;

@@ -12,7 +12,7 @@
 #include "AnimatorInspector.h"
 #include "LightInspector.h"
 #include "ParticleEmitterInspector.h"
-#include "UserScriptInspector.h"
+#include "ScriptInspector.h"
 
 namespace Odyssey
 {
@@ -77,7 +77,7 @@ namespace Odyssey
 			RegisterComponentType<MeshRenderer, MeshRendererInspector>();
 			RegisterComponentType<Animator, AnimatorInspector>();
 			RegisterComponentType<ParticleEmitter, ParticleEmitterInspector>();
-			RegisterComponentType<ScriptComponent, UserScriptInspector>();
+			RegisterComponentType<ScriptComponent, ScriptInspector>();
 			s_ComponentsRegistered = true;
 		}
 

@@ -1,4 +1,4 @@
-#include "UserScriptInspector.h"
+#include "ScriptInspector.h"
 #include "PropertyDrawers.h"
 #include "ScriptComponent.h"
 #include "imgui.h"
@@ -6,7 +6,7 @@
 
 namespace Odyssey
 {
-	UserScriptInspector::UserScriptInspector(GameObject& gameObject)
+	ScriptInspector::ScriptInspector(GameObject& gameObject)
 	{
 		m_GameObject = gameObject;
 
@@ -26,7 +26,7 @@ namespace Odyssey
 		}
 	}
 
-	void UserScriptInspector::Draw()
+	void ScriptInspector::Draw()
 	{
 		if (ImGui::CollapsingHeader(("Script - " + displayName).c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
@@ -35,7 +35,7 @@ namespace Odyssey
 		}
 	}
 
-	void UserScriptInspector::UpdateFields()
+	void ScriptInspector::UpdateFields()
 	{
 		drawers.clear();
 		if (ScriptComponent* userScript = m_GameObject.TryGetComponent<ScriptComponent>())
@@ -44,7 +44,7 @@ namespace Odyssey
 		}
 	}
 
-	void UserScriptInspector::InitializeDrawers(ScriptComponent* userScript)
+	void ScriptInspector::InitializeDrawers(ScriptComponent* userScript)
 	{
 		auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
 
@@ -70,14 +70,14 @@ namespace Odyssey
 		}
 	}
 
-	void UserScriptInspector::CreateEntityDrawer(std::string_view fieldName, uint32_t scriptID, uint32_t fieldID, GUID initialValue)
+	void ScriptInspector::CreateEntityDrawer(std::string_view fieldName, uint32_t scriptID, uint32_t fieldID, GUID initialValue)
 	{
 		auto drawer = std::make_shared<EntityFieldDrawer>(fieldName, initialValue,
 			[this, scriptID, fieldID](GUID guid) { OnFieldChanged<GUID>(scriptID, fieldID, guid); });
 		drawers.push_back(drawer);
 	}
 
-	void UserScriptInspector::CreateAssetDrawer(const std::string& fieldName, const std::string& assetType, uint32_t scriptID, uint32_t fieldID, GUID initialValue)
+	void ScriptInspector::CreateAssetDrawer(const std::string& fieldName, const std::string& assetType, uint32_t scriptID, uint32_t fieldID, GUID initialValue)
 	{
 		auto drawer = std::make_shared<AssetFieldDrawer>(fieldName, initialValue, assetType,
 			[this, scriptID, fieldID](GUID guid) { OnFieldChanged<GUID>(scriptID, fieldID, guid); });
@@ -93,7 +93,7 @@ namespace Odyssey
 		return drawer;
 	}
 
-	void UserScriptInspector::CreateDrawerFromProperty(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
+	void ScriptInspector::CreateDrawerFromProperty(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
 	{
 		switch (fieldStorage.DataType)
 		{
@@ -172,7 +172,7 @@ namespace Odyssey
 		}
 	}
 
-	void UserScriptInspector::CreateStringDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
+	void ScriptInspector::CreateStringDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
 	{
 		std::string initialValue = "";
 
@@ -181,7 +181,7 @@ namespace Odyssey
 		drawers.push_back(drawer);
 	}
 
-	void UserScriptInspector::OnStringFieldChanged(uint32_t scriptID, uint32_t fieldID, std::string_view newValue)
+	void ScriptInspector::OnStringFieldChanged(uint32_t scriptID, uint32_t fieldID, std::string_view newValue)
 	{
 		auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
 
