@@ -108,19 +108,26 @@ namespace Odyssey
 	{
 	public:
 		EntityFieldDrawer() = default;
-		EntityFieldDrawer(std::string_view label, GUID guid, std::function<void(GUID)> callback);
+		EntityFieldDrawer(std::string_view label, GUID guid, const std::string& typeName, std::function<void(GUID)> callback);
 
 	public:
 		virtual void Draw() override;
 
 	private:
-		void GeneratePossibleGUIDs();
+		void GeneratePossibleEntities();
 
 	private:
-		std::function<void(GUID)> m_OnValueModified;
+		struct EntityData
+		{
+		public:
+			std::string GameObjectName;
+			GUID GameObjectGUID;
+		};
 		GUID m_GUID = 0;
+		std::string m_TypeName;
 		uint64_t m_SelectedIndex = 0;
-		std::vector<GUID> m_PossibleGUIDs;
+		std::vector<EntityData> m_Entities;
+		std::function<void(GUID)> m_OnValueModified;
 	};
 
 	template<typename T>

@@ -66,9 +66,11 @@ namespace Odyssey
 		{
 			if (fieldStorage.DataType == DataType::Entity || fieldStorage.DataType == DataType::Component)
 			{
+				Coral::ScopedString typeName = fieldStorage.Type->GetFullName();
 				GUID initialValue;
 				fieldStorage.TryGetValue(initialValue);
-				CreateEntityDrawer(fieldStorage.Name, storage.ScriptID, fieldID, initialValue);
+
+				CreateEntityDrawer(fieldStorage.Name, storage.ScriptID, fieldID, typeName, initialValue);
 			}
 			// TODO: Convert into IsAssetType check
 			else if (fieldStorage.DataType == DataType::Mesh || fieldStorage.DataType == DataType::Material)
@@ -84,9 +86,9 @@ namespace Odyssey
 		}
 	}
 
-	void ScriptInspector::CreateEntityDrawer(std::string_view fieldName, uint32_t scriptID, uint32_t fieldID, GUID initialValue)
+	void ScriptInspector::CreateEntityDrawer(std::string_view fieldName, uint32_t scriptID, uint32_t fieldID, const std::string& typeName, GUID initialValue)
 	{
-		auto drawer = std::make_shared<EntityFieldDrawer>(fieldName, initialValue,
+		auto drawer = std::make_shared<EntityFieldDrawer>(fieldName, initialValue, typeName,
 			[this, scriptID, fieldID](GUID guid) { OnFieldChanged<GUID>(scriptID, fieldID, guid); });
 		drawers.push_back(drawer);
 	}

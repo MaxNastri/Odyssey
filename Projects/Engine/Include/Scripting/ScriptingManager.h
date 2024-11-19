@@ -49,11 +49,14 @@ namespace Odyssey
 
 				if (fieldMetadata.ManagedType->HasAttribute(nativeObjectAttributeType))
 				{
-					GUID guid = 0;
+					GUID guid;
 					fieldStorage.TryGetValue<GUID>(guid);
-					Coral::ManagedObject value = fieldMetadata.ManagedType->CreateInstance((uint64_t)guid);
-					handle.SetFieldValue(fieldStorage.Name, value);
-					value.Destroy();
+					if (guid)
+					{
+						Coral::ManagedObject value = fieldMetadata.ManagedType->CreateInstance((uint64_t)guid);
+						handle.SetFieldValue(fieldStorage.Name, value);
+						value.Destroy();
+					}
 				}
 				else
 				{
@@ -66,7 +69,6 @@ namespace Odyssey
 
 			return ManagedHandle(&handle);
 		}
-
 	private:
 		static void BuildScriptMetadata(Coral::ManagedAssembly& assembly);
 

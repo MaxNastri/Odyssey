@@ -3,6 +3,8 @@
     [NativeObject]
     public class Component
     {
+        public Entity Entity { get; internal set; }
+
         internal Component() { }
 
         // Internal constructor so we can control how the object is created natively
@@ -10,7 +12,5 @@
         {
             this.Entity = new Entity(guid);
         }
-
-        public Entity Entity { get; internal set; }
     }
 }

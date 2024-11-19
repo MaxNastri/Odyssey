@@ -122,6 +122,12 @@ namespace Odyssey::InternalCalls
 
 	void Transform_GetPosition(uint64_t guid, glm::vec3* position)
 	{
+		if (!guid)
+		{
+			Log::Error("[InternalCalls] Invalid GUID detected for Transform_GetPosition.");
+			return;
+		}
+
 		GameObject gameObject = GetGameObject(guid);
 
 		if (Transform* transform = gameObject.TryGetComponent<Transform>())
@@ -130,6 +136,12 @@ namespace Odyssey::InternalCalls
 
 	void Transform_SetPosition(uint64_t guid, glm::vec3 position)
 	{
+		if (!guid)
+		{
+			Log::Error("[InternalCalls] Invalid GUID detected for Transform_GetPosition.");
+			return;
+		}
+
 		GameObject gameObject = GetGameObject(guid);
 
 		if (Transform* transform = gameObject.TryGetComponent<Transform>())

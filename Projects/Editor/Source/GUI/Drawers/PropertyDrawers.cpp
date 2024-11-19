@@ -2,6 +2,9 @@
 #include "imgui_internal.h"
 #include "AssetManager.h"
 #include "Log.h"
+#include "SceneManager.h"
+#include "Transform.h"
+#include "EditorComponents.h"
 
 namespace Odyssey
 {
@@ -199,12 +202,13 @@ namespace Odyssey
 		}
 	}
 
-	EntityFieldDrawer::EntityFieldDrawer(std::string_view label, GUID guid, std::function<void(GUID)> callback)
+	EntityFieldDrawer::EntityFieldDrawer(std::string_view label, GUID guid, const std::string& typeName, std::function<void(GUID)> callback)
 	{
 		m_Label = label;
 		m_GUID = guid;
+		m_TypeName = typeName;
 		m_OnValueModified = callback;
-		GeneratePossibleGUIDs();
+		GeneratePossibleEntities();
 	}
 
 	void EntityFieldDrawer::Draw()
@@ -219,20 +223,21 @@ namespace Odyssey
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(-0.01f);
 
-			std::string selectedDisplayName = m_SelectedIndex != 0 ? m_PossibleGUIDs[m_SelectedIndex].String() : "None";
+			std::string selectedDisplayName = m_Entities[m_SelectedIndex].GameObjectName;
+
 			if (ImGui::BeginCombo("##Empty", selectedDisplayName.c_str()))
 			{
-				for (int32_t i = 0; i < m_PossibleGUIDs.size(); i++)
+				for (int32_t i = 0; i < m_Entities.size(); i++)
 				{
 					const bool isSelected = m_SelectedIndex == i;
-					std::string displayName = i != 0 ? m_PossibleGUIDs[i].String() : "None";
+					std::string displayName = m_Entities[i].GameObjectName;
 
-					if (ImGui::Selectable(displayName.c_str(), isSelected) && i != 0)
+					if (ImGui::Selectable(displayName.c_str(), isSelected))
 					{
 						m_SelectedIndex = i;
 
 						if (m_OnValueModified)
-							m_OnValueModified(m_PossibleGUIDs[m_SelectedIndex]);
+							m_OnValueModified(m_Entities[m_SelectedIndex].GameObjectGUID);
 					}
 
 					if (isSelected)
@@ -245,9 +250,10 @@ namespace Odyssey
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
 				{
+					// Validate typing
 					uint64_t* payloadData = (uint64_t*)payload->Data;
 					m_GUID = GUID(*payloadData);
-					GeneratePossibleGUIDs();
+					GeneratePossibleEntities();
 
 					if (m_OnValueModified)
 						m_OnValueModified(m_GUID);
@@ -263,14 +269,30 @@ namespace Odyssey
 		ImGui::PopID();
 	}
 
-	void EntityFieldDrawer::GeneratePossibleGUIDs()
+	void EntityFieldDrawer::GeneratePossibleEntities()
 	{
-		m_PossibleGUIDs = { 0, m_GUID };
+		Scene* scene = SceneManager::GetActiveScene();
 
-		for (size_t i = 0; i < m_PossibleGUIDs.size(); i++)
+		m_Entities.clear();
+
+		m_Entities.push_back({ "None", 0 });
+
+		if (m_TypeName == Transform::Type)
 		{
-			if (m_PossibleGUIDs[i] == m_GUID)
-				m_SelectedIndex = i;
+			for (auto entity : scene->GetAllEntitiesWith<Transform>())
+			{
+				GameObject gameObject = GameObject(scene, entity);
+
+				// Skip any game objects marked to not show in the hierarchy
+				if (EditorPropertiesComponent* properties = gameObject.TryGetComponent<EditorPropertiesComponent>())
+					if (!properties->ShowInHierarchy)
+						continue;
+
+				m_Entities.push_back({ gameObject.GetName(), gameObject.GetGUID() });
+
+				if (gameObject.GetGUID() == m_GUID)
+					m_SelectedIndex = m_Entities.size() - 1;
+			}
 		}
 	}
 

@@ -38,7 +38,7 @@ GameObjects:
         Animation Rig: 13775651864520599129
         Animation Blueprint: 9242731602216417912
       - Type: Odyssey.MeshRenderer
-        Enabled: 205
+        Enabled: 1
         m_Mesh: 13511586946249507819
         m_Material: 942766181068811557
       - Type: Odyssey.Transform
@@ -46,7 +46,7 @@ GameObjects:
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
-        Enabled: 205
+        Enabled: 1
         Duration: 1
         Material: 831665292157922468
         Emission Rate: 200
@@ -79,7 +79,7 @@ GameObjects:
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
-        Enabled: 205
+        Enabled: 1
         Duration: 1
         Material: 0
         Emission Rate: 100
