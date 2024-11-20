@@ -160,7 +160,7 @@ namespace Odyssey
 		m_Inspectors.clear();
 		userScriptInspectors.clear();
 
-		m_NameDrawer = StringDrawer("Name", m_Target.GetName(),
+		m_NameDrawer = StringDrawer("Name", m_Target.GetName(), false,
 			[this](std::string_view name) { OnNameChanged(name); });
 
 		for (auto& [className, createInspectorFunc] : s_CreateInspectorFuncs)

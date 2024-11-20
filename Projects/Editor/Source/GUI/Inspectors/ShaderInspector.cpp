@@ -9,8 +9,8 @@ namespace Odyssey
 	{
 		if (m_Shader = AssetManager::LoadAsset<Shader>(guid))
 		{
-			m_GUIDDrawer = StringDrawer("GUID", m_Shader->GetGUID().String(), nullptr, true);
-			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(),
+			m_GUIDDrawer = StringDrawer("GUID", m_Shader->GetGUID().String(), true);
+			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(), false,
 				[this](std::string_view name) { OnNameChanged(name); });
 			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSourceAsset(), SourceShader::Type,
 				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });

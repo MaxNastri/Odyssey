@@ -178,7 +178,7 @@ namespace Odyssey
 			case DataType::Bool:
 			{
 				Coral::Bool32 initialValue = fieldStorage.GetValue<Coral::Bool32>();
-				auto drawer = std::make_shared<BoolDrawer>(fieldStorage.Name, initialValue,
+				auto drawer = std::make_shared<BoolDrawer>(fieldStorage.Name, initialValue, false,
 					[this, scriptID, fieldID](bool newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
 				drawers.push_back(drawer);
 				break;
@@ -198,7 +198,7 @@ namespace Odyssey
 	{
 		std::string initialValue = "";
 
-		auto drawer = std::make_shared<StringDrawer>(fieldStorage.Name, initialValue,
+		auto drawer = std::make_shared<StringDrawer>(fieldStorage.Name, initialValue, false,
 			[this, scriptID, fieldID](std::string_view newValue) { OnStringFieldChanged(scriptID, fieldID, newValue); });
 		drawers.push_back(drawer);
 	}

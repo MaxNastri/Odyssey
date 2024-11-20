@@ -13,8 +13,8 @@ namespace Odyssey
 	{
 		if (m_Model = AssetManager::LoadSourceAsset<SourceModel>(guid))
 		{
-			m_Drawers.push_back(StringDrawer("Dst Asset Path", "", 
-				[this](std::string_view path) { OnDstPathChanged(path); }, false));
+			m_Drawers.push_back(StringDrawer("Dst Asset Path", "", false, 
+				[this](std::string_view path) { OnDstPathChanged(path); }));
 		}
 	}
 

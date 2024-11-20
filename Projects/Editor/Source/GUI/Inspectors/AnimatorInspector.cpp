@@ -18,7 +18,7 @@ namespace Odyssey
 			m_BlueprintDrawer = AssetFieldDrawer("Blueprint", animator->GetBlueprintAsset(), AnimationBlueprint::Type,
 				[this](GUID guid) { OnBlueprintModified(guid); });
 
-			m_DebugEnabledDrawer = BoolDrawer("Debug", false,
+			m_DebugEnabledDrawer = BoolDrawer("Debug", false, false,
 				[this](bool enabled) { OnDebugEnabledModified(enabled); });
 		}
 	}

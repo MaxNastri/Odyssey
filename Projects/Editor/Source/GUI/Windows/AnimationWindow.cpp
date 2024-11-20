@@ -334,7 +334,7 @@ namespace Odyssey
 						clipGUID = clip->GetGUID();
 
 					m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", clipGUID, AnimationClip::Type, onAnimationClipChanged);
-					m_StateNameDrawer = StringDrawer("State", m_AnimationState->GetName(), onStateNameChanged);
+					m_StateNameDrawer = StringDrawer("State", m_AnimationState->GetName(), false, onStateNameChanged);
 				}
 				else
 				{
@@ -384,7 +384,7 @@ namespace Odyssey
 											m_AnimationLink->SetInt(value);
 										}
 									};
-								m_LinkValueDrawer = std::make_unique<IntDrawer<int32_t>>("Value", animProperty->ValueBuffer.Read<int32_t>(), onLinkValueChanged);
+								m_LinkValueDrawer = std::make_unique<IntDrawer<int32_t>>("Value", animProperty->ValueBuffer.Read<int32_t>(), false, onLinkValueChanged);
 								break;
 							}
 							case AnimationPropertyType::Bool:
@@ -397,7 +397,7 @@ namespace Odyssey
 											m_AnimationLink->SetBool(value);
 										}
 									};
-								m_LinkValueDrawer = std::make_unique<BoolDrawer>("Value", animProperty->ValueBuffer.Read<bool>(), onLinkValueChanged);
+								m_LinkValueDrawer = std::make_unique<BoolDrawer>("Value", animProperty->ValueBuffer.Read<bool>(), false, onLinkValueChanged);
 								break;
 							}
 							default:

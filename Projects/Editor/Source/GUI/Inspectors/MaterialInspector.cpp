@@ -20,10 +20,10 @@ namespace Odyssey
 			if (auto texture2D = m_Material->GetTexture())
 				textureGUID = texture2D->GetGUID();
 
-			m_NameDrawer = StringDrawer("Name", m_Material->GetName(),
+			m_NameDrawer = StringDrawer("Name", m_Material->GetName(), false,
 				[this](std::string_view name) { OnNameModified(name); });
 
-			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), nullptr, true);
+			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), true);
 
 			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type,
 				[this](GUID guid) { OnShaderModified(guid); });

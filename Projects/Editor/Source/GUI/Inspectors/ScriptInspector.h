@@ -34,7 +34,7 @@ namespace Odyssey
 		void AddIntDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
 		{
 			T initialValue = fieldStorage.GetValue<T>();
-			auto drawer = std::make_shared<IntDrawer<T>>(fieldStorage.Name, initialValue,
+			auto drawer = std::make_shared<IntDrawer<T>>(fieldStorage.Name, initialValue, false,
 				[this, scriptID, fieldID](T newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
 			drawers.push_back(drawer);
 		}
