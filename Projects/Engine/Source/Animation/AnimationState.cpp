@@ -100,6 +100,54 @@ namespace Odyssey
 		return false;
 	}
 
+	void AnimationLink::SetFloat(float value)
+	{
+		static constexpr size_t floatSize = sizeof(float);
+		if (m_TargetValue.GetSize() != floatSize)
+		{
+			m_TargetValue.Free();
+			m_TargetValue.Allocate(floatSize);
+		}
+
+		m_TargetValue.Write(&value);
+	}
+
+	void AnimationLink::SetInt(int32_t value)
+	{
+		static constexpr size_t intSize = sizeof(int32_t);
+		if (m_TargetValue.GetSize() != intSize)
+		{
+			m_TargetValue.Free();
+			m_TargetValue.Allocate(intSize);
+		}
+
+		m_TargetValue.Write(&value);
+	}
+
+	void AnimationLink::SetBool(bool value)
+	{
+		static constexpr size_t boolSize = sizeof(bool);
+		if (m_TargetValue.GetSize() != boolSize)
+		{
+			m_TargetValue.Free();
+			m_TargetValue.Allocate(boolSize);
+		}
+
+		m_TargetValue.Write(&value);
+	}
+
+	void AnimationLink::SetTrigger(bool value)
+	{
+		static constexpr size_t boolSize = sizeof(bool);
+		if (m_TargetValue.GetSize() != boolSize)
+		{
+			m_TargetValue.Free();
+			m_TargetValue.Allocate(boolSize);
+		}
+
+		m_TargetValue.Write(&value);
+	}
+
 	AnimationState::AnimationState(std::string_view name)
 		: m_Name(name), m_GUID(GUID::New())
 	{

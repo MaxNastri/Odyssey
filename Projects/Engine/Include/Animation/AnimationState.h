@@ -51,7 +51,9 @@ namespace Odyssey
 		void SetProperty(std::shared_ptr<AnimationProperty> property) { m_Property = property; }
 		void SetComparisonOp(ComparisonOp op) { m_ComparisonOp = op; }
 		void SetFloat(float value);
+		void SetInt(int32_t value);
 		void SetBool(bool value);
+		void SetTrigger(bool value);
 
 	private:
 		GUID m_GUID;
