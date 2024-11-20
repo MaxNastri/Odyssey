@@ -46,7 +46,15 @@ namespace Odyssey
 
 	private: // Node inspector panel
 		std::shared_ptr<AnimationState> m_AnimationState;
+		std::shared_ptr<AnimationLink> m_AnimationLink;
+
+	private: // Animation State
+		StringDrawer m_StateNameDrawer;
 		AssetFieldDrawer m_AnimationClipDrawer;
+
+	private: // Animation Link
+		DropdownDrawer m_PropertyNameDrawer;
+		EnumDrawer<ComparisonOp> m_ComparisonDrawer;
 
 	private: // Add property menu
 		char m_AddPropertyBuffer[128] = "";

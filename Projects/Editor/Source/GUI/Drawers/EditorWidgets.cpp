@@ -5,6 +5,86 @@
 
 namespace Odyssey
 {
+	Dropdown::Dropdown(const std::vector<std::string>& options)
+	{
+		m_Options = options;
+		m_SelectedIndex = 0;
+	}
+
+	Dropdown::Dropdown(const std::vector<std::string>& options, uint64_t initialIndex)
+	{
+		m_Options = options;
+		m_SelectedIndex = initialIndex;
+	}
+
+	Dropdown::Dropdown(const std::vector<std::string>& options, std::string_view initialValue)
+	{
+		m_Options = options;
+		m_SelectedIndex = 0;
+
+		for (size_t i = 0; i < options.size(); i++)
+		{
+			if (options[i] == initialValue)
+				m_SelectedIndex = i;
+		}
+	}
+
+	bool Dropdown::Draw()
+	{
+		bool modified = false;
+
+		std::string_view selectedOption = m_Options[m_SelectedIndex];
+
+		ImGui::PushID(this);
+
+		if (ImGui::BeginCombo("##Label", selectedOption.data()))
+		{
+			for (size_t i = 0; i < m_Options.size(); i++)
+			{
+				const bool isSelected = m_SelectedIndex == i;
+				std::string_view name = m_Options[i];
+
+				if (ImGui::Selectable(name.data(), isSelected))
+				{
+					m_SelectedIndex = i;
+					modified = true;
+					break;
+				}
+			}
+
+			ImGui::EndCombo();
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void Dropdown::SetOptions(const std::vector<std::string>& options)
+	{
+		if (m_SelectedIndex != 0)
+		{
+			// Cache the previously selected option
+			std::string selected = m_Options[m_SelectedIndex];
+
+			// Reset the selected back to default
+			m_SelectedIndex = 0;
+
+			// Search the new options for the previously selected
+			// We do this just in case the ordering has changed
+			for (size_t i = 0; i < options.size(); i++)
+			{
+				if (options[i] == selected)
+				{
+					m_SelectedIndex = i;
+					break;
+				}
+			}
+		}
+
+		m_Options = options;
+	}
+
 	EntityDropdown::EntityDropdown(GUID initialValue, const std::string& typeName)
 	{
 		m_TypeName = typeName;
@@ -88,4 +168,5 @@ namespace Odyssey
 			}
 		}
 	}
+
 }

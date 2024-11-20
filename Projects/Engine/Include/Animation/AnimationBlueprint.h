@@ -40,8 +40,11 @@ namespace Odyssey
 		std::shared_ptr<AnimationStateNode> AddAnimationState(std::string name);
 
 	public:
+		std::shared_ptr<AnimationProperty> GetProperty(const std::string& propertyName) { return m_PropertyMap[propertyName]; }
 		std::vector<std::shared_ptr<AnimationProperty>>& GetProperties() { return m_Properties; }
 		std::shared_ptr<AnimationState> GetAnimationState(GUID nodeGUID);
+		std::shared_ptr<AnimationLink> GetAnimationLink(GUID linkGUID);
+		std::vector<std::string> GetAllPropertyNames();
 
 	public:
 		void AddProperty(std::string_view name, AnimationPropertyType type);

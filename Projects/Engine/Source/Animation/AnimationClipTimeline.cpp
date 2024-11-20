@@ -48,4 +48,11 @@ namespace Odyssey
 
 		return m_BlendKeys;
 	}
+
+	void AnimationClipTimeline::Reset()
+	{
+		m_CurrentTime = 0.0;
+		m_PrevFrame = 0;
+		m_NextFrame = 1;
+	}
 }

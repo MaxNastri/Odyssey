@@ -39,6 +39,11 @@ namespace Odyssey
 		return m_Timeline.BlendKeys(deltaTime);
 	}
 
+	void AnimationClip::Reset()
+	{
+		m_Timeline.Reset();
+	}
+
 	float AnimationClip::GetFrameTime(size_t frameIndex)
 	{
 		for (auto& [boneName, boneKeyframe] : m_BoneKeyframes)

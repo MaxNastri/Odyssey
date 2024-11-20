@@ -317,26 +317,57 @@ namespace Odyssey
 								m_AnimationState->SetClip(guid);
 						};
 
+					auto onStateNameChanged = [this](std::string_view name)
+						{
+							if (m_AnimationState)
+								m_AnimationState->SetName(name);
+						};
+
 					GUID clipGUID;
 
 					if (auto clip = m_AnimationState->GetClip())
 						clipGUID = clip->GetGUID();
 
 					m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", clipGUID, AnimationClip::Type, onAnimationClipChanged);
+					m_StateNameDrawer = StringDrawer("State", m_AnimationState->GetName(), onStateNameChanged);
 				}
 				else
 				{
 					// No valid nodes selected, lets look for a selected link
-
 					ImguiExt::LinkId link;
 					ImguiExt::GetSelectedLinks(&link, 1);
+					m_AnimationLink = m_Blueprint->GetAnimationLink((GUID)link.Get());
+
+					if (m_AnimationLink)
+					{
+						auto onPropertyNameChanged = [this](std::string_view property, uint64_t index)
+							{
+								if (m_AnimationLink)
+									m_AnimationLink->SetProperty(m_Blueprint->GetProperty(property.data()));
+							};
+
+						auto onComparisonOpChanged = [this](ComparisonOp op)
+							{
+								if (m_AnimationLink)
+									m_AnimationLink->SetComparisonOp(op);
+							};
+
+						m_PropertyNameDrawer = DropdownDrawer("Property", m_Blueprint->GetAllPropertyNames(), m_AnimationLink->GetProperty()->Name, onPropertyNameChanged);
+						m_ComparisonDrawer = EnumDrawer<ComparisonOp>("Comparison", m_AnimationLink->GetComparisonOp(), onComparisonOpChanged);
+					}
 				}
 			}
 
 			if (m_AnimationState)
 			{
-				ImGui::TextUnformatted(m_AnimationState->GetName().data());
+				m_StateNameDrawer.Draw();
 				m_AnimationClipDrawer.Draw();
+			}
+			else if (m_AnimationLink)
+			{
+				m_PropertyNameDrawer.Draw();
+				m_ComparisonDrawer.Draw();
+
 			}
 
 			ImGui::End();
@@ -427,9 +458,9 @@ namespace Odyssey
 			ImGui::Text("Select Property:");
 
 			auto& properties = m_Blueprint->GetProperties();
-			const std::string display = m_SelectedProperty >= 0 ? properties[m_SelectedProperty]->Name : "";
+			const std::string selectedProperty = m_SelectedProperty >= 0 ? properties[m_SelectedProperty]->Name : "";
 
-			if (ImGui::BeginCombo("##PropertyCombo", display.c_str()))
+			if (ImGui::BeginCombo("##PropertyCombo", selectedProperty.c_str()))
 			{
 				for (size_t i = 0; i < properties.size(); i++)
 				{

@@ -38,9 +38,14 @@ namespace Odyssey
 	void AnimationStateNode::DrawContent(Rune::Pin* activeLinkPin)
 	{
 		float progress = 0.0f;
-		if (m_AnimationState && m_AnimationState->GetClip())
+		if (m_AnimationState)
 		{
-			progress = m_AnimationState->GetClip()->GetProgress();
+			Name = m_AnimationState->GetName();
+
+			if (m_AnimationState->GetClip())
+			{
+				progress = m_AnimationState->GetClip()->GetProgress();
+			}
 		}
 
 		TreeNode::DrawContent(activeLinkPin);

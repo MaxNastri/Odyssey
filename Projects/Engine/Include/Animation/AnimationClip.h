@@ -20,6 +20,7 @@ namespace Odyssey
 
 	public:
 		const std::map<std::string, BlendKey>& BlendKeys(float deltaTime);
+		void Reset();
 
 	public:
 		std::map<std::string, BoneKeyframe>& GetBoneKeyframes() { return m_BoneKeyframes; }

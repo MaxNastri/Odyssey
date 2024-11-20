@@ -92,6 +92,7 @@ namespace Odyssey
 	class DoubleDrawer : public PropertyDrawer
 	{
 	public:
+		DoubleDrawer() = default;
 		DoubleDrawer(std::string_view label, double initialValue, std::function<void(double)> callback);
 
 	public:
@@ -102,6 +103,24 @@ namespace Odyssey
 		float step = 0.0f;
 		float stepFast = 0.0f;
 		double value;
+	};
+
+	class DropdownDrawer : public PropertyDrawer
+	{
+	public:
+		DropdownDrawer() = default;
+		DropdownDrawer(std::string_view label, const std::vector<std::string>& options, uint64_t startIndex, std::function<void(std::string_view, uint64_t)> callback);
+		DropdownDrawer(std::string_view label, const std::vector<std::string>& options, std::string_view initialValue, std::function<void(std::string_view, uint64_t)> callback);
+
+	public:
+		virtual void Draw() override;
+
+	public:
+		void SetOptions(const std::vector<std::string>& options);
+
+	private:
+		Dropdown m_Dropdown;
+		std::function<void(std::string_view, uint64_t)> m_OnValueModified;
 	};
 
 	class EntityFieldDrawer : public PropertyDrawer

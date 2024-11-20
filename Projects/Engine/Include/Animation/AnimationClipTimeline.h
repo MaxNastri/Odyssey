@@ -15,6 +15,9 @@ namespace Odyssey
 
 	public:
 		const std::map<std::string, BlendKey>& BlendKeys(float deltaTime);
+		void Reset();
+
+	public:
 		float GetTime() { return m_CurrentTime; }
 
 	private:

@@ -34,6 +34,7 @@ namespace Odyssey
 	{
 	public:
 		AnimationLink(std::shared_ptr<AnimationState> start, std::shared_ptr<AnimationState> end, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue);
+		AnimationLink(GUID guid, std::shared_ptr<AnimationState> start, std::shared_ptr<AnimationState> end, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue);
 
 	public:
 		bool Evaluate();
@@ -45,6 +46,12 @@ namespace Odyssey
 		std::shared_ptr<AnimationProperty> GetProperty() { return m_Property; }
 		ComparisonOp GetComparisonOp() { return m_ComparisonOp; }
 		RawBuffer& GetTargetValue() { return m_TargetValue; }
+
+	public:
+		void SetProperty(std::shared_ptr<AnimationProperty> property) { m_Property = property; }
+		void SetComparisonOp(ComparisonOp op) { m_ComparisonOp = op; }
+		void SetFloat(float value);
+		void SetBool(bool value);
 
 	private:
 		GUID m_GUID;
@@ -67,6 +74,7 @@ namespace Odyssey
 
 	public:
 		const std::map<std::string, BlendKey>& Evaluate();
+		void Reset();
 
 	public:
 		GUID GetGUID() { return m_GUID; }
@@ -75,6 +83,7 @@ namespace Odyssey
 
 	public:
 		void SetGUID(GUID guid) { m_GUID = guid; }
+		void SetName(std::string_view name) { m_Name = name; }
 		void SetClip(GUID guid);
 
 	private:

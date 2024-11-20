@@ -202,6 +202,46 @@ namespace Odyssey
 		}
 	}
 
+	DropdownDrawer::DropdownDrawer(std::string_view label, const std::vector<std::string>& options, uint64_t startIndex, std::function<void(std::string_view, uint64_t)> callback)
+		: m_Dropdown(options, startIndex)
+	{
+		m_Label = label;
+		m_OnValueModified = callback;
+	}
+
+	DropdownDrawer::DropdownDrawer(std::string_view label, const std::vector<std::string>& options, std::string_view initialValue, std::function<void(std::string_view, uint64_t)> callback)
+		: m_Dropdown(options, initialValue)
+	{
+		m_Label = label;
+		m_OnValueModified = callback;
+	}
+
+	void DropdownDrawer::Draw()
+	{
+		ImGui::PushID(this);
+
+		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
+		{
+			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(m_Label.data());
+			ImGui::TableNextColumn();
+			ImGui::PushItemWidth(-0.01f);
+
+			if (m_Dropdown.Draw() && m_OnValueModified)
+				m_OnValueModified(m_Dropdown.GetSelectedString(), m_Dropdown.GetSelectedIndex());
+
+			ImGui::EndTable();
+		}
+
+		ImGui::PopID();
+	}
+
+	void DropdownDrawer::SetOptions(const std::vector<std::string>& options)
+	{
+		m_Dropdown.SetOptions(options);
+	}
+
 	EntityFieldDrawer::EntityFieldDrawer(std::string_view label, GUID guid, const std::string& typeName, std::function<void(GUID)> callback)
 		: m_Dropdown(guid, typeName)
 	{

@@ -14,6 +14,13 @@ namespace Odyssey
 		 RawBuffer::Copy(m_TargetValue, targetValue);
 	}
 
+	AnimationLink::AnimationLink(GUID guid, std::shared_ptr<AnimationState> start, std::shared_ptr<AnimationState> end, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue)
+		: m_GUID(guid), m_BeginState(start), m_EndState(end),
+		m_Property(property), m_ComparisonOp(compareOp)
+	{
+		RawBuffer::Copy(m_TargetValue, targetValue);
+	}
+
 	bool AnimationLink::Evaluate()
 	{
 		switch (m_ComparisonOp)
@@ -108,6 +115,11 @@ namespace Odyssey
 	const std::map<std::string, BlendKey>& AnimationState::Evaluate()
 	{
 		return m_AnimationClip->BlendKeys(Time::DeltaTime());
+	}
+
+	void AnimationState::Reset()
+	{
+		m_AnimationClip->Reset();
 	}
 
 	std::string_view AnimationState::GetName()

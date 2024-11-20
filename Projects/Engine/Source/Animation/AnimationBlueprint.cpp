@@ -180,7 +180,7 @@ namespace Odyssey
 				}
 
 				// Create the animtation link
-				m_StateToLinks[beginState].push_back(std::make_shared<AnimationLink>(beginState, endState, property, comparisonOp, valueBuffer));
+				m_StateToLinks[beginState].push_back(std::make_shared<AnimationLink>(linkGUID, beginState, endState, property, comparisonOp, valueBuffer));
 			}
 		}
 	}
@@ -312,6 +312,7 @@ namespace Odyssey
 			{
 				if (animationLink->Evaluate())
 				{
+					m_CurrentState->Reset();
 					m_CurrentState = animationLink->GetEndState();
 					break;
 				}
@@ -346,6 +347,26 @@ namespace Odyssey
 			return m_States[nodeGUID];
 
 		return nullptr;
+	}
+
+	std::shared_ptr<AnimationLink> AnimationBlueprint::GetAnimationLink(GUID linkGUID)
+	{
+		for (auto& [animationState, animationLinks] : m_StateToLinks)
+		{
+			for (auto& animationLink : animationLinks)
+			{
+				if (animationLink->GetGUID() == linkGUID)
+					return animationLink;
+			}
+		}
+
+		return nullptr;
+	}
+
+	std::vector<std::string> AnimationBlueprint::GetAllPropertyNames()
+	{
+		auto view = std::views::keys(m_PropertyMap);
+		return std::vector<std::string>(view.begin(), view.end());
 	}
 
 	void AnimationBlueprint::AddProperty(std::string_view name, AnimationPropertyType type)

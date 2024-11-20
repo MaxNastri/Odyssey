@@ -1,4 +1,6 @@
 m_SourceAsset: 0
+m_GUID: 0
+m_Name: ''
 m_Type: Odyssey.AnimationBlueprint
 Properties:
   - Name: Speed
@@ -6,15 +8,15 @@ Properties:
     Value: 0
 Animation States:
   - GUID: 12397336328036976360
-    Name: State
+    Name: Idle
     Clip: 6316788137749762478
     Position: 'x: -122 y: -132'
   - GUID: 13964513376148405723
-    Name: State
+    Name: Cap
     Clip: 12740900691695561484
-    Position: 'x: -23 y: 65'
+    Position: 'x: -28 y: 62'
 Animation Links:
-  - GUID: 7273856242808460154
+  - GUID: 11167257447041325599
     Begin State: 12397336328036976360
     End State: 13964513376148405723
     Property: Speed
