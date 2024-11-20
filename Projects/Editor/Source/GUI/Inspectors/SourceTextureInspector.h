@@ -12,7 +12,7 @@ namespace Odyssey
 		SourceTextureInspector(GUID guid);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		void OnAssetPathChanged(std::string_view assetPath) { m_AssetPath = assetPath; }

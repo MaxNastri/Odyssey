@@ -17,14 +17,18 @@ namespace Odyssey
 		}
 	}
 
-	void ShaderInspector::Draw()
+	bool ShaderInspector::Draw()
 	{
-		m_GUIDDrawer.Draw();
-		m_NameDrawer.Draw();
-		m_SourceShaderDrawer.Draw();
+		bool modified = false;
+
+		modified |= m_GUIDDrawer.Draw();
+		modified |= m_NameDrawer.Draw();
+		modified |= m_SourceShaderDrawer.Draw();
 
 		if (ImGui::Button("Compile"))
 			m_Shader->Recompile();
+
+		return modified;
 	}
 	void ShaderInspector::OnNameChanged(std::string_view name)
 	{

@@ -19,15 +19,21 @@ namespace Odyssey
 				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
 		}
 	}
-	void MeshInspector::Draw()
+
+	bool MeshInspector::Draw()
 	{
-		m_GUIDDrawer.Draw();
-		m_NameDrawer.Draw();
-		m_TypeDrawer.Draw();
-		m_VertexCountDrawer.Draw();
-		m_IndexCountDrawer.Draw();
-		m_SourceMeshDrawer.Draw();
+		bool modified = false;
+
+		modified |= m_GUIDDrawer.Draw();
+		modified |= m_NameDrawer.Draw();
+		modified |= m_TypeDrawer.Draw();
+		modified |= m_VertexCountDrawer.Draw();
+		modified |= m_IndexCountDrawer.Draw();
+		modified |= m_SourceMeshDrawer.Draw();
+
+		return modified;
 	}
+
 	void MeshInspector::OnNameChanged(std::string_view name)
 	{
 		if (m_Mesh)

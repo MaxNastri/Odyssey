@@ -12,7 +12,7 @@ namespace Odyssey
 		TextureInspector(GUID guid);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		void OnNameChanged(std::string_view name);

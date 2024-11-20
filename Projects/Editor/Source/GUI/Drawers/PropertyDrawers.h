@@ -27,7 +27,7 @@ namespace Odyssey
 		AssetFieldDrawer(std::string_view label, GUID guid, const std::string& assetType, std::function<void(GUID)> callback);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	public:
 		void SetGUID(GUID guid);
@@ -50,7 +50,7 @@ namespace Odyssey
 		BoolDrawer(std::string_view label, bool initialValue, std::function<void(bool)> callback, bool readOnly = false);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 		void SetData(bool data) { m_Data = data; }
 	private:
 		std::function<void(bool)> valueUpdatedCallback;
@@ -66,7 +66,7 @@ namespace Odyssey
 		ColorPicker(std::string_view propertyLabel, float4 initialValue, std::function<void(float4)> callback);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	public:
 		void SetColor(float3 color) { m_Color = float4(color, 1.0f); }
@@ -96,7 +96,7 @@ namespace Odyssey
 		DoubleDrawer(std::string_view label, double initialValue, std::function<void(double)> callback);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		std::function<void(double)> valueUpdatedCallback;
@@ -113,7 +113,7 @@ namespace Odyssey
 		DropdownDrawer(std::string_view label, const std::vector<std::string>& options, std::string_view initialValue, std::function<void(std::string_view, uint64_t)> callback);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	public:
 		void SetOptions(const std::vector<std::string>& options);
@@ -130,7 +130,7 @@ namespace Odyssey
 		EntityFieldDrawer(std::string_view label, GUID guid, const std::string& typeName, std::function<void(GUID)> callback);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		EntityDropdown m_Dropdown;
@@ -150,8 +150,10 @@ namespace Odyssey
 		}
 
 	public:
-		virtual void Draw() override
+		virtual bool Draw() override
 		{
+			bool modified = false;
+
 			ImGui::PushID(this);
 
 			if (ImGui::BeginTable("##Table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
@@ -163,12 +165,19 @@ namespace Odyssey
 				ImGui::PushItemWidth(-0.01f);
 
 				if (m_EnumMenu.Draw())
-					m_OnValueModified(m_EnumMenu.GetValue());
+				{
+					modified = true;
+
+					if (m_OnValueModified)
+						m_OnValueModified(m_EnumMenu.GetValue());
+				}
 
 				ImGui::EndTable();
 			}
 
 			ImGui::PopID();
+
+			return modified;
 		}
 
 	private:
@@ -183,7 +192,7 @@ namespace Odyssey
 		FloatDrawer(std::string_view label, float initialValue, std::function<void(float)> callback);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		std::function<void(float)> valueUpdatedCallback;
@@ -207,8 +216,12 @@ namespace Odyssey
 		}
 
 	public:
-		virtual void Draw() override
+		virtual bool Draw() override
 		{
+			bool modified = false;
+
+			ImGui::PushID(this);
+
 			if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 			{
 				ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
@@ -216,18 +229,27 @@ namespace Odyssey
 				ImGui::TextUnformatted(m_Label.data());
 				ImGui::TableNextColumn();
 				ImGui::PushItemWidth(-0.01f);
+
 				if (m_ReadOnly)
 					ImGui::BeginDisabled();
 
 				if (ImGui::InputScalar(m_Label.data(), dataType, &data))
 				{
-					valueUpdatedCallback(data);
+					modified = true;
+
+					if (valueUpdatedCallback)
+						valueUpdatedCallback(data);
 				}
 
 				if (m_ReadOnly)
 					ImGui::EndDisabled();
+
 				ImGui::EndTable();
 			}
+
+			ImGui::PopID();
+
+			return modified;
 		}
 
 	private:
@@ -271,7 +293,7 @@ namespace Odyssey
 		RangeSlider(const std::string& label, float2 range, float2 limits, float step, std::function<void(float2)> callback);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		std::function<void(float2)> m_ValueUpdatedCallback;
@@ -287,7 +309,7 @@ namespace Odyssey
 		StringDrawer(std::string_view label, std::string_view initialValue, std::function<void(std::string_view)> callback, bool readOnly = false);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	public:
 		std::string_view GetValue() { return m_Data; }
@@ -305,7 +327,7 @@ namespace Odyssey
 		Vector3Drawer(std::string_view propertyLabel, float3 initialValue, float3 resetValue, bool drawButtons, std::function<void(float3)> callback);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 		void SetValue(float3 value) { m_Data = value; }
 
 	private:

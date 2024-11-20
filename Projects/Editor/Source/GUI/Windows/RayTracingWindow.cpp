@@ -54,10 +54,12 @@ namespace Odyssey
 		}
 	}
 
-	void RayTracingWindow::Draw()
+	bool RayTracingWindow::Draw()
 	{
+		bool modified = false;
+
 		if (!Begin())
-			return;
+			return modified;
 
 		uint32_t width = (uint32_t)m_WindowSize.x;
 		uint32_t height = (uint32_t)m_WindowSize.y;
@@ -93,6 +95,8 @@ namespace Odyssey
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
 		m_FrameIndex++;
 		End();
+
+		return modified;
 	}
 
 	void RayTracingWindow::OnWindowResize()

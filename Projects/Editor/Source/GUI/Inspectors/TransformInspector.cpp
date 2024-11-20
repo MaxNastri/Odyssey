@@ -22,8 +22,10 @@ namespace Odyssey
 		}
 	}
 
-	void TransformInspector::Draw()
+	bool TransformInspector::Draw()
 	{
+		bool modified = false;
+
 		if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			Transform& transform = m_GameObject.GetComponent<Transform>();
@@ -31,11 +33,14 @@ namespace Odyssey
 			rotationDrawer.SetValue(transform.GetEulerRotation());
 			scaleDrawer.SetValue(transform.GetScale());
 
-			positionDrawer.Draw();
-			rotationDrawer.Draw();
-			scaleDrawer.Draw();
+			modified |= positionDrawer.Draw();
+			modified |= rotationDrawer.Draw();
+			modified |= scaleDrawer.Draw();
 		}
+
 		ImGui::Spacing();
+
+		return modified;
 	}
 
 	void TransformInspector::OnPositionChanged(glm::vec3 position)

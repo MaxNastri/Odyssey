@@ -23,26 +23,31 @@ namespace Odyssey
 		}
 	}
 
-	void CameraInspector::Draw()
+	bool CameraInspector::Draw()
 	{
+		bool modified = false;
+
 		ImGui::PushID(this);
 
 		if (ImGui::Checkbox("##enabled", &m_CameraEnabled))
 		{
 			if (Camera* camera = m_GameObject.TryGetComponent<Camera>())
 				camera->SetEnabled(m_CameraEnabled);
+			modified = true;
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			m_FieldOfViewDrawer.Draw();
-			m_NearClipDrawer.Draw();
-			m_FarClipDrawer.Draw();
+			modified |= m_FieldOfViewDrawer.Draw();
+			modified |= m_NearClipDrawer.Draw();
+			modified |= m_FarClipDrawer.Draw();
 		}
 
 		ImGui::PopID();
+
+		return modified;
 	}
 
 	void CameraInspector::OnFieldOfViewChanged(float fov)

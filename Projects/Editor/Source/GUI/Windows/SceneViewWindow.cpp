@@ -64,10 +64,12 @@ namespace Odyssey
 		}
 	}
 
-	void SceneViewWindow::Draw()
+	bool SceneViewWindow::Draw()
 	{
+		bool modified = false;
+
 		if (!Begin())
-			return;
+			return modified;
 
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
 		m_SceneViewPass->SetColorRenderTexture(m_ColorRT);
@@ -75,7 +77,9 @@ namespace Odyssey
 
 		// Render gizmos
 		RenderGizmos();
+
 		End();
+		return modified;
 	}
 
 	void SceneViewWindow::OnWindowResize()

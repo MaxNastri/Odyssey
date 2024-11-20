@@ -18,7 +18,7 @@ namespace Odyssey
 		ScriptInspector(GameObject& go);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 		void UpdateFields();
 
 	private:

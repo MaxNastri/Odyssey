@@ -12,7 +12,7 @@ namespace Odyssey
 		SourceModelInspector(GUID guid);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		void OnDstPathChanged(std::string_view path) { m_DstPath = path; }

@@ -37,10 +37,12 @@ namespace Odyssey
 		m_FilesToDisplay.clear();
 	}
 
-	void ContentBrowserWindow::Draw()
+	bool ContentBrowserWindow::Draw()
 	{
+		bool modified = false;
+
 		if (!Begin())
-			return;
+			return modified;
 
 		if (m_CurrentPath != m_AssetsPath)
 		{
@@ -86,7 +88,9 @@ namespace Odyssey
 
 		if (m_UpdatePaths)
 			UpdatePaths();
+
 		End();
+		return modified;
 	}
 
 	void ContentBrowserWindow::OnWindowClose()

@@ -26,10 +26,12 @@ namespace Odyssey
 			[this](glm::vec3 color) { OnAmbientColorChanged(color); });
 	}
 
-	void SceneSettingsWindow::Draw()
+	bool SceneSettingsWindow::Draw()
 	{
+		bool modified = false;
+
 		if (!Begin())
-			return;
+			return modified;
 
 		if (m_Scene)
 		{
@@ -38,6 +40,7 @@ namespace Odyssey
 		}
 
 		End();
+		return modified;
 	}
 
 	void SceneSettingsWindow::OnWindowClose()

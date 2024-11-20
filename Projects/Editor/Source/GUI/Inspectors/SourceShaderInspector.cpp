@@ -25,12 +25,14 @@ namespace Odyssey
 			m_DstAssetPathDrawer.SetLabelWidth(0.7f);
 		}
 	}
-	void SourceShaderInspector::Draw()
+
+	bool SourceShaderInspector::Draw()
 	{
-		m_ShaderNameDrawer.Draw();
-		m_ShaderLanguageDrawer.Draw();
-		m_CompiledDrawer.Draw();
-		m_DstAssetPathDrawer.Draw();
+		bool modified = false;
+		modified |= m_ShaderNameDrawer.Draw();
+		modified |= m_ShaderLanguageDrawer.Draw();
+		modified |= m_CompiledDrawer.Draw();
+		modified |= m_DstAssetPathDrawer.Draw();
 
 		if (ImGui::Button("Compile"))
 		{
@@ -41,5 +43,7 @@ namespace Odyssey
 			if (!m_DstAssetPath.empty())
 				AssetManager::CreateAsset<Shader>(Project::GetActiveAssetsDirectory() / m_DstAssetPath, m_Shader);
 		}
+
+		return modified;
 	}
 }

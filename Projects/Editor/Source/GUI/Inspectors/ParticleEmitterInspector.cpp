@@ -31,31 +31,38 @@ namespace Odyssey
 		}
 	}
 
-	void ParticleEmitterInspector::Draw()
+	bool ParticleEmitterInspector::Draw()
 	{
+		bool modified = false;
+
 		ImGui::PushID(this);
 
 		if (ImGui::Checkbox("##enabled", &m_EmitterEnabled))
 		{
 			if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
 				emitter->SetEnabled(m_EmitterEnabled);
+
+			modified = true;
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::CollapsingHeader("Particle Emitter", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			m_LoopDrawer.Draw();
-			m_DurationDrawer.Draw();
-			m_EmissionRateDrawer.Draw();
-			m_StartColorDrawer.Draw();
-			m_EndColorDrawer.Draw();
-			m_LifetimeDrawer.Draw();
-			m_SizeDrawer.Draw();
-			m_SpeedDrawer.Draw();
-			m_MaterialDrawer.Draw();
+			modified |= m_LoopDrawer.Draw();
+			modified |= m_DurationDrawer.Draw();
+			modified |= m_EmissionRateDrawer.Draw();
+			modified |= m_StartColorDrawer.Draw();
+			modified |= m_EndColorDrawer.Draw();
+			modified |= m_LifetimeDrawer.Draw();
+			modified |= m_SizeDrawer.Draw();
+			modified |= m_SpeedDrawer.Draw();
+			modified |= m_MaterialDrawer.Draw();
 		}
+
 		ImGui::PopID();
+
+		return modified;
 	}
 
 	void ParticleEmitterInspector::OnLoopModified(bool loop)

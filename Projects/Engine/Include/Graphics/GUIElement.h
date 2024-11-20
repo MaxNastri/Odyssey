@@ -6,7 +6,7 @@ namespace Odyssey
 	{
 	public:
 		virtual void Update() { };
-		virtual void Draw() { };
+		virtual bool Draw() { return false; }
 		virtual void Reload() { }
 	};
 }

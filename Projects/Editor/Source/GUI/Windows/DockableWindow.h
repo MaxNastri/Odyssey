@@ -13,7 +13,7 @@ namespace Odyssey
 
 	public:
 		virtual void Update() { }
-		virtual void Draw() = 0;
+		virtual bool Draw() = 0;
 		virtual void OnWindowResize() { }
 		virtual void OnWindowClose() = 0;
 

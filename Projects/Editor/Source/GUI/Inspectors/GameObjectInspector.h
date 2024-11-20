@@ -16,7 +16,7 @@ namespace Odyssey
 		GameObjectInspector(GUID guid);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	public:
 		void RefreshUserScripts();

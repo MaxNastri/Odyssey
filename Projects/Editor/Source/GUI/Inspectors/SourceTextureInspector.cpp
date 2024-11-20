@@ -19,10 +19,12 @@ namespace Odyssey
 		}
 	}
 
-	void SourceTextureInspector::Draw()
+	bool SourceTextureInspector::Draw()
 	{
-		m_TextureNameDrawer.Draw();
-		m_AssetPathDrawer.Draw();
+		bool modified = false;
+
+		modified |= m_TextureNameDrawer.Draw();
+		modified |= m_AssetPathDrawer.Draw();
 
 		if (ImGui::Button("Create Texture2D"))
 		{
@@ -32,5 +34,7 @@ namespace Odyssey
 		{
 			AssetManager::CreateAsset<Cubemap>(Project::GetActiveAssetsDirectory() / m_AssetPath, m_Texture);
 		}
+
+		return modified;
 	}
 }

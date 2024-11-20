@@ -17,12 +17,17 @@ namespace Odyssey
 				[this](GUID sourceGUID) { OnSourceAssetchanged(sourceGUID); });
 		}
 	}
-	void TextureInspector::Draw()
+
+	bool TextureInspector::Draw()
 	{
-		m_GUIDDrawer.Draw();
-		m_TypeDrawer.Draw();
-		m_NameDrawer.Draw();
-		m_SourceAssetDrawer.Draw();
+		bool modified = false;
+
+		modified |= m_GUIDDrawer.Draw();
+		modified |= m_TypeDrawer.Draw();
+		modified |= m_NameDrawer.Draw();
+		modified |= m_SourceAssetDrawer.Draw();
+
+		return modified;
 	}
 
 	void TextureInspector::OnNameChanged(std::string_view name)

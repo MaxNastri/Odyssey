@@ -18,10 +18,12 @@ namespace Odyssey
 		}
 	}
 
-	void SourceModelInspector::Draw()
+	bool SourceModelInspector::Draw()
 	{
+		bool modified = false;
+
 		for (auto& drawer : m_Drawers)
-			drawer.Draw();
+			modified |= drawer.Draw();
 
 		if (ImGui::Button("Create Mesh Asset"))
 		{
@@ -35,5 +37,7 @@ namespace Odyssey
 		{
 			AssetManager::CreateAsset<AnimationClip>(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);
 		}
+
+		return modified;
 	}
 }

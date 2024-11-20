@@ -28,14 +28,18 @@ namespace Odyssey
 		}
 	}
 
-	void ScriptInspector::Draw()
+	bool ScriptInspector::Draw()
 	{
+		bool modified = false;
+
 		ImGui::PushID(this);
 
 		if (ImGui::Checkbox("##enabled", &m_ScriptEnabled))
 		{
 			if (ScriptComponent* script = m_GameObject.TryGetComponent<ScriptComponent>())
 				script->SetEnabled(m_ScriptEnabled);
+
+			modified = true;
 		}
 
 		ImGui::SameLine();
@@ -43,10 +47,12 @@ namespace Odyssey
 		if (ImGui::CollapsingHeader(("Script - " + displayName).c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			for (const auto& drawer : drawers)
-				drawer->Draw();
+				modified |= drawer->Draw();
 		}
 
 		ImGui::PopID();
+
+		return modified;
 	}
 
 	void ScriptInspector::UpdateFields()

@@ -15,7 +15,7 @@ namespace Odyssey
 
 	}
 
-	void EditorMenuBar::Draw()
+	bool EditorMenuBar::Draw()
 	{
 		if (ImGui::BeginMainMenuBar())
 		{
@@ -75,5 +75,7 @@ namespace Odyssey
 
 			ImGui::EndMainMenuBar();
 		}
+
+		return false;
 	}
 }

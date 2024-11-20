@@ -17,7 +17,7 @@ namespace Odyssey
 		InspectorWindow(std::shared_ptr<Inspector> inspector);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 		virtual void OnWindowClose() override;
 
 	public:

@@ -19,7 +19,7 @@ namespace Odyssey
 
 	public:
 		virtual void Update() override;
-		virtual void Draw() override;
+		virtual bool Draw() override;
 		virtual void OnWindowClose() override;
 
 	private:

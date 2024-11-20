@@ -84,11 +84,13 @@ namespace Odyssey
 		CreateInspectors();
 	}
 
-	void GameObjectInspector::Draw()
+	bool GameObjectInspector::Draw()
 	{
+		bool modified = false;
+
 		// Don't draw unless we have a target
 		if (!m_Target.IsValid())
-			return;
+			return modified;
 
 		if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 			m_NameDrawer.Draw();
@@ -97,12 +99,12 @@ namespace Odyssey
 
 		for (auto& inspector : m_Inspectors)
 		{
-			inspector->Draw();
+			modified |= inspector->Draw();
 		}
 
 		for (auto& userScriptInspector : userScriptInspectors)
 		{
-			userScriptInspector.Draw();
+			modified |= userScriptInspector.Draw();
 		}
 
 		if (ImGui::Button("Add Component"))
@@ -123,6 +125,7 @@ namespace Odyssey
 					selected = i;
 					s_AddComponentFuncs[componentName](m_Target);
 					CreateInspectors();
+					modified = true;
 				}
 			}
 
@@ -141,12 +144,15 @@ namespace Odyssey
 						ScriptComponent& script = m_Target.GetComponent<ScriptComponent>();
 						script.SetScriptID(metadata.ScriptID);
 						CreateInspectors();
+						modified = true;
 					}
 				}
 			}
 
 			ImGui::EndPopup();
 		}
+
+		return modified;
 	}
 
 	void GameObjectInspector::CreateInspectors()

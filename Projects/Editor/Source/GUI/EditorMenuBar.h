@@ -10,7 +10,7 @@ namespace Odyssey
 
 	public:
 		virtual void Update() override;
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		void OpenFileDialog();

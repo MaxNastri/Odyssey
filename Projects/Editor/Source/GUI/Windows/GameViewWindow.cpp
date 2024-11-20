@@ -37,10 +37,12 @@ namespace Odyssey
 		DestroyRenderTexture();
 	}
 
-	void GameViewWindow::Draw()
+	bool GameViewWindow::Draw()
 	{
+		bool modified = false;
+
 		if (!Begin())
-			return;
+			return modified;
 
 		// Display the RT as an Imgui image
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
@@ -48,7 +50,9 @@ namespace Odyssey
 		m_GameViewPass->SetDepthRenderTexture(m_DepthRT);
 
 		End();
+		return modified;
 	}
+
 	void GameViewWindow::OnWindowResize()
 	{
 		DestroyRenderTexture();

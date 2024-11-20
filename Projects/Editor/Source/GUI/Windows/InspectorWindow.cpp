@@ -44,13 +44,15 @@ namespace Odyssey
 		RegisterInspectorType<SourceTextureInspector>(SourceTexture::Type);
 	}
 
-	void InspectorWindow::Draw()
+	bool InspectorWindow::Draw()
 	{
+		bool modified = false;
+
 		ImGui::SetNextWindowSize(ImVec2(430, 450), ImGuiCond_FirstUseEver);
 		if (!ImGui::Begin("Inspector", &open))
 		{
 			ImGui::End();
-			return;
+			return modified;
 		}
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
@@ -60,6 +62,7 @@ namespace Odyssey
 		
 		ImGui::PopStyleVar();
 		ImGui::End();
+		return modified;
 	}
 
 	void InspectorWindow::OnWindowClose()

@@ -27,25 +27,31 @@ namespace Odyssey
 		}
 	}
 
-	void MeshRendererInspector::Draw()
+	bool MeshRendererInspector::Draw()
 	{
+		bool modified = false;
+
 		ImGui::PushID(this);
 
 		if (ImGui::Checkbox("##enabled", &m_MeshRendererEnabled))
 		{
 			if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 				meshRenderer->SetEnabled(m_MeshRendererEnabled);
+
+			modified = true;
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::CollapsingHeader("Mesh Renderer", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			m_MeshDrawer.Draw();
-			m_MaterialDrawer.Draw();
+			modified |= m_MeshDrawer.Draw();
+			modified |= m_MaterialDrawer.Draw();
 		}
 
 		ImGui::PopID();
+
+		return modified;
 	}
 
 	void MeshRendererInspector::OnMeshModified(GUID guid)

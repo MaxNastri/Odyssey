@@ -7,6 +7,6 @@ namespace Odyssey
 	class Inspector : public GUIElement
 	{
 	public:
-		virtual void Draw() { }
+		virtual bool Draw() { return false; }
 	};
 }

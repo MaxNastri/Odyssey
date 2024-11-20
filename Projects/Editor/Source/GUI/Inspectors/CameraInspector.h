@@ -15,7 +15,7 @@ namespace Odyssey
 		CameraInspector(GameObject& gameObject);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		void OnFieldOfViewChanged(float fov);

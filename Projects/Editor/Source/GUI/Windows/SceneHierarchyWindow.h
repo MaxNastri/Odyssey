@@ -15,7 +15,7 @@ namespace Odyssey
 		SceneHierarchyWindow(size_t windowID);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 		virtual void OnWindowClose() override;
 
 	public:

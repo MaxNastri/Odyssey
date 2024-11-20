@@ -23,10 +23,12 @@ namespace Odyssey
 			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
 	}
 
-	void SceneHierarchyWindow::Draw()
+	bool SceneHierarchyWindow::Draw()
 	{
+		bool modified = false;
+
 		if (!Begin())
-			return;
+			return modified;
 
 		if (m_Scene)
 		{
@@ -55,7 +57,9 @@ namespace Odyssey
 			m_Deferred();
 			m_Deferred = nullptr;
 		}
+
 		End();
+		return modified;
 	}
 
 	void SceneHierarchyWindow::OnWindowClose()

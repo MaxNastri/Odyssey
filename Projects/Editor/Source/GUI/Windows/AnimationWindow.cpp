@@ -30,14 +30,16 @@ namespace Odyssey
 		m_Blueprint->Update();
 	}
 
-	void AnimationWindow::Draw()
+	bool AnimationWindow::Draw()
 	{
+		bool modified = false;
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, float2(0.0f, 0.0f));
 
 		if (!Begin())
 		{
 			ImGui::PopStyleVar();
-			return;
+			return modified;
 		}
 
 		// Draw the menu bar
@@ -132,6 +134,8 @@ namespace Odyssey
 			m_Builder->End();
 			ImGui::End();
 		}
+
+		return modified;
 	}
 
 	void AnimationWindow::OnWindowClose()
