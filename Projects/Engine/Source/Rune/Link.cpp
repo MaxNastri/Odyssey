@@ -7,4 +7,8 @@ namespace Odyssey::Rune
 	{
 
 	}
+	Link::Link(GUID linkGUID, GUID startPinGUID, GUID endPinGUID)
+		: Guid(linkGUID), StartPinGUID(startPinGUID), EndPinGUID(endPinGUID), Color(1.0f)
+	{
+	}
 }

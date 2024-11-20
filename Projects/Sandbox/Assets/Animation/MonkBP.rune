@@ -1,26 +1,22 @@
 m_SourceAsset: 0
-m_GUID: 9242731602216417912
-m_Name: Monk BP
 m_Type: Odyssey.AnimationBlueprint
 Properties:
-  - Name: Move
-    Type: Trigger
-    Value: 0
   - Name: Speed
     Type: Float
     Value: 0
 Animation States:
-  - GUID: 6271724127432470386
-    Name: Idle
+  - GUID: 12397336328036976360
+    Name: State
     Clip: 6316788137749762478
-    Position: 'x: 0 y: 0'
-  - GUID: 9579378113499642795
-    Name: Cap
+    Position: 'x: -122 y: -132'
+  - GUID: 13964513376148405723
+    Name: State
     Clip: 12740900691695561484
-    Position: 'x: 4 y: 154'
+    Position: 'x: -23 y: 65'
 Animation Links:
-  - Begin State: 6271724127432470386
-    End State: 9579378113499642795
+  - GUID: 7273856242808460154
+    Begin State: 12397336328036976360
+    End State: 13964513376148405723
     Property: Speed
     Comparison: Greater
     Value: 0

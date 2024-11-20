@@ -62,6 +62,7 @@ namespace Odyssey::Rune
 		void BuildNodes();
 		void BuildNode(Node* node);
 		void BreakLinks(Pin* pin);
+		void AddLink(GUID linkGUID, GUID beginGUID, GUID endGUID);
 
 	protected:
 		friend class BlueprintBuilder;

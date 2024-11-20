@@ -39,6 +39,7 @@ namespace Odyssey
 		bool Evaluate();
 
 	public:
+		GUID GetGUID() { return m_GUID; }
 		std::shared_ptr<AnimationState> GetBeginState() { return m_BeginState; }
 		std::shared_ptr<AnimationState> GetEndState() { return m_EndState; }
 		std::shared_ptr<AnimationProperty> GetProperty() { return m_Property; }
@@ -46,6 +47,7 @@ namespace Odyssey
 		RawBuffer& GetTargetValue() { return m_TargetValue; }
 
 	private:
+		GUID m_GUID;
 		std::shared_ptr<AnimationState> m_BeginState;
 		std::shared_ptr<AnimationState> m_EndState;
 
@@ -67,11 +69,12 @@ namespace Odyssey
 		const std::map<std::string, BlendKey>& Evaluate();
 
 	public:
+		GUID GetGUID() { return m_GUID; }
 		std::string_view GetName();
 		std::shared_ptr<AnimationClip> GetClip();
 
 	public:
-		GUID GetGUID() { return m_GUID; }
+		void SetGUID(GUID guid) { m_GUID = guid; }
 		void SetClip(GUID guid);
 
 	private:

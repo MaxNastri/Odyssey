@@ -14,5 +14,6 @@ namespace Odyssey::Rune
 
 	public:
 		Link(GUID startPinGUID, GUID endPinGUID);
+		Link(GUID linkGUID, GUID startPinGUID, GUID endPinGUID);
 	};
 }

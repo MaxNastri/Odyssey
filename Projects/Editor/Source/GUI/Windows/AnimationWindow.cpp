@@ -324,6 +324,13 @@ namespace Odyssey
 
 					m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", clipGUID, AnimationClip::Type, onAnimationClipChanged);
 				}
+				else
+				{
+					// No valid nodes selected, lets look for a selected link
+
+					ImguiExt::LinkId link;
+					ImguiExt::GetSelectedLinks(&link, 1);
+				}
 			}
 
 			if (m_AnimationState)
@@ -398,8 +405,6 @@ namespace Odyssey
 		{
 			ImGui::TextUnformatted("Create New Node");
 			ImGui::Separator();
-
-			std::shared_ptr<Node> node;
 
 			if (ImGui::MenuItem("Animation State"))
 			{
@@ -542,12 +547,11 @@ namespace Odyssey
 				// Only allow the add button when the other 2 fields are filled
 				if (ImGui::Button("Add") || Input::GetKeyDown(KeyCode::Enter) || Input::GetKeyDown(KeyCode::KeypadEnter))
 				{
-					// builder->connect pending link
-					GUID startNode, endNode;
-					if (m_Builder->GetPendingLinkNodes(startNode, endNode))
+					GUID beginNode, endNode;
+					if (m_Builder->GetPendingLinkNodes(beginNode, endNode))
 					{
-						m_Blueprint->AddAnimationLink(startNode, endNode, m_SelectedProperty, (ComparisonOp)m_SelectedComparisonOp, m_AddLinkPropertyValue);
-						m_Builder->ConfirmPendingLink();
+						m_Blueprint->AddAnimationLink(beginNode, endNode, m_SelectedProperty, (ComparisonOp)m_SelectedComparisonOp, m_AddLinkPropertyValue);
+						m_Builder->ClearPendingLink();
 					}
 					ImGui::CloseCurrentPopup();
 				}
