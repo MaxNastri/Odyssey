@@ -131,8 +131,6 @@ float4 main(PixelInput input) : SV_Target
     
     LightingOutput lighting = CalculateLighting(input.Normal);
     float4 finalLighting = float4(lighting.Diffuse + AmbientColor.rgb, 1.0f);
-    
-    return float4(input.Normal, 1.0f);
     return diffuseTex2D.Sample(diffuseSampler, input.TexCoord0) * finalLighting;
 }
 
