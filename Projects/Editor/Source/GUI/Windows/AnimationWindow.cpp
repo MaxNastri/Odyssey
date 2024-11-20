@@ -301,7 +301,8 @@ namespace Odyssey
 		if (ImGui::Begin("Node Inspector Panel"))
 		{
 			float2 textSize = ImGui::CalcTextSize("Hello world") * 1.1f;
-			ImGui::FilledRectSpanText("Node Inspector", float4(1.0f), float4(0.15f, 0.15f, 0.15f, 1.0f), textSize.y, float2(1.0f, 0.0f));
+			const char* panelName = m_AnimationLink ? "Link Inspector" : "State Inspector";
+			ImGui::FilledRectSpanText(panelName, float4(1.0f), float4(0.15f, 0.15f, 0.15f, 1.0f), textSize.y, float2(1.0f, 0.0f));
 
 			if (ImguiExt::HasSelectionChanged())
 			{

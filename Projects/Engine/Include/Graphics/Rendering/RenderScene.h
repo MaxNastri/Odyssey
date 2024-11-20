@@ -25,6 +25,7 @@ namespace Odyssey
 	struct ObjectUniformData
 	{
 		glm::mat4 world;
+		glm::mat3 InverseWorld;
 	};
 
 	struct SkinningData

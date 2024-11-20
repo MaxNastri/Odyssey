@@ -220,6 +220,8 @@ namespace Odyssey
 				// Update the per-object uniform buffer
 				uint32_t perObjectSize = sizeof(objectData);
 				objectData.world = transform.GetWorldMatrix();
+				objectData.InverseWorld = glm::transpose(glm::inverse(objectData.world));
+
 				ResourceID uboID = perObjectUniformBuffers[drawcall.UniformBufferIndex];
 				auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
 				uniformBuffer->CopyData(perObjectSize, &objectData);
