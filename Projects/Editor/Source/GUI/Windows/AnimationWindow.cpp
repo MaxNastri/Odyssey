@@ -316,25 +316,13 @@ namespace Odyssey
 
 				if (m_AnimationState)
 				{
-					auto onAnimationClipChanged = [this](GUID guid)
-						{
-							if (m_AnimationState)
-								m_AnimationState->SetClip(guid);
-						};
-
-					auto onStateNameChanged = [this](std::string_view name)
-						{
-							if (m_AnimationState)
-								m_AnimationState->SetName(name);
-						};
-
 					GUID clipGUID;
 
 					if (auto clip = m_AnimationState->GetClip())
 						clipGUID = clip->GetGUID();
 
-					m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", clipGUID, AnimationClip::Type, onAnimationClipChanged);
-					m_StateNameDrawer = StringDrawer("State", m_AnimationState->GetName(), false, onStateNameChanged);
+					m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", clipGUID, AnimationClip::Type);
+					m_StateNameDrawer = StringDrawer("State", m_AnimationState->GetName());
 				}
 				else
 				{
@@ -345,59 +333,26 @@ namespace Odyssey
 
 					if (m_AnimationLink)
 					{
-						auto onPropertyNameChanged = [this](std::string_view property, uint64_t index)
-							{
-								if (m_AnimationLink)
-									m_AnimationLink->SetProperty(m_Blueprint->GetProperty(property.data()));
-							};
-
-						auto onComparisonOpChanged = [this](ComparisonOp op)
-							{
-								if (m_AnimationLink)
-									m_AnimationLink->SetComparisonOp(op);
-							};
-
-						m_PropertyNameDrawer = DropdownDrawer("Property", m_Blueprint->GetAllPropertyNames(), m_AnimationLink->GetProperty()->Name, onPropertyNameChanged);
-						m_ComparisonDrawer = EnumDrawer<ComparisonOp>("Comparison", m_AnimationLink->GetComparisonOp(), onComparisonOpChanged);
+						m_PropertyNameDrawer = DropdownDrawer("Property", m_Blueprint->GetAllPropertyNames(), m_AnimationLink->GetProperty()->Name);
+						m_ComparisonDrawer = EnumDrawer<ComparisonOp>("Comparison", m_AnimationLink->GetComparisonOp());
 
 						auto animProperty = m_AnimationLink->GetProperty();
 						switch (animProperty->Type)
 						{
 							case AnimationPropertyType::Float:
 							{
-								auto onLinkValueChanged = [this](float value)
-									{
-										if (m_AnimationLink && m_AnimationLink->GetProperty())
-										{
-											m_AnimationLink->SetFloat(value);
-										}
-									};
-								m_LinkValueDrawer = std::make_unique<FloatDrawer>("Value", animProperty->ValueBuffer.Read<float>(), onLinkValueChanged);
+								m_LinkValueDrawer = std::make_shared<FloatDrawer>("Value", animProperty->ValueBuffer.Read<float>());
 								break;
 							}
 							case AnimationPropertyType::Int:
 							{
-								auto onLinkValueChanged = [this](int32_t value)
-									{
-										if (m_AnimationLink && m_AnimationLink->GetProperty())
-										{
-											m_AnimationLink->SetInt(value);
-										}
-									};
-								m_LinkValueDrawer = std::make_unique<IntDrawer<int32_t>>("Value", animProperty->ValueBuffer.Read<int32_t>(), false, onLinkValueChanged);
+								m_LinkValueDrawer = std::make_shared<IntDrawer<int32_t>>("Value", animProperty->ValueBuffer.Read<int32_t>());
 								break;
 							}
 							case AnimationPropertyType::Bool:
 							case AnimationPropertyType::Trigger:
 							{
-								auto onLinkValueChanged = [this](bool value)
-									{
-										if (m_AnimationLink && m_AnimationLink->GetProperty())
-										{
-											m_AnimationLink->SetBool(value);
-										}
-									};
-								m_LinkValueDrawer = std::make_unique<BoolDrawer>("Value", animProperty->ValueBuffer.Read<bool>(), false, onLinkValueChanged);
+								m_LinkValueDrawer = std::make_shared<BoolDrawer>("Value", animProperty->ValueBuffer.Read<bool>());
 								break;
 							}
 							default:
@@ -409,14 +364,50 @@ namespace Odyssey
 
 			if (m_AnimationState)
 			{
-				m_StateNameDrawer.Draw();
-				m_AnimationClipDrawer.Draw();
+				if (m_StateNameDrawer.Draw())
+					m_AnimationState->SetName(m_StateNameDrawer.GetValue());
+
+				if (m_AnimationClipDrawer.Draw())
+					m_AnimationState->SetClip(m_AnimationClipDrawer.GetGUID());
 			}
 			else if (m_AnimationLink)
 			{
-				m_PropertyNameDrawer.Draw();
-				m_ComparisonDrawer.Draw();
-				m_LinkValueDrawer->Draw();
+				if (m_PropertyNameDrawer.Draw())
+					m_AnimationLink->SetProperty(m_Blueprint->GetProperty(m_PropertyNameDrawer.GetSelected().data()));
+
+				if (m_ComparisonDrawer.Draw())
+					m_AnimationLink->SetComparisonOp(m_ComparisonDrawer.GetValue());
+
+				if (m_LinkValueDrawer->Draw())
+				{
+					if (auto animationProperty = m_AnimationLink->GetProperty())
+					{
+						switch (animationProperty->Type)
+						{
+							case AnimationPropertyType::Float:
+							{
+								auto drawer = std::static_pointer_cast<FloatDrawer>(m_LinkValueDrawer);
+								m_AnimationLink->SetBool(drawer->GetValue());
+								break;
+							}
+							case AnimationPropertyType::Int:
+							{
+								auto drawer = std::static_pointer_cast<IntDrawer<int32_t>>(m_LinkValueDrawer);
+								m_AnimationLink->SetInt(drawer->GetValue());
+								break;
+							}
+							case AnimationPropertyType::Bool:
+							case AnimationPropertyType::Trigger:
+							{
+								auto drawer = std::static_pointer_cast<BoolDrawer>(m_LinkValueDrawer);
+								m_AnimationLink->SetBool(drawer->GetValue());
+								break;
+							}
+							default:
+								break;
+						}
+					}
+				}
 			}
 
 			ImGui::End();

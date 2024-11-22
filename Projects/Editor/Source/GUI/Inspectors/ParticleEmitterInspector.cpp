@@ -10,11 +10,11 @@ namespace Odyssey
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
 		{
 			m_EmitterEnabled = emitter->IsEnabled();
-			m_LoopDrawer = BoolDrawer("Loop", emitter->Loop, false,
+			m_LoopDrawer = BoolDrawer("Loop", emitter->IsLooping(), false,
 				[this](bool loop) { OnLoopModified(loop); });
 			m_DurationDrawer = FloatDrawer("Duration", emitter->GetDuration(),
 				[this](float duration) { OnDurationModified(duration); });
-			m_EmissionRateDrawer = IntDrawer<uint32_t>("Emission Rate", emitter->EmissionRate, false,
+			m_EmissionRateDrawer = IntDrawer<uint32_t>("Emission Rate", emitter->GetEmissionRate(), false,
 				[this](uint32_t emissionRate) { OnEmissionRateModified(emissionRate); });
 			m_MaterialDrawer = AssetFieldDrawer("Material", emitter->GetMaterial(), Material::Type,
 				[this](GUID material) { OnMaterialModified(material); });
@@ -68,7 +68,7 @@ namespace Odyssey
 	void ParticleEmitterInspector::OnLoopModified(bool loop)
 	{
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
-			emitter->Loop = loop;
+			emitter->SetLoop(loop);
 	}
 
 	void ParticleEmitterInspector::OnDurationModified(float duration)
@@ -80,7 +80,7 @@ namespace Odyssey
 	void ParticleEmitterInspector::OnEmissionRateModified(uint32_t emissionRate)
 	{
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
-			emitter->EmissionRate = emissionRate;
+			emitter->SetEmissionRate(emissionRate);
 	}
 
 	void ParticleEmitterInspector::OnMaterialModified(GUID material)

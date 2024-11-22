@@ -6,6 +6,16 @@ namespace Odyssey
     {
 #pragma warning disable CS0649 // Variable is never assigned to
 
+        #region Animator
+
+        internal static delegate* unmanaged<GUID, bool> Animator_IsEnabled;
+        internal static delegate* unmanaged<GUID, NativeString, float, void> Animator_SetFloat;
+        internal static delegate* unmanaged<GUID, NativeString, bool, void> Animator_SetBool;
+        internal static delegate* unmanaged<GUID, NativeString, int, void> Animator_SetInt;
+        internal static delegate* unmanaged<GUID, NativeString, void> Animator_SetTrigger;
+
+        #endregion
+
         #region GameObject
 
         internal static delegate* unmanaged<GUID> GameObject_Create;
@@ -49,6 +59,19 @@ namespace Odyssey
         // <EntityGUID, MeshGUID>
         internal static delegate* unmanaged<GUID, GUID, void> MeshRenderer_SetMesh;
         #endregion
+
+        #region Input
+
+        internal static delegate* unmanaged<KeyCode, bool> Input_GetKeyPress;
+        internal static delegate* unmanaged<KeyCode, bool> Input_GetKeyDown;
+        internal static delegate* unmanaged<KeyCode, bool> Input_GetKeyUp;
+        internal static delegate* unmanaged<MouseButton, bool> Input_GetMouseButtonDown;
+        internal static delegate* unmanaged<float> Input_GetMouseAxisHorizontal;
+        internal static delegate* unmanaged<float> Input_GetMouseAxisVertical;
+        internal static delegate* unmanaged<Vector2> Input_GetMousePosition;
+
+        #endregion
+
         #region Time
 
         internal static delegate* unmanaged<float> Time_GetDeltaTime;

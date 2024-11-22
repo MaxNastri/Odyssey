@@ -48,6 +48,8 @@ namespace Odyssey
 
 	public:
 		void SetEnabled(bool enabled) { m_Enabled = enabled; }
+		void SetLoop(bool loop) { m_Loop = loop; }
+		void SetEmissionRate(uint32_t emissionRate) { m_EmissionRate = emissionRate; }
 		void SetDuration(float duration) { m_Duration = duration; }
 		void SetLifetime(float2 lifetime) { emitterData.Lifetime = lifetime; }
 		void SetMaterial(GUID material) { m_Material = material; }
@@ -59,6 +61,8 @@ namespace Odyssey
 	public:
 		bool IsEnabled() { return m_Enabled; }
 		float GetDuration() { return m_Duration; }
+		bool IsLooping() { return m_Loop; }
+		uint32_t GetEmissionRate() { return m_EmissionRate; }
 		float4 GetStartColor() { return emitterData.StartColor; }
 		float4 GetEndColor() { return emitterData.EndColor; }
 		float2 GetLifetime() { return emitterData.Lifetime; }
@@ -68,13 +72,13 @@ namespace Odyssey
 
 	public:
 		ParticleEmitterData emitterData;
-		uint32_t EmissionRate = 100;
-		bool Loop = false;
 
 	private:
 		bool m_Enabled;
 		GameObject m_GameObject;
+		bool m_Loop = false;
 		float m_Duration = 1.0f;
+		uint32_t m_EmissionRate = 100;
 		GUID m_Material;
 		float m_EmissionTime;
 		uint32_t m_EmissionCount;

@@ -237,6 +237,9 @@ namespace Odyssey
 		}
 
 	public:
+		T GetValue() { return m_Value; }
+
+	public:
 		virtual bool Draw() override
 		{
 			bool modified = false;

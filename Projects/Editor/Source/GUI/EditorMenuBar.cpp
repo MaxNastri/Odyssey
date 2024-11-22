@@ -47,6 +47,18 @@ namespace Odyssey
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Project"))
+			{
+				if (ImGui::MenuItem("Create"))
+				{
+
+				}
+				if (ImGui::MenuItem("Open"))
+				{
+
+				}
+			}
+
 			if (ImGui::BeginMenu("Window"))
 			{
 				if (ImGui::MenuItem("Animation Window"))

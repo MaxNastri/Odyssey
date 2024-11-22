@@ -18,8 +18,8 @@ namespace Odyssey
 
         public static Vector3 operator +(Vector3 lhs, Vector3 rhs) => new Vector3(lhs.X + rhs.X, lhs.Y + rhs.Y, lhs.Z + rhs.Z);
         public static Vector3 operator *(Vector3 vector, float scalar) => new Vector3(vector.X * scalar, vector.Y * scalar, vector.Z * scalar);
-        
-public override string ToString()
+
+        public override string ToString()
         {
             return $"({X}, {Y}, {Z})";
         }

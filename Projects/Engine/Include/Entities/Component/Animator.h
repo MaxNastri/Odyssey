@@ -29,6 +29,9 @@ namespace Odyssey
 	public:
 		void SetEnabled(bool enabled);
 		void SetFloat(const std::string& propertyName, float value);
+		void SetBool(const std::string& propertyName, bool value);
+		void SetInt(const std::string& propertyName, int32_t value);
+		void SetTrigger(const std::string& propertyName);
 
 	public:
 		bool IsEnabled() { return m_Enabled; }

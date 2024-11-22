@@ -8,7 +8,7 @@ namespace Odyssey
 	{
 		m_GameObject = gameObject;
 		m_EmissionTime = 0.0f;
-		m_EmissionCount = EmissionRate;
+		m_EmissionCount = m_EmissionRate;
 	}
 
 	void ParticleEmitter::Serialize(SerializationNode& node)
@@ -19,7 +19,7 @@ namespace Odyssey
 		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Duration", m_Duration);
 		componentNode.WriteData("Material", m_Material.CRef());
-		componentNode.WriteData("Emission Rate", EmissionRate);
+		componentNode.WriteData("Emission Rate", m_EmissionRate);
 		componentNode.WriteData("Start Color", emitterData.StartColor);
 		componentNode.WriteData("End Color", emitterData.EndColor);
 		componentNode.WriteData("Velocity", emitterData.Velocity);
@@ -32,7 +32,7 @@ namespace Odyssey
 	{
 		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Duration", m_Duration);
-		node.ReadData("Emission Rate", EmissionRate);
+		node.ReadData("Emission Rate", m_EmissionRate);
 		node.ReadData("Material", m_Material.Ref());
 		node.ReadData("Start Color", emitterData.StartColor);
 		node.ReadData("End Color", emitterData.EndColor);
@@ -54,7 +54,7 @@ namespace Odyssey
 
 	void ParticleEmitter::Update(float deltaTime)
 	{
-		float emissionInterval = 1.0f / (float)EmissionRate;
+		float emissionInterval = 1.0f / (float)m_EmissionRate;
 		m_EmissionTime += deltaTime;
 		emitterData.EmitCount = 0;
 

@@ -55,7 +55,7 @@ namespace Odyssey
 	private: // Animation Link
 		DropdownDrawer m_PropertyNameDrawer;
 		EnumDrawer<ComparisonOp> m_ComparisonDrawer;
-		std::unique_ptr<PropertyDrawer> m_LinkValueDrawer;
+		std::shared_ptr<PropertyDrawer> m_LinkValueDrawer;
 
 	private: // Add property menu
 		char m_AddPropertyBuffer[128] = "";

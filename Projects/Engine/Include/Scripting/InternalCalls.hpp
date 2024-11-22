@@ -8,6 +8,8 @@
 #include "OdysseyTime.h"
 #include "AssetManager.h"
 #include "Mesh.h"
+#include "Animator.h"
+#include "Input.h"
 
 namespace Odyssey
 {
@@ -42,6 +44,58 @@ namespace Odyssey::InternalCalls
 		GameObject gameObject = activeScene->GetGameObject(guid);
 		return gameObject;
 	}
+
+#pragma region Animator
+
+	bool Animator_IsEnabled(uint64_t gameObjectGUID)
+	{
+		GameObject gameObject = GetGameObject(gameObjectGUID);
+
+		if (Animator* animator = gameObject.TryGetComponent<Animator>())
+			return animator->IsEnabled();
+
+		return false;
+	}
+
+	void Animator_SetFloat(uint64_t gameObjectGUID, Coral::String propertyName, float value)
+	{
+		std::string property = propertyName;
+		GameObject gameObject = GetGameObject(gameObjectGUID);
+
+		if (Animator* animator = gameObject.TryGetComponent<Animator>())
+			animator->SetFloat(propertyName, value);
+	}
+
+	void Animator_SetBool(uint64_t gameObjectGUID, Coral::String propertyName, bool value)
+	{
+		std::string property = propertyName;
+		GameObject gameObject = GetGameObject(gameObjectGUID);
+
+		if (Animator* animator = gameObject.TryGetComponent<Animator>())
+			animator->SetBool(propertyName, value);
+	}
+
+	void Animator_SetInt(uint64_t gameObjectGUID, Coral::String propertyName, int32_t value)
+	{
+		std::string property = propertyName;
+		GameObject gameObject = GetGameObject(gameObjectGUID);
+
+		if (Animator* animator = gameObject.TryGetComponent<Animator>())
+			animator->SetInt(propertyName, value);
+	}
+
+	void Animator_SetTrigger(uint64_t gameObjectGUID, Coral::String propertyName)
+	{
+		std::string property = propertyName;
+		GameObject gameObject = GetGameObject(gameObjectGUID);
+
+		if (Animator* animator = gameObject.TryGetComponent<Animator>())
+			animator->SetTrigger(propertyName);
+	}
+
+#pragma endregion
+
+#pragma region GameObject
 
 	uint64_t GameObject_Create()
 	{
@@ -120,6 +174,10 @@ namespace Odyssey::InternalCalls
 		return false;
 	}
 
+#pragma endregion
+
+#pragma region Transform
+	
 	void Transform_GetPosition(uint64_t guid, glm::vec3* position)
 	{
 		if (!guid)
@@ -180,6 +238,10 @@ namespace Odyssey::InternalCalls
 			transform->SetScale(scale);
 	}
 
+#pragma endregion
+
+#pragma region Mesh
+
 	uint32_t Mesh_GetVertexCount(uint64_t guid)
 	{
 		if (std::shared_ptr<Mesh> mesh = AssetManager::LoadAsset<Mesh>(GUID(guid)))
@@ -187,6 +249,10 @@ namespace Odyssey::InternalCalls
 
 		return 0;
 	}
+
+#pragma endregion
+
+#pragma region Mesh Renderer
 
 	uint64_t MeshRenderer_GetMesh(uint64_t entityGUID)
 	{
@@ -206,8 +272,53 @@ namespace Odyssey::InternalCalls
 			renderer->SetMesh(GUID(meshGUID));
 	}
 
+#pragma endregion
+
+#pragma region Input
+
+	bool Input_GetKeyPress(uint32_t key)
+	{
+		return Input::GetKeyPress((KeyCode)key);
+	}
+
+	bool Input_GetKeyDown(uint32_t key)
+	{
+		return Input::GetKeyDown((KeyCode)key);
+	}
+
+	bool Input_GetKeyUp(uint32_t key)
+	{
+		return Input::GetKeyUp((KeyCode)key);
+	}
+
+	bool Input_GetMouseButtonDown(uint32_t button)
+	{
+		return Input::GetMouseButtonDown((MouseButton)button);
+	}
+
+	float Input_GetMouseAxisHorizontal()
+	{
+		return Input::GetMouseAxisHorizontal();
+	}
+
+	float Input_GetMouseAxisVertical()
+	{
+		return Input::GetMouseAxisVertical();
+	}
+
+	float2 Input_GetMousePosition()
+	{
+		return Input::GetMousePosition();
+	}
+
+#pragma endregion
+
+#pragma region Time
+
 	float Time_GetDeltaTime()
 	{
 		return Time::DeltaTime();
 	}
+
+#pragma endregion
 }

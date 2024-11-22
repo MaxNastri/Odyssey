@@ -70,6 +70,21 @@ namespace Odyssey
 		m_Blueprint->SetFloat(propertyName, value);
 	}
 
+	void Animator::SetBool(const std::string& propertyName, bool value)
+	{
+		m_Blueprint->SetBool(propertyName, value);
+	}
+
+	void Animator::SetInt(const std::string& propertyName, int32_t value)
+	{
+		m_Blueprint->SetInt(propertyName, value);
+	}
+
+	void Animator::SetTrigger(const std::string& propertyName)
+	{
+		m_Blueprint->SetTrigger(propertyName);
+	}
+
 	GUID Animator::GetRigAsset()
 	{
 		return m_Rig->GetGUID();
