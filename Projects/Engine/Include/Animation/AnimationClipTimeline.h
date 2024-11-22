@@ -1,6 +1,6 @@
 #pragma once
 #include "GUID.h"
-#include "BoneKeyframe.hpp"
+#include "BoneKeyframe.h"
 
 namespace Odyssey
 {

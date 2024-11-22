@@ -1,18 +1,16 @@
 #pragma once
 #include "Blueprint.h"
 #include "Asset.h"
-#include "AnimationProperty.hpp"
-#include "BoneKeyframe.hpp"
-#include "RawBuffer.hpp"
+#include "AnimationLink.h"
 #include "AnimationState.h"
+#include "BoneKeyframe.h"
+#include "RawBuffer.hpp"
 
 namespace Odyssey
 {
 	using namespace Rune;
 
 	struct AnimationProperty;
-	class AnimationState;
-	class AnimationLink;
 	struct AnimationStateNode;
 
 	class AnimationBlueprint : public Blueprint, public Asset

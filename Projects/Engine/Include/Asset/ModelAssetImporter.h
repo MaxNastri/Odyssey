@@ -1,7 +1,7 @@
 #pragma once
 #include "Vertex.h"
 #include "Bone.h"
-#include "BoneKeyframe.hpp"
+#include "BoneKeyframe.h"
 
 namespace fbxsdk
 {

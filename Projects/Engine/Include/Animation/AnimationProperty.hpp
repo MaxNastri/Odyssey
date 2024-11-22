@@ -13,10 +13,6 @@ namespace Odyssey
 
 	struct AnimationProperty
 	{
-		std::string Name;
-		AnimationPropertyType Type;
-		RawBuffer ValueBuffer;
-
 	public:
 		AnimationProperty() = default;
 		AnimationProperty(std::string_view name, AnimationPropertyType type)
@@ -40,5 +36,10 @@ namespace Odyssey
 					break;
 			}
 		}
+
+	public:
+		std::string Name;
+		AnimationPropertyType Type;
+		RawBuffer ValueBuffer;
 	};
 }

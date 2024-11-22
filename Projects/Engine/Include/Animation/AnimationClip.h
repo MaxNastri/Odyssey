@@ -1,6 +1,5 @@
 #pragma once
 #include "Asset.h"
-#include "BoneKeyframe.hpp"
 #include "AnimationClipTimeline.h"
 
 namespace Odyssey
