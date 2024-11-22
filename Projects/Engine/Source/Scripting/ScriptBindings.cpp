@@ -4,7 +4,7 @@
 #include "MeshRenderer.h"
 #include "ScriptComponent.h"
 #include "Transform.h"
-#include "InternalCalls.hpp"
+#include "InternalCalls.h"
 
 namespace Odyssey
 {

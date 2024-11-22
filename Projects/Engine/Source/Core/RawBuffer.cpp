@@ -1,9 +1,7 @@
-#include "RawBuffer.hpp"
+#include "RawBuffer.h"
 
 namespace Odyssey
 {
-	using Byte = uint8_t;
-
 	RawBuffer::RawBuffer(const void* data, size_t size)
 		: m_Data((void*)data), m_Size(size)
 	{

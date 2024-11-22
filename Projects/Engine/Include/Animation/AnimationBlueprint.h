@@ -4,7 +4,7 @@
 #include "AnimationLink.h"
 #include "AnimationState.h"
 #include "BoneKeyframe.h"
-#include "RawBuffer.hpp"
+#include "RawBuffer.h"
 
 namespace Odyssey
 {

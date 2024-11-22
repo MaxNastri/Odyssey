@@ -1,6 +1,6 @@
 #pragma once
 #include "GUID.h"
-#include "RawBuffer.hpp"
+#include "RawBuffer.h"
 
 namespace Odyssey
 {

@@ -2,9 +2,10 @@
 
 namespace Odyssey
 {
+	using Byte = uint8_t;
+
 	class RawBuffer
 	{
-		using Byte = uint8_t;
 	public:
 		RawBuffer() = default;
 		RawBuffer(const void* data, size_t size);

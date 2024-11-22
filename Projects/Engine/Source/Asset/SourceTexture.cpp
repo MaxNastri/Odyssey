@@ -1,6 +1,6 @@
 #include "SourceTexture.h"
 #include "AssetManager.h"
-#include "RawBuffer.hpp"
+#include "RawBuffer.h"
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #endif

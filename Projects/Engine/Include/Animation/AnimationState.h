@@ -1,7 +1,7 @@
 #pragma once
 #include "Rune.h"
 #include "GUID.h"
-#include "AnimationProperty.hpp"
+#include "AnimationProperty.h"
 #include "BoneKeyframe.h"
 
 namespace Odyssey

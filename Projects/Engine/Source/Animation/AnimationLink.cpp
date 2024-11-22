@@ -1,6 +1,5 @@
 #include "AnimationLink.h"
 #include "AnimationState.h"
-#include "AnimationProperty.hpp"
 
 namespace Odyssey
 {

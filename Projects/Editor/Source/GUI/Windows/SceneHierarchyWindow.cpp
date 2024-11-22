@@ -9,7 +9,7 @@
 #include "EditorEvents.h"
 #include "PropertiesComponent.h"
 #include "EditorComponents.h"
-#include "RawBuffer.hpp"
+#include "RawBuffer.h"
 #include "GUIManager.h"
 
 namespace Odyssey

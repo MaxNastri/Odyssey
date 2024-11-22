@@ -1,7 +1,6 @@
 #pragma once
 #include "DockableWindow.h"
 #include "AnimationBlueprint.h"
-#include "AnimationProperty.hpp"
 #include "PropertyDrawers.h"
 
 namespace Odyssey
