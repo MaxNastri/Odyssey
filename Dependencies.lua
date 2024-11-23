@@ -48,9 +48,8 @@ Dependencies = {
 		IncludeDir = "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral",
 	},
 	GLFW = {
-		LibName = "glfw3",
-		LibDir = "%{wks.location}/Vendor/GLFW/bin/%{cfg.buildcfg}/",
-		IncludeDir = "%{wks.location}/Vendor/GLFW",
+		LibName = "GLFW",
+		IncludeDir = "%{wks.location}/Vendor/GLFW/include/GLFW",
 	},
 	JoltPhysics = {
 		LibName = "JoltPhysics",
@@ -74,9 +73,11 @@ Dependencies = {
 	},
 	ShaderC = {
 		LibName = "shaderc_combined",
+		DebugLibName = "shaderc_combinedd",
 	},
 	SPIRVCrossCore = {
 		LibName = "spirv-cross-core",
+		DebugLibName = "spirv-cross-cored",
 	},
 	SPIRVCrossGLSL = {
 		LibName = "spirv-cross-glsl",
@@ -94,9 +95,9 @@ Dependencies = {
 		IncludeDir = "%{wks.location}/Vendor/spdlog/Include",
 	},
 	Vulkan = {
-		LibName = "glfw3",
-		LibDir = "%{wks.location}/Vendor/Vulkan/Lib/%{cfg.buildcfg}/",
-		IncludeDir = "%{wks.location}/Vendor/Vulkan/Include",
+		LibName = "vulkan-1",
+		LibDir = "%{VULKAN_SDK}/Lib/",
+		IncludeDir = "%{VULKAN_SDK}/Include/",
 	},
 }
 
