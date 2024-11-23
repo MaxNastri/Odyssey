@@ -93,7 +93,7 @@ Dependencies = {
 	},
 	SPIRVCrossUtil = {
 		LibName = "spirv-cross-util",
-		DebugLibName = "pirv-cross-utild",
+		DebugLibName = "spirv-cross-utild",
 	},
 	Spdlog = {
 		IncludeDir = "%{wks.location}/Vendor/spdlog/Include",
