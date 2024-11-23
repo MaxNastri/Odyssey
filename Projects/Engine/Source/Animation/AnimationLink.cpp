@@ -3,7 +3,7 @@
 
 namespace Odyssey
 {
-	AnimationLink::AnimationLink(std::shared_ptr<AnimationState> start, std::shared_ptr<AnimationState> end, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue)
+	AnimationLink::AnimationLink(Ref<AnimationState> start, Ref<AnimationState> end, Ref<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue)
 		: m_GUID(GUID::New()), m_BeginState(start), m_EndState(end),
 		m_Property(property), m_ComparisonOp(compareOp)
 
@@ -11,7 +11,7 @@ namespace Odyssey
 		RawBuffer::Copy(m_TargetValue, targetValue);
 	}
 
-	AnimationLink::AnimationLink(GUID guid, std::shared_ptr<AnimationState> start, std::shared_ptr<AnimationState> end, std::shared_ptr<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue)
+	AnimationLink::AnimationLink(GUID guid, Ref<AnimationState> start, Ref<AnimationState> end, Ref<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue)
 		: m_GUID(guid), m_BeginState(start), m_EndState(end),
 		m_Property(property), m_ComparisonOp(compareOp)
 	{

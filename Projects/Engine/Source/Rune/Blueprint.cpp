@@ -46,7 +46,7 @@ namespace Odyssey::Rune
 		for (auto& node : m_Nodes)
 		{
 			if (node->Guid == nodeGUID)
-				return node.get();
+				return node.Get();
 		}
 
 		return nullptr;
@@ -89,7 +89,7 @@ namespace Odyssey::Rune
 	void Blueprint::BuildNodes()
 	{
 		for (auto& node : m_Nodes)
-			BuildNode(node.get());
+			BuildNode(node.Get());
 	}
 
 	void Blueprint::BuildNode(Node* node)

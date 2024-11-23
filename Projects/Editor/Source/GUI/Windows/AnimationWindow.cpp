@@ -479,8 +479,8 @@ namespace Odyssey
 
 			if (ImGui::MenuItem("Animation State"))
 			{
-				std::shared_ptr<AnimationStateNode> node = m_Blueprint->AddAnimationState("State");
-				m_Builder->ConnectNewNode(node.get());
+				Ref<AnimationStateNode> node = m_Blueprint->AddAnimationState("State");
+				m_Builder->ConnectNewNode(node.Get());
 			}
 
 			ImGui::EndPopup();

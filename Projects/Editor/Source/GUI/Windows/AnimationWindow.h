@@ -2,6 +2,7 @@
 #include "DockableWindow.h"
 #include "AnimationBlueprint.h"
 #include "PropertyDrawers.h"
+#include "Ref.h"
 
 namespace Odyssey
 {
@@ -44,8 +45,8 @@ namespace Odyssey
 		uint32_t m_DockspaceID = 0;
 
 	private: // Node inspector panel
-		std::shared_ptr<AnimationState> m_AnimationState;
-		std::shared_ptr<AnimationLink> m_AnimationLink;
+		Ref<AnimationState> m_AnimationState;
+		Ref<AnimationLink> m_AnimationLink;
 
 	private: // Animation State
 		StringDrawer m_StateNameDrawer;

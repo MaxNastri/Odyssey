@@ -5,6 +5,7 @@
 #include "AnimationState.h"
 #include "BoneKeyframe.h"
 #include "RawBuffer.h"
+#include "Ref.h"
 
 namespace Odyssey
 {
@@ -35,13 +36,13 @@ namespace Odyssey
 		const std::map<std::string, BlendKey>& GetKeyframe();
 
 	public:
-		std::shared_ptr<AnimationStateNode> AddAnimationState(std::string name);
+		Ref<AnimationStateNode> AddAnimationState(std::string name);
 
 	public:
-		std::shared_ptr<AnimationProperty> GetProperty(const std::string& propertyName) { return m_PropertyMap[propertyName]; }
-		std::vector<std::shared_ptr<AnimationProperty>>& GetProperties() { return m_Properties; }
-		std::shared_ptr<AnimationState> GetAnimationState(GUID nodeGUID);
-		std::shared_ptr<AnimationLink> GetAnimationLink(GUID linkGUID);
+		Ref<AnimationProperty> GetProperty(const std::string& propertyName) { return m_PropertyMap[propertyName]; }
+		std::vector<Ref<AnimationProperty>>& GetProperties() { return m_Properties; }
+		Ref<AnimationState> GetAnimationState(GUID nodeGUID);
+		Ref<AnimationLink> GetAnimationLink(GUID linkGUID);
 		std::vector<std::string> GetAllPropertyNames();
 
 	public:
@@ -58,10 +59,10 @@ namespace Odyssey
 		void ClearTriggers();
 
 	private:
-		std::vector<std::shared_ptr<AnimationProperty>> m_Properties;
-		std::unordered_map<std::string, std::shared_ptr<AnimationProperty>> m_PropertyMap;
-		std::map<GUID, std::shared_ptr<AnimationState>> m_States;
-		std::map<std::shared_ptr<AnimationState>, std::vector<std::shared_ptr<AnimationLink>>> m_StateToLinks;
-		std::shared_ptr<AnimationState> m_CurrentState;
+		std::vector<Ref<AnimationProperty>> m_Properties;
+		std::unordered_map<std::string, Ref<AnimationProperty>> m_PropertyMap;
+		std::map<GUID, Ref<AnimationState>> m_States;
+		std::map<Ref<AnimationState>, std::vector<Ref<AnimationLink>>> m_StateToLinks;
+		Ref<AnimationState> m_CurrentState;
 	};
 }

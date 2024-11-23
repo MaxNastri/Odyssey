@@ -644,7 +644,7 @@ namespace Odyssey::Rune
 				ImGui::TextUnformatted("Create New Node");
 				ImGui::Separator();
 
-				std::shared_ptr<Node> node;
+				Ref<Node> node;
 
 				if (ImGui::MenuItem("Branch"))
 					node = m_Blueprint->AddNode<BranchNode>("Branch");
@@ -657,7 +657,7 @@ namespace Odyssey::Rune
 
 				if (node)
 				{
-					ConnectNewNode(node.get());
+					ConnectNewNode(node.Get());
 					m_DrawingState.CreatingNewNode = false;
 				}
 
