@@ -1,10 +1,11 @@
 #pragma once
+#include "Ref.h"
 #include "EditorEnums.h"
 #include "DockableWindow.h"
+#include "Inspector.h"
 
 namespace Odyssey
 {
-	class Inspector;
 	struct IEventListener;
 	struct GUISelectionChangedEvent;
 	struct SceneLoadedEvent;
@@ -14,10 +15,10 @@ namespace Odyssey
 	public:
 		InspectorWindow() = default;
 		InspectorWindow(size_t windowID) : DockableWindow("InspectorWindow", 0, glm::vec2(0), glm::vec2(0), glm::vec2(0)) { }
-		InspectorWindow(std::shared_ptr<Inspector> inspector);
+		InspectorWindow(Ref<Inspector> inspector);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 		virtual void OnWindowClose() override;
 
 	public:
@@ -27,9 +28,9 @@ namespace Odyssey
 		void ClearSelection();
 
 	private:
-		std::shared_ptr<Inspector> m_Inspector;
-		std::shared_ptr<IEventListener> m_selectionChangedListener;
-		std::shared_ptr<IEventListener> m_SceneLoadedListener;
+		Ref<Inspector> m_Inspector;
+		Ref<IEventListener> m_selectionChangedListener;
+		Ref<IEventListener> m_SceneLoadedListener;
 		bool open = true;
 	};
 }

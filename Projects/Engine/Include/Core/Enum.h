@@ -18,6 +18,14 @@ namespace Odyssey::Enum
 	}
 
 	template<typename T>
+	inline T ToEnum(uint64_t index)
+	{
+		auto convert = magic_enum::enum_cast<T>((int32_t)index);
+		assert(convert.has_value());
+		return convert.value();
+	}
+
+	template<typename T>
 	inline int32_t ToInt(T value)
 	{
 		return magic_enum::enum_integer<T>(value);

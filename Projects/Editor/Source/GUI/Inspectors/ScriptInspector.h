@@ -1,8 +1,9 @@
 #pragma once
-#include "Inspector.h"
-#include "PropertyDrawers.h"
 #include "GameObject.h"
+#include "Inspector.h"
 #include "ManagedObject.hpp"
+#include "PropertyDrawers.h"
+#include "Ref.h"
 #include "ScriptingManager.h"
 #include "ScriptStorage.h"
 
@@ -18,12 +19,12 @@ namespace Odyssey
 		ScriptInspector(GameObject& go);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 		void UpdateFields();
 
 	private:
 		void InitializeDrawers(ScriptComponent* userScript);
-		void CreateEntityDrawer(std::string_view fieldName, uint32_t scriptID, uint32_t fieldID, GUID initialValue);
+		void CreateEntityDrawer(std::string_view fieldName, uint32_t scriptID, uint32_t fieldID, const std::string& typeName, GUID initialValue);
 		void CreateAssetDrawer(const std::string& fieldName, const std::string& assetType, uint32_t scriptID, uint32_t fieldID, GUID initialValue);
 		void CreateDrawerFromProperty(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage);
 		void CreateStringDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage);
@@ -34,9 +35,32 @@ namespace Odyssey
 		void AddIntDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
 		{
 			T initialValue = fieldStorage.GetValue<T>();
-			auto drawer = std::make_shared<IntDrawer<T>>(fieldStorage.Name, initialValue,
-				[this, scriptID, fieldID](T newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
-			drawers.push_back(drawer);
+
+			drawers.emplace_back(new IntDrawer<T>(fieldStorage.Name, initialValue, false,
+				[this, scriptID, fieldID](T newValue) { OnFieldChanged(scriptID, fieldID, newValue); }));
+		}
+
+		void OnEntityChanged(uint32_t scriptID, uint32_t fieldID, GUID newValue)
+		{
+			auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
+
+			// Validate we are working on the same script
+			if (storage.ScriptID != scriptID)
+				return;
+
+			// Look through the field storage for the matching field
+			for (auto& [storedFieldID, fieldStorage] : storage.Fields)
+			{
+				if (fieldID == storedFieldID)
+				{
+					fieldStorage.SetValue<GUID>(newValue);
+					if (newValue == 0 && fieldStorage.Instance)
+					{
+						fieldStorage.Instance->Destroy();
+					}
+					break;
+				}
+			}
 		}
 
 		template<typename T>
@@ -62,6 +86,6 @@ namespace Odyssey
 		bool m_ScriptEnabled;
 		GameObject m_GameObject;
 		std::string displayName;
-		std::vector<std::shared_ptr<PropertyDrawer>> drawers;
+		std::vector<Ref<PropertyDrawer>> drawers;
 	};
 }

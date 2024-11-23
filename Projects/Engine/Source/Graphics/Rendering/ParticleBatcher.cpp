@@ -19,7 +19,7 @@ namespace Odyssey
 	{
 		// We can share these resources between Emit and Sim passes
 		s_CommandPool = ResourceManager::Allocate<VulkanCommandPool>(VulkanQueueType::Compute);
-		s_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
+		s_PushDescriptors = new VulkanPushDescriptors();
 
 		// Calculate the size of the shared buffers
 		m_ParticleBufferSize = sizeof(Particle) * MAX_PARTICLES;
@@ -142,7 +142,7 @@ namespace Odyssey
 
 			// Push the descriptors and dispatch
 			uint32_t groups = (uint32_t)(std::ceil(emitterData.EmitCount / 64.0f));
-			commandBuffer->PushDescriptorsCompute(s_PushDescriptors.get(), s_EmitComputePipeline);
+			commandBuffer->PushDescriptorsCompute(s_PushDescriptors.Get(), s_EmitComputePipeline);
 			commandBuffer->Dispatch(groups, 1, 1);
 
 			// End and submit the commands
@@ -173,7 +173,7 @@ namespace Odyssey
 
 				// Push the descriptors and dispatch
 				uint32_t groups = (uint32_t)(std::ceil(emitterResources.ParticleCounts.AlivePreSimCount / 256.0f));
-				commandBuffer->PushDescriptorsCompute(s_PushDescriptors.get(), s_SimComputePipeline);
+				commandBuffer->PushDescriptorsCompute(s_PushDescriptors.Get(), s_SimComputePipeline);
 				commandBuffer->Dispatch(groups, 1, 1);
 
 				// End commands and release

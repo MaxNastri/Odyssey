@@ -13,10 +13,10 @@ namespace Odyssey
 	{
 		if (m_Shader = AssetManager::LoadSourceAsset<SourceShader>(guid))
 		{
-			m_ShaderNameDrawer = StringDrawer("Shader Name", m_Shader->GetName(), nullptr, true);
-			m_ShaderLanguageDrawer = StringDrawer("Shader Language", m_Shader->GetShaderLanguage(), nullptr, true);
-			m_CompiledDrawer = BoolDrawer("Compiled", m_Shader->IsCompiled(), nullptr, true);
-			m_DstAssetPathDrawer = StringDrawer("Destination Asset Path", m_DstAssetPath,
+			m_ShaderNameDrawer = StringDrawer("Shader Name", m_Shader->GetName(), true);
+			m_ShaderLanguageDrawer = StringDrawer("Shader Language", m_Shader->GetShaderLanguage(), true);
+			m_CompiledDrawer = BoolDrawer("Compiled", m_Shader->IsCompiled(), true);
+			m_DstAssetPathDrawer = StringDrawer("Destination Asset Path", m_DstAssetPath, false,
 				[this](std::string_view assetPath) { OnDstAssetPathChanged(assetPath); });
 
 			m_ShaderNameDrawer.SetLabelWidth(0.5f);
@@ -25,21 +25,25 @@ namespace Odyssey
 			m_DstAssetPathDrawer.SetLabelWidth(0.7f);
 		}
 	}
-	void SourceShaderInspector::Draw()
+
+	bool SourceShaderInspector::Draw()
 	{
-		m_ShaderNameDrawer.Draw();
-		m_ShaderLanguageDrawer.Draw();
-		m_CompiledDrawer.Draw();
-		m_DstAssetPathDrawer.Draw();
+		bool modified = false;
+		modified |= m_ShaderNameDrawer.Draw();
+		modified |= m_ShaderLanguageDrawer.Draw();
+		modified |= m_CompiledDrawer.Draw();
+		modified |= m_DstAssetPathDrawer.Draw();
 
 		if (ImGui::Button("Compile"))
 		{
-			m_CompiledDrawer.SetData(m_Shader->Compile());
+			m_CompiledDrawer.SetValue(m_Shader->Compile());
 		}
 		if (ImGui::Button("Create Shader"))
 		{
 			if (!m_DstAssetPath.empty())
 				AssetManager::CreateAsset<Shader>(Project::GetActiveAssetsDirectory() / m_DstAssetPath, m_Shader);
 		}
+
+		return modified;
 	}
 }

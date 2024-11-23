@@ -1,6 +1,5 @@
 #pragma once
-#include <EventSystem.h>
-#include <Scene.h>
+#include "EventSystem.h"
 #include "EditorEnums.h"
 
 namespace Odyssey

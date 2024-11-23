@@ -15,14 +15,14 @@ namespace Odyssey
 		SceneHierarchyWindow(size_t windowID);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 		virtual void OnWindowClose() override;
 
 	public:
 		void OnSceneLoaded(SceneLoadedEvent* event);
 
 	private:
-		void DrawSceneNode(const std::shared_ptr<SceneGraph::Node> node);
+		void DrawSceneNode(Ref<SceneGraph::Node>& node);
 		bool DrawGameObject(GameObject& gameObject, bool leaf);
 		void HandleContextMenu();
 		void HandleDragAndDropWindow();
@@ -32,7 +32,7 @@ namespace Odyssey
 		Scene* m_Scene;
 		std::vector<Interaction<GameObject>> m_Interactions;
 		bool m_ContextMenuOpen = false;
-		std::shared_ptr<IEventListener> m_SceneLoadedListener;
+		Ref<IEventListener> m_SceneLoadedListener;
 		GameObject m_Selected;
 		std::function<void(void)> m_Deferred;
 	};

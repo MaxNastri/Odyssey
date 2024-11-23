@@ -39,8 +39,7 @@ namespace Odyssey
 
 		std::wstring buildCommand = L" build \"" +
 			m_Settings.UserScriptsProject.wstring() +
-			L"\" -c Debug --no-self-contained " +
-			L"-o \"" + m_UserAssembliesDirectory.wstring() + L"\" -r \"win-x64\"";
+			L"\" -c Debug";
 
 		bool success = BuildAssemblies(buildCommand);
 		EventSystem::Dispatch<BuildCompleteEvent>(success);
@@ -129,10 +128,6 @@ namespace Odyssey
 		// Successful build
 		if (exitCode == 0)
 		{
-			// Copy out files
-			std::filesystem::path outputPath = m_Settings.ApplicationPath / m_UserAssemblyFilename;
-			std::filesystem::copy(m_UserAssemblyPath, outputPath,
-				std::filesystem::copy_options::overwrite_existing);
 			return true;
 		}
 		// Failed build

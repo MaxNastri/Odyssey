@@ -17,7 +17,7 @@ namespace Odyssey
 		m_WindowFlags |= ImGuiWindowFlags_NoCollapse;
 	}
 
-	void EditorActionsBar::Draw()
+	bool EditorActionsBar::Draw()
 	{
 		ImGuiWindowClass window_class;
 		window_class.DockNodeFlagsOverrideSet =
@@ -87,5 +87,7 @@ namespace Odyssey
 			}
 
 		}
+
+		return false;
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "RuneNodes.h"
 #include "GUID.h"
+#include "Ref.h"
 
 namespace Odyssey
 {
@@ -10,11 +11,11 @@ namespace Odyssey
 	{
 	public:
 		AnimationStateNode(std::string_view name, float4 color = Default_Color);
-		AnimationStateNode(std::string_view name, std::shared_ptr<AnimationState> state, float4 color = Default_Color);
-		AnimationStateNode(GUID guid, std::string_view name, std::shared_ptr<AnimationState> state, float4 color = Default_Color);
+		AnimationStateNode(std::string_view name, Ref<AnimationState> state, float4 color = Default_Color);
+		AnimationStateNode(GUID guid, std::string_view name, Ref<AnimationState> state, float4 color = Default_Color);
 
 	public:
-		void SetAnimationState(std::shared_ptr<AnimationState> state);
+		void SetAnimationState(Ref<AnimationState> state);
 
 	protected:
 		virtual void PushStyle() override;
@@ -23,7 +24,7 @@ namespace Odyssey
 		virtual void PopStyle() override;
 
 	private:
-		std::shared_ptr<AnimationState> m_AnimationState;
+		Ref<AnimationState> m_AnimationState;
 
 	private:
 		inline static constexpr float Progress_Bar_Height = 0.3f;

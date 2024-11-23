@@ -12,17 +12,19 @@ namespace Odyssey
 	{
 		if (m_Texture = AssetManager::LoadSourceAsset<SourceTexture>(guid))
 		{
-			m_TextureNameDrawer = StringDrawer("Texture Name", m_Texture->GetName(), nullptr, true);
+			m_TextureNameDrawer = StringDrawer("Texture Name", m_Texture->GetName(), true);
 
-			m_AssetPathDrawer = StringDrawer("Asset Path", m_AssetPath,
+			m_AssetPathDrawer = StringDrawer("Asset Path", m_AssetPath, false,
 				[this](std::string_view assetPath) { OnAssetPathChanged(assetPath); });
 		}
 	}
 
-	void SourceTextureInspector::Draw()
+	bool SourceTextureInspector::Draw()
 	{
-		m_TextureNameDrawer.Draw();
-		m_AssetPathDrawer.Draw();
+		bool modified = false;
+
+		modified |= m_TextureNameDrawer.Draw();
+		modified |= m_AssetPathDrawer.Draw();
 
 		if (ImGui::Button("Create Texture2D"))
 		{
@@ -32,5 +34,7 @@ namespace Odyssey
 		{
 			AssetManager::CreateAsset<Cubemap>(Project::GetActiveAssetsDirectory() / m_AssetPath, m_Texture);
 		}
+
+		return modified;
 	}
 }

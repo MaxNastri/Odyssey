@@ -1,6 +1,6 @@
 #pragma once
 #include "GUID.h"
-#include "BoneKeyframe.hpp"
+#include "BoneKeyframe.h"
 
 namespace Odyssey
 {
@@ -15,6 +15,9 @@ namespace Odyssey
 
 	public:
 		const std::map<std::string, BlendKey>& BlendKeys(float deltaTime);
+		void Reset();
+
+	public:
 		float GetTime() { return m_CurrentTime; }
 
 	private:

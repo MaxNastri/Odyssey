@@ -18,19 +18,23 @@ namespace Odyssey
 			m_BlueprintDrawer = AssetFieldDrawer("Blueprint", animator->GetBlueprintAsset(), AnimationBlueprint::Type,
 				[this](GUID guid) { OnBlueprintModified(guid); });
 
-			m_DebugEnabledDrawer = BoolDrawer("Debug", false,
+			m_DebugEnabledDrawer = BoolDrawer("Debug", false, false,
 				[this](bool enabled) { OnDebugEnabledModified(enabled); });
 		}
 	}
 
-	void AnimatorInspector::Draw()
+	bool AnimatorInspector::Draw()
 	{
+		bool modified = false;
+
 		ImGui::PushID(this);
 
 		if (ImGui::Checkbox("##enabled", &m_AnimatorEnabled))
 		{
 			if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
 				animator->SetEnabled(m_AnimatorEnabled);
+
+			modified = true;
 		}
 
 		ImGui::SameLine();
@@ -45,16 +49,22 @@ namespace Odyssey
 			{
 				if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
 					animator->Play();
+				modified = true;
 			}
+
 			ImGui::SameLine();
+
 			if (ImGui::Button("Pause"))
 			{
 				if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
 					animator->Pause();
+				modified = true;
 			}
 		}
 
 		ImGui::PopID();
+
+		return modified;
 	}
 
 	void AnimatorInspector::OnRigModified(GUID guid)

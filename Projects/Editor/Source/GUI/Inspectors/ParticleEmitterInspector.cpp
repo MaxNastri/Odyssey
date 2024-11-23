@@ -10,11 +10,11 @@ namespace Odyssey
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
 		{
 			m_EmitterEnabled = emitter->IsEnabled();
-			m_LoopDrawer = BoolDrawer("Loop", emitter->Loop,
+			m_LoopDrawer = BoolDrawer("Loop", emitter->IsLooping(), false,
 				[this](bool loop) { OnLoopModified(loop); });
 			m_DurationDrawer = FloatDrawer("Duration", emitter->GetDuration(),
 				[this](float duration) { OnDurationModified(duration); });
-			m_EmissionRateDrawer = IntDrawer<uint32_t>("Emission Rate", emitter->EmissionRate,
+			m_EmissionRateDrawer = IntDrawer<uint32_t>("Emission Rate", emitter->GetEmissionRate(), false,
 				[this](uint32_t emissionRate) { OnEmissionRateModified(emissionRate); });
 			m_MaterialDrawer = AssetFieldDrawer("Material", emitter->GetMaterial(), Material::Type,
 				[this](GUID material) { OnMaterialModified(material); });
@@ -31,37 +31,44 @@ namespace Odyssey
 		}
 	}
 
-	void ParticleEmitterInspector::Draw()
+	bool ParticleEmitterInspector::Draw()
 	{
+		bool modified = false;
+
 		ImGui::PushID(this);
 
 		if (ImGui::Checkbox("##enabled", &m_EmitterEnabled))
 		{
 			if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
 				emitter->SetEnabled(m_EmitterEnabled);
+
+			modified = true;
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::CollapsingHeader("Particle Emitter", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			m_LoopDrawer.Draw();
-			m_DurationDrawer.Draw();
-			m_EmissionRateDrawer.Draw();
-			m_StartColorDrawer.Draw();
-			m_EndColorDrawer.Draw();
-			m_LifetimeDrawer.Draw();
-			m_SizeDrawer.Draw();
-			m_SpeedDrawer.Draw();
-			m_MaterialDrawer.Draw();
+			modified |= m_LoopDrawer.Draw();
+			modified |= m_DurationDrawer.Draw();
+			modified |= m_EmissionRateDrawer.Draw();
+			modified |= m_StartColorDrawer.Draw();
+			modified |= m_EndColorDrawer.Draw();
+			modified |= m_LifetimeDrawer.Draw();
+			modified |= m_SizeDrawer.Draw();
+			modified |= m_SpeedDrawer.Draw();
+			modified |= m_MaterialDrawer.Draw();
 		}
+
 		ImGui::PopID();
+
+		return modified;
 	}
 
 	void ParticleEmitterInspector::OnLoopModified(bool loop)
 	{
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
-			emitter->Loop = loop;
+			emitter->SetLoop(loop);
 	}
 
 	void ParticleEmitterInspector::OnDurationModified(float duration)
@@ -73,7 +80,7 @@ namespace Odyssey
 	void ParticleEmitterInspector::OnEmissionRateModified(uint32_t emissionRate)
 	{
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
-			emitter->EmissionRate = emissionRate;
+			emitter->SetEmissionRate(emissionRate);
 	}
 
 	void ParticleEmitterInspector::OnMaterialModified(GUID material)

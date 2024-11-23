@@ -166,9 +166,11 @@ namespace Odyssey
 		AssetSerializer serializer;
 		SerializationNode root = serializer.GetRoot();
 
+		GUID skybox = m_EnvironmentSettings.Skybox ? m_EnvironmentSettings.Skybox->GetGUID() : GUID(0);
+
 		root.WriteData("Scene", m_Name);
 		root.WriteData("GUID", m_GUID.CRef());
-		root.WriteData("Skybox", m_EnvironmentSettings.Skybox.CRef());
+		root.WriteData("Skybox", skybox.CRef());
 		root.WriteData("Ambient Color", m_EnvironmentSettings.AmbientColor);
 
 		SerializationNode gameObjectsNode = root.CreateSequenceNode("GameObjects");
@@ -196,10 +198,14 @@ namespace Odyssey
 			SerializationNode root = deserializer.GetRoot();
 			SerializationNode gameObjectsNode = root.GetNode("GameObjects");
 
+			GUID skybox;
 			root.ReadData("Scene", m_Name);
 			root.ReadData("GUID", m_GUID.Ref());
-			root.ReadData("Skybox", m_EnvironmentSettings.Skybox.Ref());
+			root.ReadData("Skybox", skybox.Ref());
 			root.ReadData("Ambient Color", m_EnvironmentSettings.AmbientColor);
+
+			if (skybox)
+				m_EnvironmentSettings.SetSkybox(skybox);
 
 			assert(gameObjectsNode.IsSequence());
 			assert(gameObjectsNode.HasChildren());

@@ -15,11 +15,7 @@ namespace Odyssey
 		MeshRendererInspector(GameObject& gameObject);
 
 	public:
-		virtual void Draw() override;
-
-	private:
-		void OnMeshModified(GUID guid);
-		void OnMaterialModified(GUID guid);
+		virtual bool Draw() override;
 
 	private:
 		GameObject m_GameObject;

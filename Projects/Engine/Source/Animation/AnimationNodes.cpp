@@ -12,19 +12,19 @@ namespace Odyssey
 
 	}
 
-	AnimationStateNode::AnimationStateNode(std::string_view name, std::shared_ptr<AnimationState> state, float4 color)
+	AnimationStateNode::AnimationStateNode(std::string_view name, Ref<AnimationState> state, float4 color)
 		: TreeNode(name, color)
 	{
 		SetAnimationState(state);
 	}
 
-	AnimationStateNode::AnimationStateNode(GUID guid, std::string_view name, std::shared_ptr<AnimationState> state, float4 color)
+	AnimationStateNode::AnimationStateNode(GUID guid, std::string_view name, Ref<AnimationState> state, float4 color)
 		: TreeNode(guid, name, color)
 	{
 		SetAnimationState(state);
 	}
 
-	void AnimationStateNode::SetAnimationState(std::shared_ptr<AnimationState> state)
+	void AnimationStateNode::SetAnimationState(Ref<AnimationState> state)
 	{
 		m_AnimationState = state;
 	}
@@ -38,9 +38,14 @@ namespace Odyssey
 	void AnimationStateNode::DrawContent(Rune::Pin* activeLinkPin)
 	{
 		float progress = 0.0f;
-		if (m_AnimationState && m_AnimationState->GetClip())
+		if (m_AnimationState)
 		{
-			progress = m_AnimationState->GetClip()->GetProgress();
+			Name = m_AnimationState->GetName();
+
+			if (m_AnimationState->GetClip())
+			{
+				progress = m_AnimationState->GetClip()->GetProgress();
+			}
 		}
 
 		TreeNode::DrawContent(activeLinkPin);

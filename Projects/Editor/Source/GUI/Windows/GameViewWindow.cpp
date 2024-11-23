@@ -1,13 +1,14 @@
-#include "GameViewWindow.h"
-#include "RenderPasses.h"
-#include "EventSystem.h"
-#include "imgui.h"
-#include "ResourceManager.h"
-#include "Editor.h"
 #include "Camera.h"
-#include "Renderer.h"
-#include "VulkanRenderTexture.h"
+#include "Editor.h"
+#include "EventSystem.h"
+#include "GameViewWindow.h"
 #include "GUIManager.h"
+#include "imgui.h"
+#include "Renderer.h"
+#include "RenderPasses.h"
+#include "ResourceManager.h"
+#include "Scene.h"
+#include "VulkanRenderTexture.h"
 
 namespace Odyssey
 {
@@ -16,10 +17,10 @@ namespace Odyssey
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		// Rendering stuff
-		m_GameViewPass = std::make_shared<OpaquePass>();
+		m_GameViewPass = new OpaquePass();
 		m_GameViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		Renderer::PushRenderPass(m_GameViewPass);
-		
+
 		CreateRenderTexture();
 
 		// Listen for the scene loaded event
@@ -37,10 +38,12 @@ namespace Odyssey
 		DestroyRenderTexture();
 	}
 
-	void GameViewWindow::Draw()
+	bool GameViewWindow::Draw()
 	{
+		bool modified = false;
+
 		if (!Begin())
-			return;
+			return modified;
 
 		// Display the RT as an Imgui image
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
@@ -48,7 +51,9 @@ namespace Odyssey
 		m_GameViewPass->SetDepthRenderTexture(m_DepthRT);
 
 		End();
+		return modified;
 	}
+
 	void GameViewWindow::OnWindowResize()
 	{
 		DestroyRenderTexture();

@@ -16,7 +16,7 @@ namespace Odyssey
 	public:
 		Shader() = default;
 		Shader(const Path& assetPath);
-		Shader(const Path& assetPath, std::shared_ptr<SourceShader> source);
+		Shader(const Path& assetPath, Ref<SourceShader> source);
 
 	public:
 		void Recompile();
@@ -29,7 +29,7 @@ namespace Odyssey
 		std::map<ShaderType, ResourceID> GetResourceMap();
 
 	private:
-		void LoadFromSource(std::shared_ptr<SourceShader> source);
+		void LoadFromSource(Ref<SourceShader> source);
 		void SaveToDisk(const Path& path);
 
 	private:

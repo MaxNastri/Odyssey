@@ -12,14 +12,14 @@ namespace Odyssey
 		MeshInspector(GUID guid);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		void OnNameChanged(std::string_view name);
 		void OnSourceAssetChanged(GUID sourceGUID);
 
 	private:
-		std::shared_ptr<Mesh> m_Mesh;
+		Ref<Mesh> m_Mesh;
 		StringDrawer m_GUIDDrawer;
 		StringDrawer m_NameDrawer;
 		StringDrawer m_TypeDrawer;

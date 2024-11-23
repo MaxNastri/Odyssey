@@ -1,9 +1,10 @@
 #include "ScriptBindings.h"
+#include "Animator.h"
 #include "Camera.h"
 #include "MeshRenderer.h"
 #include "ScriptComponent.h"
 #include "Transform.h"
-#include "InternalCalls.hpp"
+#include "InternalCalls.h"
 
 namespace Odyssey
 {
@@ -11,12 +12,18 @@ namespace Odyssey
 
 	void ScriptBindings::Initialize(Coral::ManagedAssembly frameworkAssembly)
 	{
+		RegisterComponentType<Animator>(frameworkAssembly, Animator::Type);
 		RegisterComponentType<Camera>(frameworkAssembly, Camera::Type);
 		RegisterComponentType<MeshRenderer>(frameworkAssembly, MeshRenderer::Type);
 		RegisterComponentType<Transform>(frameworkAssembly, Transform::Type);
 		RegisterComponentType<ScriptComponent>(frameworkAssembly, ScriptComponent::Type);
 
-		ADD_INTERNAL_CALL(GameObject_Create);
+		ADD_INTERNAL_CALL(Animator_IsEnabled);
+		ADD_INTERNAL_CALL(Animator_SetFloat);
+		ADD_INTERNAL_CALL(Animator_SetBool);
+		ADD_INTERNAL_CALL(Animator_SetInt);
+		ADD_INTERNAL_CALL(Animator_SetTrigger);
+
 		ADD_INTERNAL_CALL(GameObject_GetName);
 		ADD_INTERNAL_CALL(GameObject_SetName);
 		ADD_INTERNAL_CALL(GameObject_AddComponent);
@@ -32,6 +39,14 @@ namespace Odyssey
 
 		ADD_INTERNAL_CALL(MeshRenderer_GetMesh);
 		ADD_INTERNAL_CALL(MeshRenderer_SetMesh);
+
+		ADD_INTERNAL_CALL(Input_GetKeyPress);
+		ADD_INTERNAL_CALL(Input_GetKeyDown);
+		ADD_INTERNAL_CALL(Input_GetKeyUp);
+		ADD_INTERNAL_CALL(Input_GetMouseButtonDown);
+		ADD_INTERNAL_CALL(Input_GetMouseAxisHorizontal);
+		ADD_INTERNAL_CALL(Input_GetMouseAxisVertical);
+		ADD_INTERNAL_CALL(Input_GetMousePosition);
 
 		ADD_INTERNAL_CALL(Time_GetDeltaTime);
 

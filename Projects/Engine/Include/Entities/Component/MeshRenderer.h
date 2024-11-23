@@ -1,12 +1,11 @@
 #pragma once
 #include "AssetSerializer.h"
 #include "GameObject.h"
+#include "Mesh.h"
+#include "Material.h"
 
 namespace Odyssey
 {
-	class Material;
-	class Mesh;
-
 	class MeshRenderer
 	{
 	public:
@@ -24,14 +23,14 @@ namespace Odyssey
 
 	public:
 		bool IsEnabled() { return m_Enabled; }
-		GUID GetMesh() { return m_Mesh; }
-		GUID GetMaterial() { return m_Material; }
+		Ref<Mesh> GetMesh() { return m_Mesh; }
+		Ref<Material> GetMaterial() { return m_Material; }
 
 	private:
-		bool m_Enabled;
+		bool m_Enabled = true;
 		GameObject m_GameObject;
-		GUID m_Mesh;
-		GUID m_Material;
+		Ref<Mesh> m_Mesh;
+		Ref<Material> m_Material;
 		CLASS_DECLARATION(Odyssey, MeshRenderer)
 	};
 }

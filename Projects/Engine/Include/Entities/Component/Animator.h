@@ -1,20 +1,19 @@
 #pragma once
+#include "AnimationBlueprint.h"
+#include "AnimationClipTimeline.h"
+#include "AnimationRig.h"
 #include "AssetSerializer.h"
 #include "GameObject.h"
-#include "AnimationRig.h"
-#include "AnimationClipTimeline.h"
 
 namespace Odyssey
 {
-	class AnimationRig;
-	class AnimationBlueprint;
-
 	class Animator
 	{
 		CLASS_DECLARATION(Odyssey, Animator)
 	public:
 		Animator() = default;
 		Animator(const GameObject& gameObject);
+		~Animator();
 
 	public:
 		void Serialize(SerializationNode& node);
@@ -29,6 +28,9 @@ namespace Odyssey
 	public:
 		void SetEnabled(bool enabled);
 		void SetFloat(const std::string& propertyName, float value);
+		void SetBool(const std::string& propertyName, bool value);
+		void SetInt(const std::string& propertyName, int32_t value);
+		void SetTrigger(const std::string& propertyName);
 
 	public:
 		bool IsEnabled() { return m_Enabled; }
@@ -54,10 +56,10 @@ namespace Odyssey
 		void DebugDrawBone(const Bone& bone);
 
 	private:
-		bool m_Enabled;
+		bool m_Enabled = true;
 		GameObject m_GameObject;
-		std::shared_ptr<AnimationRig> m_Rig;
-		std::shared_ptr<AnimationBlueprint> m_Blueprint;
+		Ref<AnimationRig> m_Rig;
+		Ref<AnimationBlueprint> m_Blueprint;
 
 	private:
 		std::vector<GameObject> m_BoneGameObjects;

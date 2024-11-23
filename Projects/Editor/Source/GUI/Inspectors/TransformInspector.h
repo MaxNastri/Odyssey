@@ -14,7 +14,7 @@ namespace Odyssey
 		TransformInspector(GameObject& gameObject);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		void OnPositionChanged(glm::vec3 position);

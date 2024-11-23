@@ -3,6 +3,7 @@
 #include "Enums.h"
 #include "Resource.h"
 #include "Drawcall.h"
+#include "Ref.h"
 
 namespace Odyssey
 {
@@ -25,6 +26,7 @@ namespace Odyssey
 	struct ObjectUniformData
 	{
 		glm::mat4 world;
+		glm::mat3 InverseWorld;
 	};
 
 	struct SkinningData
@@ -72,10 +74,10 @@ namespace Odyssey
 	{
 	public:
 		SetPass() = default;
-		SetPass(std::shared_ptr<Material> material, ResourceID descriptorLayout);
+		SetPass(Ref<Material> material, ResourceID descriptorLayout);
 
 	public:
-		void SetMaterial(std::shared_ptr<Material> material, ResourceID descriptorLayout);
+		void SetMaterial(Ref<Material> material, ResourceID descriptorLayout);
 
 	public:
 		ResourceID GraphicsPipeline;

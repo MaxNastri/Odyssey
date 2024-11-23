@@ -12,7 +12,7 @@ namespace Odyssey
 		MaterialInspector(GUID guid);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		void OnNameModified(std::string_view name);
@@ -20,12 +20,11 @@ namespace Odyssey
 		void OnTextureModified(GUID guid);
 
 	private:
-		std::shared_ptr<Material> m_Material;
+		Ref<Material> m_Material;
 
 		StringDrawer m_NameDrawer;
 		StringDrawer m_GUIDDrawer;
 		AssetFieldDrawer m_ShaderDrawer;
 		AssetFieldDrawer m_TextureDrawer;
-		bool m_Modified = false;
 	};
 }

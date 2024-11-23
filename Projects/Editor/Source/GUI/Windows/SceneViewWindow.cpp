@@ -25,7 +25,7 @@ namespace Odyssey
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		// Rendering stuff
-		m_SceneViewPass = std::make_shared<OpaquePass>();
+		m_SceneViewPass = new OpaquePass();
 		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		m_SceneViewPass->AddDebugSubPass();
 		Renderer::PushRenderPass(m_SceneViewPass);
@@ -64,10 +64,12 @@ namespace Odyssey
 		}
 	}
 
-	void SceneViewWindow::Draw()
+	bool SceneViewWindow::Draw()
 	{
+		bool modified = false;
+
 		if (!Begin())
-			return;
+			return modified;
 
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
 		m_SceneViewPass->SetColorRenderTexture(m_ColorRT);
@@ -75,7 +77,9 @@ namespace Odyssey
 
 		// Render gizmos
 		RenderGizmos();
+
 		End();
+		return modified;
 	}
 
 	void SceneViewWindow::OnWindowResize()

@@ -1,60 +1,89 @@
 #pragma once
 #include "GUIElement.h"
 #include "imgui.h"
-#include "Light.h"
+#include "GUID.h"
 #include "Enum.h"
 
 namespace Odyssey
 {
-	template<typename T>
-	class EnumComboMenu
+	class Dropdown
 	{
 	public:
-		EnumComboMenu() = default;
-		EnumComboMenu(T initialValue)
+		Dropdown() = default;
+		Dropdown(const std::vector<std::string>& options);
+		Dropdown(const std::vector<std::string>& options, uint64_t initialIndex);
+		Dropdown(const std::vector<std::string>& options, std::string_view initialValue);
+
+	public:
+		bool Draw();
+
+	public:
+		void SetOptions(const std::vector<std::string>& options);
+
+	public:
+		std::string_view GetSelectedString() { return m_Options[m_SelectedIndex]; }
+		uint64_t GetSelectedIndex() { return m_SelectedIndex; }
+
+	private:
+		std::vector<std::string> m_Options;
+		uint64_t m_SelectedIndex = 0;
+	};
+
+	template<typename T>
+	class EnumDropdown
+	{
+	public:
+		EnumDropdown() = default;
+		EnumDropdown(T initialValue)
 		{
-			m_DisplayNames = Enum::GetNameSequence<T>();
-			m_Value = initialValue;
-			m_Selected = Enum::ToInt<T>(m_Value);
+			std::vector<std::string> options = Enum::GetNameSequence<T>();
+			m_Dropdown = Dropdown(options, Enum::ToInt<T>(initialValue));
 		}
 
 		bool Draw()
 		{
-			bool modified = false;
-
-			ImGui::PushID(this);
-
-			std::string_view selectedName = m_DisplayNames[m_Selected];
-
-			if (ImGui::BeginCombo("##Label", selectedName.data()))
+			if (m_Dropdown.Draw())
 			{
-				for (size_t i = 0; i < m_DisplayNames.size(); i++)
-				{
-					const bool isSelected = m_Selected == i;
-					std::string_view name = m_DisplayNames[i];
-
-					if (ImGui::Selectable(name.data(), isSelected))
-					{
-						m_Value = Enum::ToEnum<LightType>(name);
-						m_Selected = i;
-						modified = true;
-						break;
-					}
-				}
-
-				ImGui::EndCombo();
+				m_Value = Enum::ToEnum<T>(m_Dropdown.GetSelectedIndex());
+				return true;
 			}
 
-			ImGui::PopID();
-
-			return modified;
+			return false;
 		}
 
 		T GetValue() { return m_Value; }
 
 	private:
 		T m_Value;
-		std::vector<std::string> m_DisplayNames;
-		size_t m_Selected = 0;
+		Dropdown m_Dropdown;
 	};
+
+	class EntityDropdown
+	{
+	public:
+		EntityDropdown(GUID initialValue, const std::string& typeName);
+
+	public:
+		bool Draw();
+
+	public:
+		GUID GetEntity() { return m_SelectedEntity; }
+
+	private:
+		void GeneratePossibleEntities();
+
+	private:
+		struct EntityData
+		{
+		public:
+			std::string GameObjectName;
+			GUID GameObjectGUID;
+		};
+
+		std::string m_TypeName;
+		std::vector<EntityData> m_Entities;
+		GUID m_SelectedEntity;
+		uint64_t m_SelectedIndex = 0;
+	};
+
 }

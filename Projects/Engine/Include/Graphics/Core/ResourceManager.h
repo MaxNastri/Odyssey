@@ -1,7 +1,8 @@
 #pragma once
 #include "Enums.h"
-#include "Resource.h"
 #include "FreeList.hpp"
+#include "Ref.h"
+#include "Resource.h"
 
 namespace Odyssey
 {
@@ -16,17 +17,18 @@ namespace Odyssey
 		template<typename T, typename... Args>
 		static ResourceID Allocate(Args... args)
 		{
-			static_assert(std::is_base_of<Resource, T>::value, "T is not a dervied class of Resource.");
+			static_assert(std::is_base_of_v<Resource, T>, "T is not a dervied class of Resource.");
 			ResourceID id = s_Resources.Peek();
 			s_Resources.Add<T>(id, s_Context, std::forward<Args>(args)...);
 			return id;
 		}
 
 		template<typename T>
-		static std::shared_ptr<T> GetResource(ResourceID resourceID)
+		static Ref<T> GetResource(ResourceID resourceID)
 		{
-			static_assert(std::is_base_of<Resource, T>::value, "T is not a dervied class of Resource.");
-			return std::static_pointer_cast<T>(s_Resources[resourceID]);
+			
+			static_assert(std::is_base_of_v<Resource, T>, "T is not a dervied class of Resource.");
+			return s_Resources[resourceID].As<T>();
 		}
 
 		static void Destroy(ResourceID resourceID)
@@ -36,7 +38,7 @@ namespace Odyssey
 
 			auto func = [](ResourceID resourceID)
 				{
-					if (std::shared_ptr<Resource> resource = s_Resources[resourceID])
+					if (Ref<Resource> resource = s_Resources[resourceID])
 					{
 						resource->Destroy();
 						s_Resources.Remove(resourceID);

@@ -1,4 +1,5 @@
 #pragma once
+#include "Ref.h"
 #include "EditorEnums.h"
 #include "GUIElement.h"
 
@@ -7,6 +8,6 @@ namespace Odyssey
 	class Inspector : public GUIElement
 	{
 	public:
-		virtual void Draw() { }
+		virtual bool Draw() { return false; }
 	};
 }

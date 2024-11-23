@@ -1,14 +1,14 @@
 #pragma once
+#include "ContentBrowserWindow.h"
+#include "EditorActionsBar.h"
 #include "EditorEnums.h"
-#include "GameObject.h"
+#include "EditorMenuBar.h"
+#include "GameViewWindow.h"
 #include "InspectorWindow.h"
+#include "RayTracingWindow.h"
+#include "Ref.h"
 #include "SceneHierarchyWindow.h"
 #include "SceneViewWindow.h"
-#include "GameViewWindow.h"
-#include "ContentBrowserWindow.h"
-#include "RayTracingWindow.h"
-#include "EditorMenuBar.h"
-#include "EditorActionsBar.h"
 
 namespace Odyssey
 {
@@ -48,18 +48,17 @@ namespace Odyssey
 			}
 
 			// Create and store the window
-			std::shared_ptr<T> window = std::make_shared<T>(windowID);
-			s_Windows.push_back(window);
+			s_Windows.emplace_back(new T(windowID));
 		}
 
-		template<typename T> 
+		template<typename T>
 		static void DestroyDockableWindow(T* destroyWindow)
 		{
 			std::type_index windowType = typeid(T);
 
 			for (size_t i = 0; i < s_Windows.size(); i++)
 			{
-				if (s_Windows[i].get() == destroyWindow)
+				if (s_Windows[i].Get() == destroyWindow)
 				{
 					s_WindowIDs[windowType].AvailableIDs.push(destroyWindow->GetID());
 					s_Windows.erase(s_Windows.begin() + i);
@@ -71,9 +70,6 @@ namespace Odyssey
 	public:
 		static void Update();
 		static void DrawGUI();
-
-	public:
-		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
 
 	private:
 		static void SetDarkThemeColors();
@@ -88,10 +84,10 @@ namespace Odyssey
 			size_t NextID;
 			std::priority_queue<size_t, std::vector<size_t>, std::greater<size_t>> AvailableIDs;
 		};
+
 		// Windows
-		inline static std::vector<std::shared_ptr<DockableWindow>> s_Windows;
+		inline static std::vector<Ref<DockableWindow>> s_Windows;
 		inline static std::unordered_map<std::type_index, WindowID> s_WindowIDs;
 		inline static int32_t selectedObject = -1;
-		inline static std::shared_ptr<ImguiPass> m_GUIPass;
 	};
 }

@@ -7,14 +7,14 @@ namespace Odyssey
 	AnimationRig::AnimationRig(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		if (auto source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
+		if (Ref<SourceModel> source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
 		{
 			source->AddOnModifiedListener([this]() { OnSourceModified(); });
 			LoadFromSource(source);
 		}
 	}
 
-	AnimationRig::AnimationRig(const Path& assetPath, std::shared_ptr<SourceModel> source)
+	AnimationRig::AnimationRig(const Path& assetPath, Ref<SourceModel> source)
 		: Asset(assetPath)
 	{
 		source->AddOnModifiedListener([this]() { OnSourceModified(); });
@@ -30,11 +30,11 @@ namespace Odyssey
 
 	void AnimationRig::Load()
 	{
-		if (auto source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
+		if (Ref<SourceModel> source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
 			LoadFromSource(source);
 	}
 
-	void AnimationRig::LoadFromSource(std::shared_ptr<SourceModel> source)
+	void AnimationRig::LoadFromSource(Ref<SourceModel> source)
 	{
 		const RigImportData& rigData = source->GetImporter()->GetRigData();
 		auto& boneMap = rigData.Bones;

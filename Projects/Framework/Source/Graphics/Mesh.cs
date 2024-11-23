@@ -1,6 +1,4 @@
-﻿using Odyssey;
-
-namespace Odyssey
+﻿namespace Odyssey
 {
     [NativeObject]
     public class Mesh : Asset<Mesh>

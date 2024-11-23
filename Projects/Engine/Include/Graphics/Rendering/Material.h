@@ -1,11 +1,11 @@
 #pragma once
 #include "Asset.h"
+#include "Ref.h"
+#include "Shader.h"
+#include "Texture2D.h"
 
 namespace Odyssey
 {
-	class Shader;
-	class Texture2D;
-
 	class Material : public Asset
 	{
 		CLASS_DECLARATION(Odyssey, Material)
@@ -22,15 +22,15 @@ namespace Odyssey
 		void LoadFromDisk(const Path& path);
 
 	public:
-		std::shared_ptr<Shader> GetShader() { return m_Shader; }
-		std::shared_ptr<Texture2D> GetTexture() { return m_Texture; }
+		Ref<Shader> GetShader() { return m_Shader; }
+		Ref<Texture2D> GetTexture() { return m_Texture; }
 
 	public:
-		void SetShader(std::shared_ptr<Shader> shader) { m_Shader = shader; }
-		void SetTexture(std::shared_ptr<Texture2D> texture) { m_Texture = texture; }
+		void SetShader(Ref<Shader> shader) { m_Shader = shader; }
+		void SetTexture(Ref<Texture2D> texture) { m_Texture = texture; }
 
 	private:
-		std::shared_ptr<Shader> m_Shader;
-		std::shared_ptr<Texture2D> m_Texture;
+		Ref<Shader> m_Shader;
+		Ref<Texture2D> m_Texture;
 	};
 }

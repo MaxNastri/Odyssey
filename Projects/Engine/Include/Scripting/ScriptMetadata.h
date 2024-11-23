@@ -3,7 +3,7 @@
 #include "Array.hpp"
 #include "Type.hpp"
 #include "DataType.h"
-#include "RawBuffer.hpp"
+#include "RawBuffer.h"
 
 namespace Odyssey
 {

@@ -1,8 +1,8 @@
 #pragma once
-#include "DockableWindow.h"
 #include "AnimationBlueprint.h"
-#include "AnimationProperty.hpp"
+#include "DockableWindow.h"
 #include "PropertyDrawers.h"
+#include "Ref.h"
 
 namespace Odyssey
 {
@@ -19,7 +19,7 @@ namespace Odyssey
 
 	public:
 		virtual void Update() override;
-		virtual void Draw() override;
+		virtual bool Draw() override;
 		virtual void OnWindowClose() override;
 
 	private:
@@ -40,13 +40,22 @@ namespace Odyssey
 		void OpenAddLinkMenu();
 
 	private:
-		std::shared_ptr<AnimationBlueprint> m_Blueprint;
-		std::shared_ptr<BlueprintBuilder> m_Builder;
+		Ref<AnimationBlueprint> m_Blueprint;
+		Ref<BlueprintBuilder> m_Builder;
 		uint32_t m_DockspaceID = 0;
 
 	private: // Node inspector panel
-		std::shared_ptr<AnimationState> m_AnimationState;
+		Ref<AnimationState> m_AnimationState;
+		Ref<AnimationLink> m_AnimationLink;
+
+	private: // Animation State
+		StringDrawer m_StateNameDrawer;
 		AssetFieldDrawer m_AnimationClipDrawer;
+
+	private: // Animation Link
+		DropdownDrawer m_PropertyNameDrawer;
+		EnumDrawer<ComparisonOp> m_ComparisonDrawer;
+		Ref<PropertyDrawer> m_LinkValueDrawer;
 
 	private: // Add property menu
 		char m_AddPropertyBuffer[128] = "";

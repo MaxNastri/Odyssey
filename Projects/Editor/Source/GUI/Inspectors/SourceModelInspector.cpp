@@ -13,15 +13,17 @@ namespace Odyssey
 	{
 		if (m_Model = AssetManager::LoadSourceAsset<SourceModel>(guid))
 		{
-			m_Drawers.push_back(StringDrawer("Dst Asset Path", "", 
-				[this](std::string_view path) { OnDstPathChanged(path); }, false));
+			m_Drawers.push_back(StringDrawer("Dst Asset Path", "", false, 
+				[this](std::string_view path) { OnDstPathChanged(path); }));
 		}
 	}
 
-	void SourceModelInspector::Draw()
+	bool SourceModelInspector::Draw()
 	{
+		bool modified = false;
+
 		for (auto& drawer : m_Drawers)
-			drawer.Draw();
+			modified |= drawer.Draw();
 
 		if (ImGui::Button("Create Mesh Asset"))
 		{
@@ -35,5 +37,7 @@ namespace Odyssey
 		{
 			AssetManager::CreateAsset<AnimationClip>(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);
 		}
+
+		return modified;
 	}
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "Ref.h"
 #include "DockableWindow.h"
 #include "PropertyDrawers.h"
 
@@ -14,7 +15,7 @@ namespace Odyssey
 		SceneSettingsWindow(size_t windowID);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 		virtual void OnWindowClose() override;
 
 	private:
@@ -28,6 +29,6 @@ namespace Odyssey
 
 	private:
 		Scene* m_Scene;
-		std::shared_ptr<IEventListener> m_SceneLoadedListener;
+		Ref<IEventListener> m_SceneLoadedListener;
 	};
 }

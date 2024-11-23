@@ -31,7 +31,7 @@ namespace Odyssey
 		s_RendererAPI->Destroy();
 	}
 
-	void Renderer::PushRenderPass(std::shared_ptr<RenderPass> renderPass)
+	void Renderer::PushRenderPass(Ref<RenderPass> renderPass)
 	{
 		s_RendererAPI->AddRenderPass(renderPass);
 	}
@@ -41,7 +41,7 @@ namespace Odyssey
 		s_RendererAPI->GetImGui()->SetDrawGUIListener(listener);
 	}
 
-	uint64_t Renderer::AddImguiTexture(std::shared_ptr<Texture2D> texture)
+	uint64_t Renderer::AddImguiTexture(Ref<Texture2D> texture)
 	{
 		return s_RendererAPI->GetImGui()->AddTexture(texture->GetTexture());
 	}

@@ -24,14 +24,14 @@ namespace Odyssey
 	{
 	public:
 		AssetFieldDrawer() = default;
-		AssetFieldDrawer(std::string_view label, GUID guid, const std::string& assetType, std::function<void(GUID)> callback);
+		AssetFieldDrawer(std::string_view label, GUID guid, const std::string& assetType, std::function<void(GUID)> callback = nullptr);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	public:
-		void SetGUID(GUID guid);
 		GUID GetGUID() { return m_GUID; }
+		void SetGUID(GUID guid);
 
 	private:
 		void SetSelectedIndex();
@@ -47,32 +47,36 @@ namespace Odyssey
 	{
 	public:
 		BoolDrawer() = default;
-		BoolDrawer(std::string_view label, bool initialValue, std::function<void(bool)> callback, bool readOnly = false);
+		BoolDrawer(std::string_view label, bool initialValue, bool readOnly = false, std::function<void(bool)> callback = nullptr);
 
 	public:
-		virtual void Draw() override;
-		void SetData(bool data) { m_Data = data; }
+		virtual bool Draw() override;
+
+	public:
+		bool GetValue() { return m_Value; }
+		void SetValue(bool value) { m_Value = value; }
+
 	private:
-		std::function<void(bool)> valueUpdatedCallback;
-		bool m_Data;
+		bool m_Value;
 		bool m_ReadOnly = false;
+		std::function<void(bool)> m_OnValueModifed;
 	};
 
 	class ColorPicker : public PropertyDrawer
 	{
 	public:
 		ColorPicker() = default;
-		ColorPicker(std::string_view propertyLabel, float3 initialValue, std::function<void(float3)> callback);
-		ColorPicker(std::string_view propertyLabel, float4 initialValue, std::function<void(float4)> callback);
+		ColorPicker(std::string_view propertyLabel, float3 initialValue, std::function<void(float3)> callback = nullptr);
+		ColorPicker(std::string_view propertyLabel, float4 initialValue, std::function<void(float4)> callback = nullptr);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	public:
-		void SetColor(float3 color) { m_Color = float4(color, 1.0f); }
-		void SetColor(float4 color) { m_Color = color; }
 		float4 GetColor3() { return m_Color; }
 		float4 GetColor4() { return m_Color; }
+		void SetColor(float3 color) { m_Color = float4(color, 1.0f); }
+		void SetColor(float4 color) { m_Color = color; }
 
 	private:
 		enum class ColorType
@@ -92,35 +96,60 @@ namespace Odyssey
 	class DoubleDrawer : public PropertyDrawer
 	{
 	public:
-		DoubleDrawer(std::string_view label, double initialValue, std::function<void(double)> callback);
+		DoubleDrawer() = default;
+		DoubleDrawer(std::string_view label, double initialValue, std::function<void(double)> callback = nullptr);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
+
+	public:
+		double GetValue() { return m_Value; }
+		void SetValue(double value) { m_Value = value; }
 
 	private:
-		std::function<void(double)> valueUpdatedCallback;
-		float step = 0.0f;
-		float stepFast = 0.0f;
-		double value;
+		double m_Value;
+		float m_Step = 0.0f;
+		float m_StepFast = 0.0f;
+		std::function<void(double)> m_OnValueModifed;
+	};
+
+	class DropdownDrawer : public PropertyDrawer
+	{
+	public:
+		DropdownDrawer() = default;
+		DropdownDrawer(std::string_view label, const std::vector<std::string>& options, uint64_t startIndex, std::function<void(std::string_view, uint64_t)> callback = nullptr);
+		DropdownDrawer(std::string_view label, const std::vector<std::string>& options, std::string_view initialValue, std::function<void(std::string_view, uint64_t)> callback = nullptr);
+
+	public:
+		virtual bool Draw() override;
+
+	public:
+		std::string_view GetSelected();
+		uint64_t GetSelectedIndex();
+
+	public:
+		void SetOptions(const std::vector<std::string>& options);
+
+	private:
+		Dropdown m_Dropdown;
+		std::function<void(std::string_view, uint64_t)> m_OnValueModified;
 	};
 
 	class EntityFieldDrawer : public PropertyDrawer
 	{
 	public:
 		EntityFieldDrawer() = default;
-		EntityFieldDrawer(std::string_view label, GUID guid, std::function<void(GUID)> callback);
+		EntityFieldDrawer(std::string_view label, GUID guid, const std::string& typeName, std::function<void(GUID)> callback = nullptr);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
+
+	public:
+		GUID GetEntity() { return m_Dropdown.GetEntity(); }
 
 	private:
-		void GeneratePossibleGUIDs();
-
-	private:
+		EntityDropdown m_Dropdown;
 		std::function<void(GUID)> m_OnValueModified;
-		GUID m_GUID = 0;
-		uint64_t m_SelectedIndex = 0;
-		std::vector<GUID> m_PossibleGUIDs;
 	};
 
 	template<typename T>
@@ -128,7 +157,7 @@ namespace Odyssey
 	{
 	public:
 		EnumDrawer() = default;
-		EnumDrawer(std::string_view label, T initialValue, std::function<void(T)> callback)
+		EnumDrawer(std::string_view label, T initialValue, std::function<void(T)> callback = nullptr)
 			: m_EnumMenu(initialValue)
 		{
 			m_Label = label;
@@ -136,8 +165,13 @@ namespace Odyssey
 		}
 
 	public:
-		virtual void Draw() override
+		T GetValue() { return m_EnumMenu.GetValue(); }
+
+	public:
+		virtual bool Draw() override
 		{
+			bool modified = false;
+
 			ImGui::PushID(this);
 
 			if (ImGui::BeginTable("##Table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
@@ -149,33 +183,43 @@ namespace Odyssey
 				ImGui::PushItemWidth(-0.01f);
 
 				if (m_EnumMenu.Draw())
-					m_OnValueModified(m_EnumMenu.GetValue());
+				{
+					modified = true;
+
+					if (m_OnValueModified)
+						m_OnValueModified(m_EnumMenu.GetValue());
+				}
 
 				ImGui::EndTable();
 			}
 
 			ImGui::PopID();
+
+			return modified;
 		}
 
 	private:
+		EnumDropdown<T> m_EnumMenu;
 		std::function<void(T)> m_OnValueModified;
-		EnumComboMenu<T> m_EnumMenu;
 	};
 
 	class FloatDrawer : public PropertyDrawer
 	{
 	public:
 		FloatDrawer() = default;
-		FloatDrawer(std::string_view label, float initialValue, std::function<void(float)> callback);
+		FloatDrawer(std::string_view label, float initialValue, std::function<void(float)> callback = nullptr);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
+
+	public:
+		float GetValue() { return m_Value; }
 
 	private:
-		std::function<void(float)> valueUpdatedCallback;
-		float step = 0.0f;
-		float stepFast = 0.0f;
-		float data;
+		float m_Value = 0.0f;
+		float m_Step = 0.0f;
+		float m_StepFast = 0.0f;
+		std::function<void(float)> m_OnValueModifed;
 	};
 
 	template <typename T>
@@ -183,18 +227,25 @@ namespace Odyssey
 	{
 	public:
 		IntDrawer() = default;
-		IntDrawer(const std::string& propertyLabel, T initialValue, std::function<void(T)> callback, bool readOnly = false)
+		IntDrawer(const std::string& propertyLabel, T initialValue, bool readOnly = false, std::function<void(T)> callback = nullptr)
 			: PropertyDrawer(propertyLabel)
 		{
-			data = initialValue;
-			valueUpdatedCallback = callback;
-			dataType = GetDataType();
+			m_Value = initialValue;
+			m_DataType = GetDataType();
 			m_ReadOnly = readOnly;
+			m_OnValueModifed = callback;
 		}
 
 	public:
-		virtual void Draw() override
+		T GetValue() { return m_Value; }
+
+	public:
+		virtual bool Draw() override
 		{
+			bool modified = false;
+
+			ImGui::PushID(this);
+
 			if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 			{
 				ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
@@ -202,22 +253,30 @@ namespace Odyssey
 				ImGui::TextUnformatted(m_Label.data());
 				ImGui::TableNextColumn();
 				ImGui::PushItemWidth(-0.01f);
+
 				if (m_ReadOnly)
 					ImGui::BeginDisabled();
 
-				if (ImGui::InputScalar(m_Label.data(), dataType, &data))
+				if (ImGui::InputScalar(m_Label.data(), m_DataType, &m_Value))
 				{
-					valueUpdatedCallback(data);
+					modified = true;
+
+					if (m_OnValueModifed)
+						m_OnValueModifed(m_Value);
 				}
 
 				if (m_ReadOnly)
 					ImGui::EndDisabled();
+
 				ImGui::EndTable();
 			}
+
+			ImGui::PopID();
+
+			return modified;
 		}
 
 	private:
-
 		ImGuiDataType GetDataType()
 		{
 			if constexpr (std::same_as<T, uint8_t> || std::same_as<T, std::byte>)
@@ -236,68 +295,67 @@ namespace Odyssey
 				return ImGuiDataType_::ImGuiDataType_S32;
 			else if constexpr (std::same_as<T, int64_t> || (std::same_as<T, long> && sizeof(T) == 8))
 				return ImGuiDataType_::ImGuiDataType_S64;
-
 			return ImGuiDataType_::ImGuiDataType_S64;
 		}
 
-		std::function<void(T)> valueUpdatedCallback;
-
 	private:
-		ImGuiDataType dataType;
-		uint32_t step = 0;
-		uint32_t stepFast = 0;
-		T data;
+		T m_Value;
+		ImGuiDataType m_DataType;
 		bool m_ReadOnly = false;
+		std::function<void(T)> m_OnValueModifed;
 	};
 
 	class RangeSlider : public PropertyDrawer
 	{
 	public:
 		RangeSlider() = default;
-		RangeSlider(const std::string& label, float2 range, float2 limits, float step, std::function<void(float2)> callback);
+		RangeSlider(const std::string& label, float2 range, float2 limits, float step, std::function<void(float2)> callback = nullptr);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
-		std::function<void(float2)> m_ValueUpdatedCallback;
 		float2 m_Range = float2(0.0f);
 		float2 m_Limits = float2(0.0f);
 		float m_Step = 0.1f;
+		std::function<void(float2)> m_OnValueModifed;
 	};
 
 	class StringDrawer : public PropertyDrawer
 	{
 	public:
 		StringDrawer() = default;
-		StringDrawer(std::string_view label, std::string_view initialValue, std::function<void(std::string_view)> callback, bool readOnly = false);
+		StringDrawer(std::string_view label, std::string_view initialValue, bool readOnly = false, std::function<void(std::string_view)> callback = nullptr);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	public:
-		std::string_view GetValue() { return m_Data; }
+		std::string_view GetValue() { return m_Value; }
 
 	private:
-		std::function<void(std::string_view)> valueUpdatedCallback;
-		char m_Data[128] = "";
+		char m_Value[128] = "";
 		bool m_ReadOnly = false;
+		std::function<void(std::string_view)> m_OnValueModifed;
 	};
 
 	class Vector3Drawer : public PropertyDrawer
 	{
 	public:
 		Vector3Drawer() = default;
-		Vector3Drawer(std::string_view propertyLabel, float3 initialValue, float3 resetValue, bool drawButtons, std::function<void(float3)> callback);
+		Vector3Drawer(std::string_view propertyLabel, float3 initialValue, float3 resetValue, bool drawButtons, std::function<void(float3)> callback = nullptr);
 
 	public:
-		virtual void Draw() override;
-		void SetValue(float3 value) { m_Data = value; }
+		float3 GetValue() { return m_Value; }
+		void SetValue(float3 value) { m_Value = value; }
+
+	public:
+		virtual bool Draw() override;
 
 	private:
-		std::function<void(float3)> onValueModified;
-		float3 m_Data;
+		float3 m_Value;
 		float3 m_ResetValue;
 		bool m_DrawButtons = false;
+		std::function<void(float3)> onValueModified;
 	};
 }

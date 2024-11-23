@@ -12,14 +12,14 @@ namespace Odyssey
 		ShaderInspector(GUID guid);
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		void OnNameChanged(std::string_view name);
 		void OnSourceAssetChanged(GUID sourceGUID);
 
 	private:
-		std::shared_ptr<Shader> m_Shader;
+		Ref<Shader> m_Shader;
 		StringDrawer m_GUIDDrawer;
 		StringDrawer m_NameDrawer;
 		IntDrawer<uint32_t> m_ShaderTypeDrawer;

@@ -9,7 +9,7 @@ namespace Odyssey
 		EditorActionsBar();
 
 	public:
-		virtual void Draw() override;
+		virtual bool Draw() override;
 
 	private:
 		int32_t m_WindowFlags = 0;

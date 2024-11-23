@@ -46,7 +46,7 @@ namespace Odyssey
 		SerializationNode fieldsNode = componentNode.CreateSequenceNode("Fields");
 
 		// Make sure the field still exists on deserialization
-		for (auto [fieldID, fieldStorage] : storage.Fields)
+		for (auto& [fieldID, fieldStorage] : storage.Fields)
 		{
 			if (fieldStorage.DataType == DataType::String)
 			{

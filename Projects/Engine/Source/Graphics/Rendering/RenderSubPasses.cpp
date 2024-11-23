@@ -19,7 +19,7 @@ namespace Odyssey
 {
 	void OpaqueSubPass::Setup()
 	{
-		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
+		m_PushDescriptors = new VulkanPushDescriptors();
 	}
 
 	void OpaqueSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
@@ -48,7 +48,7 @@ namespace Odyssey
 					m_PushDescriptors->AddTexture(setPass.Texture, 4);
 
 				// Push the descriptors into the command buffer
-				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), setPass.GraphicsPipeline);
+				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), setPass.GraphicsPipeline);
 
 				// Set the per-object descriptor buffer offset
 				commandBuffer->BindVertexBuffer(drawcall.VertexBufferID);
@@ -74,7 +74,7 @@ namespace Odyssey
 		info.Topology = Topology::LineList;
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
-		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
+		m_PushDescriptors = new VulkanPushDescriptors();
 	}
 
 	void DebugSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
@@ -90,7 +90,7 @@ namespace Odyssey
 		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
 
 		// Push the descriptors into the command buffer
-		commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
+		commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);
 
 		// Set the per-object descriptor buffer offset
 		commandBuffer->BindVertexBuffer(DebugRenderer::GetVertexBuffer());
@@ -115,7 +115,7 @@ namespace Odyssey
 		info.WriteDepth = false;
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
-		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
+		m_PushDescriptors = new VulkanPushDescriptors();
 
 		m_CubeMesh = AssetManager::LoadAsset<Mesh>(s_CubeMeshGUID);
 
@@ -152,7 +152,7 @@ namespace Odyssey
 		m_PushDescriptors->AddTexture(renderScene->SkyboxCubemap, 3);
 
 		// Push the descriptors into the command buffer
-		commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
+		commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);
 
 		commandBuffer->BindVertexBuffer(m_CubeMesh->GetVertexBuffer());
 		commandBuffer->BindIndexBuffer(m_CubeMesh->GetIndexBuffer());
@@ -182,7 +182,7 @@ namespace Odyssey
 		info.WriteDepth = false;
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
-		m_PushDescriptors = std::make_shared<VulkanPushDescriptors>();
+		m_PushDescriptors = new VulkanPushDescriptors();
 	}
 
 	void ParticleSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
@@ -205,7 +205,7 @@ namespace Odyssey
 			m_PushDescriptors->AddBuffer(aliveBuffer, 4);
 
 			graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
-			graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.get(), m_GraphicsPipeline);
+			graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);
 			graphicsCommandBuffer->Draw(aliveCount * 6, 1, 0, 0);
 		}
 	}

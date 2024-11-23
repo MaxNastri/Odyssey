@@ -1,6 +1,5 @@
 #pragma once
 #include "Asset.h"
-#include "BoneKeyframe.hpp"
 #include "AnimationClipTimeline.h"
 
 namespace Odyssey
@@ -12,7 +11,7 @@ namespace Odyssey
 		CLASS_DECLARATION(Odyssey, AnimationClip)
 	public:
 		AnimationClip(const Path& assetPath);
-		AnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel);
+		AnimationClip(const Path& assetPath, Ref<SourceModel> sourceModel);
 
 	public:
 		void Save();
@@ -20,6 +19,7 @@ namespace Odyssey
 
 	public:
 		const std::map<std::string, BlendKey>& BlendKeys(float deltaTime);
+		void Reset();
 
 	public:
 		std::map<std::string, BoneKeyframe>& GetBoneKeyframes() { return m_BoneKeyframes; }
@@ -29,7 +29,7 @@ namespace Odyssey
 		float GetProgress();
 
 	private:
-		void LoadFromSource(std::shared_ptr<SourceModel> source);
+		void LoadFromSource(Ref<SourceModel> source);
 		void SaveToDisk(const Path& assetPath);
 
 	private:

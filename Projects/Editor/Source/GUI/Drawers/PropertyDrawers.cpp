@@ -2,6 +2,9 @@
 #include "imgui_internal.h"
 #include "AssetManager.h"
 #include "Log.h"
+#include "SceneManager.h"
+#include "Transform.h"
+#include "EditorComponents.h"
 
 namespace Odyssey
 {
@@ -14,8 +17,12 @@ namespace Odyssey
 		SetSelectedIndex();
 	}
 
-	void AssetFieldDrawer::Draw()
+	bool AssetFieldDrawer::Draw()
 	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
 		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 		{
 			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
@@ -27,7 +34,6 @@ namespace Odyssey
 			std::vector<GUID> possibleGUIDs = AssetManager::GetAssetsOfType(m_Type);
 			possibleGUIDs.insert(possibleGUIDs.begin(), 0);
 
-			ImGui::PushID((void*)this);
 
 			std::string selectedDisplayName = selectedIndex != 0 ? AssetManager::GUIDToName(possibleGUIDs[selectedIndex]) : "None";
 			if (ImGui::BeginCombo("##Empty", selectedDisplayName.c_str()))
@@ -42,6 +48,7 @@ namespace Odyssey
 						selectedIndex = i;
 						m_GUID = possibleGUIDs[selectedIndex];
 
+						modified = true;
 						if (m_OnValueModified)
 							m_OnValueModified(m_GUID);
 					}
@@ -54,14 +61,13 @@ namespace Odyssey
 				ImGui::EndCombo();
 			}
 
-			ImGui::PopID();
-
 			if (ImGui::BeginDragDropTarget())
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Asset"))
 				{
 					m_GUID = *((GUID*)payload->Data);
 
+					modified = true;
 					if (m_OnValueModified)
 						m_OnValueModified(m_GUID);
 
@@ -72,6 +78,10 @@ namespace Odyssey
 
 			ImGui::EndTable();
 		}
+
+		ImGui::PopID();
+
+		return modified;
 	}
 
 	void AssetFieldDrawer::SetGUID(GUID guid)
@@ -95,17 +105,21 @@ namespace Odyssey
 			}
 		}
 	}
-	BoolDrawer::BoolDrawer(std::string_view label, bool initialValue, std::function<void(bool)> callback, bool readOnly)
+	BoolDrawer::BoolDrawer(std::string_view label, bool initialValue, bool readOnly, std::function<void(bool)> callback)
 		: PropertyDrawer(label)
 	{
-		m_Data = initialValue;
-		valueUpdatedCallback = callback;
+		m_Value = initialValue;
+		m_OnValueModifed = callback;
 		m_ReadOnly = readOnly;
 	}
 
-	void BoolDrawer::Draw()
+	bool BoolDrawer::Draw()
 	{
-		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::BeginTable("##Table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 		{
 			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
 			ImGui::TableNextColumn();
@@ -116,9 +130,12 @@ namespace Odyssey
 			if (m_ReadOnly)
 				ImGui::BeginDisabled();
 
-			if (ImGui::Checkbox("##label", &m_Data))
+			if (ImGui::Checkbox("##label", &m_Value))
 			{
-				valueUpdatedCallback(m_Data);
+				modified = true;
+
+				if (m_OnValueModifed)
+					m_OnValueModifed(m_Value);
 			}
 
 			if (m_ReadOnly)
@@ -126,6 +143,10 @@ namespace Odyssey
 
 			ImGui::EndTable();
 		}
+
+		ImGui::PopID();
+
+		return modified;
 	}
 
 	ColorPicker::ColorPicker(std::string_view propertyLabel, float3 initialValue, std::function<void(float3)> callback)
@@ -144,71 +165,10 @@ namespace Odyssey
 		m_ColorType = ColorType::Color4;
 	}
 
-	void ColorPicker::Draw()
+	bool ColorPicker::Draw()
 	{
-		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
-		{
-			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
-			ImGui::TableNextColumn();
-			ImGui::TextUnformatted(m_Label.data());
-			ImGui::TableNextColumn();
-			ImGui::PushItemWidth(-0.01f);
+		bool modified = false;
 
-			bool modified = false;
-			if (m_ColorType == ColorType::Color3)
-				modified = ImGui::ColorEdit3(m_Label.data(), glm::value_ptr(m_Color));
-			else
-				modified = ImGui::ColorEdit4(m_Label.data(), glm::value_ptr(m_Color));
-
-			if (modified)
-			{
-				if (m_OnColor3Modified)
-					m_OnColor3Modified(m_Color);
-				else
-					m_OnColor4Modified(m_Color);
-			}
-
-			ImGui::EndTable();
-		}
-	}
-
-	DoubleDrawer::DoubleDrawer(std::string_view label, double initialValue, std::function<void(double)> callback)
-		: PropertyDrawer(label)
-	{
-		value = initialValue;
-		valueUpdatedCallback = callback;
-	}
-
-	void DoubleDrawer::Draw()
-	{
-		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
-		{
-			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
-			ImGui::TableNextColumn();
-			ImGui::TextUnformatted(m_Label.data());
-			ImGui::TableNextColumn();
-			ImGui::PushItemWidth(-0.01f);
-
-			if (ImGui::InputDouble(m_Label.data(), &value, step, stepFast))
-			{
-				if (valueUpdatedCallback)
-					valueUpdatedCallback(value);
-			}
-
-			ImGui::EndTable();
-		}
-	}
-
-	EntityFieldDrawer::EntityFieldDrawer(std::string_view label, GUID guid, std::function<void(GUID)> callback)
-	{
-		m_Label = label;
-		m_GUID = guid;
-		m_OnValueModified = callback;
-		GeneratePossibleGUIDs();
-	}
-
-	void EntityFieldDrawer::Draw()
-	{
 		ImGui::PushID(this);
 
 		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
@@ -219,70 +179,40 @@ namespace Odyssey
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(-0.01f);
 
-			std::string selectedDisplayName = m_SelectedIndex != 0 ? m_PossibleGUIDs[m_SelectedIndex].String() : "None";
-			if (ImGui::BeginCombo("##Empty", selectedDisplayName.c_str()))
+			if (m_ColorType == ColorType::Color3)
+				modified = ImGui::ColorEdit3(m_Label.data(), glm::value_ptr(m_Color));
+			else
+				modified = ImGui::ColorEdit4(m_Label.data(), glm::value_ptr(m_Color));
+
+			if (modified)
 			{
-				for (int32_t i = 0; i < m_PossibleGUIDs.size(); i++)
-				{
-					const bool isSelected = m_SelectedIndex == i;
-					std::string displayName = i != 0 ? m_PossibleGUIDs[i].String() : "None";
-
-					if (ImGui::Selectable(displayName.c_str(), isSelected) && i != 0)
-					{
-						m_SelectedIndex = i;
-
-						if (m_OnValueModified)
-							m_OnValueModified(m_PossibleGUIDs[m_SelectedIndex]);
-					}
-
-					if (isSelected)
-						ImGui::SetItemDefaultFocus();
-				}
-				ImGui::EndCombo();
-			}
-
-			if (ImGui::BeginDragDropTarget())
-			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
-				{
-					uint64_t* payloadData = (uint64_t*)payload->Data;
-					m_GUID = GUID(*payloadData);
-					GeneratePossibleGUIDs();
-
-					if (m_OnValueModified)
-						m_OnValueModified(m_GUID);
-
-					Log::Info("(AssetFieldDrawer) Accepting Entity payload: " + m_GUID.String());
-				}
-				ImGui::EndDragDropTarget();
+				if (m_OnColor3Modified)
+					m_OnColor3Modified(m_Color);
+				else if (m_OnColor4Modified)
+					m_OnColor4Modified(m_Color);
 			}
 
 			ImGui::EndTable();
 		}
 
 		ImGui::PopID();
+
+		return modified;
 	}
 
-	void EntityFieldDrawer::GeneratePossibleGUIDs()
-	{
-		m_PossibleGUIDs = { 0, m_GUID };
-
-		for (size_t i = 0; i < m_PossibleGUIDs.size(); i++)
-		{
-			if (m_PossibleGUIDs[i] == m_GUID)
-				m_SelectedIndex = i;
-		}
-	}
-
-	FloatDrawer::FloatDrawer(std::string_view label, float initialValue, std::function<void(float)> callback)
+	DoubleDrawer::DoubleDrawer(std::string_view label, double initialValue, std::function<void(double)> callback)
 		: PropertyDrawer(label)
 	{
-		data = initialValue;
-		valueUpdatedCallback = callback;
+		m_Value = initialValue;
+		m_OnValueModifed = callback;
 	}
 
-	void FloatDrawer::Draw()
+	bool DoubleDrawer::Draw()
 	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
 		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 		{
 			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
@@ -291,12 +221,155 @@ namespace Odyssey
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(-0.01f);
 
-			if (ImGui::InputFloat(m_Label.data(), &data, step, stepFast))
+			if (ImGui::InputDouble(m_Label.data(), &m_Value, m_Step, m_StepFast))
 			{
-				valueUpdatedCallback(data);
+				modified = true;
+
+				if (m_OnValueModifed)
+					m_OnValueModifed(m_Value);
 			}
+
 			ImGui::EndTable();
 		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	DropdownDrawer::DropdownDrawer(std::string_view label, const std::vector<std::string>& options, uint64_t startIndex, std::function<void(std::string_view, uint64_t)> callback)
+		: m_Dropdown(options, startIndex)
+	{
+		m_Label = label;
+		m_OnValueModified = callback;
+	}
+
+	DropdownDrawer::DropdownDrawer(std::string_view label, const std::vector<std::string>& options, std::string_view initialValue, std::function<void(std::string_view, uint64_t)> callback)
+		: m_Dropdown(options, initialValue)
+	{
+		m_Label = label;
+		m_OnValueModified = callback;
+	}
+
+	bool DropdownDrawer::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
+		{
+			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(m_Label.data());
+			ImGui::TableNextColumn();
+			ImGui::PushItemWidth(-0.01f);
+
+			if (m_Dropdown.Draw())
+			{
+				modified = true;
+
+				if (m_OnValueModified)
+					m_OnValueModified(m_Dropdown.GetSelectedString(), m_Dropdown.GetSelectedIndex());
+			}
+
+			ImGui::EndTable();
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	std::string_view DropdownDrawer::GetSelected()
+	{
+		return m_Dropdown.GetSelectedString();
+	}
+
+	uint64_t DropdownDrawer::GetSelectedIndex()
+	{
+		return m_Dropdown.GetSelectedIndex();
+	}
+
+	void DropdownDrawer::SetOptions(const std::vector<std::string>& options)
+	{
+		m_Dropdown.SetOptions(options);
+	}
+
+	EntityFieldDrawer::EntityFieldDrawer(std::string_view label, GUID guid, const std::string& typeName, std::function<void(GUID)> callback)
+		: m_Dropdown(guid, typeName)
+	{
+		m_Label = label;
+		m_OnValueModified = callback;
+	}
+
+	bool EntityFieldDrawer::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
+		{
+			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
+
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(m_Label.data());
+
+			ImGui::TableNextColumn();
+			ImGui::PushItemWidth(-0.01f);
+
+			if (m_Dropdown.Draw())
+			{
+				modified = true;
+
+				if (m_OnValueModified)
+					m_OnValueModified(m_Dropdown.GetEntity());
+			}
+
+			ImGui::EndTable();
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	FloatDrawer::FloatDrawer(std::string_view label, float initialValue, std::function<void(float)> callback)
+		: PropertyDrawer(label)
+	{
+		m_Value = initialValue;
+		m_OnValueModifed = callback;
+	}
+
+	bool FloatDrawer::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
+		{
+			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
+			ImGui::TableNextColumn();
+			ImGui::TextUnformatted(m_Label.data());
+			ImGui::TableNextColumn();
+			ImGui::PushItemWidth(-0.01f);
+
+			if (ImGui::InputFloat(m_Label.data(), &m_Value, m_Step, m_StepFast))
+			{
+				modified = true;
+
+				if (m_OnValueModifed)
+					m_OnValueModifed(m_Value);
+			}
+
+			ImGui::EndTable();
+		}
+
+		ImGui::PopID();
+
+		return modified;
 	}
 
 	RangeSlider::RangeSlider(const std::string& label, float2 range, float2 limits, float step, std::function<void(float2)> callback)
@@ -305,11 +378,14 @@ namespace Odyssey
 		m_Range = range;
 		m_Limits = limits;
 		m_Step = step;
-		m_ValueUpdatedCallback = callback;
+		m_OnValueModifed = callback;
 	}
 
-	void RangeSlider::Draw()
+	bool RangeSlider::Draw()
 	{
+		bool modified = false;
+		ImGui::PushID(this);
+
 		if (ImGui::BeginTable("#RangeSlider", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 		{
 			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
@@ -320,23 +396,31 @@ namespace Odyssey
 			if (ImGui::DragFloatRange2(m_Label.data(), &m_Range.x, &m_Range.y, m_Step, m_Limits.x, m_Limits.y,
 				"Min: %.2f", "Max: %.2f", ImGuiSliderFlags_AlwaysClamp))
 			{
-				if (m_ValueUpdatedCallback)
-					m_ValueUpdatedCallback(m_Range);
+				if (m_OnValueModifed)
+					m_OnValueModifed(m_Range);
 			}
 			ImGui::EndTable();
 		}
+
+		ImGui::PopID();
+
+		return modified;
 	}
 
-	StringDrawer::StringDrawer(std::string_view label, std::string_view initialValue, std::function<void(std::string_view)> callback, bool readOnly)
+	StringDrawer::StringDrawer(std::string_view label, std::string_view initialValue, bool readOnly, std::function<void(std::string_view)> callback)
 		: PropertyDrawer(label)
 	{
-		initialValue.copy(m_Data, ARRAYSIZE(m_Data));
-		valueUpdatedCallback = callback;
+		initialValue.copy(m_Value, ARRAYSIZE(m_Value));
+		m_OnValueModifed = callback;
 		m_ReadOnly = readOnly;
 	}
 
-	void StringDrawer::Draw()
+	bool StringDrawer::Draw()
 	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
 		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 		{
 			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
@@ -344,33 +428,44 @@ namespace Odyssey
 			ImGui::TextUnformatted(m_Label.data());
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(-0.01f);
+
 			if (m_ReadOnly)
 				ImGui::BeginDisabled();
 
-			if (ImGui::InputText(m_Label.data(), m_Data, IM_ARRAYSIZE(m_Data)))
+			if (ImGui::InputText(m_Label.data(), m_Value, IM_ARRAYSIZE(m_Value)))
 			{
-				if (valueUpdatedCallback)
-					valueUpdatedCallback(m_Data);
+				modified = true;
+
+				if (m_OnValueModifed)
+					m_OnValueModifed(m_Value);
 			}
 
 			if (m_ReadOnly)
 				ImGui::EndDisabled();
+
 			ImGui::EndTable();
 		}
+
+		ImGui::PopID();
+
+		return modified;
 	}
 
 	Vector3Drawer::Vector3Drawer(std::string_view propertyLabel, glm::vec3 initialValue, glm::vec3 resetValue, bool drawButtons, std::function<void(glm::vec3)> callback)
 	{
 		m_Label = propertyLabel;
-		m_Data = initialValue;
+		m_Value = initialValue;
 		m_ResetValue = resetValue;
 		m_DrawButtons = drawButtons;
 		onValueModified = callback;
 	}
 
-	void Vector3Drawer::Draw()
+	bool Vector3Drawer::Draw()
 	{
-		if (ImGui::BeginTable("table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
+		bool modified = false;
+		ImGui::PushID(this);
+
+		if (ImGui::BeginTable("##Table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
 		{
 			ImGui::PushID((void*)this);
 			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
@@ -387,8 +482,6 @@ namespace Odyssey
 			float lineHeight = ImGui::GetFont()->FontSize + ImGui::GetStyle().FramePadding.y * 2.0f;
 			ImVec2 buttonSize = { lineHeight + 5.0f, lineHeight };
 
-			bool modified = false;
-
 			{
 				if (m_DrawButtons)
 				{
@@ -398,13 +491,13 @@ namespace Odyssey
 
 					if (ImGui::Button("X", buttonSize))
 					{
-						m_Data.x = m_ResetValue.x;
+						m_Value.x = m_ResetValue.x;
 						modified = true;
 					}
 					ImGui::SameLine();
 				}
 
-				modified |= ImGui::DragFloat("##x", &m_Data.x, 0.1f, 0.0f, 0.0f, "%.3f");
+				modified |= ImGui::DragFloat("##x", &m_Value.x, 0.1f, 0.0f, 0.0f, "%.3f");
 				ImGui::PopItemWidth();
 				ImGui::SameLine();
 
@@ -420,13 +513,13 @@ namespace Odyssey
 					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
 					if (ImGui::Button("Y", buttonSize))
 					{
-						m_Data.y = m_ResetValue.y;
+						m_Value.y = m_ResetValue.y;
 						modified = true;
 					}
 					ImGui::SameLine();
 				}
 
-				modified |= ImGui::DragFloat("##y", &m_Data.y, 0.1f, 0.0f, 0.0f, "%.3f");
+				modified |= ImGui::DragFloat("##y", &m_Value.y, 0.1f, 0.0f, 0.0f, "%.3f");
 				ImGui::PopItemWidth();
 				ImGui::SameLine();
 
@@ -442,12 +535,12 @@ namespace Odyssey
 					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
 					if (ImGui::Button("Z", buttonSize))
 					{
-						m_Data.z = m_ResetValue.z;
+						m_Value.z = m_ResetValue.z;
 						modified = true;
 					}
 					ImGui::SameLine();
 				}
-				modified |= ImGui::DragFloat("##z", &m_Data.z, 0.1f, 0.0f, 0.0f, "%.3f");
+				modified |= ImGui::DragFloat("##z", &m_Value.z, 0.1f, 0.0f, 0.0f, "%.3f");
 				ImGui::PopItemWidth();
 
 				if (m_DrawButtons)
@@ -459,9 +552,12 @@ namespace Odyssey
 			ImGui::PopID();
 
 			if (modified)
-				onValueModified(m_Data);
+				onValueModified(m_Value);
 
 			ImGui::EndTable();
 		}
+
+		ImGui::PopID();
+		return modified;
 	}
 }

@@ -14,51 +14,54 @@ namespace Odyssey
 
 		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 		{
-			GUID meshGUID = meshRenderer->GetMesh();
-			GUID materialGUID = meshRenderer->GetMaterial();
+			GUID meshGUID = meshRenderer->GetMesh() ? meshRenderer->GetMesh()->GetGUID() : GUID(0);
+			GUID materialGUID = meshRenderer->GetMaterial() ? meshRenderer->GetMaterial()->GetGUID() : GUID(0);
 
 			m_MeshRendererEnabled = meshRenderer->IsEnabled();
 
-			m_MeshDrawer = AssetFieldDrawer("Mesh", meshGUID, Mesh::Type,
-				[this](GUID guid) { OnMeshModified(guid); });
-
-			m_MaterialDrawer = AssetFieldDrawer("Material", materialGUID, Material::Type,
-				[this](GUID guid) { OnMaterialModified(guid); });
+			m_MeshDrawer = AssetFieldDrawer("Mesh", meshGUID, Mesh::Type);
+			m_MaterialDrawer = AssetFieldDrawer("Material", materialGUID, Material::Type);
 		}
 	}
 
-	void MeshRendererInspector::Draw()
+	bool MeshRendererInspector::Draw()
 	{
+		bool modified = false;
+
 		ImGui::PushID(this);
 
 		if (ImGui::Checkbox("##enabled", &m_MeshRendererEnabled))
 		{
 			if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 				meshRenderer->SetEnabled(m_MeshRendererEnabled);
+
+			modified = true;
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::CollapsingHeader("Mesh Renderer", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			m_MeshDrawer.Draw();
-			m_MaterialDrawer.Draw();
+			if (m_MeshDrawer.Draw())
+			{
+				if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
+					meshRenderer->SetMesh(m_MeshDrawer.GetGUID());
+
+				modified = true;
+			}
+			if (m_MaterialDrawer.Draw())
+			{
+				if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
+					meshRenderer->SetMaterial(m_MaterialDrawer.GetGUID());
+
+				modified = true;
+
+			}
+			modified |= m_MaterialDrawer.Draw();
 		}
 
 		ImGui::PopID();
-	}
 
-	void MeshRendererInspector::OnMeshModified(GUID guid)
-	{
-		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
-			meshRenderer->SetMesh(guid);
-	}
-
-	void MeshRendererInspector::OnMaterialModified(GUID guid)
-	{
-		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
-		{
-			meshRenderer->SetMaterial(guid);
-		}
+		return modified;
 	}
 }

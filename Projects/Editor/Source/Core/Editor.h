@@ -1,6 +1,5 @@
 #pragma once
-#include <VulkanRenderer.h>
-#include <Stopwatch.h>
+#include "Ref.h"
 #include "EditorEvents.h"
 #include "ScriptCompiler.h"
 #include "EventSystem.h"
@@ -32,8 +31,8 @@ namespace Odyssey
 		std::unique_ptr<ScriptCompiler> m_ScriptCompiler;
 
 	private:
-		std::shared_ptr<IEventListener> m_BuildCompleteListener;
-		std::shared_ptr<IEventListener> m_PlaymodeStateListener;
+		Ref<IEventListener> m_BuildCompleteListener;
+		Ref<IEventListener> m_PlaymodeStateListener;
 
 	private: // Constants
 		const float MaxFPS = 1.0f / 144.0f;

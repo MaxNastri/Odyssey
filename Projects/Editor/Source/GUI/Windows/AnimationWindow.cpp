@@ -30,14 +30,16 @@ namespace Odyssey
 		m_Blueprint->Update();
 	}
 
-	void AnimationWindow::Draw()
+	bool AnimationWindow::Draw()
 	{
+		bool modified = false;
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, float2(0.0f, 0.0f));
 
 		if (!Begin())
 		{
 			ImGui::PopStyleVar();
-			return;
+			return modified;
 		}
 
 		// Draw the menu bar
@@ -132,6 +134,8 @@ namespace Odyssey
 			m_Builder->End();
 			ImGui::End();
 		}
+
+		return modified;
 	}
 
 	void AnimationWindow::OnWindowClose()
@@ -141,7 +145,7 @@ namespace Odyssey
 
 	void AnimationWindow::CreateBuilder()
 	{
-		m_Builder = std::make_shared<BlueprintBuilder>(m_Blueprint.get());
+		m_Builder =  new BlueprintBuilder(m_Blueprint.Get());
 		m_Builder->OverrideCreateNodeMenu(Create_Node_Menu_Name, Create_Node_Menu_ID);
 		m_Builder->OverrideCreateLinkMenu(Add_Link_Menu_Name, Add_Link_Menu_ID);
 	}
@@ -301,7 +305,8 @@ namespace Odyssey
 		if (ImGui::Begin("Node Inspector Panel"))
 		{
 			float2 textSize = ImGui::CalcTextSize("Hello world") * 1.1f;
-			ImGui::FilledRectSpanText("Node Inspector", float4(1.0f), float4(0.15f, 0.15f, 0.15f, 1.0f), textSize.y, float2(1.0f, 0.0f));
+			const char* panelName = m_AnimationLink ? "Link Inspector" : "State Inspector";
+			ImGui::FilledRectSpanText(panelName, float4(1.0f), float4(0.15f, 0.15f, 0.15f, 1.0f), textSize.y, float2(1.0f, 0.0f));
 
 			if (ImguiExt::HasSelectionChanged())
 			{
@@ -311,25 +316,98 @@ namespace Odyssey
 
 				if (m_AnimationState)
 				{
-					auto onAnimationClipChanged = [this](GUID guid)
-						{
-							if (m_AnimationState)
-								m_AnimationState->SetClip(guid);
-						};
-
 					GUID clipGUID;
 
 					if (auto clip = m_AnimationState->GetClip())
 						clipGUID = clip->GetGUID();
 
-					m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", clipGUID, AnimationClip::Type, onAnimationClipChanged);
+					m_AnimationClipDrawer = AssetFieldDrawer("Animation Clip", clipGUID, AnimationClip::Type);
+					m_StateNameDrawer = StringDrawer("State", m_AnimationState->GetName());
+				}
+				else
+				{
+					// No valid nodes selected, lets look for a selected link
+					ImguiExt::LinkId link;
+					ImguiExt::GetSelectedLinks(&link, 1);
+					m_AnimationLink = m_Blueprint->GetAnimationLink((GUID)link.Get());
+
+					if (m_AnimationLink)
+					{
+						m_PropertyNameDrawer = DropdownDrawer("Property", m_Blueprint->GetAllPropertyNames(), m_AnimationLink->GetProperty()->Name);
+						m_ComparisonDrawer = EnumDrawer<ComparisonOp>("Comparison", m_AnimationLink->GetComparisonOp());
+
+						auto animProperty = m_AnimationLink->GetProperty();
+						switch (animProperty->Type)
+						{
+							case AnimationPropertyType::Float:
+							{
+								m_LinkValueDrawer = new FloatDrawer("Value", animProperty->ValueBuffer.Read<float>());
+								break;
+							}
+							case AnimationPropertyType::Int:
+							{
+								m_LinkValueDrawer = new IntDrawer<int32_t>("Value", animProperty->ValueBuffer.Read<int32_t>());
+								break;
+							}
+							case AnimationPropertyType::Bool:
+							case AnimationPropertyType::Trigger:
+							{
+								m_LinkValueDrawer = new BoolDrawer("Value", animProperty->ValueBuffer.Read<bool>());
+								break;
+							}
+							default:
+								break;
+						}
+					}
 				}
 			}
 
 			if (m_AnimationState)
 			{
-				ImGui::TextUnformatted(m_AnimationState->GetName().data());
-				m_AnimationClipDrawer.Draw();
+				if (m_StateNameDrawer.Draw())
+					m_AnimationState->SetName(m_StateNameDrawer.GetValue());
+
+				if (m_AnimationClipDrawer.Draw())
+					m_AnimationState->SetClip(m_AnimationClipDrawer.GetGUID());
+			}
+			else if (m_AnimationLink)
+			{
+				if (m_PropertyNameDrawer.Draw())
+					m_AnimationLink->SetProperty(m_Blueprint->GetProperty(m_PropertyNameDrawer.GetSelected().data()));
+
+				if (m_ComparisonDrawer.Draw())
+					m_AnimationLink->SetComparisonOp(m_ComparisonDrawer.GetValue());
+
+				if (m_LinkValueDrawer->Draw())
+				{
+					if (auto animationProperty = m_AnimationLink->GetProperty())
+					{
+						switch (animationProperty->Type)
+						{
+							case AnimationPropertyType::Float:
+							{
+								Ref<FloatDrawer> drawer = m_LinkValueDrawer.As<FloatDrawer>();
+								m_AnimationLink->SetBool(drawer->GetValue());
+								break;
+							}
+							case AnimationPropertyType::Int:
+							{
+								Ref<IntDrawer<int32_t>> drawer = m_LinkValueDrawer.As<IntDrawer<int32_t>>();
+								m_AnimationLink->SetInt(drawer->GetValue());
+								break;
+							}
+							case AnimationPropertyType::Bool:
+							case AnimationPropertyType::Trigger:
+							{
+								Ref<BoolDrawer> drawer = m_LinkValueDrawer.As<BoolDrawer>();
+								m_AnimationLink->SetBool(drawer->GetValue());
+								break;
+							}
+							default:
+								break;
+						}
+					}
+				}
 			}
 
 			ImGui::End();
@@ -399,12 +477,10 @@ namespace Odyssey
 			ImGui::TextUnformatted("Create New Node");
 			ImGui::Separator();
 
-			std::shared_ptr<Node> node;
-
 			if (ImGui::MenuItem("Animation State"))
 			{
-				std::shared_ptr<AnimationStateNode> node = m_Blueprint->AddAnimationState("State");
-				m_Builder->ConnectNewNode(node.get());
+				Ref<AnimationStateNode> node = m_Blueprint->AddAnimationState("State");
+				m_Builder->ConnectNewNode(node.Get());
 			}
 
 			ImGui::EndPopup();
@@ -422,9 +498,9 @@ namespace Odyssey
 			ImGui::Text("Select Property:");
 
 			auto& properties = m_Blueprint->GetProperties();
-			const std::string display = m_SelectedProperty >= 0 ? properties[m_SelectedProperty]->Name : "";
+			const std::string selectedProperty = m_SelectedProperty >= 0 ? properties[m_SelectedProperty]->Name : "";
 
-			if (ImGui::BeginCombo("##PropertyCombo", display.c_str()))
+			if (ImGui::BeginCombo("##PropertyCombo", selectedProperty.c_str()))
 			{
 				for (size_t i = 0; i < properties.size(); i++)
 				{
@@ -542,12 +618,11 @@ namespace Odyssey
 				// Only allow the add button when the other 2 fields are filled
 				if (ImGui::Button("Add") || Input::GetKeyDown(KeyCode::Enter) || Input::GetKeyDown(KeyCode::KeypadEnter))
 				{
-					// builder->connect pending link
-					GUID startNode, endNode;
-					if (m_Builder->GetPendingLinkNodes(startNode, endNode))
+					GUID beginNode, endNode;
+					if (m_Builder->GetPendingLinkNodes(beginNode, endNode))
 					{
-						m_Blueprint->AddAnimationLink(startNode, endNode, m_SelectedProperty, (ComparisonOp)m_SelectedComparisonOp, m_AddLinkPropertyValue);
-						m_Builder->ConfirmPendingLink();
+						m_Blueprint->AddAnimationLink(beginNode, endNode, m_SelectedProperty, (ComparisonOp)m_SelectedComparisonOp, m_AddLinkPropertyValue);
+						m_Builder->ClearPendingLink();
 					}
 					ImGui::CloseCurrentPopup();
 				}

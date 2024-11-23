@@ -1,12 +1,10 @@
 #include "Animator.h"
-#include "AnimationRig.h"
 #include "AssetManager.h"
-#include "AnimationBlueprint.h"
-#include "OdysseyTime.h"
 #include "DebugRenderer.h"
-#include "Transform.h"
-#include "Scene.h"
+#include "OdysseyTime.h"
 #include "PropertiesComponent.h"
+#include "Scene.h"
+#include "Transform.h"
 
 namespace Odyssey
 {
@@ -14,6 +12,12 @@ namespace Odyssey
 		: m_GameObject(gameObject)
 	{
 
+	}
+
+	Animator::~Animator()
+	{
+
+		int debu = 0;
 	}
 
 	void Animator::Serialize(SerializationNode& node)
@@ -68,6 +72,21 @@ namespace Odyssey
 	void Animator::SetFloat(const std::string& propertyName, float value)
 	{
 		m_Blueprint->SetFloat(propertyName, value);
+	}
+
+	void Animator::SetBool(const std::string& propertyName, bool value)
+	{
+		m_Blueprint->SetBool(propertyName, value);
+	}
+
+	void Animator::SetInt(const std::string& propertyName, int32_t value)
+	{
+		m_Blueprint->SetInt(propertyName, value);
+	}
+
+	void Animator::SetTrigger(const std::string& propertyName)
+	{
+		m_Blueprint->SetTrigger(propertyName);
 	}
 
 	GUID Animator::GetRigAsset()
@@ -159,9 +178,9 @@ namespace Odyssey
 			BlendKey& blendKey = boneKeys[boneName];
 
 			Transform& boneTransform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
-			boneTransform.SetPosition(blendKey.position);
-			boneTransform.SetRotation(blendKey.rotation);
-			boneTransform.SetScale(blendKey.scale);
+			boneTransform.SetPosition(blendKey.Position);
+			boneTransform.SetRotation(blendKey.Rotation);
+			boneTransform.SetScale(blendKey.Scale);
 
 			glm::mat4 key = m_Rig->GetGlobalMatrix() * animatorInverse * boneTransform.GetWorldMatrix();
 			m_FinalPoses[i] = key * bones[i].InverseBindpose;

@@ -35,14 +35,12 @@ namespace Odyssey
 	class EventListenerArray : public IEventListenerArray
 	{
 	public:
-		std::shared_ptr<EventListener<EventType>> AddListener(std::function<void(EventType*)> callback)
+		Ref<EventListener<EventType>> AddListener(std::function<void(EventType*)> callback)
 		{
-			std::shared_ptr<EventListener<EventType>> listener = std::make_shared<EventListener<EventType>>(m_NextID++, callback);
-			m_Listeners.push_back(listener);
-			return listener;
+			return m_Listeners.emplace_back(new EventListener<EventType>(m_NextID++, callback));
 		}
 
-		void RemoveListener(std::shared_ptr<EventListener<EventType>> listener)
+		void RemoveListener(Ref<EventListener<EventType>> listener)
 		{
 			auto iter = std::find(m_Listeners.begin(), m_Listeners.end(), listener);
 			if (iter != m_Listeners.end())
@@ -59,7 +57,7 @@ namespace Odyssey
 		}
 
 	private:
-		std::vector<std::shared_ptr<EventListener<EventType>>> m_Listeners;
+		std::vector<Ref<EventListener<EventType>>> m_Listeners;
 		uint64_t m_NextID = 0;
 	};
 }

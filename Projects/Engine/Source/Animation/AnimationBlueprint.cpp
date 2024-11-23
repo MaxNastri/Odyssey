@@ -1,8 +1,7 @@
 #include "AnimationBlueprint.h"
-#include "AnimationState.h"
+#include "AnimationClip.h"
 #include "AnimationNodes.h"
 #include "Enum.h"
-#include "AnimationClip.h"
 
 namespace Odyssey
 {
@@ -16,6 +15,11 @@ namespace Odyssey
 		: Blueprint(), Asset(assetPath)
 	{
 		Load();
+	}
+
+	AnimationBlueprint::~AnimationBlueprint()
+	{
+		int debug = 0;
 	}
 
 	void AnimationBlueprint::Save()
@@ -44,7 +48,7 @@ namespace Odyssey
 				SerializationNode propertyNode = propertiesNode.GetChild(i);
 				assert(propertyNode.IsMap());
 
-				auto& animProperty = m_Properties.emplace_back(std::make_shared<AnimationProperty>());
+				auto& animProperty = m_Properties.emplace_back(new AnimationProperty());
 
 				std::string enumStr;
 				propertyNode.ReadData("Name", animProperty->Name);
@@ -106,8 +110,8 @@ namespace Odyssey
 				stateNode.ReadData("Clip", clipGUID.Ref());
 				stateNode.ReadData("Position", nodePos);
 
-				auto state = std::make_shared<AnimationState>(nodeGUID, stateName, clipGUID);
-				auto node = AddNode<AnimationStateNode>(nodeGUID, stateName, state);
+				Ref<AnimationState> state = new AnimationState(nodeGUID, stateName, clipGUID);
+				Ref<AnimationStateNode> node = AddNode<AnimationStateNode>(nodeGUID, stateName, state);
 				node->SetInitialPosition(nodePos);
 
 				if (!m_CurrentState)
@@ -124,16 +128,21 @@ namespace Odyssey
 				SerializationNode linkNode = linksNode.GetChild(i);
 				assert(linkNode.IsMap());
 
+				GUID linkGUID;
 				GUID beginGUID;
 				GUID endGUID;
 				std::string propertyName;
 				std::string comparisonName;
 				RawBuffer valueBuffer;
 
+				linkNode.ReadData("GUID", linkGUID.Ref());
 				linkNode.ReadData("Begin State", beginGUID.Ref());
 				linkNode.ReadData("End State", endGUID.Ref());
 				linkNode.ReadData("Property", propertyName);
 				linkNode.ReadData("Comparison", comparisonName);
+
+				// Create the link
+				AddLink(linkGUID, beginGUID, endGUID);
 
 				auto& beginState = m_States[beginGUID];
 				auto& endState = m_States[endGUID];
@@ -174,12 +183,8 @@ namespace Odyssey
 						break;
 				}
 
-				m_StateToLinks[beginState].push_back(std::make_shared<AnimationLink>(beginState, endState, property, comparisonOp, valueBuffer));
-
-				// Add a link between the start/end nodes
-				Node* beginNode = FindNode(beginGUID);
-				Node* endNode = FindNode(endGUID);
-				AddLink(&(beginNode->Outputs[0]), &(endNode->Inputs[0]));
+				// Create the animtation link
+				m_StateToLinks[beginState].push_back(new AnimationLink(linkGUID, beginState, endState, property, comparisonOp, valueBuffer));
 			}
 		}
 	}
@@ -249,16 +254,18 @@ namespace Odyssey
 		SerializationNode linksNode = root.CreateSequenceNode("Animation Links");
 		for (auto& [animState, animLinks] : m_StateToLinks)
 		{
-			for (std::shared_ptr<AnimationLink> animLink : animLinks)
+			for (Ref<AnimationLink>& animLink : animLinks)
 			{
 				SerializationNode linkNode = linksNode.AppendChild();
 				linkNode.SetMap();
 
+				GUID linkGUID = animLink->GetGUID();
 				GUID beginState = animLink->GetBeginState()->GetGUID();
 				GUID endState = animLink->GetEndState()->GetGUID();
-				std::shared_ptr<AnimationProperty> linkProperty = animLink->GetProperty();
+				Ref<AnimationProperty> linkProperty = animLink->GetProperty();
 
 				std::string_view comparison = Enum::ToString<ComparisonOp>(animLink->GetComparisonOp());
+				linkNode.WriteData("GUID", linkGUID.CRef());
 				linkNode.WriteData("Begin State", beginState.CRef());
 				linkNode.WriteData("End State", endState.CRef());
 				linkNode.WriteData("Property", linkProperty->Name);
@@ -309,6 +316,7 @@ namespace Odyssey
 			{
 				if (animationLink->Evaluate())
 				{
+					m_CurrentState->Reset();
 					m_CurrentState = animationLink->GetEndState();
 					break;
 				}
@@ -318,20 +326,26 @@ namespace Odyssey
 		return m_CurrentState->Evaluate();
 	}
 
-	std::shared_ptr<AnimationStateNode> AnimationBlueprint::AddAnimationState(std::string name)
+	Ref<AnimationStateNode> AnimationBlueprint::AddAnimationState(std::string name)
 	{
-		auto state = std::make_shared<AnimationState>(name);
+		// Create the animation state and node
+		Ref<AnimationState> state = new AnimationState(name);
 		auto node = AddNode<AnimationStateNode>(name, state);
 
+		// Set the state's guid to match the node
+		state->SetGUID(node->Guid);
+
+		// Track the state by guid for later
 		m_States[node->Guid] = state;
 
+		// TEMP
 		if (!m_CurrentState)
 			m_CurrentState = state;
 
-		return std::static_pointer_cast<AnimationStateNode>(node);
+		return node.As<AnimationStateNode>();
 	}
 
-	std::shared_ptr<AnimationState> AnimationBlueprint::GetAnimationState(GUID nodeGUID)
+	Ref<AnimationState> AnimationBlueprint::GetAnimationState(GUID nodeGUID)
 	{
 		if (m_States.contains(nodeGUID))
 			return m_States[nodeGUID];
@@ -339,9 +353,29 @@ namespace Odyssey
 		return nullptr;
 	}
 
+	Ref<AnimationLink> AnimationBlueprint::GetAnimationLink(GUID linkGUID)
+	{
+		for (auto& [animationState, animationLinks] : m_StateToLinks)
+		{
+			for (auto& animationLink : animationLinks)
+			{
+				if (animationLink->GetGUID() == linkGUID)
+					return animationLink;
+			}
+		}
+
+		return nullptr;
+	}
+
+	std::vector<std::string> AnimationBlueprint::GetAllPropertyNames()
+	{
+		auto view = std::views::keys(m_PropertyMap);
+		return std::vector<std::string>(view.begin(), view.end());
+	}
+
 	void AnimationBlueprint::AddProperty(std::string_view name, AnimationPropertyType type)
 	{
-		m_Properties.push_back(std::make_shared<AnimationProperty>(name, type));
+		m_Properties.push_back(new AnimationProperty(name, type));
 	}
 
 	bool AnimationBlueprint::SetBool(const std::string& name, bool value)
@@ -385,15 +419,18 @@ namespace Odyssey
 		return false;
 	}
 
-	void AnimationBlueprint::AddAnimationLink(GUID startNode, GUID endNode, int32_t propertyIndex, ComparisonOp comparisonOp, RawBuffer& propertyValue)
+	void AnimationBlueprint::AddAnimationLink(GUID beginNode, GUID endNode, int32_t propertyIndex, ComparisonOp comparisonOp, RawBuffer& propertyValue)
 	{
-		if (m_States.contains(startNode) && m_States.contains(endNode))
+		if (m_States.contains(beginNode) && m_States.contains(endNode))
 		{
-			auto startState = m_States[startNode];
+			auto startState = m_States[beginNode];
 			auto endState = m_States[endNode];
 			auto animProperty = m_Properties[propertyIndex];
 
-			m_StateToLinks[startState].push_back(std::make_shared<AnimationLink>(startState, endState, animProperty, comparisonOp, propertyValue));
+			Ref<AnimationLink> animationLink = new AnimationLink(startState, endState, animProperty, comparisonOp, propertyValue);
+			AddLink(animationLink->GetGUID(), beginNode, endNode);
+
+			m_StateToLinks[startState].push_back(animationLink);
 		}
 	}
 

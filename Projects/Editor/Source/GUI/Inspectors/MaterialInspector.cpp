@@ -20,10 +20,10 @@ namespace Odyssey
 			if (auto texture2D = m_Material->GetTexture())
 				textureGUID = texture2D->GetGUID();
 
-			m_NameDrawer = StringDrawer("Name", m_Material->GetName(),
+			m_NameDrawer = StringDrawer("Name", m_Material->GetName(), false,
 				[this](std::string_view name) { OnNameModified(name); });
 
-			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), nullptr, true);
+			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), true);
 
 			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type,
 				[this](GUID guid) { OnShaderModified(guid); });
@@ -33,29 +33,25 @@ namespace Odyssey
 		}
 	}
 
-	void MaterialInspector::Draw()
+	bool MaterialInspector::Draw()
 	{
-		m_GUIDDrawer.Draw();
-		m_NameDrawer.Draw();
-		m_ShaderDrawer.Draw();
-		m_TextureDrawer.Draw();
+		bool modified = false;
 
-		if (m_Modified)
-		{
-			if (ImGui::Button("Save"))
-			{
-				m_Material->Save();
-				m_Modified = false;
-			}
-		}
+		modified |= m_GUIDDrawer.Draw();
+		modified |= m_NameDrawer.Draw();
+		modified |= m_ShaderDrawer.Draw();
+		modified |= m_TextureDrawer.Draw();
+
+		if (modified && ImGui::Button("Save"))
+			m_Material->Save();
+
+		return modified;
 	}
 
 	void MaterialInspector::OnNameModified(std::string_view name)
 	{
 		if (m_Material)
 			m_Material->SetName(name);
-
-		m_Modified = true;
 	}
 
 	void MaterialInspector::OnShaderModified(GUID guid)
@@ -64,8 +60,6 @@ namespace Odyssey
 		{
 			if (auto vertShader = AssetManager::LoadAsset<Shader>(guid))
 				m_Material->SetShader(vertShader);
-
-			m_Modified = true;
 		}
 	}
 
@@ -75,8 +69,6 @@ namespace Odyssey
 		{
 			if (auto texture = AssetManager::LoadAsset<Texture2D>(guid))
 				m_Material->SetTexture(texture);
-
-			m_Modified = true;
 		}
 	}
 }

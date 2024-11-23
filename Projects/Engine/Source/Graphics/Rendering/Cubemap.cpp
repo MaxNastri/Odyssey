@@ -10,14 +10,14 @@ namespace Odyssey
 	Cubemap::Cubemap(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+		if (Ref<SourceTexture> source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
 		{
 			source->AddOnModifiedListener([this]() { OnSourceModified(); });
 			LoadFromSource(source);
 		}
 	}
 
-	Cubemap::Cubemap(const Path& assetPath, std::shared_ptr<SourceTexture> source)
+	Cubemap::Cubemap(const Path& assetPath, Ref<SourceTexture> source)
 		: Asset(assetPath)
 	{
 		source->AddOnModifiedListener([this]() { OnSourceModified(); });
@@ -37,7 +37,7 @@ namespace Odyssey
 			LoadFromSource(source);
 	}
 
-	void Cubemap::LoadFromSource(std::shared_ptr<SourceTexture> source)
+	void Cubemap::LoadFromSource(Ref<SourceTexture> source)
 	{
 		// Convert the source texture into 6 faces
 		HdriToCubemap<unsigned char> hdriToCube_ldr(source->GetPath().string(), 1024, true);

@@ -15,7 +15,7 @@ namespace Odyssey
 
 	}
 
-	void EditorMenuBar::Draw()
+	bool EditorMenuBar::Draw()
 	{
 		if (ImGui::BeginMainMenuBar())
 		{
@@ -47,6 +47,18 @@ namespace Odyssey
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Project"))
+			{
+				if (ImGui::MenuItem("Create"))
+				{
+
+				}
+				if (ImGui::MenuItem("Open"))
+				{
+
+				}
+			}
+
 			if (ImGui::BeginMenu("Window"))
 			{
 				if (ImGui::MenuItem("Animation Window"))
@@ -75,5 +87,7 @@ namespace Odyssey
 
 			ImGui::EndMainMenuBar();
 		}
+
+		return false;
 	}
 }

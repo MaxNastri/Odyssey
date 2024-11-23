@@ -12,8 +12,6 @@ namespace Odyssey::Rune
 
 	void Blueprint::AddLink(Pin* start, Pin* end)
 	{
-		bool allowLink = false;
-
 		start->Linked = true;
 		end->Linked = true;
 
@@ -48,7 +46,7 @@ namespace Odyssey::Rune
 		for (auto& node : m_Nodes)
 		{
 			if (node->Guid == nodeGUID)
-				return node.get();
+				return node.Get();
 		}
 
 		return nullptr;
@@ -91,7 +89,7 @@ namespace Odyssey::Rune
 	void Blueprint::BuildNodes()
 	{
 		for (auto& node : m_Nodes)
-			BuildNode(node.get());
+			BuildNode(node.Get());
 	}
 
 	void Blueprint::BuildNode(Node* node)
@@ -132,6 +130,23 @@ namespace Odyssey::Rune
 		// Reverse so we go from back to front while erasing
 		for (int32_t i = removals.size() - 1; i >= 0; i--)
 			m_Links.erase(m_Links.begin() + removals[i]);
+	}
+
+	void Blueprint::AddLink(GUID linkGUID, GUID beginGUID, GUID endGUID)
+	{
+		Node* beginNode = FindNode(beginGUID);
+		Node* endNode = FindNode(endGUID);
+
+		if (beginNode && endNode)
+		{
+			Pin* beginPin = &beginNode->Outputs[0];
+			Pin* endPin = &endNode->Inputs[0];
+			beginPin->Linked = true;
+			endPin->Linked = true;
+
+			Link& newLink = m_Links.emplace_back(Link(linkGUID, beginPin->Guid, endPin->Guid));
+			newLink.Color = beginPin->GetColor();
+		}
 	}
 
 	//size_t Blueprint::LoadNodeSettings(NodeID nodeId, char* data)

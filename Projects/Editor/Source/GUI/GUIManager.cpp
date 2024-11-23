@@ -1,17 +1,17 @@
-#include "GUIManager.h"
-#include "EventSystem.h"
-#include "EditorEvents.h"
-#include <Events.h>
-#include "SceneManager.h"
-#include "Scene.h"
-#include "imgui.h"
-#include "ImGuizmo.h"
 #include "Camera.h"
-#include "RenderPasses.h"
 #include "Editor.h"
-#include "RayTracingWindow.h"
+#include "EditorEvents.h"
+#include "Events.h"
+#include "EventSystem.h"
 #include "GameObjectInspector.h"
+#include "GUIManager.h"
+#include "imgui.h"
 #include "imgui_internal.h"
+#include "ImGuizmo.h"
+#include "RayTracingWindow.h"
+#include "RenderPasses.h"
+#include "Scene.h"
+#include "SceneManager.h"
 
 namespace Odyssey
 {
@@ -23,7 +23,7 @@ namespace Odyssey
 
 	void GUIManager::CreateInspectorWindow()
 	{
-		s_Windows.push_back(std::make_shared<InspectorWindow>(std::make_shared<GameObjectInspector>()));
+		s_Windows.push_back(new InspectorWindow(new GameObjectInspector()));
 	}
 
 	void GUIManager::Update()
@@ -50,11 +50,13 @@ namespace Odyssey
 
 		for (size_t i = 0; i < s_Windows.size(); i++)
 		{
-			std::shared_ptr<DockableWindow> window = s_Windows[i];
-			window->Draw();
+			if (Ref<DockableWindow>& window = s_Windows[i])
+			{
+				window->Draw();
 
-			if (!window->IsOpen())
-				--i;
+				if (!window->IsOpen())
+					--i;
+			}
 		}
 	}
 

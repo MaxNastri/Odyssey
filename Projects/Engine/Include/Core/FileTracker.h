@@ -1,6 +1,6 @@
 #pragma once
 #include "efsw.hpp"
-#include "ReadWriteLock.hpp"
+#include "ReadWriteLock.h"
 
 namespace Odyssey
 {

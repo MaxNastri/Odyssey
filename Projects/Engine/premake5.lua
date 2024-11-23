@@ -7,10 +7,10 @@ project "Odyssey.Engine"
     
     flags { "NoPCH", "MultiProcessorCompile" }
     
-    pchheader "PCH.hpp"
+    pchheader "PCH.h"
     pchsource "Source/PCH.cpp"
 
-    forceincludes { "PCH.hpp" }
+    forceincludes { "PCH.h" }
 
     files {
         "Include/**.h",
@@ -60,5 +60,5 @@ project "Odyssey.Engine"
 
     filter { "configurations:Release" }
         runtime "Release"
-        symbols "Off"
+        symbols "On"
         optimize "On"

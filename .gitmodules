@@ -8,3 +8,6 @@
 [submodule "Vendor/Jolt/JoltPhysics"]
 	path = Vendor/Jolt/JoltPhysics
 	url = https://github.com/jrouwe/JoltPhysics
+[submodule "Vendor/glfw"]
+	path = Vendor/glfw
+	url = https://github.com/glfw/glfw.git

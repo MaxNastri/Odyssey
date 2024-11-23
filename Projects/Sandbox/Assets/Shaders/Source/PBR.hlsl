@@ -30,6 +30,7 @@ cbuffer SceneData : register(b0)
 cbuffer ModelData : register(b1)
 {
     float4x4 Model;
+    float3x3 InverseModel;
 }
 
 cbuffer SkinningData : register(b2)
@@ -55,7 +56,7 @@ VertexOutput main(VertexInput input)
     float4 normal = float4(normalize(skinning.Normal.xyz), 0.0f);
     
     output.Position = mul(ViewProjection, worldPosition);
-    output.Normal = mul(Model, normal).xyz;
+    output.Normal = normalize(mul(Model, normal).xyz);
     output.Tangent = input.Tangent;
     output.Color = input.Color;
     output.TexCoord0 = input.TexCoord0;
@@ -126,9 +127,10 @@ float3 CalculateDiffuse(Light light, float3 surfaceNormal);
 
 float4 main(PixelInput input) : SV_Target
 {
+    input.Normal = normalize(input.Normal);
+    
     LightingOutput lighting = CalculateLighting(input.Normal);
     float4 finalLighting = float4(lighting.Diffuse + AmbientColor.rgb, 1.0f);
-    
     return diffuseTex2D.Sample(diffuseSampler, input.TexCoord0) * finalLighting;
 }
 

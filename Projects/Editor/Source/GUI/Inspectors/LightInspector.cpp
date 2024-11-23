@@ -20,27 +20,34 @@ namespace Odyssey
 				[this](float range) { OnRangeChanged(range); });
 		}
 	}
-	void LightInspector::Draw()
+
+	bool LightInspector::Draw()
 	{
+		bool modified = false;
+
 		ImGui::PushID(this);
 
 		if (ImGui::Checkbox("##enabled", &m_LightEnabled))
 		{
 			if (Light* light = m_GameObject.TryGetComponent<Light>())
 				light->SetEnabled(m_LightEnabled);
+
+			modified = true;
 		}
 
 		ImGui::SameLine();
 
 		if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			m_LightTypeDrawer.Draw();
-			m_ColorPicker.Draw();
-			m_IntensityDrawer.Draw();
-			m_RangeDrawer.Draw();
+			modified |= m_LightTypeDrawer.Draw();
+			modified |= m_ColorPicker.Draw();
+			modified |= m_IntensityDrawer.Draw();
+			modified |= m_RangeDrawer.Draw();
 		}
 
 		ImGui::PopID();
+
+		return modified;
 	}
 
 	void LightInspector::OnLightTypeChanged(LightType lightType)

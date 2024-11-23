@@ -9,20 +9,25 @@ namespace Odyssey
 	{
 		if (m_Texture = AssetManager::LoadAsset<Texture2D>(guid))
 		{
-			m_GUIDDrawer = StringDrawer("GUID", m_Texture->GetGUID().String(), nullptr, true);
-			m_NameDrawer = StringDrawer("Name", m_Texture->GetName(),
+			m_GUIDDrawer = StringDrawer("GUID", m_Texture->GetGUID().String(), true);
+			m_NameDrawer = StringDrawer("Name", m_Texture->GetName(), false,
 				[this](std::string_view name) { OnNameChanged(name); });
-			m_TypeDrawer = StringDrawer("Type", m_Texture->GetType(), nullptr, true);
+			m_TypeDrawer = StringDrawer("Type", m_Texture->GetType(), true);
 			m_SourceAssetDrawer = AssetFieldDrawer("Source Asset", m_Texture->GetSourceAsset(), SourceTexture::Type,
 				[this](GUID sourceGUID) { OnSourceAssetchanged(sourceGUID); });
 		}
 	}
-	void TextureInspector::Draw()
+
+	bool TextureInspector::Draw()
 	{
-		m_GUIDDrawer.Draw();
-		m_TypeDrawer.Draw();
-		m_NameDrawer.Draw();
-		m_SourceAssetDrawer.Draw();
+		bool modified = false;
+
+		modified |= m_GUIDDrawer.Draw();
+		modified |= m_TypeDrawer.Draw();
+		modified |= m_NameDrawer.Draw();
+		modified |= m_SourceAssetDrawer.Draw();
+
+		return modified;
 	}
 
 	void TextureInspector::OnNameChanged(std::string_view name)

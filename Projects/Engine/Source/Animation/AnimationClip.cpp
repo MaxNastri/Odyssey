@@ -7,14 +7,14 @@ namespace Odyssey
 	AnimationClip::AnimationClip(const Path& assetPath)
 		: Asset(assetPath), m_Timeline(this)
 	{
-		if (auto source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
+		if (Ref<SourceModel> source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
 		{
 			source->AddOnModifiedListener([this]() { OnSourceModified(); });
 			LoadFromSource(source);
 		}
 	}
 
-	AnimationClip::AnimationClip(const Path& assetPath, std::shared_ptr<SourceModel> sourceModel)
+	AnimationClip::AnimationClip(const Path& assetPath, Ref<SourceModel> sourceModel)
 		: Asset(assetPath), m_Timeline(this)
 	{
 		sourceModel->AddOnModifiedListener([this]() { OnSourceModified(); });
@@ -37,6 +37,11 @@ namespace Odyssey
 	const std::map<std::string, BlendKey>& AnimationClip::BlendKeys(float deltaTime)
 	{
 		return m_Timeline.BlendKeys(deltaTime);
+	}
+
+	void AnimationClip::Reset()
+	{
+		m_Timeline.Reset();
 	}
 
 	float AnimationClip::GetFrameTime(size_t frameIndex)
@@ -63,7 +68,7 @@ namespace Odyssey
 		return m_Timeline.GetTime() / m_Duration;
 	}
 
-	void AnimationClip::LoadFromSource(std::shared_ptr<SourceModel> source)
+	void AnimationClip::LoadFromSource(Ref<SourceModel> source)
 	{
 		const AnimationImportData& animationData = source->GetImporter()->GetAnimationData();
 
