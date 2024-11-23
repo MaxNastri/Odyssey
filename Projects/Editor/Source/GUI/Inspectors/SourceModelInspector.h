@@ -18,7 +18,7 @@ namespace Odyssey
 		void OnDstPathChanged(std::string_view path) { m_DstPath = path; }
 
 	private:
-		std::shared_ptr<SourceModel> m_Model;
+		Ref<SourceModel> m_Model;
 		std::vector<StringDrawer> m_Drawers;
 		Path m_DstPath;
 	};

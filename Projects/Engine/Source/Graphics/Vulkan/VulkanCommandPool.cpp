@@ -61,7 +61,7 @@ namespace Odyssey
     void VulkanCommandPool::Destroy()
     {
         VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
-        std::shared_ptr<VulkanCommandPool> pool = ResourceManager::GetResource<VulkanCommandPool>(m_ResourceID);
+        Ref<VulkanCommandPool> pool = ResourceManager::GetResource<VulkanCommandPool>(m_ResourceID);
 
         // Destroy each of our allocated command buffers
         for (auto& commandBuffer : commandBuffers)

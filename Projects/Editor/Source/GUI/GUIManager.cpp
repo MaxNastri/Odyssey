@@ -23,7 +23,7 @@ namespace Odyssey
 
 	void GUIManager::CreateInspectorWindow()
 	{
-		s_Windows.push_back(new InspectorWindow(std::make_shared<GameObjectInspector>()));
+		s_Windows.push_back(new InspectorWindow(new GameObjectInspector()));
 	}
 
 	void GUIManager::Update()

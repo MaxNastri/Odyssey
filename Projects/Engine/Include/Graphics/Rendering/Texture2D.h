@@ -15,7 +15,7 @@ namespace Odyssey
 	public:
 		Texture2D(const Path& assetPath);
 		Texture2D(const Path& assetPath, TextureFormat format);
-		Texture2D(const Path& assetPath, std::shared_ptr<SourceTexture> source);
+		Texture2D(const Path& assetPath, Ref<SourceTexture> source);
 
 	public:
 		void Save();
@@ -27,7 +27,7 @@ namespace Odyssey
 		uint32_t GetHeight() { return m_TextureDescription.Height; }
 
 	private:
-		void LoadFromSource(std::shared_ptr<SourceTexture> source);
+		void LoadFromSource(Ref<SourceTexture> source);
 		void SaveToDisk(const Path& assetPath);
 
 	private:

@@ -1,13 +1,13 @@
 #pragma once
-#include "Rune.h"
-#include "GUID.h"
+#include "AnimationClip.h"
 #include "AnimationProperty.h"
 #include "BoneKeyframe.h"
+#include "GUID.h"
+#include "Ref.h"
+#include "Rune.h"
 
 namespace Odyssey
 {
-	class AnimationClip;
-
 	class AnimationState
 	{
 	public:
@@ -22,7 +22,7 @@ namespace Odyssey
 	public:
 		GUID GetGUID() { return m_GUID; }
 		std::string_view GetName();
-		std::shared_ptr<AnimationClip> GetClip();
+		Ref<AnimationClip> GetClip();
 
 	public:
 		void SetGUID(GUID guid) { m_GUID = guid; }
@@ -30,7 +30,7 @@ namespace Odyssey
 		void SetClip(GUID guid);
 
 	private:
-		std::shared_ptr<AnimationClip> m_AnimationClip;
+		Ref<AnimationClip> m_AnimationClip;
 		std::string m_Name;
 		GUID m_GUID;
 	};

@@ -1,9 +1,9 @@
 #pragma once
-#include "Ref.h"
 #include "DockableWindow.h"
-#include "Resource.h"
 #include "Events.h"
 #include "GameObject.h"
+#include "Ref.h"
+#include "Resource.h"
 
 namespace Odyssey
 {
@@ -25,9 +25,6 @@ namespace Odyssey
 	private:
 		void OnSceneLoaded(SceneLoadedEvent* event);
 
-	public:
-		std::shared_ptr<OpaquePass> GetRenderPass() { return m_GameViewPass; }
-
 	private:
 		void CreateRenderTexture();
 		void DestroyRenderTexture();
@@ -37,11 +34,11 @@ namespace Odyssey
 		ResourceID m_ColorRT;
 		ResourceID m_DepthRT;
 		ResourceID m_RTSampler;
-		
+
 	private:
 		Ref<IEventListener> m_SceneLoadListener = nullptr;
 	private:
-		std::shared_ptr<OpaquePass> m_GameViewPass;
+		Ref<OpaquePass> m_GameViewPass;
 		GameObject m_MainCamera;
 	};
 }

@@ -10,7 +10,7 @@ namespace Odyssey
 	Shader::Shader(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		if (std::shared_ptr<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
+		if (Ref<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
 		{
 			source->AddOnModifiedListener([this]() { OnSourceModified(); });
 			LoadFromSource(source);
@@ -23,7 +23,7 @@ namespace Odyssey
 		}
 	}
 
-	Shader::Shader(const Path& assetPath, std::shared_ptr<SourceShader> source)
+	Shader::Shader(const Path& assetPath, Ref<SourceShader> source)
 		: Asset(assetPath)
 	{
 		std::vector<ShaderType> shaderTypes = source->GetShaderTypes();
@@ -43,7 +43,7 @@ namespace Odyssey
 
 	void Shader::Recompile()
 	{
-		if (std::shared_ptr<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
+		if (Ref<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
 		{
 			auto shaderTypes = source->GetShaderTypes();
 			for (auto shaderType : shaderTypes)
@@ -71,7 +71,7 @@ namespace Odyssey
 
 	void Shader::Load()
 	{
-		if (std::shared_ptr<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
+		if (Ref<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
 			LoadFromSource(source);
 	}
 
@@ -88,7 +88,7 @@ namespace Odyssey
 	}
 
 
-	void Shader::LoadFromSource(std::shared_ptr<SourceShader> source)
+	void Shader::LoadFromSource(Ref<SourceShader> source)
 	{
 		// Clear any existing shaders
 		for (auto& [shaderType, shaderData] : m_Shaders)
@@ -124,7 +124,7 @@ namespace Odyssey
 
 	void Shader::OnSourceModified()
 	{
-		if (std::shared_ptr<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
+		if (Ref<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
 			LoadFromSource(source);
 	}
 }

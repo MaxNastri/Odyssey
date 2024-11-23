@@ -25,7 +25,7 @@ namespace Odyssey
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		// Rendering stuff
-		m_SceneViewPass = std::make_shared<OpaquePass>();
+		m_SceneViewPass = new OpaquePass();
 		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		m_SceneViewPass->AddDebugSubPass();
 		Renderer::PushRenderPass(m_SceneViewPass);

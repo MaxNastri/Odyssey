@@ -1,4 +1,7 @@
 #pragma once
+#include <typeinfo>
+#include "Log.h"
+#include "GUID.h"
 
 namespace Odyssey
 {
@@ -136,6 +139,13 @@ namespace Odyssey
 		bool operator<(const Ref& other) const { return m_Instance < other.m_Instance; }
 
 	public:
+		void Reset()
+		{
+			Decrement();
+			m_Instance = nullptr;
+			m_RefCount = nullptr;
+		}
+
 		T* Get() { return m_Instance; }
 
 	public:
@@ -148,6 +158,9 @@ namespace Odyssey
 	private:
 		void Increment()
 		{
+
+			std::string name(typeid(T).name());
+
 			if (m_RefCount)
 				m_RefCount->Increment();
 		}
@@ -161,8 +174,9 @@ namespace Odyssey
 				if (m_RefCount->Count() == 0)
 				{
 					delete m_Instance;
-					delete m_RefCount;
 					m_Instance = nullptr;
+
+					delete m_RefCount;
 					m_RefCount = nullptr;
 				}
 			}

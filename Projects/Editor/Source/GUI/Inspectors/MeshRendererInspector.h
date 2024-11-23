@@ -18,10 +18,6 @@ namespace Odyssey
 		virtual bool Draw() override;
 
 	private:
-		void OnMeshModified(GUID guid);
-		void OnMaterialModified(GUID guid);
-
-	private:
 		GameObject m_GameObject;
 		AssetFieldDrawer m_MeshDrawer;
 		AssetFieldDrawer m_MaterialDrawer;

@@ -33,7 +33,7 @@ namespace Odyssey
 		return m_Name;
 	}
 
-	std::shared_ptr<AnimationClip> AnimationState::GetClip()
+	Ref<AnimationClip> AnimationState::GetClip()
 	{
 		return m_AnimationClip;
 	}

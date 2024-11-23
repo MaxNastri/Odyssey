@@ -1,4 +1,5 @@
 #pragma once
+#include "Ref.h"
 
 namespace Odyssey
 {
@@ -16,20 +17,20 @@ namespace Odyssey
 
 	public:
 		template<typename T>
-		std::shared_ptr<T> Get(size_t index)
+		Ref<T> Get(size_t index)
 		{
 			static_assert(std::is_base_of<Base, T>::value, "T is not a dervied class of Base.");
 
 			if (index < m_Data.size() && m_Data[index])
 			{
-				if (std::shared_ptr<Base> basePtr = m_Data[index])
-					return std::static_pointer_cast<T>(basePtr);
+				if (Ref<Base> basePtr = m_Data[index])
+					return basePtr.As<T>();
 			}
 
 			return nullptr;
 		}
 
-		std::shared_ptr<Base> operator[](size_t index)
+		Ref<Base>& operator[](size_t index)
 		{
 			return m_Data[index];
 		}
@@ -48,13 +49,13 @@ namespace Odyssey
 			m_FreeIndices.pop();
 
 			// Create an entry and return the index
-			m_Data[nextIndex] = std::make_shared<T>(params...);
+			m_Data[nextIndex] = new T(params...);
 			return nextIndex;
 		}
 
 		void Remove(size_t index)
 		{
-			m_Data[index].reset();
+			m_Data[index].Reset();
 			m_FreeIndices.push(index);
 		}
 
@@ -77,7 +78,7 @@ namespace Odyssey
 
 	private:
 		const size_t initialCapacity = 64;
-		std::vector<std::shared_ptr<Base>> m_Data;
+		std::vector<Ref<Base>> m_Data;
 		std::queue<size_t> m_FreeIndices;
 	};
 }

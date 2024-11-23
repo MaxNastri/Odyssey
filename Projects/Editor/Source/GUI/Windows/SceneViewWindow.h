@@ -1,9 +1,10 @@
 #pragma once
 #include "DockableWindow.h"
-#include "Resource.h"
-#include "GameObject.h"
 #include "Events.h"
 #include "EventSystem.h"
+#include "GameObject.h"
+#include "Ref.h"
+#include "Resource.h"
 
 namespace Odyssey
 {
@@ -26,9 +27,6 @@ namespace Odyssey
 		virtual void OnWindowResize() override;
 		virtual void OnWindowClose() override;
 
-	public:
-		std::shared_ptr<OpaquePass> GetRenderPass() { return m_SceneViewPass; }
-
 	private:
 		void OnSceneLoaded(SceneLoadedEvent* event);
 		void OnGUISelectionChanged(GUISelectionChangedEvent* event);
@@ -49,7 +47,7 @@ namespace Odyssey
 		bool m_CameraControllerInUse = false;
 
 	private: // Rendering stuff
-		std::shared_ptr<OpaquePass> m_SceneViewPass;
+		Ref<OpaquePass> m_SceneViewPass;
 		uint64_t m_RenderTextureID;
 		ResourceID m_ColorRT;
 		ResourceID m_DepthRT;

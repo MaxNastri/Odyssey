@@ -20,7 +20,7 @@ namespace Odyssey
 		void OnTextureModified(GUID guid);
 
 	private:
-		std::shared_ptr<Material> m_Material;
+		Ref<Material> m_Material;
 
 		StringDrawer m_NameDrawer;
 		StringDrawer m_GUIDDrawer;

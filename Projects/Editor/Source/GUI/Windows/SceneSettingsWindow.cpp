@@ -14,16 +14,13 @@ namespace Odyssey
 			glm::vec2(0, 0), glm::vec2(400, 450), glm::vec2(2, 2))
 	{
 		m_Scene = SceneManager::GetActiveScene();
-		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>(
-			[this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
+		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
 
-		GUID skyboxGUID = m_Scene ? m_Scene->GetEnvironmentSettings().Skybox : GUID(0);
-		m_SkyboxDrawer = AssetFieldDrawer("Skybox", skyboxGUID, Cubemap::Type,
-			[this](GUID skyboxGUID) { OnSkyboxChanged(skyboxGUID); });
+		GUID skyboxGUID = m_Scene ? m_Scene->GetEnvironmentSettings().Skybox->GetGUID() : GUID(0);
+		m_SkyboxDrawer = AssetFieldDrawer("Skybox", skyboxGUID, Cubemap::Type);
 
-		glm::vec3 ambientColor = m_Scene ? m_Scene->GetEnvironmentSettings().AmbientColor : glm::vec3(0.0f);
-		m_AmbientColorPicker = ColorPicker("Ambient Color", ambientColor,
-			[this](glm::vec3 color) { OnAmbientColorChanged(color); });
+		float3 ambientColor = m_Scene ? m_Scene->GetEnvironmentSettings().AmbientColor : float3(0.0f);
+		m_AmbientColorPicker = ColorPicker("Ambient Color", ambientColor);
 	}
 
 	bool SceneSettingsWindow::Draw()
@@ -35,8 +32,17 @@ namespace Odyssey
 
 		if (m_Scene)
 		{
-			m_SkyboxDrawer.Draw();
-			m_AmbientColorPicker.Draw();
+			if (m_SkyboxDrawer.Draw())
+			{
+				if (m_Scene)
+					m_Scene->GetEnvironmentSettings().SetSkybox(m_SkyboxDrawer.GetGUID());
+			}
+
+			if (m_AmbientColorPicker.Draw())
+			{
+				if (m_Scene)
+					m_Scene->GetEnvironmentSettings().AmbientColor = m_AmbientColorPicker.GetColor3();
+			}
 		}
 
 		End();
@@ -51,18 +57,8 @@ namespace Odyssey
 	void SceneSettingsWindow::OnSceneLoaded(SceneLoadedEvent* event)
 	{
 		m_Scene = event->loadedScene;
-		m_SkyboxDrawer.SetGUID(m_Scene->GetEnvironmentSettings().Skybox);
-		m_AmbientColorPicker.SetColor(m_Scene->GetEnvironmentSettings().AmbientColor);
-	}
 
-	void SceneSettingsWindow::OnSkyboxChanged(GUID skyboxGUID)
-	{
-		if (m_Scene)
-			m_Scene->GetEnvironmentSettings().Skybox = skyboxGUID;
-	}
-	void SceneSettingsWindow::OnAmbientColorChanged(glm::vec3 color)
-	{
-		if (m_Scene)
-			m_Scene->GetEnvironmentSettings().AmbientColor = color;
+		m_SkyboxDrawer.SetGUID(m_Scene->GetEnvironmentSettings().Skybox->GetGUID());
+		m_AmbientColorPicker.SetColor(m_Scene->GetEnvironmentSettings().AmbientColor);
 	}
 }

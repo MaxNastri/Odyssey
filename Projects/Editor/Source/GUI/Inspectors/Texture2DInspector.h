@@ -19,7 +19,7 @@ namespace Odyssey
 		void OnSourceAssetchanged(GUID sourceGUID);
 
 	private:
-		std::shared_ptr<Texture2D> m_Texture;
+		Ref<Texture2D> m_Texture;
 		StringDrawer m_GUIDDrawer;
 		StringDrawer m_NameDrawer;
 		StringDrawer m_TypeDrawer;

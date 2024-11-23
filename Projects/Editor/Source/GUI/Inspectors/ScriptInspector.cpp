@@ -46,7 +46,7 @@ namespace Odyssey
 
 		if (ImGui::CollapsingHeader(("Script - " + displayName).c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			for (const auto& drawer : drawers)
+			for (Ref<PropertyDrawer>& drawer : drawers)
 				modified |= drawer->Draw();
 		}
 
@@ -94,25 +94,22 @@ namespace Odyssey
 
 	void ScriptInspector::CreateEntityDrawer(std::string_view fieldName, uint32_t scriptID, uint32_t fieldID, const std::string& typeName, GUID initialValue)
 	{
-		auto drawer = std::make_shared<EntityFieldDrawer>(fieldName, initialValue, typeName,
-			[this, scriptID, fieldID](GUID guid) { OnFieldChanged<GUID>(scriptID, fieldID, guid); });
-		drawers.push_back(drawer);
+		auto callback = [this, scriptID, fieldID](GUID guid)
+			{
+				OnFieldChanged<GUID>(scriptID, fieldID, guid);
+			};
+
+		drawers.emplace_back(new EntityFieldDrawer(fieldName, initialValue, typeName, callback));
 	}
 
 	void ScriptInspector::CreateAssetDrawer(const std::string& fieldName, const std::string& assetType, uint32_t scriptID, uint32_t fieldID, GUID initialValue)
 	{
-		auto drawer = std::make_shared<AssetFieldDrawer>(fieldName, initialValue, assetType,
-			[this, scriptID, fieldID](GUID guid) { OnFieldChanged<GUID>(scriptID, fieldID, guid); });
-		drawers.push_back(drawer);
-	}
+		auto callback = [this, scriptID, fieldID](GUID guid)
+			{
+				OnFieldChanged<GUID>(scriptID, fieldID, guid);
+			};
 
-	template<typename T>
-	std::shared_ptr<IntDrawer<T>> CreateIntDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
-	{
-		T initialValue = fieldStorage.GetValue<T>();
-		auto drawer = std::make_shared<IntDrawer<T>>(fieldStorage.Name, initialValue,
-			[this](T newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
-		return drawer;
+		drawers.emplace_back(new AssetFieldDrawer(fieldName, initialValue, assetType, callback));
 	}
 
 	void ScriptInspector::CreateDrawerFromProperty(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
@@ -162,33 +159,45 @@ namespace Odyssey
 			case DataType::Float:
 			{
 				float initialValue = fieldStorage.GetValue<float>();
-				auto drawer = std::make_shared<FloatDrawer>(fieldStorage.Name, initialValue,
-					[this, scriptID, fieldID](float newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
-				drawers.push_back(drawer);
+				auto callback = [this, scriptID, fieldID](float newValue)
+					{
+						OnFieldChanged(scriptID, fieldID, newValue);
+					};
+
+				drawers.emplace_back(new FloatDrawer(fieldStorage.Name, initialValue, callback));
 				break;
 			}
 			case DataType::Double:
 			{
 				double initialValue = fieldStorage.GetValue<double>();
-				auto drawer = std::make_shared<DoubleDrawer>(fieldStorage.Name, initialValue,
-					[this, scriptID, fieldID](double newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
-				drawers.push_back(drawer);
+				auto callback = [this, scriptID, fieldID](double newValue)
+					{
+						OnFieldChanged(scriptID, fieldID, newValue);
+					};
+
+				drawers.emplace_back(new DoubleDrawer(fieldStorage.Name, initialValue, callback));
 				break;
 			}
 			case DataType::Bool:
 			{
 				Coral::Bool32 initialValue = fieldStorage.GetValue<Coral::Bool32>();
-				auto drawer = std::make_shared<BoolDrawer>(fieldStorage.Name, initialValue, false,
-					[this, scriptID, fieldID](bool newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
-				drawers.push_back(drawer);
+				auto callback = [this, scriptID, fieldID](bool newValue)
+					{
+						OnFieldChanged(scriptID, fieldID, newValue);
+					};
+
+				drawers.emplace_back(new BoolDrawer(fieldStorage.Name, initialValue, false, callback));
 				break;
 			}
 			case DataType::Vector3:
 			{
 				glm::vec3 initialValue = fieldStorage.GetValue<glm::vec3>();
-				auto drawer = std::make_shared<Vector3Drawer>(fieldStorage.Name, initialValue, glm::zero<glm::vec3>(), false,
-					[this, scriptID, fieldID](glm::vec3 newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
-				drawers.push_back(drawer);
+				auto callback = [this, scriptID, fieldID](glm::vec3 newValue)
+					{
+						OnFieldChanged(scriptID, fieldID, newValue);
+					};
+
+				drawers.emplace_back(new Vector3Drawer(fieldStorage.Name, initialValue, glm::zero<glm::vec3>(), false, callback));
 				break;
 			}
 		}
@@ -196,11 +205,12 @@ namespace Odyssey
 
 	void ScriptInspector::CreateStringDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
 	{
-		std::string initialValue = "";
+		auto callback = [this, scriptID, fieldID](std::string_view newValue)
+			{
+				OnStringFieldChanged(scriptID, fieldID, newValue);
+			};
 
-		auto drawer = std::make_shared<StringDrawer>(fieldStorage.Name, initialValue, false,
-			[this, scriptID, fieldID](std::string_view newValue) { OnStringFieldChanged(scriptID, fieldID, newValue); });
-		drawers.push_back(drawer);
+		drawers.emplace_back(new StringDrawer(fieldStorage.Name, "", false, callback));
 	}
 
 	void ScriptInspector::OnStringFieldChanged(uint32_t scriptID, uint32_t fieldID, std::string_view newValue)

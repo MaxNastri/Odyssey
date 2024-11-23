@@ -1,12 +1,10 @@
 #include "Animator.h"
-#include "AnimationRig.h"
 #include "AssetManager.h"
-#include "AnimationBlueprint.h"
-#include "OdysseyTime.h"
 #include "DebugRenderer.h"
-#include "Transform.h"
-#include "Scene.h"
+#include "OdysseyTime.h"
 #include "PropertiesComponent.h"
+#include "Scene.h"
+#include "Transform.h"
 
 namespace Odyssey
 {
@@ -14,6 +12,12 @@ namespace Odyssey
 		: m_GameObject(gameObject)
 	{
 
+	}
+
+	Animator::~Animator()
+	{
+
+		int debu = 0;
 	}
 
 	void Animator::Serialize(SerializationNode& node)

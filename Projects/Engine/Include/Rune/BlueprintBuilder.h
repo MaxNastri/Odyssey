@@ -1,6 +1,7 @@
 #pragma once
-#include "Rune.h"
 #include "GUID.h"
+#include "Ref.h"
+#include "Rune.h"
 
 namespace ax::NodeEditor
 {
@@ -70,7 +71,7 @@ namespace Odyssey
 		private:
 			struct Header
 			{
-				std::shared_ptr<Texture2D> Texture;
+				Ref<Texture2D> Texture;
 				uint64_t TextureID;
 				float4 Color;
 				float2 Min;

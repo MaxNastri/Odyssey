@@ -19,7 +19,7 @@ namespace Odyssey
 		void OnSourceAssetChanged(GUID sourceGUID);
 
 	private:
-		std::shared_ptr<Shader> m_Shader;
+		Ref<Shader> m_Shader;
 		StringDrawer m_GUIDDrawer;
 		StringDrawer m_NameDrawer;
 		IntDrawer<uint32_t> m_ShaderTypeDrawer;

@@ -1,8 +1,9 @@
 #pragma once
-#include "Inspector.h"
-#include "PropertyDrawers.h"
 #include "GameObject.h"
+#include "Inspector.h"
 #include "ManagedObject.hpp"
+#include "PropertyDrawers.h"
+#include "Ref.h"
 #include "ScriptingManager.h"
 #include "ScriptStorage.h"
 
@@ -34,9 +35,9 @@ namespace Odyssey
 		void AddIntDrawer(uint32_t scriptID, uint32_t fieldID, FieldStorage& fieldStorage)
 		{
 			T initialValue = fieldStorage.GetValue<T>();
-			auto drawer = std::make_shared<IntDrawer<T>>(fieldStorage.Name, initialValue, false,
-				[this, scriptID, fieldID](T newValue) { OnFieldChanged(scriptID, fieldID, newValue); });
-			drawers.push_back(drawer);
+
+			drawers.emplace_back(new IntDrawer<T>(fieldStorage.Name, initialValue, false,
+				[this, scriptID, fieldID](T newValue) { OnFieldChanged(scriptID, fieldID, newValue); }));
 		}
 
 		void OnEntityChanged(uint32_t scriptID, uint32_t fieldID, GUID newValue)
@@ -85,6 +86,6 @@ namespace Odyssey
 		bool m_ScriptEnabled;
 		GameObject m_GameObject;
 		std::string displayName;
-		std::vector<std::shared_ptr<PropertyDrawer>> drawers;
+		std::vector<Ref<PropertyDrawer>> drawers;
 	};
 }

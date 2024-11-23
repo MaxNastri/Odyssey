@@ -1,6 +1,6 @@
 #pragma once
-#include "DockableWindow.h"
 #include "AnimationBlueprint.h"
+#include "DockableWindow.h"
 #include "PropertyDrawers.h"
 #include "Ref.h"
 
@@ -40,8 +40,8 @@ namespace Odyssey
 		void OpenAddLinkMenu();
 
 	private:
-		std::shared_ptr<AnimationBlueprint> m_Blueprint;
-		std::shared_ptr<BlueprintBuilder> m_Builder;
+		Ref<AnimationBlueprint> m_Blueprint;
+		Ref<BlueprintBuilder> m_Builder;
 		uint32_t m_DockspaceID = 0;
 
 	private: // Node inspector panel
@@ -55,7 +55,7 @@ namespace Odyssey
 	private: // Animation Link
 		DropdownDrawer m_PropertyNameDrawer;
 		EnumDrawer<ComparisonOp> m_ComparisonDrawer;
-		std::shared_ptr<PropertyDrawer> m_LinkValueDrawer;
+		Ref<PropertyDrawer> m_LinkValueDrawer;
 
 	private: // Add property menu
 		char m_AddPropertyBuffer[128] = "";

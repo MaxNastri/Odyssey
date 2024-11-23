@@ -19,7 +19,7 @@ namespace Odyssey
 		void OnSourceAssetChanged(GUID sourceGUID);
 
 	private:
-		std::shared_ptr<Mesh> m_Mesh;
+		Ref<Mesh> m_Mesh;
 		StringDrawer m_GUIDDrawer;
 		StringDrawer m_NameDrawer;
 		StringDrawer m_TypeDrawer;

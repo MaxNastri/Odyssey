@@ -1,15 +1,16 @@
 #pragma once
-#include "volk.h"
-#include "VulkanDevice.h"
-#include "VulkanImgui.h"
-#include "VulkanSwapchain.h"
-#include "VulkanFrame.h"
-#include "VulkanCommandPool.h"
-#include "VulkanShaderModule.h"
-#include "ResourceManager.h"
 #include "Drawcall.h"
-#include "RenderScene.h"
+#include "Ref.h"
 #include "RenderPasses.h"
+#include "RenderScene.h"
+#include "ResourceManager.h"
+#include "volk.h"
+#include "VulkanCommandPool.h"
+#include "VulkanDevice.h"
+#include "VulkanFrame.h"
+#include "VulkanImgui.h"
+#include "VulkanShaderModule.h"
+#include "VulkanSwapchain.h"
 
 namespace Odyssey
 {
@@ -32,7 +33,7 @@ namespace Odyssey
 		bool Present();
 
 	public:
-		void AddRenderPass(std::shared_ptr<RenderPass> renderPass) { m_RenderPasses.push_back(renderPass); }
+		void AddRenderPass(Ref<RenderPass> renderPass) { m_RenderPasses.push_back(renderPass); }
 		void AddImguiPass();
 
 	public:
@@ -58,7 +59,7 @@ namespace Odyssey
 
 	private: // Draws
 		std::vector<std::shared_ptr<RenderScene>> m_RenderScenes;
-		std::vector<std::shared_ptr<RenderPass>> m_RenderPasses;
+		std::vector<Ref<RenderPass>> m_RenderPasses;
 		std::shared_ptr<ImguiPass> m_IMGUIPass;
 		std::shared_ptr<PerFrameRenderingData> m_RenderingData;
 

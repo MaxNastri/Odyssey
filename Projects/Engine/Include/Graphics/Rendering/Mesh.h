@@ -13,14 +13,14 @@ namespace Odyssey
 	public:
 		Mesh() = default;
 		Mesh(const Path& assetPath);
-		Mesh(const Path& assetPath, std::shared_ptr<SourceModel> source);
+		Mesh(const Path& assetPath, Ref<SourceModel> source);
 
 	public:
 		void Save();
 		void Load();
 
 	private:
-		void LoadFromSource(std::shared_ptr<SourceModel> source);
+		void LoadFromSource(Ref<SourceModel> source);
 		void SaveToDisk(const Path& assetPath);
 
 	public:

@@ -20,6 +20,7 @@ namespace Odyssey
 	public:
 		AnimationBlueprint();
 		AnimationBlueprint(const Path& assetPath);
+		~AnimationBlueprint();
 
 	public:
 		void Save();

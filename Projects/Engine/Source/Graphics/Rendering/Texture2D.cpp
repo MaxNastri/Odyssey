@@ -11,7 +11,7 @@ namespace Odyssey
 	Texture2D::Texture2D(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+		if (Ref<SourceTexture> source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
 		{
 			source->AddOnModifiedListener([this]() { OnSourceModified(); });
 			LoadFromSource(source);
@@ -21,14 +21,14 @@ namespace Odyssey
 	Texture2D::Texture2D(const Path& assetPath, TextureFormat format)
 		: Asset(assetPath)
 	{
-		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+		if (Ref<SourceTexture> source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
 		{
 			source->AddOnModifiedListener([this]() { OnSourceModified(); });
 			LoadFromSource(source);
 		}
 	}
 
-	Texture2D::Texture2D(const Path& assetPath, std::shared_ptr<SourceTexture> source)
+	Texture2D::Texture2D(const Path& assetPath, Ref<SourceTexture> source)
 		: Asset(assetPath)
 	{
 		SetSourceAsset(source->GetGUID());
@@ -41,12 +41,12 @@ namespace Odyssey
 
 	void Texture2D::Load()
 	{
-		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+		if (Ref<SourceTexture> source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
 			LoadFromSource(source);
 		//LoadFromDisk(m_AssetPath);
 	}
 
-	void Texture2D::LoadFromSource(std::shared_ptr<SourceTexture> source)
+	void Texture2D::LoadFromSource(Ref<SourceTexture> source)
 	{
 		// Copy in the texture settings
 		m_TextureDescription.Width = (uint32_t)source->GetWidth();
@@ -78,7 +78,7 @@ namespace Odyssey
 
 	void Texture2D::OnSourceModified()
 	{
-		if (auto source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
+		if (Ref<SourceTexture> source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
 			LoadFromSource(source);
 	}
 }

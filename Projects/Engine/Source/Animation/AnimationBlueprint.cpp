@@ -17,6 +17,11 @@ namespace Odyssey
 		Load();
 	}
 
+	AnimationBlueprint::~AnimationBlueprint()
+	{
+		int debug = 0;
+	}
+
 	void AnimationBlueprint::Save()
 	{
 		SaveToDisk(m_AssetPath);

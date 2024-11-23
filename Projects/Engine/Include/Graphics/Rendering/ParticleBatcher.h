@@ -2,12 +2,11 @@
 #include "ParticleEmitter.h"
 #include "Resource.h"
 #include "GameObject.h"
+#include "Shader.h"
+#include "VulkanPushDescriptors.h"
 
 namespace Odyssey
 {
-	class Shader;
-	class VulkanPushDescriptors;
-
 	class ParticleBatcher
 	{
 	public:
@@ -72,20 +71,20 @@ namespace Odyssey
 
 	private: // Shared
 		inline static ResourceID s_CommandPool;
-		inline static std::shared_ptr<VulkanPushDescriptors> s_PushDescriptors;
-		inline static std::shared_ptr<VulkanPushDescriptors> s_SimPushDescriptors;
+		inline static Ref<VulkanPushDescriptors> s_PushDescriptors;
+		inline static Ref<VulkanPushDescriptors> s_SimPushDescriptors;
 
 	private: // Emit pass
 		inline static const GUID& s_EmitShaderGUID = 8940240242710108428;
 		inline static ResourceID s_EmitDescriptorLayout;
 		inline static ResourceID s_EmitComputePipeline;
-		inline static std::shared_ptr<Shader> s_EmitShader;
+		inline static Ref<Shader> s_EmitShader;
 
 	private: // Simulation pass
 		inline static const GUID& s_SimShaderGUID = 7831351134810913572;
 		inline static ResourceID s_SimDescriptorLayout;
 		inline static ResourceID s_SimComputePipeline;
-		inline static std::shared_ptr<Shader> s_SimShader;
+		inline static Ref<Shader> s_SimShader;
 
 	private: // Buffer sizes
 		inline static size_t s_EmitterBufferSize;

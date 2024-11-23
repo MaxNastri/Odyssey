@@ -1,30 +1,30 @@
-#include "InspectorWindow.h"
-#include "imgui.h"
 #include "EditorEvents.h"
+#include "Events.h"
 #include "EventSystem.h"
 #include "GameObjectInspector.h"
-#include "MaterialInspector.h"
-#include "MeshRendererInspector.h"
-#include "SourceShaderInspector.h"
-#include "SourceModelInspector.h"
-#include "SourceTextureInspector.h"
-#include "ShaderInspector.h"
-#include "MeshInspector.h"
-#include "Texture2DInspector.h"
-#include "Events.h"
 #include "GUIManager.h"
+#include "imgui.h"
+#include "InspectorWindow.h"
+#include "MaterialInspector.h"
+#include "MeshInspector.h"
+#include "MeshRendererInspector.h"
+#include "ShaderInspector.h"
+#include "SourceModelInspector.h"
+#include "SourceShaderInspector.h"
+#include "SourceTextureInspector.h"
+#include "Texture2DInspector.h"
 
 namespace Odyssey
 {
-	std::map<std::string, std::function<std::shared_ptr<Inspector>(GUID)>> s_CreateInspectorFuncs;
+	std::map<std::string, std::function<Ref<Inspector>(GUID)>> s_CreateInspectorFuncs;
 
 	template<typename T>
 	static void RegisterInspectorType(const std::string& assetType)
 	{
-		s_CreateInspectorFuncs[assetType] = [](GUID guid) { return std::make_shared<T>(guid); };
+		s_CreateInspectorFuncs[assetType] = [](GUID guid) { return new T(guid); };
 	}
 
-	InspectorWindow::InspectorWindow(std::shared_ptr<Inspector> inspector)
+	InspectorWindow::InspectorWindow(Ref<Inspector> inspector)
 	{
 		m_Inspector = inspector;
 		m_selectionChangedListener = EventSystem::Listen<GUISelectionChangedEvent>
@@ -59,7 +59,7 @@ namespace Odyssey
 
 		if (m_Inspector)
 			m_Inspector->Draw();
-		
+
 		ImGui::PopStyleVar();
 		ImGui::End();
 		return modified;

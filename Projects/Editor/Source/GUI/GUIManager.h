@@ -71,9 +71,6 @@ namespace Odyssey
 		static void Update();
 		static void DrawGUI();
 
-	public:
-		static std::shared_ptr<ImguiPass> GetRenderPass() { return m_GUIPass; }
-
 	private:
 		static void SetDarkThemeColors();
 
@@ -92,6 +89,5 @@ namespace Odyssey
 		inline static std::vector<Ref<DockableWindow>> s_Windows;
 		inline static std::unordered_map<std::type_index, WindowID> s_WindowIDs;
 		inline static int32_t selectedObject = -1;
-		inline static std::shared_ptr<ImguiPass> m_GUIPass;
 	};
 }

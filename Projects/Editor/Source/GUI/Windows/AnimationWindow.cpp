@@ -145,7 +145,7 @@ namespace Odyssey
 
 	void AnimationWindow::CreateBuilder()
 	{
-		m_Builder = std::make_shared<BlueprintBuilder>(m_Blueprint.get());
+		m_Builder =  new BlueprintBuilder(m_Blueprint.Get());
 		m_Builder->OverrideCreateNodeMenu(Create_Node_Menu_Name, Create_Node_Menu_ID);
 		m_Builder->OverrideCreateLinkMenu(Add_Link_Menu_Name, Add_Link_Menu_ID);
 	}
@@ -341,18 +341,18 @@ namespace Odyssey
 						{
 							case AnimationPropertyType::Float:
 							{
-								m_LinkValueDrawer = std::make_shared<FloatDrawer>("Value", animProperty->ValueBuffer.Read<float>());
+								m_LinkValueDrawer = new FloatDrawer("Value", animProperty->ValueBuffer.Read<float>());
 								break;
 							}
 							case AnimationPropertyType::Int:
 							{
-								m_LinkValueDrawer = std::make_shared<IntDrawer<int32_t>>("Value", animProperty->ValueBuffer.Read<int32_t>());
+								m_LinkValueDrawer = new IntDrawer<int32_t>("Value", animProperty->ValueBuffer.Read<int32_t>());
 								break;
 							}
 							case AnimationPropertyType::Bool:
 							case AnimationPropertyType::Trigger:
 							{
-								m_LinkValueDrawer = std::make_shared<BoolDrawer>("Value", animProperty->ValueBuffer.Read<bool>());
+								m_LinkValueDrawer = new BoolDrawer("Value", animProperty->ValueBuffer.Read<bool>());
 								break;
 							}
 							default:
@@ -386,20 +386,20 @@ namespace Odyssey
 						{
 							case AnimationPropertyType::Float:
 							{
-								auto drawer = std::static_pointer_cast<FloatDrawer>(m_LinkValueDrawer);
+								Ref<FloatDrawer> drawer = m_LinkValueDrawer.As<FloatDrawer>();
 								m_AnimationLink->SetBool(drawer->GetValue());
 								break;
 							}
 							case AnimationPropertyType::Int:
 							{
-								auto drawer = std::static_pointer_cast<IntDrawer<int32_t>>(m_LinkValueDrawer);
+								Ref<IntDrawer<int32_t>> drawer = m_LinkValueDrawer.As<IntDrawer<int32_t>>();
 								m_AnimationLink->SetInt(drawer->GetValue());
 								break;
 							}
 							case AnimationPropertyType::Bool:
 							case AnimationPropertyType::Trigger:
 							{
-								auto drawer = std::static_pointer_cast<BoolDrawer>(m_LinkValueDrawer);
+								Ref<BoolDrawer> drawer = m_LinkValueDrawer.As<BoolDrawer>();
 								m_AnimationLink->SetBool(drawer->GetValue());
 								break;
 							}

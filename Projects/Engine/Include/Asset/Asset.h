@@ -1,6 +1,7 @@
 #pragma once
 #include "AssetSerializer.h"
 #include "GUID.h"
+#include "Ref.h"
 
 namespace Odyssey
 {

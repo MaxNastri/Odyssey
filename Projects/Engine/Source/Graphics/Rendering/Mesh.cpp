@@ -11,11 +11,11 @@ namespace Odyssey
 	Mesh::Mesh(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		if (auto source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
+		if (Ref<SourceModel> source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
 			LoadFromSource(source);
 	}
 
-	Mesh::Mesh(const Path& assetPath, std::shared_ptr<SourceModel> source)
+	Mesh::Mesh(const Path& assetPath, Ref<SourceModel> source)
 		: Asset(assetPath)
 	{
 		SetSourceAsset(source->GetGUID());
@@ -29,11 +29,11 @@ namespace Odyssey
 
 	void Mesh::Load()
 	{
-		if (auto source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
+		if (Ref<SourceModel> source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
 			LoadFromSource(source);
 	}
 
-	void Mesh::LoadFromSource(std::shared_ptr<SourceModel> source)
+	void Mesh::LoadFromSource(Ref<SourceModel> source)
 	{
 		// TODO: Add support for submeshes
 		auto importer = source->GetImporter();

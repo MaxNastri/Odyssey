@@ -124,10 +124,7 @@ namespace Odyssey
 
 		EnvironmentSettings envSettings = scene->GetEnvironmentSettings();
 		if (envSettings.Skybox)
-		{
-			auto skyboxTexture = AssetManager::LoadAsset<Cubemap>(envSettings.Skybox);
-			SkyboxCubemap = skyboxTexture->GetTexture();
-		}
+			SkyboxCubemap = envSettings.Skybox->GetTexture();
 
 		for (auto entity : scene->GetAllEntitiesWith<Light>())
 		{
@@ -204,11 +201,11 @@ namespace Odyssey
 			setPasses.push_back(SetPass());
 			SetPass& setPass = setPasses[setPasses.size() - 1];
 
-			auto material = AssetManager::LoadAsset<Material>(meshRenderer.GetMaterial());
+			Ref<Material> material = meshRenderer.GetMaterial();
 			setPass.SetMaterial(material, m_DescriptorLayout);
 
 			// Create the drawcall data
-			if (auto mesh = AssetManager::LoadAsset<Mesh>(meshRenderer.GetMesh()))
+			if (Ref<Mesh> mesh = meshRenderer.GetMesh())
 			{
 				Drawcall drawcall;
 				drawcall.VertexBufferID = mesh->GetVertexBuffer();
@@ -239,12 +236,12 @@ namespace Odyssey
 		}
 	}
 
-	SetPass::SetPass(std::shared_ptr<Material> material, ResourceID descriptorLayout)
+	SetPass::SetPass(Ref<Material> material, ResourceID descriptorLayout)
 	{
 		SetMaterial(material, descriptorLayout);
 	}
 
-	void SetPass::SetMaterial(std::shared_ptr<Material> material, ResourceID descriptorLayout)
+	void SetPass::SetMaterial(Ref<Material> material, ResourceID descriptorLayout)
 	{
 		// Allocate a graphics pipeline
 		VulkanPipelineInfo info;

@@ -1,4 +1,5 @@
 #pragma once
+#include "Ref.h"
 #include "Resource.h"
 
 namespace Odyssey
@@ -17,6 +18,7 @@ namespace Odyssey
 		SceneView = 2,
 		GameView = 3,
 	};
+
 	struct RenderTarget
 	{
 		RenderTargetType Type;
@@ -39,9 +41,9 @@ namespace Odyssey
 		static void Destroy();
 
 	public:
-		static void PushRenderPass(std::shared_ptr<RenderPass> renderPass);
+		static void PushRenderPass(Ref<RenderPass> renderPass);
 		static void SetDrawGUIListener(std::function<void(void)> listener);
-		static uint64_t AddImguiTexture(std::shared_ptr<Texture2D> texture);
+		static uint64_t AddImguiTexture(Ref<Texture2D> texture);
 		static uint64_t AddImguiRenderTexture(ResourceID renderTextureID, ResourceID samplerID);
 		static void DestroyImguiTexture(uint64_t imguiHandle);
 		static std::shared_ptr<VulkanWindow> GetWindow();
@@ -50,7 +52,6 @@ namespace Odyssey
 		static void RegisterRenderTarget(RenderTargetType rtType, ResourceID colorRT, ResourceID depthRT);
 
 	private:
-
 		inline static std::unordered_map<RenderTargetType, RenderTarget> m_RenderTargets;
 		inline static std::shared_ptr<VulkanRenderer> s_RendererAPI;
 		inline static RendererConfig s_Config;

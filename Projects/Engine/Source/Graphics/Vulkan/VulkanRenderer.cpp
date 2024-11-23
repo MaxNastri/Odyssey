@@ -1,21 +1,20 @@
-#include "VulkanRenderer.h"
-#include "VulkanGlobals.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_vulkan.h"
-#include "VulkanContext.h"
-#include "VulkanPhysicalDevice.h"
-#include "VulkanWindow.h"
-#include "VulkanBuffer.h"
-#include "VulkanQueue.h"
-#include "VulkanImage.h"
-#include "VulkanRenderTexture.h"
-#include "ResourceManager.h"
+#include "Material.h"
 #include "PerFrameRenderingData.h"
+#include "ResourceManager.h"
 #include "Scene.h"
 #include "SceneManager.h"
-#include "Material.h"
-#include <chrono>
+#include "VulkanBuffer.h"
+#include "VulkanContext.h"
+#include "VulkanGlobals.h"
+#include "VulkanImage.h"
+#include "VulkanPhysicalDevice.h"
+#include "VulkanQueue.h"
+#include "VulkanRenderer.h"
+#include "VulkanRenderTexture.h"
+#include "VulkanWindow.h"
 
 namespace Odyssey
 {
@@ -212,7 +211,7 @@ namespace Odyssey
 			params.renderingData = m_RenderingData;
 			params.FrameRT = frame->GetRenderTarget();
 
-			for (const auto& renderPass : m_RenderPasses)
+			for (Ref<RenderPass>& renderPass : m_RenderPasses)
 			{
 				renderPass->BeginPass(params);
 				renderPass->Execute(params);
