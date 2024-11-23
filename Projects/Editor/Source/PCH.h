@@ -24,9 +24,12 @@
 	#include <Windows.h>
 #endif
 
-#include "glm.h"
+#include "PCH.h"
 #include "Utils.h"
 #include "Globals.h"
+
+#include "glm.h"
+using namespace glm;
 
 #include "Jolt/Jolt.h"
 using namespace JPH;

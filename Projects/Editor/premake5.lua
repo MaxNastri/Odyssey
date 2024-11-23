@@ -11,10 +11,10 @@ project "Odyssey.Editor"
 
     flags { "MultiProcessorCompile" }
     
-    pchheader "PCH.hpp"
+    pchheader "PCH.h"
     pchsource "Source/PCH.cpp"
 
-    forceincludes { "PCH.hpp" }
+    forceincludes { "PCH.h" }
     
     files {
         "Source/**.h",
