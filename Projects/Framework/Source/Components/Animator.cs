@@ -24,7 +24,7 @@
 
         public void SetTrigger(string propertyName)
         {
-            unsafe {  InternalCalls.Animator_SetTrigger(Entity.GUID, propertyName); }
+            unsafe { InternalCalls.Animator_SetTrigger(Entity.GUID, propertyName); }
         }
     }
 }

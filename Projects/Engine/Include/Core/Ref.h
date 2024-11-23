@@ -127,6 +127,7 @@ namespace Odyssey
 		const T* operator->() const { return m_Instance; }
 
 		operator bool() { return m_Instance != nullptr; }
+		operator bool() const { return m_Instance != nullptr; }
 
 		bool operator==(const Ref<T>& other) const { return m_Instance == other.m_Instance; }
 		bool operator!=(const Ref<T>& other) const { return !(*this == other); }

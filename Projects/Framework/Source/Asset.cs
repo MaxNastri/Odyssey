@@ -1,6 +1,4 @@
-﻿using Coral.Managed.Interop;
-
-namespace Odyssey
+﻿namespace Odyssey
 {
     public class Asset<T>
     {

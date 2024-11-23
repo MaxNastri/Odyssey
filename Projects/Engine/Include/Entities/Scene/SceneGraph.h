@@ -1,4 +1,5 @@
 #pragma once
+#include "Ref.h"
 #include "GameObject.h"
 #include "AssetSerializer.h"
 
@@ -14,9 +15,9 @@ namespace Odyssey
 			Node(const GameObject& entity) : Entity(entity) { }
 
 		public:
-			std::shared_ptr<Node> Parent = nullptr;
+			Ref<Node> Parent = nullptr;
 			GameObject Entity;
-			std::vector<std::shared_ptr<Node>> Children;
+			std::vector<Ref<Node>> Children;
 		};
 
 	public:
@@ -27,7 +28,7 @@ namespace Odyssey
 		void Deserialize(Scene* scene, SerializationNode& serializationNode);
 
 	public:
-		const Node* GetSceneRoot() { return m_Root.get(); }
+		const Node* GetSceneRoot() { return m_Root.Get(); }
 
 	public:
 		void AddEntity(const GameObject& entity);
@@ -40,13 +41,13 @@ namespace Odyssey
 		std::vector<GameObject> GetChildren(const GameObject& entity);
 
 	private:
-		std::shared_ptr<Node> FindNode(const GameObject& entity);
-		void RemoveNodeAndChildren(std::shared_ptr<Node> node);
-		void RemoveParent(std::shared_ptr<Node> node);
-		void RemoveChildNode(std::shared_ptr<Node> parentNode, std::shared_ptr<Node> childNode);
+		Ref<Node> FindNode(const GameObject& entity);
+		void RemoveNodeAndChildren(Ref<Node> node);
+		void RemoveParent(Ref<Node> node);
+		void RemoveChildNode(Ref<Node> parentNode, Ref<Node> childNode);
 
 	private:
-		std::shared_ptr<Node> m_Root;
-		std::vector<std::shared_ptr<Node>> m_Nodes;
+		Ref<Node> m_Root;
+		std::vector<Ref<Node>> m_Nodes;
 	};
 }

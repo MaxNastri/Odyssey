@@ -7,7 +7,7 @@ namespace Odyssey
     public class Entity
     {
         private Dictionary<Type, Component> componentCache = new Dictionary<Type, Component>();
-        
+
         internal GUID GUID { get; set; }
 
         protected Entity()
@@ -33,7 +33,7 @@ namespace Odyssey
         public T AddComponent<T>() where T : Component, new()
         {
             Type type = typeof(T);
-            
+
             // Check if we already have a component of this type
             if (this.HasComponent<T>())
                 return this.GetComponent<T>();
