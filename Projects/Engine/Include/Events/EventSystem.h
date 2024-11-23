@@ -1,4 +1,5 @@
 #pragma once
+#include "Ref.h"
 #include "EventListenerArray.h"
 
 namespace Odyssey
@@ -16,42 +17,39 @@ namespace Odyssey
 		static void Dispatch(Args&&... params)
 		{
 			std::type_index typeID = typeid(EventType);
-
 			EventType* currentEvent = new EventType(params...);
 
-			EventListenerArray<EventType>* eventListenerArray = GetEventListenerArray<EventType>();
-			eventListenerArray->ExecuteCallbacks(currentEvent);
+			GetEventListenerArray<EventType>()->ExecuteCallbacks(currentEvent);
 
 			delete currentEvent;
 		}
 
 		template<typename EventType>
-		static std::shared_ptr<IEventListener> Listen(std::function<void(EventType*)> callback)
+		static Ref<IEventListener> Listen(std::function<void(EventType*)> callback)
 		{
-			EventListenerArray<EventType>* eventListenerArray = GetEventListenerArray<EventType>();
-			return eventListenerArray->AddListener(callback);
+			return GetEventListenerArray<EventType>()->AddListener(callback);
 		}
 
 		template<typename EventType>
-		static void RemoveListener(std::shared_ptr<IEventListener> listener)
+		static void RemoveListener(Ref<IEventListener> listener)
 		{
-			EventListenerArray<EventType>* eventListenerArray = GetEventListenerArray<EventType>();
-			std::shared_ptr<EventListener<EventType>> eventListener = std::static_pointer_cast<EventListener<EventType>>(listener);
-			eventListenerArray->RemoveListener(eventListener);
+			GetEventListenerArray<EventType>()->RemoveListener(listener.As<EventListener<EventType>>());
 		}
 
 		template<typename EventType>
-		static EventListenerArray<EventType>* GetEventListenerArray()
+		static Ref<EventListenerArray<EventType>> GetEventListenerArray()
 		{
 			std::type_index typeID = typeid(EventType);
+
 			if (eventTypeToListeners.find(typeID) == eventTypeToListeners.end())
 			{
-				eventTypeToListeners[typeID] = std::make_unique<EventListenerArray<EventType>>();
+				eventTypeToListeners[typeID] = new EventListenerArray<EventType>();
 			}
-			return static_cast<EventListenerArray<EventType>*>(eventTypeToListeners[typeID].get());
+
+			return eventTypeToListeners[typeID].As<EventListenerArray<EventType>>();
 		}
 
 	private:
-		static std::map<std::type_index, std::unique_ptr<IEventListenerArray>> eventTypeToListeners;
+		inline static std::map<std::type_index, Ref<IEventListenerArray>> eventTypeToListeners;
 	};
 }

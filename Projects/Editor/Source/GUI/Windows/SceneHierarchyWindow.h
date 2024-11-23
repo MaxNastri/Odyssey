@@ -32,7 +32,7 @@ namespace Odyssey
 		Scene* m_Scene;
 		std::vector<Interaction<GameObject>> m_Interactions;
 		bool m_ContextMenuOpen = false;
-		std::shared_ptr<IEventListener> m_SceneLoadedListener;
+		Ref<IEventListener> m_SceneLoadedListener;
 		GameObject m_Selected;
 		std::function<void(void)> m_Deferred;
 	};

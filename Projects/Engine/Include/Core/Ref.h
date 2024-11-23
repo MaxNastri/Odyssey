@@ -62,6 +62,7 @@ namespace Odyssey
 		{
 			m_Instance = (T*)other.m_Instance;
 			m_RefCount = other.m_RefCount;
+			Increment();
 		}
 
 		template<typename T2>
@@ -126,7 +127,12 @@ namespace Odyssey
 		const T* operator->() const { return m_Instance; }
 
 		operator bool() { return m_Instance != nullptr; }
-		operator bool() const { return m_Instance != nullptr; }
+
+		bool operator==(const Ref<T>& other) const { return m_Instance == other.m_Instance; }
+		bool operator!=(const Ref<T>& other) const { return !(*this == other); }
+
+		bool operator() (const Ref& lhs, const Ref& rhs) const { return lhs.m_Instance < rhs.m_Instance; }
+		bool operator<(const Ref& other) const { return m_Instance < other.m_Instance; }
 
 	public:
 		T* Get() { return m_Instance; }

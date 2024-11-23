@@ -1,4 +1,5 @@
 #pragma once
+#include "Ref.h"
 #include "EditorEnums.h"
 #include "DockableWindow.h"
 
@@ -28,8 +29,8 @@ namespace Odyssey
 
 	private:
 		std::shared_ptr<Inspector> m_Inspector;
-		std::shared_ptr<IEventListener> m_selectionChangedListener;
-		std::shared_ptr<IEventListener> m_SceneLoadedListener;
+		Ref<IEventListener> m_selectionChangedListener;
+		Ref<IEventListener> m_SceneLoadedListener;
 		bool open = true;
 	};
 }

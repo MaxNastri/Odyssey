@@ -41,8 +41,8 @@ namespace Odyssey
 		void UpdateGizmosInput();
 
 	private: // Event listener
-		std::shared_ptr<IEventListener> m_SceneLoadedListener;
-		std::shared_ptr<IEventListener> m_GUISelectionListener;
+		Ref<IEventListener> m_SceneLoadedListener;
+		Ref<IEventListener> m_GUISelectionListener;
 
 	private: // Camera stuff
 		GameObject m_GameObject;

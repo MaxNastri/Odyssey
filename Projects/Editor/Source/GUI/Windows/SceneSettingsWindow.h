@@ -1,4 +1,5 @@
 #pragma once
+#include "Ref.h"
 #include "DockableWindow.h"
 #include "PropertyDrawers.h"
 
@@ -28,6 +29,6 @@ namespace Odyssey
 
 	private:
 		Scene* m_Scene;
-		std::shared_ptr<IEventListener> m_SceneLoadedListener;
+		Ref<IEventListener> m_SceneLoadedListener;
 	};
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "Ref.h"
 #include "DockableWindow.h"
 #include "Resource.h"
 #include "Events.h"
@@ -38,7 +39,7 @@ namespace Odyssey
 		ResourceID m_RTSampler;
 		
 	private:
-		std::shared_ptr<IEventListener> m_SceneLoadListener = nullptr;
+		Ref<IEventListener> m_SceneLoadListener = nullptr;
 	private:
 		std::shared_ptr<OpaquePass> m_GameViewPass;
 		GameObject m_MainCamera;
