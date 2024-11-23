@@ -6,14 +6,14 @@ namespace Odyssey
 {
 	SceneGraph::SceneGraph()
 	{
-		m_Root = new Node();
+		m_Root = new SceneNode();
 	}
 
 	void SceneGraph::Serialize(Scene* scene, SerializationNode& serializationNode)
 	{
 		SerializationNode sceneGraphNode = serializationNode.CreateSequenceNode("Scene Graph Nodes");
 
-		for (Ref<SceneGraph::Node>& node : m_Nodes)
+		for (Ref<SceneNode>& node : m_Nodes)
 		{
 			// Skip game objects who dont' want to be serialized
 			PropertiesComponent properties = node->Entity.GetComponent<PropertiesComponent>();
@@ -42,7 +42,7 @@ namespace Odyssey
 
 		struct NodeConnection
 		{
-			Ref<Node> Node;
+			Ref<SceneNode> Node;
 			GUID Parent;
 		};
 		std::vector<NodeConnection> connections;
@@ -53,7 +53,7 @@ namespace Odyssey
 
 			assert(sceneNode.IsMap());
 
-			Ref<Node> node = m_Nodes.emplace_back(new Node());
+			Ref<SceneNode> node = m_Nodes.emplace_back(new SceneNode());
 			NodeConnection& connection = connections.emplace_back();
 			connection.Node = node;
 
@@ -83,7 +83,7 @@ namespace Odyssey
 
 	void SceneGraph::AddEntity(const GameObject& entity)
 	{
-		Ref<SceneGraph::Node> node = new Node(entity);
+		Ref<SceneNode> node = new SceneNode(entity);
 		node->Parent = m_Root;
 		m_Nodes.push_back(node);
 		m_Root->Children.push_back(node);
@@ -91,14 +91,14 @@ namespace Odyssey
 
 	void SceneGraph::RemoveEntityAndChildren(const GameObject& entity)
 	{
-		if (Ref<SceneGraph::Node> node = FindNode(entity))
+		if (Ref<SceneNode> node = FindNode(entity))
 			RemoveNodeAndChildren(node);
 	}
 
 	void SceneGraph::SetParent(const GameObject& parent, const GameObject& entity)
 	{
-		Ref<SceneGraph::Node> parentNode = FindNode(parent);
-		Ref<SceneGraph::Node> node = FindNode(entity);
+		Ref<SceneNode> parentNode = FindNode(parent);
+		Ref<SceneNode> node = FindNode(entity);
 
 		if (node && parentNode)
 		{
@@ -110,7 +110,7 @@ namespace Odyssey
 
 	void SceneGraph::RemoveParent(const GameObject& entity)
 	{
-		if (Ref<SceneGraph::Node> node = FindNode(entity))
+		if (Ref<SceneNode> node = FindNode(entity))
 		{
 			RemoveParent(node);
 
@@ -146,8 +146,8 @@ namespace Odyssey
 
 	void SceneGraph::RemoveChild(const GameObject& entity, const GameObject& child)
 	{
-		Ref<Node> node = FindNode(entity);
-		Ref<Node> childNode = FindNode(child);
+		Ref<SceneNode> node = FindNode(entity);
+		Ref<SceneNode> childNode = FindNode(child);
 
 		if (node && childNode)
 		{
@@ -171,7 +171,7 @@ namespace Odyssey
 		return children;
 	}
 
-	Ref<SceneGraph::Node> SceneGraph::FindNode(const GameObject& entity)
+	Ref<SceneNode> SceneGraph::FindNode(const GameObject& entity)
 	{
 		for (size_t i = 0; i < m_Nodes.size(); i++)
 		{
@@ -182,7 +182,7 @@ namespace Odyssey
 		return nullptr;
 	}
 
-	void SceneGraph::RemoveNodeAndChildren(Ref<Node> node)
+	void SceneGraph::RemoveNodeAndChildren(Ref<SceneNode> node)
 	{
 		for (size_t i = 0; i < node->Children.size(); i++)
 		{
@@ -203,7 +203,7 @@ namespace Odyssey
 		}
 	}
 
-	void SceneGraph::RemoveParent(Ref<Node> node)
+	void SceneGraph::RemoveParent(Ref<SceneNode> node)
 	{
 		auto parent = node->Parent;
 
@@ -222,7 +222,7 @@ namespace Odyssey
 
 	}
 
-	void SceneGraph::RemoveChildNode(Ref<Node> parentNode, Ref<Node> childNode)
+	void SceneGraph::RemoveChildNode(Ref<SceneNode> parentNode, Ref<SceneNode> childNode)
 	{
 		auto& children = parentNode->Children;
 

@@ -22,7 +22,7 @@ namespace Odyssey
 		void OnSceneLoaded(SceneLoadedEvent* event);
 
 	private:
-		void DrawSceneNode(Ref<SceneGraph::Node>& node);
+		void DrawSceneNode(Ref<SceneNode>& node);
 		bool DrawGameObject(GameObject& gameObject, bool leaf);
 		void HandleContextMenu();
 		void HandleDragAndDropWindow();

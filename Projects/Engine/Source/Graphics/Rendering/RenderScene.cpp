@@ -125,6 +125,8 @@ namespace Odyssey
 		EnvironmentSettings envSettings = scene->GetEnvironmentSettings();
 		if (envSettings.Skybox)
 			SkyboxCubemap = envSettings.Skybox->GetTexture();
+		else
+			SkyboxCubemap = ResourceID::Invalid();
 
 		for (auto entity : scene->GetAllEntitiesWith<Light>())
 		{

@@ -4,7 +4,7 @@
 #include "GameObject.h"
 #include "GUID.h"
 #include "SceneGraph.h"
-#include "EnvironmentSettings.hpp"
+#include "EnvironmentSettings.h"
 
 namespace Odyssey
 {

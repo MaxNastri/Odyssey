@@ -35,11 +35,11 @@ namespace Odyssey
 			m_Interactions.clear();
 
 			SceneGraph& sceneGraph = m_Scene->GetSceneGraph();
-			const SceneGraph::Node* sceneRoot = sceneGraph.GetSceneRoot();
+			const SceneNode* sceneRoot = sceneGraph.GetSceneRoot();
 
 			// Draw the scene root's children
 			// Note: Their children will be drawn recursively
-			for (Ref<SceneGraph::Node> node : sceneRoot->Children)
+			for (Ref<SceneNode> node : sceneRoot->Children)
 			{
 				if (node)
 					DrawSceneNode(node);
@@ -72,7 +72,7 @@ namespace Odyssey
 		m_Scene = event->loadedScene;
 	}
 
-	void SceneHierarchyWindow::DrawSceneNode(Ref<SceneGraph::Node>& node)
+	void SceneHierarchyWindow::DrawSceneNode(Ref<SceneNode>& node)
 	{
 		GameObject& entity = node->Entity;
 		bool isLeaf = node->Children.size() == 0;
@@ -89,7 +89,7 @@ namespace Odyssey
 		if (DrawGameObject(entity, isLeaf))
 		{
 			// Draw the node's children, if they exist
-			for (Ref<SceneGraph::Node>& childNode : node->Children)
+			for (Ref<SceneNode>& childNode : node->Children)
 			{
 				DrawSceneNode(childNode);
 			}

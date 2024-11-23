@@ -5,21 +5,20 @@
 
 namespace Odyssey
 {
-	class SceneGraph
+	struct SceneNode
 	{
 	public:
-		struct Node
-		{
-		public:
-			Node() = default;
-			Node(const GameObject& entity) : Entity(entity) { }
+		SceneNode() = default;
+		SceneNode(const GameObject& entity) : Entity(entity) { }
 
-		public:
-			Ref<Node> Parent = nullptr;
-			GameObject Entity;
-			std::vector<Ref<Node>> Children;
-		};
+	public:
+		Ref<SceneNode> Parent = nullptr;
+		GameObject Entity;
+		std::vector<Ref<SceneNode>> Children;
+	};
 
+	class SceneGraph
+	{
 	public:
 		SceneGraph();
 
@@ -28,7 +27,7 @@ namespace Odyssey
 		void Deserialize(Scene* scene, SerializationNode& serializationNode);
 
 	public:
-		const Node* GetSceneRoot() { return m_Root.Get(); }
+		const SceneNode* GetSceneRoot() { return m_Root.Get(); }
 
 	public:
 		void AddEntity(const GameObject& entity);
@@ -41,13 +40,13 @@ namespace Odyssey
 		std::vector<GameObject> GetChildren(const GameObject& entity);
 
 	private:
-		Ref<Node> FindNode(const GameObject& entity);
-		void RemoveNodeAndChildren(Ref<Node> node);
-		void RemoveParent(Ref<Node> node);
-		void RemoveChildNode(Ref<Node> parentNode, Ref<Node> childNode);
+		Ref<SceneNode> FindNode(const GameObject& entity);
+		void RemoveNodeAndChildren(Ref<SceneNode> node);
+		void RemoveParent(Ref<SceneNode> node);
+		void RemoveChildNode(Ref<SceneNode> parentNode, Ref<SceneNode> childNode);
 
 	private:
-		Ref<Node> m_Root;
-		std::vector<Ref<Node>> m_Nodes;
+		Ref<SceneNode> m_Root;
+		std::vector<Ref<SceneNode>> m_Nodes;
 	};
 }
