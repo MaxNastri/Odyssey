@@ -81,15 +81,19 @@ Dependencies = {
 	},
 	SPIRVCrossGLSL = {
 		LibName = "spirv-cross-glsl",
+		DebugLibName = "spirv-cross-glsld",
 	},
 	SPIRVCrossHLSL = {
 		LibName = "spirv-cross-hlsl",
+		DebugLibName = "spirv-cross-hlsld",
 	},
 	SPIRVCrossReflect = {
 		LibName = "spirv-cross-reflect",
+		DebugLibName = "spirv-cross-reflectd",
 	},
 	SPIRVCrossUtil = {
 		LibName = "spirv-cross-util",
+		DebugLibName = "pirv-cross-utild",
 	},
 	Spdlog = {
 		IncludeDir = "%{wks.location}/Vendor/spdlog/Include",

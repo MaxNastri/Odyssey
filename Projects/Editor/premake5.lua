@@ -65,5 +65,6 @@ project "Odyssey.Editor"
         
     filter { "configurations:Release" }
         runtime "Release"
+        symbols "On"
         defines { "ODYSSEY_RELEASE" }
         ProcessDependencies("Release")

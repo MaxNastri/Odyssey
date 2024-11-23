@@ -56,7 +56,7 @@ namespace Odyssey
 		void DebugDrawBone(const Bone& bone);
 
 	private:
-		bool m_Enabled;
+		bool m_Enabled = true;
 		GameObject m_GameObject;
 		Ref<AnimationRig> m_Rig;
 		Ref<AnimationBlueprint> m_Blueprint;

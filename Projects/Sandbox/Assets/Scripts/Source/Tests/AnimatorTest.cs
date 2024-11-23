@@ -7,7 +7,7 @@ namespace Sandbox
     {
         protected override void Update()
         {
-            if (Input.GetKeyPress(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 Console.Write("Space");
             }

@@ -8,7 +8,6 @@ project "Odyssey.Framework"
     dotnetframework "net8.0"
     kind "SharedLib"
 	clr "Unsafe"
-    targetname "Odyssey.Framework"
     namespace "Odyssey"
 
     targetdir "%{TargetDirectory}"
