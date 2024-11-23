@@ -10,4 +10,4 @@
 	url = https://github.com/jrouwe/JoltPhysics
 [submodule "Vendor/glfw"]
 	path = Vendor/glfw
-	url = https://github.com/glfw/glfw.git
+	url = https://github.com/Kold011/glfw.git

@@ -48,8 +48,8 @@ Dependencies = {
 		IncludeDir = "%{wks.location}/Vendor/Coral/Coral.Native/Include/Coral",
 	},
 	GLFW = {
-		LibName = "GLFW",
-		IncludeDir = "%{wks.location}/Vendor/GLFW/include/GLFW",
+		LibName = "glfw",
+		IncludeDir = "%{wks.location}/Vendor/glfw/include/GLFW",
 	},
 	JoltPhysics = {
 		LibName = "JoltPhysics",

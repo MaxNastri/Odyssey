@@ -21,7 +21,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}"
 group "Dependencies"
 include "Vendor/Jolt/JoltPhysicsPremake.lua"
 include "Vendor/efsw/premake5.lua"
-include "Vendor/GLFW/premake5.lua"
+include "Vendor/glfw/premake5.lua"
 group ""
 
 group "Odyssey"
