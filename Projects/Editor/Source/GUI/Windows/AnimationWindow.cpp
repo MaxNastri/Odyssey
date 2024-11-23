@@ -8,6 +8,7 @@
 #include "AnimationClip.h"
 #include "AnimationState.h"
 #include "AnimationNodes.h"
+#include "AnimationLink.h"
 
 namespace Odyssey
 {
@@ -145,7 +146,7 @@ namespace Odyssey
 
 	void AnimationWindow::CreateBuilder()
 	{
-		m_Builder =  new BlueprintBuilder(m_Blueprint.Get());
+		m_Builder = new BlueprintBuilder(m_Blueprint.Get());
 		m_Builder->OverrideCreateNodeMenu(Create_Node_Menu_Name, Create_Node_Menu_ID);
 		m_Builder->OverrideCreateLinkMenu(Add_Link_Menu_Name, Add_Link_Menu_ID);
 	}
@@ -333,7 +334,7 @@ namespace Odyssey
 
 					if (m_AnimationLink)
 					{
-						m_PropertyNameDrawer = DropdownDrawer("Property", m_Blueprint->GetAllPropertyNames(), m_AnimationLink->GetProperty()->Name);
+						/*m_PropertyNameDrawer = DropdownDrawer("Property", m_Blueprint->GetAllPropertyNames(), m_AnimationLink->GetProperty()->Name);
 						m_ComparisonDrawer = EnumDrawer<ComparisonOp>("Comparison", m_AnimationLink->GetComparisonOp());
 
 						auto animProperty = m_AnimationLink->GetProperty();
@@ -357,7 +358,7 @@ namespace Odyssey
 							}
 							default:
 								break;
-						}
+						}*/
 					}
 				}
 			}
@@ -372,42 +373,58 @@ namespace Odyssey
 			}
 			else if (m_AnimationLink)
 			{
-				if (m_PropertyNameDrawer.Draw())
-					m_AnimationLink->SetProperty(m_Blueprint->GetProperty(m_PropertyNameDrawer.GetSelected().data()));
+				const auto& forwardTransitions = m_AnimationLink->GetForwardTransitions();
 
-				if (m_ComparisonDrawer.Draw())
-					m_AnimationLink->SetComparisonOp(m_ComparisonDrawer.GetValue());
+				ImVec2 itemSpacing = ImGui::GetStyle().ItemSpacing;
+				itemSpacing.x = 4.0f;
 
-				if (m_LinkValueDrawer->Draw())
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, itemSpacing);
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+
+				const std::vector<std::string>& propertyNames = m_Blueprint->GetAllPropertyNames();
+				for (size_t i = 0; i < forwardTransitions.size(); i++)
 				{
-					if (auto animationProperty = m_AnimationLink->GetProperty())
+					Ref<AnimationCondition> condition = forwardTransitions[i];
+					Dropdown propertyDrawer = Dropdown(propertyNames, condition->GetPropertyName());
+					EnumDropdown<ComparisonOp> comparisonDrawer = EnumDropdown<ComparisonOp>(condition->GetComparison());
+
+					ImGui::PushItemWidth(-0.01f);
+					ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+
+					propertyDrawer.Draw();
+					ImGui::SameLine();
+					comparisonDrawer.Draw();
+					ImGui::SameLine();
+					switch (condition->GetPropertyType())
 					{
-						switch (animationProperty->Type)
+						case AnimationPropertyType::Float:
 						{
-							case AnimationPropertyType::Float:
-							{
-								Ref<FloatDrawer> drawer = m_LinkValueDrawer.As<FloatDrawer>();
-								m_AnimationLink->SetBool(drawer->GetValue());
-								break;
-							}
-							case AnimationPropertyType::Int:
-							{
-								Ref<IntDrawer<int32_t>> drawer = m_LinkValueDrawer.As<IntDrawer<int32_t>>();
-								m_AnimationLink->SetInt(drawer->GetValue());
-								break;
-							}
-							case AnimationPropertyType::Bool:
-							case AnimationPropertyType::Trigger:
-							{
-								Ref<BoolDrawer> drawer = m_LinkValueDrawer.As<BoolDrawer>();
-								m_AnimationLink->SetBool(drawer->GetValue());
-								break;
-							}
-							default:
-								break;
+							float value = condition->GetTargetValue<float>();
+							if (ImGui::InputFloat("##Label", &value))
+								condition->SetTargetValue<float>(value);
+							break;
 						}
+						case AnimationPropertyType::Int:
+						{
+							int32_t value = condition->GetTargetValue<int32_t>();
+							if (ImGui::InputScalar("##label", ImGuiDataType_S32, &value))
+								condition->SetTargetValue<int32_t>(value);
+							break;
+						}
+						case AnimationPropertyType::Bool:
+						case AnimationPropertyType::Trigger:
+						{
+							bool value = condition->GetTargetValue<bool>();
+							if (ImGui::Checkbox("##label", &value))
+								condition->SetTargetValue<bool>(value);
+							break;
+						}
+						default:
+							break;
 					}
 				}
+
+				ImGui::PopStyleVar(2);
 			}
 
 			ImGui::End();

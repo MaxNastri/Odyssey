@@ -37,7 +37,7 @@ namespace Odyssey
 
 		ImGui::PushID(this);
 
-		if (ImGui::BeginCombo("##Label", selectedOption.data()))
+		if (ImGui::BeginCombo("##Label", selectedOption.data(), ImGuiComboFlags_NoArrowButton))
 		{
 			for (size_t i = 0; i < m_Options.size(); i++)
 			{
