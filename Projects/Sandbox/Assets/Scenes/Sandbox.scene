@@ -3,6 +3,67 @@ GUID: 6049963977740777600
 Skybox: 16662637833593679810
 Ambient Color: 'x: 0.1886121 y: 0.097326525 z: 0.097326525'
 GameObjects:
+  - Name: Example
+    GUID: 17906546655285653478
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -2.1353767 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.ParticleEmitter
+        Enabled: 0
+        Duration: 1
+        Looping: 0
+        Material: 831665292157922468
+        Emission Rate: 100
+        Start Color: 'x: 0.33064374 y: 0 z: 0.4341637 w: 1'
+        End Color: 'x: 0.63529414 y: 0 z: 0.60784316 w: 0.35686275'
+        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
+        Lifetime: 'x: 1 y: 3.5'
+        Size: 'x: 0.5 y: 1'
+        Speed: 'x: 4 y: 8'
+  - Name: Sun
+    GUID: 1496534082370822112
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.Light
+        Enabled: 1
+        Light Type: Directional
+        Color: 'x: 0.68327403 y: 0.33798966 z: 0.33798966'
+        Intensity: 1
+        Range: 1
+  - Name: Monk FBX
+    GUID: 15322439001782158818
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Animator
+        Animation Rig: 13775651864520599129
+        Animation Blueprint: 9242731602216417912
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        m_Mesh: 13511586946249507819
+        m_Material: 942766181068811557
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: -0.15717334'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.ParticleEmitter
+        Enabled: 0
+        Duration: 1
+        Looping: 0
+        Material: 831665292157922468
+        Emission Rate: 200
+        Start Color: 'x: 0.5124555 y: 0.28449482 z: 0 w: 1'
+        End Color: 'x: 0.24911034 y: 0.1494662 z: 0 w: 0.3647059'
+        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
+        Lifetime: 'x: 1 y: 3'
+        Size: 'x: 0.45 y: 0.8'
+        Speed: 'x: 2.5 y: 5'
   - Name: Camera
     GUID: 1278710421845013511
     Type: Odyssey.GameObject
@@ -30,65 +91,6 @@ GameObjects:
             Value: 1
           - Name: RotDirection
             Value: 'x: 0 y: 45 z: 0'
-  - Name: Monk FBX
-    GUID: 15322439001782158818
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.Animator
-        Animation Rig: 13775651864520599129
-        Animation Blueprint: 9242731602216417912
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        m_Mesh: 13511586946249507819
-        m_Material: 942766181068811557
-      - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: -0.15717334'
-        Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
-      - Type: Odyssey.ParticleEmitter
-        Enabled: 0
-        Duration: 1
-        Material: 831665292157922468
-        Emission Rate: 200
-        Start Color: 'x: 0.5124555 y: 0.28449482 z: 0 w: 1'
-        End Color: 'x: 0.24911034 y: 0.1494662 z: 0 w: 0.3647059'
-        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
-        Lifetime: 'x: 1 y: 3'
-        Size: 'x: 0.45 y: 0.8'
-        Speed: 'x: 2.5 y: 5'
-  - Name: Sun
-    GUID: 1496534082370822112
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 0 y: 90 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
-      - Type: Odyssey.Light
-        Enabled: 1
-        Light Type: Directional
-        Color: 'x: 0.68327403 y: 0.33798966 z: 0.33798966'
-        Intensity: 1
-        Range: 1
-  - Name: Example
-    GUID: 17906546655285653478
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.Transform
-        Position: 'x: -2.1353767 y: 0 z: 0'
-        Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
-      - Type: Odyssey.ParticleEmitter
-        Enabled: 0
-        Duration: 1
-        Material: 0
-        Emission Rate: 100
-        Start Color: 'x: 0.33064374 y: 0 z: 0.4341637 w: 1'
-        End Color: 'x: 0.63529414 y: 0 z: 0.60784316 w: 0.35686275'
-        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
-        Lifetime: 'x: 1 y: 3.5'
-        Size: 'x: 0.5 y: 1'
-        Speed: 'x: 4 y: 8'
 Scene Graph Nodes:
   - Entity: 15322439001782158818
     Parent: 0

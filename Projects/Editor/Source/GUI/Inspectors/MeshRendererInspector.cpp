@@ -57,7 +57,6 @@ namespace Odyssey
 				modified = true;
 
 			}
-			modified |= m_MaterialDrawer.Draw();
 		}
 
 		ImGui::PopID();
