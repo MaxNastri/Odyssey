@@ -106,10 +106,6 @@ namespace Odyssey
 			if (!emitter.IsEnabled())
 				continue;
 
-			// Start the emit compute pass
-			commandBuffer->BeginCommands();
-			commandBuffer->BindComputePipeline(s_EmitComputePipeline);
-
 			if (!s_EntityToResourceIndex.contains(gameObject))
 			{
 				Log::Error("[ParticleBatcher] Attempting to update un-registered emitter: " + gameObject.GetName() + ".");
@@ -119,8 +115,16 @@ namespace Odyssey
 			size_t emitterIndex = s_EntityToResourceIndex[gameObject];
 			PerEmitterResources& emitterResources = s_EmitterResources[emitterIndex];
 
+			if (!emitter.IsActive() && emitterResources.ParticleCounts.AlivePreSimCount == 0)
+				continue;
+
+			// Start the emit compute pass
+			commandBuffer->BeginCommands();
+			commandBuffer->BindComputePipeline(s_EmitComputePipeline);
+
 			// Update the emitter and generate some randomness
 			emitter.Update(Time::DeltaTime());
+
 			auto& emitterData = emitter.GetEmitterData();
 			emitterData.Rnd.x = (Random::Float01() - 0.5f) * 2.0f;
 			emitterData.Rnd.y = (Random::Float01() - 0.5f) * 2.0f;
@@ -280,7 +284,7 @@ namespace Odyssey
 		auto alivePreSimBuffer = ResourceManager::GetResource<VulkanBuffer>(emitterResources.AlivePreSimBuffer);
 		auto counterBuffer = ResourceManager::GetResource<VulkanBuffer>(emitterResources.CounterBuffer);
 		auto alivePostSimBuffer = ResourceManager::GetResource<VulkanBuffer>(emitterResources.AlivePostSimBuffer);
-		
+
 		// Copy the buffers into cpu memory
 		alivePreSimBuffer->CopyBufferMemory(emitterResources.AlivePreSimList.data());
 		counterBuffer->CopyBufferMemory(&emitterResources.ParticleCounts);

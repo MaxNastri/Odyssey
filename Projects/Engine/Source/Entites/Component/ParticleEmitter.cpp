@@ -7,7 +7,6 @@ namespace Odyssey
 	ParticleEmitter::ParticleEmitter(const GameObject& gameObject)
 	{
 		m_GameObject = gameObject;
-		m_EmissionTime = 0.0f;
 		m_EmissionCount = m_EmissionRate;
 	}
 
@@ -55,8 +54,18 @@ namespace Odyssey
 	void ParticleEmitter::Update(float deltaTime)
 	{
 		float emissionInterval = 1.0f / (float)m_EmissionRate;
-		m_EmissionTime += deltaTime;
 		emitterData.EmitCount = 0;
+
+		m_ActiveTime += deltaTime;
+
+		if (m_ActiveTime >= m_Duration)
+		{
+			m_Active = false;
+			return;
+		}
+
+		// Update our time since last emission
+		m_EmissionTime += deltaTime;
 
 		if (m_EmissionTime > emissionInterval)
 		{

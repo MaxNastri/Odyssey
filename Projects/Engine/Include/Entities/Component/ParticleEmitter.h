@@ -60,6 +60,7 @@ namespace Odyssey
 
 	public:
 		bool IsEnabled() { return m_Enabled; }
+		bool IsActive() { return m_Active; }
 		float GetDuration() { return m_Duration; }
 		bool IsLooping() { return m_Loop; }
 		uint32_t GetEmissionRate() { return m_EmissionRate; }
@@ -80,9 +81,12 @@ namespace Odyssey
 		float m_Duration = 1.0f;
 		uint32_t m_EmissionRate = 100;
 		GUID m_Material;
-		float m_EmissionTime;
+
+	private:
+		bool m_Active = true;
+		float m_ActiveTime = 0.0f;
+		float m_EmissionTime = 0.0f;
 		uint32_t m_EmissionCount;
 		uint32_t m_ParticleCount;
-		bool m_Playing;
 	};
 }
