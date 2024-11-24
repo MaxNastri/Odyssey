@@ -17,6 +17,7 @@ namespace Odyssey
 		componentNode.WriteData("Type", ParticleEmitter::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Duration", m_Duration);
+		componentNode.WriteData("Looping", m_Looping);
 		componentNode.WriteData("Material", m_Material.CRef());
 		componentNode.WriteData("Emission Rate", m_EmissionRate);
 		componentNode.WriteData("Start Color", emitterData.StartColor);
@@ -31,6 +32,7 @@ namespace Odyssey
 	{
 		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Duration", m_Duration);
+		node.ReadData("Looping", m_Looping);
 		node.ReadData("Emission Rate", m_EmissionRate);
 		node.ReadData("Material", m_Material.Ref());
 		node.ReadData("Start Color", emitterData.StartColor);
@@ -60,8 +62,13 @@ namespace Odyssey
 
 		if (m_ActiveTime >= m_Duration)
 		{
-			m_Active = false;
-			return;
+			if (!m_Looping)
+			{
+				m_Active = false;
+				return;
+			}
+			else
+				m_Active = 0.0f;
 		}
 
 		// Update our time since last emission

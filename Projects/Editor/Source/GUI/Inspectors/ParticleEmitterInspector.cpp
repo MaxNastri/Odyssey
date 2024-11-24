@@ -68,7 +68,7 @@ namespace Odyssey
 	void ParticleEmitterInspector::OnLoopModified(bool loop)
 	{
 		if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
-			emitter->SetLoop(loop);
+			emitter->SetLooping(loop);
 	}
 
 	void ParticleEmitterInspector::OnDurationModified(float duration)
