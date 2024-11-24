@@ -145,56 +145,113 @@ namespace Odyssey
 				// Create the animtation link
 				Ref<AnimationLink> animationLink = new AnimationLink(linkGUID, beginState, endState);
 				m_StateToLinks[beginState].emplace_back(animationLink);
+				m_StateToLinks[endState].emplace_back(animationLink);
 
 				// Deserialize forward transitions
-				SerializationNode transitionsNode = linkNode.GetNode("Forward Transitions");
-				assert(transitionsNode.IsSequence());
-
-				for (size_t i = 0; i < transitionsNode.ChildCount(); i++)
 				{
-					SerializationNode conditionNode = transitionsNode.GetChild(i);
-					assert(conditionNode.IsMap());
+					SerializationNode transitionsNode = linkNode.GetNode("Forward Transitions");
+					assert(transitionsNode.IsSequence());
 
-					std::string propertyName;
-					std::string comparisonName;
-					conditionNode.ReadData("Property", propertyName);
-					conditionNode.ReadData("Comparison", comparisonName);
-
-					ComparisonOp comparison = Enum::ToEnum<ComparisonOp>(comparisonName);
-					RawBuffer valueBuffer;
-
-					auto& animationProperty = m_PropertyMap[propertyName];
-					switch (animationProperty->Type)
+					for (size_t i = 0; i < transitionsNode.ChildCount(); i++)
 					{
-						case AnimationPropertyType::Trigger:
-						case AnimationPropertyType::Bool:
-						{
-							bool value;
-							conditionNode.ReadData("Value", value);
-							RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+						SerializationNode conditionNode = transitionsNode.GetChild(i);
+						assert(conditionNode.IsMap());
 
-							break;
-						}
-						case AnimationPropertyType::Float:
+						std::string propertyName;
+						std::string comparisonName;
+						conditionNode.ReadData("Property", propertyName);
+						conditionNode.ReadData("Comparison", comparisonName);
+
+						ComparisonOp comparison = Enum::ToEnum<ComparisonOp>(comparisonName);
+						RawBuffer valueBuffer;
+
+						auto& animationProperty = m_PropertyMap[propertyName];
+						switch (animationProperty->Type)
 						{
-							float value;
-							conditionNode.ReadData("Value", value);
-							RawBuffer::Copy(valueBuffer, &value, sizeof(value));
-							break;
+							case AnimationPropertyType::Trigger:
+							case AnimationPropertyType::Bool:
+							{
+								bool value;
+								conditionNode.ReadData("Value", value);
+								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+
+								break;
+							}
+							case AnimationPropertyType::Float:
+							{
+								float value;
+								conditionNode.ReadData("Value", value);
+								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+								break;
+							}
+							case AnimationPropertyType::Int:
+							{
+								int32_t value;
+								conditionNode.ReadData("Value", value);
+								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+								break;
+							}
+							default:
+								break;
 						}
-						case AnimationPropertyType::Int:
-						{
-							int32_t value;
-							conditionNode.ReadData("Value", value);
-							RawBuffer::Copy(valueBuffer, &value, sizeof(value));
-							break;
-						}
-						default:
-							break;
+
+						Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer);
+						animationLink->AddTransition(beginState, endState, condition);
 					}
+				}
 
-					Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer);
-					animationLink->AddTransition(beginState, endState, condition);
+
+				// Deserialize forward transitions
+				{
+					SerializationNode transitionsNode = linkNode.GetNode("Return Transitions");
+					assert(transitionsNode.IsSequence());
+
+					for (size_t i = 0; i < transitionsNode.ChildCount(); i++)
+					{
+						SerializationNode conditionNode = transitionsNode.GetChild(i);
+						assert(conditionNode.IsMap());
+
+						std::string propertyName;
+						std::string comparisonName;
+						conditionNode.ReadData("Property", propertyName);
+						conditionNode.ReadData("Comparison", comparisonName);
+
+						ComparisonOp comparison = Enum::ToEnum<ComparisonOp>(comparisonName);
+						RawBuffer valueBuffer;
+
+						auto& animationProperty = m_PropertyMap[propertyName];
+						switch (animationProperty->Type)
+						{
+							case AnimationPropertyType::Trigger:
+							case AnimationPropertyType::Bool:
+							{
+								bool value;
+								conditionNode.ReadData("Value", value);
+								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+
+								break;
+							}
+							case AnimationPropertyType::Float:
+							{
+								float value;
+								conditionNode.ReadData("Value", value);
+								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+								break;
+							}
+							case AnimationPropertyType::Int:
+							{
+								int32_t value;
+								conditionNode.ReadData("Value", value);
+								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+								break;
+							}
+							default:
+								break;
+						}
+
+						Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer);
+						animationLink->AddTransition(endState, beginState, condition);
+					}
 				}
 			}
 		}

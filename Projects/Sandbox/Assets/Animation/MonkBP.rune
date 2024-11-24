@@ -22,4 +22,7 @@ Animation Links:
       - Property: Speed
         Comparison: Greater
         Value: 0
-    Return Transitions: []
+    Return Transitions:
+      - Property: Speed
+        Comparison: LessOrEqual
+        Value: 0

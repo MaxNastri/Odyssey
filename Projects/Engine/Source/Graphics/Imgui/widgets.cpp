@@ -440,4 +440,26 @@ namespace ImGui
 		// Set the cursor below the rect
 		ImGui::SetCursorScreenPos(float2(screenPos.x, max.y + (style.ItemSpacing.y * 2.0f)));
 	}
+
+	void FilledRectSpanTextFree(std::string_view text, float4 textColor, float4 bgColor, float height, float2 padding)
+	{
+		auto& style = ImGui::GetStyle();
+
+		float2 windowPadding = style.WindowPadding - float2(1.0f);
+		float2 windowPos = ImGui::GetWindowPos();
+		float2 screenPos = ImGui::GetCursorScreenPos();
+
+		// Get the min and max without window padding
+		float2 min = screenPos - windowPadding + padding;
+		float2 max = float2((ImGui::GetWindowContentRegionMax() + windowPos).x + windowPadding.x + padding.x, min.y + height);
+
+		// Draw the rect and text
+		ImGui::GetWindowDrawList()->PushClipRect(min, max);
+		ImGui::GetWindowDrawList()->AddRectFilled(min, max, ImColor(bgColor));
+		ImGui::GetWindowDrawList()->AddText(float2(screenPos.x, min.y), ImColor(textColor), text.data());
+		ImGui::GetWindowDrawList()->PopClipRect();
+
+		// Set the cursor below the rect
+		ImGui::SetCursorScreenPos(float2(screenPos.x, max.y + (style.ItemSpacing.y)));
+	}
 }

@@ -105,8 +105,9 @@ namespace Odyssey
 	{
 		for (Ref<AnimationCondition> condition : m_ForwardTransitions)
 		{
-			if (condition->Evaluate())
+			if (currentState != m_EndState && condition->Evaluate())
 			{
+				currentState->Reset();
 				currentState = m_EndState;
 				return true;
 			}
@@ -114,8 +115,9 @@ namespace Odyssey
 
 		for (Ref<AnimationCondition> condition : m_ReturnTransitions)
 		{
-			if (condition->Evaluate())
+			if (currentState != m_BeginState && condition->Evaluate())
 			{
+				currentState->Reset();
 				currentState = m_BeginState;
 				return true;
 			}

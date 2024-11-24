@@ -13,4 +13,5 @@ namespace ImGui
 	bool SelectableInput(const char* str_id, bool selected, ImGuiSelectableFlags flags, char* buf, size_t buf_size);
 	void FilledRectSpan(float4 color, float height, float2 padding);
 	void FilledRectSpanText(std::string_view text, float4 textColor, float4 bgColor, float height, float2 padding);
+	void FilledRectSpanTextFree(std::string_view text, float4 textColor, float4 bgColor, float height, float2 padding);
 }
