@@ -348,7 +348,7 @@ namespace Odyssey
 				itemSpacing.x = 4.0f;
 
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, itemSpacing);
-				ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+				//ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
 
 				ImGui::Separator();
 
@@ -423,50 +423,54 @@ namespace Odyssey
 					const std::vector<std::string>& propertyNames = m_Blueprint->GetAllPropertyNames();
 
 					ImGui::SetNextItemWidth(-0.1f);
-					if (ImGui::BeginListBox(""))
-					{
-						ImGui::EndListBox();
-					}
-					for (size_t i = 0; i < returnTransitions.size(); i++)
-					{
-						Ref<AnimationCondition> condition = returnTransitions[i];
-						Dropdown propertyDrawer = Dropdown(propertyNames, condition->GetPropertyName());
-						EnumDropdown<ComparisonOp> comparisonDrawer = EnumDropdown<ComparisonOp>(condition->GetComparison());
+					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4{ 0.125f, 0.13f, 0.135f, 1.0f });
 
-						ImGui::PushItemWidth(-0.01f);
-						ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-
-						propertyDrawer.Draw();
-						ImGui::SameLine();
-						comparisonDrawer.Draw();
-						ImGui::SameLine();
-						switch (condition->GetPropertyType())
+					if (ImGui::BeginListBox("Return Transitions"))
+					{
+						ImGui::PopStyleColor();
+						for (size_t i = 0; i < returnTransitions.size(); i++)
 						{
-							case AnimationPropertyType::Float:
+							Ref<AnimationCondition> condition = returnTransitions[i];
+							Dropdown propertyDrawer = Dropdown(propertyNames, condition->GetPropertyName());
+							EnumDropdown<ComparisonOp> comparisonDrawer = EnumDropdown<ComparisonOp>(condition->GetComparison());
+
+							ImGui::PushItemWidth(-0.01f);
+							ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+
+							propertyDrawer.Draw();
+							ImGui::SameLine();
+							comparisonDrawer.Draw();
+							ImGui::SameLine();
+							switch (condition->GetPropertyType())
 							{
-								float value = condition->GetTargetValue<float>();
-								if (ImGui::InputFloat("##Label", &value))
-									condition->SetTargetValue<float>(value);
-								break;
+								case AnimationPropertyType::Float:
+								{
+									float value = condition->GetTargetValue<float>();
+									if (ImGui::InputFloat("##Label", &value))
+										condition->SetTargetValue<float>(value);
+									break;
+								}
+								case AnimationPropertyType::Int:
+								{
+									int32_t value = condition->GetTargetValue<int32_t>();
+									if (ImGui::InputScalar("##label", ImGuiDataType_S32, &value))
+										condition->SetTargetValue<int32_t>(value);
+									break;
+								}
+								case AnimationPropertyType::Bool:
+								case AnimationPropertyType::Trigger:
+								{
+									bool value = condition->GetTargetValue<bool>();
+									if (ImGui::Checkbox("##label", &value))
+										condition->SetTargetValue<bool>(value);
+									break;
+								}
+								default:
+									break;
 							}
-							case AnimationPropertyType::Int:
-							{
-								int32_t value = condition->GetTargetValue<int32_t>();
-								if (ImGui::InputScalar("##label", ImGuiDataType_S32, &value))
-									condition->SetTargetValue<int32_t>(value);
-								break;
-							}
-							case AnimationPropertyType::Bool:
-							case AnimationPropertyType::Trigger:
-							{
-								bool value = condition->GetTargetValue<bool>();
-								if (ImGui::Checkbox("##label", &value))
-									condition->SetTargetValue<bool>(value);
-								break;
-							}
-							default:
-								break;
 						}
+
+						ImGui::EndListBox();
 					}
 
 					float panelWidth = ImGui::GetContentRegionMax().x;
@@ -483,7 +487,7 @@ namespace Odyssey
 						OpenSelectPropertyMenu();
 				}
 
-				ImGui::PopStyleVar(2);
+				ImGui::PopStyleVar();
 			}
 
 			ImGui::End();

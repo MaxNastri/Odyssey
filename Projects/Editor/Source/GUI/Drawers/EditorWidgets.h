@@ -85,5 +85,4 @@ namespace Odyssey
 		GUID m_SelectedEntity;
 		uint64_t m_SelectedIndex = 0;
 	};
-
 }

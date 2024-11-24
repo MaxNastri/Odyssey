@@ -55,8 +55,6 @@ namespace Odyssey
 				propertyNode.ReadData("Type", enumStr);
 				animProperty->Type = Enum::ToEnum<AnimationPropertyType>(enumStr);
 
-				m_PropertyMap[animProperty->Name] = animProperty;
-
 				switch (animProperty->Type)
 				{
 					case AnimationPropertyType::Trigger:
@@ -165,38 +163,40 @@ namespace Odyssey
 						ComparisonOp comparison = Enum::ToEnum<ComparisonOp>(comparisonName);
 						RawBuffer valueBuffer;
 
-						auto& animationProperty = m_PropertyMap[propertyName];
-						switch (animationProperty->Type)
+						if (Ref<AnimationProperty> animationProperty = GetProperty(propertyName))
 						{
-							case AnimationPropertyType::Trigger:
-							case AnimationPropertyType::Bool:
+							switch (animationProperty->Type)
 							{
-								bool value;
-								conditionNode.ReadData("Value", value);
-								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+								case AnimationPropertyType::Trigger:
+								case AnimationPropertyType::Bool:
+								{
+									bool value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
 
-								break;
+									break;
+								}
+								case AnimationPropertyType::Float:
+								{
+									float value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+									break;
+								}
+								case AnimationPropertyType::Int:
+								{
+									int32_t value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+									break;
+								}
+								default:
+									break;
 							}
-							case AnimationPropertyType::Float:
-							{
-								float value;
-								conditionNode.ReadData("Value", value);
-								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
-								break;
-							}
-							case AnimationPropertyType::Int:
-							{
-								int32_t value;
-								conditionNode.ReadData("Value", value);
-								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
-								break;
-							}
-							default:
-								break;
+
+							Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer);
+							animationLink->AddTransition(beginState, endState, condition);
 						}
-
-						Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer);
-						animationLink->AddTransition(beginState, endState, condition);
 					}
 				}
 
@@ -219,38 +219,40 @@ namespace Odyssey
 						ComparisonOp comparison = Enum::ToEnum<ComparisonOp>(comparisonName);
 						RawBuffer valueBuffer;
 
-						auto& animationProperty = m_PropertyMap[propertyName];
-						switch (animationProperty->Type)
+						if (Ref<AnimationProperty> animationProperty = GetProperty(propertyName))
 						{
-							case AnimationPropertyType::Trigger:
-							case AnimationPropertyType::Bool:
+							switch (animationProperty->Type)
 							{
-								bool value;
-								conditionNode.ReadData("Value", value);
-								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+								case AnimationPropertyType::Trigger:
+								case AnimationPropertyType::Bool:
+								{
+									bool value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
 
-								break;
+									break;
+								}
+								case AnimationPropertyType::Float:
+								{
+									float value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+									break;
+								}
+								case AnimationPropertyType::Int:
+								{
+									int32_t value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+									break;
+								}
+								default:
+									break;
 							}
-							case AnimationPropertyType::Float:
-							{
-								float value;
-								conditionNode.ReadData("Value", value);
-								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
-								break;
-							}
-							case AnimationPropertyType::Int:
-							{
-								int32_t value;
-								conditionNode.ReadData("Value", value);
-								RawBuffer::Copy(valueBuffer, &value, sizeof(value));
-								break;
-							}
-							default:
-								break;
+
+							Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer);
+							animationLink->AddTransition(endState, beginState, condition);
 						}
-
-						Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer);
-						animationLink->AddTransition(endState, beginState, condition);
 					}
 				}
 			}
@@ -460,6 +462,15 @@ namespace Odyssey
 		return node.As<AnimationStateNode>();
 	}
 
+	Ref<AnimationProperty> AnimationBlueprint::GetProperty(const std::string& propertyName)
+	{
+		for (Ref<AnimationProperty>& animationProperty : m_Properties)
+			if (animationProperty->Name == propertyName)
+				return animationProperty;
+
+		return Ref<AnimationProperty>();
+	}
+
 	Ref<AnimationState> AnimationBlueprint::GetAnimationState(GUID nodeGUID)
 	{
 		if (m_States.contains(nodeGUID))
@@ -484,32 +495,35 @@ namespace Odyssey
 
 	std::vector<std::string> AnimationBlueprint::GetAllPropertyNames()
 	{
-		auto view = std::views::keys(m_PropertyMap);
-		return std::vector<std::string>(view.begin(), view.end());
+		std::vector<std::string> names;
+
+		for (Ref<AnimationProperty> animationProperty : m_Properties)
+			names.emplace_back(animationProperty->Name);
+
+		return names;
 	}
 
 	void AnimationBlueprint::AddProperty(std::string_view name, AnimationPropertyType type)
 	{
-		Ref<AnimationProperty> property = new AnimationProperty(name, type);
-		m_Properties.emplace_back(property);
-		m_PropertyMap[name.data()] = property;
+		m_Properties.emplace_back(new AnimationProperty(name, type));
 	}
 
 	bool AnimationBlueprint::SetBool(const std::string& name, bool value)
 	{
-		if (m_PropertyMap.contains(name))
+		if (Ref<AnimationProperty> animationProperty = GetProperty(name))
 		{
-			m_PropertyMap[name]->ValueBuffer.Write(&value);
+			animationProperty->ValueBuffer.Write(&value);
 			return true;
 		}
+
 		return false;
 	}
 
 	bool AnimationBlueprint::SetFloat(const std::string& name, float value)
 	{
-		if (m_PropertyMap.contains(name))
+		if (Ref<AnimationProperty> animationProperty = GetProperty(name))
 		{
-			m_PropertyMap[name]->ValueBuffer.Write(&value);
+			animationProperty->ValueBuffer.Write(&value);
 			return true;
 		}
 		return false;
@@ -517,9 +531,9 @@ namespace Odyssey
 
 	bool AnimationBlueprint::SetInt(const std::string& name, int32_t value)
 	{
-		if (m_PropertyMap.contains(name))
+		if (Ref<AnimationProperty> animationProperty = GetProperty(name))
 		{
-			m_PropertyMap[name]->ValueBuffer.Write(&value);
+			animationProperty->ValueBuffer.Write(&value);
 			return true;
 		}
 		return false;
@@ -527,10 +541,10 @@ namespace Odyssey
 
 	bool AnimationBlueprint::SetTrigger(const std::string& name)
 	{
-		if (m_PropertyMap.contains(name))
+		if (Ref<AnimationProperty> animationProperty = GetProperty(name))
 		{
 			bool trigger = true;
-			m_PropertyMap[name]->ValueBuffer.Write(&trigger);
+			animationProperty->ValueBuffer.Write(&trigger);
 			return true;
 		}
 		return false;
