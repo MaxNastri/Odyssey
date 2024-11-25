@@ -72,21 +72,42 @@ namespace Odyssey
 				GameObject parent = scene->GetGameObject(connection.Parent);
 				connection.Node->Parent = FindNode(parent);
 				connection.Node->Parent->Children.push_back(connection.Node);
+
+				PropertiesComponent& properties = connection.Node->Entity.GetComponent<PropertiesComponent>();
+				if (properties.SortOrder == -1)
+					properties.SortOrder = connection.Node->Parent->Children.size() - 1;
 			}
 			else
 			{
 				connection.Node->Parent = m_Root;
 				m_Root->Children.push_back(connection.Node);
+
+				PropertiesComponent& properties = connection.Node->Entity.GetComponent<PropertiesComponent>();
+				if (properties.SortOrder == -1)
+					properties.SortOrder = m_Root->Children.size() - 1;
 			}
 		}
+
+		m_Root->SortChildren();
 	}
 
 	void SceneGraph::AddEntity(const GameObject& entity)
 	{
+		// Create a new scenenode
 		Ref<SceneNode> node = new SceneNode(entity);
+
+		// Set the node's parent as the root and add to the root's children
 		node->Parent = m_Root;
 		m_Nodes.push_back(node);
 		m_Root->Children.push_back(node);
+
+		// Apply default sort order logic if non is set
+		PropertiesComponent& properties = node->Entity.GetComponent<PropertiesComponent>();
+		if (properties.SortOrder == -1)
+			properties.SortOrder = m_Root->Children.size() - 1;
+
+		// Sort the root
+		m_Root->SortChildren();
 	}
 
 	void SceneGraph::RemoveEntityAndChildren(const GameObject& entity)
@@ -105,6 +126,10 @@ namespace Odyssey
 			RemoveParent(node);
 			node->Parent = parentNode;
 			node->Parent->Children.push_back(node);
+
+			// Change the node's sort order to the bottom of the children
+			PropertiesComponent& properties = node->Entity.GetComponent<PropertiesComponent>();
+			properties.SortOrder = node->Children.size() - 1;
 		}
 	}
 
@@ -141,6 +166,10 @@ namespace Odyssey
 			RemoveParent(childNode);
 			childNode->Parent = node;
 			node->Children.push_back(childNode);
+
+			// Change the node's sort order to the bottom of the children
+			PropertiesComponent& properties = childNode->Entity.GetComponent<PropertiesComponent>();
+			properties.SortOrder = node->Children.size() - 1;
 		}
 	}
 
@@ -233,6 +262,28 @@ namespace Odyssey
 				children.erase(children.begin() + i);
 				break;
 			}
+		}
+	}
+
+	void SceneNode::SortChildren(bool recursive)
+	{
+		struct CustomSort
+		{
+			bool operator()(Ref<SceneNode> a, Ref<SceneNode> b) const
+			{
+				PropertiesComponent& propertiesA = a->Entity.GetComponent<PropertiesComponent>();
+				PropertiesComponent& propertiesB = b->Entity.GetComponent<PropertiesComponent>();
+
+				return propertiesA.SortOrder < propertiesB.SortOrder;
+			}
+		} customSort;
+
+		std::sort(Children.begin(), Children.end(), customSort);
+
+		if (recursive)
+		{
+			for (size_t i = 0; i < Children.size(); i++)
+				Children[i]->SortChildren(recursive);
 		}
 	}
 }

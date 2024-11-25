@@ -12,6 +12,9 @@ namespace Odyssey
 		SceneNode(const GameObject& entity) : Entity(entity) { }
 
 	public:
+		void SortChildren(bool recursive = false);
+
+	public:
 		Ref<SceneNode> Parent = nullptr;
 		GameObject Entity;
 		std::vector<Ref<SceneNode>> Children;
@@ -27,7 +30,7 @@ namespace Odyssey
 		void Deserialize(Scene* scene, SerializationNode& serializationNode);
 
 	public:
-		const SceneNode* GetSceneRoot() { return m_Root.Get(); }
+		Ref<SceneNode>& GetSceneRoot() { return m_Root; }
 
 	public:
 		void AddEntity(const GameObject& entity);

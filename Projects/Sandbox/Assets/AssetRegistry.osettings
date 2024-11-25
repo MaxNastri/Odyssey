@@ -3,10 +3,6 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Monk_CCC.asset
     GUID: 379771950876182716
-  - Name: 'PBR Non-Skinned'
-    Type: Odyssey.Material
-    Path: 'Materials/Default - NonSkinned.asset'
-    GUID: 942766181068811554
   - Name: PBR
     Type: Odyssey.Material
     Path: Materials/PBR.asset
@@ -35,10 +31,6 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: Textures/Kachujin_diffuse.png
     GUID: 17785645852077111092
-  - Name: Cube
-    Type: Odyssey.Mesh
-    Path: Meshes/Cube.mesh
-    GUID: 16688031995771648164
   - Name: Monk
     Type: Odyssey.SourceModel
     Path: Models/Monk.glb
@@ -53,7 +45,7 @@ Entries:
     GUID: 13775651864520599129
   - Name: Monk Mesh
     Type: Odyssey.Mesh
-    Path: 'Meshes/Monk-Mesh.mesh'
+    Path: Meshes/Monk.mesh
     GUID: 13511586946249507819
   - Name: Monk BP
     Type: Odyssey.AnimationBlueprint
@@ -83,3 +75,11 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Barrel_Albedo.asset
     GUID: 15566671228588070251
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Barrel.mesh
+    GUID: 7897092920170469954
+  - Name: Barrel
+    Type: Odyssey.Material
+    Path: Materials/Material.mat
+    GUID: 1478857400269284978

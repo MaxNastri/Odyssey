@@ -161,6 +161,25 @@ namespace Odyssey
 		LoadFromDisk(m_Path);
 	}
 
+	void SerializeSceneNode(SerializationNode& serializationNode, Ref<SceneNode>& sceneNode)
+	{
+		GameObject gameObject = sceneNode->Entity;
+		PropertiesComponent& properties = gameObject.GetComponent<PropertiesComponent>();
+
+		if (properties.Serialize)
+		{
+			SerializationNode gameObjectNode = serializationNode.AppendChild();
+			gameObjectNode.SetMap();
+			gameObjectNode.WriteData("Sort Order", properties.SortOrder);
+			gameObjectNode.WriteData("Prefab", 0);
+
+			gameObject.Serialize(gameObjectNode);
+		}
+
+		for (Ref<SceneNode> childNode : sceneNode->Children)
+			SerializeSceneNode(serializationNode, childNode);
+	}
+
 	void Scene::SaveToDisk(const Path& assetPath)
 	{
 		AssetSerializer serializer;
@@ -175,14 +194,12 @@ namespace Odyssey
 
 		SerializationNode gameObjectsNode = root.CreateSequenceNode("GameObjects");
 
-		for (auto entity : m_Registry.view<PropertiesComponent>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			PropertiesComponent properties = gameObject.GetComponent<PropertiesComponent>();
-	
-			if (properties.Serialize)
-				gameObject.Serialize(gameObjectsNode);
-		}
+		// Get the scene root and make sure the graph is sorted
+		Ref<SceneNode>& sceneRoot = m_SceneGraph.GetSceneRoot();
+		sceneRoot->SortChildren(true);
+
+		for (Ref<SceneNode> sceneNode : sceneRoot->Children)
+			SerializeSceneNode(gameObjectsNode, sceneNode);
 
 		m_SceneGraph.Serialize(this, root);
 
@@ -212,18 +229,21 @@ namespace Odyssey
 
 			for (size_t i = 0; i < gameObjectsNode.ChildCount(); i++)
 			{
+				SerializationNode gameObjectNode = gameObjectsNode.GetChild(i);
+				assert(gameObjectNode.IsMap());
+
 				GameObject gameObject = CreateEmptyEntity();
-				SerializationNode child = gameObjectsNode.GetChild(i);
-				gameObject.Deserialize(child);
+				PropertiesComponent& properties = gameObject.AddComponent<PropertiesComponent>();
+
+				GUID prefab;
+				gameObjectNode.ReadData("Sort Order", properties.SortOrder);
+				gameObjectNode.ReadData("Prefab", prefab.Ref());
+
+				if (!prefab)
+					gameObject.Deserialize(gameObjectNode);
 
 				GUID guid = gameObject.GetGUID();
 				m_GUIDToGameObject[guid] = gameObject;
-				
-				if (gameObject.HasComponent<ScriptComponent>())
-				{
-					ScriptComponent& scriptComponent = gameObject.GetComponent<ScriptComponent>();
-					uint32_t scriptID = scriptComponent.GetScriptID();
-				}
 			}
 
 			m_SceneGraph.Deserialize(this, root);

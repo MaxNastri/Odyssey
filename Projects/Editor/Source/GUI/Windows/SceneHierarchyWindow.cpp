@@ -35,7 +35,7 @@ namespace Odyssey
 			m_Interactions.clear();
 
 			SceneGraph& sceneGraph = m_Scene->GetSceneGraph();
-			const SceneNode* sceneRoot = sceneGraph.GetSceneRoot();
+			Ref<SceneNode>& sceneRoot = sceneGraph.GetSceneRoot();
 
 			// Draw the scene root's children
 			// Note: Their children will be drawn recursively

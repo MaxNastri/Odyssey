@@ -21,7 +21,7 @@ namespace Odyssey
 		bool IsValid() { return m_Scene; }
 
 	public:
-		void Serialize(SerializationNode& node);
+		void Serialize(SerializationNode& gameObjectNode);
 		void Deserialize(SerializationNode& node);
 
 	public:

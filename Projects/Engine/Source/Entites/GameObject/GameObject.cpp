@@ -23,12 +23,10 @@ namespace Odyssey
 		m_Scene = scene;
 	}
 
-	void GameObject::Serialize(SerializationNode& node)
+	void GameObject::Serialize(SerializationNode& gameObjectNode)
 	{
 		PropertiesComponent& properties = GetComponent<PropertiesComponent>();
 
-		SerializationNode gameObjectNode = node.AppendChild();
-		gameObjectNode.SetMap();
 		gameObjectNode.WriteData("Name", properties.Name);
 		gameObjectNode.WriteData("GUID", properties.GUID.CRef());
 		gameObjectNode.WriteData("Type", Type);
@@ -59,18 +57,12 @@ namespace Odyssey
 
 	void GameObject::Deserialize(SerializationNode& node)
 	{
-		assert(node.IsMap());
-
-		if (!HasComponent<PropertiesComponent>())
-			AddComponent<PropertiesComponent>();
-
 		PropertiesComponent& properties = GetComponent<PropertiesComponent>();
 		node.ReadData("Name", properties.Name);
 		node.ReadData("GUID", properties.GUID.Ref());
 
 		SerializationNode componentsNode = node.GetNode("Components");
 		assert(componentsNode.IsSequence());
-		assert(componentsNode.HasChildren());
 
 		for (size_t i = 0; i < componentsNode.ChildCount(); ++i)
 		{
