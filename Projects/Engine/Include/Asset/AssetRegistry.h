@@ -29,6 +29,9 @@ namespace Odyssey
 		void SaveTo(const Path& path);
 		void Load();
 
+	private:
+		void PruneEntries();
+
 	public:
 		Path RootDirectory;
 		Path RegistryPath;

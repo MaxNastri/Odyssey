@@ -11,10 +11,6 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/PBR.asset
     GUID: 942766181068811557
-  - Name: Barrel
-    Type: Odyssey.Material
-    Path: Materials/Barrel.asset
-    GUID: 942766181066811556
   - Name: PBR
     Type: Odyssey.Shader
     Path: Shaders/PBR.asset
@@ -31,38 +27,14 @@ Entries:
     Type: Odyssey.SourceModel
     Path: Models/Monk.gltf
     GUID: 3270948376729727283
-  - Name: Kachujin_specular
-    Type: Odyssey.SourceTexture
-    Path: Models/Capoeira.fbm/Kachujin_specular.png
-    GUID: 7299573490149890267
-  - Name: Kachujin_diffuse_body
-    Type: Odyssey.SourceTexture
-    Path: Models/Capoeira.fbm/Kachujin_diffuse_body.png
-    GUID: 8175636576157770894
   - Name: PBR
     Type: Odyssey.SourceShader
     Path: Shaders/Source/PBR.hlsl
     GUID: 8792030590727510300
-  - Name: Kachujin_normal
-    Type: Odyssey.SourceTexture
-    Path: Models/Capoeira.fbm/Kachujin_normal.png
-    GUID: 9561603051015759961
-  - Name: Capoeira
-    Type: Odyssey.SourceModel
-    Path: Models/Capoeira.fbx
-    GUID: 12861167884330528575
   - Name: Kachujin_diffuse
     Type: Odyssey.SourceTexture
     Path: Textures/Kachujin_diffuse.png
     GUID: 17785645852077111092
-  - Name: Kachujin_diffuse
-    Type: Odyssey.SourceTexture
-    Path: Models/Capoeira.fbm/Kachujin_diffuse.png
-    GUID: 3391686428449141831
-  - Name: Cube
-    Type: Odyssey.SourceModel
-    Path: Models/Cube.fbx
-    GUID: 9086862285100025922
   - Name: Cube
     Type: Odyssey.Mesh
     Path: Meshes/Cube.mesh
@@ -111,31 +83,3 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Barrel_Albedo.asset
     GUID: 15566671228588070251
-  - Name: Default
-    Type: Odyssey.Material
-    Path: Materials/material/.mat
-    GUID: 4500305656734585803
-  - Name: Default
-    Type: Odyssey.Material
-    Path: Materials/material..mat
-    GUID: 6108161896554777915
-  - Name: Default
-    Type: Odyssey.Material
-    Path: Materials/material.mat
-    GUID: 11953922489609268789
-  - Name: Default
-    Type: Odyssey.Material
-    Path: Materials/Material.mat1.mat
-    GUID: 2209144160393675487
-  - Name: Barrel
-    Type: Odyssey.Material
-    Path: Materials/Material.mat
-    GUID: 17730690767769150201
-  - Name: Default
-    Type: Odyssey.Material
-    Path: Materials/Material1.mat
-    GUID: 2498348897875907997
-  - Name: Default
-    Type: Odyssey.Material
-    Path: Materials/Material2.mat
-    GUID: 13864756039477749750

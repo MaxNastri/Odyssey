@@ -106,6 +106,28 @@ namespace Odyssey
 				entryNode.ReadData("GUID", entry.Guid.Ref());
 				entry.Path = path;
 			}
+
+			PruneEntries();
 		}
+	}
+
+	void AssetRegistry::PruneEntries()
+	{
+		size_t removed = 0;
+
+		for (int64_t i = (int64_t)Entries.size() - 1; i >= 0; i--)
+		{
+			AssetEntry& entry = Entries[i];
+
+			if (!std::filesystem::exists(RootDirectory / entry.Path))
+			{
+				Entries.erase(Entries.begin() + i);
+				removed++;
+				continue;
+			}
+		}
+
+		if (removed > 0)
+			Save();
 	}
 }
