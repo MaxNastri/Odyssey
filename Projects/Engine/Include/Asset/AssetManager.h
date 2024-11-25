@@ -5,11 +5,12 @@
 #include "GUID.h"
 #include "AssetRegistry.h"
 
+#include "Material.h"
+
 namespace Odyssey
 {
 	class Asset;
 	class AnimationRig;
-	class Material;
 	class Mesh;
 	class Shader;
 	class Scene;

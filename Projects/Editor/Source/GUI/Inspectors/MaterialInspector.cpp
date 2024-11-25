@@ -68,7 +68,10 @@ namespace Odyssey
 		if (m_Material)
 		{
 			if (auto texture = AssetManager::LoadAsset<Texture2D>(guid))
+			{
 				m_Material->SetTexture(texture);
+				m_Material->Save();
+			}
 		}
 	}
 }

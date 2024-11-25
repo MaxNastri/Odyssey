@@ -130,6 +130,9 @@ namespace Odyssey
 			{
 				if (ImGui::MenuItem("Material"))
 				{
+					const Path& path = GetUniquePath("Material", ".mat");
+					AssetManager::CreateAsset<Material>(path);
+					m_UpdatePaths = true;
 				}
 				if (ImGui::MenuItem("Scene"))
 				{
@@ -201,5 +204,16 @@ namespace Odyssey
 	void ContentBrowserWindow::OnFileAction(const Path& filePath, FileActionType fileAction)
 	{
 		UpdatePaths();
+	}
+	Path ContentBrowserWindow::GetUniquePath(const Path& filename, const Path& extension)
+	{
+		Path path = m_CurrentPath / Path(filename.string() + extension.string());
+
+		uint32_t fileCount = 0;
+
+		while (std::filesystem::exists(path))
+			path = m_CurrentPath / Path(filename.string() + std::to_string(++fileCount) + extension.string());
+
+		return path;
 	}
 }

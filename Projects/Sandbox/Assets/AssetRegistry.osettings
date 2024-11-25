@@ -11,6 +11,10 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/PBR.asset
     GUID: 942766181068811557
+  - Name: Barrel
+    Type: Odyssey.Material
+    Path: Materials/Barrel.asset
+    GUID: 942766181066811556
   - Name: PBR
     Type: Odyssey.Shader
     Path: Shaders/PBR.asset
@@ -91,3 +95,47 @@ Entries:
     Type: Odyssey.AnimationClip
     Path: 'Animation/Idle-Clip.asset'
     GUID: 6316788137749762478
+  - Name: Barrel
+    Type: Odyssey.SourceModel
+    Path: Models/Barrel.glb
+    GUID: 14189596733765247754
+  - Name: Barrel
+    Type: Odyssey.Mesh
+    Path: Meshes/Barrel.mesh
+    GUID: 13004314950757685951
+  - Name: Barrel
+    Type: Odyssey.SourceTexture
+    Path: Textures/Barrel.png
+    GUID: 17265819042437453023
+  - Name: Barrel Albedo
+    Type: Odyssey.Texture2D
+    Path: Textures/Barrel_Albedo.asset
+    GUID: 15566671228588070251
+  - Name: Default
+    Type: Odyssey.Material
+    Path: Materials/material/.mat
+    GUID: 4500305656734585803
+  - Name: Default
+    Type: Odyssey.Material
+    Path: Materials/material..mat
+    GUID: 6108161896554777915
+  - Name: Default
+    Type: Odyssey.Material
+    Path: Materials/material.mat
+    GUID: 11953922489609268789
+  - Name: Default
+    Type: Odyssey.Material
+    Path: Materials/Material.mat1.mat
+    GUID: 2209144160393675487
+  - Name: Barrel
+    Type: Odyssey.Material
+    Path: Materials/Material.mat
+    GUID: 17730690767769150201
+  - Name: Default
+    Type: Odyssey.Material
+    Path: Materials/Material1.mat
+    GUID: 2498348897875907997
+  - Name: Default
+    Type: Odyssey.Material
+    Path: Materials/Material2.mat
+    GUID: 13864756039477749750
