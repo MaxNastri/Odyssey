@@ -24,6 +24,6 @@ namespace Odyssey
 		StringDrawer m_NameDrawer;
 		StringDrawer m_TypeDrawer;
 		AssetFieldDrawer m_SourceAssetDrawer;
-
+		uint64_t m_PreviewTexture;
 	};
 }
