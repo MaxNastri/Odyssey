@@ -120,8 +120,8 @@ namespace Odyssey
 
 	void ContentBrowserWindow::HandleContextMenu()
 	{
-		if (!m_ContextMenuOpen && Input::GetMouseButtonDown(MouseButton::Right))
-			ImGui::OpenPopup("Context Menu: Content Browser");
+		if (!m_ContextMenuOpen && Input::GetMouseButtonDown(MouseButton::Right) && !ImGui::IsAnyItemHovered())
+			ImGui::OpenPopup("Context Menu: Content Browser", ImGuiPopupFlags_NoOpenOverExistingPopup);
 
 		// TODO: Check its inside content area
 		if (m_ContextMenuOpen = ImGui::BeginPopup("Context Menu: Content Browser"))
@@ -153,11 +153,24 @@ namespace Odyssey
 	
 	void ContentBrowserWindow::DrawSceneAsset(const Path& assetPath)
 	{
-		std::string filename = assetPath.filename().string();
+		std::string filename = assetPath.filename().replace_extension("").string();
 
-		if (ImGui::Button(filename.c_str()))
-		{
+		if (!m_Input)
+			m_Input = new SelectableInput(filename);
+		
+		auto status = m_Input->Draw();
+
+		if (status == SelectableInput::Status::DoubleClick)
 			SceneManager::LoadScene(assetPath);
+		else if (status == SelectableInput::Status::TextModified)
+		{
+			std::string newFileName(m_Input->GetText());
+			Path newPath = assetPath.parent_path() / (newFileName + assetPath.extension().string());
+
+			if (!std::filesystem::exists(newPath))
+			{
+				std::filesystem::rename(assetPath, newPath);
+			}
 		}
 	}
 

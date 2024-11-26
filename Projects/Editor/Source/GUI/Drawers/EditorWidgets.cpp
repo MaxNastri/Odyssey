@@ -2,6 +2,8 @@
 #include "SceneManager.h"
 #include "EditorComponents.h"
 #include "Transform.h"
+#include "imgui_internal.h"
+#include "Input.h"
 
 namespace Odyssey
 {
@@ -166,6 +168,79 @@ namespace Odyssey
 				if (gameObject.GetGUID() == m_SelectedEntity)
 					m_SelectedIndex = m_Entities.size() - 1;
 			}
+		}
+	}
+
+	SelectableInput::SelectableInput(std::string_view text)
+	{
+		m_Text = text;
+		m_Text.copy(m_InputBuffer, ARRAYSIZE(m_InputBuffer));
+	}
+
+	SelectableInput::Status SelectableInput::Draw()
+	{
+		bool previouslySelected = m_Selected;
+		m_Status = Status::None;
+
+		ImGui::PushID(this);
+
+		if (!previouslySelected)
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, float4(0.0f));
+
+		if (m_ShowInput)
+		{
+			DrawInput();
+		}
+		else
+		{
+			if (ImGui::Selectable(m_Text.c_str(), m_Selected, ImGuiSelectableFlags_AllowDoubleClick))
+			{
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+					m_Status = Status::DoubleClick;
+				else
+					m_Selected = true;
+			}
+
+			if (!ImGui::IsItemHovered() && Input::GetMouseButtonDown(MouseButton::Left))
+			{
+				m_Selected = false;
+			}
+			else if (ImGui::IsItemHovered() && Input::GetMouseButtonDown(MouseButton::Right))
+			{
+				ImGui::OpenPopup("Popup");
+			}
+
+			if (ImGui::BeginPopup("Popup"))
+			{
+				if (ImGui::MenuItem("Rename"))
+				{
+					m_ShowInput = true;
+				}
+
+				ImGui::EndPopup();
+			}
+		}
+
+		if (!previouslySelected)
+			ImGui::PopStyleColor();
+
+		ImGui::PopID();
+
+		return m_Status;
+	}
+
+	void SelectableInput::DrawInput()
+	{
+		bool enter = ImGui::InputText("##Label", m_InputBuffer, ARRAYSIZE(m_InputBuffer), ImGuiInputTextFlags_EnterReturnsTrue);
+		
+		ImGui::SetKeyboardFocusHere(-1);
+		
+		if (enter || (!ImGui::IsItemHovered() && Input::GetMouseButtonDown(MouseButton::Left)))
+		{
+			// Submit the text
+			m_Text = m_InputBuffer;
+			m_ShowInput = false;
+			m_Status = Status::TextModified;
 		}
 	}
 }

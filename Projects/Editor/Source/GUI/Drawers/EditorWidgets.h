@@ -85,4 +85,33 @@ namespace Odyssey
 		GUID m_SelectedEntity;
 		uint64_t m_SelectedIndex = 0;
 	};
+
+	class SelectableInput
+	{
+	public:
+		enum class Status
+		{
+			None = 0,
+			DoubleClick = 1,
+			TextModified = 2,
+		};
+
+	public:
+		SelectableInput() = default;
+		SelectableInput(std::string_view text);
+
+	public:
+		Status Draw();
+		std::string_view GetText() { return m_Text; }
+
+	private:
+		void DrawInput();
+
+	private:
+		std::string m_Text;
+		char m_InputBuffer[128] = "";
+		bool m_Selected = false;
+		bool m_ShowInput = false;
+		Status m_Status = Status::None;
+	};
 }

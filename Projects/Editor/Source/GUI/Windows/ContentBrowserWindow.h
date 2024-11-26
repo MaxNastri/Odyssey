@@ -1,6 +1,8 @@
 #pragma once
+#include "Ref.h"
 #include "DockableWindow.h"
 #include "FileTracker.h"
+#include "EditorWidgets.h"
 
 namespace Odyssey
 {
@@ -34,6 +36,7 @@ namespace Odyssey
 		std::vector<Path> m_FoldersToDisplay;
 		std::vector<Path> m_FilesToDisplay;
 		std::unique_ptr<FileTracker> m_FileTracker;
+		Ref<SelectableInput> m_Input;
 
 	private: // Context menu
 		bool m_ContextMenuOpen = false;
