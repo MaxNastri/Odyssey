@@ -43,7 +43,7 @@ namespace Odyssey
 				if (m_Options.Callback)
 				{
 					m_Lock.Lock(LockState::Write);
-					m_WaitingCallbacks.push_back([this, fileAction]() { m_Options.Callback(fileAction.Filename, (FileActionType)fileAction.Action); });
+					m_WaitingCallbacks.push_back([this, fileAction]() { m_Options.Callback(fileAction.OldFilename, fileAction.Filename, (FileActionType)fileAction.Action); });
 					m_Lock.Unlock(LockState::Write);
 				}
 			}
@@ -75,7 +75,7 @@ namespace Odyssey
 			if (m_Options.Callback && (isDirectory || extensionMatch))
 			{
 				m_Lock.Lock(LockState::Write);
-				m_WaitingCallbacks.push_back([this, fileAction]() { m_Options.Callback(fileAction.Filename, (FileActionType)fileAction.Action); });
+				m_WaitingCallbacks.push_back([this, fileAction]() { m_Options.Callback(fileAction.OldFilename, fileAction.Filename, (FileActionType)fileAction.Action); });
 				m_Lock.Unlock(LockState::Write);
 			}
 		}

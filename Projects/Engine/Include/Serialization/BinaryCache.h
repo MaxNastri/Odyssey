@@ -20,7 +20,7 @@ namespace Odyssey
 		void CatalogAssets();
 		BinaryBuffer LoadBinaryData(const Path& path);
 		Path GenerateAssetPath(GUID guid);
-		void OnFileAction(const Path& path, FileActionType fileAction);
+		void OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction);
 
 	private:
 		Path m_Path;

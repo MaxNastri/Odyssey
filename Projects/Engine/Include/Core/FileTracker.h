@@ -20,7 +20,7 @@ namespace Odyssey
 		std::vector<Path> Extensions;
 		bool Recursive = false;
 		bool IncludeDirectoryChanges = false;
-		std::function<void(const Path, FileActionType)> Callback = nullptr;
+		std::function<void(const Path, const Path, FileActionType)> Callback = nullptr;
 	};
 
 	class FileTracker : efsw::FileWatchListener

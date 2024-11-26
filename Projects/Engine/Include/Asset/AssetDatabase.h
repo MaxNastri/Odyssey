@@ -57,7 +57,7 @@ namespace Odyssey
 
 	private:
 		void AddRegistryAsset(GUID guid, const Path& path, const std::string& assetName, const std::string& assetType, bool sourceAsset);
-		void OnFileAction(const Path& filename, FileActionType fileAction);
+		void OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction);
 
 	protected:
 		std::unique_ptr<FileTracker> m_FileTracker;

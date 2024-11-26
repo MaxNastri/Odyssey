@@ -24,7 +24,7 @@ namespace Odyssey
 		void DrawSceneAsset(const Path& assetPath);
 		void DrawSourceAsset(const Path& sourcePath);
 		void DrawAsset(const Path& assetPath);
-		void OnFileAction(const Path& filePath, FileActionType fileAction);
+		void OnFileAction(const Path& oldPath, const Path& newPath, FileActionType fileAction);
 
 	private:
 		Path GetUniquePath(const Path& filename, const Path& extension);

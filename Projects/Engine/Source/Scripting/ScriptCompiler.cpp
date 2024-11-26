@@ -24,8 +24,8 @@ namespace Odyssey
 		options.TrackingPath = m_Settings.UserScriptsDirectory;
 		options.Extensions = { ".cs" };
 		options.Recursive = true;
-		options.Callback = [this](const Path& path, FileActionType fileAction)
-			{ OnFileAction(path, fileAction); };
+		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction)
+			{ OnFileAction(oldPath, newPath, fileAction); };
 		m_FileTracker = std::make_unique<FileTracker>(options);
 	}
 
@@ -138,7 +138,7 @@ namespace Odyssey
 		}
 	}
 
-	void ScriptCompiler::OnFileAction(const Path& filename, FileActionType fileAction)
+	void ScriptCompiler::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
 	{
 		shouldRebuild = !buildInProgress && fileAction != FileActionType::None;
 	}

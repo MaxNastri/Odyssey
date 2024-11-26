@@ -26,7 +26,7 @@ namespace Odyssey
 	private:
 		bool BuildAssemblies(std::wstring buildCommand);
 		bool WaitForBuildComplete(PROCESS_INFORMATION pi);
-		void OnFileAction(const Path& filename, FileActionType fileAction);
+		void OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction);
 
 	private:
 		bool buildInProgress = false;

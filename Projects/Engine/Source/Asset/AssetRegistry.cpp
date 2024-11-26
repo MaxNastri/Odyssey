@@ -7,6 +7,13 @@ namespace Odyssey
 		RegistryPath = registryPath;
 		RootDirectory = RegistryPath.parent_path();
 		Load();
+
+		TrackingOptions options;
+		options.TrackingPath = RootDirectory;
+		options.Extensions = { };
+		options.Recursive = true;
+		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnFileAction(oldPath, newPath, fileAction); };
+		m_Tracker = new FileTracker(options);
 	}
 
 	void AssetRegistry::AddAsset(const std::string& name, const std::string& type, const Path& path, GUID guid)
@@ -45,6 +52,19 @@ namespace Odyssey
 			if (entry.Guid == guid)
 			{
 				entry.Path = path;
+				Save();
+				break;
+			}
+		}
+	}
+
+	void AssetRegistry::UpdateAssetPath(const Path& oldPath, const Path& newPath)
+	{
+		for (AssetEntry& entry : Entries)
+		{
+			if (entry.Path == oldPath)
+			{
+				entry.Path = newPath;
 				Save();
 				break;
 			}
@@ -129,5 +149,13 @@ namespace Odyssey
 
 		if (removed > 0)
 			Save();
+	}
+
+	void AssetRegistry::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
+	{
+		if (fileAction == FileActionType::Moved && !oldFilename.empty() && !newFilename.empty())
+		{
+			UpdateAssetPath(oldFilename, newFilename);
+		}
 	}
 }

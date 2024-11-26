@@ -22,7 +22,7 @@ namespace Odyssey
 
 	private:
 		void LoadTexture();
-		void OnFileModified(const Path& path, FileActionType fileAction);
+		void OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction);
 
 	private:
 		int32_t m_Width, m_Height, m_Channels;

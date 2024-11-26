@@ -27,7 +27,7 @@ namespace Odyssey
 		options.TrackingPath = searchOptions.Root;
 		options.Extensions = supportedExtensions;
 		options.Recursive = true;
-		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileAction(path, fileAction); };
+		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnFileAction(oldPath, newPath, fileAction); };
 		m_FileTracker = std::make_unique<FileTracker>(options);
 
 		AddRegistry(projectRegistry);
@@ -271,7 +271,7 @@ namespace Odyssey
 		m_AssetTypeToGUIDs[assetType.data()].push_back(guid);
 	}
 
-	void AssetDatabase::OnFileAction(const Path& filename, FileActionType fileAction)
+	void AssetDatabase::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
 	{
 		if (fileAction != FileActionType::None && fileAction != FileActionType::Modified)
 			Scan();

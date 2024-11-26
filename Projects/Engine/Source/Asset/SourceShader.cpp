@@ -14,7 +14,7 @@ namespace Odyssey
 
 		TrackingOptions options;
 		options.TrackingPath = sourcePath;
-		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileModified(path, fileAction); };
+		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnFileAction(oldPath, newPath, fileAction); };
 		m_FileTracker = std::make_unique<FileTracker>(options);
 	}
 
@@ -148,7 +148,7 @@ namespace Odyssey
 		}
 	}
 
-	void SourceShader::OnFileModified(const Path& path, FileActionType fileAction)
+	void SourceShader::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
 	{
 		if (fileAction == FileActionType::Modified)
 		{

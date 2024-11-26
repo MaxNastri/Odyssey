@@ -24,8 +24,8 @@ namespace Odyssey
 		options.Extensions = { ".asset", ".glsl", ".meta" };
 		options.Recursive = true;
 		options.IncludeDirectoryChanges = true;
-		options.Callback = [this](const Path& filePath, FileActionType fileAction)
-			{ OnFileAction(filePath, fileAction); };
+		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction)
+			{ OnFileAction(oldPath, newPath, fileAction); };
 		m_FileTracker = std::make_unique<FileTracker>(options);
 
 		UpdatePaths();
@@ -170,6 +170,7 @@ namespace Odyssey
 			if (!std::filesystem::exists(newPath))
 			{
 				std::filesystem::rename(assetPath, newPath);
+				m_UpdatePaths = true;
 			}
 		}
 	}
@@ -214,7 +215,7 @@ namespace Odyssey
 		ImGui::PopID();
 	}
 
-	void ContentBrowserWindow::OnFileAction(const Path& filePath, FileActionType fileAction)
+	void ContentBrowserWindow::OnFileAction(const Path& oldPath, const Path& newPath, FileActionType fileAction)
 	{
 		UpdatePaths();
 	}

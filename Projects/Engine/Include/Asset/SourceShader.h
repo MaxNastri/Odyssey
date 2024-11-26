@@ -25,7 +25,7 @@ namespace Odyssey
 	private:
 		void ParseShaderFile(const Path& path);
 		void ParseShaderCode(const std::string& fileContents);
-		void OnFileModified(const Path& path, FileActionType fileAction);
+		void OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction);
 
 	private:
 		std::string m_ShaderName;
