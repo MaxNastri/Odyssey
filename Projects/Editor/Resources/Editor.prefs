@@ -3,12 +3,15 @@ Editor Registry: Resources/AssetRegistry.osettings
 Folder Icon: 213981209753892768
 Script Icon: 128378120928579883
 Material Icon: 712378667834876178
+Mesh Icon: 192838772537861324
 Asset Extensions:
   - .asset
   - .shader
   - .mesh
   - .prefab
   - .rune
+  - .tex2D
+  - .mat
 Source Extensions:
   .fbx: Odyssey.SourceModel
   .glb: Odyssey.SourceModel

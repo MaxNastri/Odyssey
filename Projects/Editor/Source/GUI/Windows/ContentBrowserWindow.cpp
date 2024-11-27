@@ -11,6 +11,7 @@
 #include "GUIManager.h"
 #include "Renderer.h"
 #include "Preferences.h"
+#include "ThumbnailManager.h"
 
 namespace Odyssey
 {
@@ -168,17 +169,25 @@ namespace Odyssey
 				const std::vector<std::string>& assetExtensions = Preferences::GetAssetExtensions();
 
 				// Validate the file has a valid asset extension
-				if (std::find(assetExtensions.begin(), assetExtensions.end(), extension) != assetExtensions.end())
+				// TODO: For now special case scenes
+				if (extension == ".scene" || std::find(assetExtensions.begin(), assetExtensions.end(), extension) != assetExtensions.end())
 				{
-					m_FilesToDisplay.push_back(iter.path());
+					Path path = iter.path();
+					Path extension = path.extension();
+
+					m_FilesToDisplay.push_back(path);
 
 					uint64_t icon = 0;
-					if (iter.path().extension() == ".cs")
+					if (extension == ".cs")
 						icon = m_ScriptIconHandle;
-					else if (iter.path().extension() == ".mat")
+					else if (extension == ".mat")
 						icon = m_MaterialIconHandle;
+					else if (extension == ".tex2D")
+						icon = ThumbnailManager::LoadTexture(path);
+					else if (extension == ".mesh")
+						icon = ThumbnailManager::LoadTexture(Preferences::GetMeshIcon());
 
-					m_AssetDrawers.push_back(SelectableInput(iter.path().filename().replace_extension("").string(), icon));
+					m_AssetDrawers.push_back(SelectableInput(path.filename().replace_extension("").string(), icon));
 				}
 			}
 		}

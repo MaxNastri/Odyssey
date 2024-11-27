@@ -45,8 +45,11 @@ namespace Odyssey
 		template<typename T>
 		void ReadData(ryml::csubstr name, T& data)
 		{
-			if (m_Node[name].has_val() || m_Node[name].has_children())
-				m_Node[name] >> data;
+			if (m_Node[name].has_key())
+			{
+				if (m_Node[name].has_val() || m_Node[name].has_children())
+					m_Node[name] >> data;
+			}
 		}
 
 		void SetMap() { m_Node |= ryml::MAP; }

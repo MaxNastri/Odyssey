@@ -25,7 +25,7 @@ namespace Odyssey
 	void Light::Deserialize(SerializationNode& node)
 	{
 		std::string lightType;
-		node.ReadData("Enable", m_Enabled);
+		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Light Type", lightType);
 		node.ReadData("Color", m_Color);
 		node.ReadData("Intensity", m_Intensity);

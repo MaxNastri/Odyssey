@@ -50,8 +50,8 @@ namespace Odyssey
 	public:
 		std::string Name;
 		double Start = std::numeric_limits<double>::max();
-		double Duration;
-		uint32_t FramesPerSecond;
+		double Duration = 0.0;
+		uint32_t FramesPerSecond = 0;
 		std::map<std::string, BoneKeyframe> BoneKeyframes;
 	};
 

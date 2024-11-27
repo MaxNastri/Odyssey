@@ -69,8 +69,8 @@ namespace Odyssey
 		dynamic_rendering_feature.pNext = &bufferAddress;
 
 		VkPhysicalDeviceFeatures deviceFeatures{};
-		deviceFeatures.geometryShader = true;
 		deviceFeatures.logicOp = true;
+		deviceFeatures.samplerAnisotropy = true;
 
 		VkDeviceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

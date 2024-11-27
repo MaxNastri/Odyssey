@@ -1,7 +1,7 @@
 Entries:
   - Name: Monk
     Type: Odyssey.Texture2D
-    Path: Textures/Monk_CCC.asset
+    Path: Textures/Monk_CCC.tex2D
     GUID: 379771950876182716
   - Name: PBR
     Type: Odyssey.Material
@@ -17,7 +17,7 @@ Entries:
     GUID: 16662637833593679810
   - Name: example
     Type: Odyssey.SourceTexture
-    Path: Textures/Skybox/example.png
+    Path: Textures/Source/example.png
     GUID: 397722758389800740
   - Name: Monk
     Type: Odyssey.SourceModel
@@ -29,7 +29,7 @@ Entries:
     GUID: 8792030590727510300
   - Name: Kachujin_diffuse
     Type: Odyssey.SourceTexture
-    Path: Textures/Kachujin_diffuse.png
+    Path: Textures/Source/Kachujin_diffuse.png
     GUID: 17785645852077111092
   - Name: Monk
     Type: Odyssey.SourceModel
@@ -69,11 +69,11 @@ Entries:
     GUID: 13004314950757685951
   - Name: Barrel
     Type: Odyssey.SourceTexture
-    Path: Textures/Barrel.png
+    Path: Textures/Source/Barrel.png
     GUID: 17265819042437453023
   - Name: Barrel Albedo
     Type: Odyssey.Texture2D
-    Path: Textures/Barrel_Albedo.asset
+    Path: Textures/Barrel_Albedo.tex2D
     GUID: 15566671228588070251
   - Name: Default
     Type: Odyssey.Mesh

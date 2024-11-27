@@ -202,7 +202,7 @@ namespace Odyssey
 
 			// Move the cursor along so we can draw the icon to the left of the selectable
 			if (m_IconHandle)
-				ImGui::SetCursorPosX(startPosX + textHeight);
+				ImGui::SetCursorPosX(startPosX + textHeight + style.ItemSpacing.x);
 
 			const ImGuiSelectableFlags flags = ImGuiSelectableFlags_AllowDoubleClick |
 				ImGuiSelectableFlags_SpanAllColumns |
