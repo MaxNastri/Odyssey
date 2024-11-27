@@ -15,12 +15,8 @@ namespace Odyssey
 		virtual bool Draw() override;
 
 	private:
-		void OnNameModified(std::string_view name);
-		void OnShaderModified(GUID guid);
-		void OnTextureModified(GUID guid);
-
-	private:
 		Ref<Material> m_Material;
+		bool m_Dirty = false;
 
 		StringDrawer m_NameDrawer;
 		StringDrawer m_GUIDDrawer;

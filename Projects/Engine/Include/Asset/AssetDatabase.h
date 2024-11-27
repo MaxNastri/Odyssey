@@ -9,8 +9,8 @@ namespace Odyssey
 	{
 		Path Root;
 		std::vector<Path> ExclusionPaths;
-		std::vector<Path> Extensions;
-		bool SourceAssetsOnly = false;
+		std::vector<std::string> Extensions;
+		std::map<std::string, std::string> SourceExtensionsMap;
 	};
 
 	struct AssetMetadata
@@ -70,22 +70,5 @@ namespace Odyssey
 		std::map<Path, GUID> m_AssetPathToGUID;
 		// [AssetType, List<GUID>]
 		std::map<std::string, std::vector<GUID>> m_AssetTypeToGUIDs;
-
-	private:
-		inline static std::set<std::string> s_AssetExtensions =
-		{
-			".asset", ".shader", ".mesh", ".prefab", ".rune"
-		};
-
-		inline static std::map<std::string, std::string> s_SourceAssetExtensionsToType =
-		{
-			{".glsl", "Odyssey.SourceShader"},
-			{".hlsl", "Odyssey.SourceShader"},
-			{".fbx", "Odyssey.SourceModel"},
-			{".gltf", "Odyssey.SourceModel"},
-			{".glb", "Odyssey.SourceModel"},
-			{".png", "Odyssey.SourceTexture"},
-			{".jpg", "Odyssey.SourceTexture"},
-		};
 	};
 }

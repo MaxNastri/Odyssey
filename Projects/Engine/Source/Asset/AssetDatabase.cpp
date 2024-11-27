@@ -12,12 +12,12 @@ namespace Odyssey
 
 		std::vector<Path> supportedExtensions;
 		
-		for (auto& extension : s_AssetExtensions)
+		for (auto& extension : m_SearchOptions.Extensions)
 		{
 			supportedExtensions.push_back(extension);
 		}
 
-		for (auto& [extension, sourceType] : s_SourceAssetExtensionsToType)
+		for (auto& [extension, sourceType] : m_SearchOptions.SourceExtensionsMap)
 		{
 			supportedExtensions.push_back(extension);
 		}
@@ -62,7 +62,7 @@ namespace Odyssey
 	{
 		for (auto& entry : registry.Entries)
 		{
-			bool sourceAsset = !s_AssetExtensions.contains(entry.Path.extension().string());
+			bool sourceAsset = Odyssey::Contains(m_SearchOptions.Extensions, entry.Path.extension().string());
 			AddRegistryAsset(entry.Guid, registry.RootDirectory / entry.Path, entry.Path.filename().replace_extension().string(), entry.Type, sourceAsset);
 		}
 	}
@@ -100,7 +100,7 @@ namespace Odyssey
 
 			if (dirEntry.is_regular_file())
 			{
-				for (const auto& searchExt : s_AssetExtensions)
+				for (const auto& searchExt : m_SearchOptions.Extensions)
 				{
 					// Check if this is a valid extension
 					if (extension == searchExt)
@@ -137,10 +137,10 @@ namespace Odyssey
 			auto extension = assetPath.extension().string();
 
 			// Check if the file extension is a valid source asset
-			if (dirEntry.is_regular_file() && s_SourceAssetExtensionsToType.contains(extension))
+			if (dirEntry.is_regular_file() && m_SearchOptions.SourceExtensionsMap.contains(extension))
 			{
 				std::string name = assetPath.filename().replace_extension("").string();
-				std::string type = s_SourceAssetExtensionsToType[extension];
+				std::string type = m_SearchOptions.SourceExtensionsMap[extension];
 
 				// Add the source asset to the database
 				GUID guid = GUID::New();

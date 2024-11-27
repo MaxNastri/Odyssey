@@ -14,6 +14,7 @@
 #include "SceneSettingsWindow.h"
 #include "AssetRegistry.h"
 #include "ParticleBatcher.h"
+#include "Preferences.h"
 
 namespace Odyssey
 {
@@ -31,14 +32,21 @@ namespace Odyssey
 		m_PlaymodeStateListener = EventSystem::Listen<PlaymodeStateChangedEvent>
 			([this](PlaymodeStateChangedEvent* event) { OnPlaymodeStateChanged(event); });
 
-		// Load the default project
-		Project::LoadProject("C:/Git/Odyssey/Projects/Sandbox");
+		Preferences::LoadPreferences("Resources/Editor.prefs");
+		Preferences::SavePreferences();
 
-		std::vector<Path> engineRegistries = 
+		// Load the default project
+		Project::LoadProject(Preferences::GetStartupProject());
+
 		{
-			"Resources/AssetRegistry.osettings"
-		};
-		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), engineRegistries);
+			// Create the asset database
+			AssetManager::Settings settings;
+			settings.AssetsDirectory = Project::GetActiveAssetsDirectory();
+			settings.AdditionalRegistries = { Preferences::GetEditorRegistry() };
+			settings.AssetExtensions = Preferences::GetAssetExtensions();
+			settings.SourceAssetExtensionMap = Preferences::GetSourceExtensions();
+			AssetManager::CreateDatabase(settings);
+		}
 
 		// Create the renderer
 		RendererConfig config = { .EnableIMGUI = true };
@@ -52,14 +60,17 @@ namespace Odyssey
 
 		GUIManager::Initialize();
 
-		// Build the user assembly
-		ScriptCompiler::Settings settings;
-		settings.ApplicationPath = Globals::GetApplicationPath();
-		settings.CacheDirectory = Project::GetActiveCacheDirectory();
-		settings.UserScriptsDirectory = Project::GetActiveUserScriptsDirectory();
-		settings.UserScriptsProject = Project::GetActiveUserScriptsProject();
-		m_ScriptCompiler = std::make_unique<ScriptCompiler>(settings);
+		{
+			// Create the script compiler
+			ScriptCompiler::Settings settings;
+			settings.ApplicationPath = Globals::GetApplicationPath();
+			settings.CacheDirectory = Project::GetActiveCacheDirectory();
+			settings.UserScriptsDirectory = Project::GetActiveUserScriptsDirectory();
+			settings.UserScriptsProject = Project::GetActiveUserScriptsProject();
+			m_ScriptCompiler = std::make_unique<ScriptCompiler>(settings);
+		}
 
+		// Build the user assembly
 		ScriptingManager::SetUserAssembliesPath(m_ScriptCompiler->GetUserAssemblyPath());
 		ScriptingManager::LoadUserAssemblies();
 

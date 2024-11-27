@@ -1,0 +1,19 @@
+Startup Project: 'C:/Git/Odyssey/Projects/Sandbox'
+Editor Registry: Resources/AssetRegistry.osettings
+Folder Icon: 213981209753892768
+Script Icon: 128378120928579883
+Material Icon: 712378667834876178
+Asset Extensions:
+  - .asset
+  - .shader
+  - .mesh
+  - .prefab
+  - .rune
+Source Extensions:
+  .fbx: Odyssey.SourceModel
+  .glb: Odyssey.SourceModel
+  .glsl: Odyssey.SourceShader
+  .gltf: Odyssey.SourceModel
+  .hlsl: Odyssey.SourceShader
+  .jpg: Odyssey.SourceTexture
+  .png: Odyssey.SourceTexture

@@ -20,16 +20,10 @@ namespace Odyssey
 			if (auto texture2D = m_Material->GetTexture())
 				textureGUID = texture2D->GetGUID();
 
-			m_NameDrawer = StringDrawer("Name", m_Material->GetName(), false,
-				[this](std::string_view name) { OnNameModified(name); });
-
 			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), true);
-
-			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type,
-				[this](GUID guid) { OnShaderModified(guid); });
-
-			m_TextureDrawer = AssetFieldDrawer("Texture", textureGUID, Texture2D::Type,
-				[this](GUID guid) { OnTextureModified(guid); });
+			m_NameDrawer = StringDrawer("Name", m_Material->GetName(), false);
+			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type);
+			m_TextureDrawer = AssetFieldDrawer("Texture", textureGUID, Texture2D::Type);
 		}
 	}
 
@@ -38,40 +32,33 @@ namespace Odyssey
 		bool modified = false;
 
 		modified |= m_GUIDDrawer.Draw();
-		modified |= m_NameDrawer.Draw();
-		modified |= m_ShaderDrawer.Draw();
-		modified |= m_TextureDrawer.Draw();
 
-		if (modified && ImGui::Button("Save"))
+		if (modified |= m_NameDrawer.Draw())
+		{
+			m_Material->SetName(m_NameDrawer.GetValue());
+			m_Dirty = true;
+		}
+
+		if (modified |= m_ShaderDrawer.Draw())
+		{
+			if (auto shader = AssetManager::LoadAsset<Shader>(m_ShaderDrawer.GetGUID()))
+				m_Material->SetShader(shader);
+			m_Dirty = true;
+		}
+
+		if (modified |= m_TextureDrawer.Draw())
+		{
+			if (auto texture = AssetManager::LoadAsset<Texture2D>(m_TextureDrawer.GetGUID()))
+				m_Material->SetTexture(texture);
+			m_Dirty = true;
+		}
+
+		if (m_Dirty && ImGui::Button("Save"))
+		{
 			m_Material->Save();
+			m_Dirty = false;
+		}
 
 		return modified;
-	}
-
-	void MaterialInspector::OnNameModified(std::string_view name)
-	{
-		if (m_Material)
-			m_Material->SetName(name);
-	}
-
-	void MaterialInspector::OnShaderModified(GUID guid)
-	{
-		if (m_Material)
-		{
-			if (auto vertShader = AssetManager::LoadAsset<Shader>(guid))
-				m_Material->SetShader(vertShader);
-		}
-	}
-
-	void MaterialInspector::OnTextureModified(GUID guid)
-	{
-		if (m_Material)
-		{
-			if (auto texture = AssetManager::LoadAsset<Texture2D>(guid))
-			{
-				m_Material->SetTexture(texture);
-				m_Material->Save();
-			}
-		}
 	}
 }

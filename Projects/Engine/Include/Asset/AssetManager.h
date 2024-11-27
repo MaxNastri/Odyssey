@@ -26,7 +26,16 @@ namespace Odyssey
 	class AssetManager
 	{
 	public:
-		static void CreateDatabase(const Path& assetsDirectory, std::vector<Path>& additionalRegistries);
+		struct Settings
+		{
+			Path AssetsDirectory;
+			std::vector<Path> AdditionalRegistries;
+			std::vector<std::string> AssetExtensions;
+			std::map<std::string, std::string> SourceAssetExtensionMap;
+		};
+
+	public:
+		static void CreateDatabase(Settings settings);
 
 	public:
 		template<typename T, typename... Args>

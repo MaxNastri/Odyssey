@@ -10,6 +10,7 @@
 #include "EditorEvents.h"
 #include "GUIManager.h"
 #include "Renderer.h"
+#include "Preferences.h"
 
 namespace Odyssey
 {
@@ -20,9 +21,9 @@ namespace Odyssey
 		m_AssetsPath = windowID % 2 == 0 ? Project::GetActiveAssetsDirectory() : "Resources";
 		m_CurrentPath = m_AssetsPath;
 
-		m_FolderIcon = AssetManager::LoadAsset<Texture2D>(Folder_Icon_GUID);
-		m_ScriptIcon = AssetManager::LoadAsset<Texture2D>(Script_Icon_GUID);
-		m_MaterialIcon = AssetManager::LoadAsset<Texture2D>(Material_Icon_GUID);
+		m_FolderIcon = AssetManager::LoadAsset<Texture2D>(Preferences::GetFolderIcon());
+		m_ScriptIcon = AssetManager::LoadAsset<Texture2D>(Preferences::GetScriptIcon());
+		m_MaterialIcon = AssetManager::LoadAsset<Texture2D>(Preferences::GetMaterialIcon());
 		m_FolderIconHandle = Renderer::AddImguiTexture(m_FolderIcon);
 		m_ScriptIconHandle = Renderer::AddImguiTexture(m_ScriptIcon);
 		m_MaterialIconHandle = Renderer::AddImguiTexture(m_MaterialIcon);
@@ -163,16 +164,22 @@ namespace Odyssey
 			}
 			else if (iter.is_regular_file())
 			{
-				// TODO: Validate asset file
-				m_FilesToDisplay.push_back(iter.path());
+				const Path& extension = iter.path().extension();
+				const std::vector<std::string>& assetExtensions = Preferences::GetAssetExtensions();
 
-				uint64_t icon = 0;
-				if (iter.path().extension() == ".cs")
-					icon = m_ScriptIconHandle;
-				else if (iter.path().extension() == ".mat")
-					icon = m_MaterialIconHandle;
+				// Validate the file has a valid asset extension
+				if (std::find(assetExtensions.begin(), assetExtensions.end(), extension) != assetExtensions.end())
+				{
+					m_FilesToDisplay.push_back(iter.path());
 
-				m_AssetDrawers.push_back(SelectableInput(iter.path().filename().replace_extension("").string(), icon));
+					uint64_t icon = 0;
+					if (iter.path().extension() == ".cs")
+						icon = m_ScriptIconHandle;
+					else if (iter.path().extension() == ".mat")
+						icon = m_MaterialIconHandle;
+
+					m_AssetDrawers.push_back(SelectableInput(iter.path().filename().replace_extension("").string(), icon));
+				}
 			}
 		}
 	}
