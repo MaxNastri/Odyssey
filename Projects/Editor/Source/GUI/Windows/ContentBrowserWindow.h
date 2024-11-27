@@ -3,6 +3,7 @@
 #include "DockableWindow.h"
 #include "FileTracker.h"
 #include "EditorWidgets.h"
+#include "Texture2D.h"
 
 namespace Odyssey
 {
@@ -21,9 +22,6 @@ namespace Odyssey
 
 	private:
 		void HandleContextMenu();
-		void DrawSceneAsset(const Path& assetPath);
-		void DrawSourceAsset(const Path& sourcePath);
-		void DrawAsset(const Path& assetPath);
 		void OnFileAction(const Path& oldPath, const Path& newPath, FileActionType fileAction);
 
 	private:
@@ -36,9 +34,17 @@ namespace Odyssey
 		std::vector<Path> m_FoldersToDisplay;
 		std::vector<Path> m_FilesToDisplay;
 		std::unique_ptr<FileTracker> m_FileTracker;
-		Ref<SelectableInput> m_Input;
+		std::vector<SelectableInput> m_FolderDrawers;
+		std::vector<SelectableInput> m_AssetDrawers;
+
+		Ref<Texture2D> m_FolderIcon;
+		Ref<Texture2D> m_ScriptIcon;
+		uint64_t m_FolderIconHandle = 0;
+		uint64_t m_ScriptIconHandle = 0;
 
 	private: // Context menu
 		bool m_ContextMenuOpen = false;
+		inline static const GUID& Folder_Icon_GUID = 213981209753892768;
+		inline static const GUID& Script_Icon_GUID = 128378120928579883;
 	};
 }

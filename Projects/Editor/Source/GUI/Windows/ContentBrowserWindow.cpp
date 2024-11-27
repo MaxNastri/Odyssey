@@ -9,6 +9,7 @@
 #include "EventSystem.h"
 #include "EditorEvents.h"
 #include "GUIManager.h"
+#include "Renderer.h"
 
 namespace Odyssey
 {
@@ -18,7 +19,12 @@ namespace Odyssey
 	{
 		m_AssetsPath = windowID % 2 == 0 ? Project::GetActiveAssetsDirectory() : "Resources";
 		m_CurrentPath = m_AssetsPath;
-		
+
+		m_FolderIcon = AssetManager::LoadAsset<Texture2D>(Folder_Icon_GUID);
+		m_ScriptIcon = AssetManager::LoadAsset<Texture2D>(Script_Icon_GUID);
+		m_FolderIconHandle = Renderer::AddImguiTexture(m_FolderIcon);
+		m_ScriptIconHandle = Renderer::AddImguiTexture(m_ScriptIcon);
+
 		TrackingOptions options;
 		options.TrackingPath = m_AssetsPath;
 		options.Extensions = { ".asset", ".glsl", ".meta" };
@@ -54,32 +60,71 @@ namespace Odyssey
 		}
 
 		// Draw folders first
-		for (auto path : m_FoldersToDisplay)
+		for (size_t i = 0; i < m_FolderDrawers.size(); i++)
 		{
-			std::string filename = path.filename().string();
-
-			if (ImGui::Button(filename.c_str()))
+			SelectableInput& drawer = m_FolderDrawers[i];
+			if (drawer.Draw() == SelectableInput::Result::DoubleClick)
 			{
-				m_CurrentPath = path;
+				m_CurrentPath = m_FoldersToDisplay[i];
 				m_UpdatePaths = true;
 			}
 		}
 
 		// Now files
-		for (auto& path : m_FilesToDisplay)
+		for (size_t i = 0; i < m_AssetDrawers.size(); i++)
 		{
-			if (path.extension() == ".scene")
+			SelectableInput& drawer = m_AssetDrawers[i];
+			Path& path = m_FilesToDisplay[i];
+
+			bool isScene = path.extension() == ".scene";
+			bool isSourceAsset = AssetManager::IsSourceAsset(path);
+
+			SelectableInput::Result drawStatus = drawer.Draw();
+
+			switch (drawStatus)
 			{
-				// Scene path
-				DrawSceneAsset(path);
-			}
-			else if (AssetManager::IsSourceAsset(path)) // Source asset lane
-			{
-				DrawSourceAsset(path);
-			}
-			else // Asset lane
-			{
-				DrawAsset(path);
+				case Odyssey::SelectableInput::Result::Selected:
+				{
+					// Dispatch a GUI selection event to update the rest of the UI
+					GUISelection selection;
+					selection.GUID = AssetManager::PathToGUID(path);
+					selection.Type = AssetManager::GUIDToAssetType(selection.GUID);
+					selection.FilePath = path;
+					EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
+
+					if (!isSourceAsset && !isScene)
+					{
+						// Allow for this asset to be a potential drag/drop payload
+						if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+						{
+							GUID guid = AssetManager::PathToGUID(path);
+							ImGui::SetDragDropPayload("Asset", &guid, sizeof(GUID));
+							ImGui::EndDragDropSource();
+						}
+					}
+
+					break;
+				}
+				case Odyssey::SelectableInput::Result::DoubleClick:
+				{
+					if (isScene)
+						SceneManager::LoadScene(path);
+
+					break;
+				}
+				case Odyssey::SelectableInput::Result::TextModified:
+				{
+					// Generate a new path for the asset
+					std::string newFileName(drawer.GetText());
+					Path newPath = path.parent_path() / (newFileName + path.extension().string());
+
+					// Rename the file
+					std::filesystem::rename(path, newPath);
+
+					// Mark our current path as dirty so we update
+					m_UpdatePaths = true;
+					break;
+				}
 			}
 		}
 
@@ -104,16 +149,26 @@ namespace Odyssey
 		m_FilesToDisplay.clear();
 		m_FoldersToDisplay.clear();
 
+		m_FolderDrawers.clear();
+		m_AssetDrawers.clear();
+
 		for (auto& iter : std::filesystem::directory_iterator(m_CurrentPath))
 		{
 			if (iter.is_directory())
 			{
 				m_FoldersToDisplay.push_back(iter.path());
+				m_FolderDrawers.push_back(SelectableInput(iter.path().filename().string(), m_FolderIconHandle));
 			}
 			else if (iter.is_regular_file())
 			{
-				if (iter.path().extension() != ".meta")
-					m_FilesToDisplay.push_back(iter.path());
+				// TODO: Validate asset file
+				m_FilesToDisplay.push_back(iter.path());
+
+				uint64_t icon = 0;
+				if (iter.path().extension() == ".cs")
+					icon = m_ScriptIconHandle;
+
+				m_AssetDrawers.push_back(SelectableInput(iter.path().filename().replace_extension("").string(), icon));
 			}
 		}
 	}
@@ -150,75 +205,12 @@ namespace Odyssey
 			ImGui::EndPopup();
 		}
 	}
-	
-	void ContentBrowserWindow::DrawSceneAsset(const Path& assetPath)
-	{
-		std::string filename = assetPath.filename().replace_extension("").string();
-
-		if (!m_Input)
-			m_Input = new SelectableInput(filename);
-		
-		auto status = m_Input->Draw();
-
-		if (status == SelectableInput::Status::DoubleClick)
-			SceneManager::LoadScene(assetPath);
-		else if (status == SelectableInput::Status::TextModified)
-		{
-			std::string newFileName(m_Input->GetText());
-			Path newPath = assetPath.parent_path() / (newFileName + assetPath.extension().string());
-
-			if (!std::filesystem::exists(newPath))
-			{
-				std::filesystem::rename(assetPath, newPath);
-				m_UpdatePaths = true;
-			}
-		}
-	}
-
-	void ContentBrowserWindow::DrawSourceAsset(const Path& sourcePath)
-	{
-		std::string filename = sourcePath.filename().string();
-		ImGui::PushID(filename.c_str());
-
-		if (ImGui::Selectable(filename.c_str()))
-		{
-			GUISelection selection;
-			selection.GUID = AssetManager::PathToGUID(sourcePath);
-			selection.Type = AssetManager::GUIDToAssetType(selection.GUID);
-			selection.FilePath = sourcePath;
-			EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
-		}
-		ImGui::PopID();
-	}
-	void ContentBrowserWindow::DrawAsset(const Path& assetPath)
-	{
-		std::string filename = assetPath.filename().string();
-
-		ImGui::PushID(filename.c_str());
-
-		if (ImGui::Selectable(filename.c_str()))
-		{
-			GUISelection selection;
-			selection.GUID = AssetManager::PathToGUID(assetPath);
-			selection.Type = AssetManager::GUIDToAssetType(selection.GUID);
-			EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
-		}
-
-		// Allow for this asset to be a potential draw/drop payload
-		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-		{
-			GUID guid = AssetManager::PathToGUID(assetPath);
-			ImGui::SetDragDropPayload("Asset", &guid, sizeof(GUID));
-			ImGui::EndDragDropSource();
-		}
-
-		ImGui::PopID();
-	}
 
 	void ContentBrowserWindow::OnFileAction(const Path& oldPath, const Path& newPath, FileActionType fileAction)
 	{
 		UpdatePaths();
 	}
+
 	Path ContentBrowserWindow::GetUniquePath(const Path& filename, const Path& extension)
 	{
 		Path path = m_CurrentPath / Path(filename.string() + extension.string());

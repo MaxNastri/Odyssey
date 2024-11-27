@@ -89,20 +89,24 @@ namespace Odyssey
 	class SelectableInput
 	{
 	public:
-		enum class Status
+		enum class Result
 		{
 			None = 0,
-			DoubleClick = 1,
-			TextModified = 2,
+			Selected = 1,
+			DoubleClick = 2,
+			TextModified = 3,
 		};
 
 	public:
 		SelectableInput() = default;
-		SelectableInput(std::string_view text);
+		SelectableInput(std::string_view text, uint64_t iconHandle = 0);
 
 	public:
-		Status Draw();
+		Result Draw();
 		std::string_view GetText() { return m_Text; }
+
+	public:
+		void SetIcon(uint64_t iconHandle) { m_IconHandle = iconHandle; }
 
 	private:
 		void DrawInput();
@@ -112,6 +116,7 @@ namespace Odyssey
 		char m_InputBuffer[128] = "";
 		bool m_Selected = false;
 		bool m_ShowInput = false;
-		Status m_Status = Status::None;
+		uint64_t m_IconHandle = 0;
+		Result m_Result = Result::None;
 	};
 }

@@ -55,6 +55,14 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: 'Textures/Source/SoftParticle.png'
     GUID: 812973823681236833
+  - Name: Default Folder
+    Type: Odyssey.Texture2D
+    Path: 'Textures/Folder_Default.asset'
+    GUID: 213981209753892768
+  - Name: Default Folder
+    Type: Odyssey.SourceTexture
+    Path: 'Textures/Source/Folder_Default.png'
+    GUID: 898173491239897822
   - Name: Particles
     Type: Odyssey.Material
     Path: 'Materials/Particles.asset'
@@ -67,3 +75,11 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: 'Textures/Source/BlueprintBackground.png'
     GUID: 901283857934219837
+  - Name: Script Default
+    Type: Odyssey.Texture2D
+    Path: 'Textures/Script_Default.asset'
+    GUID: 128378120928579883
+  - Name: Script Default
+    Type: Odyssey.SourceTexture
+    Path: 'Textures/Source/Script_Default.png'
+    GUID: 190283902178367422
