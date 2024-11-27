@@ -39,12 +39,15 @@ namespace Odyssey
 
 		Ref<Texture2D> m_FolderIcon;
 		Ref<Texture2D> m_ScriptIcon;
+		Ref<Texture2D> m_MaterialIcon;
 		uint64_t m_FolderIconHandle = 0;
 		uint64_t m_ScriptIconHandle = 0;
+		uint64_t m_MaterialIconHandle = 0;
 
 	private: // Context menu
 		bool m_ContextMenuOpen = false;
 		inline static const GUID& Folder_Icon_GUID = 213981209753892768;
 		inline static const GUID& Script_Icon_GUID = 128378120928579883;
+		inline static const GUID& Material_Icon_GUID = 712378667834876178;
 	};
 }

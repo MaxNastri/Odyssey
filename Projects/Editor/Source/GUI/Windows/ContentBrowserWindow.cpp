@@ -22,8 +22,10 @@ namespace Odyssey
 
 		m_FolderIcon = AssetManager::LoadAsset<Texture2D>(Folder_Icon_GUID);
 		m_ScriptIcon = AssetManager::LoadAsset<Texture2D>(Script_Icon_GUID);
+		m_MaterialIcon = AssetManager::LoadAsset<Texture2D>(Material_Icon_GUID);
 		m_FolderIconHandle = Renderer::AddImguiTexture(m_FolderIcon);
 		m_ScriptIconHandle = Renderer::AddImguiTexture(m_ScriptIcon);
+		m_MaterialIconHandle = Renderer::AddImguiTexture(m_MaterialIcon);
 
 		TrackingOptions options;
 		options.TrackingPath = m_AssetsPath;
@@ -167,6 +169,8 @@ namespace Odyssey
 				uint64_t icon = 0;
 				if (iter.path().extension() == ".cs")
 					icon = m_ScriptIconHandle;
+				else if (iter.path().extension() == ".mat")
+					icon = m_MaterialIconHandle;
 
 				m_AssetDrawers.push_back(SelectableInput(iter.path().filename().replace_extension("").string(), icon));
 			}

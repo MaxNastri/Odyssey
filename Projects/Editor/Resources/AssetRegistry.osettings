@@ -17,69 +17,77 @@ Entries:
     GUID: 14856991710712284328
   - Name: Cube
     Type: Odyssey.SourceModel
-    Path: 'Meshes/Source/Cube.glb'
+    Path: Meshes/Source/Cube.glb
     GUID: 17688292389720890448
   - Name: Cube
     Type: Odyssey.Mesh
-    Path: 'Meshes/Cube.mesh'
+    Path: Meshes/Cube.mesh
     GUID: 4325336624522892849
   - Name: Particle Render
     Type: Odyssey.Shader
-    Path: 'Shaders/ParticleRender.shader'
+    Path: Shaders/ParticleRender.shader
     GUID: 16032593712191697003
   - Name: Particle Render
     Type: Odyssey.SourceShader
-    Path: 'Shaders/Source/ParticleRender.hlsl'
+    Path: Shaders/Source/ParticleRender.hlsl
     GUID: 3156967184414869478
   - Name: ParticleEmitter
     Type: Odyssey.SourceShader
-    Path: 'Shaders/Source/ParticleEmitter.hlsl'
+    Path: Shaders/Source/ParticleEmitter.hlsl
     GUID: 6212201915190309476
   - Name: ParticleEmitter
     Type: Odyssey.Shader
-    Path: 'Shaders/ParticleEmitter.shader'
+    Path: Shaders/ParticleEmitter.shader
     GUID: 8940240242710108428
   - Name: Particle Simulation
     Type: Odyssey.SourceShader
-    Path: 'Shaders/Source/ParticleSimulation.hlsl'
+    Path: Shaders/Source/ParticleSimulation.hlsl
     GUID: 4123209115191309476
   - Name: Particle Simulation
     Type: Odyssey.Shader
-    Path: 'Shaders/ParticleSimulation.shader'
+    Path: Shaders/ParticleSimulation.shader
     GUID: 7831351134810913572
   - Name: Soft Particle
     Type: Odyssey.Texture2D
-    Path: 'Textures/SoftParticle.asset'
+    Path: Textures/SoftParticle.asset
     GUID: 488672041793267412
   - Name: Soft Particle
     Type: Odyssey.SourceTexture
-    Path: 'Textures/Source/SoftParticle.png'
+    Path: Textures/Source/SoftParticle.png
     GUID: 812973823681236833
   - Name: Default Folder
     Type: Odyssey.Texture2D
-    Path: 'Textures/Folder_Default.asset'
+    Path: Textures/Folder_Default.asset
     GUID: 213981209753892768
   - Name: Default Folder
     Type: Odyssey.SourceTexture
-    Path: 'Textures/Source/Folder_Default.png'
+    Path: Textures/Source/Folder_Default.png
     GUID: 898173491239897822
   - Name: Particles
     Type: Odyssey.Material
-    Path: 'Materials/Particles.asset'
+    Path: Materials/Particles.asset
     GUID: 831665292157922468
   - Name: Blueprint Background
     Type: Odyssey.Texture2D
-    Path: 'Textures/BlueprintBackground.asset'
+    Path: Textures/BlueprintBackground.asset
     GUID: 980123767453938719
   - Name: Blueprint Background
     Type: Odyssey.SourceTexture
-    Path: 'Textures/Source/BlueprintBackground.png'
+    Path: Textures/Source/BlueprintBackground.png
     GUID: 901283857934219837
   - Name: Script Default
     Type: Odyssey.Texture2D
-    Path: 'Textures/Script_Default.asset'
+    Path: Textures/Script_Default.asset
     GUID: 128378120928579883
   - Name: Script Default
     Type: Odyssey.SourceTexture
-    Path: 'Textures/Source/Script_Default.png'
+    Path: Textures/Source/Script_Default.png
     GUID: 190283902178367422
+  - Name: Material Default
+    Type: Odyssey.Texture2D
+    Path: Textures/Material_Default.asset
+    GUID: 712378667834876178
+  - Name: Material Icon
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Material_Icon.png
+    GUID: 982137237683467341

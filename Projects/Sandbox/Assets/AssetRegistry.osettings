@@ -5,7 +5,7 @@ Entries:
     GUID: 379771950876182716
   - Name: PBR
     Type: Odyssey.Material
-    Path: Materials/PBR.asset
+    Path: Materials/PBR.mat
     GUID: 942766181068811557
   - Name: PBR
     Type: Odyssey.Shader
