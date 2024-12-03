@@ -174,11 +174,23 @@ namespace Odyssey
 					float aspectRatio = 1.0f;
 
 					if (extension == ".cs")
+					{
 						icon = ThumbnailManager::LoadThumbnail(Preferences::GetScriptIcon());
+						Ref<Texture2D> texture = ThumbnailManager::GetTexture(icon);
+						aspectRatio = (float)texture->GetWidth() / (float)texture->GetHeight();
+					}
 					else if (extension == ".tex2D")
+					{
 						icon = ThumbnailManager::LoadThumbnail(path);
+						Ref<Texture2D> texture = ThumbnailManager::GetTexture(icon);
+						aspectRatio = (float)texture->GetWidth() / (float)texture->GetHeight();
+					}
 					else if (extension == ".mat")
+					{
 						icon = ThumbnailManager::LoadThumbnail(Preferences::GetMaterialIcon());
+						Ref<Texture2D> texture = ThumbnailManager::GetTexture(icon);
+						aspectRatio = (float)texture->GetWidth() / (float)texture->GetHeight();
+					}
 					else
 					{
 						icon = ThumbnailManager::LoadThumbnail(Preferences::GetAssetIcon());
