@@ -25,8 +25,10 @@ namespace Odyssey
 		static const GUID& GetScriptIcon() { return s_Instance->m_ScriptIcon; }
 		static const GUID& GetMaterialIcon() { return s_Instance->m_MaterialIcon; }
 		static const GUID& GetMeshIcon() { return s_Instance->m_MeshIcon; }
+		static const GUID& GetAssetIcon() { return s_Instance->m_AssetIcon; }
 		static const std::vector<std::string>& GetAssetExtensions() { return s_Instance->m_AssetExtensions; }
-		static const std::map<std::string, std::string>& GetSourceExtensions() { return s_Instance->m_SourceExtensionsToType; }
+		static const std::vector<std::string>& GetSourceExtensions() { return s_Instance->m_SourceExtensions; }
+		static const std::map<std::string, std::string>& GetSourceExtensionsMap() { return s_Instance->m_SourceExtensionsToType; }
 		
 	private: // Singleton
 		inline static Ref<Preferences> s_Instance;
@@ -36,6 +38,7 @@ namespace Odyssey
 
 	private:
 		std::vector<std::string> m_AssetExtensions;
+		std::vector<std::string> m_SourceExtensions;
 		std::map<std::string, std::string> m_SourceExtensionsToType;
 
 	private: // Icons
@@ -43,6 +46,7 @@ namespace Odyssey
 		GUID m_ScriptIcon;
 		GUID m_MaterialIcon;
 		GUID m_MeshIcon;
+		GUID m_AssetIcon;
 
 	private: // Pathing
 		Path m_StartupProject;

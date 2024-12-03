@@ -348,7 +348,6 @@ namespace Odyssey
 				itemSpacing.x = 4.0f;
 
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, itemSpacing);
-				//ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
 
 				ImGui::Separator();
 
@@ -406,12 +405,15 @@ namespace Odyssey
 					auto style = ImGui::GetStyle();
 
 					// + button
-					float2 addButtonSize = ImGui::CalcTextSize("+") + style.FramePadding + style.ItemSpacing;
-					float addButtonPosition = panelWidth - addButtonSize.x - style.FramePadding.x;
+					float2 addButtonSize = ImGui::CalcTextSize("+");
+					addButtonSize.x = addButtonSize.y;
+					float addButtonPosition = panelWidth - addButtonSize.x;
 
 					ImGui::SetCursorPosX(addButtonPosition);
+					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
 					if (ImGui::Button("+", addButtonSize))
 						OpenSelectPropertyMenu();
+					ImGui::PopStyleVar();
 				}
 
 				ImGui::Separator();
@@ -479,12 +481,15 @@ namespace Odyssey
 					auto style = ImGui::GetStyle();
 
 					// + button
-					float2 addButtonSize = ImGui::CalcTextSize("+") + style.FramePadding + style.ItemSpacing;
-					float addButtonPosition = panelWidth - addButtonSize.x - style.FramePadding.x;
+					float2 addButtonSize = ImGui::CalcTextSize("+");
+					addButtonSize.x = addButtonSize.y;
+					float addButtonPosition = panelWidth - addButtonSize.x;
 
 					ImGui::SetCursorPosX(addButtonPosition);
+					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
 					if (ImGui::Button("+", addButtonSize))
 						OpenSelectPropertyMenu();
+					ImGui::PopStyleVar();
 				}
 
 				ImGui::PopStyleVar();

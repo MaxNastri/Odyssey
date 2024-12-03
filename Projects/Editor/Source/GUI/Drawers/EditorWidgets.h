@@ -99,14 +99,14 @@ namespace Odyssey
 
 	public:
 		SelectableInput() = default;
-		SelectableInput(std::string_view text, uint64_t iconHandle = 0);
+		SelectableInput(std::string_view text, uint64_t iconHandle = 0, float aspectRatio = 1.0f);
 
 	public:
 		Result Draw();
 		std::string_view GetText() { return m_Text; }
 
 	public:
-		void SetIcon(uint64_t iconHandle) { m_IconHandle = iconHandle; }
+		void SetIcon(uint64_t iconHandle, float aspectRatio);
 
 	private:
 		void DrawInput();
@@ -117,6 +117,19 @@ namespace Odyssey
 		bool m_Selected = false;
 		bool m_ShowInput = false;
 		uint64_t m_IconHandle = 0;
+		float m_AspectRatio = 1.0f;
 		Result m_Result = Result::None;
+	};
+
+	class SearchWidget
+	{
+	public:
+		SearchWidget(std::string_view searchString, std::string_view hint = "Search...");
+
+	public:
+		bool Draw();
+
+	private:
+		std::string m_SearchString;
 	};
 }

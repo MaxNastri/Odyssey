@@ -4,12 +4,12 @@
 
 namespace Odyssey
 {
-	uint64_t ThumbnailManager::LoadTexture(const Path& path)
+	uint64_t ThumbnailManager::LoadThumbnail(const Path& path)
 	{
-		return LoadTexture(AssetManager::PathToGUID(path));
+		return LoadThumbnail(AssetManager::PathToGUID(path));
 	}
 
-	uint64_t ThumbnailManager::LoadTexture(const GUID& guid)
+	uint64_t ThumbnailManager::LoadThumbnail(const GUID& guid)
 	{
 		if (guid)
 		{
@@ -35,5 +35,16 @@ namespace Odyssey
 				m_TextureDatas.erase(guid);
 			}
 		}
+	}
+
+	Ref<Texture2D> ThumbnailManager::GetTexture(uint64_t handle)
+	{
+		for (auto& [guid, textureData] : m_TextureDatas)
+		{
+			if (textureData.ImGuiHandle == handle)
+				return textureData.Texture;
+		}
+
+		return Ref<Texture2D>();
 	}
 }

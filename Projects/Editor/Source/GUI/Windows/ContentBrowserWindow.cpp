@@ -22,13 +22,6 @@ namespace Odyssey
 		m_AssetsPath = windowID % 2 == 0 ? Project::GetActiveAssetsDirectory() : "Resources";
 		m_CurrentPath = m_AssetsPath;
 
-		m_FolderIcon = AssetManager::LoadAsset<Texture2D>(Preferences::GetFolderIcon());
-		m_ScriptIcon = AssetManager::LoadAsset<Texture2D>(Preferences::GetScriptIcon());
-		m_MaterialIcon = AssetManager::LoadAsset<Texture2D>(Preferences::GetMaterialIcon());
-		m_FolderIconHandle = Renderer::AddImguiTexture(m_FolderIcon);
-		m_ScriptIconHandle = Renderer::AddImguiTexture(m_ScriptIcon);
-		m_MaterialIconHandle = Renderer::AddImguiTexture(m_MaterialIcon);
-
 		TrackingOptions options;
 		options.TrackingPath = m_AssetsPath;
 		options.Extensions = { ".asset", ".glsl", ".meta" };
@@ -161,16 +154,16 @@ namespace Odyssey
 			if (iter.is_directory())
 			{
 				m_FoldersToDisplay.push_back(iter.path());
-				m_FolderDrawers.push_back(SelectableInput(iter.path().filename().string(), m_FolderIconHandle));
+				m_FolderDrawers.push_back(SelectableInput(iter.path().filename().string(), ThumbnailManager::LoadThumbnail(Preferences::GetFolderIcon())));
 			}
 			else if (iter.is_regular_file())
 			{
-				const Path& extension = iter.path().extension();
+				const std::string& extension = iter.path().extension().string();
 				const std::vector<std::string>& assetExtensions = Preferences::GetAssetExtensions();
+				const std::vector<std::string>& sourceExtensions = Preferences::GetSourceExtensions();
 
-				// Validate the file has a valid asset extension
-				// TODO: For now special case scenes
-				if (extension == ".scene" || std::find(assetExtensions.begin(), assetExtensions.end(), extension) != assetExtensions.end())
+				// || Contains(sourceExtensions, extension.string()
+				if (extension == ".scene" || extension == ".cs" || Contains(assetExtensions, extension) || Contains(sourceExtensions, extension))
 				{
 					Path path = iter.path();
 					Path extension = path.extension();
@@ -178,16 +171,22 @@ namespace Odyssey
 					m_FilesToDisplay.push_back(path);
 
 					uint64_t icon = 0;
-					if (extension == ".cs")
-						icon = m_ScriptIconHandle;
-					else if (extension == ".mat")
-						icon = m_MaterialIconHandle;
-					else if (extension == ".tex2D")
-						icon = ThumbnailManager::LoadTexture(path);
-					else if (extension == ".mesh")
-						icon = ThumbnailManager::LoadTexture(Preferences::GetMeshIcon());
+					float aspectRatio = 1.0f;
 
-					m_AssetDrawers.push_back(SelectableInput(path.filename().replace_extension("").string(), icon));
+					if (extension == ".cs")
+						icon = ThumbnailManager::LoadThumbnail(Preferences::GetScriptIcon());
+					else if (extension == ".tex2D")
+						icon = ThumbnailManager::LoadThumbnail(path);
+					else if (extension == ".mat")
+						icon = ThumbnailManager::LoadThumbnail(Preferences::GetMaterialIcon());
+					else
+					{
+						icon = ThumbnailManager::LoadThumbnail(Preferences::GetAssetIcon());
+						Ref<Texture2D> texture = ThumbnailManager::GetTexture(icon);
+						aspectRatio = (float)texture->GetWidth() / (float)texture->GetHeight();
+					}
+
+					m_AssetDrawers.push_back(SelectableInput(path.filename().replace_extension("").string(), icon, aspectRatio));
 				}
 			}
 		}

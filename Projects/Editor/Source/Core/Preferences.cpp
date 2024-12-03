@@ -23,6 +23,7 @@ namespace Odyssey
 			root.ReadData("Editor Registry", registryPath);
 			root.ReadData("Folder Icon", m_FolderIcon.Ref());
 			root.ReadData("Script Icon", m_ScriptIcon.Ref());
+			root.ReadData("Asset Icon", m_AssetIcon.Ref());
 			root.ReadData("Material Icon", m_MaterialIcon.Ref());
 			root.ReadData("Mesh Icon", m_MeshIcon.Ref());
 			root.ReadData("Asset Extensions", m_AssetExtensions);
@@ -30,6 +31,11 @@ namespace Odyssey
 
 			m_StartupProject = startupProject;
 			m_EditorRegistry = registryPath;
+
+			for (auto& [extension, sourceType] : m_SourceExtensionsToType)
+			{
+				m_SourceExtensions.emplace_back(extension);
+			}
 		}
 	}
 
@@ -47,6 +53,7 @@ namespace Odyssey
 		root.WriteData("Editor Registry", m_EditorRegistry.string());
 		root.WriteData("Folder Icon", m_FolderIcon.CRef());
 		root.WriteData("Script Icon", m_ScriptIcon.CRef());
+		root.WriteData("Asset Icon", m_AssetIcon.CRef());
 		root.WriteData("Material Icon", m_MaterialIcon.CRef());
 		root.WriteData("Mesh Icon", m_MeshIcon.CRef());
 		root.WriteData("Asset Extensions", m_AssetExtensions);

@@ -44,7 +44,7 @@ namespace Odyssey
 			settings.AssetsDirectory = Project::GetActiveAssetsDirectory();
 			settings.AdditionalRegistries = { Preferences::GetEditorRegistry() };
 			settings.AssetExtensions = Preferences::GetAssetExtensions();
-			settings.SourceAssetExtensionMap = Preferences::GetSourceExtensions();
+			settings.SourceAssetExtensionMap = Preferences::GetSourceExtensionsMap();
 			AssetManager::CreateDatabase(settings);
 		}
 

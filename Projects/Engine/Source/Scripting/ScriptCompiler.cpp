@@ -128,6 +128,12 @@ namespace Odyssey
 		// Successful build
 		if (exitCode == 0)
 		{
+			Path scriptsFolder = m_Settings.UserScriptsProject.parent_path();
+			Path objFolder = scriptsFolder / "obj";
+
+			if (std::filesystem::exists(objFolder))
+				std::filesystem::remove_all(objFolder);
+
 			return true;
 		}
 		// Failed build

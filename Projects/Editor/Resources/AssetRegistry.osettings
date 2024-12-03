@@ -75,13 +75,13 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: Textures/Source/BlueprintBackground.png
     GUID: 901283857934219837
-  - Name: Script Default
+  - Name: Script Icon
     Type: Odyssey.Texture2D
-    Path: Textures/Script_Default.tex2D
+    Path: Textures/Script_Icon.tex2D
     GUID: 128378120928579883
-  - Name: Script Default
+  - Name: Script Icon
     Type: Odyssey.SourceTexture
-    Path: Textures/Source/Script_Default.png
+    Path: Textures/Source/Script_Icon.png
     GUID: 190283902178367422
   - Name: Material Default
     Type: Odyssey.Texture2D
@@ -95,7 +95,11 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Mesh_Icon.tex2D
     GUID: 192838772537861324
-  - Name: Mesh Icon
+  - Name: Asset Icon
+    Type: Odyssey.Texture2D
+    Path: Textures/Asset_Icon.tex2D
+    GUID: 128397192873168765
+  - Name: Asset Icon
     Type: Odyssey.SourceTexture
-    Path: Textures/Source/Mesh_Icon.png
-    GUID: 912839816784678614
+    Path: Textures/Source/Asset_Icon.png
+    GUID: 678512365782317894

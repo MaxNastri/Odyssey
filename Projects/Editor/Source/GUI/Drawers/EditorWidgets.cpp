@@ -171,10 +171,11 @@ namespace Odyssey
 		}
 	}
 
-	SelectableInput::SelectableInput(std::string_view text, uint64_t iconHandle)
+	SelectableInput::SelectableInput(std::string_view text, uint64_t iconHandle, float aspectRatio)
 	{
 		m_Text = text;
 		m_IconHandle = iconHandle;
+		m_AspectRatio = aspectRatio;
 		m_Text.copy(m_InputBuffer, ARRAYSIZE(m_InputBuffer));
 	}
 
@@ -198,11 +199,12 @@ namespace Odyssey
 			auto* window = ImGui::GetCurrentWindow();
 
 			float textHeight = ImGui::CalcTextSize(m_Text.c_str()).y;
+			float iconWidth = textHeight * m_AspectRatio;
 			float startPosX = ImGui::GetCursorPosX();
 
 			// Move the cursor along so we can draw the icon to the left of the selectable
 			if (m_IconHandle)
-				ImGui::SetCursorPosX(startPosX + textHeight + style.ItemSpacing.x);
+				ImGui::SetCursorPosX(startPosX + iconWidth + style.ItemSpacing.x);
 
 			const ImGuiSelectableFlags flags = ImGuiSelectableFlags_AllowDoubleClick |
 				ImGuiSelectableFlags_SpanAllColumns |
@@ -235,7 +237,7 @@ namespace Odyssey
 				// Move the cursor back to the left and draw the icon
 				ImGui::SameLine();
 				ImGui::SetCursorPosX(startPosX);
-				ImGui::Image((void*)m_IconHandle, float2(textHeight, textHeight));
+				ImGui::Image((void*)m_IconHandle, float2(iconWidth, textHeight));
 
 				// Check if the icon is hovered
 				hovered |= ImGui::IsItemHovered();
@@ -275,12 +277,20 @@ namespace Odyssey
 		return m_Result;
 	}
 
+	void SelectableInput::SetIcon(uint64_t iconHandle, float aspectRatio)
+	{
+		m_IconHandle = iconHandle;
+		m_AspectRatio = aspectRatio;
+	}
+
 	void SelectableInput::DrawInput()
 	{
 		if (m_IconHandle)
 		{
 			float textHeight = ImGui::CalcTextSize(m_Text.c_str()).y;
-			ImGui::Image((void*)m_IconHandle, float2(textHeight, textHeight));
+			float iconWidth = textHeight * m_AspectRatio;
+
+			ImGui::Image((void*)m_IconHandle, float2(iconWidth, textHeight));
 			ImGui::SameLine();
 		}
 
@@ -295,5 +305,12 @@ namespace Odyssey
 			m_ShowInput = false;
 			m_Result = Result::TextModified;
 		}
+	}
+
+	bool SearchWidget::Draw()
+	{
+		ImGui::PushID(this);
+
+		return false;
 	}
 }

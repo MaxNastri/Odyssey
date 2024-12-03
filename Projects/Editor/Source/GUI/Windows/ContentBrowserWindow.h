@@ -37,13 +37,6 @@ namespace Odyssey
 		std::vector<SelectableInput> m_FolderDrawers;
 		std::vector<SelectableInput> m_AssetDrawers;
 
-		Ref<Texture2D> m_FolderIcon;
-		Ref<Texture2D> m_ScriptIcon;
-		Ref<Texture2D> m_MaterialIcon;
-		uint64_t m_FolderIconHandle = 0;
-		uint64_t m_ScriptIconHandle = 0;
-		uint64_t m_MaterialIconHandle = 0;
-
 	private: // Context menu
 		bool m_ContextMenuOpen = false;
 	};
