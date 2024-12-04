@@ -1,0 +1,11 @@
+m_SourceAsset: 0
+m_GUID: 1485679445113041986
+m_Name: Default
+m_Type: Odyssey.AnimationBlueprint
+Properties: []
+Animation States:
+  - GUID: 1825717251040014146
+    Name: Cap
+    Clip: 10761971308510954515
+    Position: 'x: -244 y: -79'
+Animation Links: []

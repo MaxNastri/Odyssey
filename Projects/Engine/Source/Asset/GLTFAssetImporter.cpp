@@ -274,7 +274,6 @@ namespace Odyssey
 
 		m_MeshData.ObjectCount = 0;
 
-
 		TempNode* parent = nullptr;
 
 		for (auto node : scene.nodes)

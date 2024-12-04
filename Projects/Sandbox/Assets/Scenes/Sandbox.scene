@@ -5,7 +5,7 @@ Ambient Color: 'x: 0.1886121 y: 0.097326525 z: 0.097326525'
 GameObjects:
   - Sort Order: 0
     Prefab: 0
-    Name: Monk FBX
+    Name: Monk GLB
     GUID: 15322439001782158818
     Type: Odyssey.GameObject
     Components:
@@ -17,7 +17,7 @@ GameObjects:
         m_Mesh: 13511586946249507819
         m_Material: 942766181068811557
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: -0.15717334'
+        Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
@@ -79,12 +79,19 @@ GameObjects:
         Range: 1
   - Sort Order: 3
     Prefab: 0
-    Name: Example
+    Name: Monk FBX
     GUID: 17906546655285653478
     Type: Odyssey.GameObject
     Components:
+      - Type: Odyssey.Animator
+        Animation Rig: 11787023755999278324
+        Animation Blueprint: 1485679445113041986
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        m_Mesh: 2002632121797997546
+        m_Material: 942766181068811557
       - Type: Odyssey.Transform
-        Position: 'x: -2.1353767 y: 0 z: 0'
+        Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter

@@ -13,7 +13,6 @@
     <Optimize>false</Optimize>
     <OutputPath>..\..\Cache\Build\Binaries\</OutputPath>
     <IntermediateOutputPath>..\..\Cache\Build\Intermediates\Debug\</IntermediateOutputPath>
-    <BaseIntermediateOutputPath>..\..\Cache\Build\Intermediates\Debug\</BaseIntermediateOutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

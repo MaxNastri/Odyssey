@@ -261,9 +261,6 @@ namespace Odyssey
 
 	void AssetDatabase::AddRegistryAsset(GUID guid, const Path& path, const std::string& assetName, const std::string& assetType, bool sourceAsset)
 	{
-		if (guid == 1478857400269284978)
-			int d = 0;
-
 		if (!m_GUIDToMetadata.contains(guid))
 			m_GUIDToMetadata[guid] = AssetMetadata(path, assetName, assetType, sourceAsset);
 

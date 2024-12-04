@@ -6,6 +6,7 @@
 #include "Mesh.h"
 #include "AnimationRig.h"
 #include "AnimationClip.h"
+#include "FBXAssetImporter.h"
 
 namespace Odyssey
 {
@@ -36,6 +37,12 @@ namespace Odyssey
 		else if (ImGui::Button("Create Animation Clip"))
 		{
 			AssetManager::CreateAsset<AnimationClip>(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);
+		}
+		else if (ImGui::Button("Test FBX"))
+		{
+			FBXAssetImporter importer;
+			bool res = importer.Import(m_Model->GetPath());
+			int debug = 0;
 		}
 
 		return modified;
