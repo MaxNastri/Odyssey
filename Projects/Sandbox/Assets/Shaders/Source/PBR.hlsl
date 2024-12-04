@@ -18,6 +18,8 @@ struct VertexOutput
     float4 Color : COLOR0;
     float2 TexCoord0 : TEXCOORD0;
     float4 ViewPosition : POSITION1;
+    float4 BoneIndices : BLENDINDICES0;
+    float4 BoneWeights : BLENDWEIGHT0;
 };
 
 cbuffer SceneData : register(b0)
@@ -51,6 +53,9 @@ VertexOutput main(VertexInput input)
     output.Color = input.Color;
     output.TexCoord0 = input.TexCoord0;
     output.ViewPosition = ViewPos - worldPosition;
+    output.BoneWeights = input.BoneWeights;
+    output.BoneIndices = input.BoneIndices;
+    
     return output;
 }
 
@@ -66,6 +71,8 @@ struct PixelInput
     float3 Tangent : TANGENT;
     float4 Color : COLOR0;
     float2 TexCoord0 : TEXCOORD0;
+    float4 BoneIndices : BLENDINDICES0;
+    float4 BoneWeights : BLENDWEIGHT0;
 };
 
 struct Light

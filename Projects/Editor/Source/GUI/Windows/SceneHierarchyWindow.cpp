@@ -117,11 +117,11 @@ namespace Odyssey
 		open = ImGui::TreeNodeEx(id, nodeFlags, gameObject.GetName().c_str());
 
 		if (ImGui::IsItemHovered())
-			m_Interactions.push_back({ InteractionType::Hovered, &gameObject });
+			m_Interactions.push_back({ InteractionType::Hovered, gameObject.GetGUID() });
 
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 		{
-			m_Interactions.push_back({ InteractionType::Selection, &gameObject });
+			m_Interactions.push_back({ InteractionType::Selection, gameObject.GetGUID()});
 			m_Selected = gameObject;
 		}
 
@@ -142,11 +142,13 @@ namespace Odyssey
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
 			{
 				// Register a drag and drop interaction
-				Interaction<GameObject> interaction;
+				Interaction<GUID>& interaction = m_Interactions.emplace_back();
 				interaction.Type = InteractionType::DragAndDropTarget;
-				interaction.Target = &gameObject;
-				RawBuffer::Copy(interaction.Data, payload->Data, payload->DataSize);
-				m_Interactions.push_back(interaction);
+				interaction.Target = gameObject.GetGUID();
+				uint64_t* data = (uint64_t*)payload->Data;
+				GUID guid = GUID(*data);
+				interaction.Data.Allocate(sizeof(GUID));
+				interaction.Data.Write(&guid);
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -189,7 +191,6 @@ namespace Odyssey
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Entity"))
 			{
-
 				GUID guid = *((GUID*)payload->Data);
 				GameObject gameObject = m_Scene->GetGameObject(guid);
 				if (gameObject.GetParent().IsValid())
@@ -209,7 +210,7 @@ namespace Odyssey
 					// Dispatch an event with the game object's guid
 					GUISelection selection;
 					selection.Type = GameObject::Type;
-					selection.GUID = interaction.Target->GetGUID();
+					selection.GUID = interaction.Target;
 					EventSystem::Dispatch<GUISelectionChangedEvent>(selection);
 					break;
 				}
@@ -217,7 +218,8 @@ namespace Odyssey
 				{
 					GUID guid = interaction.Data.Read<GUID>();
 					GameObject gameObject = m_Scene->GetGameObject(guid);
-					gameObject.SetParent(*interaction.Target);
+					GameObject target = m_Scene->GetGameObject(interaction.Target);
+					gameObject.SetParent(target);
 					break;
 				}
 				default:

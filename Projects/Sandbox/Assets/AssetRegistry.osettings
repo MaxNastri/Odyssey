@@ -531,3 +531,7 @@ Entries:
     Type: Odyssey.SourceShader
     Path: Shaders/Source/PBR_Skinned.hlsl
     GUID: 456787683416587321
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/tower.mesh
+    GUID: 6195154431227879032

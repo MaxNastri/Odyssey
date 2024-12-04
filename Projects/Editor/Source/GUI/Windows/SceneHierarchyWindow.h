@@ -30,7 +30,7 @@ namespace Odyssey
 
 	private:
 		Scene* m_Scene;
-		std::vector<Interaction<GameObject>> m_Interactions;
+		std::vector<Interaction<GUID>> m_Interactions;
 		bool m_ContextMenuOpen = false;
 		Ref<IEventListener> m_SceneLoadedListener;
 		GameObject m_Selected;

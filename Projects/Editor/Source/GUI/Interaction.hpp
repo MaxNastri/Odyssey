@@ -19,10 +19,10 @@ namespace Odyssey
 	{
 	public:
 		InteractionType Type = InteractionType::None;
-		T* Target;
+		T Target;
 		RawBuffer Data;
 
-		void Set(InteractionType type, T* target)
+		void Set(InteractionType type, T target)
 		{
 			Type = type;
 			Target = target;
