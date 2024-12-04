@@ -249,6 +249,8 @@ namespace Odyssey
 			{
 				glm::vec3 yaw = vec3(0, 1, 0) * mouseH * (1.0f / 144.0f) * 15.0f;
 				glm::vec3 pitch = vec3(1, 0, 0) * mouseV * (1.0f / 144.0f) * 15.0f;
+				yaw.z = 0.0f;
+				pitch.z = 0.0f;
 
 				transform->AddRotation(yaw);
 				transform->AddRotation(pitch);

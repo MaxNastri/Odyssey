@@ -249,6 +249,7 @@ namespace Odyssey
 		VulkanPipelineInfo info;
 		info.Shaders = material->GetShader()->GetResourceMap();
 		info.DescriptorLayout = descriptorLayout;
+		info.CullMode = CullMode::Back;
 
 		Shaders = info.Shaders;
 		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);

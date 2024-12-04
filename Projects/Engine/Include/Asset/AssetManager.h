@@ -47,9 +47,10 @@ namespace Odyssey
 			GUID guid = GUID::New();
 			Ref<T> asset = new T(assetPath, std::forward<Args>(params)...);
 
+			
 			// Set asset data
 			asset->m_GUID = guid;
-			asset->SetName("Default");
+			asset->SetName(assetPath.filename().replace_extension("").string());
 			asset->m_Type = T::Type;
 
 			// Save to disk

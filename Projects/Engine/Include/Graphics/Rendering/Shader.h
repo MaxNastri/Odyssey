@@ -3,6 +3,7 @@
 #include "Asset.h"
 #include "Resource.h"
 #include "BinaryBuffer.h"
+#include "SourceShader.h"
 
 namespace Odyssey
 {
@@ -42,6 +43,8 @@ namespace Odyssey
 			BinaryBuffer CodeBuffer;
 			ResourceID ShaderModule;
 		};
+		
 		std::map<ShaderType, ShaderData> m_Shaders;
+		Ref<SourceShader> m_Source;
 	};
 }

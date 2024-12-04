@@ -113,6 +113,7 @@ namespace Odyssey
 		info.Shaders = m_Shader->GetResourceMap();
 		info.DescriptorLayout = m_DescriptorLayout;
 		info.WriteDepth = false;
+		info.CullMode = CullMode::None;
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		m_PushDescriptors = new VulkanPushDescriptors();

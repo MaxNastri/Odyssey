@@ -38,22 +38,12 @@ cbuffer SkinningData : register(b2)
     float4x4 Bones[128];
 }
 
-struct SkinningOutput
-{
-    float4 Position;
-    float4 Normal;
-};
-
-// Forward declarations
-SkinningOutput SkinVertex(VertexInput input);
-
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
     
-    SkinningOutput skinning = SkinVertex(input);
-    float4 worldPosition = mul(Model, skinning.Position);
-    float4 normal = float4(normalize(skinning.Normal.xyz), 0.0f);
+    float4 worldPosition = mul(Model, float4(input.Position, 1.0f));
+    float4 normal = float4(normalize(input.Normal.xyz), 0.0f);
     
     output.Position = mul(ViewProjection, worldPosition);
     output.Normal = normalize(mul(Model, normal).xyz);
@@ -61,23 +51,6 @@ VertexOutput main(VertexInput input)
     output.Color = input.Color;
     output.TexCoord0 = input.TexCoord0;
     output.ViewPosition = ViewPos - worldPosition;
-    return output;
-}
-
-SkinningOutput SkinVertex(VertexInput input)
-{
-    SkinningOutput output;
-    output.Position = float4(0, 0, 0, 1);
-    output.Normal = float4(0, 0, 0, 1);
-    float4 vertexPosition = float4(input.Position, 1.0f);
-    float4 vertexNormal = float4(input.Normal, 0.0f);
-    
-    for (int i = 0; i < 4; i++)
-    {
-        output.Position += mul(Bones[input.BoneIndices[i]], vertexPosition) * input.BoneWeights[i];
-        output.Normal += mul(Bones[input.BoneIndices[i]], vertexNormal) * input.BoneWeights[i];
-    }
-    
     return output;
 }
 

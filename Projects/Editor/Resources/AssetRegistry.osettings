@@ -23,6 +23,14 @@ Entries:
     Type: Odyssey.Mesh
     Path: Meshes/Cube.mesh
     GUID: 4325336624522892849
+  - Name: Plane
+    Type: Odyssey.SourceModel
+    Path: Meshes/Source/Plane.glb
+    GUID: 21283897786241326734
+  - Name: Plane
+    Type: Odyssey.Mesh
+    Path: Meshes/Plane.mesh
+    GUID: 3098132783127681236
   - Name: Particle Render
     Type: Odyssey.Shader
     Path: Shaders/ParticleRender.shader

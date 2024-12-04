@@ -138,8 +138,8 @@ namespace Odyssey
 			size_t vertCount = ufbx_generate_indices(streams, 1, indices.data(), indices.size(), nullptr, nullptr);
 			vertices.resize(vertCount);
 
-			meshData.VertexLists[submeshIdx] = vertices;
-			meshData.IndexLists[submeshIdx] = indices;
+			meshData.VertexLists.push_back(vertices);
+			meshData.IndexLists.push_back(indices);
 			submeshIdx++;
 		}
 	}
@@ -397,20 +397,17 @@ namespace Odyssey
 
 		ufbx_skin_deformer* skin = scene->skin_deformers.count > 0 ? scene->skin_deformers[0] : nullptr;
 
+		if (skin)
+			LoadRig(skin, m_RigData);
+
 		// The scene is fully loaded, start parsing
 		for (ufbx_mesh* mesh : scene->meshes)
 		{
-			m_MeshData.VertexLists.resize(mesh->materials.count);
-			m_MeshData.IndexLists.resize(mesh->materials.count);
-
-			if (skin)
-				LoadRig(skin, m_RigData);
-
 			LoadMesh(mesh, skin, m_MeshData);
-
-			if (scene->anim_stacks.count > 0)
-				LoadAnimationClip(scene, scene->anim_stacks[0], m_AnimationData);
 		}
+
+		if (scene->anim_stacks.count > 0 && scene->skin_deformers.count > 0)
+			LoadAnimationClip(scene, scene->anim_stacks[0], m_AnimationData);
 
 		return true;
 	}

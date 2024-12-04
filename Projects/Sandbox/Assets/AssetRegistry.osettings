@@ -3,14 +3,18 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Monk_CCC.tex2D
     GUID: 379771950876182716
-  - Name: PBR
+  - Name: PBR Skinned
     Type: Odyssey.Material
-    Path: Materials/PBR.mat
+    Path: Materials/PBR_Skinned.mat
     GUID: 942766181068811557
   - Name: PBR
     Type: Odyssey.Shader
     Path: Shaders/PBR.asset
     GUID: 9634657926911688453
+  - Name: PBR Skinned
+    Type: Odyssey.Shader
+    Path: Shaders/PBR_Skinned.asset
+    GUID: 6712367376531468719
   - Name: Molten
     Type: Odyssey.Cubemap
     Path: Textures/Skybox/Molten.asset
@@ -23,10 +27,6 @@ Entries:
     Type: Odyssey.SourceModel
     Path: Models/Monk.gltf
     GUID: 3270948376729727283
-  - Name: PBR
-    Type: Odyssey.SourceShader
-    Path: Shaders/Source/PBR.hlsl
-    GUID: 8792030590727510300
   - Name: Kachujin_diffuse
     Type: Odyssey.SourceTexture
     Path: Textures/Source/Kachujin_diffuse.png
@@ -60,14 +60,6 @@ Entries:
     Path: 'Animation/Idle-Clip.asset'
     GUID: 6316788137749762478
   - Name: Barrel
-    Type: Odyssey.SourceModel
-    Path: Models/Barrel.glb
-    GUID: 14189596733765247754
-  - Name: Barrel
-    Type: Odyssey.Mesh
-    Path: Meshes/Barrel.mesh
-    GUID: 13004314950757685951
-  - Name: Barrel
     Type: Odyssey.SourceTexture
     Path: Textures/Source/Barrel.png
     GUID: 17265819042437453023
@@ -99,3 +91,443 @@ Entries:
     Type: Odyssey.Mesh
     Path: 'Meshes/Monk-FBX.mesh'
     GUID: 2002632121797997546
+  - Name: barrel
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/barrel.fbx
+    GUID: 6697807878966639888
+  - Name: boat_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/boat_1.fbx
+    GUID: 15895578380992121396
+  - Name: boat_2
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/boat_2.fbx
+    GUID: 3936583775039728077
+  - Name: bottle
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/bottle.fbx
+    GUID: 1505163422331455526
+  - Name: brick_column_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/brick_column_1.fbx
+    GUID: 7544721479550141875
+  - Name: brick_tree_base
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/brick_tree_base.fbx
+    GUID: 7452501056582634648
+  - Name: brick_wall_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/brick_wall_1.fbx
+    GUID: 3200073943202836380
+  - Name: building_segment_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/building_segment_1.fbx
+    GUID: 11524252329674437893
+  - Name: building_segment_2
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/building_segment_2.fbx
+    GUID: 14507565224103359341
+  - Name: building_segment_3
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/building_segment_3.fbx
+    GUID: 14514824848643490228
+  - Name: building_segment_4
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/building_segment_4.fbx
+    GUID: 10158085114735832413
+  - Name: building_segment_5
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/building_segment_5.fbx
+    GUID: 12892740246413602381
+  - Name: building_segment_6
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/building_segment_6.fbx
+    GUID: 5549872946586648197
+  - Name: chair
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/chair.fbx
+    GUID: 12350115615287771360
+  - Name: circular_table
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/circular_table.fbx
+    GUID: 18417374488323583760
+  - Name: crate_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/crate_1.fbx
+    GUID: 8345855407805877299
+  - Name: crate_2
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/crate_2.fbx
+    GUID: 18091711225406732363
+  - Name: dock_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/dock_1.fbx
+    GUID: 11866338615285721091
+  - Name: dock_2
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/dock_2.fbx
+    GUID: 6470179552527121521
+  - Name: fence_gate
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/fence_gate.fbx
+    GUID: 10011603952648976519
+  - Name: fence_segment_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/fence_segment_1.fbx
+    GUID: 16705475008107356280
+  - Name: fence_segment_2
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/fence_segment_2.fbx
+    GUID: 15520216174289986483
+  - Name: fireplace
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/fireplace.fbx
+    GUID: 3287990183228807333
+  - Name: hammer
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/hammer.fbx
+    GUID: 8656571511257283233
+  - Name: ladder_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/ladder_1.fbx
+    GUID: 6889505285965712512
+  - Name: lamp_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/lamp_1.fbx
+    GUID: 12088598329735082630
+  - Name: log_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/log_1.fbx
+    GUID: 78221291808738437
+  - Name: Old Sea Port_Tree
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Old Sea Port_Tree.fbx
+    GUID: 3440576502582530246
+  - Name: plank_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/plank_1.fbx
+    GUID: 15559712032899594527
+  - Name: post_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/post_1.fbx
+    GUID: 1719934630690728102
+  - Name: post_2
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/post_2.fbx
+    GUID: 17626067347878137064
+  - Name: rope_3
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/rope_3.fbx
+    GUID: 295988467676343552
+  - Name: stairs_wood_spiral
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/stairs_wood_spiral.fbx
+    GUID: 3545463695817715555
+  - Name: tower
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/tower.fbx
+    GUID: 2194157898223389419
+  - Name: tower_extension
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/tower_extension.fbx
+    GUID: 7722067301664529272
+  - Name: tower_short
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/tower_short.fbx
+    GUID: 9405452102448402126
+  - Name: Wood Canopy
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Wood Canopy.fbx
+    GUID: 4382853674692084741
+  - Name: workbench
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/workbench.fbx
+    GUID: 8296605053930543633
+  - Name: Barrel
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/barrel.mesh
+    GUID: 16763106103384214741
+  - Name: Boat 1
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/boat_1.mesh
+    GUID: 5597837198141586254
+  - Name: Boat 2
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/boat_2.mesh
+    GUID: 4346537307143043408
+  - Name: Bottle
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/bottle.mesh
+    GUID: 4172400646928810766
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/brick_column_1.mesh
+    GUID: 8958058890886565394
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/brick_tree_base.mesh
+    GUID: 5606148609726903610
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/brick_wall_1.mesh
+    GUID: 13820031340072242801
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/building_segment_1.mesh
+    GUID: 3549250334322316995
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/brick_tree_base.mesh
+    GUID: 16994709111569517170
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/brick_wall_1.mesh
+    GUID: 8119167279744050967
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/building_segment_1.mesh
+    GUID: 3020176742771563421
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/building_segment_2.mesh
+    GUID: 3337681921251472171
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/building_segment_3.mesh
+    GUID: 7342128999157480002
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/building_segment_4.mesh
+    GUID: 18432676635204201043
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/building_segment_5.mesh
+    GUID: 8403765498396048830
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/building_segment_6.mesh
+    GUID: 14193610063533704545
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/chair.mesh
+    GUID: 17595839205806975406
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/circular_table.mesh
+    GUID: 2975569417507807520
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/crate_1.mesh
+    GUID: 14168050247499179552
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/crate_2.mesh
+    GUID: 12664318203516942931
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/dock_1.mesh
+    GUID: 9131470353860217323
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/dock_2.mesh
+    GUID: 17865444670514799942
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/fence_gate.mesh
+    GUID: 15857860595286838697
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/fence_segment_1.mesh
+    GUID: 16960106126103840786
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/fence_segment_2.mesh
+    GUID: 17256605676268040196
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/fireplace.mesh
+    GUID: 15580852852506549302
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/hammer.mesh
+    GUID: 1165359848942748068
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/ladder_1.mesh
+    GUID: 15895499751014200382
+  - Name: Bark_Grey
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Bark_Grey.png
+    GUID: 14873638940177206924
+  - Name: Bark_Grey_3
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Bark_Grey_3.png
+    GUID: 6308003995220731616
+  - Name: Bark_Grey_4
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Bark_Grey_4.png
+    GUID: 16358903782506005718
+  - Name: Bark_Grey_Metallic 2
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Bark_Grey_Metallic 2.png
+    GUID: 4703406622097085829
+  - Name: Bark_Grey_Metallic
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Bark_Grey_Metallic.png
+    GUID: 8720706943531555490
+  - Name: Bark_Grey_normal
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Bark_Grey_normal.png
+    GUID: 7421304969651008267
+  - Name: Barrel
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Barrel.png
+    GUID: 14008545872619181569
+  - Name: Barrel_Metallic 2
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Barrel_Metallic 2.png
+    GUID: 17575796715107731868
+  - Name: Barrel_Metallic
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Barrel_Metallic.png
+    GUID: 6081522791354670120
+  - Name: Barrel_Normal
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Barrel_Normal.png
+    GUID: 2905906928398555917
+  - Name: branch_maple
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/branch_maple.png
+    GUID: 5522678738301007157
+  - Name: branch_maple_translucency
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/branch_maple_translucency.png
+    GUID: 15233955174811405080
+  - Name: Brick_wall_1
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Brick_wall_1.png
+    GUID: 11675155160747172334
+  - Name: Brick_Wall_Metallic 2
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Brick_Wall_Metallic 2.png
+    GUID: 14722928769084756807
+  - Name: Brick_Wall_Metallic
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Brick_Wall_Metallic.png
+    GUID: 13062110182627180
+  - Name: Brick_wall_normal
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Brick_wall_normal.png
+    GUID: 17421355771922369773
+  - Name: Brick_Wall_Occlusion
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Brick_Wall_Occlusion.png
+    GUID: 14856253756871452204
+  - Name: Canvas
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Canvas.png
+    GUID: 14994818698319560697
+  - Name: Canvas_Normal
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Canvas_Normal.png
+    GUID: 3238801197377261160
+  - Name: Cobblestone
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Cobblestone.png
+    GUID: 18241419599601750131
+  - Name: Cobblestone_Metallic
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Cobblestone_Metallic.png
+    GUID: 17151116395899189519
+  - Name: Cobblestone_Occlusion
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Cobblestone_Occlusion.png
+    GUID: 6805702243427034543
+  - Name: dirt_1
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/dirt_1.png
+    GUID: 8329877153407376478
+  - Name: dirt_1_specular
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/dirt_1_specular.png
+    GUID: 6801654684519892540
+  - Name: fence_1
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/fence_1.png
+    GUID: 6342744075675473169
+  - Name: Generic_Metal_1
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Generic_Metal_1.png
+    GUID: 11444392246208880346
+  - Name: Generic_Metal_3
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Generic_Metal_3.png
+    GUID: 9563086118895982756
+  - Name: lamp_1
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/lamp_1.png
+    GUID: 17035051997505527263
+  - Name: Log_End_1
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Log_End_1.png
+    GUID: 16120907009200683367
+  - Name: Log_End_2
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Log_End_2.png
+    GUID: 261690620502372130
+  - Name: Log_End_Occlusion
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Log_End_Occlusion.png
+    GUID: 4443789130507556915
+  - Name: planks_1
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/planks_1.png
+    GUID: 4859008186911108191
+  - Name: planks_1_Metallic 2
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/planks_1_Metallic 2.png
+    GUID: 16239596983405199178
+  - Name: planks_1_Metallic
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/planks_1_Metallic.png
+    GUID: 7996042507723238920
+  - Name: planks_1_normal
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/planks_1_normal.png
+    GUID: 18330120249464288946
+  - Name: Rooftiles
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Rooftiles.png
+    GUID: 4055231237196058648
+  - Name: Rooftiles_Metallic
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Rooftiles_Metallic.png
+    GUID: 14289217336352749965
+  - Name: Rooftiles_normal
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/Rooftiles_normal.png
+    GUID: 17474837630510055190
+  - Name: rope
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/rope.png
+    GUID: 11525443447151451655
+  - Name: rope_normal
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/rope_normal.png
+    GUID: 12324364403963501042
+  - Name: Brick_Wall_1
+    Type: Odyssey.Material
+    Path: Materials/Brick_Wall_1.mat
+    GUID: 14770402574313958026
+  - Name: Default
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Brick_wall_1.tex2d
+    GUID: 5210788529713619104
+  - Name: PBR
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/PBR.hlsl
+    GUID: 8792030590727510300
+  - Name: PBR Skinned
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/PBR_Skinned.hlsl
+    GUID: 456787683416587321

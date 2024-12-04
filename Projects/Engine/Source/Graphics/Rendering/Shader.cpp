@@ -10,10 +10,10 @@ namespace Odyssey
 	Shader::Shader(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		if (Ref<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
+		if (m_Source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
 		{
-			source->AddOnModifiedListener([this]() { OnSourceModified(); });
-			LoadFromSource(source);
+			m_Source->AddOnModifiedListener([this]() { OnSourceModified(); });
+			LoadFromSource(m_Source);
 		}
 
 		for (auto& [shaderType, shaderData] : m_Shaders)
@@ -24,7 +24,7 @@ namespace Odyssey
 	}
 
 	Shader::Shader(const Path& assetPath, Ref<SourceShader> source)
-		: Asset(assetPath)
+		: Asset(assetPath), m_Source(source)
 	{
 		std::vector<ShaderType> shaderTypes = source->GetShaderTypes();
 		for (ShaderType shaderType : shaderTypes)
@@ -43,15 +43,15 @@ namespace Odyssey
 
 	void Shader::Recompile()
 	{
-		if (Ref<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
+		if (m_Source)
 		{
-			auto shaderTypes = source->GetShaderTypes();
+			auto shaderTypes = m_Source->GetShaderTypes();
 			for (auto shaderType : shaderTypes)
 			{
 				BinaryBuffer tempBuffer;
 				auto& shaderData = m_Shaders[shaderType];
 
-				if (source->Compile(shaderType, tempBuffer))
+				if (m_Source->Compile(shaderType, tempBuffer))
 				{
 					shaderData.CodeBuffer = tempBuffer;
 
@@ -71,8 +71,8 @@ namespace Odyssey
 
 	void Shader::Load()
 	{
-		if (Ref<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
-			LoadFromSource(source);
+		if (m_Source)
+			LoadFromSource(m_Source);
 	}
 
 	std::map<ShaderType, ResourceID> Shader::GetResourceMap()
@@ -124,7 +124,7 @@ namespace Odyssey
 
 	void Shader::OnSourceModified()
 	{
-		if (Ref<SourceShader> source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
-			LoadFromSource(source);
+		if (m_Source)
+			LoadFromSource(m_Source);
 	}
 }
