@@ -75,11 +75,7 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Barrel_Albedo.tex2D
     GUID: 15566671228588070251
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Barrel.mesh
-    GUID: 7897092920170469954
   - Name: Barrel
     Type: Odyssey.Material
-    Path: Materials/Material.mat
+    Path: Materials/Barrel.mat
     GUID: 1478857400269284978

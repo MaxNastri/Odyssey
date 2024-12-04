@@ -33,28 +33,35 @@ namespace Odyssey
 
 		modified |= m_GUIDDrawer.Draw();
 
-		if (modified |= m_NameDrawer.Draw())
+		if (m_NameDrawer.Draw())
 		{
-			m_Material->SetName(m_NameDrawer.GetValue());
 			m_Dirty = true;
+			modified = true;
 		}
 
-		if (modified |= m_ShaderDrawer.Draw())
+		if (m_ShaderDrawer.Draw())
 		{
+			m_Dirty = true;
+			modified = true;
+
 			if (auto shader = AssetManager::LoadAsset<Shader>(m_ShaderDrawer.GetGUID()))
 				m_Material->SetShader(shader);
-			m_Dirty = true;
 		}
 
-		if (modified |= m_TextureDrawer.Draw())
+		if (m_TextureDrawer.Draw())
 		{
+			m_Dirty = true;
+			modified = true;
+
 			if (auto texture = AssetManager::LoadAsset<Texture2D>(m_TextureDrawer.GetGUID()))
 				m_Material->SetTexture(texture);
-			m_Dirty = true;
 		}
 
 		if (m_Dirty && ImGui::Button("Save"))
 		{
+			if (m_Material->GetName() != m_NameDrawer.GetValue())
+				m_Material->SetName(m_NameDrawer.GetValue());
+			
 			m_Material->Save();
 			m_Dirty = false;
 		}

@@ -46,11 +46,17 @@ namespace Odyssey
 
 	void MeshRenderer::SetMesh(GUID meshGUID)
 	{
-		m_Mesh = AssetManager::LoadAsset<Mesh>(meshGUID);
+		if (meshGUID)
+			m_Mesh = AssetManager::LoadAsset<Mesh>(meshGUID);
+		else
+			m_Mesh.Reset();
 	}
 
 	void MeshRenderer::SetMaterial(GUID materialGUID)
 	{
-		m_Material = AssetManager::LoadAsset<Material>(materialGUID);
+		if (materialGUID)
+			m_Material = AssetManager::LoadAsset<Material>(materialGUID);
+		else
+			m_Material.Reset();
 	}
 }
