@@ -7,10 +7,10 @@
 
 namespace Odyssey
 {
-	VulkanFrame::VulkanFrame(std::shared_ptr<VulkanContext> context, ResourceID renderTargetID, VkFormat format)
+	VulkanFrame::VulkanFrame(std::shared_ptr<VulkanContext> context, ResourceID colorTexture, VkFormat format)
 	{
 		m_Context = context;
-		m_RenderTexture = renderTargetID;
+		m_FrameTexture = colorTexture;
 
 		CreateFence();
 		CreateSempaphores();
@@ -29,9 +29,9 @@ namespace Odyssey
 		renderCompleteSemaphore = VK_NULL_HANDLE;
 	}
 
-	void VulkanFrame::SetRenderTarget(ResourceID renderTargetID, uint32_t imageIndex)
+	void VulkanFrame::SetColorTexture(ResourceID colorTexture, uint32_t imageIndex)
 	{
-		m_RenderTexture = renderTargetID;
+		m_FrameTexture = colorTexture;
 		m_ImageIndex = imageIndex;
 	}
 

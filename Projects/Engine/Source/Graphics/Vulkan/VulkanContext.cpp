@@ -22,6 +22,7 @@ namespace Odyssey
 
 		physicalDevice = std::make_shared<VulkanPhysicalDevice>(instance);
 		logicalDevice = std::make_shared<VulkanDevice>(physicalDevice.get());
+		GetSupportedMSAA();
 	}
 
 	void VulkanContext::Destroy()
@@ -147,6 +148,28 @@ namespace Odyssey
 		{
 			Log::Error("(context 3)");
 		}
+	}
+
+	void VulkanContext::GetSupportedMSAA()
+	{
+		VkPhysicalDeviceProperties properties;
+		vkGetPhysicalDeviceProperties(physicalDevice->GetPhysicalDevice(), &properties);
+
+		VkSampleCountFlags count = properties.limits.framebufferColorSampleCounts &
+			properties.limits.framebufferDepthSampleCounts;
+
+		if (count & VK_SAMPLE_COUNT_64_BIT)
+			m_SampleCount = 64;
+		else if (count & VK_SAMPLE_COUNT_32_BIT)
+				m_SampleCount = 32;
+		else if (count & VK_SAMPLE_COUNT_16_BIT)
+			m_SampleCount = 16;
+		else if (count & VK_SAMPLE_COUNT_8_BIT)
+			m_SampleCount = 8;
+		else if (count & VK_SAMPLE_COUNT_4_BIT)
+			m_SampleCount = 4;
+		else if (count & VK_SAMPLE_COUNT_2_BIT)
+			m_SampleCount = 2;
 	}
 
 	bool VulkanContext::IsExtensionAvailable(std::vector<VkExtensionProperties>& properties, const char* extension)
