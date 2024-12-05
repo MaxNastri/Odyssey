@@ -84,7 +84,7 @@ namespace Odyssey
 			Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
 
 			// Load and return the asset
-			return new T(assetPath);
+			return Ref<T>(new T(assetPath));
 		}
 
 		template<typename T>

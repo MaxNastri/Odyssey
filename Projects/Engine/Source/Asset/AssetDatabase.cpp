@@ -23,12 +23,11 @@ namespace Odyssey
 		}
 
 		// Create a file tracker based on the search options so we can detect any file changes
-		TrackingOptions options;
-		options.TrackingPath = searchOptions.Root;
+		FolderTracker::Options options;
 		options.Extensions = supportedExtensions;
 		options.Recursive = true;
 		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnFileAction(oldPath, newPath, fileAction); };
-		m_FileTracker = std::make_unique<FileTracker>(options);
+		m_TrackingID = FileManager::Get().TrackFolder(searchOptions.Root, options);
 
 		AddRegistry(projectRegistry);
 

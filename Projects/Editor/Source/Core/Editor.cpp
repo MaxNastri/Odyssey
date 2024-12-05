@@ -1,5 +1,4 @@
 #include "Editor.h"
-#include "FileTracker.h"
 #include "AssetManager.h"
 #include "ScriptingManager.h"
 #include "GUIManager.h"
@@ -15,6 +14,7 @@
 #include "AssetRegistry.h"
 #include "ParticleBatcher.h"
 #include "Preferences.h"
+#include "FileManager.h"
 
 namespace Odyssey
 {
@@ -24,7 +24,7 @@ namespace Odyssey
 		// With native debugging enabled, our breakpoints wont work before we init scripting
 		ScriptingManager::Initialize();
 		Random::Initialize();
-		FileTracker::Init();
+		FileManager::Init();
 
 		// Register for event listeners
 		m_BuildCompleteListener = EventSystem::Listen<BuildCompleteEvent>
@@ -97,7 +97,8 @@ namespace Odyssey
 			{
 				m_TimeSinceLastUpdate = 0.0f;
 
-				FileTracker::Dispatch();
+				FileManager::Get().Dispatch();
+
 				// Process any changes made to the user's managed dll
 				m_ScriptCompiler->Process();
 				DebugRenderer::Clear();

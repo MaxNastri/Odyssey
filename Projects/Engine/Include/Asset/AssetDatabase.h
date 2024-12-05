@@ -1,6 +1,6 @@
 #pragma once
 #include "GUID.h"
-#include "FileTracker.h"
+#include "FileManager.h"
 #include "AssetRegistry.h"
 
 namespace Odyssey
@@ -60,7 +60,7 @@ namespace Odyssey
 		void OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction);
 
 	protected:
-		std::unique_ptr<FileTracker> m_FileTracker;
+		TrackingID m_TrackingID;
 		SearchOptions m_SearchOptions;
 		AssetRegistry& m_ProjectRegistry;
 

@@ -20,13 +20,12 @@ namespace Odyssey
 		// Keep the user assemblies directory up to date with our latest coral and framework dlls
 		std::filesystem::copy(SCRIPTS_RESOURCES_DIRECTORY, m_UserAssembliesDirectory, std::filesystem::copy_options::overwrite_existing);
 
-		TrackingOptions options;
-		options.TrackingPath = m_Settings.UserScriptsDirectory;
+		FolderTracker::Options options;
 		options.Extensions = { ".cs" };
 		options.Recursive = true;
 		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction)
 			{ OnFileAction(oldPath, newPath, fileAction); };
-		m_FileTracker = std::make_unique<FileTracker>(options);
+		m_TrackingID = FileManager::Get().TrackFolder(m_Settings.UserScriptsDirectory, options);
 	}
 
 	bool ScriptCompiler::BuildUserAssembly()

@@ -2,7 +2,7 @@
 #include "Ref.h"
 #include "Asset.h"
 #include "AssetSerializer.h"
-#include "FileTracker.h"
+#include "FileManager.h"
 
 namespace Odyssey
 {
@@ -20,6 +20,7 @@ namespace Odyssey
 	public:
 		AssetRegistry() = default;
 		AssetRegistry(const Path& registryPath);
+		~AssetRegistry();
 
 	public:
 		void AddAsset(const std::string& name, const std::string& type, const Path& path, GUID guid);
@@ -40,6 +41,6 @@ namespace Odyssey
 		Path RootDirectory;
 		Path RegistryPath;
 		std::vector<AssetEntry> Entries;
-		Ref<FileTracker> m_Tracker;
+		TrackingID m_TrackingID;
 	};
 }

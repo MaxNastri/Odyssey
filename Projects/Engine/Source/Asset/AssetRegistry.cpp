@@ -8,12 +8,16 @@ namespace Odyssey
 		RootDirectory = RegistryPath.parent_path();
 		Load();
 
-		TrackingOptions options;
-		options.TrackingPath = RootDirectory;
+		FolderTracker::Options options;
 		options.Extensions = { };
 		options.Recursive = true;
 		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnFileAction(oldPath, newPath, fileAction); };
-		m_Tracker = new FileTracker(options);
+		m_TrackingID = FileManager::Get().TrackFolder(RootDirectory, options);
+	}
+
+	AssetRegistry::~AssetRegistry()
+	{
+		FileManager::Get().UntrackFolder(m_TrackingID);
 	}
 
 	void AssetRegistry::AddAsset(const std::string& name, const std::string& type, const Path& path, GUID guid)

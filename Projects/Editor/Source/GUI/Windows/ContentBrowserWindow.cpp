@@ -22,14 +22,13 @@ namespace Odyssey
 		m_AssetsPath = windowID % 2 == 0 ? Project::GetActiveAssetsDirectory() : "Resources";
 		m_CurrentPath = m_AssetsPath;
 
-		TrackingOptions options;
-		options.TrackingPath = m_AssetsPath;
+		FolderTracker::Options options;
 		options.Extensions = { ".asset", ".glsl", ".meta" };
 		options.Recursive = true;
 		options.IncludeDirectoryChanges = true;
 		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction)
 			{ OnFileAction(oldPath, newPath, fileAction); };
-		m_FileTracker = std::make_unique<FileTracker>(options);
+		m_FileTrackingID = FileManager::Get().TrackFolder(m_AssetsPath, options);
 
 		UpdatePaths();
 	}
@@ -38,6 +37,7 @@ namespace Odyssey
 	{
 		m_FoldersToDisplay.clear();
 		m_FilesToDisplay.clear();
+		FileManager::Get().UntrackFolder(m_FileTrackingID);
 	}
 
 	bool ContentBrowserWindow::Draw()

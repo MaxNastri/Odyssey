@@ -10,12 +10,12 @@ namespace Odyssey
 		if (!std::filesystem::exists(m_Path))
 			std::filesystem::create_directories(m_Path);
 
-		TrackingOptions options;
-		options.TrackingPath = m_Path;
-		options.Extensions = { ".asset" };
-		options.Recursive = true;
-		options.Callback = [this](const Path& newPath, const Path& oldPath, FileActionType fileAction) { OnFileAction(oldPath, newPath, fileAction); };
-		m_FileTracker = std::make_unique<FileTracker>(options);
+		//TrackingOptions options;
+		//options.TrackingPath = m_Path;
+		//options.Extensions = { ".asset" };
+		//options.Recursive = true;
+		//options.Callback = [this](const Path& newPath, const Path& oldPath, FileActionType fileAction) { OnFileAction(oldPath, newPath, fileAction); };
+		//m_FileTracker = std::make_unique<FileTracker>(options);
 
 		CatalogAssets();
 	}
@@ -109,9 +109,9 @@ namespace Odyssey
 	{
 		return m_Path / std::string(guid.String() + ".asset");
 	}
-	void BinaryCache::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
-	{
-		if (fileAction != FileActionType::None && fileAction != FileActionType::Modified)
-			CatalogAssets();
-	}
+	//void BinaryCache::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
+	//{
+	//	//if (fileAction != FileActionType::None && fileAction != FileActionType::Modified)
+	//	//	CatalogAssets();
+	//}
 }

@@ -12,10 +12,9 @@ namespace Odyssey
 		Name = filename.replace_extension("").string();
 		ParseShaderFile(sourcePath);
 
-		TrackingOptions options;
-		options.TrackingPath = sourcePath;
-		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnFileAction(oldPath, newPath, fileAction); };
-		m_FileTracker = std::make_unique<FileTracker>(options);
+		FileActionCallback callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction)
+			{ OnFileAction(oldPath, newPath, fileAction); };
+		m_TrackingID = FileManager::Get().TrackFile(sourcePath, callback);
 	}
 
 	bool SourceShader::Compile()
