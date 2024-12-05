@@ -109,9 +109,16 @@ float4 main(PixelInput input) : SV_Target
 {
     input.Normal = normalize(input.Normal);
     
+    float4 albedo = diffuseTex2D.Sample(diffuseSampler, input.TexCoord0);
+    
+    // Alpha cutout for discarding completely transparent pixels
+    // Todo: Make this an option in the material inspector
+    if (albedo.a < 1.0f)
+        discard;
+    
     LightingOutput lighting = CalculateLighting(input.Normal);
     float4 finalLighting = float4(lighting.Diffuse + AmbientColor.rgb, 1.0f);
-    return diffuseTex2D.Sample(diffuseSampler, input.TexCoord0) * finalLighting;
+    return albedo * finalLighting;
 }
 
 LightingOutput CalculateLighting(float3 surfaceNormal)

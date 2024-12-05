@@ -53,8 +53,9 @@ namespace Odyssey
 
 	void Scene::DestroyGameObject(const GameObject& gameObject)
 	{
+		entt::entity entity = gameObject;
 		m_SceneGraph.RemoveEntityAndChildren(gameObject);
-		m_Registry.destroy(gameObject);
+		m_Registry.destroy(entity);
 	}
 
 	void Scene::Clear()

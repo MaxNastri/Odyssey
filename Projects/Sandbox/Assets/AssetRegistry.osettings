@@ -523,10 +523,6 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Environment/Brick_wall_1.tex2d
     GUID: 5210788529713619104
-  - Name: PBR
-    Type: Odyssey.SourceShader
-    Path: Shaders/Source/PBR.hlsl
-    GUID: 8792030590727510300
   - Name: PBR Skinned
     Type: Odyssey.SourceShader
     Path: Shaders/Source/PBR_Skinned.hlsl
@@ -535,3 +531,31 @@ Entries:
     Type: Odyssey.Mesh
     Path: Meshes/Environment/tower.mesh
     GUID: 6195154431227879032
+  - Name: Bark_Grey
+    Type: Odyssey.Material
+    Path: Materials/Bark_Grey.mat
+    GUID: 13765641391405978811
+  - Name: Default
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Bark_Grey.tex2D
+    GUID: 13649937747991786106
+  - Name: Default
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/planks_1.tex2D
+    GUID: 14386576293868154267
+  - Name: Planks 1
+    Type: Odyssey.Material
+    Path: Materials/Planks 1.mat
+    GUID: 12331985322653593688
+  - Name: Default
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/fence_1.tex2D
+    GUID: 10762345787116404470
+  - Name: Fence_1
+    Type: Odyssey.Material
+    Path: Materials/Fence_1.mat
+    GUID: 4405053874687466506
+  - Name: PBR
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/PBR.hlsl
+    GUID: 8792030590727510300

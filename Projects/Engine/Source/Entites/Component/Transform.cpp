@@ -143,10 +143,13 @@ namespace Odyssey
 		GameObject parent = m_GameObject.GetParent();
 		while (parent.IsValid())
 		{
-			Transform& parentTransform = parent.GetComponent<Transform>();
-			worldMatrix = parentTransform.GetLocalMatrix() * worldMatrix;
-
-			parent = parent.GetParent();
+			if (Transform* parentTransform = parent.TryGetComponent<Transform>())
+			{
+				worldMatrix = parentTransform->GetLocalMatrix() * worldMatrix;
+				parent = parent.GetParent();
+			}
+			else
+				break;
 		}
 
 		return worldMatrix;
