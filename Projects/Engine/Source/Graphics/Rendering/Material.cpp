@@ -39,8 +39,11 @@ namespace Odyssey
 		if (m_Shader)
 			root.WriteData("m_Shader", m_Shader->GetGUID().CRef());
 
-		if (m_Texture)
-			root.WriteData("m_Texture", m_Texture->GetGUID().CRef());
+		if (m_ColorTexture)
+			root.WriteData("m_Texture", m_ColorTexture->GetGUID().CRef());
+
+		if (m_NormalTexture)
+			root.WriteData("Normal Texture", m_NormalTexture->GetGUID().CRef());
 
 		// Save to disk
 		serializer.WriteToDisk(assetPath);
@@ -54,16 +57,21 @@ namespace Odyssey
 			SerializationNode root = deserializer.GetRoot();
 
 			GUID shaderGUID;
-			GUID textureGUID;
+			GUID colorTextureGUID;
+			GUID normalTextureGUID;
 
 			root.ReadData("m_Shader", shaderGUID.Ref());
-			root.ReadData("m_Texture", textureGUID.Ref());
+			root.ReadData("m_Texture", colorTextureGUID.Ref());
+			root.ReadData("Normal Texture", normalTextureGUID.Ref());
 
 			if (shaderGUID)
 				m_Shader = AssetManager::LoadAsset<Shader>(shaderGUID);
 
-			if (textureGUID)
-				m_Texture = AssetManager::LoadAsset<Texture2D>(textureGUID);
+			if (colorTextureGUID)
+				m_ColorTexture = AssetManager::LoadAsset<Texture2D>(colorTextureGUID);
+
+			if (normalTextureGUID)
+				m_NormalTexture = AssetManager::LoadAsset<Texture2D>(normalTextureGUID);
 		}
 	}
 }

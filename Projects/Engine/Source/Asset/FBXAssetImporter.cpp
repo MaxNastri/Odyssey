@@ -95,6 +95,9 @@ namespace Odyssey
 					vertex.Position = ToFloat3(mesh->vertex_position[index]);
 					vertex.Normal = ToFloat3(mesh->vertex_normal[index]);
 					vertex.TexCoord0 = ToFloat2(mesh->vertex_uv[index]);
+					if (mesh->vertex_tangent.exists)
+						vertex.Tangent = ToFloat3(mesh->vertex_tangent[index]);
+
 					vertex.TexCoord0.y = 1.0f - vertex.TexCoord0.y;
 
 					// Check if this is a skinned mesh

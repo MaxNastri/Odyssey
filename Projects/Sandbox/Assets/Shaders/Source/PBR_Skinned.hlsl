@@ -45,6 +45,9 @@ struct SkinningOutput
     float4 Normal;
 };
 
+Texture2D normalTex2D : register(t4);
+SamplerState normalSampler : register(s4);
+
 // Forward declarations
 SkinningOutput SkinVertex(VertexInput input);
 
@@ -121,8 +124,8 @@ cbuffer LightData : register(b3)
     uint LightCount;
 }
 
-Texture2D diffuseTex2D : register(t4);
-SamplerState diffuseSampler : register(s4);
+Texture2D diffuseTex2D : register(t5);
+SamplerState diffuseSampler : register(s5);
 
 // Forward declarations
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal);
@@ -142,7 +145,7 @@ float4 main(PixelInput input) : SV_Target
         discard;
     
     LightingOutput lighting = CalculateLighting(input.WorldPosition, input.Normal);
-    float4 finalLighting = float4(lighting.Diffuse * AmbientColor.rgb, 1.0f);
+    float4 finalLighting = float4(lighting.Diffuse + AmbientColor.rgb, 1.0f);
     return albedo * finalLighting;
 }
 

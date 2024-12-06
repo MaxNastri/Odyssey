@@ -1,7 +1,7 @@
 Scene: Scene_01
 GUID: 6049963977740777600
 Skybox: 16662637833593679810
-Ambient Color: 'x: 0.2738947 y: 0.28380978 z: 0.28825623'
+Ambient Color: 'x: 0.027228635 y: 0.032999314 z: 0.03558719'
 GameObjects:
   - Sort Order: 0
     Prefab: 0
@@ -69,12 +69,12 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 0 y: 90 z: 0'
+        Rotation: 'x: 60 y: 45 z: 30'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.Light
         Enabled: 1
         Light Type: Directional
-        Color: 'x: 0.71568245 y: 0.83768815 z: 0.97153026'
+        Color: 'x: 0.8932384 y: 0.9441497 z: 1'
         Intensity: 1
         Range: 1
   - Sort Order: 6
@@ -381,48 +381,6 @@ GameObjects:
     GUID: 6989108007560929657
     Type: Odyssey.GameObject
     Components: []
-  - Sort Order: -1
-    Prefab: 0
-    Name: Brick Wall 1
-    GUID: 7745925365640190494
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        m_Mesh: 8119167279744050967
-        m_Material: 14770402574313958026
-      - Type: Odyssey.Transform
-        Position: 'x: 5.8096595 y: 0 z: -2.315'
-        Rotation: 'x: -90.00252 y: -89.417175 z: 0.0025174557'
-        Scale: 'x: 0.2 y: 0.2 z: 0.2'
-  - Sort Order: -1
-    Prefab: 0
-    Name: Wall 4
-    GUID: 4190012196937303288
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        m_Mesh: 4325336624522892849
-        m_Material: 14770402574313958026
-      - Type: Odyssey.Transform
-        Position: 'x: 5.035152 y: 1 z: 1.0720845'
-        Rotation: 'x: 0 y: 35 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
-  - Sort Order: -1
-    Prefab: 0
-    Name: Wall 5
-    GUID: 17228483054339074487
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        m_Mesh: 4325336624522892849
-        m_Material: 14770402574313958026
-      - Type: Odyssey.Transform
-        Position: 'x: 6.6704593 y: 1 z: -0.07334827'
-        Rotation: 'x: 0 y: 35 z: 0'
-        Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
     Name: Wall 1
@@ -465,54 +423,54 @@ GameObjects:
         Position: 'x: -3.4956279 y: 1 z: 2.5'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 3
+    Prefab: 0
+    Name: Brick Wall 1
+    GUID: 7745925365640190494
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        m_Mesh: 8119167279744050967
+        m_Material: 14770402574313958026
+      - Type: Odyssey.Transform
+        Position: 'x: 5.8096595 y: 0 z: -2.315'
+        Rotation: 'x: -90.00252 y: -89.417175 z: 0.0025174557'
+        Scale: 'x: 0.2 y: 0.2 z: 0.2'
+  - Sort Order: 4
+    Prefab: 0
+    Name: Wall 4
+    GUID: 4190012196937303288
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        m_Mesh: 4325336624522892849
+        m_Material: 14770402574313958026
+      - Type: Odyssey.Transform
+        Position: 'x: 5.035152 y: 1 z: 1.0720845'
+        Rotation: 'x: 0 y: 35 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 5
+    Prefab: 0
+    Name: Wall 5
+    GUID: 17228483054339074487
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        m_Mesh: 4325336624522892849
+        m_Material: 14770402574313958026
+      - Type: Odyssey.Transform
+        Position: 'x: 6.6704593 y: 1 z: -0.07334827'
+        Rotation: 'x: 0 y: 35 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 11
     Prefab: 0
     Name: Columns
     GUID: 15641241119976775753
     Type: Odyssey.GameObject
     Components: []
-  - Sort Order: -1
-    Prefab: 0
-    Name: Column 3
-    GUID: 3113113455560211746
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        m_Mesh: 8958058890886565394
-        m_Material: 14770402574313958026
-      - Type: Odyssey.Transform
-        Position: 'x: 3.7765172 y: 0 z: -2.315'
-        Rotation: 'x: -90 y: 0 z: 0'
-        Scale: 'x: 0.2 y: 0.2 z: 0.2'
-  - Sort Order: -1
-    Prefab: 0
-    Name: Column 4
-    GUID: 11186455520953612708
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        m_Mesh: 8958058890886565394
-        m_Material: 14770402574313958026
-      - Type: Odyssey.Transform
-        Position: 'x: -1.9613397 y: 0 z: -2.315'
-        Rotation: 'x: -90 y: 0 z: 0'
-        Scale: 'x: 0.2 y: 0.2 z: 0.2'
-  - Sort Order: -1
-    Prefab: 0
-    Name: Column 5
-    GUID: 10801713579106431150
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        m_Mesh: 8958058890886565394
-        m_Material: 14770402574313958026
-      - Type: Odyssey.Transform
-        Position: 'x: -3.838137 y: 0 z: -2.315'
-        Rotation: 'x: -90 y: 0 z: 0'
-        Scale: 'x: 0.2 y: 0.2 z: 0.2'
   - Sort Order: 0
     Prefab: 0
     Name: Column 1
@@ -541,54 +499,54 @@ GameObjects:
         Position: 'x: 1.8828938 y: 1.3804646e-07 z: -2.315'
         Rotation: 'x: -90 y: 0 z: 0'
         Scale: 'x: 0.2 y: 0.2 z: 0.2'
+  - Sort Order: 2
+    Prefab: 0
+    Name: Column 3
+    GUID: 3113113455560211746
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        m_Mesh: 8958058890886565394
+        m_Material: 14770402574313958026
+      - Type: Odyssey.Transform
+        Position: 'x: 3.7765172 y: 0 z: -2.315'
+        Rotation: 'x: -90 y: 0 z: 0'
+        Scale: 'x: 0.2 y: 0.2 z: 0.2'
+  - Sort Order: 3
+    Prefab: 0
+    Name: Column 4
+    GUID: 11186455520953612708
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        m_Mesh: 8958058890886565394
+        m_Material: 14770402574313958026
+      - Type: Odyssey.Transform
+        Position: 'x: -1.9613397 y: 0 z: -2.315'
+        Rotation: 'x: -90 y: 0 z: 0'
+        Scale: 'x: 0.2 y: 0.2 z: 0.2'
+  - Sort Order: 4
+    Prefab: 0
+    Name: Column 5
+    GUID: 10801713579106431150
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        m_Mesh: 8958058890886565394
+        m_Material: 14770402574313958026
+      - Type: Odyssey.Transform
+        Position: 'x: -3.838137 y: 0 z: -2.315'
+        Rotation: 'x: -90 y: 0 z: 0'
+        Scale: 'x: 0.2 y: 0.2 z: 0.2'
   - Sort Order: 11
     Prefab: 0
     Name: Fences
     GUID: 9665343803287027218
     Type: Odyssey.GameObject
     Components: []
-  - Sort Order: -1
-    Prefab: 0
-    Name: Fence 2
-    GUID: 4924211802927373549
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        m_Mesh: 16960106126103840786
-        m_Material: 4405053874687466506
-      - Type: Odyssey.Transform
-        Position: 'x: 3.565183 y: 0 z: -2.3'
-        Rotation: 'x: 90 y: 90 z: 180'
-        Scale: 'x: 0.2 y: 0.25 z: 0.2'
-  - Sort Order: -1
-    Prefab: 0
-    Name: Fence 3
-    GUID: 12190140887867352466
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        m_Mesh: 16960106126103840786
-        m_Material: 4405053874687466506
-      - Type: Odyssey.Transform
-        Position: 'x: -3.633067 y: 0 z: -2.3'
-        Rotation: 'x: 90 y: -90 z: -180'
-        Scale: 'x: 0.2 y: 0.25 z: 0.2'
-  - Sort Order: -1
-    Prefab: 0
-    Name: Fence 4
-    GUID: 6079073231591336396
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        m_Mesh: 16960106126103840786
-        m_Material: 4405053874687466506
-      - Type: Odyssey.Transform
-        Position: 'x: 5.4506273 y: 0 z: -2.3'
-        Rotation: 'x: 90 y: 90 z: 180'
-        Scale: 'x: 0.2 y: 0.25 z: 0.2'
   - Sort Order: 0
     Prefab: 0
     Name: Fence 1
@@ -603,13 +561,55 @@ GameObjects:
         Position: 'x: 1.675 y: 0 z: -2.3'
         Rotation: 'x: 90 y: 90 z: 180'
         Scale: 'x: 0.2 y: 0.25 z: 0.19999994'
+  - Sort Order: 1
+    Prefab: 0
+    Name: Fence 2
+    GUID: 4924211802927373549
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        m_Mesh: 16960106126103840786
+        m_Material: 4405053874687466506
+      - Type: Odyssey.Transform
+        Position: 'x: 3.565183 y: 0 z: -2.3'
+        Rotation: 'x: 90 y: 90 z: 180'
+        Scale: 'x: 0.2 y: 0.25 z: 0.2'
+  - Sort Order: 2
+    Prefab: 0
+    Name: Fence 3
+    GUID: 12190140887867352466
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        m_Mesh: 16960106126103840786
+        m_Material: 4405053874687466506
+      - Type: Odyssey.Transform
+        Position: 'x: -3.633067 y: 0 z: -2.3'
+        Rotation: 'x: 90 y: -90 z: -180'
+        Scale: 'x: 0.2 y: 0.25 z: 0.2'
+  - Sort Order: 3
+    Prefab: 0
+    Name: Fence 4
+    GUID: 6079073231591336396
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        m_Mesh: 16960106126103840786
+        m_Material: 4405053874687466506
+      - Type: Odyssey.Transform
+        Position: 'x: 5.4506273 y: 0 z: -2.3'
+        Rotation: 'x: 90 y: 90 z: 180'
+        Scale: 'x: 0.2 y: 0.25 z: 0.2'
   - Sort Order: 11
     Prefab: 0
     Name: Gates
     GUID: 9217910582838324365
     Type: Odyssey.GameObject
     Components: []
-  - Sort Order: -1
+  - Sort Order: 0
     Prefab: 0
     Name: Gate 1
     GUID: 13203273561240663335
@@ -623,7 +623,7 @@ GameObjects:
         Position: 'x: -0.20960984 y: -7.164336e-08 z: -2.299511'
         Rotation: 'x: 89.999916 y: 15 z: 179.99994'
         Scale: 'x: 0.2 y: 0.25 z: 0.2'
-  - Sort Order: -1
+  - Sort Order: 1
     Prefab: 0
     Name: Gate 2
     GUID: 13483707575364147340

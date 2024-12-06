@@ -41,6 +41,9 @@ cbuffer SkinningData : register(b2)
     float4x4 Bones[128];
 }
 
+Texture2D normalTex2D : register(t4);
+SamplerState normalSampler : register(s4);
+
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
@@ -101,8 +104,8 @@ cbuffer LightData : register(b3)
     uint LightCount;
 }
 
-Texture2D diffuseTex2D : register(t4);
-SamplerState diffuseSampler : register(s4);
+Texture2D diffuseTex2D : register(t5);
+SamplerState diffuseSampler : register(s5);
 
 // Forward declarations
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal);
@@ -122,7 +125,7 @@ float4 main(PixelInput input) : SV_Target
         discard;
     
     LightingOutput lighting = CalculateLighting(input.WorldPosition, input.Normal);
-    float3 finalLighting = lighting.Diffuse * AmbientColor.rgb;
+    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb;
     return albedo * float4(finalLighting, 1.0f);
 }
 

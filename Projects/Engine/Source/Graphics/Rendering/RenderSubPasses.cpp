@@ -43,9 +43,13 @@ namespace Odyssey
 				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
 				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 3);
 
-				// Add textures, if they are set
-				if (setPass.Texture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.Texture, 4);
+				// Normal map binds to the vertex shader register 4
+				if (setPass.NormalTexture.IsValid())
+					m_PushDescriptors->AddTexture(setPass.NormalTexture, 4);
+
+				// Color map binds to the fragment shader register 5
+				if (setPass.ColorTexture.IsValid())
+					m_PushDescriptors->AddTexture(setPass.ColorTexture, 5);
 
 				// Push the descriptors into the command buffer
 				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), setPass.GraphicsPipeline);

@@ -82,7 +82,8 @@ namespace Odyssey
 	public:
 		ResourceID GraphicsPipeline;
 		std::map<ShaderType, ResourceID> Shaders;
-		ResourceID Texture;
+		ResourceID ColorTexture;
+		ResourceID NormalTexture;
 		std::vector<Drawcall> Drawcalls;
 	};
 

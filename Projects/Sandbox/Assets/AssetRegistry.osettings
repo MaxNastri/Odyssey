@@ -559,3 +559,7 @@ Entries:
     Type: Odyssey.SourceShader
     Path: Shaders/Source/PBR.hlsl
     GUID: 8792030590727510300
+  - Name: Default
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Brick_wall_normal.tex2D
+    GUID: 2053248186768817129
