@@ -13,6 +13,7 @@ struct VertexInput
 struct VertexOutput
 {
     float4 Position : SV_Position;
+    float3 WorldPosition : POSITION;
     float3 Normal : NORMAL;
     float3 Tangent : TANGENT;
     float4 Color : COLOR0;
@@ -47,7 +48,6 @@ struct SkinningOutput
 // Forward declarations
 SkinningOutput SkinVertex(VertexInput input);
 
-
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
@@ -57,6 +57,7 @@ VertexOutput main(VertexInput input)
     float4 normal = float4(normalize(skinning.Normal.xyz), 0.0f);
     
     output.Position = mul(ViewProjection, worldPosition);
+    output.WorldPosition = worldPosition.xyz;
     output.Normal = normalize(mul(Model, normal).xyz);
     output.Tangent = input.Tangent;
     output.Color = input.Color;
@@ -90,6 +91,7 @@ SkinningOutput SkinVertex(VertexInput input)
 struct PixelInput
 {
     float4 Position : SV_Position;
+    float3 WorldPosition : POSITION;
     float3 Normal : NORMAL;
     float3 Tangent : TANGENT;
     float4 Color : COLOR0;
@@ -123,19 +125,28 @@ Texture2D diffuseTex2D : register(t4);
 SamplerState diffuseSampler : register(s4);
 
 // Forward declarations
-LightingOutput CalculateLighting(float3 surfaceNormal);
-float3 CalculateDiffuse(Light light, float3 surfaceNormal);
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal);
+float3 CalculateDiffuse(Light light, float3 worldNormal);
+float3 CalculateDirectionalLight(Light light, float3 worldNormal);
+float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal);
 
 float4 main(PixelInput input) : SV_Target
 {
     input.Normal = normalize(input.Normal);
     
-    LightingOutput lighting = CalculateLighting(input.Normal);
-    float4 finalLighting = float4(lighting.Diffuse + AmbientColor.rgb, 1.0f);
-    return diffuseTex2D.Sample(diffuseSampler, input.TexCoord0) * finalLighting;
+    float4 albedo = diffuseTex2D.Sample(diffuseSampler, input.TexCoord0);
+    
+    // Alpha cutout for discarding completely transparent pixels
+    // Todo: Make this an option in the material inspector
+    if (albedo.a < 1.0f)
+        discard;
+    
+    LightingOutput lighting = CalculateLighting(input.WorldPosition, input.Normal);
+    float4 finalLighting = float4(lighting.Diffuse * AmbientColor.rgb, 1.0f);
+    return albedo * finalLighting;
 }
 
-LightingOutput CalculateLighting(float3 surfaceNormal)
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal)
 {
     LightingOutput output;
     output.Diffuse = float4(0, 0, 0, 1);
@@ -145,10 +156,10 @@ LightingOutput CalculateLighting(float3 surfaceNormal)
         switch (SceneLights[i].Type)
         {
             case DIRECTIONAL_LIGHT:
-                output.Diffuse += CalculateDiffuse(SceneLights[i], surfaceNormal);
+                output.Diffuse += CalculateDirectionalLight(SceneLights[i], worldNormal);
                 break;
             case POINT_LIGHT:
-                //output.Diffuse += CalculateDiffuse(SceneLights[i], surfaceNormal);
+                output.Diffuse += CalculatePointLight(SceneLights[i], worldPosition, worldNormal);
                 break;
         }
 
@@ -156,11 +167,32 @@ LightingOutput CalculateLighting(float3 surfaceNormal)
     return output;
 }
 
-float3 CalculateDiffuse(Light light, float3 surfaceNormal)
+float3 CalculateDiffuse(Light light, float3 lightVector, float3 worldNormal)
 {
-    float3 lightVector = -normalize(light.Direction.xyz);
-    float contribution = max(0.0f, dot(surfaceNormal, lightVector));
-    // Half-lambert equation modified to be cubed instead of squared
+    float contribution = max(0.0f, dot(worldNormal, lightVector));
+    
+    // Half-lambert equation modified to be squared instead of cubed
     contribution = pow((contribution * 0.5f) + 0.5f, 3);
     return light.Color.rgb * light.Intensity * contribution;
+}
+
+float3 CalculateDirectionalLight(Light light, float3 worldNormal)
+{
+    float3 lightVector = -normalize(light.Direction.xyz);
+    return CalculateDiffuse(light, lightVector, worldNormal);
+}
+
+float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal)
+{
+    float3 lightVector = light.Position.xyz - worldPosition;
+    
+    // Manually normalize the light vector so
+    // we can use the distance in our attenuation calculation
+    float distance = length(lightVector);
+    lightVector /= distance;
+    
+    // Squared exponential falloff
+    float attenuation = pow(1.0f - saturate(distance / light.Range), 2);
+    
+    return CalculateDiffuse(light, lightVector, worldNormal) * attenuation;
 }
