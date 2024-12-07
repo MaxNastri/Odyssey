@@ -6,7 +6,7 @@ namespace Odyssey
 	{
 		Position = glm::vec3(0, 0, 0);
 		Normal = glm::vec3(0, 0, 0);
-		Tangent = glm::vec3(0, 0, 0);
+		Tangent = float4(0.0f);
 		Color = glm::vec4(0, 0, 0, 0);
 		TexCoord0 = glm::vec2(0, 0);
 		TexCoord1 = glm::vec2(0, 0);
@@ -24,7 +24,7 @@ namespace Odyssey
 	{
 		Position = position;
 		Normal = glm::vec3(0, 0, 0);
-		Tangent = glm::vec3(0, 0, 0);
+		Tangent = float4(0.0f);
 		Color = color;
 		TexCoord0 = glm::vec2(0, 0);
 		TexCoord1 = glm::vec2(0, 0);
@@ -42,7 +42,7 @@ namespace Odyssey
 	{
 		Position = position;
 		Normal = normal;
-		Tangent = glm::vec3(0, 0, 0);
+		Tangent = float4(0.0f);
 		Color = glm::vec4(0, 0, 0, 0);
 		TexCoord0 = uv0;
 		TexCoord1 = glm::vec2(0, 0);
@@ -88,7 +88,7 @@ namespace Odyssey
 		// Tangent
 		description.binding = 0;
 		description.location = 2;
-		description.format = VK_FORMAT_R32G32B32_SFLOAT;
+		description.format = VK_FORMAT_R32G32B32A32_SFLOAT;
 		description.offset = offsetof(Vertex, Tangent);
 		attributeDescriptions.push_back(description);
 

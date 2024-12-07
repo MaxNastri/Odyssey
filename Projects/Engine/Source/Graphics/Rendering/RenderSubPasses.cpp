@@ -14,12 +14,92 @@
 #include "ParticleBatcher.h"
 #include "VulkanBuffer.h"
 #include "Texture2D.h"
+#include "Light.h"
 
 namespace Odyssey
 {
+	void ShadowSubPass::Setup()
+	{
+		m_PushDescriptors = new VulkanPushDescriptors();
+		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
+
+		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
+
+		Ref<VulkanDescriptorLayout> descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
+		descriptorLayout->AddBinding("Shadow Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
+		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
+		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
+		descriptorLayout->Apply();
+
+		VulkanPipelineInfo info;
+		info.Shaders = m_Shader->GetResourceMap();
+		info.CullMode = CullMode::None;
+		info.WriteDepth = true;
+		info.DescriptorLayout = m_DescriptorLayout;
+		info.MSAACountOverride = 1;
+
+		m_ShadowPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
+
+		// Allocate the UBO
+		size_t dataSize = sizeof(m_ShadowData);
+		m_UniformBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, dataSize);
+
+		// Write the camera data into the ubo memory
+		Ref<VulkanBuffer> uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_UniformBuffer);
+		uniformBuffer->CopyData(dataSize, &m_ShadowData);
+	}
+
+	void ShadowSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
+	{
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		auto renderScene = params.renderingData->renderScene;
+
+		commandBuffer->BindGraphicsPipeline(m_ShadowPipeline);
+
+		for (size_t i = 0; i < renderScene->LightingData.SceneLights.size(); i++)
+		{
+			SceneLight& sceneLight = renderScene->LightingData.SceneLights[i];
+
+			if ((LightType)sceneLight.Type == LightType::Directional)
+			{
+				m_ShadowData.LightViewProj = Light::CalculateViewProj(float3(0.0f), 10.0f, sceneLight.Position, sceneLight.Direction);
+				break;
+			}
+		}
+
+		// Update the shadow ubo
+		Ref<VulkanBuffer> uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_UniformBuffer);
+		uniformBuffer->CopyData(sizeof(m_ShadowData), &m_ShadowData);
+
+		for (SetPass& setPass : renderScene->setPasses)
+		{
+			for (size_t i = 0; i < setPass.Drawcalls.size(); i++)
+			{
+				Drawcall& drawcall = setPass.Drawcalls[i];
+
+				// Add the camera and per object data to the push descriptors
+				uint32_t uboIndex = drawcall.UniformBufferIndex;
+				m_PushDescriptors->Clear();
+				m_PushDescriptors->AddBuffer(m_UniformBuffer, 0);
+				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
+				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
+
+				// Push the descriptors into the command buffer
+				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_ShadowPipeline);
+
+				// Set the per-object descriptor buffer offset
+				commandBuffer->BindVertexBuffer(drawcall.VertexBufferID);
+				commandBuffer->BindIndexBuffer(drawcall.IndexBufferID);
+				commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);
+			}
+		}
+	}
+
 	void OpaqueSubPass::Setup()
 	{
 		m_PushDescriptors = new VulkanPushDescriptors();
+		m_BlackTexture = AssetManager::LoadAsset<Texture2D>(s_BlackTextureGUID);
+		m_BlackTextureID = m_BlackTexture->GetTexture();
 	}
 
 	void OpaqueSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
@@ -43,13 +123,17 @@ namespace Odyssey
 				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
 				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 3);
 
-				// Normal map binds to the vertex shader register 4
-				if (setPass.NormalTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.NormalTexture, 4);
-
-				// Color map binds to the fragment shader register 5
+				// Color map binds to the fragment shader register 4
 				if (setPass.ColorTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.ColorTexture, 5);
+					m_PushDescriptors->AddTexture(setPass.ColorTexture, 4);
+				else
+					m_PushDescriptors->AddTexture(m_BlackTextureID, 4);
+
+				// Normal map binds to the fragment shader register 5
+				if (setPass.NormalTexture.IsValid())
+					m_PushDescriptors->AddTexture(setPass.NormalTexture, 5);
+				else
+					m_PushDescriptors->AddTexture(m_BlackTextureID, 5);
 
 				// Push the descriptors into the command buffer
 				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), setPass.GraphicsPipeline);

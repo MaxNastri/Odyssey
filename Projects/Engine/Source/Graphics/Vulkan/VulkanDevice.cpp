@@ -32,6 +32,7 @@ namespace Odyssey
 
 		// Dynamic rendering
 		device_extensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
+		//device_extensions.push_back(VK_EXT_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_EXTENSION_NAME);
 		device_extensions.push_back("VK_KHR_depth_stencil_resolve");
 		device_extensions.push_back("VK_KHR_create_renderpass2");
 		device_extensions.push_back("VK_KHR_multiview");
@@ -66,12 +67,16 @@ namespace Odyssey
 		bufferAddress.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
 		bufferAddress.bufferDeviceAddress = VK_TRUE;
 
+		//VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT unusedAttachments;
+		//unusedAttachments.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_FEATURES_EXT;
+		//unusedAttachments.dynamicRenderingUnusedAttachments = VK_TRUE;
+
 		dynamic_rendering_feature.pNext = &bufferAddress;
+		//unusedAttachments.pNext = &bufferAddress;
 
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		deviceFeatures.logicOp = true;
 		deviceFeatures.samplerAnisotropy = true;
-
 		VkDeviceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		create_info.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]);

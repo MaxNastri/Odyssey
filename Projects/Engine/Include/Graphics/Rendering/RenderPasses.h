@@ -50,6 +50,23 @@ namespace Odyssey
 		VkImageLayout m_EndLayout;
 	};
 
+	class ShadowPass : public RenderPass
+	{
+	public:
+		ShadowPass();
+
+	public:
+		virtual void BeginPass(RenderPassParams& params) override;
+		virtual void Execute(RenderPassParams& params) override;
+		virtual void EndPass(RenderPassParams& params) override;
+
+	private:
+		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
+
+	private:
+		inline static constexpr uint32_t Shadowmap_Size = 1024;
+	};
+
 	class OpaquePass : public RenderPass
 	{
 	public:

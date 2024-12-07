@@ -563,3 +563,11 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Environment/Brick_wall_normal.tex2D
     GUID: 2053248186768817129
+  - Name: Kachujin_normal
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Kachujin_normal.png
+    GUID: 5415441570168615331
+  - Name: Default
+    Type: Odyssey.Texture2D
+    Path: Textures/Monk_normal.tex2D
+    GUID: 6832636239839654488

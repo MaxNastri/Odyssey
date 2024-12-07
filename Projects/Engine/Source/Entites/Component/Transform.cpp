@@ -174,6 +174,11 @@ namespace Odyssey
 		}
 	}
 
+	void Transform::LookAt(float3 center, float3 up)
+	{
+		SetLocalMatrix(glm::inverse(glm::lookAtLH(m_Position, center, up)));
+	}
+
 	void Transform::CalculateEulerRotations()
 	{
 		// Check if the row 3 column 1 is +- 1

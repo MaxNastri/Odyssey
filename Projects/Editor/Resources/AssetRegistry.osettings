@@ -111,3 +111,19 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: Textures/Source/Asset_Icon.png
     GUID: 678512365782317894
+  - Name: Black
+    Type: Odyssey.Texture2D
+    Path: Textures/Black.tex2D
+    GUID: 783478723187327676
+  - Name: Black
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Black.png
+    GUID: 891239123723176542
+  - Name: Shadowmapping
+    Type: Odyssey.Shader
+    Path: Shaders/Shadowmapping.shader
+    GUID: 879318792137863213
+  - Name: Shadowmapping
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Shadowmapping.hlsl
+    GUID: 690823879126781327

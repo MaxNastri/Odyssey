@@ -1,6 +1,7 @@
 #include "FBXAssetImporter.h"
 #include "ufbx.h"
 #include "Log.h"
+#include "GeometryUtil.h"
 
 namespace Odyssey
 {
@@ -95,9 +96,6 @@ namespace Odyssey
 					vertex.Position = ToFloat3(mesh->vertex_position[index]);
 					vertex.Normal = ToFloat3(mesh->vertex_normal[index]);
 					vertex.TexCoord0 = ToFloat2(mesh->vertex_uv[index]);
-					if (mesh->vertex_tangent.exists)
-						vertex.Tangent = ToFloat3(mesh->vertex_tangent[index]);
-
 					vertex.TexCoord0.y = 1.0f - vertex.TexCoord0.y;
 
 					// Check if this is a skinned mesh
@@ -140,6 +138,8 @@ namespace Odyssey
 			// This will de-duplicate vertices and modify the passed in vertices/indices
 			size_t vertCount = ufbx_generate_indices(streams, 1, indices.data(), indices.size(), nullptr, nullptr);
 			vertices.resize(vertCount);
+
+			GeometryUtil::GenerateTangents(vertices, indices);
 
 			meshData.VertexLists.push_back(vertices);
 			meshData.IndexLists.push_back(indices);

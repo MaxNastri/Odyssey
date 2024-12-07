@@ -56,6 +56,7 @@ namespace Odyssey
 		Cubemap = 3,
 		RenderTexture = 4,
 		DepthTexture = 5,
+		Shadowmap = 6,
 	};
 
 	enum class TextureFormat

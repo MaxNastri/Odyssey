@@ -13,6 +13,7 @@ namespace Odyssey
 	public:
 		VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height);
 		VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height, TextureFormat format);
+		VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription& imageDesc);
 		VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID imageID, TextureFormat format);
 		void Destroy();
 

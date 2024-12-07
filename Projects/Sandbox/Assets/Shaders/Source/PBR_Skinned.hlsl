@@ -3,7 +3,7 @@ struct VertexInput
 {
     float3 Position : POSITION;
     float3 Normal : NORMAL;
-    float3 Tangent : TANGENT;
+    float4 Tangent : TANGENT;
     float4 Color : COLOR;
     float2 TexCoord0 : TEXCOORD0;
     float4 BoneIndices : BLENDINDICES0;
@@ -15,7 +15,7 @@ struct VertexOutput
     float4 Position : SV_Position;
     float3 WorldPosition : POSITION;
     float3 Normal : NORMAL;
-    float3 Tangent : TANGENT;
+    float4 Tangent : TANGENT;
     float4 Color : COLOR0;
     float2 TexCoord0 : TEXCOORD0;
     float4 ViewPosition : POSITION1;
@@ -45,9 +45,6 @@ struct SkinningOutput
     float4 Normal;
 };
 
-Texture2D normalTex2D : register(t4);
-SamplerState normalSampler : register(s4);
-
 // Forward declarations
 SkinningOutput SkinVertex(VertexInput input);
 
@@ -58,11 +55,12 @@ VertexOutput main(VertexInput input)
     SkinningOutput skinning = SkinVertex(input);
     float4 worldPosition = mul(Model, skinning.Position);
     float4 normal = float4(normalize(skinning.Normal.xyz), 0.0f);
+    float4 tangent = float4(input.Tangent.xyz, 0.0f);
     
     output.Position = mul(ViewProjection, worldPosition);
     output.WorldPosition = worldPosition.xyz;
     output.Normal = normalize(mul(Model, normal).xyz);
-    output.Tangent = input.Tangent;
+    output.Tangent = float4(mul(Model, tangent).xyz, input.Tangent.w);
     output.Color = input.Color;
     output.TexCoord0 = input.TexCoord0;
     output.ViewPosition = ViewPos - worldPosition;
@@ -96,7 +94,7 @@ struct PixelInput
     float4 Position : SV_Position;
     float3 WorldPosition : POSITION;
     float3 Normal : NORMAL;
-    float3 Tangent : TANGENT;
+    float4 Tangent : TANGENT;
     float4 Color : COLOR0;
     float2 TexCoord0 : TEXCOORD0;
 };
@@ -124,8 +122,10 @@ cbuffer LightData : register(b3)
     uint LightCount;
 }
 
-Texture2D diffuseTex2D : register(t5);
-SamplerState diffuseSampler : register(s5);
+Texture2D diffuseTex2D : register(t4);
+SamplerState diffuseSampler : register(s4);
+Texture2D normalTex2D : register(t5);
+SamplerState normalSampler : register(s5);
 
 // Forward declarations
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal);
@@ -135,7 +135,7 @@ float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal
 
 float4 main(PixelInput input) : SV_Target
 {
-    input.Normal = normalize(input.Normal);
+    float3 worldNormal = normalize(input.Normal);
     
     float4 albedo = diffuseTex2D.Sample(diffuseSampler, input.TexCoord0);
     
@@ -144,7 +144,26 @@ float4 main(PixelInput input) : SV_Target
     if (albedo.a < 1.0f)
         discard;
     
-    LightingOutput lighting = CalculateLighting(input.WorldPosition, input.Normal);
+    float3 texNormal = normalTex2D.Sample(normalSampler, input.TexCoord0);
+    bool blankNormalMap = texNormal.x == 0.0f && texNormal.y == 0.0f && texNormal.z == 0.0f;
+    
+    if (!blankNormalMap)
+    {
+        // Move the texture normal from 0.0 - 1.0 space to -1.0 to 1.0
+        texNormal = (2.0f * texNormal) - 1.0f;
+        
+        // "Orthogonalize" the tangent
+        float3 tangent = normalize(input.Tangent.xyz - dot(input.Tangent.xyz, worldNormal) * worldNormal);
+        
+        // Calculate the binormal
+        float3 binormal = cross(worldNormal, tangent);
+        
+        // Create the tex-space matrix and generate the final surface normal
+        float3x3 texSpace = float3x3(tangent, binormal, worldNormal);
+        worldNormal = mul(texNormal.xyz, texSpace);
+    }
+    
+    LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal);
     float4 finalLighting = float4(lighting.Diffuse + AmbientColor.rgb, 1.0f);
     return albedo * finalLighting;
 }

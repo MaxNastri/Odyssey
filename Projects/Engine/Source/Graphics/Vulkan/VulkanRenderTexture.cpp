@@ -101,6 +101,44 @@ namespace Odyssey
 		commandPool->ReleaseBuffer(commandBufferID);
 	}
 
+	VulkanRenderTexture::VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription& imageDesc)
+		: Resource(id)
+	{
+		m_Context = context;
+		m_Width = imageDesc.Width;
+		m_Height = imageDesc.Height;
+		m_Format = imageDesc.Format;
+
+		// Allocate the image
+		m_Image = ResourceManager::Allocate<VulkanImage>(imageDesc);
+
+		if (imageDesc.Samples > 1)
+		{
+			VulkanImageDescription resolveDesc = imageDesc;
+			resolveDesc.Samples = 1;
+			m_ResolveImage = ResourceManager::Allocate<VulkanImage>(resolveDesc);
+		}
+
+		// Allocate a command buffer to transition the image layout
+		auto commandPoolID = context->GetGraphicsCommandPool();
+		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+		auto commandBufferID = commandPool->AllocateBuffer();
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+		// Transition the image to the proper layout based on format
+		VkImageLayout layout = IsDepthTexture(imageDesc.Format) ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL :
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		commandBuffer->BeginCommands();
+		commandBuffer->TransitionLayouts(m_Image, layout);
+		if (m_ResolveImage.IsValid())
+			commandBuffer->TransitionLayouts(m_ResolveImage, layout);
+		commandBuffer->EndCommands();
+		commandBuffer->SubmitGraphics();
+
+		// Release the command buffer
+		commandPool->ReleaseBuffer(commandBufferID);
+	}
+
 	VulkanRenderTexture::VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID imageID, TextureFormat format)
 		: Resource(id)
 	{

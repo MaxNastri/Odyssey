@@ -29,5 +29,6 @@ namespace Odyssey
 		bool WriteDepth = true;
 		bool BindVertexAttributeDescriptions = true;
 		bool AlphaBlend = false;
+		uint32_t MSAACountOverride = 0;
 	};
 }

@@ -30,6 +30,7 @@ namespace Odyssey
 		float GetFieldOfView() { return m_FieldOfView; }
 		float GetNearClip() { return m_NearClip; }
 		float GetFarClip() { return m_FarClip; }
+		GameObject& GetGameObject() { return m_GameObject; }
 
 	public:
 		void SetEnabled(bool enabled);

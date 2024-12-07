@@ -31,8 +31,8 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
 		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
 		descriptorLayout->AddBinding("Lighting Data", DescriptorType::Uniform, ShaderStage::Fragment, 3);
-		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Vertex, 4);
-		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 5);
+		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 4);
+		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Fragment, 5);
 		descriptorLayout->Apply();
 
 		// Camera uniform buffer

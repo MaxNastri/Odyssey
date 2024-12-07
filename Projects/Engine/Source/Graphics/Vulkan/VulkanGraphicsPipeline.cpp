@@ -125,7 +125,14 @@ namespace Odyssey
 		VkPipelineMultisampleStateCreateInfo multisampling{};
 		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 		multisampling.sampleShadingEnable = VK_FALSE;
-		multisampling.rasterizationSamples = m_Context->GetSampleCount() > 1 ? (VkSampleCountFlagBits)m_Context->GetSampleCount() : VK_SAMPLE_COUNT_1_BIT;
+
+		if (info.MSAACountOverride)
+			multisampling.rasterizationSamples = (VkSampleCountFlagBits)info.MSAACountOverride;
+		else if (m_Context->GetSampleCount() > 1)
+			multisampling.rasterizationSamples = (VkSampleCountFlagBits)m_Context->GetSampleCount();
+		else
+			multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
 		multisampling.minSampleShading = 1.0f; // Optional
 		multisampling.pSampleMask = nullptr; // Optional
 		multisampling.alphaToCoverageEnable = VK_FALSE; // Optional

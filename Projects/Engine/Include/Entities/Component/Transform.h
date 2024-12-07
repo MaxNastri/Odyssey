@@ -42,7 +42,8 @@ namespace Odyssey
 
     public:
         void RotateAround(glm::vec3 center, glm::vec3 axis, float degrees, bool worldSpace);
-    
+        void LookAt(float3 center, float3 up);
+
     private:
         void CalculateEulerRotations();
         void ComposeLocalMatrix();
