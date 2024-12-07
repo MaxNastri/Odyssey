@@ -7,7 +7,7 @@ project "Odyssey.Editor"
     architecture "x86_64"
     staticruntime "Off"
     debuggertype "NativeWithManagedCore"
-    dependson "Odyssey.Engine"
+    dependson { "Odyssey.Engine", "Coral.Native" }
 
     flags { "MultiProcessorCompile" }
     
