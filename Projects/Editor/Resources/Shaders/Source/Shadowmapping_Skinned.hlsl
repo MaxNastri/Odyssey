@@ -3,9 +3,6 @@ struct VertexInput
 {
     float3 Position : POSITION;
     float3 Normal : NORMAL;
-    float4 Tangent : TANGENT;
-    float4 Color : COLOR;
-    float2 TexCoord0 : TEXCOORD0;
     float4 BoneIndices : BLENDINDICES0;
     float4 BoneWeights : BLENDWEIGHT0;
 };
@@ -48,7 +45,7 @@ VertexOutput main(VertexInput input)
     
     SkinningOutput skinning = SkinVertex(input);
     skinning.Normal = normalize(skinning.Normal);
-    skinning.Position.xyz = skinning.Position.xyz - (skinning.Normal.xyz * 0.001f);
+    skinning.Position.xyz -= (skinning.Normal.xyz * 0.001f);
     
     output.Position = mul(Model, skinning.Position);
     output.Position = mul(LightViewProj, output.Position);

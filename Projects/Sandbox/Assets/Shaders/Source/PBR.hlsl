@@ -4,23 +4,17 @@ struct VertexInput
     float3 Position : POSITION;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
-    float4 Color : COLOR;
     float2 TexCoord0 : TEXCOORD0;
-    float4 BoneIndices : BLENDINDICES0;
-    float4 BoneWeights : BLENDWEIGHT0;
 };
 
 struct VertexOutput
 {
     float4 Position : SV_Position;
-    float3 WorldPosition : POSITION1;
-    float4 ShadowCoord : POSITION2;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
-    float4 Color : COLOR0;
     float2 TexCoord0 : TEXCOORD0;
-    float4 BoneIndices : BLENDINDICES0;
-    float4 BoneWeights : BLENDWEIGHT0;
+    float3 WorldPosition : POSITION1;
+    float4 ShadowCoord : POSITION2;
 };
 
 cbuffer SceneData : register(b0)
@@ -65,10 +59,7 @@ VertexOutput main(VertexInput input)
     output.ShadowCoord.xyz /= output.ShadowCoord.w;
     output.Normal = normalize(mul(Model, normal).xyz);
     output.Tangent = float4(mul(Model, tangent).xyz, input.Tangent.w);
-    output.Color = input.Color;
     output.TexCoord0 = input.TexCoord0;
-    output.BoneWeights = input.BoneWeights;
-    output.BoneIndices = input.BoneIndices;
     
     return output;
 }
@@ -81,14 +72,11 @@ VertexOutput main(VertexInput input)
 struct PixelInput
 {
     float4 Position : SV_Position;
-    float3 WorldPosition : POSITION1;
-    float4 ShadowCoord : POSITION2;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
-    float4 Color : COLOR0;
     float2 TexCoord0 : TEXCOORD0;
-    float4 BoneIndices : BLENDINDICES0;
-    float4 BoneWeights : BLENDWEIGHT0;
+    float3 WorldPosition : POSITION1;
+    float4 ShadowCoord : POSITION2;
 };
 
 struct Light

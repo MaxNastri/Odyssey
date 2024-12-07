@@ -13,7 +13,6 @@ namespace Odyssey
 
 	public:
 		static VkVertexInputBindingDescription GetBindingDescription();
-		static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions();
 
 	public:
 		float3 Position = float3(0, 0, 0);

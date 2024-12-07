@@ -201,16 +201,14 @@ namespace Odyssey
 			GameObject gameObject = GameObject(scene, entity);
 			MeshRenderer& meshRenderer = gameObject.GetComponent<MeshRenderer>();
 			Transform& transform = gameObject.GetComponent<Transform>();
+			Animator* animator = gameObject.TryGetComponent<Animator>();
 
 			if (!meshRenderer.IsEnabled() || !meshRenderer.GetMaterial() || !meshRenderer.GetMesh())
 				continue;
 
 			// For now, 1 set pass per drawcall
-			setPasses.push_back(SetPass());
-			SetPass& setPass = setPasses[setPasses.size() - 1];
-
-			Ref<Material> material = meshRenderer.GetMaterial();
-			setPass.SetMaterial(material, m_DescriptorLayout);
+			SetPass& setPass = setPasses.emplace_back();
+			setPass.SetMaterial(meshRenderer.GetMaterial(), animator != nullptr, m_DescriptorLayout);
 
 			// Create the drawcall data
 			if (Ref<Mesh> mesh = meshRenderer.GetMesh())
@@ -220,6 +218,7 @@ namespace Odyssey
 				drawcall.IndexBufferID = mesh->GetIndexBuffer();
 				drawcall.IndexCount = mesh->GetIndexCount();
 				drawcall.UniformBufferIndex = m_NextUniformBuffer++;
+				drawcall.Skinned = animator != nullptr;
 
 				// Update the per-object uniform buffer
 				uint32_t perObjectSize = sizeof(objectData);
@@ -230,10 +229,8 @@ namespace Odyssey
 				auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
 				uniformBuffer->CopyData(perObjectSize, &objectData);
 
-				if (auto animator = gameObject.TryGetComponent<Animator>())
+				if (animator)
 				{
-					drawcall.Skinned = true;
-
 					size_t skinningSize = sizeof(SkinningData);
 					SkinningData.SetBindposes(animator->GetFinalPoses());
 
@@ -245,20 +242,20 @@ namespace Odyssey
 		}
 	}
 
-	SetPass::SetPass(Ref<Material> material, ResourceID descriptorLayout)
+	SetPass::SetPass(Ref<Material> material, bool skinned, ResourceID descriptorLayout)
 	{
-		SetMaterial(material, descriptorLayout);
+		SetMaterial(material, skinned, descriptorLayout);
 	}
 
-	void SetPass::SetMaterial(Ref<Material> material, ResourceID descriptorLayout)
+	void SetPass::SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout)
 	{
 		// Allocate a graphics pipeline
 		VulkanPipelineInfo info;
-		info.Shaders = material->GetShader()->GetResourceMap();
+		Shaders = info.Shaders = material->GetShader()->GetResourceMap();
 		info.DescriptorLayout = descriptorLayout;
 		info.CullMode = CullMode::Back;
+		SetupAttributeDescriptions(skinned, info.AttributeDescriptions);
 
-		Shaders = info.Shaders;
 		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 
 		if (Ref<Texture2D> colorTexture = material->GetColorTexture())
@@ -266,5 +263,57 @@ namespace Odyssey
 
 		if (Ref<Texture2D> normalTexture = material->GetNormalTexture())
 			NormalTexture = normalTexture->GetTexture();
+	}
+
+	void SetPass::SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions)
+	{
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+
+		// Position
+		auto& positionDesc = attributeDescriptions.emplace_back();
+		positionDesc.binding = 0;
+		positionDesc.location = 0;
+		positionDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		positionDesc.offset = offsetof(Vertex, Position);
+
+		// Normal
+		auto& normalDesc = attributeDescriptions.emplace_back();
+		normalDesc.binding = 0;
+		normalDesc.location = 1;
+		normalDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		normalDesc.offset = offsetof(Vertex, Normal);
+
+		// Tangent
+		auto& tangentDesc = attributeDescriptions.emplace_back();
+		tangentDesc.binding = 0;
+		tangentDesc.location = 2;
+		tangentDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		tangentDesc.offset = offsetof(Vertex, Tangent);
+
+		// TexCoord0
+		auto& texCoord0Desc = attributeDescriptions.emplace_back();
+		texCoord0Desc.binding = 0;
+		texCoord0Desc.location = 3;
+		texCoord0Desc.format = VK_FORMAT_R32G32_SFLOAT;
+		texCoord0Desc.offset = offsetof(Vertex, TexCoord0);
+
+		if (skinned)
+		{
+			// Bone Indices
+			auto& indicesDesc = attributeDescriptions.emplace_back();
+			indicesDesc.binding = 0;
+			indicesDesc.location = 4;
+			indicesDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+			indicesDesc.offset = offsetof(Vertex, BoneIndices);
+
+			// Bone Weights
+			auto& weightsDesc = attributeDescriptions.emplace_back();
+			weightsDesc.binding = 0;
+			weightsDesc.location = 5;
+			weightsDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+			weightsDesc.offset = offsetof(Vertex, BoneWeights);
+		}
+
+		descriptions.WriteData(attributeDescriptions);
 	}
 }

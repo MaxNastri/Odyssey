@@ -4,7 +4,6 @@ struct VertexInput
     float3 Position : POSITION;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
-    float4 Color : COLOR;
     float2 TexCoord0 : TEXCOORD0;
     float4 BoneIndices : BLENDINDICES0;
     float4 BoneWeights : BLENDWEIGHT0;
@@ -13,12 +12,11 @@ struct VertexInput
 struct VertexOutput
 {
     float4 Position : SV_Position;
-    float3 WorldPosition : POSITION1;
-    float4 ShadowCoord : POSITION2;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
-    float4 Color : COLOR0;
     float2 TexCoord0 : TEXCOORD0;
+    float3 WorldPosition : POSITION1;
+    float4 ShadowCoord : POSITION2;
 };
 
 cbuffer SceneData : register(b0)
@@ -66,16 +64,20 @@ VertexOutput main(VertexInput input)
     float4 normal = float4(normalize(skinning.Normal.xyz), 0.0f);
     float4 tangent = float4(input.Tangent.xyz, 0.0f);
     
+    // Standard output
     output.Position = mul(ViewProjection, worldPosition);
+    output.Normal = normalize(mul(Model, normal).xyz);
+    output.Tangent = float4(mul(Model, tangent).xyz, input.Tangent.w);
+    output.TexCoord0 = input.TexCoord0;
+    
+    // Position in world space
     output.WorldPosition = worldPosition.xyz;
+    
+    // Position in shadow light space with perspective divide
     output.ShadowCoord = mul(LightViewProj, worldPosition);
     output.ShadowCoord = mul(ShadowBias, output.ShadowCoord);
     output.ShadowCoord.xyz /= output.ShadowCoord.w;
     
-    output.Normal = normalize(mul(Model, normal).xyz);
-    output.Tangent = float4(mul(Model, tangent).xyz, input.Tangent.w);
-    output.Color = input.Color;
-    output.TexCoord0 = input.TexCoord0;
     return output;
 }
 
@@ -104,14 +106,11 @@ SkinningOutput SkinVertex(VertexInput input)
 struct PixelInput
 {
     float4 Position : SV_Position;
-    float3 WorldPosition : POSITION1;
-    float4 ShadowCoord : POSITION2;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
-    float4 Color : COLOR0;
     float2 TexCoord0 : TEXCOORD0;
-    float4 BoneIndices : BLENDINDICES0;
-    float4 BoneWeights : BLENDWEIGHT0;
+    float3 WorldPosition : POSITION1;
+    float4 ShadowCoord : POSITION2;
 };
 
 struct Light
@@ -260,7 +259,7 @@ float FilterPCF(float4 shadowCoord, float bias)
     
     float shadowfactor = 0.0f;
     int count = 0;
-    int range = 16;
+    int range = 8;
     
     for (int x = -range; x <= range; x++)
     {

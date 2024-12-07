@@ -1,7 +1,7 @@
 Scene: Scene_01
 GUID: 6049963977740777600
 Skybox: 16662637833593679810
-Ambient Color: 'x: 0.1886121 y: 0.097326525 z: 0.097326525'
+Ambient Color: 'x: 0.053380787 y: 0.025265642 z: 0.025265642'
 GameObjects:
   - Sort Order: 0
     Prefab: 0

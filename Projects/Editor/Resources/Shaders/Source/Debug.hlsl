@@ -6,8 +6,6 @@ struct VertexInput
     float3 Tangent : TANGENT;
     float4 Color : COLOR;
     float2 TexCoord0 : TEXCOORD0;
-    float4 BoneIndices : BLENDINDICES0;
-    float4 BoneWeights : BLENDWEIGHT0;
 };
 
 struct VertexOutput
@@ -17,8 +15,6 @@ struct VertexOutput
     float3 Tangent : TANGENT;
     float4 Color : COLOR0;
     float2 TexCoord0 : TEXCOORD0;
-    float4 BoneIndices : BLENDINDICES0;
-    float4 BoneWeights : BLENDWEIGHT0;
 };
 
 cbuffer SceneData : register(b0)
@@ -39,8 +35,6 @@ VertexOutput main(VertexInput input)
     output.Tangent = input.Tangent;
     output.Color = input.Color;
     output.TexCoord0 = input.TexCoord0;
-    output.BoneIndices = input.BoneIndices;
-    output.BoneWeights = input.BoneWeights;
     return output;
 }
 
@@ -52,8 +46,6 @@ struct PixelInput
     float3 Tangent : TANGENT;
     float4 Color : COLOR0;
     float2 TexCoord0 : TEXCOORD0;
-    float4 BoneIndices : BLENDINDICES0;
-    float4 BoneWeights : BLENDWEIGHT0;
 };
 
 float4 main(PixelInput input) : SV_Target

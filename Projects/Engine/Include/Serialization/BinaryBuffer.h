@@ -16,6 +16,7 @@ namespace Odyssey
 		void Clear();
 		const std::vector<unsigned char>& GetData() { return m_Data; }
 		size_t GetSize() { return m_Size; }
+		size_t GetCount() { return m_Count; }
 
 	public:
 		template<typename T>
@@ -44,6 +45,7 @@ namespace Odyssey
 			size_t writeSize = objSize * writeData.size();
 			size_t prevSize = m_Size;
 			m_Size += writeSize;
+			m_Count++;
 
 			m_Data.resize(m_Size);
 			memcpy(&(m_Data[0]) + prevSize, writeData.data(), writeSize);
@@ -56,6 +58,7 @@ namespace Odyssey
 			size_t objSize = sizeof(T);
 
 			m_Size = objSize * writeData.size();
+			m_Count = writeData.size();
 
 			// Clear the data and resize to match
 			m_Data.clear();
@@ -74,6 +77,8 @@ namespace Odyssey
 			m_Data.clear();
 			m_Data.resize(m_Size);
 
+			m_Count = size / sizeof(T);
+
 			// Mem-copy the data into the binary buffer
 			memcpy(&m_Data[0], data, m_Size);
 		}
@@ -81,5 +86,6 @@ namespace Odyssey
 	private:
 		std::vector<unsigned char> m_Data;
 		size_t m_Size = 0;
+		size_t m_Count = 0;
 	};
 }

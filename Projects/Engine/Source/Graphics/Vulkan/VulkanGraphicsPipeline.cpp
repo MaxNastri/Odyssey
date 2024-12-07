@@ -87,18 +87,15 @@ namespace Odyssey
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-		VkVertexInputBindingDescription bindingDescription{};
-		std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions{};
-
 		if (info.BindVertexAttributeDescriptions)
 		{
-			bindingDescription = Vertex::GetBindingDescription();
+			VkVertexInputBindingDescription bindingDescription = Vertex::GetBindingDescription();
 			vertexInputInfo.vertexBindingDescriptionCount = 1;
 			vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 
-			vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
-			vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
-			vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
+			auto attributeDescriptions = info.AttributeDescriptions.Convert<VkVertexInputAttributeDescription>();
+			vertexInputInfo.vertexAttributeDescriptionCount = info.AttributeDescriptions.GetCount();
+			vertexInputInfo.pVertexAttributeDescriptions = (VkVertexInputAttributeDescription*)info.AttributeDescriptions.GetData().data();
 		}
 
 		// Input Assembly

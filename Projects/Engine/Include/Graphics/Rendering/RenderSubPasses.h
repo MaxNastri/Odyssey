@@ -5,6 +5,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "VulkanPushDescriptors.h"
+#include "BinaryBuffer.h"
 
 namespace Odyssey
 {
@@ -26,6 +27,7 @@ namespace Odyssey
 	public:
 		virtual void Setup() override;
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+		void GetAttributeDescriptions(BinaryBuffer& attributeDescriptions, bool skinned);
 
 	private: // Non-skinned
 		Ref<Shader> m_Shader;
@@ -67,6 +69,7 @@ namespace Odyssey
 	public:
 		virtual void Setup() override;
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+		void GetAttributeDescriptions(BinaryBuffer& attributeDescriptions);
 
 	private:
 		Ref<Shader> m_Shader;
@@ -83,6 +86,7 @@ namespace Odyssey
 	public:
 		virtual void Setup() override;
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+		void GetAttributeDescriptions(BinaryBuffer& attributeDescriptions);
 
 	private:
 		ResourceID m_GraphicsPipeline;

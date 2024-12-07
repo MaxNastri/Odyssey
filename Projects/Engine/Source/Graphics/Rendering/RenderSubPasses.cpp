@@ -39,6 +39,8 @@ namespace Odyssey
 			info.CullMode = CullMode::Front;
 			info.DescriptorLayout = m_DescriptorLayout;
 			info.MSAACountOverride = 1;
+			GetAttributeDescriptions(info.AttributeDescriptions, false);
+
 			m_Pipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		}
 
@@ -49,6 +51,8 @@ namespace Odyssey
 			info.CullMode = CullMode::Front;
 			info.DescriptorLayout = m_DescriptorLayout;
 			info.MSAACountOverride = 1;
+			GetAttributeDescriptions(info.AttributeDescriptions, true);
+
 			m_SkinnedPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		}
 	}
@@ -72,7 +76,7 @@ namespace Odyssey
 
 				if (drawcall.Skinned)
 					m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
-				
+
 				commandBuffer->SetDepthBias(100.25f, 0.0f, 1.75f);
 
 				// Push the descriptors into the command buffer
@@ -93,6 +97,44 @@ namespace Odyssey
 				commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);
 			}
 		}
+	}
+
+	void ShadowSubPass::GetAttributeDescriptions(BinaryBuffer& attributeDescriptions, bool skinned)
+	{
+		std::vector<VkVertexInputAttributeDescription> descriptions;
+
+		// Position
+		auto& positionDesc = descriptions.emplace_back();
+		positionDesc.binding = 0;
+		positionDesc.location = 0;
+		positionDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		positionDesc.offset = offsetof(Vertex, Position);
+
+		// Normal
+		auto& normalDesc = descriptions.emplace_back();
+		normalDesc.binding = 0;
+		normalDesc.location = 1;
+		normalDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		normalDesc.offset = offsetof(Vertex, Normal);
+
+		if (skinned)
+		{
+			// Bone Indices
+			auto& indicesDesc = descriptions.emplace_back();
+			indicesDesc.binding = 0;
+			indicesDesc.location = 2;
+			indicesDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+			indicesDesc.offset = offsetof(Vertex, BoneIndices);
+
+			// Bone Weights
+			auto& weightsDesc = descriptions.emplace_back();
+			weightsDesc.binding = 0;
+			weightsDesc.location = 3;
+			weightsDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+			weightsDesc.offset = offsetof(Vertex, BoneWeights);
+		}
+
+		attributeDescriptions.WriteData(descriptions);
 	}
 
 	void OpaqueSubPass::Setup()
@@ -170,6 +212,7 @@ namespace Odyssey
 		info.Shaders = m_Shader->GetResourceMap();
 		info.DescriptorLayout = m_DescriptorLayout;
 		info.Topology = Topology::LineList;
+		GetAttributeDescriptions(info.AttributeDescriptions);
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		m_PushDescriptors = new VulkanPushDescriptors();
@@ -195,6 +238,48 @@ namespace Odyssey
 		commandBuffer->Draw((uint32_t)DebugRenderer::GetVertexCount(), 1, 0, 0);
 	}
 
+	void DebugSubPass::GetAttributeDescriptions(BinaryBuffer& attributeDescriptions)
+	{
+		std::vector<VkVertexInputAttributeDescription> descriptions;
+
+		// Position
+		auto& positionDesc = descriptions.emplace_back();
+		positionDesc.binding = 0;
+		positionDesc.location = 0;
+		positionDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		positionDesc.offset = offsetof(Vertex, Position);
+
+		// Normal
+		auto& normalDesc = descriptions.emplace_back();
+		normalDesc.binding = 0;
+		normalDesc.location = 1;
+		normalDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		normalDesc.offset = offsetof(Vertex, Normal);
+
+		// Tangent
+		auto& tangentDesc = descriptions.emplace_back();
+		tangentDesc.binding = 0;
+		tangentDesc.location = 2;
+		tangentDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		tangentDesc.offset = offsetof(Vertex, Tangent);
+
+		// Color
+		auto& colorDesc = descriptions.emplace_back();
+		colorDesc.binding = 0;
+		colorDesc.location = 3;
+		colorDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		colorDesc.offset = offsetof(Vertex, Color);
+
+		// TexCoord0
+		auto& texCoord0Desc = descriptions.emplace_back();
+		texCoord0Desc.binding = 0;
+		texCoord0Desc.location = 4;
+		texCoord0Desc.format = VK_FORMAT_R32G32_SFLOAT;
+		texCoord0Desc.offset = offsetof(Vertex, TexCoord0);
+
+		attributeDescriptions.WriteData(descriptions);
+	}
+
 	void SkyboxSubPass::Setup()
 	{
 		// Create the descriptor layout
@@ -212,6 +297,7 @@ namespace Odyssey
 		info.DescriptorLayout = m_DescriptorLayout;
 		info.WriteDepth = false;
 		info.CullMode = CullMode::None;
+		GetAttributeDescriptions(info.AttributeDescriptions);
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		m_PushDescriptors = new VulkanPushDescriptors();
@@ -256,6 +342,20 @@ namespace Odyssey
 		commandBuffer->BindVertexBuffer(m_CubeMesh->GetVertexBuffer());
 		commandBuffer->BindIndexBuffer(m_CubeMesh->GetIndexBuffer());
 		commandBuffer->DrawIndexed(m_CubeMesh->GetIndexCount(), 1, 0, 0, 0);
+	}
+
+	void SkyboxSubPass::GetAttributeDescriptions(BinaryBuffer& attributeDescriptions)
+	{
+		std::vector<VkVertexInputAttributeDescription> descriptions;
+
+		// Position
+		auto& positionDesc = descriptions.emplace_back();
+		positionDesc.binding = 0;
+		positionDesc.location = 0;
+		positionDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		positionDesc.offset = offsetof(Vertex, Position);
+
+		attributeDescriptions.WriteData(descriptions);
 	}
 
 	void ParticleSubPass::Setup()

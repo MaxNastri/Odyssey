@@ -1,6 +1,7 @@
 #pragma once
 #include "Resource.h"
 #include "Enums.h"
+#include "BinaryBuffer.h"
 
 namespace Odyssey
 {
@@ -31,5 +32,6 @@ namespace Odyssey
 		bool AlphaBlend = false;
 		uint32_t MSAACountOverride = 0;
 		bool IsShadow = false;
+		BinaryBuffer AttributeDescriptions;
 	};
 }

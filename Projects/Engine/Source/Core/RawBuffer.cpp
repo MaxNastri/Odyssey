@@ -3,9 +3,9 @@
 namespace Odyssey
 {
 	RawBuffer::RawBuffer(const void* data, size_t size)
-		: m_Data((void*)data), m_Size(size)
 	{
-
+		Allocate(size);
+		Write(data);
 	}
 
 	RawBuffer::~RawBuffer()

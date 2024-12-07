@@ -4,6 +4,7 @@
 #include "Resource.h"
 #include "Drawcall.h"
 #include "Ref.h"
+#include "BinaryBuffer.h"
 
 namespace Odyssey
 {
@@ -75,10 +76,13 @@ namespace Odyssey
 	{
 	public:
 		SetPass() = default;
-		SetPass(Ref<Material> material, ResourceID descriptorLayout);
+		SetPass(Ref<Material> material, bool skinned, ResourceID descriptorLayout);
 
 	public:
-		void SetMaterial(Ref<Material> material, ResourceID descriptorLayout);
+		void SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout);
+
+	private:
+		void SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions);
 
 	public:
 		ResourceID GraphicsPipeline;
