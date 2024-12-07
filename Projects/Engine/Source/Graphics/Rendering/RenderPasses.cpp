@@ -143,6 +143,9 @@ namespace Odyssey
 		// Transition the shadowmap for use in the fragment shader
 		auto depthTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_DepthRT);
 		commandBuffer->TransitionLayouts(depthTexture->GetImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
+
+		// Set the shadowmap for use in other passes
+		params.Shadowmap = m_DepthRT;
 	}
 
 	OpaquePass::OpaquePass()

@@ -33,10 +33,11 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Lighting Data", DescriptorType::Uniform, ShaderStage::Fragment, 3);
 		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 4);
 		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Fragment, 5);
+		descriptorLayout->AddBinding("Shadowmap", DescriptorType::Sampler, ShaderStage::Fragment, 6);
 		descriptorLayout->Apply();
 
 		// Camera uniform buffer
-		uint32_t cameraDataSize = sizeof(cameraData);
+		uint32_t cameraDataSize = sizeof(sceneData);
 
 		for (uint32_t i = 0; i < MAX_CAMERAS; i++)
 		{
@@ -45,9 +46,9 @@ namespace Odyssey
 
 			// Write the camera data into the ubo memory
 			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
-			uniformBuffer->CopyData(cameraDataSize, &cameraData);
+			uniformBuffer->CopyData(cameraDataSize, &sceneData);
 
-			cameraDataBuffers.push_back(uboID);
+			sceneDataBuffers.push_back(uboID);
 		}
 
 		// Per-object uniform buffers
@@ -95,7 +96,7 @@ namespace Odyssey
 	{
 		ResourceManager::Destroy(m_DescriptorLayout);
 
-		for (auto& resource : cameraDataBuffers)
+		for (auto& resource : sceneDataBuffers)
 		{
 			ResourceManager::Destroy(resource);
 		}
@@ -109,19 +110,6 @@ namespace Odyssey
 	void RenderScene::ConvertScene(Scene* scene)
 	{
 		ClearSceneData();
-
-		// Search the scene for the main camera
-		for (auto entity : scene->GetAllEntitiesWith<Camera>())
-		{
-			GameObject gameObject = GameObject(scene, entity);
-			Camera& camera = gameObject.GetComponent<Camera>();
-
-			if (camera.IsEnabled() && camera.IsMainCamera())
-			{
-				m_MainCamera = &camera;
-				SetCameraData(m_MainCamera);
-			}
-		}
 
 		EnvironmentSettings envSettings = scene->GetEnvironmentSettings();
 		if (envSettings.Skybox)
@@ -144,15 +132,32 @@ namespace Odyssey
 				sceneLight.Intensity = light.GetIntensity();
 				sceneLight.Range = light.GetRange();
 				LightingData.LightCount++;
+
+				if (light.GetType() == LightType::Directional)
+					sceneData.LightViewProj = Light::CalculateViewProj(float3(0.0f), 10.0f, sceneLight.Position, sceneLight.Direction);
+			}
+		}
+
+		// Search the scene for the main camera
+		for (auto entity : scene->GetAllEntitiesWith<Camera>())
+		{
+			GameObject gameObject = GameObject(scene, entity);
+			Camera& camera = gameObject.GetComponent<Camera>();
+
+			if (camera.IsEnabled() && camera.IsMainCamera())
+			{
+				m_MainCamera = &camera;
+				SetCameraData(m_MainCamera);
 			}
 		}
 
 		// Set the ambient color from the environment settings
 		LightingData.AmbientColor = glm::vec4(scene->GetEnvironmentSettings().AmbientColor, 1.0f);
 
-		// Copy the data into the uniform buffer
-		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(LightingBuffer);
-		uniformBuffer->CopyData(sizeof(LightingData), &LightingData);
+
+		// Update the lighting ubo
+		auto lightingUBO = ResourceManager::GetResource<VulkanBuffer>(LightingBuffer);
+		lightingUBO->CopyData(sizeof(LightingData), &LightingData);
 
 		ParticleBatcher::Update();
 
@@ -175,15 +180,15 @@ namespace Odyssey
 
 	uint32_t RenderScene::SetCameraData(Camera* camera)
 	{
-		cameraData.inverseView = camera->GetInverseView();
-		cameraData.ViewProjection = camera->GetProjection() * cameraData.inverseView;
-		cameraData.ViewPosition = glm::vec4(camera->GetView()[3][0], camera->GetView()[3][1], camera->GetView()[3][2], 1.0f);
+		sceneData.View = camera->GetInverseView();
+		sceneData.ViewProjection = camera->GetProjection() * camera->GetInverseView();
+		sceneData.ViewPosition = glm::vec4(camera->GetView()[3][0], camera->GetView()[3][1], camera->GetView()[3][2], 1.0f);
 
 		uint32_t index = m_NextCameraBuffer;
-		uint32_t sceneUniformSize = sizeof(cameraData);
 
-		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(cameraDataBuffers[m_NextCameraBuffer]);
-		uniformBuffer->CopyData(sceneUniformSize, &cameraData);
+		// Update the scene ubo
+		auto sceneUBO = ResourceManager::GetResource<VulkanBuffer>(sceneDataBuffers[index]);
+		sceneUBO->CopyData(sizeof(sceneData), &sceneData);
 
 		m_NextCameraBuffer++;
 		return index;
@@ -210,12 +215,11 @@ namespace Odyssey
 			// Create the drawcall data
 			if (Ref<Mesh> mesh = meshRenderer.GetMesh())
 			{
-				Drawcall drawcall;
+				Drawcall& drawcall = setPass.Drawcalls.emplace_back();
 				drawcall.VertexBufferID = mesh->GetVertexBuffer();
 				drawcall.IndexBufferID = mesh->GetIndexBuffer();
 				drawcall.IndexCount = mesh->GetIndexCount();
 				drawcall.UniformBufferIndex = m_NextUniformBuffer++;
-				setPass.Drawcalls.push_back(drawcall);
 
 				// Update the per-object uniform buffer
 				uint32_t perObjectSize = sizeof(objectData);
@@ -228,6 +232,8 @@ namespace Odyssey
 
 				if (auto animator = gameObject.TryGetComponent<Animator>())
 				{
+					drawcall.Skinned = true;
+
 					size_t skinningSize = sizeof(SkinningData);
 					SkinningData.SetBindposes(animator->GetFinalPoses());
 

@@ -22,54 +22,41 @@ namespace Odyssey
 	{
 		m_PushDescriptors = new VulkanPushDescriptors();
 		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
+		m_SkinnedShader = AssetManager::LoadAsset<Shader>(Skinned_Shader_GUID);
 
 		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
 
 		Ref<VulkanDescriptorLayout> descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
-		descriptorLayout->AddBinding("Shadow Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
+		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
 		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
 		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
 		descriptorLayout->Apply();
 
-		VulkanPipelineInfo info;
-		info.Shaders = m_Shader->GetResourceMap();
-		info.CullMode = CullMode::None;
-		info.WriteDepth = true;
-		info.DescriptorLayout = m_DescriptorLayout;
-		info.MSAACountOverride = 1;
+		// Non-skinned pipeline
+		{
+			VulkanPipelineInfo info;
+			info.Shaders = m_Shader->GetResourceMap();
+			info.CullMode = CullMode::Front;
+			info.DescriptorLayout = m_DescriptorLayout;
+			info.MSAACountOverride = 1;
+			m_Pipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
+		}
 
-		m_ShadowPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
-
-		// Allocate the UBO
-		size_t dataSize = sizeof(m_ShadowData);
-		m_UniformBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, dataSize);
-
-		// Write the camera data into the ubo memory
-		Ref<VulkanBuffer> uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_UniformBuffer);
-		uniformBuffer->CopyData(dataSize, &m_ShadowData);
+		// Skinned pipeline
+		{
+			VulkanPipelineInfo info;
+			info.Shaders = m_SkinnedShader->GetResourceMap();
+			info.CullMode = CullMode::Front;
+			info.DescriptorLayout = m_DescriptorLayout;
+			info.MSAACountOverride = 1;
+			m_SkinnedPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
+		}
 	}
 
 	void ShadowSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
 		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 		auto renderScene = params.renderingData->renderScene;
-
-		commandBuffer->BindGraphicsPipeline(m_ShadowPipeline);
-
-		for (size_t i = 0; i < renderScene->LightingData.SceneLights.size(); i++)
-		{
-			SceneLight& sceneLight = renderScene->LightingData.SceneLights[i];
-
-			if ((LightType)sceneLight.Type == LightType::Directional)
-			{
-				m_ShadowData.LightViewProj = Light::CalculateViewProj(float3(0.0f), 10.0f, sceneLight.Position, sceneLight.Direction);
-				break;
-			}
-		}
-
-		// Update the shadow ubo
-		Ref<VulkanBuffer> uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_UniformBuffer);
-		uniformBuffer->CopyData(sizeof(m_ShadowData), &m_ShadowData);
 
 		for (SetPass& setPass : renderScene->setPasses)
 		{
@@ -80,12 +67,25 @@ namespace Odyssey
 				// Add the camera and per object data to the push descriptors
 				uint32_t uboIndex = drawcall.UniformBufferIndex;
 				m_PushDescriptors->Clear();
-				m_PushDescriptors->AddBuffer(m_UniformBuffer, 0);
+				m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[uboIndex], 0);
 				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
-				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
+
+				if (drawcall.Skinned)
+					m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
+				
+				commandBuffer->SetDepthBias(100.25f, 0.0f, 1.75f);
 
 				// Push the descriptors into the command buffer
-				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_ShadowPipeline);
+				if (drawcall.Skinned)
+				{
+					commandBuffer->BindGraphicsPipeline(m_SkinnedPipeline);
+					commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_SkinnedPipeline);
+				}
+				else
+				{
+					commandBuffer->BindGraphicsPipeline(m_Pipeline);
+					commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_Pipeline);
+				}
 
 				// Set the per-object descriptor buffer offset
 				commandBuffer->BindVertexBuffer(drawcall.VertexBufferID);
@@ -98,8 +98,12 @@ namespace Odyssey
 	void OpaqueSubPass::Setup()
 	{
 		m_PushDescriptors = new VulkanPushDescriptors();
+
 		m_BlackTexture = AssetManager::LoadAsset<Texture2D>(s_BlackTextureGUID);
 		m_BlackTextureID = m_BlackTexture->GetTexture();
+
+		m_WhiteTexture = AssetManager::LoadAsset<Texture2D>(s_WhiteTextureGUID);
+		m_WhiteTextureID = m_WhiteTexture->GetTexture();
 	}
 
 	void OpaqueSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
@@ -118,7 +122,7 @@ namespace Odyssey
 				// Add the camera and per object data to the push descriptors
 				uint32_t uboIndex = drawcall.UniformBufferIndex;
 				m_PushDescriptors->Clear();
-				m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
+				m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
 				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
 				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
 				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 3);
@@ -134,6 +138,12 @@ namespace Odyssey
 					m_PushDescriptors->AddTexture(setPass.NormalTexture, 5);
 				else
 					m_PushDescriptors->AddTexture(m_BlackTextureID, 5);
+
+				// Shadowmap binds to the fragment shader register 6
+				if (params.Shadowmap.IsValid())
+					m_PushDescriptors->AddRenderTexture(params.Shadowmap, 6);
+				else
+					m_PushDescriptors->AddTexture(m_WhiteTextureID, 6);
 
 				// Push the descriptors into the command buffer
 				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), setPass.GraphicsPipeline);
@@ -175,7 +185,7 @@ namespace Odyssey
 		// Push the camera descriptors
 		auto renderScene = params.renderingData->renderScene;
 		m_PushDescriptors->Clear();
-		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
+		m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
 
 		// Push the descriptors into the command buffer
 		commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);
@@ -235,7 +245,7 @@ namespace Odyssey
 		commandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
 
 		m_PushDescriptors->Clear();
-		m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
+		m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
 		m_PushDescriptors->AddBuffer(uboID, 1);
 
 		m_PushDescriptors->AddTexture(renderScene->SkyboxCubemap, 3);
@@ -288,7 +298,7 @@ namespace Odyssey
 			ResourceID aliveBuffer = ParticleBatcher::GetAliveBuffer(index);
 
 			m_PushDescriptors->Clear();
-			m_PushDescriptors->AddBuffer(renderScene->cameraDataBuffers[subPassData.CameraIndex], 0);
+			m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
 			m_PushDescriptors->AddBuffer(particleBuffer, 2);
 			m_PushDescriptors->AddTexture(m_ParticleTexture->GetTexture(), 3);
 			m_PushDescriptors->AddBuffer(aliveBuffer, 4);

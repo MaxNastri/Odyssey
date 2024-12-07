@@ -27,22 +27,21 @@ namespace Odyssey
 		virtual void Setup() override;
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
 
-	private:
-		struct ShadowData
-		{
-			mat4 LightViewProj;
-		};
-
-	private:
-		Ref<VulkanPushDescriptors> m_PushDescriptors;
+	private: // Non-skinned
 		Ref<Shader> m_Shader;
-		ResourceID m_ShadowPipeline;
-		ResourceID m_UniformBuffer;
+		ResourceID m_Pipeline;
+
+	private: //Skinned
+		Ref<Shader> m_SkinnedShader;
+		ResourceID m_SkinnedPipeline;
+
+	private: // Shared
+		Ref<VulkanPushDescriptors> m_PushDescriptors;
 		ResourceID m_DescriptorLayout;
-		ShadowData m_ShadowData;
 
 	private:
 		inline static const GUID& Shader_GUID = 879318792137863213;
+		inline static const GUID& Skinned_Shader_GUID = 218097783217681239;
 	};
 
 	class OpaqueSubPass : public RenderSubPass
@@ -55,9 +54,12 @@ namespace Odyssey
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
 		Ref<Texture2D> m_BlackTexture;
 		ResourceID m_BlackTextureID;
+		Ref<Texture2D> m_WhiteTexture;
+		ResourceID m_WhiteTextureID;
 
 	private:
 		inline static const GUID& s_BlackTextureGUID = 783478723187327676;
+		inline static const GUID& s_WhiteTextureGUID = 879823474869737113;
 	};
 
 	class DebugSubPass : public RenderSubPass

@@ -24,6 +24,7 @@ namespace Odyssey
 		std::shared_ptr<PerFrameRenderingData> renderingData;
 		ResourceID GraphicsCommandBuffer;
 		ResourceID FrameTexture;
+		ResourceID Shadowmap;
 	};
 
 	class RenderPass
@@ -64,7 +65,7 @@ namespace Odyssey
 		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
 
 	private:
-		inline static constexpr uint32_t Shadowmap_Size = 1024;
+		inline static constexpr uint32_t Shadowmap_Size = 2048;
 	};
 
 	class OpaquePass : public RenderPass

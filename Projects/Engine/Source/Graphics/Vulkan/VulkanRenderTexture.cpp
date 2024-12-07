@@ -119,6 +119,11 @@ namespace Odyssey
 			m_ResolveImage = ResourceManager::Allocate<VulkanImage>(resolveDesc);
 		}
 
+		if (imageDesc.ImageType == ImageType::Shadowmap)
+		{
+			m_Sampler = ResourceManager::Allocate<VulkanTextureSampler>();
+		}
+
 		// Allocate a command buffer to transition the image layout
 		auto commandPoolID = context->GetGraphicsCommandPool();
 		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
@@ -185,9 +190,28 @@ namespace Odyssey
 		}
 	}
 
+	VkWriteDescriptorSet VulkanRenderTexture::GetDescriptorInfo()
+	{
+		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(m_Sampler);
+		auto image = ResourceManager::GetResource<VulkanImage>(m_Image);
+
+		descriptor.imageView = image->GetImageView();
+		descriptor.imageLayout = image->GetLayout();
+		descriptor.sampler = sampler->GetSamplerVK();
+
+		VkWriteDescriptorSet writeSet{};
+		writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		writeSet.dstSet = 0;
+		writeSet.dstBinding = 2;
+		writeSet.descriptorCount = 1;
+		writeSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		writeSet.pImageInfo = &descriptor;
+		return writeSet;
+	}
+
 	bool VulkanRenderTexture::IsDepthTexture(TextureFormat format)
 	{
 		return format == TextureFormat::D32_SFLOAT || format == TextureFormat::D32_SFLOAT_S8_UINT ||
-			format == TextureFormat::D24_UNORM_S8_UINT;
+			format == TextureFormat::D24_UNORM_S8_UINT || format == TextureFormat::D16_UNORM;
 	}
 }

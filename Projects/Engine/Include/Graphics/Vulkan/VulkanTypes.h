@@ -30,5 +30,6 @@ namespace Odyssey
 		bool BindVertexAttributeDescriptions = true;
 		bool AlphaBlend = false;
 		uint32_t MSAACountOverride = 0;
+		bool IsShadow = false;
 	};
 }

@@ -68,7 +68,8 @@ namespace Odyssey
 		// Dynamics
 		std::vector<VkDynamicState> dynamicStates = {
 			VK_DYNAMIC_STATE_VIEWPORT,
-			VK_DYNAMIC_STATE_SCISSOR
+			VK_DYNAMIC_STATE_SCISSOR,
+			VK_DYNAMIC_STATE_DEPTH_BIAS
 		};
 
 		VkPipelineDynamicStateCreateInfo dynamicState{};
@@ -116,10 +117,7 @@ namespace Odyssey
 		// TODO: Convert this to be dynamically set based on config/per material
 		rasterizer.cullMode = ConvertCullMode(info.CullMode);
 		rasterizer.frontFace = info.FrontCCW ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE;
-		rasterizer.depthBiasEnable = VK_FALSE;
-		rasterizer.depthBiasConstantFactor = 0.0f; // Optional
-		rasterizer.depthBiasClamp = 0.0f; // Optional
-		rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
+		rasterizer.depthBiasEnable = VK_TRUE;
 
 		// MSAA
 		VkPipelineMultisampleStateCreateInfo multisampling{};
@@ -142,7 +140,7 @@ namespace Odyssey
 		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 		depthStencil.depthTestEnable = VK_TRUE;
 		depthStencil.depthWriteEnable = info.WriteDepth;
-		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthCompareOp = info.IsShadow ? VK_COMPARE_OP_LESS_OR_EQUAL : VK_COMPARE_OP_LESS;
 		depthStencil.depthBoundsTestEnable = VK_FALSE;
 		depthStencil.minDepthBounds = 0.0f; // Optional
 		depthStencil.maxDepthBounds = 1.0f; // Optional

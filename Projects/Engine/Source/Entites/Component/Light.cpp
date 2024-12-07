@@ -62,28 +62,14 @@ namespace Odyssey
 
 	mat4 Light::CalculateViewProj(float3 sceneCenter, float sceneRadius, float4 lightPos, float4 lightDir)
 	{
-		float distance = -2.0f * sceneRadius;
+		float distance = -sceneRadius * 1.1f;
 		float3 position = lightDir * distance;
 
-		// Get the light space view matrix
-		mat4 view = glm::inverse(glm::lookAtLH(position, sceneCenter, float3(0.0f, 1.0f, 0.0f)));
-
-		// Calculate the scene center in light space
-		float4 lightSpaceCenter = view * float4(sceneCenter, 1.0f);
-
-		// Get the bounds of the orthographic projection
-		float left = lightSpaceCenter.x - sceneRadius;
-		float right = lightSpaceCenter.x + sceneRadius;
-
-		float bottom = lightSpaceCenter.y - sceneRadius;
-		float top = lightSpaceCenter.y + sceneRadius;
-
-		float zNear = lightSpaceCenter.z - sceneRadius;
-		float zFar = lightSpaceCenter.z + sceneRadius;
-
-		// Calculate the orthographic projection
-		mat4 proj = glm::orthoLH(left, right, bottom, top, .01f, 100.0f);
+		// Calculate the view/projection from the light's perspective
+		mat4 view = glm::lookAtLH(position, sceneCenter, float3(0.0f, 1.0f, 0.0f));
+		mat4 proj = glm::perspectiveLH(glm::radians(45.0f), 1.0f, 1.0f, 90.0f);
 		proj[1][1] = -proj[1][1];
+
 		return proj * view;
 	}
 }

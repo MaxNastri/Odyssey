@@ -127,3 +127,19 @@ Entries:
     Type: Odyssey.SourceShader
     Path: Shaders/Source/Shadowmapping.hlsl
     GUID: 690823879126781327
+  - Name: Shadowmapping Skinned
+    Type: Odyssey.Shader
+    Path: Shaders/Shadowmapping_Skinned.shader
+    GUID: 218097783217681239
+  - Name: Shadowmapping Skinned
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Shadowmapping_Skinned.hlsl
+    GUID: 719741236172837688
+  - Name: White
+    Type: Odyssey.Texture2D
+    Path: Textures/White.tex2D
+    GUID: 879823474869737113
+  - Name: White
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/White.png
+    GUID: 046283651452984366

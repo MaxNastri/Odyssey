@@ -4,6 +4,19 @@
 
 namespace Odyssey
 {
+	bool IsExtensionAvailable(std::vector<VkExtensionProperties>& properties, const char* extension)
+	{
+		for (const VkExtensionProperties& p : properties)
+		{
+			if (strcmp(p.extensionName, extension) == 0)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	VulkanDevice::VulkanDevice(VulkanPhysicalDevice* physicalDevice)
 	{
 		CreateLogicalDevice(physicalDevice);
@@ -27,18 +40,6 @@ namespace Odyssey
 	{
 		VkPhysicalDevice vkPhysicalDevice = physicalDevice->GetPhysicalDevice();
 
-		std::vector<const char*> device_extensions;
-		device_extensions.push_back("VK_KHR_swapchain");
-
-		// Dynamic rendering
-		device_extensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
-		//device_extensions.push_back(VK_EXT_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_EXTENSION_NAME);
-		device_extensions.push_back("VK_KHR_depth_stencil_resolve");
-		device_extensions.push_back("VK_KHR_create_renderpass2");
-		device_extensions.push_back("VK_KHR_multiview");
-		device_extensions.push_back("VK_KHR_maintenance2");
-		device_extensions.push_back(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
-
 		// Enumerate physical device extension
 		uint32_t properties_count;
 		std::vector<VkExtensionProperties> properties;
@@ -47,10 +48,24 @@ namespace Odyssey
 		properties.resize(properties_count);
 		vkEnumerateDeviceExtensionProperties(vkPhysicalDevice, nullptr, &properties_count, properties.data());
 
-#ifdef VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
-		if (IsExtensionAvailable(properties, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
-			device_extensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-#endif
+
+		std::vector<const char*> device_extensions;
+		device_extensions.push_back("VK_KHR_swapchain");
+
+		// Dynamic rendering
+		device_extensions.push_back(VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
+		device_extensions.push_back("VK_KHR_depth_stencil_resolve");
+		device_extensions.push_back("VK_KHR_create_renderpass2");
+		device_extensions.push_back("VK_KHR_multiview");
+		device_extensions.push_back("VK_KHR_maintenance2");
+		device_extensions.push_back(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
+
+		bool allowUnusedAttachments = false;
+		if (IsExtensionAvailable(properties, VK_EXT_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_EXTENSION_NAME))
+		{
+			allowUnusedAttachments = true;
+			device_extensions.push_back(VK_EXT_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_EXTENSION_NAME);
+		}
 
 		const float queue_priority[] = { 1.0f };
 		VkDeviceQueueCreateInfo queue_info[1] = {};
@@ -59,20 +74,24 @@ namespace Odyssey
 		queue_info[0].queueCount = 1;
 		queue_info[0].pQueuePriorities = queue_priority;
 
-		VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamic_rendering_feature{};
-		dynamic_rendering_feature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
-		dynamic_rendering_feature.dynamicRendering = VK_TRUE;
+		VkPhysicalDeviceDynamicRenderingFeaturesKHR dynamicRendering{};
+		dynamicRendering.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
+		dynamicRendering.dynamicRendering = VK_TRUE;
 
 		VkPhysicalDeviceBufferDeviceAddressFeatures bufferAddress{};
 		bufferAddress.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
 		bufferAddress.bufferDeviceAddress = VK_TRUE;
 
-		//VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT unusedAttachments;
-		//unusedAttachments.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_FEATURES_EXT;
-		//unusedAttachments.dynamicRenderingUnusedAttachments = VK_TRUE;
+		dynamicRendering.pNext = &bufferAddress;
 
-		dynamic_rendering_feature.pNext = &bufferAddress;
-		//unusedAttachments.pNext = &bufferAddress;
+		if (allowUnusedAttachments)
+		{
+			VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT unusedAttachments;
+			unusedAttachments.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_FEATURES_EXT;
+			unusedAttachments.dynamicRenderingUnusedAttachments = VK_TRUE;
+			unusedAttachments.pNext = dynamicRendering.pNext;
+			dynamicRendering.pNext = &unusedAttachments;
+		}
 
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		deviceFeatures.logicOp = true;
@@ -83,7 +102,7 @@ namespace Odyssey
 		create_info.pQueueCreateInfos = queue_info;
 		create_info.enabledExtensionCount = (uint32_t)device_extensions.size();
 		create_info.ppEnabledExtensionNames = device_extensions.data();
-		create_info.pNext = &dynamic_rendering_feature;
+		create_info.pNext = &dynamicRendering;
 		create_info.pEnabledFeatures = &deviceFeatures;
 
 		VkResult err = vkCreateDevice(vkPhysicalDevice, &create_info, allocator, &logicalDevice);

@@ -24,8 +24,10 @@ struct VertexOutput
 
 cbuffer SceneData : register(b0)
 {
+    float4 ViewPos;
     float4x4 View;
     float4x4 ViewProjection;
+    float4x4 LightViewProj;
 }
 
 cbuffer ModelData : register(b1)

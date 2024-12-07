@@ -81,7 +81,13 @@ namespace Odyssey
 			viewInfo.image = m_Image;
 			viewInfo.viewType = desc.ImageType == ImageType::Cubemap ? VK_IMAGE_VIEW_TYPE_CUBE : VK_IMAGE_VIEW_TYPE_2D;
 			viewInfo.format = GetFormat(desc.Format);
-			viewInfo.subresourceRange.aspectMask = isDepth ? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+			if (desc.ImageType == ImageType::Shadowmap)
+				viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+			else if (isDepth)
+				viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+			else
+				viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
 			viewInfo.subresourceRange.levelCount = desc.MipLevels;
 			viewInfo.subresourceRange.layerCount = desc.ArrayDepth;
 
@@ -409,6 +415,8 @@ namespace Odyssey
 				return VK_FORMAT_R8G8B8A8_UNORM;
 			case TextureFormat::D24_UNORM_S8_UINT:
 				return VK_FORMAT_D24_UNORM_S8_UINT;
+			case TextureFormat::D16_UNORM:
+				return VK_FORMAT_D16_UNORM;
 			case TextureFormat::D32_SFLOAT:
 				return VK_FORMAT_D32_SFLOAT;
 			case TextureFormat::D32_SFLOAT_S8_UINT:
@@ -421,6 +429,6 @@ namespace Odyssey
 	bool VulkanImage::IsDepthFormat(TextureFormat format)
 	{
 		return format == TextureFormat::D32_SFLOAT || format == TextureFormat::D32_SFLOAT_S8_UINT ||
-			format == TextureFormat::D24_UNORM_S8_UINT;
+			format == TextureFormat::D24_UNORM_S8_UINT || format == TextureFormat::D16_UNORM;
 	}
 }

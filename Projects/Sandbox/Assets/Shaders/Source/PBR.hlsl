@@ -13,21 +13,22 @@ struct VertexInput
 struct VertexOutput
 {
     float4 Position : SV_Position;
-    float3 WorldPosition : POSITION;
+    float3 WorldPosition : POSITION1;
+    float4 ShadowCoord : POSITION2;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float4 Color : COLOR0;
     float2 TexCoord0 : TEXCOORD0;
-    float4 ViewPosition : POSITION1;
     float4 BoneIndices : BLENDINDICES0;
     float4 BoneWeights : BLENDWEIGHT0;
 };
 
 cbuffer SceneData : register(b0)
 {
+    float4 ViewPos;
     float4x4 View;
     float4x4 ViewProjection;
-    float4 ViewPos;
+    float4x4 LightViewProj;
 }
 
 cbuffer ModelData : register(b1)
@@ -41,6 +42,14 @@ cbuffer SkinningData : register(b2)
     float4x4 Bones[128];
 }
 
+static const float4x4 ShadowBias = float4x4
+(
+	0.5, 0.0, 0.0, 0.5,
+	0.0, 0.5, 0.0, 0.5,
+	0.0, 0.0, 1.0, 0.0,
+	0.0, 0.0, 0.0, 1.0
+);
+
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
@@ -51,11 +60,13 @@ VertexOutput main(VertexInput input)
     
     output.Position = mul(ViewProjection, worldPosition);
     output.WorldPosition = worldPosition.xyz;
+    output.ShadowCoord = mul(LightViewProj, worldPosition);
+    output.ShadowCoord = mul(ShadowBias, output.ShadowCoord);
+    output.ShadowCoord.xyz /= output.ShadowCoord.w;
     output.Normal = normalize(mul(Model, normal).xyz);
     output.Tangent = float4(mul(Model, tangent).xyz, input.Tangent.w);
     output.Color = input.Color;
     output.TexCoord0 = input.TexCoord0;
-    output.ViewPosition = ViewPos - worldPosition;
     output.BoneWeights = input.BoneWeights;
     output.BoneIndices = input.BoneIndices;
     
@@ -70,7 +81,8 @@ VertexOutput main(VertexInput input)
 struct PixelInput
 {
     float4 Position : SV_Position;
-    float3 WorldPosition : POSITION;
+    float3 WorldPosition : POSITION1;
+    float4 ShadowCoord : POSITION2;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float4 Color : COLOR0;
@@ -106,12 +118,16 @@ Texture2D diffuseTex2D : register(t4);
 SamplerState diffuseSampler : register(s4);
 Texture2D normalTex2D : register(t5);
 SamplerState normalSampler : register(s5);
+Texture2D shadowmapTex2D : register(t6);
+SamplerState shadowmapSampler : register(s6);
 
 // Forward declarations
-LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal);
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float4 shadowCoord);
 float3 CalculateDiffuse(Light light, float3 worldNormal);
-float3 CalculateDirectionalLight(Light light, float3 worldNormal);
+float3 CalculateDirectionalLight(Light light, float3 worldNormal, float4 shadowCoord);
 float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal);
+float CalculateShadowFactor(float4 shadowCoord, float bias);
+float FilterPCF(float4 shadowCoord, float bias);
 
 float4 main(PixelInput input) : SV_Target
 {
@@ -143,12 +159,13 @@ float4 main(PixelInput input) : SV_Target
         worldNormal = mul(texNormal.xyz, texSpace);
     }
     
-    LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal);
+    LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal, input.ShadowCoord);
+    
     float3 finalLighting = lighting.Diffuse + AmbientColor.rgb;
     return albedo * float4(finalLighting, 1.0f);
 }
 
-LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal)
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float4 shadowCoord)
 {
     LightingOutput output;
     output.Diffuse = float4(0, 0, 0, 1);
@@ -158,7 +175,7 @@ LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal)
         switch (SceneLights[i].Type)
         {
             case DIRECTIONAL_LIGHT:
-                output.Diffuse += CalculateDirectionalLight(SceneLights[i], worldNormal);
+                output.Diffuse += CalculateDirectionalLight(SceneLights[i], worldNormal, shadowCoord);
                 break;
             case POINT_LIGHT:
                 output.Diffuse += CalculatePointLight(SceneLights[i], worldPosition, worldNormal);
@@ -178,10 +195,15 @@ float3 CalculateDiffuse(Light light, float3 lightVector, float3 worldNormal)
     return light.Color.rgb * light.Intensity * contribution;
 }
 
-float3 CalculateDirectionalLight(Light light, float3 worldNormal)
+float3 CalculateDirectionalLight(Light light, float3 worldNormal, float4 shadowCoord)
 {
     float3 lightVector = -normalize(light.Direction.xyz);
-    return CalculateDiffuse(light, lightVector, worldNormal);
+    
+    const float MINIMUM_SHADOW_BIAS = 0.002;
+    float bias = max(MINIMUM_SHADOW_BIAS * (1.0 - dot(worldNormal, lightVector)), MINIMUM_SHADOW_BIAS);
+    float shadowFactor = FilterPCF(shadowCoord, bias);
+    
+    return CalculateDiffuse(light, lightVector, worldNormal) * shadowFactor;
 }
 
 float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal)
@@ -197,4 +219,34 @@ float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal
     float attenuation = pow(1.0f - saturate(distance / light.Range), 2);
     
     return CalculateDiffuse(light, lightVector, worldNormal) * attenuation;
+}
+
+float CalculateShadowFactor(float4 shadowCoord, float2 offset, float bias)
+{
+    float depth = shadowmapTex2D.Sample(shadowmapSampler, shadowCoord.xy + offset).r;
+    return step(shadowCoord.z, depth + bias);
+}
+
+float FilterPCF(float4 shadowCoord, float bias)
+{
+    int2 texDimensions;
+    shadowmapTex2D.GetDimensions(texDimensions.x, texDimensions.y);
+    float scale = 1.5f;
+    float dx = scale * (1.0f / float(texDimensions.x));
+    float dy = scale * (1.0f / float(texDimensions.y));
+    
+    float shadowfactor = 0.0f;
+    int count = 0;
+    int range = 4;
+    
+    for (int x = -range; x <= range; x++)
+    {
+        for (int y = -range; y <= range; y++)
+        {
+            shadowfactor += CalculateShadowFactor(shadowCoord, float2(dx * x, dy * y), bias);
+            count++;
+        }
+    }
+    
+    return shadowfactor / float(count);
 }

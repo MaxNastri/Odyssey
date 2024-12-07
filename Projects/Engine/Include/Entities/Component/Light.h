@@ -46,6 +46,7 @@ namespace Odyssey
 		glm::vec3 m_Color = glm::vec3(1.0f);
 		float m_Intensity = 1.0f;
 		float m_Range = 1.0f;
+		float m_FOV = 45.0f;
 
 	private:
 		bool m_Enabled = true;

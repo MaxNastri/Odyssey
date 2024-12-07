@@ -16,11 +16,12 @@ namespace Odyssey
 	class VulkanDescriptorLayout;
 	class VulkanTexture;
 
-	struct CameraUniformData
+	struct SceneData
 	{
-		glm::mat4 inverseView;
-		glm::mat4 ViewProjection;
 		glm::vec4 ViewPosition;
+		mat4 View;
+		glm::mat4 ViewProjection;
+		glm::mat4 LightViewProj;
 	};
 
 	struct ObjectUniformData
@@ -105,7 +106,7 @@ namespace Odyssey
 
 	public:
 		// Uniform structs
-		CameraUniformData cameraData;
+		SceneData sceneData;
 		ObjectUniformData objectData;
 		SkinningData SkinningData;
 		LightingData LightingData;
@@ -117,7 +118,7 @@ namespace Odyssey
 		std::vector<GUID> ParticleEmitters;
 
 		// Scene uniform buffers
-		std::vector<ResourceID> cameraDataBuffers;
+		std::vector<ResourceID> sceneDataBuffers;
 		std::vector<ResourceID> perObjectUniformBuffers;
 		std::vector<ResourceID> skinningBuffers;
 		ResourceID LightingBuffer;
