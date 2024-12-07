@@ -22,6 +22,7 @@ group "Dependencies"
 include "Vendor/Jolt/JoltPhysicsPremake.lua"
 include "Vendor/efsw/premake5.lua"
 include "Vendor/glfw/premake5.lua"
+include "Vendor/Coral/Coral.Native/premake5.lua"
 group ""
 
 group "Odyssey"
