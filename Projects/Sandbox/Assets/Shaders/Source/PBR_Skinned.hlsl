@@ -44,14 +44,6 @@ struct SkinningOutput
     float4 Normal;
 };
 
-static const float4x4 ShadowBias = float4x4
-(
-	0.5, 0.0, 0.0, 0.5,
-	0.0, 0.5, 0.0, 0.5,
-	0.0, 0.0, 1.0, 0.0,
-	0.0, 0.0, 0.0, 1.0
-);
-
 // Forward declarations
 SkinningOutput SkinVertex(VertexInput input);
 
@@ -75,7 +67,6 @@ VertexOutput main(VertexInput input)
     
     // Position in shadow light space with perspective divide
     output.ShadowCoord = mul(LightViewProj, worldPosition);
-    output.ShadowCoord = mul(ShadowBias, output.ShadowCoord);
     output.ShadowCoord.xyz /= output.ShadowCoord.w;
     
     return output;
@@ -144,12 +135,12 @@ Texture2D shadowmapTex2D : register(t6);
 SamplerState shadowmapSampler : register(s6);
 
 // Forward declarations
-LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float4 shadowCoord);
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord);
 float3 CalculateDiffuse(Light light, float3 worldNormal);
-float3 CalculateDirectionalLight(Light light, float3 worldNormal, float4 shadowCoord);
+float3 CalculateDirectionalLight(Light light, float3 worldNormal, float3 shadowCoord);
 float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal);
-float CalculateShadowFactor(float4 shadowCoord, float bias);
-float FilterPCF(float4 shadowCoord, float bias);
+float CalculateShadowFactor(float3 shadowCoord, float bias);
+float FilterPCF(float3 shadowCoord, float bias);
 
 float4 main(PixelInput input) : SV_Target
 {
@@ -167,27 +158,31 @@ float4 main(PixelInput input) : SV_Target
     
     if (!blankNormalMap)
     {
-        // Move the texture normal from 0.0 - 1.0 space to -1.0 to 1.0
-        texNormal = (2.0f * texNormal) - 1.0f;
-        
-        // "Orthogonalize" the tangent
-        float3 tangent = normalize(input.Tangent.xyz - dot(input.Tangent.xyz, worldNormal) * worldNormal);
-        
-        // Calculate the binormal
-        float3 binormal = input.Tangent.w * cross(worldNormal, tangent);
-        
-        // Create the tex-space matrix and generate the final surface normal
-        float3x3 texSpace = float3x3(tangent, binormal, worldNormal);
-        worldNormal = mul(texNormal.xyz, texSpace);
+        //// Move the texture normal from 0.0 - 1.0 space to -1.0 to 1.0
+        //texNormal = (2.0f * texNormal) - 1.0f;
+        //
+        //// "Orthogonalize" the tangent
+        //float3 tangent = normalize(input.Tangent.xyz - dot(input.Tangent.xyz, worldNormal) * worldNormal);
+        //
+        //// Calculate the binormal
+        //float3 binormal = input.Tangent.w * cross(worldNormal, tangent);
+        //
+        //// Create the tex-space matrix and generate the final surface normal
+        //float3x3 texSpace = float3x3(tangent, binormal, worldNormal);
+        //worldNormal = mul(texNormal.xyz, texSpace);
     }
     
-    LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal, input.ShadowCoord);
+    float3 shadowCoord = input.ShadowCoord.xyz;
+    shadowCoord.x = 0.5f + (shadowCoord.x * 0.5f);
+    shadowCoord.y = 0.5f - (shadowCoord.y * 0.5f);
+    
+    LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal, shadowCoord);
     
     float3 finalLighting = lighting.Diffuse + AmbientColor.rgb;
     return albedo * float4(finalLighting, 1.0f);
 }
 
-LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float4 shadowCoord)
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord)
 {
     LightingOutput output;
     output.Diffuse = float4(0, 0, 0, 1);
@@ -217,13 +212,12 @@ float3 CalculateDiffuse(Light light, float3 lightVector, float3 worldNormal)
     return light.Color.rgb * light.Intensity * contribution;
 }
 
-float3 CalculateDirectionalLight(Light light, float3 worldNormal, float4 shadowCoord)
+float3 CalculateDirectionalLight(Light light, float3 worldNormal, float3 shadowCoord)
 {
     float3 lightVector = -normalize(light.Direction.xyz);
     
-    const float MINIMUM_SHADOW_BIAS = 0.00;
-    float bias = max(MINIMUM_SHADOW_BIAS * (1.0 - dot(worldNormal, lightVector)), MINIMUM_SHADOW_BIAS);
-    float shadowFactor = FilterPCF(shadowCoord, bias);
+    float shadowFactor = FilterPCF(shadowCoord, 0.0f);
+    shadowFactor = max(0.0f, shadowFactor * dot(worldNormal, lightVector));
     
     return CalculateDiffuse(light, lightVector, worldNormal) * shadowFactor;
 }
@@ -243,19 +237,19 @@ float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal
     return CalculateDiffuse(light, lightVector, worldNormal) * attenuation;
 }
 
-float CalculateShadowFactor(float4 shadowCoord, float2 offset, float bias)
+float CalculateShadowFactor(float3 shadowCoord, float2 offset, float bias)
 {
     float depth = shadowmapTex2D.Sample(shadowmapSampler, shadowCoord.xy + offset).r;
     return step(shadowCoord.z, depth + bias);
 }
 
-float FilterPCF(float4 shadowCoord, float bias)
+float FilterPCF(float3 shadowCoord, float bias)
 {
     int2 texDimensions;
     shadowmapTex2D.GetDimensions(texDimensions.x, texDimensions.y);
     float scale = 1.5f;
-    float dx = scale * (1.0f / float(texDimensions.x));
-    float dy = scale * (1.0f / float(texDimensions.y));
+    float dx = (1.0f / float(texDimensions.x));
+    float dy = (1.0f / float(texDimensions.y));
     
     float shadowfactor = 0.0f;
     int count = 0;

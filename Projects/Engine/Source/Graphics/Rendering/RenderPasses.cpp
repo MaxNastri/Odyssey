@@ -98,9 +98,9 @@ namespace Odyssey
 		{
 			VkViewport viewport{};
 			viewport.x = 0.0f;
-			viewport.y = 0.0f;
-			viewport.width = static_cast<float>(width);
-			viewport.height = static_cast<float>(height);
+			viewport.y = (float)height;
+			viewport.width = (float)width;
+			viewport.height = -1.0f * (float)height;
 			viewport.minDepth = 0.0f;
 			viewport.maxDepth = 1.0f;
 			commandBuffer->BindViewport(viewport);
@@ -281,9 +281,9 @@ namespace Odyssey
 		{
 			VkViewport viewport{};
 			viewport.x = 0.0f;
-			viewport.y = 0.0f;
-			viewport.width = static_cast<float>(width);
-			viewport.height = static_cast<float>(height);
+			viewport.y = height;
+			viewport.width = (float)width;
+			viewport.height = -1.0f * (float)height;
 			viewport.minDepth = 0.0f;
 			viewport.maxDepth = 1.0f;
 			commandBuffer->BindViewport(viewport);
@@ -414,9 +414,9 @@ namespace Odyssey
 		{
 			VkViewport viewport{};
 			viewport.x = 0.0f;
-			viewport.y = 0.0f;
-			viewport.width = static_cast<float>(width);
-			viewport.height = static_cast<float>(height);
+			viewport.y = (float)height;
+			viewport.width = (float)width;
+			viewport.height = -1.0f * (float)height;
 			viewport.minDepth = 0.0f;
 			viewport.maxDepth = 1.0f;
 			commandBuffer->BindViewport(viewport);

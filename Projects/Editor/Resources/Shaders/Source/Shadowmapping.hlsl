@@ -27,7 +27,6 @@ VertexOutput main(VertexInput input)
 {
     VertexOutput output;
     float4 position = float4(input.Position, 1.0f);
-    position.xyz -= (input.Normal * 0.001f);
     output.Position = mul(Model, position);
     output.Position = mul(LightViewProj, output.Position);
     return output;

@@ -92,7 +92,6 @@ namespace Odyssey
 	void Camera::CalculateProjection()
 	{
 		m_Projection = glm::perspectiveFovLH(m_FieldOfView, m_Width, m_Height, m_NearClip, m_FarClip);
-		m_Projection[1][1] = -m_Projection[1][1];
 		m_InverseProjection = glm::inverse(m_Projection);
 	}
 

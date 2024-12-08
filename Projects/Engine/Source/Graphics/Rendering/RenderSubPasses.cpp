@@ -71,13 +71,13 @@ namespace Odyssey
 				// Add the camera and per object data to the push descriptors
 				uint32_t uboIndex = drawcall.UniformBufferIndex;
 				m_PushDescriptors->Clear();
-				m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[uboIndex], 0);
+				m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[0], 0);
 				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
 
 				if (drawcall.Skinned)
 					m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
 
-				commandBuffer->SetDepthBias(100.25f, 0.0f, 1.75f);
+				commandBuffer->SetDepthBias(1.0f, 0.0f, 1.25f);
 
 				// Push the descriptors into the command buffer
 				if (drawcall.Skinned)

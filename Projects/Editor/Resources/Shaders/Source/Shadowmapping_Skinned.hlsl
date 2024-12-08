@@ -45,8 +45,6 @@ VertexOutput main(VertexInput input)
     
     SkinningOutput skinning = SkinVertex(input);
     skinning.Normal = normalize(skinning.Normal);
-    skinning.Position.xyz -= (skinning.Normal.xyz * 0.001f);
-    
     output.Position = mul(Model, skinning.Position);
     output.Position = mul(LightViewProj, output.Position);
     

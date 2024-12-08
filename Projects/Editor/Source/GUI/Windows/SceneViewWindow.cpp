@@ -165,7 +165,6 @@ namespace Odyssey
 				glm::mat4 worldMatrix = transform->GetLocalMatrix();
 				glm::mat4 view = camera.GetInverseView();
 				glm::mat4 proj = camera.GetProjection();
-				proj[1][1] *= -1.0f;
 
 				ImGuizmo::AllowAxisFlip(SceneViewWindow::AllowFlip);
 				ImGuizmo::SetGizmoSizeClipSpace(0.1f);
