@@ -65,7 +65,7 @@ namespace Odyssey
 		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
 
 	private:
-		inline static constexpr uint32_t Shadowmap_Size = 2048;
+		inline static constexpr uint32_t Shadowmap_Size = 4096;
 	};
 
 	class OpaquePass : public RenderPass

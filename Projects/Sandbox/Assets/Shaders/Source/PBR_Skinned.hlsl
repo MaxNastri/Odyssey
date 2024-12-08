@@ -158,18 +158,18 @@ float4 main(PixelInput input) : SV_Target
     
     if (!blankNormalMap)
     {
-        //// Move the texture normal from 0.0 - 1.0 space to -1.0 to 1.0
-        //texNormal = (2.0f * texNormal) - 1.0f;
-        //
-        //// "Orthogonalize" the tangent
-        //float3 tangent = normalize(input.Tangent.xyz - dot(input.Tangent.xyz, worldNormal) * worldNormal);
-        //
-        //// Calculate the binormal
-        //float3 binormal = input.Tangent.w * cross(worldNormal, tangent);
-        //
-        //// Create the tex-space matrix and generate the final surface normal
-        //float3x3 texSpace = float3x3(tangent, binormal, worldNormal);
-        //worldNormal = mul(texNormal.xyz, texSpace);
+        // Move the texture normal from 0.0 - 1.0 space to -1.0 to 1.0
+        texNormal = (2.0f * texNormal) - 1.0f;
+        
+        // "Orthogonalize" the tangent
+        float3 tangent = normalize(input.Tangent.xyz - dot(input.Tangent.xyz, worldNormal) * worldNormal);
+        
+        // Calculate the binormal
+        float3 binormal = input.Tangent.w * cross(worldNormal, tangent);
+        
+        // Create the tex-space matrix and generate the final surface normal
+        float3x3 texSpace = float3x3(tangent, binormal, worldNormal);
+        worldNormal = mul(texNormal.xyz, texSpace);
     }
     
     float3 shadowCoord = input.ShadowCoord.xyz;
