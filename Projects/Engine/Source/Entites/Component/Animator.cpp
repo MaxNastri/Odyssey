@@ -49,10 +49,13 @@ namespace Odyssey
 
 	void Animator::OnEditorUpdate()
 	{
-		if (m_BoneGameObjects.size() == 0)
-			CreateBoneGameObjects();
+		if (m_Rig && m_Blueprint)
+		{
+			if (m_BoneGameObjects.size() == 0)
+				CreateBoneGameObjects();
 
-		Update();
+			Update();
+		}
 	}
 
 	void Animator::Update()
@@ -91,12 +94,12 @@ namespace Odyssey
 
 	GUID Animator::GetRigAsset()
 	{
-		return m_Rig->GetGUID();
+		return m_Rig ? m_Rig->GetGUID() : GUID::Empty();
 	}
 
 	GUID Animator::GetBlueprintAsset()
 	{
-		return m_Blueprint->GetGUID();
+		return m_Blueprint ? m_Blueprint->GetGUID() : GUID::Empty();
 	}
 
 	void Animator::SetRig(GUID guid)

@@ -13,22 +13,21 @@ namespace Odyssey
 
 	public:
 		static VkVertexInputBindingDescription GetBindingDescription();
-		static std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions();
 
 	public:
-		glm::vec3 Position = glm::vec3(0, 0, 0);
-		glm::vec3 Normal = glm::vec3(0, 1, 0);
-		glm::vec3 Tangent = glm::vec3(0, 1, 0);
-		glm::vec4 Color = glm::vec4(1, 1, 1, 1);
-		glm::vec2 TexCoord0 = glm::vec2(0, 0);
-		glm::vec2 TexCoord1 = glm::vec2(0, 0);
-		glm::vec2 TexCoord2 = glm::vec2(0, 0);
-		glm::vec2 TexCoord3 = glm::vec2(0, 0);
-		glm::vec2 TexCoord4 = glm::vec2(0, 0);
-		glm::vec2 TexCoord5 = glm::vec2(0, 0);
-		glm::vec2 TexCoord6 = glm::vec2(0, 0);
-		glm::vec2 TexCoord7 = glm::vec2(0, 0);
-		glm::vec4 BoneIndices = glm::vec4(0, 0, 0, 0);
-		glm::vec4 BoneWeights = glm::vec4(0, 0, 0, 0);
+		float3 Position = float3(0, 0, 0);
+		float3 Normal = float3(0, 1, 0);
+		float4 Tangent = float4(0, 1, 0, 0);
+		float4 Color = float4(1, 1, 1, 1);
+		float2 TexCoord0 = float2(0, 0);
+		float2 TexCoord1 = float2(0, 0);
+		float2 TexCoord2 = float2(0, 0);
+		float2 TexCoord3 = float2(0, 0);
+		float2 TexCoord4 = float2(0, 0);
+		float2 TexCoord5 = float2(0, 0);
+		float2 TexCoord6 = float2(0, 0);
+		float2 TexCoord7 = float2(0, 0);
+		float4 BoneIndices = float4(0, 0, 0, 0);
+		float4 BoneWeights = float4(0, 0, 0, 0);
 	};
 }

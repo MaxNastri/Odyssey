@@ -68,7 +68,8 @@ namespace Odyssey
 		// Dynamics
 		std::vector<VkDynamicState> dynamicStates = {
 			VK_DYNAMIC_STATE_VIEWPORT,
-			VK_DYNAMIC_STATE_SCISSOR
+			VK_DYNAMIC_STATE_SCISSOR,
+			VK_DYNAMIC_STATE_DEPTH_BIAS
 		};
 
 		VkPipelineDynamicStateCreateInfo dynamicState{};
@@ -86,18 +87,15 @@ namespace Odyssey
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-		VkVertexInputBindingDescription bindingDescription{};
-		std::vector<VkVertexInputAttributeDescription> vertexAttributeDescriptions{};
-
 		if (info.BindVertexAttributeDescriptions)
 		{
-			bindingDescription = Vertex::GetBindingDescription();
+			VkVertexInputBindingDescription bindingDescription = Vertex::GetBindingDescription();
 			vertexInputInfo.vertexBindingDescriptionCount = 1;
 			vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 
-			vertexAttributeDescriptions = Vertex::GetAttributeDescriptions();
-			vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexAttributeDescriptions.size();
-			vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescriptions.data();
+			auto attributeDescriptions = info.AttributeDescriptions.Convert<VkVertexInputAttributeDescription>();
+			vertexInputInfo.vertexAttributeDescriptionCount = info.AttributeDescriptions.GetCount();
+			vertexInputInfo.pVertexAttributeDescriptions = (VkVertexInputAttributeDescription*)info.AttributeDescriptions.GetData().data();
 		}
 
 		// Input Assembly
@@ -116,16 +114,20 @@ namespace Odyssey
 		// TODO: Convert this to be dynamically set based on config/per material
 		rasterizer.cullMode = ConvertCullMode(info.CullMode);
 		rasterizer.frontFace = info.FrontCCW ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE;
-		rasterizer.depthBiasEnable = VK_FALSE;
-		rasterizer.depthBiasConstantFactor = 0.0f; // Optional
-		rasterizer.depthBiasClamp = 0.0f; // Optional
-		rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
+		rasterizer.depthBiasEnable = VK_TRUE;
 
 		// MSAA
 		VkPipelineMultisampleStateCreateInfo multisampling{};
 		multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 		multisampling.sampleShadingEnable = VK_FALSE;
-		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+		if (info.MSAACountOverride)
+			multisampling.rasterizationSamples = (VkSampleCountFlagBits)info.MSAACountOverride;
+		else if (m_Context->GetSampleCount() > 1)
+			multisampling.rasterizationSamples = (VkSampleCountFlagBits)m_Context->GetSampleCount();
+		else
+			multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
 		multisampling.minSampleShading = 1.0f; // Optional
 		multisampling.pSampleMask = nullptr; // Optional
 		multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
@@ -135,7 +137,7 @@ namespace Odyssey
 		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 		depthStencil.depthTestEnable = VK_TRUE;
 		depthStencil.depthWriteEnable = info.WriteDepth;
-		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthCompareOp = info.IsShadow ? VK_COMPARE_OP_LESS_OR_EQUAL : VK_COMPARE_OP_LESS;
 		depthStencil.depthBoundsTestEnable = VK_FALSE;
 		depthStencil.minDepthBounds = 0.0f; // Optional
 		depthStencil.maxDepthBounds = 1.0f; // Optional

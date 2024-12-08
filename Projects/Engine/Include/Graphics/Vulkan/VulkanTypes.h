@@ -1,6 +1,7 @@
 #pragma once
 #include "Resource.h"
 #include "Enums.h"
+#include "BinaryBuffer.h"
 
 namespace Odyssey
 {
@@ -29,5 +30,8 @@ namespace Odyssey
 		bool WriteDepth = true;
 		bool BindVertexAttributeDescriptions = true;
 		bool AlphaBlend = false;
+		uint32_t MSAACountOverride = 0;
+		bool IsShadow = false;
+		BinaryBuffer AttributeDescriptions;
 	};
 }

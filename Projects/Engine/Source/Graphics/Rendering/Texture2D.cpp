@@ -52,6 +52,8 @@ namespace Odyssey
 		m_TextureDescription.Width = (uint32_t)source->GetWidth();
 		m_TextureDescription.Height = (uint32_t)source->GetHeight();
 		m_TextureDescription.Channels = (uint32_t)source->GetChannels();
+		if (m_AssetPath.string().find("normal") != std::string::npos)
+			m_TextureDescription.Format = TextureFormat::R8G8B8A8_UNORM;
 
 		// Destroy the existing texture
 		if (m_Texture)

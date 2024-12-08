@@ -23,7 +23,8 @@ namespace Odyssey
 		std::shared_ptr<VulkanContext> context;
 		std::shared_ptr<PerFrameRenderingData> renderingData;
 		ResourceID GraphicsCommandBuffer;
-		ResourceID FrameRT;
+		ResourceID FrameTexture;
+		ResourceID Shadowmap;
 	};
 
 	class RenderPass
@@ -34,19 +35,37 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) = 0;
 
 	public:
-		void SetColorRenderTexture(ResourceID colorRT) { m_ColorRT = colorRT; }
-		void SetDepthRenderTexture(ResourceID depthRT) { m_DepthRT = depthRT; }
+		void SetColorRenderTexture(ResourceID colorRT);
+		void SetDepthRenderTexture(ResourceID depthRT);
 		void SetLayouts(VkImageLayout beginLayout, VkImageLayout endLayout) { m_BeginLayout = beginLayout; m_EndLayout = endLayout; }
 		void SetClearValue(glm::vec4 clearValue) { m_ClearValue = clearValue; }
 
 	protected:
 		ResourceID m_ColorRT;
 		ResourceID m_DepthRT;
+
 		glm::vec4 m_ClearValue;
 		// Starting layout
 		// Ending layout
 		VkImageLayout m_BeginLayout;
 		VkImageLayout m_EndLayout;
+	};
+
+	class ShadowPass : public RenderPass
+	{
+	public:
+		ShadowPass();
+
+	public:
+		virtual void BeginPass(RenderPassParams& params) override;
+		virtual void Execute(RenderPassParams& params) override;
+		virtual void EndPass(RenderPassParams& params) override;
+
+	private:
+		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
+
+	private:
+		inline static constexpr uint32_t Shadowmap_Size = 4096;
 	};
 
 	class OpaquePass : public RenderPass

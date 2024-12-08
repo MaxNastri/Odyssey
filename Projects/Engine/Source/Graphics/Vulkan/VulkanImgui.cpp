@@ -53,7 +53,7 @@ namespace Odyssey
 		init_info.Subpass = 0;
 		init_info.MinImageCount = initInfo.minImageCount;
 		init_info.ImageCount = initInfo.imageCount;
-		init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+		init_info.MSAASamples = (VkSampleCountFlagBits)m_Context->GetSampleCount();
 		init_info.Allocator = allocator;
 		init_info.CheckVkResultFn = nullptr;
 		init_info.UseDynamicRendering = true;
@@ -124,7 +124,14 @@ namespace Odyssey
 	uint64_t VulkanImgui::AddRenderTexture(ResourceID renderTextureID, ResourceID samplerID)
 	{
 		auto texture = ResourceManager::GetResource<VulkanRenderTexture>(renderTextureID);
-		auto image = ResourceManager::GetResource<VulkanImage>(texture->GetImage());
+
+		Ref<VulkanImage> image;
+
+		if (m_Context->GetSampleCount() > 1)
+			image = ResourceManager::GetResource<VulkanImage>(texture->GetResolveImage());
+		else
+			image = ResourceManager::GetResource<VulkanImage>(texture->GetImage());
+
 		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(samplerID);
 
 		VkSampler samplerVk = sampler->GetSamplerVK();
@@ -201,7 +208,7 @@ namespace Odyssey
 		submitInfo.pCommandBuffers = commandBuffer->GetCommandBufferRef();
 
 		commandBuffer->EndCommands();
-		
+
 		VkResult err = vkQueueSubmit(m_Context->GetGraphicsQueueVK(), 1, &submitInfo, VK_NULL_HANDLE);
 
 		if (!check_vk_result(err))

@@ -17,6 +17,8 @@ namespace Odyssey
 		GUID GUID;
 		std::string Name = "GameObject";
 		bool Serialize = true;
+		bool IsPrefabInstance = false;
+		int64_t SortOrder = -1;
 
 	private:
 		GameObject m_GameObject;

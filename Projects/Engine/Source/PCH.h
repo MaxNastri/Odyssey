@@ -35,3 +35,12 @@ using namespace glm;
 using namespace JPH;
 
 using Path = std::filesystem::path;
+
+namespace Odyssey
+{
+	template<typename T>
+	inline static bool Contains(const std::vector<T>& vector, const T& search)
+	{
+		return std::find(vector.begin(), vector.end(), search) != vector.end();
+	}
+}

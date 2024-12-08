@@ -40,7 +40,7 @@ namespace Odyssey
 		Ref<AnimationStateNode> AddAnimationState(std::string name);
 
 	public:
-		Ref<AnimationProperty> GetProperty(const std::string& propertyName) { return m_PropertyMap[propertyName]; }
+		Ref<AnimationProperty> GetProperty(const std::string& propertyName);
 		std::vector<Ref<AnimationProperty>>& GetProperties() { return m_Properties; }
 		Ref<AnimationState> GetAnimationState(GUID nodeGUID);
 		Ref<AnimationLink> GetAnimationLink(GUID linkGUID);
@@ -58,10 +58,10 @@ namespace Odyssey
 
 	private:
 		void ClearTriggers();
+		Ref<AnimationProperty> GetProperty(std::string_view name);
 
 	private:
 		std::vector<Ref<AnimationProperty>> m_Properties;
-		std::unordered_map<std::string, Ref<AnimationProperty>> m_PropertyMap;
 		std::map<GUID, Ref<AnimationState>> m_States;
 		std::map<Ref<AnimationState>, std::vector<Ref<AnimationLink>>> m_StateToLinks;
 		Ref<AnimationState> m_CurrentState;

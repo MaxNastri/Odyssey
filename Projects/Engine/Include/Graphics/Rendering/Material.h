@@ -23,14 +23,17 @@ namespace Odyssey
 
 	public:
 		Ref<Shader> GetShader() { return m_Shader; }
-		Ref<Texture2D> GetTexture() { return m_Texture; }
+		Ref<Texture2D> GetColorTexture() { return m_ColorTexture; }
+		Ref<Texture2D> GetNormalTexture() { return m_NormalTexture; }
 
 	public:
 		void SetShader(Ref<Shader> shader) { m_Shader = shader; }
-		void SetTexture(Ref<Texture2D> texture) { m_Texture = texture; }
+		void SetColorTexture(Ref<Texture2D> texture) { m_ColorTexture = texture; }
+		void SetNormalTexture(Ref<Texture2D> texture) { m_NormalTexture = texture; }
 
 	private:
 		Ref<Shader> m_Shader;
-		Ref<Texture2D> m_Texture;
+		Ref<Texture2D> m_ColorTexture;
+		Ref<Texture2D> m_NormalTexture;
 	};
 }

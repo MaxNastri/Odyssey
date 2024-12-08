@@ -7,6 +7,7 @@
 #include "EditorEvents.h"
 #include "SceneSettingsWindow.h"
 #include "AnimationWindow.h"
+#include "PreferencesWindow.h"
 
 namespace Odyssey
 {
@@ -46,7 +47,13 @@ namespace Odyssey
 
 				ImGui::EndMenu();
 			}
+			if (ImGui::BeginMenu("Edit"))
+			{
+				if (ImGui::MenuItem("Preferences"))
+					GUIManager::CreateDockableWindow<PreferencesWindow>();
 
+				ImGui::EndMenu();
+			}
 			if (ImGui::BeginMenu("Project"))
 			{
 				if (ImGui::MenuItem("Create"))
@@ -57,6 +64,7 @@ namespace Odyssey
 				{
 
 				}
+				ImGui::EndMenu();
 			}
 
 			if (ImGui::BeginMenu("Window"))

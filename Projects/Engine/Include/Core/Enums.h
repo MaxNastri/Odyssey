@@ -56,6 +56,7 @@ namespace Odyssey
 		Cubemap = 3,
 		RenderTexture = 4,
 		DepthTexture = 5,
+		Shadowmap = 6,
 	};
 
 	enum class TextureFormat
@@ -67,6 +68,7 @@ namespace Odyssey
 		D32_SFLOAT = 100,
 		D32_SFLOAT_S8_UINT = 101,
 		D24_UNORM_S8_UINT = 102,
+		D16_UNORM = 124,
 	};
 
 	enum class ImageTiling

@@ -25,7 +25,7 @@ namespace Odyssey
 	void Light::Deserialize(SerializationNode& node)
 	{
 		std::string lightType;
-		node.ReadData("Enable", m_Enabled);
+		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Light Type", lightType);
 		node.ReadData("Color", m_Color);
 		node.ReadData("Intensity", m_Intensity);
@@ -58,5 +58,17 @@ namespace Odyssey
 		}
 
 		return rotation;
+	}
+
+	mat4 Light::CalculateViewProj(float3 sceneCenter, float sceneRadius, float4 lightPos, float4 lightDir)
+	{
+		float distance = -sceneRadius * 1.1f;
+		float3 position = lightDir * distance;
+
+		// Calculate the view/projection from the light's perspective
+		mat4 view = glm::lookAtLH(position, sceneCenter, float3(0.0f, 1.0f, 0.0f));
+		mat4 proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -20.0f, 20.0f);
+
+		return proj * view;
 	}
 }

@@ -53,7 +53,6 @@ namespace Odyssey
 		AssetFieldDrawer m_AnimationClipDrawer;
 
 	private: // Animation Link
-		DropdownDrawer m_PropertyNameDrawer;
 		EnumDrawer<ComparisonOp> m_ComparisonDrawer;
 		Ref<PropertyDrawer> m_LinkValueDrawer;
 

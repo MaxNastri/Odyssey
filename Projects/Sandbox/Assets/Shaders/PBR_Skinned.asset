@@ -1,0 +1,9 @@
+m_SourceAsset: 0456787683416587321
+m_GUID: 6712367376531468719
+m_Name: PBR Skinned
+m_Type: Odyssey.Shader
+m_Shaders:
+  - ShaderType: 1
+    ShaderCode: 2014516192613528873
+  - ShaderType: 2
+    ShaderCode: 17547895010854438639

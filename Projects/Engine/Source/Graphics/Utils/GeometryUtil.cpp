@@ -1,9 +1,109 @@
 #include "glm.h"
 #include "GeometryUtil.h"
 #include <utility>
+#include "mikktspace.h"
 
 namespace Odyssey
 {
+	struct BasicMesh
+	{
+		std::vector<Vertex>* Vertices;
+		std::vector<uint32_t>* Indices;
+	};
+
+	inline static int32_t GetFaceCount(const SMikkTSpaceContext* context)
+	{
+		BasicMesh* mesh = (BasicMesh*)context->m_pUserData;
+
+		return (int32_t)mesh->Indices->size() / 3;
+	}
+
+	inline static int32_t GetNumberOfFaceVertices(const SMikkTSpaceContext* context, int32_t face)
+	{
+		return 3;
+	}
+
+	inline static int32_t GetVertexIndex(const SMikkTSpaceContext* context, int32_t face, int32_t vertexIndex)
+	{
+		BasicMesh* mesh = (BasicMesh*)context->m_pUserData;
+
+		int32_t faceSize = GetNumberOfFaceVertices(context, face);
+		int32_t indicesIndex = (face * faceSize) + vertexIndex;
+
+		int32_t index = (int32_t)((*mesh->Indices)[indicesIndex]);
+
+		return index;
+	}
+
+	static void GetPosition(const SMikkTSpaceContext* context, float outpos[], int32_t face, int32_t vertexIndex)
+	{
+		BasicMesh* mesh = (BasicMesh*)context->m_pUserData;
+
+		int32_t index = GetVertexIndex(context, face, vertexIndex);
+		Vertex& vertex = (*mesh->Vertices)[index];
+
+		outpos[0] = vertex.Position.x;
+		outpos[1] = vertex.Position.y;
+		outpos[2] = vertex.Position.z;
+	}
+
+	static void GetNormal(const SMikkTSpaceContext* context, float outnormal[], int32_t face, int32_t vertexIndex)
+	{
+		BasicMesh* mesh = (BasicMesh*)context->m_pUserData;
+
+		int32_t index = GetVertexIndex(context, face, vertexIndex);
+		Vertex& vertex = (*mesh->Vertices)[index];
+
+		outnormal[0] = vertex.Normal.x;
+		outnormal[1] = vertex.Normal.y;
+		outnormal[2] = vertex.Normal.z;
+	}
+
+	static void GetTexCoord0(const SMikkTSpaceContext* context, float outuv[], int32_t face, int32_t vertexIndex)
+	{
+		BasicMesh* mesh = (BasicMesh*)context->m_pUserData;
+
+		int32_t index = GetVertexIndex(context, face, vertexIndex);
+		Vertex& vertex = (*mesh->Vertices)[index];
+
+		outuv[0] = vertex.TexCoord0.x;
+		outuv[1] = vertex.TexCoord0.y;
+	}
+
+	static void SetTangentSpaceBasic(const SMikkTSpaceContext* context, const float tangentu[], float fSign, int32_t face, int32_t vertexIndex)
+	{
+		BasicMesh* mesh = (BasicMesh*)context->m_pUserData;
+
+		int32_t index = GetVertexIndex(context, face, vertexIndex);
+		Vertex& vertex = (*mesh->Vertices)[index];
+
+		vertex.Tangent.x = tangentu[0];
+		vertex.Tangent.y = tangentu[1];
+		vertex.Tangent.z = tangentu[2];
+		vertex.Tangent.w = fSign;
+	}
+
+	void GeometryUtil::GenerateTangents(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
+	{
+		BasicMesh mesh({ &vertices, &indices });
+
+		SMikkTSpaceInterface mikkInterface{};
+		SMikkTSpaceContext context{};
+
+		mikkInterface.m_getNumFaces = GetFaceCount;
+		mikkInterface.m_getNumVerticesOfFace = GetNumberOfFaceVertices;
+
+		mikkInterface.m_getPosition = GetPosition;
+		mikkInterface.m_getNormal = GetNormal;
+		mikkInterface.m_getTexCoord = GetTexCoord0;
+		mikkInterface.m_setTSpaceBasic = SetTangentSpaceBasic;
+
+		context.m_pInterface = &mikkInterface;
+		context.m_pUserData = &mesh;
+
+		genTangSpaceDefault(&context);
+	}
+
 	void GeometryUtil::ComputeBox(vec3 center, vec3 scale, std::vector<Vertex>& vertices, std::vector<unsigned int>& indices)
 	{
 		// A box has six faces, each one pointing in a different direction.

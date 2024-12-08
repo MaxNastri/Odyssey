@@ -1,6 +1,6 @@
 #pragma once
 #include "Enums.h"
-#include "FreeList.hpp"
+#include "FreeList.h"
 #include "Ref.h"
 #include "Resource.h"
 
@@ -49,6 +49,7 @@ namespace Odyssey
 
 	public:
 		static void Flush();
+		static std::shared_ptr<VulkanContext> GetContext() { return s_Context; }
 
 	private: // Vulkan members
 		inline static std::shared_ptr<VulkanContext> s_Context = nullptr;

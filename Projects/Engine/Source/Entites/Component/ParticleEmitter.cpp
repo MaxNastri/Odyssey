@@ -7,7 +7,6 @@ namespace Odyssey
 	ParticleEmitter::ParticleEmitter(const GameObject& gameObject)
 	{
 		m_GameObject = gameObject;
-		m_EmissionTime = 0.0f;
 		m_EmissionCount = m_EmissionRate;
 	}
 
@@ -18,6 +17,7 @@ namespace Odyssey
 		componentNode.WriteData("Type", ParticleEmitter::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Duration", m_Duration);
+		componentNode.WriteData("Looping", m_Looping);
 		componentNode.WriteData("Material", m_Material.CRef());
 		componentNode.WriteData("Emission Rate", m_EmissionRate);
 		componentNode.WriteData("Start Color", emitterData.StartColor);
@@ -32,6 +32,7 @@ namespace Odyssey
 	{
 		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Duration", m_Duration);
+		node.ReadData("Looping", m_Looping);
 		node.ReadData("Emission Rate", m_EmissionRate);
 		node.ReadData("Material", m_Material.Ref());
 		node.ReadData("Start Color", emitterData.StartColor);
@@ -55,8 +56,23 @@ namespace Odyssey
 	void ParticleEmitter::Update(float deltaTime)
 	{
 		float emissionInterval = 1.0f / (float)m_EmissionRate;
-		m_EmissionTime += deltaTime;
 		emitterData.EmitCount = 0;
+
+		m_ActiveTime += deltaTime;
+
+		if (m_ActiveTime >= m_Duration)
+		{
+			if (!m_Looping)
+			{
+				m_Active = false;
+				return;
+			}
+			else
+				m_Active = 0.0f;
+		}
+
+		// Update our time since last emission
+		m_EmissionTime += deltaTime;
 
 		if (m_EmissionTime > emissionInterval)
 		{

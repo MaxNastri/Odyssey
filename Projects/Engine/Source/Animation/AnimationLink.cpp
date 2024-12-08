@@ -3,22 +3,14 @@
 
 namespace Odyssey
 {
-	AnimationLink::AnimationLink(Ref<AnimationState> start, Ref<AnimationState> end, Ref<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue)
-		: m_GUID(GUID::New()), m_BeginState(start), m_EndState(end),
-		m_Property(property), m_ComparisonOp(compareOp)
-
+	AnimationCondition::AnimationCondition(Ref<AnimationProperty> property, ComparisonOp comparison, const RawBuffer& targetValue)
 	{
+		m_Property = property;
+		m_ComparisonOp = comparison;
 		RawBuffer::Copy(m_TargetValue, targetValue);
 	}
 
-	AnimationLink::AnimationLink(GUID guid, Ref<AnimationState> start, Ref<AnimationState> end, Ref<AnimationProperty> property, ComparisonOp compareOp, RawBuffer& targetValue)
-		: m_GUID(guid), m_BeginState(start), m_EndState(end),
-		m_Property(property), m_ComparisonOp(compareOp)
-	{
-		RawBuffer::Copy(m_TargetValue, targetValue);
-	}
-
-	bool AnimationLink::Evaluate()
+	bool AnimationCondition::Evaluate()
 	{
 		switch (m_ComparisonOp)
 		{
@@ -97,51 +89,49 @@ namespace Odyssey
 		return false;
 	}
 
-	void AnimationLink::SetFloat(float value)
-	{
-		static constexpr size_t floatSize = sizeof(float);
-		if (m_TargetValue.GetSize() != floatSize)
-		{
-			m_TargetValue.Free();
-			m_TargetValue.Allocate(floatSize);
-		}
+	AnimationLink::AnimationLink(Ref<AnimationState> start, Ref<AnimationState> end)
+		: m_GUID(GUID::New()), m_BeginState(start), m_EndState(end)
 
-		m_TargetValue.Write(&value);
+	{
 	}
 
-	void AnimationLink::SetInt(int32_t value)
+	AnimationLink::AnimationLink(GUID guid, Ref<AnimationState> start, Ref<AnimationState> end)
+		: m_GUID(guid), m_BeginState(start), m_EndState(end)
 	{
-		static constexpr size_t intSize = sizeof(int32_t);
-		if (m_TargetValue.GetSize() != intSize)
-		{
-			m_TargetValue.Free();
-			m_TargetValue.Allocate(intSize);
-		}
 
-		m_TargetValue.Write(&value);
 	}
 
-	void AnimationLink::SetBool(bool value)
+	bool AnimationLink::Evaluate(Ref<AnimationState>& currentState)
 	{
-		static constexpr size_t boolSize = sizeof(bool);
-		if (m_TargetValue.GetSize() != boolSize)
+		for (Ref<AnimationCondition> condition : m_ForwardTransitions)
 		{
-			m_TargetValue.Free();
-			m_TargetValue.Allocate(boolSize);
+			if (currentState != m_EndState && condition->Evaluate())
+			{
+				currentState->Reset();
+				currentState = m_EndState;
+				return true;
+			}
 		}
 
-		m_TargetValue.Write(&value);
+		for (Ref<AnimationCondition> condition : m_ReturnTransitions)
+		{
+			if (currentState != m_BeginState && condition->Evaluate())
+			{
+				currentState->Reset();
+				currentState = m_BeginState;
+				return true;
+			}
+		}
+
+		return false;
 	}
-
-	void AnimationLink::SetTrigger(bool value)
+	void AnimationLink::AddTransition(Ref<AnimationState> begin, Ref<AnimationState> end, Ref<AnimationCondition>& condition)
 	{
-		static constexpr size_t boolSize = sizeof(bool);
-		if (m_TargetValue.GetSize() != boolSize)
-		{
-			m_TargetValue.Free();
-			m_TargetValue.Allocate(boolSize);
-		}
-
-		m_TargetValue.Write(&value);
+		// Check for a forward transition (begin -> end)
+		if (m_BeginState == begin && m_EndState == end)
+			m_ForwardTransitions.emplace_back(condition);
+		// Check for a return transition (end -> begin)
+		else if (m_BeginState == end && m_EndState == begin)
+			m_ReturnTransitions.emplace_back(condition);
 	}
 }

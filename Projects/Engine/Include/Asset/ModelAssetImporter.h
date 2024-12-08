@@ -3,11 +3,6 @@
 #include "Bone.h"
 #include "BoneKeyframe.h"
 
-namespace fbxsdk
-{
-	class FbxNode;
-}
-
 namespace Odyssey
 {
 	struct MeshImportData
@@ -22,7 +17,6 @@ namespace Odyssey
 
 	struct FBXBone
 	{
-		fbxsdk::FbxNode* Node;
 		std::string Name;
 		int32_t ParentIndex = -1;
 		int32_t Index = -1;
@@ -38,7 +32,6 @@ namespace Odyssey
 
 	struct RigImportData
 	{
-		std::vector<BoneInfluence> ControlPointInfluences;
 		std::unordered_map<std::string, FBXBone> Bones;
 		glm::mat4 RotationOffset = glm::mat4(1.0f);
 		glm::mat4 ScaleOffset = glm::mat4(1.0f);
@@ -50,8 +43,8 @@ namespace Odyssey
 	public:
 		std::string Name;
 		double Start = std::numeric_limits<double>::max();
-		double Duration;
-		uint32_t FramesPerSecond;
+		double Duration = 0.0;
+		uint32_t FramesPerSecond = 0;
 		std::map<std::string, BoneKeyframe> BoneKeyframes;
 	};
 

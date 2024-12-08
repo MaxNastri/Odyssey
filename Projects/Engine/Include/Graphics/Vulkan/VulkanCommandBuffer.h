@@ -46,6 +46,7 @@ namespace Odyssey
 		void PushDescriptorsGraphics(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
 		void PushDescriptorsCompute(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
 		void Dispatch(uint32_t groupX, uint32_t groupY, uint32_t groupZ);
+		void SetDepthBias(float bias, float clamp, float slope);
 
 	public:
 		const VkCommandBuffer GetCommandBuffer() { return m_CommandBuffer; }

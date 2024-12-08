@@ -13,6 +13,7 @@ namespace Odyssey
 	public:
 		VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height);
 		VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, uint32_t width, uint32_t height, TextureFormat format);
+		VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription& imageDesc);
 		VulkanRenderTexture(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID imageID, TextureFormat format);
 		void Destroy();
 
@@ -21,8 +22,14 @@ namespace Odyssey
 
 	public:
 		ResourceID GetImage() { return m_Image; }
+		ResourceID GetResolveImage() { return m_ResolveImage; }
+		ResourceID GetSampler() { return m_Sampler; }
 		uint32_t GetWidth() { return m_Width; }
 		uint32_t GetHeight() { return m_Height; }
+		TextureFormat GetFormat() { return m_Format; }
+
+	public:
+		VkWriteDescriptorSet GetDescriptorInfo();
 
 	private:
 		bool IsDepthTexture(TextureFormat format);
@@ -30,7 +37,11 @@ namespace Odyssey
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
 		ResourceID m_Image;
+		ResourceID m_ResolveImage;
 		ResourceID m_StagingBuffer;
+		ResourceID m_Sampler;
 		uint32_t m_Width, m_Height;
+		TextureFormat m_Format;
+		VkDescriptorImageInfo descriptor;
 	};
 }

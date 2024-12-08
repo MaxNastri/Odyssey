@@ -15,13 +15,13 @@
 
 namespace Odyssey
 {
-	void AssetManager::CreateDatabase(const Path& assetsDirectory, std::vector<Path>& additionalRegistries)
+	void AssetManager::CreateDatabase(Settings settings)
 	{
-		s_AssetsDirectory = assetsDirectory;
+		s_AssetsDirectory = settings.AssetsDirectory;
 
 		std::vector<AssetRegistry> registries;
 
-		for (const Path& registry : additionalRegistries)
+		for (const Path& registry : settings.AdditionalRegistries)
 		{
 			registries.push_back(AssetRegistry(registry));
 		}
@@ -30,6 +30,8 @@ namespace Odyssey
 		SearchOptions assetSearch;
 		assetSearch.Root = s_AssetsDirectory;
 		assetSearch.ExclusionPaths = { };
+		assetSearch.Extensions = settings.AssetExtensions;
+		assetSearch.SourceExtensionsMap = settings.SourceAssetExtensionMap;
 
 		s_AssetDatabase = std::make_unique<AssetDatabase>(assetSearch, Project::GetActiveAssetRegistry(), registries);
 	}

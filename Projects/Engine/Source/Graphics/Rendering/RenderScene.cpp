@@ -32,10 +32,12 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
 		descriptorLayout->AddBinding("Lighting Data", DescriptorType::Uniform, ShaderStage::Fragment, 3);
 		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 4);
+		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Fragment, 5);
+		descriptorLayout->AddBinding("Shadowmap", DescriptorType::Sampler, ShaderStage::Fragment, 6);
 		descriptorLayout->Apply();
 
 		// Camera uniform buffer
-		uint32_t cameraDataSize = sizeof(cameraData);
+		uint32_t cameraDataSize = sizeof(sceneData);
 
 		for (uint32_t i = 0; i < MAX_CAMERAS; i++)
 		{
@@ -44,9 +46,9 @@ namespace Odyssey
 
 			// Write the camera data into the ubo memory
 			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
-			uniformBuffer->CopyData(cameraDataSize, &cameraData);
+			uniformBuffer->CopyData(cameraDataSize, &sceneData);
 
-			cameraDataBuffers.push_back(uboID);
+			sceneDataBuffers.push_back(uboID);
 		}
 
 		// Per-object uniform buffers
@@ -94,7 +96,7 @@ namespace Odyssey
 	{
 		ResourceManager::Destroy(m_DescriptorLayout);
 
-		for (auto& resource : cameraDataBuffers)
+		for (auto& resource : sceneDataBuffers)
 		{
 			ResourceManager::Destroy(resource);
 		}
@@ -109,22 +111,11 @@ namespace Odyssey
 	{
 		ClearSceneData();
 
-		// Search the scene for the main camera
-		for (auto entity : scene->GetAllEntitiesWith<Camera>())
-		{
-			GameObject gameObject = GameObject(scene, entity);
-			Camera& camera = gameObject.GetComponent<Camera>();
-
-			if (camera.IsEnabled() && camera.IsMainCamera())
-			{
-				m_MainCamera = &camera;
-				SetCameraData(m_MainCamera);
-			}
-		}
-
 		EnvironmentSettings envSettings = scene->GetEnvironmentSettings();
 		if (envSettings.Skybox)
 			SkyboxCubemap = envSettings.Skybox->GetTexture();
+		else
+			SkyboxCubemap = ResourceID::Invalid();
 
 		for (auto entity : scene->GetAllEntitiesWith<Light>())
 		{
@@ -141,15 +132,32 @@ namespace Odyssey
 				sceneLight.Intensity = light.GetIntensity();
 				sceneLight.Range = light.GetRange();
 				LightingData.LightCount++;
+
+				if (light.GetType() == LightType::Directional)
+					sceneData.LightViewProj = Light::CalculateViewProj(float3(0.0f), 10.0f, sceneLight.Position, sceneLight.Direction);
+			}
+		}
+
+		// Search the scene for the main camera
+		for (auto entity : scene->GetAllEntitiesWith<Camera>())
+		{
+			GameObject gameObject = GameObject(scene, entity);
+			Camera& camera = gameObject.GetComponent<Camera>();
+
+			if (camera.IsEnabled() && camera.IsMainCamera())
+			{
+				m_MainCamera = &camera;
+				SetCameraData(m_MainCamera);
 			}
 		}
 
 		// Set the ambient color from the environment settings
 		LightingData.AmbientColor = glm::vec4(scene->GetEnvironmentSettings().AmbientColor, 1.0f);
 
-		// Copy the data into the uniform buffer
-		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(LightingBuffer);
-		uniformBuffer->CopyData(sizeof(LightingData), &LightingData);
+
+		// Update the lighting ubo
+		auto lightingUBO = ResourceManager::GetResource<VulkanBuffer>(LightingBuffer);
+		lightingUBO->CopyData(sizeof(LightingData), &LightingData);
 
 		ParticleBatcher::Update();
 
@@ -172,15 +180,15 @@ namespace Odyssey
 
 	uint32_t RenderScene::SetCameraData(Camera* camera)
 	{
-		cameraData.inverseView = camera->GetInverseView();
-		cameraData.ViewProjection = camera->GetProjection() * cameraData.inverseView;
-		cameraData.ViewPosition = glm::vec4(camera->GetView()[3][0], camera->GetView()[3][1], camera->GetView()[3][2], 1.0f);
+		sceneData.View = camera->GetInverseView();
+		sceneData.ViewProjection = camera->GetProjection() * camera->GetInverseView();
+		sceneData.ViewPosition = glm::vec4(camera->GetView()[3][0], camera->GetView()[3][1], camera->GetView()[3][2], 1.0f);
 
 		uint32_t index = m_NextCameraBuffer;
-		uint32_t sceneUniformSize = sizeof(cameraData);
 
-		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(cameraDataBuffers[m_NextCameraBuffer]);
-		uniformBuffer->CopyData(sceneUniformSize, &cameraData);
+		// Update the scene ubo
+		auto sceneUBO = ResourceManager::GetResource<VulkanBuffer>(sceneDataBuffers[index]);
+		sceneUBO->CopyData(sizeof(sceneData), &sceneData);
 
 		m_NextCameraBuffer++;
 		return index;
@@ -193,26 +201,24 @@ namespace Odyssey
 			GameObject gameObject = GameObject(scene, entity);
 			MeshRenderer& meshRenderer = gameObject.GetComponent<MeshRenderer>();
 			Transform& transform = gameObject.GetComponent<Transform>();
+			Animator* animator = gameObject.TryGetComponent<Animator>();
 
 			if (!meshRenderer.IsEnabled() || !meshRenderer.GetMaterial() || !meshRenderer.GetMesh())
 				continue;
 
 			// For now, 1 set pass per drawcall
-			setPasses.push_back(SetPass());
-			SetPass& setPass = setPasses[setPasses.size() - 1];
-
-			Ref<Material> material = meshRenderer.GetMaterial();
-			setPass.SetMaterial(material, m_DescriptorLayout);
+			SetPass& setPass = setPasses.emplace_back();
+			setPass.SetMaterial(meshRenderer.GetMaterial(), animator != nullptr, m_DescriptorLayout);
 
 			// Create the drawcall data
 			if (Ref<Mesh> mesh = meshRenderer.GetMesh())
 			{
-				Drawcall drawcall;
+				Drawcall& drawcall = setPass.Drawcalls.emplace_back();
 				drawcall.VertexBufferID = mesh->GetVertexBuffer();
 				drawcall.IndexBufferID = mesh->GetIndexBuffer();
 				drawcall.IndexCount = mesh->GetIndexCount();
 				drawcall.UniformBufferIndex = m_NextUniformBuffer++;
-				setPass.Drawcalls.push_back(drawcall);
+				drawcall.Skinned = animator != nullptr;
 
 				// Update the per-object uniform buffer
 				uint32_t perObjectSize = sizeof(objectData);
@@ -223,7 +229,7 @@ namespace Odyssey
 				auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
 				uniformBuffer->CopyData(perObjectSize, &objectData);
 
-				if (auto animator = gameObject.TryGetComponent<Animator>())
+				if (animator)
 				{
 					size_t skinningSize = sizeof(SkinningData);
 					SkinningData.SetBindposes(animator->GetFinalPoses());
@@ -236,22 +242,78 @@ namespace Odyssey
 		}
 	}
 
-	SetPass::SetPass(Ref<Material> material, ResourceID descriptorLayout)
+	SetPass::SetPass(Ref<Material> material, bool skinned, ResourceID descriptorLayout)
 	{
-		SetMaterial(material, descriptorLayout);
+		SetMaterial(material, skinned, descriptorLayout);
 	}
 
-	void SetPass::SetMaterial(Ref<Material> material, ResourceID descriptorLayout)
+	void SetPass::SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout)
 	{
 		// Allocate a graphics pipeline
 		VulkanPipelineInfo info;
-		info.Shaders = material->GetShader()->GetResourceMap();
+		Shaders = info.Shaders = material->GetShader()->GetResourceMap();
 		info.DescriptorLayout = descriptorLayout;
+		info.CullMode = CullMode::Back;
+		SetupAttributeDescriptions(skinned, info.AttributeDescriptions);
 
-		Shaders = info.Shaders;
 		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 
-		if (auto texture = material->GetTexture())
-			Texture = texture->GetTexture();
+		if (Ref<Texture2D> colorTexture = material->GetColorTexture())
+			ColorTexture = colorTexture->GetTexture();
+
+		if (Ref<Texture2D> normalTexture = material->GetNormalTexture())
+			NormalTexture = normalTexture->GetTexture();
+	}
+
+	void SetPass::SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions)
+	{
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+
+		// Position
+		auto& positionDesc = attributeDescriptions.emplace_back();
+		positionDesc.binding = 0;
+		positionDesc.location = 0;
+		positionDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		positionDesc.offset = offsetof(Vertex, Position);
+
+		// Normal
+		auto& normalDesc = attributeDescriptions.emplace_back();
+		normalDesc.binding = 0;
+		normalDesc.location = 1;
+		normalDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		normalDesc.offset = offsetof(Vertex, Normal);
+
+		// Tangent
+		auto& tangentDesc = attributeDescriptions.emplace_back();
+		tangentDesc.binding = 0;
+		tangentDesc.location = 2;
+		tangentDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		tangentDesc.offset = offsetof(Vertex, Tangent);
+
+		// TexCoord0
+		auto& texCoord0Desc = attributeDescriptions.emplace_back();
+		texCoord0Desc.binding = 0;
+		texCoord0Desc.location = 3;
+		texCoord0Desc.format = VK_FORMAT_R32G32_SFLOAT;
+		texCoord0Desc.offset = offsetof(Vertex, TexCoord0);
+
+		if (skinned)
+		{
+			// Bone Indices
+			auto& indicesDesc = attributeDescriptions.emplace_back();
+			indicesDesc.binding = 0;
+			indicesDesc.location = 4;
+			indicesDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+			indicesDesc.offset = offsetof(Vertex, BoneIndices);
+
+			// Bone Weights
+			auto& weightsDesc = attributeDescriptions.emplace_back();
+			weightsDesc.binding = 0;
+			weightsDesc.location = 5;
+			weightsDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+			weightsDesc.offset = offsetof(Vertex, BoneWeights);
+		}
+
+		descriptions.WriteData(attributeDescriptions);
 	}
 }

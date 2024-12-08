@@ -39,12 +39,14 @@ namespace Odyssey
 	public:
 		glm::vec3 GetPosition();
 		glm::vec3 GetDirection();
+		static mat4 CalculateViewProj(float3 sceneCenter, float sceneRadius, float4 lightPos, float4 lightDir);
 
 	private:
 		LightType m_Type = LightType::Directional;
 		glm::vec3 m_Color = glm::vec3(1.0f);
 		float m_Intensity = 1.0f;
 		float m_Range = 1.0f;
+		float m_FOV = 45.0f;
 
 	private:
 		bool m_Enabled = true;

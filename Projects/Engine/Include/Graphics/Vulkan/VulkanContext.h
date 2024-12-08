@@ -39,11 +39,12 @@ namespace Odyssey
 		const VkQueue GetComputeQueueVK();
 		ResourceID GetGraphicsCommandPool() { return m_GraphicsCommandPool; }
 		ResourceID GetComputeCommandPool() { return m_ComputeCommandPool; }
+		uint32_t GetSampleCount() { return m_SampleCount; }
 
 	private:
 		void GatherExtensions();
 		void CreateInstance();
-
+		void GetSupportedMSAA();
 		bool IsExtensionAvailable(std::vector<VkExtensionProperties>& properties, const char* extension);
 
 	private: // Vulkan objects
@@ -54,6 +55,9 @@ namespace Odyssey
 		ResourceID m_ComputeCommandPool;
 		std::shared_ptr<VulkanQueue> m_GraphicsQueue;
 		std::shared_ptr<VulkanQueue> m_ComputeQueue;
+
+	private:
+		uint32_t m_SampleCount = 1;
 
 	private: // Extensions
 		std::vector<const char*> extensions;

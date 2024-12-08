@@ -55,8 +55,6 @@ namespace Odyssey
 				propertyNode.ReadData("Type", enumStr);
 				animProperty->Type = Enum::ToEnum<AnimationPropertyType>(enumStr);
 
-				m_PropertyMap[animProperty->Name] = animProperty;
-
 				switch (animProperty->Type)
 				{
 					case AnimationPropertyType::Trigger:
@@ -131,60 +129,132 @@ namespace Odyssey
 				GUID linkGUID;
 				GUID beginGUID;
 				GUID endGUID;
-				std::string propertyName;
-				std::string comparisonName;
-				RawBuffer valueBuffer;
 
 				linkNode.ReadData("GUID", linkGUID.Ref());
 				linkNode.ReadData("Begin State", beginGUID.Ref());
 				linkNode.ReadData("End State", endGUID.Ref());
-				linkNode.ReadData("Property", propertyName);
-				linkNode.ReadData("Comparison", comparisonName);
 
 				// Create the link
 				AddLink(linkGUID, beginGUID, endGUID);
 
 				auto& beginState = m_States[beginGUID];
 				auto& endState = m_States[endGUID];
-				auto& property = m_PropertyMap[propertyName];
-				ComparisonOp comparisonOp = Enum::ToEnum<ComparisonOp>(comparisonName);
-
-				switch (property->Type)
-				{
-					case AnimationPropertyType::Trigger:
-					case AnimationPropertyType::Bool:
-					{
-						bool value = false;
-						linkNode.ReadData("Value", value);
-
-						valueBuffer.Allocate(sizeof(bool));
-						valueBuffer.Write(&value);
-						break;
-					}
-					case AnimationPropertyType::Float:
-					{
-						float value = 0.0f;
-						linkNode.ReadData("Value", value);
-
-						valueBuffer.Allocate(sizeof(float));
-						valueBuffer.Write(&value);
-						break;
-					}
-					case AnimationPropertyType::Int:
-					{
-						int32_t value = 0;
-						linkNode.ReadData("Value", value);
-
-						valueBuffer.Allocate(sizeof(int32_t));
-						valueBuffer.Write(&value);
-						break;
-					}
-					default:
-						break;
-				}
 
 				// Create the animtation link
-				m_StateToLinks[beginState].push_back(new AnimationLink(linkGUID, beginState, endState, property, comparisonOp, valueBuffer));
+				Ref<AnimationLink> animationLink = new AnimationLink(linkGUID, beginState, endState);
+				m_StateToLinks[beginState].emplace_back(animationLink);
+				m_StateToLinks[endState].emplace_back(animationLink);
+
+				// Deserialize forward transitions
+				{
+					SerializationNode transitionsNode = linkNode.GetNode("Forward Transitions");
+					assert(transitionsNode.IsSequence());
+
+					for (size_t i = 0; i < transitionsNode.ChildCount(); i++)
+					{
+						SerializationNode conditionNode = transitionsNode.GetChild(i);
+						assert(conditionNode.IsMap());
+
+						std::string propertyName;
+						std::string comparisonName;
+						conditionNode.ReadData("Property", propertyName);
+						conditionNode.ReadData("Comparison", comparisonName);
+
+						ComparisonOp comparison = Enum::ToEnum<ComparisonOp>(comparisonName);
+						RawBuffer valueBuffer;
+
+						if (Ref<AnimationProperty> animationProperty = GetProperty(propertyName))
+						{
+							switch (animationProperty->Type)
+							{
+								case AnimationPropertyType::Trigger:
+								case AnimationPropertyType::Bool:
+								{
+									bool value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+
+									break;
+								}
+								case AnimationPropertyType::Float:
+								{
+									float value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+									break;
+								}
+								case AnimationPropertyType::Int:
+								{
+									int32_t value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+									break;
+								}
+								default:
+									break;
+							}
+
+							Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer);
+							animationLink->AddTransition(beginState, endState, condition);
+						}
+					}
+				}
+
+
+				// Deserialize forward transitions
+				{
+					SerializationNode transitionsNode = linkNode.GetNode("Return Transitions");
+					assert(transitionsNode.IsSequence());
+
+					for (size_t i = 0; i < transitionsNode.ChildCount(); i++)
+					{
+						SerializationNode conditionNode = transitionsNode.GetChild(i);
+						assert(conditionNode.IsMap());
+
+						std::string propertyName;
+						std::string comparisonName;
+						conditionNode.ReadData("Property", propertyName);
+						conditionNode.ReadData("Comparison", comparisonName);
+
+						ComparisonOp comparison = Enum::ToEnum<ComparisonOp>(comparisonName);
+						RawBuffer valueBuffer;
+
+						if (Ref<AnimationProperty> animationProperty = GetProperty(propertyName))
+						{
+							switch (animationProperty->Type)
+							{
+								case AnimationPropertyType::Trigger:
+								case AnimationPropertyType::Bool:
+								{
+									bool value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+
+									break;
+								}
+								case AnimationPropertyType::Float:
+								{
+									float value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+									break;
+								}
+								case AnimationPropertyType::Int:
+								{
+									int32_t value;
+									conditionNode.ReadData("Value", value);
+									RawBuffer::Copy(valueBuffer, &value, sizeof(value));
+									break;
+								}
+								default:
+									break;
+							}
+
+							Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer);
+							animationLink->AddTransition(endState, beginState, condition);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -262,38 +332,89 @@ namespace Odyssey
 				GUID linkGUID = animLink->GetGUID();
 				GUID beginState = animLink->GetBeginState()->GetGUID();
 				GUID endState = animLink->GetEndState()->GetGUID();
-				Ref<AnimationProperty> linkProperty = animLink->GetProperty();
 
-				std::string_view comparison = Enum::ToString<ComparisonOp>(animLink->GetComparisonOp());
 				linkNode.WriteData("GUID", linkGUID.CRef());
 				linkNode.WriteData("Begin State", beginState.CRef());
 				linkNode.WriteData("End State", endState.CRef());
-				linkNode.WriteData("Property", linkProperty->Name);
-				linkNode.WriteData("Comparison", comparison);
 
-				switch (linkProperty->Type)
+				// Serialize forward transitions
 				{
-					case AnimationPropertyType::Trigger:
-					case AnimationPropertyType::Bool:
+					SerializationNode transitionsNode = linkNode.CreateSequenceNode("Forward Transitions");
+					for (Ref<AnimationCondition> condition : animLink->GetForwardTransitions())
 					{
-						bool value = linkProperty->ValueBuffer.Read<bool>();
-						linkNode.WriteData("Value", value);
-						break;
+						SerializationNode conditionNode = transitionsNode.AppendChild();
+						conditionNode.SetMap();
+
+						std::string propertyName = condition->GetPropertyName();
+						ComparisonOp comparison = condition->GetComparison();
+						conditionNode.WriteData("Property", propertyName);
+						conditionNode.WriteData("Comparison", Enum::ToString(comparison));
+
+						switch (condition->GetPropertyType())
+						{
+							case AnimationPropertyType::Trigger:
+							case AnimationPropertyType::Bool:
+							{
+								bool value = condition->GetTargetValue<bool>();
+								conditionNode.WriteData("Value", value);
+								break;
+							}
+							case AnimationPropertyType::Float:
+							{
+								float value = condition->GetTargetValue<float>();
+								conditionNode.WriteData("Value", value);
+								break;
+							}
+							case AnimationPropertyType::Int:
+							{
+								int32_t value = condition->GetTargetValue<int32_t>();
+								conditionNode.WriteData("Value", value);
+								break;
+							}
+							default:
+								break;
+						}
 					}
-					case AnimationPropertyType::Float:
+				}
+
+				// Serialize Return transitions
+				{
+					SerializationNode transitionsNode = linkNode.CreateSequenceNode("Return Transitions");
+					for (Ref<AnimationCondition> condition : animLink->GetReturnTransitions())
 					{
-						float value = linkProperty->ValueBuffer.Read<float>();
-						linkNode.WriteData("Value", value);
-						break;
+						SerializationNode conditionNode = transitionsNode.AppendChild();
+						conditionNode.SetMap();
+
+						std::string propertyName = condition->GetPropertyName();
+						ComparisonOp comparison = condition->GetComparison();
+						conditionNode.WriteData("Property", propertyName);
+						conditionNode.WriteData("Comparison", Enum::ToString(comparison));
+
+						switch (condition->GetPropertyType())
+						{
+							case AnimationPropertyType::Trigger:
+							case AnimationPropertyType::Bool:
+							{
+								bool value = condition->GetTargetValue<bool>();
+								conditionNode.WriteData("Value", value);
+								break;
+							}
+							case AnimationPropertyType::Float:
+							{
+								float value = condition->GetTargetValue<float>();
+								conditionNode.WriteData("Value", value);
+								break;
+							}
+							case AnimationPropertyType::Int:
+							{
+								int32_t value = condition->GetTargetValue<int32_t>();
+								conditionNode.WriteData("Value", value);
+								break;
+							}
+							default:
+								break;
+						}
 					}
-					case AnimationPropertyType::Int:
-					{
-						int32_t value = linkProperty->ValueBuffer.Read<int32_t>();
-						linkNode.WriteData("Value", value);
-						break;
-					}
-					default:
-						break;
 				}
 			}
 		}
@@ -314,12 +435,8 @@ namespace Odyssey
 
 			for (auto& animationLink : links)
 			{
-				if (animationLink->Evaluate())
-				{
-					m_CurrentState->Reset();
-					m_CurrentState = animationLink->GetEndState();
+				if (animationLink->Evaluate(m_CurrentState))
 					break;
-				}
 			}
 		}
 
@@ -343,6 +460,15 @@ namespace Odyssey
 			m_CurrentState = state;
 
 		return node.As<AnimationStateNode>();
+	}
+
+	Ref<AnimationProperty> AnimationBlueprint::GetProperty(const std::string& propertyName)
+	{
+		for (Ref<AnimationProperty>& animationProperty : m_Properties)
+			if (animationProperty->Name == propertyName)
+				return animationProperty;
+
+		return Ref<AnimationProperty>();
 	}
 
 	Ref<AnimationState> AnimationBlueprint::GetAnimationState(GUID nodeGUID)
@@ -369,30 +495,35 @@ namespace Odyssey
 
 	std::vector<std::string> AnimationBlueprint::GetAllPropertyNames()
 	{
-		auto view = std::views::keys(m_PropertyMap);
-		return std::vector<std::string>(view.begin(), view.end());
+		std::vector<std::string> names;
+
+		for (Ref<AnimationProperty> animationProperty : m_Properties)
+			names.emplace_back(animationProperty->Name);
+
+		return names;
 	}
 
 	void AnimationBlueprint::AddProperty(std::string_view name, AnimationPropertyType type)
 	{
-		m_Properties.push_back(new AnimationProperty(name, type));
+		m_Properties.emplace_back(new AnimationProperty(name, type));
 	}
 
 	bool AnimationBlueprint::SetBool(const std::string& name, bool value)
 	{
-		if (m_PropertyMap.contains(name))
+		if (Ref<AnimationProperty> animationProperty = GetProperty(name))
 		{
-			m_PropertyMap[name]->ValueBuffer.Write(&value);
+			animationProperty->ValueBuffer.Write(&value);
 			return true;
 		}
+
 		return false;
 	}
 
 	bool AnimationBlueprint::SetFloat(const std::string& name, float value)
 	{
-		if (m_PropertyMap.contains(name))
+		if (Ref<AnimationProperty> animationProperty = GetProperty(name))
 		{
-			m_PropertyMap[name]->ValueBuffer.Write(&value);
+			animationProperty->ValueBuffer.Write(&value);
 			return true;
 		}
 		return false;
@@ -400,9 +531,9 @@ namespace Odyssey
 
 	bool AnimationBlueprint::SetInt(const std::string& name, int32_t value)
 	{
-		if (m_PropertyMap.contains(name))
+		if (Ref<AnimationProperty> animationProperty = GetProperty(name))
 		{
-			m_PropertyMap[name]->ValueBuffer.Write(&value);
+			animationProperty->ValueBuffer.Write(&value);
 			return true;
 		}
 		return false;
@@ -410,10 +541,10 @@ namespace Odyssey
 
 	bool AnimationBlueprint::SetTrigger(const std::string& name)
 	{
-		if (m_PropertyMap.contains(name))
+		if (Ref<AnimationProperty> animationProperty = GetProperty(name))
 		{
 			bool trigger = true;
-			m_PropertyMap[name]->ValueBuffer.Write(&trigger);
+			animationProperty->ValueBuffer.Write(&trigger);
 			return true;
 		}
 		return false;
@@ -423,14 +554,17 @@ namespace Odyssey
 	{
 		if (m_States.contains(beginNode) && m_States.contains(endNode))
 		{
-			auto startState = m_States[beginNode];
+			auto beginState = m_States[beginNode];
 			auto endState = m_States[endNode];
 			auto animProperty = m_Properties[propertyIndex];
 
-			Ref<AnimationLink> animationLink = new AnimationLink(startState, endState, animProperty, comparisonOp, propertyValue);
+			Ref<AnimationLink> animationLink = new AnimationLink(beginState, endState);
+			Ref<AnimationCondition> condition = new AnimationCondition(animProperty, comparisonOp, propertyValue);
+			animationLink->AddTransition(beginState, endState, condition);
+
 			AddLink(animationLink->GetGUID(), beginNode, endNode);
 
-			m_StateToLinks[startState].push_back(animationLink);
+			m_StateToLinks[beginState].push_back(animationLink);
 		}
 	}
 

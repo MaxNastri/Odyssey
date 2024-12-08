@@ -16,6 +16,7 @@ namespace Odyssey
 	public:
 		bool IsValid() { return m_Data != INVALID; }
 		void Reset() { m_Data = INVALID; }
+		static ResourceID Invalid() { return ResourceID(); }
 
 	private:
 		uint64_t m_Data;

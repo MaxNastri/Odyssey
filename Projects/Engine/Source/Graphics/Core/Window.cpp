@@ -69,6 +69,12 @@ namespace Odyssey
 	void Window::GetFrameBufferSize(int& width, int& height)
 	{
 		glfwGetFramebufferSize(glfwHandle, &width, &height);
+
+		while (width == 0 || height == 0)
+		{
+			glfwGetFramebufferSize(glfwHandle, &width, &height);
+			glfwWaitEvents();
+		}
 	}
 
 	void Window::SetSize(uint32_t width, uint32_t height)

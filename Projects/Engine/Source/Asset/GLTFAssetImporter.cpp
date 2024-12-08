@@ -7,6 +7,7 @@
 #include "tiny_gltf.h"
 #include "Log.h"
 #include "Vertex.h"
+#include "GeometryUtil.h"
 
 namespace Odyssey
 {
@@ -274,7 +275,6 @@ namespace Odyssey
 
 		m_MeshData.ObjectCount = 0;
 
-
 		TempNode* parent = nullptr;
 
 		for (auto node : scene.nodes)
@@ -291,6 +291,8 @@ namespace Odyssey
 			for (size_t p = 0; p < mesh.primitives.size(); p++)
 			{
 				const Primitive& primitive = mesh.primitives[p];
+				std::vector<Vertex> vertices;
+				std::vector<uint32_t> indices;
 
 				// Vertices
 				{
@@ -304,7 +306,6 @@ namespace Odyssey
 					uint32_t vertexCount = (uint32_t)positionData.Accessor->count;
 					uint32_t vertexStart = 0;
 
-					std::vector<Vertex> vertices;
 					vertices.resize(vertexCount);
 
 					for (size_t v = 0; v < vertexCount; v++)
@@ -352,8 +353,6 @@ namespace Odyssey
 						}
 						vertexStart++;
 					}
-
-					m_MeshData.VertexLists.push_back(vertices);
 				}
 
 				// Indices
@@ -365,7 +364,6 @@ namespace Odyssey
 				uint32_t indexCount = static_cast<uint32_t>(accessor.count);
 
 				uint32_t indexStart = 0;
-				std::vector<uint32_t> indices;
 				indices.resize(indexCount);
 
 				switch (accessor.componentType)
@@ -407,6 +405,8 @@ namespace Odyssey
 				if (m_Settings.ConvertLH)
 					std::reverse(indices.begin(), indices.end());
 
+				GeometryUtil::GenerateTangents(vertices, indices);
+				m_MeshData.VertexLists.push_back(vertices);
 				m_MeshData.IndexLists.push_back(indices);
 			}
 		}

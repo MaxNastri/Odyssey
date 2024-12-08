@@ -30,6 +30,7 @@ namespace Odyssey
 	{
 	public:
 		bool EnableIMGUI = true;
+		bool ShadowsEnabled = true;
 	};
 
 	class Renderer

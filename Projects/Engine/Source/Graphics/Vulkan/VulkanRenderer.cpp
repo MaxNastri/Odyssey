@@ -156,7 +156,7 @@ namespace Odyssey
 		}
 
 		VulkanFrame& frame = m_Frames[s_FrameIndex];
-		frame.SetRenderTarget(m_Swapchain->GetBackbuffers()[imageIndex], imageIndex);
+		frame.SetColorTexture(m_Swapchain->GetBackbuffers()[imageIndex], imageIndex);
 
 		if (!check_vk_result(err))
 		{
@@ -178,8 +178,11 @@ namespace Odyssey
 		commandBuffer->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
-		auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(frame.GetRenderTarget());
+		auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(frame.GetFrameTexture());
 		commandBuffer->TransitionLayouts(renderTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+		if (renderTexture->GetResolveImage().IsValid())
+			commandBuffer->TransitionLayouts(renderTexture->GetResolveImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		currentFrame = &frame;
 		return true;
@@ -209,7 +212,7 @@ namespace Odyssey
 			params.GraphicsCommandBuffer = m_GraphicsCommandBuffers[s_FrameIndex];
 			params.context = m_Context;
 			params.renderingData = m_RenderingData;
-			params.FrameRT = frame->GetRenderTarget();
+			params.FrameTexture = frame->GetFrameTexture();
 
 			for (Ref<RenderPass>& renderPass : m_RenderPasses)
 			{
@@ -226,6 +229,13 @@ namespace Odyssey
 				m_IMGUIPass->EndPass(params);
 			}
 
+			auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(frame->GetFrameTexture());
+
+			if (renderTexture->GetResolveImage().IsValid())
+				commandBuffer->TransitionLayouts(renderTexture->GetResolveImage(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+			else
+				commandBuffer->TransitionLayouts(renderTexture->GetImage(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+
 			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			VkSubmitInfo submitInfo = {};
 			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -238,7 +248,6 @@ namespace Odyssey
 			submitInfo.pSignalSemaphores = frame->GetRenderCompleteSemaphore();
 
 			commandBuffer->EndCommands();
-
 
 			// Wait for the initial fences to clear
 			if (s_PreviousFrame != s_FrameIndex)

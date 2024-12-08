@@ -20,13 +20,12 @@ namespace Odyssey
 		// Keep the user assemblies directory up to date with our latest coral and framework dlls
 		std::filesystem::copy(SCRIPTS_RESOURCES_DIRECTORY, m_UserAssembliesDirectory, std::filesystem::copy_options::overwrite_existing);
 
-		TrackingOptions options;
-		options.TrackingPath = m_Settings.UserScriptsDirectory;
+		FolderTracker::Options options;
 		options.Extensions = { ".cs" };
 		options.Recursive = true;
-		options.Callback = [this](const Path& path, FileActionType fileAction)
-			{ OnFileAction(path, fileAction); };
-		m_FileTracker = std::make_unique<FileTracker>(options);
+		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction)
+			{ OnFileAction(oldPath, newPath, fileAction); };
+		m_TrackingID = FileManager::Get().TrackFolder(m_Settings.UserScriptsDirectory, options);
 	}
 
 	bool ScriptCompiler::BuildUserAssembly()
@@ -128,6 +127,12 @@ namespace Odyssey
 		// Successful build
 		if (exitCode == 0)
 		{
+			Path scriptsFolder = m_Settings.UserScriptsProject.parent_path();
+			Path objFolder = scriptsFolder / "obj";
+
+			if (std::filesystem::exists(objFolder))
+				std::filesystem::remove_all(objFolder);
+
 			return true;
 		}
 		// Failed build
@@ -138,7 +143,7 @@ namespace Odyssey
 		}
 	}
 
-	void ScriptCompiler::OnFileAction(const Path& filename, FileActionType fileAction)
+	void ScriptCompiler::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
 	{
 		shouldRebuild = !buildInProgress && fileAction != FileActionType::None;
 	}

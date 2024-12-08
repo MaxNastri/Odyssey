@@ -5,11 +5,12 @@
 #include "GUID.h"
 #include "AssetRegistry.h"
 
+#include "Material.h"
+
 namespace Odyssey
 {
 	class Asset;
 	class AnimationRig;
-	class Material;
 	class Mesh;
 	class Shader;
 	class Scene;
@@ -25,7 +26,16 @@ namespace Odyssey
 	class AssetManager
 	{
 	public:
-		static void CreateDatabase(const Path& assetsDirectory, std::vector<Path>& additionalRegistries);
+		struct Settings
+		{
+			Path AssetsDirectory;
+			std::vector<Path> AdditionalRegistries;
+			std::vector<std::string> AssetExtensions;
+			std::map<std::string, std::string> SourceAssetExtensionMap;
+		};
+
+	public:
+		static void CreateDatabase(Settings settings);
 
 	public:
 		template<typename T, typename... Args>
@@ -37,9 +47,10 @@ namespace Odyssey
 			GUID guid = GUID::New();
 			Ref<T> asset = new T(assetPath, std::forward<Args>(params)...);
 
+			
 			// Set asset data
 			asset->m_GUID = guid;
-			asset->SetName("Default");
+			asset->SetName(assetPath.filename().replace_extension("").string());
 			asset->m_Type = T::Type;
 
 			// Save to disk
@@ -73,7 +84,7 @@ namespace Odyssey
 			Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
 
 			// Load and return the asset
-			return new T(assetPath);
+			return Ref<T>(new T(assetPath));
 		}
 
 		template<typename T>

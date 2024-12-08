@@ -237,4 +237,8 @@ namespace Odyssey
 	{
 		vkCmdDispatch(m_CommandBuffer, groupX, groupY, groupZ);
 	}
+	void VulkanCommandBuffer::SetDepthBias(float bias, float clamp, float slope)
+	{
+		vkCmdSetDepthBias(m_CommandBuffer, bias, clamp, slope);
+	}
 }

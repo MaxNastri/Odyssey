@@ -3,28 +3,26 @@ struct VertexInput
 {
     float3 Position : POSITION;
     float3 Normal : NORMAL;
-    float3 Tangent : TANGENT;
-    float4 Color : COLOR;
+    float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
-    float4 BoneIndices : BLENDINDICES0;
-    float4 BoneWeights : BLENDWEIGHT0;
 };
 
 struct VertexOutput
 {
     float4 Position : SV_Position;
     float3 Normal : NORMAL;
-    float3 Tangent : TANGENT;
-    float4 Color : COLOR0;
+    float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
-    float4 ViewPosition : POSITION1;
+    float3 WorldPosition : POSITION1;
+    float4 ShadowCoord : POSITION2;
 };
 
 cbuffer SceneData : register(b0)
 {
+    float4 ViewPos;
     float4x4 View;
     float4x4 ViewProjection;
-    float4 ViewPos;
+    float4x4 LightViewProj;
 }
 
 cbuffer ModelData : register(b1)
@@ -38,45 +36,21 @@ cbuffer SkinningData : register(b2)
     float4x4 Bones[128];
 }
 
-struct SkinningOutput
-{
-    float4 Position;
-    float4 Normal;
-};
-
-// Forward declarations
-SkinningOutput SkinVertex(VertexInput input);
-
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
     
-    SkinningOutput skinning = SkinVertex(input);
-    float4 worldPosition = mul(Model, skinning.Position);
-    float4 normal = float4(normalize(skinning.Normal.xyz), 0.0f);
+    float4 worldPosition = mul(Model, float4(input.Position, 1.0f));
+    float4 normal = float4(normalize(input.Normal.xyz), 0.0f);
+    float4 tangent = float4(input.Tangent.xyz, 0.0f);
     
     output.Position = mul(ViewProjection, worldPosition);
+    output.WorldPosition = worldPosition.xyz;
+    output.ShadowCoord = mul(LightViewProj, worldPosition);
+    output.ShadowCoord.xyz /= output.ShadowCoord.w;
     output.Normal = normalize(mul(Model, normal).xyz);
-    output.Tangent = input.Tangent;
-    output.Color = input.Color;
+    output.Tangent = float4(mul(Model, tangent).xyz, input.Tangent.w);
     output.TexCoord0 = input.TexCoord0;
-    output.ViewPosition = ViewPos - worldPosition;
-    return output;
-}
-
-SkinningOutput SkinVertex(VertexInput input)
-{
-    SkinningOutput output;
-    output.Position = float4(0, 0, 0, 1);
-    output.Normal = float4(0, 0, 0, 1);
-    float4 vertexPosition = float4(input.Position, 1.0f);
-    float4 vertexNormal = float4(input.Normal, 0.0f);
-    
-    for (int i = 0; i < 4; i++)
-    {
-        output.Position += mul(Bones[input.BoneIndices[i]], vertexPosition) * input.BoneWeights[i];
-        output.Normal += mul(Bones[input.BoneIndices[i]], vertexNormal) * input.BoneWeights[i];
-    }
     
     return output;
 }
@@ -90,9 +64,10 @@ struct PixelInput
 {
     float4 Position : SV_Position;
     float3 Normal : NORMAL;
-    float3 Tangent : TANGENT;
-    float4 Color : COLOR0;
+    float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
+    float3 WorldPosition : POSITION1;
+    float4 ShadowCoord : POSITION2;
 };
 
 struct Light
@@ -120,21 +95,60 @@ cbuffer LightData : register(b3)
 
 Texture2D diffuseTex2D : register(t4);
 SamplerState diffuseSampler : register(s4);
+Texture2D normalTex2D : register(t5);
+SamplerState normalSampler : register(s5);
+Texture2D shadowmapTex2D : register(t6);
+SamplerState shadowmapSampler : register(s6);
 
 // Forward declarations
-LightingOutput CalculateLighting(float3 surfaceNormal);
-float3 CalculateDiffuse(Light light, float3 surfaceNormal);
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord);
+float3 CalculateDiffuse(Light light, float3 worldNormal);
+float3 CalculateDirectionalLight(Light light, float3 worldNormal, float3 shadowCoord);
+float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal);
+float CalculateShadowFactor(float3 shadowCoord, float bias);
+float FilterPCF(float3 shadowCoord, float bias);
 
 float4 main(PixelInput input) : SV_Target
 {
-    input.Normal = normalize(input.Normal);
+    float3 worldNormal = normalize(input.Normal);
     
-    LightingOutput lighting = CalculateLighting(input.Normal);
-    float4 finalLighting = float4(lighting.Diffuse + AmbientColor.rgb, 1.0f);
-    return diffuseTex2D.Sample(diffuseSampler, input.TexCoord0) * finalLighting;
+    float4 albedo = diffuseTex2D.Sample(diffuseSampler, input.TexCoord0);
+    
+    // Alpha cutout for discarding completely transparent pixels
+    // Todo: Make this an option in the material inspector
+    if (albedo.a < 1.0f)
+        discard;
+    
+    float3 texNormal = normalTex2D.Sample(normalSampler, input.TexCoord0);
+    bool blankNormalMap = texNormal.x == 0.0f && texNormal.y == 0.0f && texNormal.z == 0.0f;
+    
+    if (!blankNormalMap)
+    {
+        //// Move the texture normal from 0.0 - 1.0 space to -1.0 to 1.0
+        //texNormal = (2.0f * texNormal) - 1.0f;
+        //
+        //// "Orthogonalize" the tangent
+        //float3 tangent = normalize(input.Tangent.xyz - dot(input.Tangent.xyz, worldNormal) * worldNormal);
+        //
+        //// Calculate the binormal
+        //float3 binormal = input.Tangent.w * cross(worldNormal, tangent);
+        //
+        //// Create the tex-space matrix and generate the final surface normal
+        //float3x3 texSpace = float3x3(tangent, binormal, worldNormal);
+        //worldNormal = mul(texNormal.xyz, texSpace);
+    }
+    
+    float3 shadowCoord = input.ShadowCoord.xyz;
+    shadowCoord.x = 0.5f + (shadowCoord.x * 0.5f);
+    shadowCoord.y = 0.5f - (shadowCoord.y * 0.5f);
+    
+    LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal, shadowCoord);
+    
+    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb;
+    return albedo * float4(finalLighting, 1.0f);
 }
 
-LightingOutput CalculateLighting(float3 surfaceNormal)
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord)
 {
     LightingOutput output;
     output.Diffuse = float4(0, 0, 0, 1);
@@ -144,10 +158,10 @@ LightingOutput CalculateLighting(float3 surfaceNormal)
         switch (SceneLights[i].Type)
         {
             case DIRECTIONAL_LIGHT:
-                output.Diffuse += CalculateDiffuse(SceneLights[i], surfaceNormal);
+                output.Diffuse += CalculateDirectionalLight(SceneLights[i], worldNormal, shadowCoord);
                 break;
             case POINT_LIGHT:
-                //output.Diffuse += CalculateDiffuse(SceneLights[i], surfaceNormal);
+                output.Diffuse += CalculatePointLight(SceneLights[i], worldPosition, worldNormal);
                 break;
         }
 
@@ -155,11 +169,66 @@ LightingOutput CalculateLighting(float3 surfaceNormal)
     return output;
 }
 
-float3 CalculateDiffuse(Light light, float3 surfaceNormal)
+float3 CalculateDiffuse(Light light, float3 lightVector, float3 worldNormal)
 {
-    float3 lightVector = -normalize(light.Direction.xyz);
-    float contribution = max(0.0f, dot(surfaceNormal, lightVector));
-    // Half-lambert equation modified to be cubed instead of squared
+    float contribution = max(0.0f, dot(worldNormal, lightVector));
+    
+    // Half-lambert equation modified to be squared instead of cubed
     contribution = pow((contribution * 0.5f) + 0.5f, 3);
     return light.Color.rgb * light.Intensity * contribution;
+}
+
+float3 CalculateDirectionalLight(Light light, float3 worldNormal, float3 shadowCoord)
+{
+    float3 lightVector = -normalize(light.Direction.xyz);
+    
+    float shadowFactor = FilterPCF(shadowCoord, 0.0f);
+    shadowFactor = max(0.0f, shadowFactor * dot(worldNormal, lightVector));
+    
+    return CalculateDiffuse(light, lightVector, worldNormal) * shadowFactor;
+}
+
+float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal)
+{
+    float3 lightVector = light.Position.xyz - worldPosition;
+    
+    // Manually normalize the light vector so
+    // we can use the distance in our attenuation calculation
+    float distance = length(lightVector);
+    lightVector /= distance;
+    
+    // Squared exponential falloff
+    float attenuation = pow(1.0f - saturate(distance / light.Range), 2);
+    
+    return CalculateDiffuse(light, lightVector, worldNormal) * attenuation;
+}
+
+float CalculateShadowFactor(float3 shadowCoord, float2 offset, float bias)
+{
+    float depth = shadowmapTex2D.Sample(shadowmapSampler, shadowCoord.xy + offset).r;
+    return step(shadowCoord.z, depth + bias);
+}
+
+float FilterPCF(float3 shadowCoord, float bias)
+{
+    int2 texDimensions;
+    shadowmapTex2D.GetDimensions(texDimensions.x, texDimensions.y);
+    float scale = 1.5f;
+    float dx = (1.0f / float(texDimensions.x));
+    float dy = (1.0f / float(texDimensions.y));
+    
+    float shadowfactor = 0.0f;
+    int count = 0;
+    int range = 3;
+    
+    for (int x = -range; x <= range; x++)
+    {
+        for (int y = -range; y <= range; y++)
+        {
+            shadowfactor += CalculateShadowFactor(shadowCoord, float2(dx * x, dy * y), bias);
+            count++;
+        }
+    }
+    
+    return shadowfactor / float(count);
 }

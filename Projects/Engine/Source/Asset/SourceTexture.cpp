@@ -11,10 +11,8 @@ namespace Odyssey
 	SourceTexture::SourceTexture(const Path& sourcePath)
 		: SourceAsset(sourcePath)
 	{
-		TrackingOptions options;
-		options.TrackingPath = sourcePath;
-		options.Callback = [this](const Path& path, FileActionType fileAction) { OnFileModified(path, fileAction); };
-		m_FileTracker = std::make_unique<FileTracker>(options);
+		FileActionCallback callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnFileAction(oldPath, newPath, fileAction); };
+		m_TrackingID = FileManager::Get().TrackFile(sourcePath, callback);
 
 		LoadTexture();
 	}
@@ -28,7 +26,7 @@ namespace Odyssey
 		m_PixelBuffer.WriteData(pixels, bufferSize);
 	}
 
-	void SourceTexture::OnFileModified(const Path& path, FileActionType fileAction)
+	void SourceTexture::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
 	{
 		if (fileAction == FileActionType::Modified)
 		{

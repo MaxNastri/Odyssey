@@ -13,12 +13,13 @@ namespace Odyssey
 	VulkanImage::VulkanImage(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc)
 		: Resource(id)
 	{
+
 		m_Context = context;
 		m_Width = desc.Width;
 		m_Height = desc.Height;
 		m_Channels = desc.Channels;
 		m_ArrayDepth = desc.ArrayDepth;
-		isDepth = desc.ImageType == ImageType::DepthTexture;
+		isDepth = desc.ImageType == ImageType::DepthTexture || desc.ImageType == ImageType::Shadowmap;
 
 		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
 		VkPhysicalDevice physicalDevice = m_Context->GetPhysicalDevice()->GetPhysicalDevice();
@@ -38,7 +39,12 @@ namespace Odyssey
 			imageInfo.initialLayout = imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			imageInfo.usage = GetUsage(desc.ImageType);
 			imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+
+			if (desc.ImageType == ImageType::RenderTexture || desc.ImageType == ImageType::DepthTexture)
+				imageInfo.samples = (VkSampleCountFlagBits)desc.Samples;
+			else
+				imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+
 			if (desc.ImageType == ImageType::Cubemap)
 				imageInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 
@@ -75,7 +81,13 @@ namespace Odyssey
 			viewInfo.image = m_Image;
 			viewInfo.viewType = desc.ImageType == ImageType::Cubemap ? VK_IMAGE_VIEW_TYPE_CUBE : VK_IMAGE_VIEW_TYPE_2D;
 			viewInfo.format = GetFormat(desc.Format);
-			viewInfo.subresourceRange.aspectMask = isDepth ? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+			if (desc.ImageType == ImageType::Shadowmap)
+				viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+			else if (isDepth)
+				viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+			else
+				viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
 			viewInfo.subresourceRange.levelCount = desc.MipLevels;
 			viewInfo.subresourceRange.layerCount = desc.ArrayDepth;
 
@@ -282,6 +294,13 @@ namespace Odyssey
 			srcStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			dstStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
+		{
+			barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			dstStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		}
 		else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
 		{
 			barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
@@ -316,6 +335,30 @@ namespace Odyssey
 
 			srcStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			dstStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+			barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			dstStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+			dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 		}
 		else
 		{
@@ -353,6 +396,8 @@ namespace Odyssey
 				return VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 			case ImageType::DepthTexture:
 				return VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+			case ImageType::Shadowmap:
+				return VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 			default:
 				return 0;
 		}
@@ -370,6 +415,8 @@ namespace Odyssey
 				return VK_FORMAT_R8G8B8A8_UNORM;
 			case TextureFormat::D24_UNORM_S8_UINT:
 				return VK_FORMAT_D24_UNORM_S8_UINT;
+			case TextureFormat::D16_UNORM:
+				return VK_FORMAT_D16_UNORM;
 			case TextureFormat::D32_SFLOAT:
 				return VK_FORMAT_D32_SFLOAT;
 			case TextureFormat::D32_SFLOAT_S8_UINT:
@@ -382,6 +429,6 @@ namespace Odyssey
 	bool VulkanImage::IsDepthFormat(TextureFormat format)
 	{
 		return format == TextureFormat::D32_SFLOAT || format == TextureFormat::D32_SFLOAT_S8_UINT ||
-			format == TextureFormat::D24_UNORM_S8_UINT;
+			format == TextureFormat::D24_UNORM_S8_UINT || format == TextureFormat::D16_UNORM;
 	}
 }

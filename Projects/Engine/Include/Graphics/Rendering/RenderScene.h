@@ -4,6 +4,7 @@
 #include "Resource.h"
 #include "Drawcall.h"
 #include "Ref.h"
+#include "BinaryBuffer.h"
 
 namespace Odyssey
 {
@@ -16,11 +17,12 @@ namespace Odyssey
 	class VulkanDescriptorLayout;
 	class VulkanTexture;
 
-	struct CameraUniformData
+	struct SceneData
 	{
-		glm::mat4 inverseView;
-		glm::mat4 ViewProjection;
 		glm::vec4 ViewPosition;
+		mat4 View;
+		glm::mat4 ViewProjection;
+		glm::mat4 LightViewProj;
 	};
 
 	struct ObjectUniformData
@@ -74,15 +76,19 @@ namespace Odyssey
 	{
 	public:
 		SetPass() = default;
-		SetPass(Ref<Material> material, ResourceID descriptorLayout);
+		SetPass(Ref<Material> material, bool skinned, ResourceID descriptorLayout);
 
 	public:
-		void SetMaterial(Ref<Material> material, ResourceID descriptorLayout);
+		void SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout);
+
+	private:
+		void SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions);
 
 	public:
 		ResourceID GraphicsPipeline;
 		std::map<ShaderType, ResourceID> Shaders;
-		ResourceID Texture;
+		ResourceID ColorTexture;
+		ResourceID NormalTexture;
 		std::vector<Drawcall> Drawcalls;
 	};
 
@@ -104,7 +110,7 @@ namespace Odyssey
 
 	public:
 		// Uniform structs
-		CameraUniformData cameraData;
+		SceneData sceneData;
 		ObjectUniformData objectData;
 		SkinningData SkinningData;
 		LightingData LightingData;
@@ -116,7 +122,7 @@ namespace Odyssey
 		std::vector<GUID> ParticleEmitters;
 
 		// Scene uniform buffers
-		std::vector<ResourceID> cameraDataBuffers;
+		std::vector<ResourceID> sceneDataBuffers;
 		std::vector<ResourceID> perObjectUniformBuffers;
 		std::vector<ResourceID> skinningBuffers;
 		ResourceID LightingBuffer;

@@ -143,10 +143,13 @@ namespace Odyssey
 		GameObject parent = m_GameObject.GetParent();
 		while (parent.IsValid())
 		{
-			Transform& parentTransform = parent.GetComponent<Transform>();
-			worldMatrix = parentTransform.GetLocalMatrix() * worldMatrix;
-
-			parent = parent.GetParent();
+			if (Transform* parentTransform = parent.TryGetComponent<Transform>())
+			{
+				worldMatrix = parentTransform->GetLocalMatrix() * worldMatrix;
+				parent = parent.GetParent();
+			}
+			else
+				break;
 		}
 
 		return worldMatrix;
@@ -169,6 +172,11 @@ namespace Odyssey
 			// Current * target = local space rotation
 			SetRotation(glm::normalize(m_Rotation * targetRotation));
 		}
+	}
+
+	void Transform::LookAt(float3 center, float3 up)
+	{
+		SetLocalMatrix(glm::inverse(glm::lookAtLH(m_Position, center, up)));
 	}
 
 	void Transform::CalculateEulerRotations()

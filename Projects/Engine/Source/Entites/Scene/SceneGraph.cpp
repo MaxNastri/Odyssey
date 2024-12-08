@@ -6,14 +6,14 @@ namespace Odyssey
 {
 	SceneGraph::SceneGraph()
 	{
-		m_Root = new Node();
+		m_Root = new SceneNode();
 	}
 
 	void SceneGraph::Serialize(Scene* scene, SerializationNode& serializationNode)
 	{
 		SerializationNode sceneGraphNode = serializationNode.CreateSequenceNode("Scene Graph Nodes");
 
-		for (Ref<SceneGraph::Node>& node : m_Nodes)
+		for (Ref<SceneNode>& node : m_Nodes)
 		{
 			// Skip game objects who dont' want to be serialized
 			PropertiesComponent properties = node->Entity.GetComponent<PropertiesComponent>();
@@ -42,7 +42,7 @@ namespace Odyssey
 
 		struct NodeConnection
 		{
-			Ref<Node> Node;
+			Ref<SceneNode> Node;
 			GUID Parent;
 		};
 		std::vector<NodeConnection> connections;
@@ -53,7 +53,7 @@ namespace Odyssey
 
 			assert(sceneNode.IsMap());
 
-			Ref<Node> node = m_Nodes.emplace_back(new Node());
+			Ref<SceneNode> node = m_Nodes.emplace_back(new SceneNode());
 			NodeConnection& connection = connections.emplace_back();
 			connection.Node = node;
 
@@ -72,45 +72,70 @@ namespace Odyssey
 				GameObject parent = scene->GetGameObject(connection.Parent);
 				connection.Node->Parent = FindNode(parent);
 				connection.Node->Parent->Children.push_back(connection.Node);
+
+				PropertiesComponent& properties = connection.Node->Entity.GetComponent<PropertiesComponent>();
+				if (properties.SortOrder == -1)
+					properties.SortOrder = connection.Node->Parent->Children.size() - 1;
 			}
 			else
 			{
 				connection.Node->Parent = m_Root;
 				m_Root->Children.push_back(connection.Node);
+
+				PropertiesComponent& properties = connection.Node->Entity.GetComponent<PropertiesComponent>();
+				if (properties.SortOrder == -1)
+					properties.SortOrder = m_Root->Children.size() - 1;
 			}
 		}
+
+		m_Root->SortChildren();
 	}
 
 	void SceneGraph::AddEntity(const GameObject& entity)
 	{
-		Ref<SceneGraph::Node> node = new Node(entity);
+		// Create a new scenenode
+		Ref<SceneNode> node = new SceneNode(entity);
+
+		// Set the node's parent as the root and add to the root's children
 		node->Parent = m_Root;
 		m_Nodes.push_back(node);
 		m_Root->Children.push_back(node);
+
+		// Apply default sort order logic if non is set
+		PropertiesComponent& properties = node->Entity.GetComponent<PropertiesComponent>();
+		if (properties.SortOrder == -1)
+			properties.SortOrder = m_Root->Children.size() - 1;
+
+		// Sort the root
+		m_Root->SortChildren();
 	}
 
 	void SceneGraph::RemoveEntityAndChildren(const GameObject& entity)
 	{
-		if (Ref<SceneGraph::Node> node = FindNode(entity))
+		if (Ref<SceneNode> node = FindNode(entity))
 			RemoveNodeAndChildren(node);
 	}
 
 	void SceneGraph::SetParent(const GameObject& parent, const GameObject& entity)
 	{
-		Ref<SceneGraph::Node> parentNode = FindNode(parent);
-		Ref<SceneGraph::Node> node = FindNode(entity);
+		Ref<SceneNode> parentNode = FindNode(parent);
+		Ref<SceneNode> node = FindNode(entity);
 
 		if (node && parentNode)
 		{
 			RemoveParent(node);
 			node->Parent = parentNode;
 			node->Parent->Children.push_back(node);
+
+			// Change the node's sort order to the bottom of the children
+			PropertiesComponent& properties = node->Entity.GetComponent<PropertiesComponent>();
+			properties.SortOrder = node->Children.size() - 1;
 		}
 	}
 
 	void SceneGraph::RemoveParent(const GameObject& entity)
 	{
-		if (Ref<SceneGraph::Node> node = FindNode(entity))
+		if (Ref<SceneNode> node = FindNode(entity))
 		{
 			RemoveParent(node);
 
@@ -141,13 +166,17 @@ namespace Odyssey
 			RemoveParent(childNode);
 			childNode->Parent = node;
 			node->Children.push_back(childNode);
+
+			// Change the node's sort order to the bottom of the children
+			PropertiesComponent& properties = childNode->Entity.GetComponent<PropertiesComponent>();
+			properties.SortOrder = node->Children.size() - 1;
 		}
 	}
 
 	void SceneGraph::RemoveChild(const GameObject& entity, const GameObject& child)
 	{
-		Ref<Node> node = FindNode(entity);
-		Ref<Node> childNode = FindNode(child);
+		Ref<SceneNode> node = FindNode(entity);
+		Ref<SceneNode> childNode = FindNode(child);
 
 		if (node && childNode)
 		{
@@ -171,7 +200,7 @@ namespace Odyssey
 		return children;
 	}
 
-	Ref<SceneGraph::Node> SceneGraph::FindNode(const GameObject& entity)
+	Ref<SceneNode> SceneGraph::FindNode(const GameObject& entity)
 	{
 		for (size_t i = 0; i < m_Nodes.size(); i++)
 		{
@@ -182,7 +211,7 @@ namespace Odyssey
 		return nullptr;
 	}
 
-	void SceneGraph::RemoveNodeAndChildren(Ref<Node> node)
+	void SceneGraph::RemoveNodeAndChildren(Ref<SceneNode> node)
 	{
 		for (size_t i = 0; i < node->Children.size(); i++)
 		{
@@ -203,7 +232,7 @@ namespace Odyssey
 		}
 	}
 
-	void SceneGraph::RemoveParent(Ref<Node> node)
+	void SceneGraph::RemoveParent(Ref<SceneNode> node)
 	{
 		auto parent = node->Parent;
 
@@ -222,7 +251,7 @@ namespace Odyssey
 
 	}
 
-	void SceneGraph::RemoveChildNode(Ref<Node> parentNode, Ref<Node> childNode)
+	void SceneGraph::RemoveChildNode(Ref<SceneNode> parentNode, Ref<SceneNode> childNode)
 	{
 		auto& children = parentNode->Children;
 
@@ -233,6 +262,28 @@ namespace Odyssey
 				children.erase(children.begin() + i);
 				break;
 			}
+		}
+	}
+
+	void SceneNode::SortChildren(bool recursive)
+	{
+		struct CustomSort
+		{
+			bool operator()(Ref<SceneNode> a, Ref<SceneNode> b) const
+			{
+				PropertiesComponent& propertiesA = a->Entity.GetComponent<PropertiesComponent>();
+				PropertiesComponent& propertiesB = b->Entity.GetComponent<PropertiesComponent>();
+
+				return propertiesA.SortOrder < propertiesB.SortOrder;
+			}
+		} customSort;
+
+		std::sort(Children.begin(), Children.end(), customSort);
+
+		if (recursive)
+		{
+			for (size_t i = 0; i < Children.size(); i++)
+				Children[i]->SortChildren(recursive);
 		}
 	}
 }

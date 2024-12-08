@@ -1,5 +1,4 @@
 #include "Editor.h"
-#include "FileTracker.h"
 #include "AssetManager.h"
 #include "ScriptingManager.h"
 #include "GUIManager.h"
@@ -14,6 +13,8 @@
 #include "SceneSettingsWindow.h"
 #include "AssetRegistry.h"
 #include "ParticleBatcher.h"
+#include "Preferences.h"
+#include "FileManager.h"
 
 namespace Odyssey
 {
@@ -23,7 +24,7 @@ namespace Odyssey
 		// With native debugging enabled, our breakpoints wont work before we init scripting
 		ScriptingManager::Initialize();
 		Random::Initialize();
-		FileTracker::Init();
+		FileManager::Init();
 
 		// Register for event listeners
 		m_BuildCompleteListener = EventSystem::Listen<BuildCompleteEvent>
@@ -31,14 +32,21 @@ namespace Odyssey
 		m_PlaymodeStateListener = EventSystem::Listen<PlaymodeStateChangedEvent>
 			([this](PlaymodeStateChangedEvent* event) { OnPlaymodeStateChanged(event); });
 
-		// Load the default project
-		Project::LoadProject("C:/Git/Odyssey/Projects/Sandbox");
+		Preferences::LoadPreferences("Resources/Editor.prefs");
+		Preferences::SavePreferences();
 
-		std::vector<Path> engineRegistries = 
+		// Load the default project
+		Project::LoadProject(Preferences::GetStartupProject());
+
 		{
-			"Resources/AssetRegistry.osettings"
-		};
-		AssetManager::CreateDatabase(Project::GetActiveAssetsDirectory(), engineRegistries);
+			// Create the asset database
+			AssetManager::Settings settings;
+			settings.AssetsDirectory = Project::GetActiveAssetsDirectory();
+			settings.AdditionalRegistries = { Preferences::GetEditorRegistry() };
+			settings.AssetExtensions = Preferences::GetAssetExtensions();
+			settings.SourceAssetExtensionMap = Preferences::GetSourceExtensionsMap();
+			AssetManager::CreateDatabase(settings);
+		}
 
 		// Create the renderer
 		RendererConfig config = { .EnableIMGUI = true };
@@ -52,14 +60,17 @@ namespace Odyssey
 
 		GUIManager::Initialize();
 
-		// Build the user assembly
-		ScriptCompiler::Settings settings;
-		settings.ApplicationPath = Globals::GetApplicationPath();
-		settings.CacheDirectory = Project::GetActiveCacheDirectory();
-		settings.UserScriptsDirectory = Project::GetActiveUserScriptsDirectory();
-		settings.UserScriptsProject = Project::GetActiveUserScriptsProject();
-		m_ScriptCompiler = std::make_unique<ScriptCompiler>(settings);
+		{
+			// Create the script compiler
+			ScriptCompiler::Settings settings;
+			settings.ApplicationPath = Globals::GetApplicationPath();
+			settings.CacheDirectory = Project::GetActiveCacheDirectory();
+			settings.UserScriptsDirectory = Project::GetActiveUserScriptsDirectory();
+			settings.UserScriptsProject = Project::GetActiveUserScriptsProject();
+			m_ScriptCompiler = std::make_unique<ScriptCompiler>(settings);
+		}
 
+		// Build the user assembly
 		ScriptingManager::SetUserAssembliesPath(m_ScriptCompiler->GetUserAssemblyPath());
 		ScriptingManager::LoadUserAssemblies();
 
@@ -86,7 +97,8 @@ namespace Odyssey
 			{
 				m_TimeSinceLastUpdate = 0.0f;
 
-				FileTracker::Dispatch();
+				FileManager::Get().Dispatch();
+
 				// Process any changes made to the user's managed dll
 				m_ScriptCompiler->Process();
 				DebugRenderer::Clear();

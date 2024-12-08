@@ -10,6 +10,9 @@ namespace Odyssey
 		s_Config = config;
 		s_RendererAPI = std::make_shared<VulkanRenderer>();
 
+		if (s_Config.ShadowsEnabled)
+			s_RendererAPI->AddRenderPass(new ShadowPass());
+
 		if (s_Config.EnableIMGUI)
 			s_RendererAPI->AddImguiPass();
 

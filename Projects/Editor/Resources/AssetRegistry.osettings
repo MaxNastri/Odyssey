@@ -17,53 +17,129 @@ Entries:
     GUID: 14856991710712284328
   - Name: Cube
     Type: Odyssey.SourceModel
-    Path: 'Meshes/Source/Cube.glb'
+    Path: Meshes/Source/Cube.glb
     GUID: 17688292389720890448
   - Name: Cube
     Type: Odyssey.Mesh
-    Path: 'Meshes/Cube.mesh'
+    Path: Meshes/Cube.mesh
     GUID: 4325336624522892849
+  - Name: Plane
+    Type: Odyssey.SourceModel
+    Path: Meshes/Source/Plane.glb
+    GUID: 21283897786241326734
+  - Name: Plane
+    Type: Odyssey.Mesh
+    Path: Meshes/Plane.mesh
+    GUID: 3098132783127681236
   - Name: Particle Render
     Type: Odyssey.Shader
-    Path: 'Shaders/ParticleRender.shader'
+    Path: Shaders/ParticleRender.shader
     GUID: 16032593712191697003
   - Name: Particle Render
     Type: Odyssey.SourceShader
-    Path: 'Shaders/Source/ParticleRender.hlsl'
+    Path: Shaders/Source/ParticleRender.hlsl
     GUID: 3156967184414869478
   - Name: ParticleEmitter
     Type: Odyssey.SourceShader
-    Path: 'Shaders/Source/ParticleEmitter.hlsl'
+    Path: Shaders/Source/ParticleEmitter.hlsl
     GUID: 6212201915190309476
   - Name: ParticleEmitter
     Type: Odyssey.Shader
-    Path: 'Shaders/ParticleEmitter.shader'
+    Path: Shaders/ParticleEmitter.shader
     GUID: 8940240242710108428
   - Name: Particle Simulation
     Type: Odyssey.SourceShader
-    Path: 'Shaders/Source/ParticleSimulation.hlsl'
+    Path: Shaders/Source/ParticleSimulation.hlsl
     GUID: 4123209115191309476
   - Name: Particle Simulation
     Type: Odyssey.Shader
-    Path: 'Shaders/ParticleSimulation.shader'
+    Path: Shaders/ParticleSimulation.shader
     GUID: 7831351134810913572
   - Name: Soft Particle
     Type: Odyssey.Texture2D
-    Path: 'Textures/SoftParticle.asset'
+    Path: Textures/SoftParticle.tex2D
     GUID: 488672041793267412
   - Name: Soft Particle
     Type: Odyssey.SourceTexture
-    Path: 'Textures/Source/SoftParticle.png'
+    Path: Textures/Source/SoftParticle.png
     GUID: 812973823681236833
+  - Name: Default Folder
+    Type: Odyssey.Texture2D
+    Path: Textures/Folder_Default.tex2D
+    GUID: 213981209753892768
+  - Name: Default Folder
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Folder_Default.png
+    GUID: 898173491239897822
   - Name: Particles
     Type: Odyssey.Material
-    Path: 'Materials/Particles.asset'
+    Path: Materials/Particles.asset
     GUID: 831665292157922468
   - Name: Blueprint Background
     Type: Odyssey.Texture2D
-    Path: 'Textures/BlueprintBackground.asset'
+    Path: Textures/BlueprintBackground.tex2D
     GUID: 980123767453938719
   - Name: Blueprint Background
     Type: Odyssey.SourceTexture
-    Path: 'Textures/Source/BlueprintBackground.png'
+    Path: Textures/Source/BlueprintBackground.png
     GUID: 901283857934219837
+  - Name: Script Icon
+    Type: Odyssey.Texture2D
+    Path: Textures/Script_Icon.tex2D
+    GUID: 128378120928579883
+  - Name: Script Icon
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Script_Icon.png
+    GUID: 190283902178367422
+  - Name: Material Default
+    Type: Odyssey.Texture2D
+    Path: Textures/Material_Default.tex2D
+    GUID: 712378667834876178
+  - Name: Material Icon
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Material_Icon.png
+    GUID: 982137237683467341
+  - Name: Mesh Icon
+    Type: Odyssey.Texture2D
+    Path: Textures/Mesh_Icon.tex2D
+    GUID: 192838772537861324
+  - Name: Asset Icon
+    Type: Odyssey.Texture2D
+    Path: Textures/Asset_Icon.tex2D
+    GUID: 128397192873168765
+  - Name: Asset Icon
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Asset_Icon.png
+    GUID: 678512365782317894
+  - Name: Black
+    Type: Odyssey.Texture2D
+    Path: Textures/Black.tex2D
+    GUID: 783478723187327676
+  - Name: Black
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Black.png
+    GUID: 891239123723176542
+  - Name: Shadowmapping
+    Type: Odyssey.Shader
+    Path: Shaders/Shadowmapping.shader
+    GUID: 879318792137863213
+  - Name: Shadowmapping
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Shadowmapping.hlsl
+    GUID: 690823879126781327
+  - Name: Shadowmapping Skinned
+    Type: Odyssey.Shader
+    Path: Shaders/Shadowmapping_Skinned.shader
+    GUID: 218097783217681239
+  - Name: Shadowmapping Skinned
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Shadowmapping_Skinned.hlsl
+    GUID: 719741236172837688
+  - Name: White
+    Type: Odyssey.Texture2D
+    Path: Textures/White.tex2D
+    GUID: 879823474869737113
+  - Name: White
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/White.png
+    GUID: 046283651452984366

@@ -7,6 +7,17 @@ namespace Odyssey
 		RegistryPath = registryPath;
 		RootDirectory = RegistryPath.parent_path();
 		Load();
+
+		FolderTracker::Options options;
+		options.Extensions = { };
+		options.Recursive = true;
+		options.Callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnFileAction(oldPath, newPath, fileAction); };
+		m_TrackingID = FileManager::Get().TrackFolder(RootDirectory, options);
+	}
+
+	AssetRegistry::~AssetRegistry()
+	{
+		FileManager::Get().UntrackFolder(m_TrackingID);
 	}
 
 	void AssetRegistry::AddAsset(const std::string& name, const std::string& type, const Path& path, GUID guid)
@@ -45,6 +56,19 @@ namespace Odyssey
 			if (entry.Guid == guid)
 			{
 				entry.Path = path;
+				Save();
+				break;
+			}
+		}
+	}
+
+	void AssetRegistry::UpdateAssetPath(const Path& oldPath, const Path& newPath)
+	{
+		for (AssetEntry& entry : Entries)
+		{
+			if (entry.Path == oldPath)
+			{
+				entry.Path = newPath;
 				Save();
 				break;
 			}
@@ -106,6 +130,36 @@ namespace Odyssey
 				entryNode.ReadData("GUID", entry.Guid.Ref());
 				entry.Path = path;
 			}
+
+			PruneEntries();
+		}
+	}
+
+	void AssetRegistry::PruneEntries()
+	{
+		size_t removed = 0;
+
+		for (int64_t i = (int64_t)Entries.size() - 1; i >= 0; i--)
+		{
+			AssetEntry& entry = Entries[i];
+
+			if (!std::filesystem::exists(RootDirectory / entry.Path))
+			{
+				Entries.erase(Entries.begin() + i);
+				removed++;
+				continue;
+			}
+		}
+
+		if (removed > 0)
+			Save();
+	}
+
+	void AssetRegistry::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
+	{
+		if (fileAction == FileActionType::Moved && !oldFilename.empty() && !newFilename.empty())
+		{
+			UpdateAssetPath(oldFilename, newFilename);
 		}
 	}
 }

@@ -40,7 +40,7 @@ namespace Odyssey
 
 		ImGui::SameLine();
 
-		if (ImGui::CollapsingHeader("Mesh Renderer", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+		if (ImGui::CollapsingHeader("Mesh Renderer", ImGuiTreeNodeFlags_DefaultOpen))
 		{
 			if (m_MeshDrawer.Draw())
 			{
@@ -57,7 +57,6 @@ namespace Odyssey
 				modified = true;
 
 			}
-			modified |= m_MaterialDrawer.Draw();
 		}
 
 		ImGui::PopID();

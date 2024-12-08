@@ -2,6 +2,8 @@
 #include "SceneManager.h"
 #include "EditorComponents.h"
 #include "Transform.h"
+#include "imgui_internal.h"
+#include "Input.h"
 
 namespace Odyssey
 {
@@ -169,4 +171,146 @@ namespace Odyssey
 		}
 	}
 
+	SelectableInput::SelectableInput(std::string_view text, uint64_t iconHandle, float aspectRatio)
+	{
+		m_Text = text;
+		m_IconHandle = iconHandle;
+		m_AspectRatio = aspectRatio;
+		m_Text.copy(m_InputBuffer, ARRAYSIZE(m_InputBuffer));
+	}
+
+	SelectableInput::Result SelectableInput::Draw()
+	{
+		bool previouslySelected = m_Selected;
+		m_Result = Result::None;
+
+		ImGui::PushID(this);
+
+		if (!previouslySelected)
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, float4(0.0f));
+
+		if (m_ShowInput)
+		{
+			DrawInput();
+		}
+		else
+		{
+			auto& style = ImGui::GetStyle();
+			auto* window = ImGui::GetCurrentWindow();
+
+			float textHeight = ImGui::CalcTextSize(m_Text.c_str()).y;
+			float iconWidth = textHeight * m_AspectRatio;
+			float startPosX = ImGui::GetCursorPosX();
+
+			// Move the cursor along so we can draw the icon to the left of the selectable
+			if (m_IconHandle)
+				ImGui::SetCursorPosX(startPosX + iconWidth + style.ItemSpacing.x);
+
+			const ImGuiSelectableFlags flags = ImGuiSelectableFlags_AllowDoubleClick |
+				ImGuiSelectableFlags_SpanAllColumns |
+				ImGuiSelectableFlags_AllowItemOverlap;
+
+			// Extend the work rect to ignore window padding so the selectable highlight
+			// fills the entire width
+			window->ParentWorkRect.Min.x -= style.WindowPadding.x;
+			window->ParentWorkRect.Max.x += style.WindowPadding.x;
+
+			// Draw the selectable
+			if (ImGui::Selectable(m_Text.c_str(), m_Selected, flags))
+			{
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					m_Result = Result::DoubleClick;
+				}
+				else
+				{
+					m_Result = Result::Selected;
+					m_Selected = true;
+				}
+			}
+
+			// Check if its hovered
+			bool hovered = ImGui::IsItemHovered();
+
+			if (m_IconHandle)
+			{
+				// Move the cursor back to the left and draw the icon
+				ImGui::SameLine();
+				ImGui::SetCursorPosX(startPosX);
+				ImGui::Image((void*)m_IconHandle, float2(iconWidth, textHeight));
+
+				// Check if the icon is hovered
+				hovered |= ImGui::IsItemHovered();
+			}
+
+			// Done drawing, restore the work rect to its original size
+			window->ParentWorkRect.Min.x += style.WindowPadding.x;
+			window->ParentWorkRect.Max.x -= style.WindowPadding.x;
+
+			// We treat the icon and selectable as a single widget for hover checks
+			if (!hovered && Input::GetMouseButtonDown(MouseButton::Left))
+			{
+				m_Selected = false;
+			}
+			else if (hovered && Input::GetMouseButtonDown(MouseButton::Right))
+			{
+				m_Selected = true;
+				ImGui::OpenPopup("Popup");
+			}
+
+			if (ImGui::BeginPopup("Popup"))
+			{
+				if (ImGui::MenuItem("Rename"))
+				{
+					m_ShowInput = true;
+				}
+
+				ImGui::EndPopup();
+			}
+		}
+
+		if (!previouslySelected)
+			ImGui::PopStyleColor();
+
+		ImGui::PopID();
+
+		return m_Result;
+	}
+
+	void SelectableInput::SetIcon(uint64_t iconHandle, float aspectRatio)
+	{
+		m_IconHandle = iconHandle;
+		m_AspectRatio = aspectRatio;
+	}
+
+	void SelectableInput::DrawInput()
+	{
+		if (m_IconHandle)
+		{
+			float textHeight = ImGui::CalcTextSize(m_Text.c_str()).y;
+			float iconWidth = textHeight * m_AspectRatio;
+
+			ImGui::Image((void*)m_IconHandle, float2(iconWidth, textHeight));
+			ImGui::SameLine();
+		}
+
+		bool enter = ImGui::InputText("##Label", m_InputBuffer, ARRAYSIZE(m_InputBuffer), ImGuiInputTextFlags_EnterReturnsTrue);
+		
+		ImGui::SetKeyboardFocusHere(-1);
+		
+		if (enter || (!ImGui::IsItemHovered() && Input::GetMouseButtonDown(MouseButton::Left)))
+		{
+			// Submit the text
+			m_Text = m_InputBuffer;
+			m_ShowInput = false;
+			m_Result = Result::TextModified;
+		}
+	}
+
+	bool SearchWidget::Draw()
+	{
+		ImGui::PushID(this);
+
+		return false;
+	}
 }

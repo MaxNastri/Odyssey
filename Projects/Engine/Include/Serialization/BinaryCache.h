@@ -1,7 +1,6 @@
 #pragma once
 #include "BinaryBuffer.h"
 #include "GUID.h"
-#include "FileTracker.h"
 
 namespace Odyssey
 {
@@ -20,12 +19,11 @@ namespace Odyssey
 		void CatalogAssets();
 		BinaryBuffer LoadBinaryData(const Path& path);
 		Path GenerateAssetPath(GUID guid);
-		void OnFileAction(const Path& path, FileActionType fileAction);
+		//void OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction);
 
 	private:
 		Path m_Path;
 		std::map<GUID, Path> m_GUIDToPath;
 		std::map<Path, GUID> m_PathToGUID;
-		std::unique_ptr<FileTracker> m_FileTracker = nullptr;
 	};
 }

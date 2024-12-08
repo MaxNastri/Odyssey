@@ -1,6 +1,9 @@
 #pragma once
+#include "Ref.h"
 #include "DockableWindow.h"
-#include "FileTracker.h"
+#include "EditorWidgets.h"
+#include "Texture2D.h"
+#include "FileManager.h"
 
 namespace Odyssey
 {
@@ -19,10 +22,10 @@ namespace Odyssey
 
 	private:
 		void HandleContextMenu();
-		void DrawSceneAsset(const Path& assetPath);
-		void DrawSourceAsset(const Path& sourcePath);
-		void DrawAsset(const Path& assetPath);
-		void OnFileAction(const Path& filePath, FileActionType fileAction);
+		void OnFileAction(const Path& oldPath, const Path& newPath, FileActionType fileAction);
+
+	private:
+		Path GetUniquePath(const Path& filename, const Path& extension);
 
 	private: // Pathing
 		bool m_UpdatePaths = true;
@@ -30,7 +33,9 @@ namespace Odyssey
 		Path m_CurrentPath;
 		std::vector<Path> m_FoldersToDisplay;
 		std::vector<Path> m_FilesToDisplay;
-		std::unique_ptr<FileTracker> m_FileTracker;
+		std::vector<SelectableInput> m_FolderDrawers;
+		std::vector<SelectableInput> m_AssetDrawers;
+		TrackingID m_FileTrackingID;
 
 	private: // Context menu
 		bool m_ContextMenuOpen = false;
