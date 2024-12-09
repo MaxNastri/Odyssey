@@ -14,8 +14,10 @@ GameObjects:
         Animation Blueprint: 9242731602216417912
       - Type: Odyssey.MeshRenderer
         Enabled: 1
-        m_Mesh: 13511586946249507819
-        m_Material: 942766181068811557
+        Mesh: 13511586946249507819
+        Materials:
+          - 942766181068811557
+          - 942766181068811557
       - Type: Odyssey.Transform
         Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 0 y: 0 z: 0'
@@ -85,8 +87,9 @@ GameObjects:
     Components:
       - Type: Odyssey.MeshRenderer
         Enabled: 1
-        m_Mesh: 3098132783127681236
-        m_Material: 1478857400269284978
+        Mesh: 3098132783127681236
+        Materials:
+          - 1478857400269284978
       - Type: Odyssey.Transform
         Position: 'x: 0.9845674 y: 0.31097046 z: 0'
         Rotation: 'x: 0 y: -0 z: 59.264267'

@@ -20,7 +20,7 @@ namespace Odyssey
 	private:
 		GameObject m_GameObject;
 		AssetFieldDrawer m_MeshDrawer;
-		AssetFieldDrawer m_MaterialDrawer;
+		std::vector<AssetFieldDrawer> m_MaterialDrawers;
 		bool m_MeshRendererEnabled;
 	};
 }

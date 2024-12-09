@@ -39,11 +39,14 @@ namespace Odyssey
 		auto importer = source->GetImporter();
 		const MeshImportData& meshData = importer->GetMeshData();
 
-		std::vector<Vertex> vertices = meshData.VertexLists[0];
-		SetVertices(vertices);
+		assert(meshData.VertexLists.size() == meshData.IndexLists.size());
+		m_SubMeshes.resize(meshData.VertexLists.size());
 
-		std::vector<uint32_t> indices = meshData.IndexLists[0];
-		SetIndices(indices);
+		for (size_t i = 0; i < m_SubMeshes.size(); i++)
+		{
+			SetVertices(meshData.VertexLists[i], i);
+			SetIndices(meshData.IndexLists[i], i);
+		}
 	}
 
 	void Mesh::SaveToDisk(const Path& path)
@@ -54,42 +57,51 @@ namespace Odyssey
 		// Serialize the asset metadata first
 		SerializeMetadata(serializer);
 
-		root.WriteData("m_VertexCount", m_VertexCount);
-		root.WriteData("m_VertexData", m_VerticesGUID.CRef());
-		root.WriteData("m_IndexCount", m_IndexCount);
-		root.WriteData("m_IndexData", m_IndicesGUID.CRef());
-
 		serializer.WriteToDisk(path);
 	}
 
-	void Mesh::SetVertices(std::vector<Vertex>& vertices)
+	SubMesh* Mesh::GetSubmesh(size_t submeshIndex)
 	{
-		m_Vertices = vertices;
-		m_VertexCount = (uint16_t)m_Vertices.size();
+		if (submeshIndex < m_SubMeshes.size())
+			return &m_SubMeshes[submeshIndex];
 
-		if (m_VertexBuffer)
-			ResourceManager::Destroy(m_VertexBuffer);
+		return nullptr;
+	}
+
+	void Mesh::SetVertices(const std::vector<Vertex>& vertices, size_t submeshIndex)
+	{
+		assert(submeshIndex < m_SubMeshes.size());
+
+		SubMesh& submesh = m_SubMeshes[submeshIndex];
+		submesh.Vertices = vertices;
+		submesh.VertexCount = (uint16_t)submesh.Vertices.size();
+
+		if (submesh.VertexBuffer)
+			ResourceManager::Destroy(submesh.VertexBuffer);
 
 		// Allocate the vertex buffer
-		size_t dataSize = m_Vertices.size() * sizeof(m_Vertices[0]);
-		m_VertexBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Vertex, dataSize);
+		size_t dataSize = submesh.Vertices.size() * sizeof(submesh.Vertices[0]);
+		submesh.VertexBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Vertex, dataSize);
 
 		// Upload the vertices to the GPU
-		auto vertexBuffer = ResourceManager::GetResource<VulkanBuffer>(m_VertexBuffer);
+		Ref<VulkanBuffer> vertexBuffer = ResourceManager::GetResource<VulkanBuffer>(submesh.VertexBuffer);
 		vertexBuffer->UploadData(vertices.data(), dataSize);
 	}
 
-	void Mesh::SetIndices(std::vector<uint32_t>& indices)
+	void Mesh::SetIndices(const std::vector<uint32_t>& indices, size_t submeshIndex)
 	{
-		m_Indices = indices;
-		m_IndexCount = (uint32_t)m_Indices.size();
+		assert(submeshIndex < m_SubMeshes.size());
 
-		if (m_IndexBuffer)
-			ResourceManager::Destroy(m_IndexBuffer);
+		SubMesh& submesh = m_SubMeshes[submeshIndex];
+		submesh.Indices = indices;
+		submesh.IndexCount = (uint32_t)indices.size();
 
-		size_t dataSize = m_Indices.size() * sizeof(m_Indices[0]);
-		m_IndexBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Index, dataSize);
-		auto indexBuffer = ResourceManager::GetResource<VulkanBuffer>(m_IndexBuffer);
+		if (submesh.IndexBuffer)
+			ResourceManager::Destroy(submesh.IndexBuffer);
+
+		size_t dataSize = submesh.Indices.size() * sizeof(submesh.Indices[0]);
+		submesh.IndexBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Index, dataSize);
+		Ref<VulkanBuffer> indexBuffer = ResourceManager::GetResource<VulkanBuffer>(submesh.IndexBuffer);
 		indexBuffer->UploadData(indices.data(), dataSize);
 	}
 }

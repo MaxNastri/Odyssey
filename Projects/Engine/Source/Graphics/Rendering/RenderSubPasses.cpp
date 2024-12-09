@@ -153,6 +153,9 @@ namespace Odyssey
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 		auto renderScene = params.renderingData->renderScene;
 
+		// Set our depth bias values back to 0
+		commandBuffer->SetDepthBias(0.0f, 0.0f, 0.0f);
+
 		for (auto& setPass : params.renderingData->renderScene->setPasses)
 		{
 			commandBuffer->BindGraphicsPipeline(setPass.GraphicsPipeline);

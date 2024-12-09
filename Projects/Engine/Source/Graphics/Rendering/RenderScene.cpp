@@ -203,41 +203,53 @@ namespace Odyssey
 			Transform& transform = gameObject.GetComponent<Transform>();
 			Animator* animator = gameObject.TryGetComponent<Animator>();
 
-			if (!meshRenderer.IsEnabled() || !meshRenderer.GetMaterial() || !meshRenderer.GetMesh())
+			const std::vector<Ref<Material>>& materials = meshRenderer.GetMaterials();
+			Ref<Mesh> mesh = meshRenderer.GetMesh();
+
+			if (!meshRenderer.IsEnabled() || materials.size() == 0 || !mesh)
 				continue;
 
-			// For now, 1 set pass per drawcall
-			SetPass& setPass = setPasses.emplace_back();
-			setPass.SetMaterial(meshRenderer.GetMaterial(), animator != nullptr, m_DescriptorLayout);
+			uint32_t uboIndex = m_NextUniformBuffer++;
 
-			// Create the drawcall data
-			if (Ref<Mesh> mesh = meshRenderer.GetMesh())
+			for (size_t i = 0; i < materials.size(); i++)
 			{
-				Drawcall& drawcall = setPass.Drawcalls.emplace_back();
-				drawcall.VertexBufferID = mesh->GetVertexBuffer();
-				drawcall.IndexBufferID = mesh->GetIndexBuffer();
-				drawcall.IndexCount = mesh->GetIndexCount();
-				drawcall.UniformBufferIndex = m_NextUniformBuffer++;
-				drawcall.Skinned = animator != nullptr;
+				if (!materials[i])
+					continue;
 
-				// Update the per-object uniform buffer
-				uint32_t perObjectSize = sizeof(objectData);
-				objectData.world = transform.GetWorldMatrix();
-				objectData.InverseWorld = glm::transpose(glm::inverse(objectData.world));
-
-				ResourceID uboID = perObjectUniformBuffers[drawcall.UniformBufferIndex];
-				auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
-				uniformBuffer->CopyData(perObjectSize, &objectData);
-
-				if (animator)
+				if (SubMesh* submesh = mesh->GetSubmesh(i))
 				{
-					size_t skinningSize = sizeof(SkinningData);
-					SkinningData.SetBindposes(animator->GetFinalPoses());
+					// For now, 1 set pass per drawcall
+					SetPass& setPass = setPasses.emplace_back();
+					setPass.SetMaterial(materials[i], animator != nullptr, m_DescriptorLayout);
 
-					ResourceID skinningID = skinningBuffers[drawcall.UniformBufferIndex];
-					auto skinningBuffer = ResourceManager::GetResource<VulkanBuffer>(skinningID);
-					skinningBuffer->CopyData(skinningSize, &SkinningData);
+					// Create the drawcall data
+					Drawcall& drawcall = setPass.Drawcalls.emplace_back();
+					drawcall.VertexBufferID = submesh->VertexBuffer;
+					drawcall.IndexBufferID = submesh->IndexBuffer;
+					drawcall.IndexCount = submesh->IndexCount;
+					drawcall.UniformBufferIndex = uboIndex;
+					drawcall.Skinned = animator != nullptr;
 				}
+			}
+
+			// Update the per-object uniform buffer
+			uint32_t perObjectSize = sizeof(objectData);
+			objectData.world = transform.GetWorldMatrix();
+			objectData.InverseWorld = glm::transpose(glm::inverse(objectData.world));
+
+			ResourceID uboID = perObjectUniformBuffers[uboIndex];
+			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
+			uniformBuffer->CopyData(perObjectSize, &objectData);
+
+			if (animator)
+			{
+				// Update the skinning buffer
+				size_t skinningSize = sizeof(SkinningData);
+				SkinningData.SetBindposes(animator->GetFinalPoses());
+
+				ResourceID skinningID = skinningBuffers[uboIndex];
+				auto skinningBuffer = ResourceManager::GetResource<VulkanBuffer>(skinningID);
+				skinningBuffer->CopyData(skinningSize, &SkinningData);
 			}
 		}
 	}

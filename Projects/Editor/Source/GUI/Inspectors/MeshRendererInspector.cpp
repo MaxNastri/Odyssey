@@ -15,12 +15,15 @@ namespace Odyssey
 		if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 		{
 			GUID meshGUID = meshRenderer->GetMesh() ? meshRenderer->GetMesh()->GetGUID() : GUID(0);
-			GUID materialGUID = meshRenderer->GetMaterial() ? meshRenderer->GetMaterial()->GetGUID() : GUID(0);
 
 			m_MeshRendererEnabled = meshRenderer->IsEnabled();
 
 			m_MeshDrawer = AssetFieldDrawer("Mesh", meshGUID, Mesh::Type);
-			m_MaterialDrawer = AssetFieldDrawer("Material", materialGUID, Material::Type);
+			auto& materials = meshRenderer->GetMaterials();
+			for (size_t i = 0; i < materials.size(); i++)
+			{
+				m_MaterialDrawers.emplace_back(AssetFieldDrawer(std::format("Material {}", i), materials[i]->GetGUID(), Material::Type));
+			}
 		}
 	}
 
@@ -49,13 +52,22 @@ namespace Odyssey
 
 				modified = true;
 			}
-			if (m_MaterialDrawer.Draw())
+
+			for (size_t i = 0; i < m_MaterialDrawers.size(); i++)
 			{
-				if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
-					meshRenderer->SetMaterial(m_MaterialDrawer.GetGUID());
+				if (m_MaterialDrawers[i].Draw())
+				{
+					if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
+						meshRenderer->SetMaterial(m_MaterialDrawers[i].GetGUID(), i);
 
-				modified = true;
+					modified = true;
+				}
+			}
 
+			if (ImGui::Button("Add Material"))
+			{
+				size_t materialIndex = m_MaterialDrawers.size();
+				m_MaterialDrawers.emplace_back(AssetFieldDrawer(std::format("Material {}", materialIndex), 0, Material::Type));
 			}
 		}
 
