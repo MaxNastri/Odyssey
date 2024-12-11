@@ -94,6 +94,21 @@ GameObjects:
         Position: 'x: 0.9845674 y: 0.31097046 z: 0'
         Rotation: 'x: 0 y: -0 z: 59.264267'
         Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 5
+    Prefab: 0
+    Name: GameObject
+    GUID: 8852869364502826611
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 1478857400269284978
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
 Scene Graph Nodes:
   - Entity: 15322439001782158818
     Parent: 0
@@ -102,4 +117,6 @@ Scene Graph Nodes:
   - Entity: 1496534082370822112
     Parent: 0
   - Entity: 4347209049409031115
+    Parent: 0
+  - Entity: 8852869364502826611
     Parent: 0

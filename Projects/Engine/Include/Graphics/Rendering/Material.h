@@ -14,7 +14,7 @@ namespace Odyssey
 		Material(const Path& assetPath);
 
 	public:
-		void Save();
+		virtual void Save() override;
 		void Load();
 
 	private:

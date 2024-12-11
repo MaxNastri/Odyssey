@@ -14,12 +14,6 @@ namespace Odyssey
 
 	}
 
-	Animator::~Animator()
-	{
-
-		int debu = 0;
-	}
-
 	void Animator::Serialize(SerializationNode& node)
 	{
 		SerializationNode componentNode = node.AppendChild();
@@ -113,7 +107,7 @@ namespace Odyssey
 
 	void Animator::SetBlueprint(GUID guid)
 	{
-		m_Blueprint = AssetManager::LoadAsset<AnimationBlueprint>(guid);
+		m_Blueprint = AssetManager::LoadInstance<AnimationBlueprint>(guid);
 	}
 
 	void Animator::CreateBoneGameObjects()

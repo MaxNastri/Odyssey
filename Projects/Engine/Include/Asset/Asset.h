@@ -53,6 +53,9 @@ namespace Odyssey
 		void Load();
 
 	public:
+		virtual void Save() = 0;
+
+	public:
 		GUID GetGUID() { return m_GUID; }
 		std::string_view GetName() { return m_Name; }
 		std::string_view GetType() { return m_Type; }

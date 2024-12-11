@@ -23,7 +23,7 @@ namespace Odyssey
 		void Recompile();
 
 	public:
-		void Save();
+		virtual void Save() override;
 		void Load();
 
 	public:

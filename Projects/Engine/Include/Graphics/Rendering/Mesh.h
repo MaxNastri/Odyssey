@@ -27,7 +27,7 @@ namespace Odyssey
 		Mesh(const Path& assetPath, Ref<SourceModel> source);
 
 	public:
-		void Save();
+		virtual void Save() override;
 		void Load();
 
 	private:

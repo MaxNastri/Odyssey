@@ -18,7 +18,7 @@ namespace Odyssey
 		Texture2D(const Path& assetPath, Ref<SourceTexture> source);
 
 	public:
-		void Save();
+		virtual void Save() override;
 		void Load();
 
 	public:
