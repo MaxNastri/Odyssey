@@ -45,6 +45,7 @@ namespace Odyssey
 
 			// Create a new material asset
 			GUID guid = GUID::New();
+			std::string name = assetPath.filename().replace_extension("").string();
 
 			s_LoadedAssets.insert(guid);
 
@@ -53,14 +54,14 @@ namespace Odyssey
 
 			// Set asset data
 			asset->m_GUID = guid;
-			asset->SetName(assetPath.filename().replace_extension("").string());
+			asset->SetName(name);
 			asset->m_Type = T::Type;
 
 			// Save to disk
 			if (!assetPath.empty())
 				asset->Save();
 
-			s_AssetDatabase->AddAsset(guid, assetPath, "Default", T::Type, false);
+			s_AssetDatabase->AddAsset(guid, assetPath, name, T::Type, false);
 
 			return asset.As<T>();
 		}

@@ -203,7 +203,7 @@ namespace Odyssey
 			Transform& transform = gameObject.GetComponent<Transform>();
 			Animator* animator = gameObject.TryGetComponent<Animator>();
 
-			const std::vector<Ref<Material>>& materials = meshRenderer.GetMaterials();
+			std::vector<Ref<Material>>& materials = meshRenderer.GetMaterials();
 			Ref<Mesh> mesh = meshRenderer.GetMesh();
 
 			if (!meshRenderer.IsEnabled() || materials.size() == 0 || !mesh)
@@ -213,7 +213,7 @@ namespace Odyssey
 
 			for (size_t i = 0; i < materials.size(); i++)
 			{
-				if (!materials[i])
+				if (!materials[i] || materials[i]->GetGUID() == 0)
 					continue;
 
 				if (SubMesh* submesh = mesh->GetSubmesh(i))
