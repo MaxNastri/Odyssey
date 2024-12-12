@@ -134,7 +134,7 @@ namespace Odyssey
 				LightingData.LightCount++;
 
 				if (light.GetType() == LightType::Directional)
-					sceneData.LightViewProj = Light::CalculateViewProj(float3(0.0f), 10.0f, sceneLight.Position, sceneLight.Direction);
+					sceneData.LightViewProj = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, sceneLight.Position, sceneLight.Direction);
 			}
 		}
 

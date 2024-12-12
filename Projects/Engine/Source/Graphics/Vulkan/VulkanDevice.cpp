@@ -84,9 +84,10 @@ namespace Odyssey
 
 		dynamicRendering.pNext = &bufferAddress;
 
+		VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT unusedAttachments;
+
 		if (allowUnusedAttachments)
 		{
-			VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT unusedAttachments;
 			unusedAttachments.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_FEATURES_EXT;
 			unusedAttachments.dynamicRenderingUnusedAttachments = VK_TRUE;
 			unusedAttachments.pNext = dynamicRendering.pNext;

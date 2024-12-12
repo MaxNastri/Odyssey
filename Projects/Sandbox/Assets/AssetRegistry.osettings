@@ -427,3 +427,63 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Fire1.tex2D
     GUID: 13306251931061361116
+  - Name: rock_09
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/rock_09.fbx
+    GUID: 4710216233613423870
+  - Name: T_rock_02_BC
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_rock_02_BC.png
+    GUID: 3543611155993707643
+  - Name: T_rock_02_MT_AO_H_SM
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_rock_02_MT_AO_H_SM.png
+    GUID: 16722785976468588585
+  - Name: T_rock_02_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_rock_02_N.png
+    GUID: 10154330964371239816
+  - Name: Rock_02_BC
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Rock_02_BC.tex2D
+    GUID: 262173709281449890
+  - Name: Rock_02_M
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Rock_02_M.tex2D
+    GUID: 17492370988812685835
+  - Name: Rock_02_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Rock_02_N.tex2D
+    GUID: 5566965161330113531
+  - Name: Rock_09
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Rock_09.mesh
+    GUID: 658561421433963468
+  - Name: Rock
+    Type: Odyssey.Material
+    Path: Materials/Rock.mat
+    GUID: 16304850672499381298
+  - Name: Stone_gate_01_base
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Stone_gate_01_base.fbx
+    GUID: 13996946070568082664
+  - Name: stone_gate_01_base
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/stone_gate_01_base.mesh
+    GUID: 12860828773237114523
+  - Name: decal_gate_01
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/decal_gate_01.fbx
+    GUID: 3491392411410790474
+  - Name: Decal_gate_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Decal_gate_01.mesh
+    GUID: 15722660542382960456
+  - Name: stone_door_wing_01
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/stone_door_wing_01.fbx
+    GUID: 17672879164980919603
+  - Name: Stone_door_wing_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Stone_door_wing_01.mesh
+    GUID: 4271601825038393822

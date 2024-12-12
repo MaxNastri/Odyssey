@@ -192,6 +192,8 @@ namespace Odyssey
 		root.WriteData("GUID", m_GUID.CRef());
 		root.WriteData("Skybox", skybox.CRef());
 		root.WriteData("Ambient Color", m_EnvironmentSettings.AmbientColor);
+		root.WriteData("Scene Center", m_EnvironmentSettings.SceneCenter);
+		root.WriteData("Scene Radius", m_EnvironmentSettings.SceneRadius);
 
 		SerializationNode gameObjectsNode = root.CreateSequenceNode("GameObjects");
 
@@ -221,6 +223,8 @@ namespace Odyssey
 			root.ReadData("GUID", m_GUID.Ref());
 			root.ReadData("Skybox", skybox.Ref());
 			root.ReadData("Ambient Color", m_EnvironmentSettings.AmbientColor);
+			root.ReadData("Scene Center", m_EnvironmentSettings.SceneCenter);
+			root.ReadData("Scene Radius", m_EnvironmentSettings.SceneRadius);
 
 			if (skybox)
 				m_EnvironmentSettings.SetSkybox(skybox);

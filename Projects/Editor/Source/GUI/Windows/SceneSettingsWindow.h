@@ -20,12 +20,12 @@ namespace Odyssey
 
 	private:
 		void OnSceneLoaded(SceneLoadedEvent* event);
-		void OnSkyboxChanged(GUID skyboxGUID);
-		void OnAmbientColorChanged(glm::vec3 color);
 
 	private:
 		AssetFieldDrawer m_SkyboxDrawer;
 		ColorPicker m_AmbientColorPicker;
+		Vector3Drawer m_SceneCenterDrawer;
+		FloatDrawer m_SceneRadiusDrawer;
 
 	private:
 		Scene* m_Scene;
