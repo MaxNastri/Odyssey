@@ -50,6 +50,7 @@ namespace Odyssey
 		void SetEnabled(bool enabled) { m_Enabled = enabled; }
 		void SetLooping(bool looping) { m_Looping = looping; }
 		void SetEmissionRate(uint32_t emissionRate) { m_EmissionRate = emissionRate; }
+		void SetRadius(float radius) { m_Radius = radius; }
 		void SetDuration(float duration) { m_Duration = duration; }
 		void SetLifetime(float2 lifetime) { emitterData.Lifetime = lifetime; }
 		void SetMaterial(GUID material) { m_Material = material; }
@@ -70,7 +71,7 @@ namespace Odyssey
 		GUID GetMaterial() { return m_Material; }
 		float2 GetSize() { return emitterData.Size; }
 		float2 GetSpeed() { return emitterData.Speed; }
-
+		float GetRadius() { return m_Radius; }
 	public:
 		ParticleEmitterData emitterData;
 
@@ -80,6 +81,7 @@ namespace Odyssey
 		bool m_Looping = false;
 		float m_Duration = 1.0f;
 		uint32_t m_EmissionRate = 100;
+		float m_Radius = 1.0f;
 		GUID m_Material;
 
 	private:

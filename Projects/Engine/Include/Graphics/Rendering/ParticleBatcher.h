@@ -21,6 +21,7 @@ namespace Odyssey
 
 	public:
 		static const std::vector<size_t>& GetDrawList() { return s_DrawList; }
+		static GUID GetMaterial(size_t index);
 		static uint32_t GetAliveCount(size_t index);
 		static ResourceID GetParticleBuffer(size_t index);
 		static ResourceID GetAliveBuffer(size_t index);
@@ -58,6 +59,9 @@ namespace Odyssey
 			ResourceID AlivePostSimBuffer;
 			ResourceID DeadBuffer;
 			ResourceID CounterBuffer;
+
+			// Material
+			GUID Material;
 
 			// Frame data
 			uint32_t CurrentFrameAliveCount = 0;

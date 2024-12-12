@@ -20,6 +20,7 @@ namespace Odyssey
 		void SetEnabled(bool enabled);
 		void SetMesh(GUID meshGUID);
 		void SetMaterial(GUID materialGUID, size_t submesh = 0);
+		void RemoveMaterial(int32_t index = -1);
 
 	public:
 		bool IsEnabled() { return m_Enabled; }

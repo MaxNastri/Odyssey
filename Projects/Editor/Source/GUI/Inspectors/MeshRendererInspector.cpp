@@ -69,6 +69,15 @@ namespace Odyssey
 				size_t materialIndex = m_MaterialDrawers.size();
 				m_MaterialDrawers.emplace_back(AssetFieldDrawer(std::format("Material {}", materialIndex), 0, Material::Type));
 			}
+			ImGui::SameLine();
+			if (ImGui::Button("Remove Last Material"))
+			{
+				if (m_MaterialDrawers.size() > 0)
+					m_MaterialDrawers.erase(m_MaterialDrawers.end() - 1);
+
+				if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
+					meshRenderer->RemoveMaterial();
+			}
 		}
 
 		ImGui::PopID();

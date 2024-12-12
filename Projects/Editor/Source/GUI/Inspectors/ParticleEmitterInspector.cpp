@@ -16,6 +16,8 @@ namespace Odyssey
 				[this](float duration) { OnDurationModified(duration); });
 			m_EmissionRateDrawer = IntDrawer<uint32_t>("Emission Rate", emitter->GetEmissionRate(), false,
 				[this](uint32_t emissionRate) { OnEmissionRateModified(emissionRate); });
+			m_RadiusDrawer = FloatDrawer("Radius", emitter->GetRadius());
+
 			m_MaterialDrawer = AssetFieldDrawer("Material", emitter->GetMaterial(), Material::Type,
 				[this](GUID material) { OnMaterialModified(material); });
 			m_LifetimeDrawer = RangeSlider("Lifetime", emitter->GetLifetime(), float2(0.1f, 10.0f), 0.1f,
@@ -52,6 +54,11 @@ namespace Odyssey
 			modified |= m_LoopDrawer.Draw();
 			modified |= m_DurationDrawer.Draw();
 			modified |= m_EmissionRateDrawer.Draw();
+			if (m_RadiusDrawer.Draw())
+			{
+				if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
+					emitter->SetRadius(m_RadiusDrawer.GetValue());
+			}
 			modified |= m_StartColorDrawer.Draw();
 			modified |= m_EndColorDrawer.Draw();
 			modified |= m_LifetimeDrawer.Draw();

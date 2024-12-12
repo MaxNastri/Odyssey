@@ -31,6 +31,7 @@ namespace Odyssey
 		BoolDrawer m_LoopDrawer;
 		FloatDrawer m_DurationDrawer;
 		IntDrawer<uint32_t> m_EmissionRateDrawer;
+		FloatDrawer m_RadiusDrawer;
 		AssetFieldDrawer m_MaterialDrawer;
 		RangeSlider m_LifetimeDrawer;
 		RangeSlider m_SizeDrawer;

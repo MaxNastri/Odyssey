@@ -11,6 +11,8 @@
 #include "EditorComponents.h"
 #include "RawBuffer.h"
 #include "GUIManager.h"
+#include "MeshRenderer.h"
+#include "Transform.h"
 
 namespace Odyssey
 {
@@ -173,9 +175,15 @@ namespace Odyssey
 		{
 			if (ImGui::BeginMenu("Create"))
 			{
-				if (ImGui::MenuItem("GameObject"))
+				if (ImGui::MenuItem("Empty Object"))
 				{
 					GameObject gameObject = m_Scene->CreateGameObject();
+				}
+				if (ImGui::MenuItem("3D Object"))
+				{
+					GameObject gameObject = m_Scene->CreateGameObject();
+					gameObject.AddComponent<Transform>();
+					gameObject.AddComponent<MeshRenderer>();
 				}
 				ImGui::EndMenu();
 			}

@@ -1,8 +1,22 @@
 #pragma once
 #include "Ref.h"
+#include "RawBuffer.h"
 
 namespace Odyssey
 {
+	class ClipBoard
+	{
+	public:
+		static void Copy(const void* data, size_t size)
+		{
+			RawBuffer::Copy(UserData, data, size);
+		}
+
+		static RawBuffer& Paste() { return UserData; }
+
+		inline static RawBuffer UserData;
+	};
+
 	class Preferences
 	{
 	public:

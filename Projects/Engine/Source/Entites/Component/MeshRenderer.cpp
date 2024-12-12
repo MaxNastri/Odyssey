@@ -72,4 +72,14 @@ namespace Odyssey
 		else
 			m_Materials[submesh].Reset();
 	}
+	void MeshRenderer::RemoveMaterial(int32_t index)
+	{
+		if (m_Materials.size() > 0)
+		{
+			if (index == -1)
+				index = (int32_t)m_Materials.size() - 1;
+
+			m_Materials.erase(m_Materials.begin() + index);
+		}
+	}
 }

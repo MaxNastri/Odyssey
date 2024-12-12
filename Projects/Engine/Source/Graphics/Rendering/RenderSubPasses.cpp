@@ -399,11 +399,20 @@ namespace Odyssey
 			uint32_t aliveCount = ParticleBatcher::GetAliveCount(index);
 			ResourceID particleBuffer = ParticleBatcher::GetParticleBuffer(index);
 			ResourceID aliveBuffer = ParticleBatcher::GetAliveBuffer(index);
+			GUID materialGUID = ParticleBatcher::GetMaterial(index);
+
+			ResourceID colorTexture = m_ParticleTexture->GetTexture();
+
+			if (Ref<Material> material = AssetManager::LoadAsset<Material>(materialGUID))
+			{
+				if (Ref<Texture2D> texture = material->GetColorTexture())
+					colorTexture = texture->GetTexture();
+			}
 
 			m_PushDescriptors->Clear();
 			m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
 			m_PushDescriptors->AddBuffer(particleBuffer, 2);
-			m_PushDescriptors->AddTexture(m_ParticleTexture->GetTexture(), 3);
+			m_PushDescriptors->AddTexture(colorTexture, 3);
 			m_PushDescriptors->AddBuffer(aliveBuffer, 4);
 
 			graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);

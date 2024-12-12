@@ -283,3 +283,147 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/Glass_Window.mat
     GUID: 3071517346640755351
+  - Name: ornament_01a
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/ornament_01a.fbx
+    GUID: 13768233537646082378
+  - Name: tower_level0_wall_01_f
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/tower_level0_wall_01_f.fbx
+    GUID: 11219202916144414377
+  - Name: ornament_01a
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/ornament_01a.mesh
+    GUID: 2382757527250924263
+  - Name: tower_level0_wall_01_f
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/tower_level0_wall_01_f.mesh
+    GUID: 13330179292863103688
+  - Name: T_Ornaments_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Ornaments_N.png
+    GUID: 14774965919367279418
+  - Name: Ornaments_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Ornaments_N.tex2D
+    GUID: 8617775628757055184
+  - Name: Ornament
+    Type: Odyssey.Material
+    Path: Materials/Ornament.mat
+    GUID: 14342047184238483103
+  - Name: Buttress_level0_00_a
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Buttress_level0_00_a.fbx
+    GUID: 4384721018586036342
+  - Name: Buttress_level0_00_c
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Buttress_level0_00_c.fbx
+    GUID: 13053422242367430791
+  - Name: sculpture_03
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/sculpture_03.fbx
+    GUID: 15177029265592021927
+  - Name: T_stone_sculptures_01_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_stone_sculptures_01_N.png
+    GUID: 289388346643830810
+  - Name: Stone_sculptures_01_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Stone_sculptures_01_N.tex2D
+    GUID: 13729244023843068852
+  - Name: Buttress_level0_00_a
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Buttress_level0_00_a.mesh
+    GUID: 1986306644513962590
+  - Name: Buttress_level0_00_c
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Buttress_level0_00_c.mesh
+    GUID: 15986346709224944722
+  - Name: sculpture_03
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/sculpture_03.mesh
+    GUID: 14353921652970163184
+  - Name: Stone Sculpture
+    Type: Odyssey.Material
+    Path: Materials/Stone Sculpture.mat
+    GUID: 16452805652338282562
+  - Name: PBR_Emissive
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/PBR_Emissive.hlsl
+    GUID: 13834704671605831352
+  - Name: PBR_Emissive
+    Type: Odyssey.Shader
+    Path: Shaders/PBR_Emissive.shader
+    GUID: 13726779930172400085
+  - Name: Brazier_02
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Brazier_02.fbx
+    GUID: 4660780674775373618
+  - Name: Brazier_iron_stand_01
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Brazier_iron_stand_01.fbx
+    GUID: 5979732383841557109
+  - Name: Column_socle_01
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Column_socle_01.fbx
+    GUID: 12683579607076844000
+  - Name: stone_element_05
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/stone_element_05.fbx
+    GUID: 4235247763161466153
+  - Name: T_Doors_elements_01_BC
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Doors_elements_01_BC.png
+    GUID: 675118583062039885
+  - Name: T_Doors_elements_01_MT_AO_SM
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Doors_elements_01_MT_AO_SM.png
+    GUID: 16724668656498641482
+  - Name: T_Doors_elements_01_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Doors_elements_01_N.png
+    GUID: 6736731579152911184
+  - Name: Doors_elements_01_BC
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Doors_elements_01_BC.tex2D
+    GUID: 2123635673430797876
+  - Name: Doors_elements_01_M
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Doors_elements_01_M.tex2D
+    GUID: 2121362220815426149
+  - Name: Doors_elements_01_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Doors_elements_01_N.tex2D
+    GUID: 16057804515411225806
+  - Name: Brazier_02
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Brazier_02.mesh
+    GUID: 14946945081136084699
+  - Name: Brazier_iron_stand_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Brazier_iron_stand_01.mesh
+    GUID: 9137671057581172594
+  - Name: Column_socle_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Column_socle_01.mesh
+    GUID: 17964267904088391254
+  - Name: stone_element_05
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/stone_element_05.mesh
+    GUID: 9619875415120290558
+  - Name: Metal Doors
+    Type: Odyssey.Material
+    Path: Materials/Doors.mat
+    GUID: 7332157666035654410
+  - Name: Fire VFX
+    Type: Odyssey.Material
+    Path: Materials/Fire_VFX.mat
+    GUID: 9122200999232379991
+  - Name: Fire1
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Fire1.png
+    GUID: 11311962961418756032
+  - Name: Fire1
+    Type: Odyssey.Texture2D
+    Path: Textures/Fire1.tex2D
+    GUID: 13306251931061361116
