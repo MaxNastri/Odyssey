@@ -127,12 +127,19 @@ cbuffer LightData : register(b3)
     uint LightCount;
 }
 
-Texture2D diffuseTex2D : register(t4);
-SamplerState diffuseSampler : register(s4);
-Texture2D normalTex2D : register(t5);
-SamplerState normalSampler : register(s5);
-Texture2D shadowmapTex2D : register(t6);
-SamplerState shadowmapSampler : register(s6);
+cbuffer MaterialData : register(b4)
+{
+    // RGB = Emissive Color, A = Emissive Power
+    float4 EmissiveColor;
+    float alphaClip;
+}
+
+Texture2D diffuseTex2D : register(t5);
+SamplerState diffuseSampler : register(s5);
+Texture2D normalTex2D : register(t6);
+SamplerState normalSampler : register(s6);
+Texture2D shadowmapTex2D : register(t7);
+SamplerState shadowmapSampler : register(s7);
 
 // Forward declarations
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord);
@@ -150,7 +157,7 @@ float4 main(PixelInput input) : SV_Target
     
     // Alpha cutout for discarding completely transparent pixels
     // Todo: Make this an option in the material inspector
-    if (albedo.a < 1.0f)
+    if (albedo.a < alphaClip)
         discard;
     
     float3 texNormal = normalTex2D.Sample(normalSampler, input.TexCoord0);
@@ -178,7 +185,7 @@ float4 main(PixelInput input) : SV_Target
     
     LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal, shadowCoord);
     
-    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb;
+    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb + (EmissiveColor.rgb * EmissiveColor.a);
     return albedo * float4(finalLighting, 1.0f);
 }
 

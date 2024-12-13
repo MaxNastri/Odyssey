@@ -33,6 +33,7 @@ namespace Odyssey
 		static void SavePreferences();
 
 	public:
+		static mat4 GetSceneView() { return s_Instance->m_SceneView; }
 		static const Path& GetStartupProject() { return s_Instance->m_StartupProject; }
 		static const Path& GetEditorRegistry() { return s_Instance->m_EditorRegistry; }
 		static const GUID& GetFolderIcon() { return s_Instance->m_FolderIcon; }
@@ -43,7 +44,10 @@ namespace Odyssey
 		static const std::vector<std::string>& GetAssetExtensions() { return s_Instance->m_AssetExtensions; }
 		static const std::vector<std::string>& GetSourceExtensions() { return s_Instance->m_SourceExtensions; }
 		static const std::map<std::string, std::string>& GetSourceExtensionsMap() { return s_Instance->m_SourceExtensionsToType; }
-		
+
+	public:
+		static void SetSceneView(mat4 sceneView);
+	
 	private: // Singleton
 		inline static Ref<Preferences> s_Instance;
 
@@ -54,6 +58,9 @@ namespace Odyssey
 		std::vector<std::string> m_AssetExtensions;
 		std::vector<std::string> m_SourceExtensions;
 		std::map<std::string, std::string> m_SourceExtensionsToType;
+
+	private:
+		mat4 m_SceneView = mat4(1.0f);
 
 	private: // Icons
 		GUID m_FolderIcon;

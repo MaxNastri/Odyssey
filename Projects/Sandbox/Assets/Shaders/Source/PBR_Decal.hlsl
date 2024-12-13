@@ -93,12 +93,20 @@ cbuffer LightData : register(b3)
     uint LightCount;
 }
 
-Texture2D diffuseTex2D : register(t4);
-SamplerState diffuseSampler : register(s4);
-Texture2D normalTex2D : register(t5);
-SamplerState normalSampler : register(s5);
-Texture2D shadowmapTex2D : register(t6);
-SamplerState shadowmapSampler : register(s6);
+// Bindings
+cbuffer MaterialData : register(b4)
+{
+    // RGB = Emissive Color, A = Emissive Power
+    float4 EmissiveColor;
+    float alphaClip;
+}
+
+Texture2D diffuseTex2D : register(t5);
+SamplerState diffuseSampler : register(s5);
+Texture2D normalTex2D : register(t6);
+SamplerState normalSampler : register(s6);
+Texture2D shadowmapTex2D : register(t7);
+SamplerState shadowmapSampler : register(s7);
 
 // Forward declarations
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord);
@@ -114,17 +122,17 @@ float4 main(PixelInput input) : SV_Target
     
     float4 albedo = diffuseTex2D.Sample(diffuseSampler, input.TexCoord0);
     
-    if (albedo.a < 0.5f)
+    if (albedo.a < alphaClip)
         discard;
     
     float3 texNormal = normalTex2D.Sample(normalSampler, input.TexCoord0);
     bool blankNormalMap = texNormal.x == 0.0f && texNormal.y == 0.0f && texNormal.z == 0.0f;
     
-    float3 normalColor = normalize(float3(0.5f, 0.5f, 1.0f));
-    float3 emissiveColor = float3(0.0f, 0.0f, 0.0f);
+    const float3 normalColor = normalize(float3(0.5f, 0.5f, 1.0f));
+    float4 emissiveColor = float4(0.0f);
     
     if (dot(texNormal, normalColor) < 0.95f)
-        emissiveColor = float3(1.0f, 0.3f, 0.0f);
+        emissiveColor = EmissiveColor;
     
     if (!blankNormalMap)
     {
@@ -148,7 +156,7 @@ float4 main(PixelInput input) : SV_Target
     
     LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal, shadowCoord);
     
-    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb + (emissiveColor.rgb * 2.0f);
+    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb + (emissiveColor.rgb * emissiveColor.a);
     return float4(albedo.rgb, 1.0f) * float4(finalLighting, 1.0f);
 }
 

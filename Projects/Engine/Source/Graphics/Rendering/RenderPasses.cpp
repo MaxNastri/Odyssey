@@ -308,13 +308,8 @@ namespace Odyssey
 		// Set either the camera override or the scene's main camera
 		if (m_Camera)
 		{
-			subPassData.CameraIndex = renderScene->SetCameraData(m_Camera);
+			subPassData.CameraIndex = renderScene->SetSceneData(m_Camera);
 			subPassData.Camera = m_Camera;
-		}
-		else if (renderScene->HasMainCamera())
-		{
-			subPassData.CameraIndex = renderScene->SetCameraData(renderScene->m_MainCamera);
-			subPassData.Camera = renderScene->m_MainCamera;
 		}
 
 		// Check for a valid camera data index

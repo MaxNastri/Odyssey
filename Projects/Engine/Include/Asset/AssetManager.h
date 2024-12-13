@@ -72,6 +72,9 @@ namespace Odyssey
 			static_assert(std::is_base_of<SourceAsset, T>::value, "T is not a dervied class of SourceAsset.");
 
 			Path sourcePath = s_AssetDatabase->GUIDToAssetPath(guid);
+			if (sourcePath.empty())
+				return nullptr;
+
 			Ref<T> sourceAsset = new T(sourcePath);
 
 			// Set the metadata for the source asset

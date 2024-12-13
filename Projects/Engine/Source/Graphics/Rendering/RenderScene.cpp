@@ -18,6 +18,7 @@
 #include "Light.h"
 #include "ParticleBatcher.h"
 #include "VulkanBuffer.h"
+#include "SceneManager.h"
 
 namespace Odyssey
 {
@@ -31,65 +32,75 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
 		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
 		descriptorLayout->AddBinding("Lighting Data", DescriptorType::Uniform, ShaderStage::Fragment, 3);
-		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 4);
-		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Fragment, 5);
-		descriptorLayout->AddBinding("Shadowmap", DescriptorType::Sampler, ShaderStage::Fragment, 6);
+		descriptorLayout->AddBinding("Material Data", DescriptorType::Uniform, ShaderStage::Fragment, 4);
+		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 5);
+		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Fragment, 6);
+		descriptorLayout->AddBinding("Shadowmap", DescriptorType::Sampler, ShaderStage::Fragment, 7);
 		descriptorLayout->Apply();
 
 		// Camera uniform buffer
-		uint32_t cameraDataSize = sizeof(sceneData);
-
 		for (uint32_t i = 0; i < MAX_CAMERAS; i++)
 		{
 			// Allocate the UBO
-			ResourceID uboID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, cameraDataSize);
+			ResourceID uboID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(SceneData));
 
 			// Write the camera data into the ubo memory
+			SceneData sceneData;
 			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
-			uniformBuffer->CopyData(cameraDataSize, &sceneData);
+			uniformBuffer->CopyData(sizeof(SceneData), &sceneData);
 
 			sceneDataBuffers.push_back(uboID);
 		}
 
 		// Per-object uniform buffers
-		uint32_t perObjectUniformSize = sizeof(objectData);
-
 		for (uint32_t i = 0; i < Max_Uniform_Buffers; i++)
 		{
 			// Allocate the UBO
-			ResourceID uboID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, perObjectUniformSize);
+			ResourceID uboID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(ObjectUniformData));
 
 			// Write the per-object data into the ubo
+			ObjectUniformData objectData;
 			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
-			uniformBuffer->CopyData(perObjectUniformSize, &objectData);
+			uniformBuffer->CopyData(sizeof(ObjectUniformData), &objectData);
 
 			perObjectUniformBuffers.push_back(uboID);
 		}
 
 		// Skinning buffers
-		uint32_t skinningSize = sizeof(SkinningData);
-
 		for (uint32_t i = 0; i < Max_Uniform_Buffers; i++)
 		{
 			// Allocate the UBO
-			ResourceID uboID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, skinningSize);
+			ResourceID uboID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(SkinningData));
 
 			// Write the per-object data into the ubo
+			SkinningData skinningData;
 			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
-			uniformBuffer->CopyData(skinningSize, &SkinningData);
+			uniformBuffer->CopyData(sizeof(SkinningData), &skinningData);
 
 			skinningBuffers.push_back(uboID);
 		}
 
-		// Skinning buffers
-		uint32_t lightSize = sizeof(LightingData);
+		// Material buffers
+		for (uint32_t i = 0; i < Max_Uniform_Buffers; i++)
+		{
+			// Allocate the UBO
+			ResourceID uboID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(MaterialData));
+
+			// Write the per-object data into the ubo
+			MaterialData materialData;
+			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
+			uniformBuffer->CopyData(sizeof(MaterialData), &materialData);
+
+			m_MaterialBuffers.push_back(uboID);
+		}
 
 		// Allocate the UBO
-		LightingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, lightSize);
+		LightingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(LightingData));
 
 		// Write the per-object data into the ubo
+		LightingData lightingData;
 		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(LightingBuffer);
-		uniformBuffer->CopyData(lightSize, &LightingData);
+		uniformBuffer->CopyData(sizeof(LightingData), &lightingData);
 	}
 
 	void RenderScene::Destroy()
@@ -117,6 +128,9 @@ namespace Odyssey
 		else
 			SkyboxCubemap = ResourceID::Invalid();
 
+		LightingData lightingData;
+		lightingData.AmbientColor = float4(scene->GetEnvironmentSettings().AmbientColor, 1.0f);
+
 		for (auto entity : scene->GetAllEntitiesWith<Light>())
 		{
 			GameObject gameObject = GameObject(scene, entity);
@@ -124,19 +138,25 @@ namespace Odyssey
 
 			if (light.IsEnabled())
 			{
-				SceneLight& sceneLight = LightingData.SceneLights[LightingData.LightCount];
+				SceneLight& sceneLight = lightingData.SceneLights[lightingData.LightCount];
 				sceneLight.Type = (uint32_t)light.GetType();
 				sceneLight.Position = glm::vec4(light.GetPosition(), 1.0f);
 				sceneLight.Direction = glm::vec4(light.GetDirection(), 1.0f);
 				sceneLight.Color = glm::vec4(light.GetColor(), 1.0f);
 				sceneLight.Intensity = light.GetIntensity();
 				sceneLight.Range = light.GetRange();
-				LightingData.LightCount++;
+				lightingData.LightCount++;
 
 				if (light.GetType() == LightType::Directional)
-					sceneData.LightViewProj = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, sceneLight.Position, sceneLight.Direction);
+				{
+					m_ShadowLight = &light;
+				}
 			}
 		}
+
+		// Update the lighting ubo
+		auto lightingUBO = ResourceManager::GetResource<VulkanBuffer>(LightingBuffer);
+		lightingUBO->CopyData(sizeof(LightingData), &lightingData);
 
 		// Search the scene for the main camera
 		for (auto entity : scene->GetAllEntitiesWith<Camera>())
@@ -147,20 +167,11 @@ namespace Odyssey
 			if (camera.IsEnabled() && camera.IsMainCamera())
 			{
 				m_MainCamera = &camera;
-				SetCameraData(m_MainCamera);
+				SetSceneData(m_MainCamera);
 			}
 		}
 
-		// Set the ambient color from the environment settings
-		LightingData.AmbientColor = glm::vec4(scene->GetEnvironmentSettings().AmbientColor, 1.0f);
-
-
-		// Update the lighting ubo
-		auto lightingUBO = ResourceManager::GetResource<VulkanBuffer>(LightingBuffer);
-		lightingUBO->CopyData(sizeof(LightingData), &LightingData);
-
 		ParticleBatcher::Update();
-
 		SetupDrawcalls(scene);
 	}
 
@@ -174,16 +185,26 @@ namespace Odyssey
 		setPasses.clear();
 		m_NextUniformBuffer = 0;
 		m_NextCameraBuffer = 0;
+		m_NextMaterialBuffer = 0;
 		m_MainCamera = nullptr;
-		LightingData.LightCount = 0;
 	}
 
-	uint32_t RenderScene::SetCameraData(Camera* camera)
+	uint32_t RenderScene::SetSceneData(Camera* camera)
 	{
+		// TODO: Fix this to not use the scene manager
+		EnvironmentSettings envSettings = SceneManager::GetActiveScene()->GetEnvironmentSettings();
+
+		SceneData sceneData;
 		sceneData.View = camera->GetInverseView();
 		sceneData.ViewProjection = camera->GetProjection() * camera->GetInverseView();
-		sceneData.ViewPosition = glm::vec4(camera->GetView()[3][0], camera->GetView()[3][1], camera->GetView()[3][2], 1.0f);
 
+		float4 viewPos = camera->GetView()[3];
+		viewPos.w = 1.0f;
+		sceneData.ViewPosition = viewPos;
+
+		if (m_ShadowLight)
+			sceneData.LightViewProj = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, m_ShadowLight->GetDirection());
+		
 		uint32_t index = m_NextCameraBuffer;
 
 		// Update the scene ubo
@@ -220,7 +241,8 @@ namespace Odyssey
 				{
 					// For now, 1 set pass per drawcall
 					SetPass& setPass = setPasses.emplace_back();
-					setPass.SetMaterial(materials[i], animator != nullptr, m_DescriptorLayout);
+					setPass.SetMaterial(materials[i], animator != nullptr, m_DescriptorLayout, m_MaterialBuffers[m_NextMaterialBuffer]);
+					m_NextMaterialBuffer++;
 
 					// Create the drawcall data
 					Drawcall& drawcall = setPass.Drawcalls.emplace_back();
@@ -233,6 +255,7 @@ namespace Odyssey
 			}
 
 			// Update the per-object uniform buffer
+			ObjectUniformData objectData;
 			uint32_t perObjectSize = sizeof(objectData);
 			objectData.world = transform.GetWorldMatrix();
 			objectData.InverseWorld = glm::transpose(glm::inverse(objectData.world));
@@ -244,22 +267,17 @@ namespace Odyssey
 			if (animator)
 			{
 				// Update the skinning buffer
-				size_t skinningSize = sizeof(SkinningData);
-				SkinningData.SetBindposes(animator->GetFinalPoses());
+				SkinningData skinningData;
+				skinningData.SetBindposes(animator->GetFinalPoses());
 
 				ResourceID skinningID = skinningBuffers[uboIndex];
 				auto skinningBuffer = ResourceManager::GetResource<VulkanBuffer>(skinningID);
-				skinningBuffer->CopyData(skinningSize, &SkinningData);
+				skinningBuffer->CopyData(sizeof(SkinningData), &skinningData);
 			}
 		}
 	}
 
-	SetPass::SetPass(Ref<Material> material, bool skinned, ResourceID descriptorLayout)
-	{
-		SetMaterial(material, skinned, descriptorLayout);
-	}
-
-	void SetPass::SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout)
+	void SetPass::SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout, ResourceID materialBuffer)
 	{
 		// Allocate a graphics pipeline
 		VulkanPipelineInfo info;
@@ -275,6 +293,16 @@ namespace Odyssey
 
 		if (Ref<Texture2D> normalTexture = material->GetNormalTexture())
 			NormalTexture = normalTexture->GetTexture();
+
+		// Store the material buffer for binding
+		MaterialBuffer = materialBuffer;
+
+		// Copy the material properties into the buffer
+		Ref<VulkanBuffer> materialUniform = ResourceManager::GetResource<VulkanBuffer>(materialBuffer);
+		MaterialData materialData;
+		materialData.EmissiveColor = float4(material->GetEmissiveColor(), material->GetEmissivePower());
+		materialData.AlphaClip = material->GetAlphaClip();
+		materialUniform->CopyData(sizeof(MaterialData), &materialData);
 	}
 
 	void SetPass::SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions)

@@ -39,7 +39,7 @@ namespace Odyssey
 	public:
 		glm::vec3 GetPosition();
 		glm::vec3 GetDirection();
-		static mat4 CalculateViewProj(float3 sceneCenter, float sceneRadius, float4 lightPos, float4 lightDir);
+		static mat4 CalculateViewProj(float3 sceneCenter, float sceneRadius, float3 lightDir);
 
 	private:
 		LightType m_Type = LightType::Directional;

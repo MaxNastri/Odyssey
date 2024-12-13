@@ -171,24 +171,25 @@ namespace Odyssey
 				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
 				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
 				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 3);
+				m_PushDescriptors->AddBuffer(setPass.MaterialBuffer, 4);
 
-				// Color map binds to the fragment shader register 4
+				// Color map binds to the fragment shader register 5
 				if (setPass.ColorTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.ColorTexture, 4);
-				else
-					m_PushDescriptors->AddTexture(m_BlackTextureID, 4);
-
-				// Normal map binds to the fragment shader register 5
-				if (setPass.NormalTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.NormalTexture, 5);
+					m_PushDescriptors->AddTexture(setPass.ColorTexture, 5);
 				else
 					m_PushDescriptors->AddTexture(m_BlackTextureID, 5);
 
-				// Shadowmap binds to the fragment shader register 6
-				if (params.Shadowmap.IsValid())
-					m_PushDescriptors->AddRenderTexture(params.Shadowmap, 6);
+				// Normal map binds to the fragment shader register 6
+				if (setPass.NormalTexture.IsValid())
+					m_PushDescriptors->AddTexture(setPass.NormalTexture, 6);
 				else
-					m_PushDescriptors->AddTexture(m_WhiteTextureID, 6);
+					m_PushDescriptors->AddTexture(m_BlackTextureID, 6);
+
+				// Shadowmap binds to the fragment shader register 7
+				if (params.Shadowmap.IsValid())
+					m_PushDescriptors->AddRenderTexture(params.Shadowmap, 7);
+				else
+					m_PushDescriptors->AddTexture(m_WhiteTextureID, 7);
 
 				// Push the descriptors into the command buffer
 				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), setPass.GraphicsPipeline);

@@ -12,7 +12,6 @@ namespace Odyssey
 	class VulkanGraphicsPipeline;
 	class VulkanImage;
 	class VulkanIndexBuffer;
-	class VulkanUniformBuffer;
 	class VulkanPushDescriptors;
 
 	class VulkanCommandBuffer : public Resource

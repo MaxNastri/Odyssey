@@ -23,5 +23,8 @@ namespace Odyssey
 		AssetFieldDrawer m_ShaderDrawer;
 		AssetFieldDrawer m_ColorTextureDrawer;
 		AssetFieldDrawer m_NormalTextureDrawer;
+		ColorPicker m_EmissiveColorDrawer;
+		FloatDrawer m_EmissivePowerDrawer;
+		FloatDrawer m_AlphaClipDrawer;
 	};
 }

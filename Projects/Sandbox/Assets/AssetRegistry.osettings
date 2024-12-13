@@ -307,10 +307,6 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Environment/Ornaments_N.tex2D
     GUID: 8617775628757055184
-  - Name: Ornament
-    Type: Odyssey.Material
-    Path: Materials/Ornament.mat
-    GUID: 14342047184238483103
   - Name: Buttress_level0_00_a
     Type: Odyssey.SourceModel
     Path: Models/Environment/Buttress_level0_00_a.fbx
@@ -347,13 +343,9 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/Stone Sculpture.mat
     GUID: 16452805652338282562
-  - Name: PBR_Emissive
-    Type: Odyssey.SourceShader
-    Path: Shaders/Source/PBR_Emissive.hlsl
-    GUID: 13834704671605831352
-  - Name: PBR_Emissive
+  - Name: PBR_Decal
     Type: Odyssey.Shader
-    Path: Shaders/PBR_Emissive.shader
+    Path: Shaders/PBR_Decal.shader
     GUID: 13726779930172400085
   - Name: Brazier_02
     Type: Odyssey.SourceModel
@@ -519,10 +511,6 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Environment/Ornaments_M.tex2D
     GUID: 437209025483338855
-  - Name: Ornament_Decal
-    Type: Odyssey.Material
-    Path: Materials/Ornament_Decal.mat
-    GUID: 1378937304713442903
   - Name: Flak
     Type: Odyssey.SourceTexture
     Path: Textures/Source/Flak.png
@@ -555,3 +543,15 @@ Entries:
     Type: Odyssey.Mesh
     Path: Meshes/Environment/Ornament_pic_10e_02.mesh
     GUID: 11362682416421520594
+  - Name: PBR_Decal
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/PBR_Decal.hlsl
+    GUID: 13834704671605831352
+  - Name: Ornament
+    Type: Odyssey.Material
+    Path: Materials/Ornament_Castle.mat
+    GUID: 14342047184238483103
+  - Name: Ornament_Decal
+    Type: Odyssey.Material
+    Path: Materials/Ornament_Gate.mat
+    GUID: 1378937304713442903

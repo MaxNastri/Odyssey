@@ -29,6 +29,9 @@ namespace Odyssey
 			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type);
 			m_ColorTextureDrawer = AssetFieldDrawer("Color Texture", colorTextureGUID, Texture2D::Type);
 			m_NormalTextureDrawer = AssetFieldDrawer("Normal Texture", normalTextureGUID, Texture2D::Type);
+			m_EmissiveColorDrawer = ColorPicker("Emissive Color", m_Material->GetEmissiveColor());
+			m_EmissivePowerDrawer = FloatDrawer("Emissive Power", m_Material->GetEmissivePower());
+			m_AlphaClipDrawer = FloatDrawer("Alpha Clip", m_Material->GetAlphaClip());
 		}
 	}
 
@@ -69,6 +72,27 @@ namespace Odyssey
 
 			if (auto texture = AssetManager::LoadAsset<Texture2D>(m_NormalTextureDrawer.GetGUID()))
 				m_Material->SetNormalTexture(texture);
+		}
+
+		if (m_EmissiveColorDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+			m_Material->SetEmissiveColor(m_EmissiveColorDrawer.GetColor3());
+		}
+
+		if (m_EmissivePowerDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+			m_Material->SetEmissivePower(m_EmissivePowerDrawer.GetValue());
+		}
+
+		if (m_AlphaClipDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+			m_Material->SetAlphaClip(m_AlphaClipDrawer.GetValue());
 		}
 
 		if (m_Dirty && ImGui::Button("Save"))

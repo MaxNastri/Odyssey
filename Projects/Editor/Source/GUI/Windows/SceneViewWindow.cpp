@@ -17,6 +17,7 @@
 #include "PropertiesComponent.h"
 #include "DebugRenderer.h"
 #include "GUIManager.h"
+#include "Preferences.h"
 
 namespace Odyssey
 {
@@ -105,13 +106,14 @@ namespace Odyssey
 		if (m_ActiveScene = event->loadedScene)
 		{
 			m_GameObject = m_ActiveScene->CreateGameObject();
-			m_GameObject.AddComponent<Transform>();
+			Transform& transform = m_GameObject.AddComponent<Transform>();
 
 			// Add a transform and camera
 			Camera& camera = m_GameObject.AddComponent<Camera>();
 			camera.SetMainCamera(false);
 			camera.Awake();
 			camera.SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+			transform.SetLocalMatrix(Preferences::GetSceneView());
 
 			// Add the editor properties component to hide this object in the scene hierarchy window
 			EditorPropertiesComponent& properties = m_GameObject.AddComponent<EditorPropertiesComponent>();
@@ -254,6 +256,10 @@ namespace Odyssey
 				transform->AddRotation(yaw);
 				transform->AddRotation(pitch);
 			}
+
+			// TODO: Move this to a timer or (ideally) into one of the destroy functions
+			if (inputVel != float3(0.0f) || mouseH != 0.0f || mouseV != 0.0f)
+				Preferences::SetSceneView(transform->GetWorldMatrix());
 		}
 	}
 

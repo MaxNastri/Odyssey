@@ -88,21 +88,6 @@ GameObjects:
     GUID: 5861699021464848534
     Type: Odyssey.GameObject
     Components: []
-  - Sort Order: -1
-    Prefab: 0
-    Name: Face Decal R
-    GUID: 6934932188601506167
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        Mesh: 11907695015326494159
-        Materials:
-          - 1378937304713442903
-      - Type: Odyssey.Transform
-        Position: 'x: -14.718138 y: 1.8326546 z: -6.7588153'
-        Rotation: 'x: 0 y: 90 z: 0'
-        Scale: 'x: 0.7 y: 0.7 z: 0.8'
   - Sort Order: 0
     Prefab: 0
     Name: Frame
@@ -129,7 +114,7 @@ GameObjects:
         Enabled: 1
         Mesh: 15722660542382960456
         Materials:
-          - 14342047184238483103
+          - 1378937304713442903
       - Type: Odyssey.Transform
         Position: 'x: -14.43297 y: 0.5754985 z: -8.647434'
         Rotation: 'x: 0 y: 90 z: 0'
@@ -176,7 +161,22 @@ GameObjects:
         Materials:
           - 1378937304713442903
       - Type: Odyssey.Transform
-        Position: 'x: -14.718138 y: 1.8326546 z: -7.48156'
+        Position: 'x: -14.718138 y: 1.65 z: -7.48156'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 0.7 y: 0.7 z: 0.8'
+  - Sort Order: 5
+    Prefab: 0
+    Name: Face Decal R
+    GUID: 6934932188601506167
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 11907695015326494159
+        Materials:
+          - 1378937304713442903
+      - Type: Odyssey.Transform
+        Position: 'x: -14.718138 y: 1.65 z: -6.7588153'
         Rotation: 'x: 0 y: 90 z: 0'
         Scale: 'x: 0.7 y: 0.7 z: 0.8'
   - Sort Order: 11

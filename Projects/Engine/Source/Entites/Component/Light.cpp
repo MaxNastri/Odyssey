@@ -60,7 +60,7 @@ namespace Odyssey
 		return rotation;
 	}
 
-	mat4 Light::CalculateViewProj(float3 sceneCenter, float sceneRadius, float4 lightPos, float4 lightDir)
+	mat4 Light::CalculateViewProj(float3 sceneCenter, float sceneRadius, float3 lightDir)
 	{
 		float distance = -sceneRadius;
 		float3 position = lightDir * distance;
