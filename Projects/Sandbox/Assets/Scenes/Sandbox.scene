@@ -88,6 +88,21 @@ GameObjects:
     GUID: 5861699021464848534
     Type: Odyssey.GameObject
     Components: []
+  - Sort Order: -1
+    Prefab: 0
+    Name: Face Decal R
+    GUID: 6934932188601506167
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 11907695015326494159
+        Materials:
+          - 1378937304713442903
+      - Type: Odyssey.Transform
+        Position: 'x: -14.718138 y: 1.8326546 z: -6.7588153'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 0.7 y: 0.7 z: 0.8'
   - Sort Order: 0
     Prefab: 0
     Name: Frame
@@ -119,7 +134,7 @@ GameObjects:
         Position: 'x: -14.43297 y: 0.5754985 z: -8.647434'
         Rotation: 'x: 0 y: 90 z: 0'
         Scale: 'x: 0.92960393 y: 0.7948602 z: 0.96813506'
-  - Sort Order: 10
+  - Sort Order: 2
     Prefab: 0
     Name: Right Wing
     GUID: 2210150299556282946
@@ -131,9 +146,39 @@ GameObjects:
         Materials:
           - 10534666163883095481
       - Type: Odyssey.Transform
-        Position: 'x: -14.847408 y: 2.3037639 z: -6.5843496'
+        Position: 'x: -14.847408 y: 2.3037639 z: -6.576218'
         Rotation: 'x: -90 y: -90 z: 0'
         Scale: 'x: 0.55599993 y: 0.5452994 z: 0.47530174'
+  - Sort Order: 3
+    Prefab: 0
+    Name: Left Wing
+    GUID: 7170771395364442661
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 4271601825038393822
+        Materials:
+          - 10534666163883095481
+      - Type: Odyssey.Transform
+        Position: 'x: -14.847408 y: 2.3037639 z: -7.6586995'
+        Rotation: 'x: -90 y: 90 z: 0'
+        Scale: 'x: 0.55599993 y: 0.5452994 z: 0.47530174'
+  - Sort Order: 4
+    Prefab: 0
+    Name: Face Decal L
+    GUID: 14723231309858642763
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 11362682416421520594
+        Materials:
+          - 1378937304713442903
+      - Type: Odyssey.Transform
+        Position: 'x: -14.718138 y: 1.8326546 z: -7.48156'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 0.7 y: 0.7 z: 0.8'
   - Sort Order: 11
     Prefab: 0
     Name: Walkway
@@ -185,21 +230,6 @@ GameObjects:
         Position: 'x: -13.539311 y: 1.1140435 z: -16.241827'
         Rotation: 'x: 0 y: 90 z: 0'
         Scale: 'x: 1.5 y: 1.3622026 z: 1.3622022'
-  - Sort Order: 11
-    Prefab: 0
-    Name: Left Wing
-    GUID: 7170771395364442661
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        Mesh: 4271601825038393822
-        Materials:
-          - 10534666163883095481
-      - Type: Odyssey.Transform
-        Position: 'x: -14.847408 y: 2.3037639 z: -7.6490097'
-        Rotation: 'x: -90 y: 90 z: 0'
-        Scale: 'x: 0.55599993 y: 0.5452994 z: 0.47530174'
   - Sort Order: 16
     Prefab: 0
     Name: Rocks
@@ -1146,6 +1176,29 @@ GameObjects:
         Speed: 'x: 4 y: 7'
   - Sort Order: 5
     Prefab: 0
+    Name: Smoke
+    GUID: 11571789158432469321
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -2.7493334 y: 3.3512168 z: 3.3586435'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.ParticleEmitter
+        Enabled: 1
+        Duration: 1
+        Radius: 0.38
+        Looping: 1
+        Material: 16605951600674301940
+        Emission Rate: 100
+        Start Color: 'x: 0 y: 0 z: 0 w: 1'
+        End Color: 'x: 0 y: 0 z: 0 w: 0'
+        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
+        Lifetime: 'x: 1 y: 5'
+        Size: 'x: 0.25 y: 1'
+        Speed: 'x: 0.25 y: 1'
+  - Sort Order: 5
+    Prefab: 0
     Name: Alcove R
     GUID: 12650402085961292409
     Type: Odyssey.GameObject
@@ -1670,6 +1723,12 @@ Scene Graph Nodes:
   - Entity: 14101075894787954953
     Parent: 5861699021464848534
   - Entity: 2210150299556282946
-    Parent: 0
+    Parent: 5861699021464848534
   - Entity: 7170771395364442661
-    Parent: 0
+    Parent: 5861699021464848534
+  - Entity: 11571789158432469321
+    Parent: 15358131238993116705
+  - Entity: 14723231309858642763
+    Parent: 5861699021464848534
+  - Entity: 6934932188601506167
+    Parent: 5861699021464848534

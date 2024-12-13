@@ -487,3 +487,71 @@ Entries:
     Type: Odyssey.Mesh
     Path: Meshes/Environment/Stone_door_wing_01.mesh
     GUID: 4271601825038393822
+  - Name: ornament_pic_10e_01
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/ornament_pic_10e_01.fbx
+    GUID: 10482597606367110868
+  - Name: ornament_pic_10e_02
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/ornament_pic_10e_02.fbx
+    GUID: 15771363607272180992
+  - Name: ornamet_pic_09f
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/ornamet_pic_09f.fbx
+    GUID: 8720396049181160287
+  - Name: ornament_pic_09f
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/ornament_pic_09f.mesh
+    GUID: 927226921128455021
+  - Name: T_Ornaments_decal
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Ornaments_decal.png
+    GUID: 12516201432559931319
+  - Name: T_Ornaments_Shape
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Ornaments_Shape.png
+    GUID: 8695327470103669273
+  - Name: Ornaments_decal
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Ornaments_decal.tex2D
+    GUID: 15224893156691087190
+  - Name: Ornaments_M
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Ornaments_M.tex2D
+    GUID: 437209025483338855
+  - Name: Ornament_Decal
+    Type: Odyssey.Material
+    Path: Materials/Ornament_Decal.mat
+    GUID: 1378937304713442903
+  - Name: Flak
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Flak.png
+    GUID: 9782568990620543582
+  - Name: Smoke
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Smoke.png
+    GUID: 11649457561614352045
+  - Name: Flak
+    Type: Odyssey.Texture2D
+    Path: Textures/Particles/Flak.tex2D
+    GUID: 15134319680538409167
+  - Name: Smoke
+    Type: Odyssey.Texture2D
+    Path: Textures/Particles/Smoke.tex2D
+    GUID: 7341086997358014686
+  - Name: Flak Particle
+    Type: Odyssey.Material
+    Path: Materials/Particles/Particle_Flak.mat
+    GUID: 6125355969842835682
+  - Name: Smoke Particle
+    Type: Odyssey.Material
+    Path: Materials/Particles/Particle_Smoke.mat
+    GUID: 16605951600674301940
+  - Name: Ornament_pic_10e_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Ornament_pic_10e_01.mesh
+    GUID: 11907695015326494159
+  - Name: Ornament_pic_10e_02
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Ornament_pic_10e_02.mesh
+    GUID: 11362682416421520594

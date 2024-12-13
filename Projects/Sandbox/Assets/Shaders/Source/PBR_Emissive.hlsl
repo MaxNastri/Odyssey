@@ -114,6 +114,9 @@ float4 main(PixelInput input) : SV_Target
     
     float4 albedo = diffuseTex2D.Sample(diffuseSampler, input.TexCoord0);
     
+    if (albedo.a < 0.5f)
+        discard;
+    
     float3 texNormal = normalTex2D.Sample(normalSampler, input.TexCoord0);
     bool blankNormalMap = texNormal.x == 0.0f && texNormal.y == 0.0f && texNormal.z == 0.0f;
     
