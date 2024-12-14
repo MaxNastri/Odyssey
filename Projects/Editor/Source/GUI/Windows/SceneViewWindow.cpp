@@ -195,7 +195,7 @@ namespace Odyssey
 
 	void SceneViewWindow::UpdateCameraController()
 	{
-		const float speed = 15.0f;
+		const float speed = 20.0f;
 
 		glm::vec3 inputVel = glm::zero<vec3>();
 		Transform* transform = m_GameObject.TryGetComponent<Transform>();

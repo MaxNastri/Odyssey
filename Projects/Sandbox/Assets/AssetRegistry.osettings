@@ -547,11 +547,19 @@ Entries:
     Type: Odyssey.SourceShader
     Path: Shaders/Source/PBR_Decal.hlsl
     GUID: 13834704671605831352
-  - Name: Ornament
+  - Name: Rune_Castle_Decal_Orange
     Type: Odyssey.Material
-    Path: Materials/Ornament_Castle.mat
+    Path: Materials/Decals/Rune_Castle_Decal_Orange.mat
     GUID: 14342047184238483103
-  - Name: Ornament_Decal
+  - Name: Ornament_Rune_Gate_Cyan
     Type: Odyssey.Material
-    Path: Materials/Ornament_Gate.mat
+    Path: Materials/Decals/Rune_Gate_Decal_Cyan.mat
     GUID: 1378937304713442903
+  - Name: Rune_Gate_Decal_Red
+    Type: Odyssey.Material
+    Path: Materials/Decals/Rune_Gate_Decal_Red.mat
+    GUID: 16157047713997452460
+  - Name: Rune_Gate_Decal_Green
+    Type: Odyssey.Material
+    Path: Materials/Decals/Rune_Gate_Decal_Green.mat
+    GUID: 10126946721482002417

@@ -74,7 +74,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 0 y: 4.953355 z: -8.656717'
-        Rotation: 'x: 61.613907 y: -21.015009 z: -33.569298'
+        Rotation: 'x: 52.400017 y: 33.323204 z: 3.3718334e-05'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.Light
         Enabled: 1
@@ -84,7 +84,7 @@ GameObjects:
         Range: 1
   - Sort Order: 9
     Prefab: 0
-    Name: Gate
+    Name: Rune Gate L
     GUID: 5861699021464848534
     Type: Odyssey.GameObject
     Components: []
@@ -114,7 +114,7 @@ GameObjects:
         Enabled: 1
         Mesh: 15722660542382960456
         Materials:
-          - 1378937304713442903
+          - 16157047713997452460
       - Type: Odyssey.Transform
         Position: 'x: -14.43297 y: 0.5754985 z: -8.647434'
         Rotation: 'x: 0 y: 90 z: 0'
@@ -159,7 +159,7 @@ GameObjects:
         Enabled: 1
         Mesh: 11362682416421520594
         Materials:
-          - 1378937304713442903
+          - 16157047713997452460
       - Type: Odyssey.Transform
         Position: 'x: -14.718138 y: 1.65 z: -7.48156'
         Rotation: 'x: 0 y: 90 z: 0'
@@ -174,11 +174,78 @@ GameObjects:
         Enabled: 1
         Mesh: 11907695015326494159
         Materials:
-          - 1378937304713442903
+          - 16157047713997452460
       - Type: Odyssey.Transform
         Position: 'x: -14.718138 y: 1.65 z: -6.7588153'
         Rotation: 'x: 0 y: 90 z: 0'
         Scale: 'x: 0.7 y: 0.7 z: 0.8'
+  - Sort Order: 6
+    Prefab: 0
+    Name: Light
+    GUID: 2890828273094723428
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -13.162535 y: 1.6564584 z: -7.1000686'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.Light
+        Enabled: 1
+        Light Type: Point
+        Color: 'x: 1 y: 0 z: 0'
+        Intensity: 0.75
+        Range: 7
+  - Sort Order: 10
+    Prefab: 0
+    Name: Stairs R
+    GUID: 1099346680714202200
+    Type: Odyssey.GameObject
+    Components: []
+  - Sort Order: 0
+    Prefab: 0
+    Name: Walkway Plane
+    GUID: 3655390159889272372
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: 13.868 y: 1.1140435 z: -13.251215'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.5 y: 1.3622026 z: 1.3622019'
+  - Sort Order: 1
+    Prefab: 0
+    Name: Stairs 01
+    GUID: 340056220637474005
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 17575173010726122184
+        Materials:
+          - 16911619204229098531
+      - Type: Odyssey.Transform
+        Position: 'x: 10.076 y: -0.06693089 z: -13.391175'
+        Rotation: 'x: -90 y: 180 z: 0'
+        Scale: 'x: 1 y: 0.5 z: 0.75'
+  - Sort Order: 2
+    Prefab: 0
+    Name: Stairs 01
+    GUID: 4064436306196203581
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 17575173010726122184
+        Materials:
+          - 16911619204229098531
+      - Type: Odyssey.Transform
+        Position: 'x: 11.83 y: 0.65729845 z: -13.391175'
+        Rotation: 'x: -90 y: 180 z: 0'
+        Scale: 'x: 1 y: 0.5 z: 0.75'
   - Sort Order: 11
     Prefab: 0
     Name: Walkway
@@ -187,7 +254,7 @@ GameObjects:
     Components: []
   - Sort Order: 0
     Prefab: 0
-    Name: Walkway Plane
+    Name: Ground
     GUID: 6490258752713059154
     Type: Odyssey.GameObject
     Components:
@@ -197,27 +264,12 @@ GameObjects:
         Materials:
           - 7887090432482843
       - Type: Odyssey.Transform
-        Position: 'x: -10.82156 y: 1.114 z: -16.377663'
+        Position: 'x: -11.150487 y: 1.114 z: -16.377663'
         Rotation: 'x: 0 y: 90 z: 0'
         Scale: 'x: 1.3622022 y: 1.3622026 z: 1.3622022'
-  - Sort Order: 1
-    Prefab: 0
-    Name: Walkway Plane
-    GUID: 5609519205875276917
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        Mesh: 3098132783127681236
-        Materials:
-          - 7887090432482843
-      - Type: Odyssey.Transform
-        Position: 'x: -13.539311 y: 1.1140435 z: -13.251215'
-        Rotation: 'x: 0 y: 90 z: 0'
-        Scale: 'x: 1.5 y: 1.3622026 z: 1.3622019'
   - Sort Order: 2
     Prefab: 0
-    Name: Walkway Plane
+    Name: Ground
     GUID: 10000604919046356131
     Type: Odyssey.GameObject
     Components:
@@ -227,12 +279,401 @@ GameObjects:
         Materials:
           - 7887090432482843
       - Type: Odyssey.Transform
-        Position: 'x: -13.539311 y: 1.1140435 z: -16.241827'
+        Position: 'x: -13.868 y: 1.1140435 z: -16.241827'
         Rotation: 'x: 0 y: 90 z: 0'
         Scale: 'x: 1.5 y: 1.3622026 z: 1.3622022'
+  - Sort Order: 2
+    Prefab: 0
+    Name: Ground
+    GUID: 14000908845690042100
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: -8.426666 y: 1.114 z: -16.377663'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.3622022 y: 1.3622026 z: 1.3622022'
+  - Sort Order: 3
+    Prefab: 0
+    Name: Ground
+    GUID: 2324998782690640843
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: -5.7060432 y: 1.114 z: -16.377663'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.3622022 y: 1.3622026 z: 1.3622022'
+  - Sort Order: 4
+    Prefab: 0
+    Name: Ground
+    GUID: 296651657051139231
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: -2.9821005 y: 1.114 z: -16.377663'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.3622022 y: 1.3622026 z: 1.3622022'
+  - Sort Order: 5
+    Prefab: 0
+    Name: Ground
+    GUID: 10548273770408519757
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: -0.2586 y: 1.114 z: -16.377663'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.3622022 y: 1.3622026 z: 1.3622022'
+  - Sort Order: 6
+    Prefab: 0
+    Name: Ground
+    GUID: 12187961525489959430
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: 2.464405 y: 1.114 z: -16.377663'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.3622022 y: 1.3622026 z: 1.3622022'
+  - Sort Order: 7
+    Prefab: 0
+    Name: Ground
+    GUID: 5430833090343869248
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: 5.1876655 y: 1.114 z: -16.377663'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.3622022 y: 1.3622026 z: 1.3622022'
+  - Sort Order: 8
+    Prefab: 0
+    Name: Ground
+    GUID: 15390818510063038157
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: 7.90932 y: 1.114 z: -16.377663'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.3622022 y: 1.3622026 z: 1.3622022'
+  - Sort Order: 9
+    Prefab: 0
+    Name: Ground
+    GUID: 9289830595550170251
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: 10.636562 y: 1.114 z: -16.377663'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.3622022 y: 1.3622026 z: 1.3622022'
+  - Sort Order: 10
+    Prefab: 0
+    Name: Ground
+    GUID: 3868927426629405915
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: 13.865743 y: 1.114 z: -16.233582'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.5 y: 1.3622026 z: 1.3622022'
+  - Sort Order: 11
+    Prefab: 0
+    Name: Ground
+    GUID: 8172680732746004491
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: 12.009211 y: 1.1035504 z: -16.377663'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.3622022 y: 1.3622026 z: 1.3622022'
+  - Sort Order: 11
+    Prefab: 0
+    Name: Rocks R
+    GUID: 13777818674362548302
+    Type: Odyssey.GameObject
+    Components: []
+  - Sort Order: 0
+    Prefab: 0
+    Name: Rock
+    GUID: 17834903830759664939
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 658561421433963468
+        Materials:
+          - 16304850672499381298
+      - Type: Odyssey.Transform
+        Position: 'x: 14.701973 y: 2.9558232 z: 3.4906478'
+        Rotation: 'x: -89.99962 y: 14.894288 z: 9.688208'
+        Scale: 'x: 5 y: 5 z: 5'
+  - Sort Order: 1
+    Prefab: 0
+    Name: Rock
+    GUID: 4874370798297246095
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 658561421433963468
+        Materials:
+          - 16304850672499381298
+      - Type: Odyssey.Transform
+        Position: 'x: 12.8830385 y: 7.2291574 z: 3.9696908'
+        Rotation: 'x: 99.18707 y: -26.01583 z: -169.75783'
+        Scale: 'x: 2 y: 2 z: 1.5'
+  - Sort Order: 2
+    Prefab: 0
+    Name: Rock
+    GUID: 16448877432740395916
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 658561421433963468
+        Materials:
+          - 16304850672499381298
+      - Type: Odyssey.Transform
+        Position: 'x: 17.23098 y: 0.42920852 z: 1.3728561'
+        Rotation: 'x: 87.461 y: -7.742915 z: 18.217564'
+        Scale: 'x: 5 y: 5 z: 5'
+  - Sort Order: 3
+    Prefab: 0
+    Name: Rock
+    GUID: 13162187949494298363
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 658561421433963468
+        Materials:
+          - 16304850672499381298
+      - Type: Odyssey.Transform
+        Position: 'x: 16.723349 y: 2.1047852 z: -7.193474'
+        Rotation: 'x: -33.251736 y: 81.47233 z: 59.59974'
+        Scale: 'x: 5 y: 5 z: 5'
+  - Sort Order: 4
+    Prefab: 0
+    Name: Rock
+    GUID: 16033216016249584050
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 658561421433963468
+        Materials:
+          - 16304850672499381298
+      - Type: Odyssey.Transform
+        Position: 'x: 16.723349 y: 0.4591912 z: -3.8744988'
+        Rotation: 'x: -17.652132 y: 44.633366 z: 76.64953'
+        Scale: 'x: 5 y: 5 z: 5'
+  - Sort Order: 5
+    Prefab: 0
+    Name: Rock
+    GUID: 170196216700969742
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 658561421433963468
+        Materials:
+          - 16304850672499381298
+      - Type: Odyssey.Transform
+        Position: 'x: 16.520912 y: 1.4831188 z: -10.124507'
+        Rotation: 'x: 6.20649 y: -43.20234 z: -99.087555'
+        Scale: 'x: 3.3500004 y: 3.3500001 z: 3.3500001'
+  - Sort Order: 6
+    Prefab: 0
+    Name: Rock
+    GUID: 13859837917195789982
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 658561421433963468
+        Materials:
+          - 16304850672499381298
+      - Type: Odyssey.Transform
+        Position: 'x: 16.9178 y: 1.4831188 z: -13.821889'
+        Rotation: 'x: 156.93723 y: -80.03084 z: -73.67766'
+        Scale: 'x: 6.35 y: 5.25 z: 4.85'
+  - Sort Order: 7
+    Prefab: 0
+    Name: Rock
+    GUID: 2839064064327946219
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 658561421433963468
+        Materials:
+          - 16304850672499381298
+      - Type: Odyssey.Transform
+        Position: 'x: 18.050045 y: 3.4441497 z: -9.371829'
+        Rotation: 'x: -156.55367 y: 32.889973 z: 146.82048'
+        Scale: 'x: 4.48806 y: 4.1626496 z: 2.0828729'
+  - Sort Order: 13
+    Prefab: 0
+    Name: Rune Gate R
+    GUID: 12385148431865297517
+    Type: Odyssey.GameObject
+    Components: []
+  - Sort Order: 0
+    Prefab: 0
+    Name: Frame
+    GUID: 6852416722376220850
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 12860828773237114523
+        Materials:
+          - 10534666163883095481
+          - 2842208577896573398
+      - Type: Odyssey.Transform
+        Position: 'x: 14.753 y: -0.65684116 z: -7.1479607'
+        Rotation: 'x: -90.00002 y: -90 z: 1.3672792e-05'
+        Scale: 'x: 0.9345321 y: 0.9316467 z: 0.7597751'
+  - Sort Order: 1
+    Prefab: 0
+    Name: Frame Decal
+    GUID: 9094724526618409671
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 15722660542382960456
+        Materials:
+          - 10126946721482002417
+      - Type: Odyssey.Transform
+        Position: 'x: 14.433 y: 0.5754985 z: -5.652239'
+        Rotation: 'x: 0 y: -90 z: 0'
+        Scale: 'x: 0.92960393 y: 0.7948602 z: 0.96813506'
+  - Sort Order: 2
+    Prefab: 0
+    Name: Left Wing
+    GUID: 11310437828072623463
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 4271601825038393822
+        Materials:
+          - 10534666163883095481
+      - Type: Odyssey.Transform
+        Position: 'x: 14.847 y: 2.3037639 z: -6.576218'
+        Rotation: 'x: -90 y: -90 z: 0'
+        Scale: 'x: 0.55599993 y: 0.5452994 z: 0.47530174'
+  - Sort Order: 3
+    Prefab: 0
+    Name: Right Wing
+    GUID: 15417563104418307848
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 4271601825038393822
+        Materials:
+          - 10534666163883095481
+      - Type: Odyssey.Transform
+        Position: 'x: 14.847 y: 2.3037639 z: -7.6586995'
+        Rotation: 'x: -90 y: 90 z: 0'
+        Scale: 'x: 0.55599993 y: 0.5452994 z: 0.47530174'
+  - Sort Order: 4
+    Prefab: 0
+    Name: Face Decal L
+    GUID: 3262033722598145294
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 11362682416421520594
+        Materials:
+          - 10126946721482002417
+      - Type: Odyssey.Transform
+        Position: 'x: 14.718 y: 1.65 z: -6.757627'
+        Rotation: 'x: 0 y: -90 z: 0'
+        Scale: 'x: 0.7 y: 0.7 z: 0.8'
+  - Sort Order: 5
+    Prefab: 0
+    Name: Face Decal R
+    GUID: 2778953980231989223
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 11907695015326494159
+        Materials:
+          - 10126946721482002417
+      - Type: Odyssey.Transform
+        Position: 'x: 14.718 y: 1.65 z: -7.4820037'
+        Rotation: 'x: 0 y: -90 z: 0'
+        Scale: 'x: 0.7 y: 0.7 z: 0.8'
+  - Sort Order: 6
+    Prefab: 0
+    Name: Light
+    GUID: 11383884812507387769
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 13.345901 y: 1.457499 z: -7.1000686'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.Light
+        Enabled: 1
+        Light Type: Point
+        Color: 'x: 0 y: 0.78431374 z: 0'
+        Intensity: 0.75
+        Range: 5
   - Sort Order: 16
     Prefab: 0
-    Name: Rocks
+    Name: Rocks L
     GUID: 10279785999084914635
     Type: Odyssey.GameObject
     Components: []
@@ -338,7 +779,7 @@ GameObjects:
         Materials:
           - 16304850672499381298
       - Type: Odyssey.Transform
-        Position: 'x: -17.389322 y: 2.001198 z: -10.641748'
+        Position: 'x: -17.388897 y: 2.0023518 z: -10.75642'
         Rotation: 'x: 26.114843 y: -74.903404 z: -110.0891'
         Scale: 'x: 5.9500003 y: 5.9500003 z: 5.9500003'
   - Sort Order: 16
@@ -604,7 +1045,7 @@ GameObjects:
         Scale: 'x: 3 y: 0.5 z: 3'
   - Sort Order: 17
     Prefab: 0
-    Name: Stairs
+    Name: Stairs L
     GUID: 4971633635255116321
     Type: Odyssey.GameObject
     Components: []
@@ -620,7 +1061,7 @@ GameObjects:
         Materials:
           - 16911619204229098531
       - Type: Odyssey.Transform
-        Position: 'x: -9.88669 y: -0.06693089 z: -13.391175'
+        Position: 'x: -10.075701 y: -0.06693089 z: -13.391175'
         Rotation: 'x: -90 y: 0 z: 0'
         Scale: 'x: 1 y: 0.5 z: 0.75'
   - Sort Order: 1
@@ -635,9 +1076,24 @@ GameObjects:
         Materials:
           - 16911619204229098531
       - Type: Odyssey.Transform
-        Position: 'x: -11.573267 y: 0.65729845 z: -13.391175'
+        Position: 'x: -11.829785 y: 0.65729845 z: -13.391175'
         Rotation: 'x: -90 y: 0 z: 0'
         Scale: 'x: 1 y: 0.5 z: 0.75'
+  - Sort Order: 2
+    Prefab: 0
+    Name: Walkway Plane
+    GUID: 5609519205875276917
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 7887090432482843
+      - Type: Odyssey.Transform
+        Position: 'x: -13.868481 y: 1.1140435 z: -13.251215'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 1.5 y: 1.3622026 z: 1.3622019'
   - Sort Order: 19
     Prefab: 0
     Name: Castle
@@ -1693,7 +2149,7 @@ Scene Graph Nodes:
   - Entity: 15446907367342273291
     Parent: 4971633635255116321
   - Entity: 5609519205875276917
-    Parent: 8484674720709630211
+    Parent: 4971633635255116321
   - Entity: 8484674720709630211
     Parent: 0
   - Entity: 10000604919046356131
@@ -1732,3 +2188,67 @@ Scene Graph Nodes:
     Parent: 5861699021464848534
   - Entity: 6934932188601506167
     Parent: 5861699021464848534
+  - Entity: 2890828273094723428
+    Parent: 5861699021464848534
+  - Entity: 1099346680714202200
+    Parent: 0
+  - Entity: 3655390159889272372
+    Parent: 1099346680714202200
+  - Entity: 340056220637474005
+    Parent: 1099346680714202200
+  - Entity: 4064436306196203581
+    Parent: 1099346680714202200
+  - Entity: 14000908845690042100
+    Parent: 8484674720709630211
+  - Entity: 2324998782690640843
+    Parent: 8484674720709630211
+  - Entity: 296651657051139231
+    Parent: 8484674720709630211
+  - Entity: 10548273770408519757
+    Parent: 8484674720709630211
+  - Entity: 12187961525489959430
+    Parent: 8484674720709630211
+  - Entity: 5430833090343869248
+    Parent: 8484674720709630211
+  - Entity: 15390818510063038157
+    Parent: 8484674720709630211
+  - Entity: 9289830595550170251
+    Parent: 8484674720709630211
+  - Entity: 3868927426629405915
+    Parent: 8484674720709630211
+  - Entity: 8172680732746004491
+    Parent: 8484674720709630211
+  - Entity: 13777818674362548302
+    Parent: 0
+  - Entity: 17834903830759664939
+    Parent: 13777818674362548302
+  - Entity: 4874370798297246095
+    Parent: 13777818674362548302
+  - Entity: 16448877432740395916
+    Parent: 13777818674362548302
+  - Entity: 13162187949494298363
+    Parent: 13777818674362548302
+  - Entity: 12385148431865297517
+    Parent: 0
+  - Entity: 6852416722376220850
+    Parent: 12385148431865297517
+  - Entity: 16033216016249584050
+    Parent: 13777818674362548302
+  - Entity: 170196216700969742
+    Parent: 13777818674362548302
+  - Entity: 13859837917195789982
+    Parent: 13777818674362548302
+  - Entity: 2839064064327946219
+    Parent: 13777818674362548302
+  - Entity: 9094724526618409671
+    Parent: 12385148431865297517
+  - Entity: 11310437828072623463
+    Parent: 12385148431865297517
+  - Entity: 15417563104418307848
+    Parent: 12385148431865297517
+  - Entity: 3262033722598145294
+    Parent: 12385148431865297517
+  - Entity: 2778953980231989223
+    Parent: 12385148431865297517
+  - Entity: 11383884812507387769
+    Parent: 12385148431865297517
