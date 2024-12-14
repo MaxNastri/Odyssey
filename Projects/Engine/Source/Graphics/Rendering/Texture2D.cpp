@@ -12,20 +12,14 @@ namespace Odyssey
 		: Asset(assetPath)
 	{
 		if (Ref<SourceTexture> source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
-		{
-			source->AddOnModifiedListener([this]() { OnSourceModified(); });
-			LoadFromSource(source);
-		}
+			Load(source);
 	}
 
 	Texture2D::Texture2D(const Path& assetPath, TextureFormat format)
 		: Asset(assetPath)
 	{
 		if (Ref<SourceTexture> source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
-		{
-			source->AddOnModifiedListener([this]() { OnSourceModified(); });
-			LoadFromSource(source);
-		}
+			Load(source);
 	}
 
 	Texture2D::Texture2D(const Path& assetPath, Ref<SourceTexture> source)
@@ -39,11 +33,46 @@ namespace Odyssey
 		SaveToDisk(m_AssetPath);
 	}
 
-	void Texture2D::Load()
+	void Texture2D::Load(Ref<SourceTexture> source)
 	{
-		if (Ref<SourceTexture> source = AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset))
-			LoadFromSource(source);
-		//LoadFromDisk(m_AssetPath);
+		AssetDeserializer deserializer(m_AssetPath);
+		if (deserializer.IsValid())
+		{
+			SerializationNode root = deserializer.GetRoot();
+			root.ReadData("Mip Maps Enabled", m_TextureDescription.MipMapEnabled);
+			root.ReadData("Mip Bias", m_TextureDescription.MipBias);
+			root.ReadData("Max Mip Count", m_TextureDescription.MaxMipCount);
+		}
+
+		source->AddOnModifiedListener([this]() { OnSourceModified(); });
+		LoadFromSource(source);
+	}
+
+	void Texture2D::SetMipMapsEnabled(bool enabled)
+	{
+		if (m_TextureDescription.MipMapEnabled != enabled)
+		{
+			m_TextureDescription.MipMapEnabled = enabled;
+			LoadFromSource(AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset));
+		}
+	}
+
+	void Texture2D::SetMipBias(float bias)
+	{
+		if (m_TextureDescription.MipBias != bias)
+		{
+			m_TextureDescription.MipBias = bias;
+			LoadFromSource(AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset));
+		}
+	}
+
+	void Texture2D::SetMaxMipCount(uint32_t count)
+	{
+		if (m_TextureDescription.MaxMipCount != count)
+		{
+			m_TextureDescription.MaxMipCount = count;
+			LoadFromSource(AssetManager::LoadSourceAsset<SourceTexture>(m_SourceAsset));
+		}
 	}
 
 	void Texture2D::LoadFromSource(Ref<SourceTexture> source)
@@ -52,7 +81,6 @@ namespace Odyssey
 		m_TextureDescription.Width = (uint32_t)source->GetWidth();
 		m_TextureDescription.Height = (uint32_t)source->GetHeight();
 		m_TextureDescription.Channels = (uint32_t)source->GetChannels();
-		m_TextureDescription.MipMapEnabled = true;
 
 		if (m_AssetPath.string().find("normal") != std::string::npos)
 			m_TextureDescription.Format = TextureFormat::R8G8B8A8_UNORM;
@@ -73,9 +101,11 @@ namespace Odyssey
 		// Serialize the asset metadata first
 		SerializeMetadata(serializer);
 
-		root.WriteData("m_Width", m_TextureDescription.Width);
-		root.WriteData("m_Height", m_TextureDescription.Height);
-		root.WriteData("m_PixelBufferGUID", m_PixelBufferGUID.CRef());
+		root.WriteData("Width", m_TextureDescription.Width);
+		root.WriteData("Height", m_TextureDescription.Height);
+		root.WriteData("Mip Maps Enabled", m_TextureDescription.MipMapEnabled);
+		root.WriteData("Mip Bias", m_TextureDescription.MipBias);
+		root.WriteData("Max Mip Count", m_TextureDescription.MaxMipCount);
 
 		serializer.WriteToDisk(assetPath);
 	}

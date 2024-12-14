@@ -2,6 +2,8 @@ m_SourceAsset: 289388346643830810
 m_GUID: 13729244023843068852
 m_Name: Stone_sculptures_01_N
 m_Type: Odyssey.Texture2D
-m_Width: 1
-m_Height: 1
-m_PixelBufferGUID: 0
+Width: 4096
+Height: 4096
+Mip Maps Enabled: 1
+Mip Bias: 0
+Max Mip Count: 0

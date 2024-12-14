@@ -2,6 +2,8 @@ m_SourceAsset: 14774965919367279418
 m_GUID: 8617775628757055184
 m_Name: Ornaments_N
 m_Type: Odyssey.Texture2D
-m_Width: 1
-m_Height: 1
-m_PixelBufferGUID: 0
+Width: 4096
+Height: 4096
+Mip Maps Enabled: 1
+Mip Bias: 0
+Max Mip Count: 4

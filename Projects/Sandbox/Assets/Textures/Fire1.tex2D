@@ -2,6 +2,8 @@ m_SourceAsset: 11311962961418756032
 m_GUID: 13306251931061361116
 m_Name: Fire1
 m_Type: Odyssey.Texture2D
-m_Width: 1
-m_Height: 1
-m_PixelBufferGUID: 0
+Width: 2560
+Height: 1920
+Mip Maps Enabled: 1
+Mip Bias: 0
+Max Mip Count: 0

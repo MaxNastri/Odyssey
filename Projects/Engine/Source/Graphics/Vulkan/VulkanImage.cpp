@@ -10,6 +10,21 @@
 
 namespace Odyssey
 {
+	uint32_t GetMipCount(VulkanImageDescription& desc)
+	{
+		uint32_t mipCount = 1;
+
+		if (desc.MipMapEnabled)
+		{
+			mipCount = (uint32_t)(std::floor(std::log2(std::max(desc.Width, desc.Height))) + 1);
+
+			if (desc.MaxMipCount > 0)
+				mipCount = std::min(mipCount, desc.MaxMipCount);
+		}
+
+		return mipCount;
+	}
+
 	VulkanImage::VulkanImage(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc)
 		: Resource(id)
 	{
@@ -18,10 +33,8 @@ namespace Odyssey
 		m_Height = desc.Height;
 		m_Channels = desc.Channels;
 		m_ArrayDepth = desc.ArrayDepth;
-		m_MipLevels = desc.MipMapEnabled ? (uint32_t)(std::floor(std::log2(std::max(desc.Width, desc.Height))) + 1) : 1;
-
-		if (desc.MipMapEnabled && m_MipLevels > 1)
-			m_MipLevels /= 2;
+		m_MipLevels = GetMipCount(desc);
+		m_MipBias = desc.MipBias;
 
 		isDepth = desc.ImageType == ImageType::DepthTexture || desc.ImageType == ImageType::Shadowmap;
 

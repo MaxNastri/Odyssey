@@ -2,5 +2,8 @@ m_SourceAsset: 898173491239897822
 m_GUID: 213981209753892768
 m_Name: Default Folder
 m_Type: Odyssey.Texture2D
-m_Width: 256
-m_Height: 256
+Width: 192
+Height: 159
+Mip Maps Enabled: 1
+Mip Bias: 0
+Max Mip Count: 0

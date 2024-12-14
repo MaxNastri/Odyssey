@@ -2,6 +2,8 @@ m_SourceAsset: 16364410354128084079
 m_GUID: 11202307513001725368
 m_Name: T_stone_wall_01_N
 m_Type: Odyssey.Texture2D
-m_Width: 1
-m_Height: 1
-m_PixelBufferGUID: 0
+Width: 4096
+Height: 4096
+Mip Maps Enabled: 1
+Mip Bias: 0
+Max Mip Count: 0

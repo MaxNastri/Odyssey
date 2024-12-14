@@ -2,6 +2,8 @@ m_SourceAsset: 5415441570168615331
 m_GUID: 6832636239839654488
 m_Name: Monk_normal
 m_Type: Odyssey.Texture2D
-m_Width: 1
-m_Height: 1
-m_PixelBufferGUID: 0
+Width: 2048
+Height: 2048
+Mip Maps Enabled: 1
+Mip Bias: 0
+Max Mip Count: 0

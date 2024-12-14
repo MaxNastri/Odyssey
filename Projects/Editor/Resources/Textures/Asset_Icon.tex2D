@@ -2,5 +2,8 @@ m_SourceAsset: 678512365782317894
 m_GUID: 128397192873168765
 m_Name: Asset Icon
 m_Type: Odyssey.Texture2D
-m_Width: 445
-m_Height: 511
+Width: 445
+Height: 511
+Mip Maps Enabled: 1
+Mip Bias: 0
+Max Mip Count: 0

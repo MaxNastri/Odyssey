@@ -2,6 +2,8 @@ m_SourceAsset: 3543611155993707643
 m_GUID: 262173709281449890
 m_Name: Rock_02_BC
 m_Type: Odyssey.Texture2D
-m_Width: 1
-m_Height: 1
-m_PixelBufferGUID: 0
+Width: 4096
+Height: 4096
+Mip Maps Enabled: 1
+Mip Bias: 0
+Max Mip Count: 0

@@ -52,7 +52,7 @@ namespace Odyssey
 		samplerInfo.maxAnisotropy = 8.0f;
 		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-		samplerInfo.mipLodBias = 0.0f;
+		samplerInfo.mipLodBias = image->GetMipBias();
 		samplerInfo.minLod = 0.0f;
 		samplerInfo.maxLod = image->GetMipLevels();
 
