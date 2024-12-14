@@ -12,6 +12,7 @@ namespace Odyssey
 	{
 	public:
 		VulkanTextureSampler(ResourceID id, std::shared_ptr<VulkanContext> context);
+		VulkanTextureSampler(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID imageID);
 		void Destroy();
 
 	public:

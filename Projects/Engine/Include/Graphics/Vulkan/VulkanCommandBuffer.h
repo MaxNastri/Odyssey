@@ -36,7 +36,6 @@ namespace Odyssey
 		void SetScissor(VkRect2D scissor);
 		void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance);
 		void DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance);
-		void TransitionLayoutsRT(ResourceID renderTextureID, VkImageLayout newLayout);
 		void TransitionLayouts(ResourceID imageID, VkImageLayout newLayout);
 		void CopyBufferToImage(ResourceID bufferID, ResourceID imageID, uint32_t width, uint32_t height);
 		void BindVertexBuffer(ResourceID vertexBufferID);
