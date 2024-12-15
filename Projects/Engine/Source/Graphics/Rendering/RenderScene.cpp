@@ -183,6 +183,7 @@ namespace Odyssey
 		}
 
 		setPasses.clear();
+		m_GUIDToSetPass.clear();
 		m_NextUniformBuffer = 0;
 		m_NextCameraBuffer = 0;
 		m_NextMaterialBuffer = 0;
@@ -239,13 +240,28 @@ namespace Odyssey
 
 				if (SubMesh* submesh = mesh->GetSubmesh(i))
 				{
-					// For now, 1 set pass per drawcall
-					SetPass& setPass = setPasses.emplace_back();
-					setPass.SetMaterial(materials[i], animator != nullptr, m_DescriptorLayout, m_MaterialBuffers[m_NextMaterialBuffer]);
-					m_NextMaterialBuffer++;
+					GUID materialGUID = materials[i]->GetGUID();
+					SetPass* setPass = nullptr;
+
+					if (m_GUIDToSetPass.contains(materialGUID))
+					{
+						size_t index = m_GUIDToSetPass[materialGUID];
+						setPass = &setPasses[index];
+					}
+					else
+					{
+						size_t index = setPasses.size();
+						setPasses.emplace_back();
+
+						m_GUIDToSetPass[materialGUID] = index;
+						setPass = &setPasses[index];
+
+						setPass->SetMaterial(materials[i], animator != nullptr, m_DescriptorLayout, m_MaterialBuffers[m_NextMaterialBuffer]);
+						m_NextMaterialBuffer++;
+					}
 
 					// Create the drawcall data
-					Drawcall& drawcall = setPass.Drawcalls.emplace_back();
+					Drawcall& drawcall = setPass->Drawcalls.emplace_back();
 					drawcall.VertexBufferID = submesh->VertexBuffer;
 					drawcall.IndexBufferID = submesh->IndexBuffer;
 					drawcall.IndexCount = submesh->IndexCount;

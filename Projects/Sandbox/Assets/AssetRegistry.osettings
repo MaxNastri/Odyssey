@@ -563,3 +563,59 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/Decals/Rune_Gate_Decal_Green.mat
     GUID: 10126946721482002417
+  - Name: Custom_socket_line_01_d
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Custom_socket_line_01_d.fbx
+    GUID: 3245350314522466270
+  - Name: Custom_socket_line_01_d
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Custom_socket_line_01_d.mesh
+    GUID: 2104968868744331800
+  - Name: Ornament_04_base
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Ornament_04_base.fbx
+    GUID: 4296936123326998561
+  - Name: Ornament_04_base
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Ornament_04_base.mesh
+    GUID: 1535541694286048631
+  - Name: Barrier_Long_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Barrier_Long_1.fbx
+    GUID: 904061141947438220
+  - Name: Barrier_Long_1
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Barrier_Long_1.mesh
+    GUID: 14938759012562627960
+  - Name: Column_socle_04_line
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Column_socle_04_line.fbx
+    GUID: 841883425816932384
+  - Name: Column_sockle_04_line
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Column_sockle_04_line.mesh
+    GUID: 10821021688575040574
+  - Name: tower_level2_wall_01_e
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/tower_level2_wall_01_e.fbx
+    GUID: 9867723639002602784
+  - Name: Tower_level2_wall_01_e
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Tower_level2_wall_01_e.mesh
+    GUID: 16791967029605748130
+  - Name: Barrier_Stairs
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Barrier_Stairs.fbx
+    GUID: 39327171277926450
+  - Name: Barrier_Stairs_Middle
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Barrier_Stairs_Middle.fbx
+    GUID: 12099672218737717190
+  - Name: Barrier_Stairs
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Barrier_Stairs.mesh
+    GUID: 2278662559697851726
+  - Name: Barrier_Stairs_Middle
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Barrier_Stairs_Middle.mesh
+    GUID: 16669672280382599985

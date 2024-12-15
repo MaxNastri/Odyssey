@@ -120,6 +120,8 @@ namespace Odyssey
 		Light* m_ShadowLight = nullptr;
 		ResourceID SkyboxCubemap;
 		std::vector<SetPass> setPasses;
+		std::map<GUID, size_t> m_GUIDToSetPass;
+
 		std::vector<GUID> ParticleEmitters;
 
 		// Scene uniform buffers
@@ -134,7 +136,7 @@ namespace Odyssey
 		uint32_t m_NextCameraBuffer = 0;
 		uint32_t m_NextMaterialBuffer = 0;
 
-		const uint32_t Max_Uniform_Buffers = 128;
+		const uint32_t Max_Uniform_Buffers = 256;
 		inline static constexpr uint32_t MAX_CAMERAS = 12;
 		inline static constexpr uint32_t MAX_LIGHTS = 16;
 	};
