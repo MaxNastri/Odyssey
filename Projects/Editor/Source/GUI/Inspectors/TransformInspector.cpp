@@ -46,16 +46,21 @@ namespace Odyssey
 			if (ImGui::Button("Copy"))
 			{
 				Data data{ positionDrawer.GetValue(), rotationDrawer.GetValue(), scaleDrawer.GetValue() };
-				ClipBoard::Copy(&data, sizeof(data));
+				ClipBoard::Copy("Transform", &data, sizeof(data));
 			}
+
 			ImGui::SameLine();
+
 			if (ImGui::Button("Paste"))
 			{
-				Data data = ClipBoard::Paste().Read<Data>();
+				if (ClipBoard::GetContext() == "Transform")
+				{
+					Data data = ClipBoard::Paste().Read<Data>();
 
-				OnPositionChanged(data.pos);
-				OnRotationChanged(data.rot);
-				OnScaleChanged(data.scale);
+					OnPositionChanged(data.pos);
+					OnRotationChanged(data.rot);
+					OnScaleChanged(data.scale);
+				}
 			}
 		}
 

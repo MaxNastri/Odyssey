@@ -7,14 +7,17 @@ namespace Odyssey
 	class ClipBoard
 	{
 	public:
-		static void Copy(const void* data, size_t size)
+		static void Copy(std::string_view context, const void* data, size_t size)
 		{
+			UserContext = context;
 			RawBuffer::Copy(UserData, data, size);
 		}
 
 		static RawBuffer& Paste() { return UserData; }
+		static std::string_view GetContext() { return UserContext; }
 
 		inline static RawBuffer UserData;
+		inline static std::string UserContext;
 	};
 
 	class Preferences

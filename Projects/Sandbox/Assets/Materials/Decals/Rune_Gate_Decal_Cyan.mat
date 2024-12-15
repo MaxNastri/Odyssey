@@ -6,5 +6,5 @@ m_Shader: 13726779930172400085
 m_Texture: 15224893156691087190
 Normal Texture: 8617775628757055184
 Emissive Color: 'x: 0 y: 1 z: 1'
-Emissive Power: 2
-Alpha Clip: 0.5
+Emissive Power: 1.5
+Alpha Clip: 0.005

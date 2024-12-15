@@ -192,8 +192,8 @@ GameObjects:
       - Type: Odyssey.Light
         Enabled: 1
         Light Type: Point
-        Color: 'x: 1 y: 0 z: 0'
-        Intensity: 0.75
+        Color: 'x: 0.85490197 y: 0.64705884 z: 0.1254902'
+        Intensity: 0.5
         Range: 7
   - Sort Order: 11
     Prefab: 0
@@ -353,7 +353,7 @@ GameObjects:
         Enabled: 1
         Mesh: 15722660542382960456
         Materials:
-          - 10126946721482002417
+          - 16157047713997452460
       - Type: Odyssey.Transform
         Position: 'x: 14.433 y: 0.5754985 z: -5.652239'
         Rotation: 'x: 0 y: -90 z: 0'
@@ -398,7 +398,7 @@ GameObjects:
         Enabled: 1
         Mesh: 11362682416421520594
         Materials:
-          - 10126946721482002417
+          - 16157047713997452460
       - Type: Odyssey.Transform
         Position: 'x: 14.718 y: 1.65 z: -6.757627'
         Rotation: 'x: 0 y: -90 z: 0'
@@ -413,7 +413,7 @@ GameObjects:
         Enabled: 1
         Mesh: 11907695015326494159
         Materials:
-          - 10126946721482002417
+          - 16157047713997452460
       - Type: Odyssey.Transform
         Position: 'x: 14.718 y: 1.65 z: -7.4820037'
         Rotation: 'x: 0 y: -90 z: 0'
@@ -431,9 +431,9 @@ GameObjects:
       - Type: Odyssey.Light
         Enabled: 1
         Light Type: Point
-        Color: 'x: 0 y: 0.78431374 z: 0'
-        Intensity: 0.75
-        Range: 5
+        Color: 'x: 0.85490197 y: 0.64705884 z: 0.1254902'
+        Intensity: 0.5
+        Range: 7
   - Sort Order: 16
     Prefab: 0
     Name: Rocks L
@@ -614,7 +614,7 @@ GameObjects:
         Materials:
           - 7887090432482843
       - Type: Odyssey.Transform
-        Position: 'x: -12 y: -0.8111515 z: -2.7691536'
+        Position: 'x: -12 y: -0.8111515 z: -2.7617772'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 3 y: 0.5 z: 3'
   - Sort Order: 4
@@ -629,7 +629,7 @@ GameObjects:
         Materials:
           - 7887090432482843
       - Type: Odyssey.Transform
-        Position: 'x: -10.62428 y: -0.8111515 z: 3.2239578'
+        Position: 'x: -10.62428 y: -0.8111515 z: 3.2427258'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 3 y: 0.5 z: 3'
   - Sort Order: 5
@@ -659,7 +659,7 @@ GameObjects:
         Materials:
           - 7887090432482843
       - Type: Odyssey.Transform
-        Position: 'x: -6 y: -0.8111515 z: -8.756793'
+        Position: 'x: -6 y: -0.8111515 z: -8.776435'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 3 y: 0.5 z: 3'
   - Sort Order: 7
@@ -674,7 +674,7 @@ GameObjects:
         Materials:
           - 7887090432482843
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: -0.8111515 z: -8.756793'
+        Position: 'x: 0 y: -0.8111515 z: -8.764579'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 3 y: 0.5 z: 3'
   - Sort Order: 8
@@ -689,7 +689,7 @@ GameObjects:
         Materials:
           - 7887090432482843
       - Type: Odyssey.Transform
-        Position: 'x: 6 y: -0.8111515 z: -8.756793'
+        Position: 'x: 6 y: -0.8111515 z: -8.765'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 3 y: 0.5 z: 3'
   - Sort Order: 9
@@ -704,7 +704,7 @@ GameObjects:
         Materials:
           - 7887090432482843
       - Type: Odyssey.Transform
-        Position: 'x: 12 y: -0.8111515 z: -8.756793'
+        Position: 'x: 12 y: -0.8111515 z: -8.765'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 3 y: 0.5 z: 3'
   - Sort Order: 10
@@ -734,7 +734,7 @@ GameObjects:
         Materials:
           - 7887090432482843
       - Type: Odyssey.Transform
-        Position: 'x: 11.119004 y: -0.8111515 z: 3.2162738'
+        Position: 'x: 11.119004 y: -0.8111515 z: 3.2292342'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 3 y: 0.5 z: 3'
   - Sort Order: 12
@@ -2345,8 +2345,8 @@ GameObjects:
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
-        Start Color: 'x: 1 y: 0.8428211 z: 0.7758007 w: 0.8627451'
-        End Color: 'x: 1 y: 0.38431373 z: 0 w: 0'
+        Start Color: 'x: 1 y: 0.3843137 z: 0 w: 0.8627451'
+        End Color: 'x: 0 y: 0 z: 0 w: 0'
         Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
         Lifetime: 'x: 0.3 y: 1'
         Size: 'x: 1 y: 2'

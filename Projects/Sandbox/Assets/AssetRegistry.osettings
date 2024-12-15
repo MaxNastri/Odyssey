@@ -555,10 +555,6 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/Decals/Rune_Gate_Decal_Cyan.mat
     GUID: 1378937304713442903
-  - Name: Rune_Gate_Decal_Red
-    Type: Odyssey.Material
-    Path: Materials/Decals/Rune_Gate_Decal_Red.mat
-    GUID: 16157047713997452460
   - Name: Rune_Gate_Decal_Green
     Type: Odyssey.Material
     Path: Materials/Decals/Rune_Gate_Decal_Green.mat
@@ -619,3 +615,7 @@ Entries:
     Type: Odyssey.Mesh
     Path: Meshes/Environment/Barrier_Stairs_Middle.mesh
     GUID: 16669672280382599985
+  - Name: Rune_Gate_Decal_Yellow
+    Type: Odyssey.Material
+    Path: Materials/Decals/Rune_Gate_Decal_Yellow.mat
+    GUID: 16157047713997452460

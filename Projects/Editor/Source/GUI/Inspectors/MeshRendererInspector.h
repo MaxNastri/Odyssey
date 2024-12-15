@@ -18,6 +18,9 @@ namespace Odyssey
 		virtual bool Draw() override;
 
 	private:
+		void InitDrawers();
+
+	private:
 		GameObject m_GameObject;
 		AssetFieldDrawer m_MeshDrawer;
 		std::vector<AssetFieldDrawer> m_MaterialDrawers;
