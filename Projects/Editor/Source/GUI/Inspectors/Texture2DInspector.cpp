@@ -18,7 +18,9 @@ namespace Odyssey
 			m_TypeDrawer = StringDrawer("Type", m_Texture->GetType(), true);
 			m_SourceAssetDrawer = AssetFieldDrawer("Source Asset", m_Texture->GetSourceAsset(), SourceTexture::Type,
 				[this](GUID sourceGUID) { OnSourceAssetchanged(sourceGUID); });
-
+			m_MipMapDrawer = BoolDrawer("Mip Maps Enabled", m_Texture->GetMipMapsEnabled());
+			m_MipBiasDrawer = FloatDrawer("Mip Bias", m_Texture->GetMipBias());
+			m_MaxMipCountDrawer = IntDrawer<uint32_t>("Max Mip Count", m_Texture->GetMaxMipCount());
 			m_PreviewTexture = Renderer::AddImguiTexture(m_Texture);
 		}
 	}
@@ -45,6 +47,24 @@ namespace Odyssey
 		modified |= m_TypeDrawer.Draw();
 		modified |= m_NameDrawer.Draw();
 		modified |= m_SourceAssetDrawer.Draw();
+
+		if (m_MipMapDrawer.Draw())
+		{
+			m_Texture->SetMipMapsEnabled(m_MipMapDrawer.GetValue());
+			m_Texture->Save();
+		}
+
+		if (m_MipBiasDrawer.Draw())
+		{
+			m_Texture->SetMipBias(m_MipBiasDrawer.GetValue());
+			m_Texture->Save();
+		}
+
+		if (m_MaxMipCountDrawer.Draw())
+		{
+			m_Texture->SetMaxMipCount(m_MaxMipCountDrawer.GetValue());
+			m_Texture->Save();
+		}
 
 		static float bottomPaneHeight = 400.0f;
 		static float topPaneHeight = 800.0f;

@@ -14,16 +14,15 @@ namespace Odyssey
 	struct AnimationProperty;
 	struct AnimationStateNode;
 
-	class AnimationBlueprint : public Blueprint, public Asset
+	class AnimationBlueprint : public Asset, public Blueprint
 	{
 		CLASS_DECLARATION(Odyssey, AnimationBlueprint)
 	public:
 		AnimationBlueprint();
 		AnimationBlueprint(const Path& assetPath);
-		~AnimationBlueprint();
 
 	public:
-		void Save();
+		virtual void Save() override;
 		void Load();
 
 	private:

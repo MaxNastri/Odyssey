@@ -107,6 +107,8 @@ namespace Odyssey
 			modified |= userScriptInspector.Draw();
 		}
 
+		ImGui::Spacing();
+
 		if (ImGui::Button("Add Component"))
 			ImGui::OpenPopup("Add Component Popup");
 

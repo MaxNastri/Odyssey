@@ -60,14 +60,14 @@ namespace Odyssey
 		return rotation;
 	}
 
-	mat4 Light::CalculateViewProj(float3 sceneCenter, float sceneRadius, float4 lightPos, float4 lightDir)
+	mat4 Light::CalculateViewProj(float3 sceneCenter, float sceneRadius, float3 lightDir)
 	{
-		float distance = -sceneRadius * 1.1f;
+		float distance = -sceneRadius;
 		float3 position = lightDir * distance;
 
 		// Calculate the view/projection from the light's perspective
 		mat4 view = glm::lookAtLH(position, sceneCenter, float3(0.0f, 1.0f, 0.0f));
-		mat4 proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, -20.0f, 20.0f);
+		mat4 proj = glm::ortho(-sceneRadius, sceneRadius, -sceneRadius, sceneRadius, -(sceneRadius + 10.0f), sceneRadius + 10.0f);
 
 		return proj * view;
 	}

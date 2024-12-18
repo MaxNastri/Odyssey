@@ -17,6 +17,7 @@ namespace Odyssey
 		componentNode.WriteData("Type", ParticleEmitter::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Duration", m_Duration);
+		componentNode.WriteData("Radius", m_Radius);
 		componentNode.WriteData("Looping", m_Looping);
 		componentNode.WriteData("Material", m_Material.CRef());
 		componentNode.WriteData("Emission Rate", m_EmissionRate);
@@ -32,6 +33,7 @@ namespace Odyssey
 	{
 		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Duration", m_Duration);
+		node.ReadData("Radius", m_Radius);
 		node.ReadData("Looping", m_Looping);
 		node.ReadData("Emission Rate", m_EmissionRate);
 		node.ReadData("Material", m_Material.Ref());

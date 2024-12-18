@@ -153,6 +153,9 @@ namespace Odyssey
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 		auto renderScene = params.renderingData->renderScene;
 
+		// Set our depth bias values back to 0
+		commandBuffer->SetDepthBias(0.0f, 0.0f, 0.0f);
+
 		for (auto& setPass : params.renderingData->renderScene->setPasses)
 		{
 			commandBuffer->BindGraphicsPipeline(setPass.GraphicsPipeline);
@@ -168,24 +171,25 @@ namespace Odyssey
 				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
 				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
 				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 3);
+				m_PushDescriptors->AddBuffer(setPass.MaterialBuffer, 4);
 
-				// Color map binds to the fragment shader register 4
+				// Color map binds to the fragment shader register 5
 				if (setPass.ColorTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.ColorTexture, 4);
-				else
-					m_PushDescriptors->AddTexture(m_BlackTextureID, 4);
-
-				// Normal map binds to the fragment shader register 5
-				if (setPass.NormalTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.NormalTexture, 5);
+					m_PushDescriptors->AddTexture(setPass.ColorTexture, 5);
 				else
 					m_PushDescriptors->AddTexture(m_BlackTextureID, 5);
 
-				// Shadowmap binds to the fragment shader register 6
-				if (params.Shadowmap.IsValid())
-					m_PushDescriptors->AddRenderTexture(params.Shadowmap, 6);
+				// Normal map binds to the fragment shader register 6
+				if (setPass.NormalTexture.IsValid())
+					m_PushDescriptors->AddTexture(setPass.NormalTexture, 6);
 				else
-					m_PushDescriptors->AddTexture(m_WhiteTextureID, 6);
+					m_PushDescriptors->AddTexture(m_BlackTextureID, 6);
+
+				// Shadowmap binds to the fragment shader register 7
+				if (params.Shadowmap.IsValid())
+					m_PushDescriptors->AddRenderTexture(params.Shadowmap, 7);
+				else
+					m_PushDescriptors->AddTexture(m_WhiteTextureID, 7);
 
 				// Push the descriptors into the command buffer
 				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), setPass.GraphicsPipeline);
@@ -396,11 +400,20 @@ namespace Odyssey
 			uint32_t aliveCount = ParticleBatcher::GetAliveCount(index);
 			ResourceID particleBuffer = ParticleBatcher::GetParticleBuffer(index);
 			ResourceID aliveBuffer = ParticleBatcher::GetAliveBuffer(index);
+			GUID materialGUID = ParticleBatcher::GetMaterial(index);
+
+			ResourceID colorTexture = m_ParticleTexture->GetTexture();
+
+			if (Ref<Material> material = AssetManager::LoadAsset<Material>(materialGUID))
+			{
+				if (Ref<Texture2D> texture = material->GetColorTexture())
+					colorTexture = texture->GetTexture();
+			}
 
 			m_PushDescriptors->Clear();
 			m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
 			m_PushDescriptors->AddBuffer(particleBuffer, 2);
-			m_PushDescriptors->AddTexture(m_ParticleTexture->GetTexture(), 3);
+			m_PushDescriptors->AddTexture(colorTexture, 3);
 			m_PushDescriptors->AddBuffer(aliveBuffer, 4);
 
 			graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);

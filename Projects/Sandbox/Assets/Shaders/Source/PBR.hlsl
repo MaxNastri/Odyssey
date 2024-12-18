@@ -50,7 +50,7 @@ VertexOutput main(VertexInput input)
     output.ShadowCoord.xyz /= output.ShadowCoord.w;
     output.Normal = normalize(mul(Model, normal).xyz);
     output.Tangent = float4(mul(Model, tangent).xyz, input.Tangent.w);
-    output.TexCoord0 = input.TexCoord0;
+    output.TexCoord0 = abs(input.TexCoord0);
     
     return output;
 }
@@ -93,12 +93,19 @@ cbuffer LightData : register(b3)
     uint LightCount;
 }
 
-Texture2D diffuseTex2D : register(t4);
-SamplerState diffuseSampler : register(s4);
-Texture2D normalTex2D : register(t5);
-SamplerState normalSampler : register(s5);
-Texture2D shadowmapTex2D : register(t6);
-SamplerState shadowmapSampler : register(s6);
+cbuffer MaterialData : register(b4)
+{
+    // RGB = Emissive Color, A = Emissive Power
+    float4 EmissiveColor;
+    float alphaClip;
+}
+
+Texture2D diffuseTex2D : register(t5);
+SamplerState diffuseSampler : register(s5);
+Texture2D normalTex2D : register(t6);
+SamplerState normalSampler : register(s6);
+Texture2D shadowmapTex2D : register(t7);
+SamplerState shadowmapSampler : register(s7);
 
 // Forward declarations
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord);
@@ -113,29 +120,23 @@ float4 main(PixelInput input) : SV_Target
     float3 worldNormal = normalize(input.Normal);
     
     float4 albedo = diffuseTex2D.Sample(diffuseSampler, input.TexCoord0);
-    
-    // Alpha cutout for discarding completely transparent pixels
-    // Todo: Make this an option in the material inspector
-    if (albedo.a < 1.0f)
-        discard;
-    
     float3 texNormal = normalTex2D.Sample(normalSampler, input.TexCoord0);
     bool blankNormalMap = texNormal.x == 0.0f && texNormal.y == 0.0f && texNormal.z == 0.0f;
     
     if (!blankNormalMap)
     {
-        //// Move the texture normal from 0.0 - 1.0 space to -1.0 to 1.0
-        //texNormal = (2.0f * texNormal) - 1.0f;
-        //
-        //// "Orthogonalize" the tangent
-        //float3 tangent = normalize(input.Tangent.xyz - dot(input.Tangent.xyz, worldNormal) * worldNormal);
-        //
-        //// Calculate the binormal
-        //float3 binormal = input.Tangent.w * cross(worldNormal, tangent);
-        //
-        //// Create the tex-space matrix and generate the final surface normal
-        //float3x3 texSpace = float3x3(tangent, binormal, worldNormal);
-        //worldNormal = mul(texNormal.xyz, texSpace);
+        // Move the texture normal from 0.0 - 1.0 space to -1.0 to 1.0
+        texNormal = (2.0f * texNormal) - 1.0f;
+        
+        // "Orthogonalize" the tangent
+        float3 tangent = normalize(input.Tangent.xyz - dot(input.Tangent.xyz, worldNormal) * worldNormal);
+        
+        // Calculate the binormal
+        float3 binormal = input.Tangent.w * cross(worldNormal, tangent);
+        
+        // Create the tex-space matrix and generate the final surface normal
+        float3x3 texSpace = float3x3(tangent, binormal, worldNormal);
+        worldNormal = mul(texNormal.xyz, texSpace);
     }
     
     float3 shadowCoord = input.ShadowCoord.xyz;
@@ -144,8 +145,8 @@ float4 main(PixelInput input) : SV_Target
     
     LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal, shadowCoord);
     
-    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb;
-    return albedo * float4(finalLighting, 1.0f);
+    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb + (EmissiveColor.rgb * EmissiveColor.a);
+    return float4(albedo.rgb, 1.0f) * float4(finalLighting, 1.0f);
 }
 
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord)

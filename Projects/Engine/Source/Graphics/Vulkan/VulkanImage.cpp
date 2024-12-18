@@ -10,15 +10,32 @@
 
 namespace Odyssey
 {
+	uint32_t GetMipCount(VulkanImageDescription& desc)
+	{
+		uint32_t mipCount = 1;
+
+		if (desc.MipMapEnabled)
+		{
+			mipCount = (uint32_t)(std::floor(std::log2(std::max(desc.Width, desc.Height))) + 1);
+
+			if (desc.MaxMipCount > 0)
+				mipCount = std::min(mipCount, desc.MaxMipCount);
+		}
+
+		return mipCount;
+	}
+
 	VulkanImage::VulkanImage(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc)
 		: Resource(id)
 	{
-
 		m_Context = context;
 		m_Width = desc.Width;
 		m_Height = desc.Height;
 		m_Channels = desc.Channels;
 		m_ArrayDepth = desc.ArrayDepth;
+		m_MipLevels = GetMipCount(desc);
+		m_MipBias = desc.MipBias;
+
 		isDepth = desc.ImageType == ImageType::DepthTexture || desc.ImageType == ImageType::Shadowmap;
 
 		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
@@ -32,12 +49,16 @@ namespace Odyssey
 			imageInfo.extent.width = desc.Width;
 			imageInfo.extent.height = desc.Height;
 			imageInfo.extent.depth = desc.Depth;
-			imageInfo.mipLevels = desc.MipLevels;
+			imageInfo.mipLevels = m_MipLevels;
 			imageInfo.arrayLayers = desc.ArrayDepth;
 			imageInfo.format = GetFormat(desc.Format);
 			imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 			imageInfo.initialLayout = imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			imageInfo.usage = GetUsage(desc.ImageType);
+
+			if (m_MipLevels > 1)
+				imageInfo.usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+
 			imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
 			if (desc.ImageType == ImageType::RenderTexture || desc.ImageType == ImageType::DepthTexture)
@@ -88,7 +109,7 @@ namespace Odyssey
 			else
 				viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
-			viewInfo.subresourceRange.levelCount = desc.MipLevels;
+			viewInfo.subresourceRange.levelCount = m_MipLevels;
 			viewInfo.subresourceRange.layerCount = desc.ArrayDepth;
 
 			if (vkCreateImageView(device, &viewInfo, nullptr, &imageView) != VK_SUCCESS)
@@ -108,6 +129,7 @@ namespace Odyssey
 		m_Height = height;
 		m_Channels = channels;
 		m_ArrayDepth = 1;
+		m_MipLevels = 1;
 		isDepth = false;
 
 		imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -121,7 +143,7 @@ namespace Odyssey
 			viewInfo.format = format;
 			viewInfo.subresourceRange.aspectMask = isDepth ? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
 			viewInfo.subresourceRange.baseMipLevel = 0;
-			viewInfo.subresourceRange.levelCount = 1;
+			viewInfo.subresourceRange.levelCount = m_MipLevels;
 			viewInfo.subresourceRange.baseArrayLayer = 0;
 			viewInfo.subresourceRange.layerCount = 1;
 
@@ -235,7 +257,7 @@ namespace Odyssey
 		barrier.image = image->GetImage();
 		barrier.subresourceRange.aspectMask = image->isDepth ? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
 		barrier.subresourceRange.baseMipLevel = 0;
-		barrier.subresourceRange.levelCount = 1;
+		barrier.subresourceRange.levelCount = image->GetMipLevels();
 		barrier.subresourceRange.baseArrayLayer = 0;
 		barrier.subresourceRange.layerCount = image->GetArrayDepth();
 		barrier.srcAccessMask = 0;

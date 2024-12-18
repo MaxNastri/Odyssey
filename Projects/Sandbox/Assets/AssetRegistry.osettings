@@ -59,18 +59,6 @@ Entries:
     Type: Odyssey.AnimationClip
     Path: 'Animation/Idle-Clip.asset'
     GUID: 6316788137749762478
-  - Name: Barrel
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Barrel.png
-    GUID: 17265819042437453023
-  - Name: Barrel Albedo
-    Type: Odyssey.Texture2D
-    Path: Textures/Barrel_Albedo.tex2D
-    GUID: 15566671228588070251
-  - Name: Barrel
-    Type: Odyssey.Material
-    Path: Materials/Barrel.mat
-    GUID: 1478857400269284978
   - Name: Capoeira
     Type: Odyssey.SourceModel
     Path: Models/Capoeira.fbx
@@ -91,478 +79,14 @@ Entries:
     Type: Odyssey.Mesh
     Path: 'Meshes/Monk-FBX.mesh'
     GUID: 2002632121797997546
-  - Name: barrel
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/barrel.fbx
-    GUID: 6697807878966639888
-  - Name: boat_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/boat_1.fbx
-    GUID: 15895578380992121396
-  - Name: boat_2
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/boat_2.fbx
-    GUID: 3936583775039728077
-  - Name: bottle
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/bottle.fbx
-    GUID: 1505163422331455526
-  - Name: brick_column_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/brick_column_1.fbx
-    GUID: 7544721479550141875
-  - Name: brick_tree_base
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/brick_tree_base.fbx
-    GUID: 7452501056582634648
-  - Name: brick_wall_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/brick_wall_1.fbx
-    GUID: 3200073943202836380
-  - Name: building_segment_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/building_segment_1.fbx
-    GUID: 11524252329674437893
-  - Name: building_segment_2
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/building_segment_2.fbx
-    GUID: 14507565224103359341
-  - Name: building_segment_3
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/building_segment_3.fbx
-    GUID: 14514824848643490228
-  - Name: building_segment_4
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/building_segment_4.fbx
-    GUID: 10158085114735832413
-  - Name: building_segment_5
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/building_segment_5.fbx
-    GUID: 12892740246413602381
-  - Name: building_segment_6
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/building_segment_6.fbx
-    GUID: 5549872946586648197
-  - Name: chair
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/chair.fbx
-    GUID: 12350115615287771360
-  - Name: circular_table
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/circular_table.fbx
-    GUID: 18417374488323583760
-  - Name: crate_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/crate_1.fbx
-    GUID: 8345855407805877299
-  - Name: crate_2
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/crate_2.fbx
-    GUID: 18091711225406732363
-  - Name: dock_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/dock_1.fbx
-    GUID: 11866338615285721091
-  - Name: dock_2
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/dock_2.fbx
-    GUID: 6470179552527121521
-  - Name: fence_gate
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/fence_gate.fbx
-    GUID: 10011603952648976519
-  - Name: fence_segment_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/fence_segment_1.fbx
-    GUID: 16705475008107356280
-  - Name: fence_segment_2
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/fence_segment_2.fbx
-    GUID: 15520216174289986483
-  - Name: fireplace
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/fireplace.fbx
-    GUID: 3287990183228807333
-  - Name: hammer
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/hammer.fbx
-    GUID: 8656571511257283233
-  - Name: ladder_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/ladder_1.fbx
-    GUID: 6889505285965712512
-  - Name: lamp_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/lamp_1.fbx
-    GUID: 12088598329735082630
-  - Name: log_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/log_1.fbx
-    GUID: 78221291808738437
-  - Name: Old Sea Port_Tree
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/Old Sea Port_Tree.fbx
-    GUID: 3440576502582530246
-  - Name: plank_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/plank_1.fbx
-    GUID: 15559712032899594527
-  - Name: post_1
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/post_1.fbx
-    GUID: 1719934630690728102
-  - Name: post_2
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/post_2.fbx
-    GUID: 17626067347878137064
-  - Name: rope_3
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/rope_3.fbx
-    GUID: 295988467676343552
-  - Name: stairs_wood_spiral
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/stairs_wood_spiral.fbx
-    GUID: 3545463695817715555
-  - Name: tower
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/tower.fbx
-    GUID: 2194157898223389419
-  - Name: tower_extension
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/tower_extension.fbx
-    GUID: 7722067301664529272
-  - Name: tower_short
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/tower_short.fbx
-    GUID: 9405452102448402126
-  - Name: Wood Canopy
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/Wood Canopy.fbx
-    GUID: 4382853674692084741
-  - Name: workbench
-    Type: Odyssey.SourceModel
-    Path: Models/Environment/workbench.fbx
-    GUID: 8296605053930543633
-  - Name: Barrel
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/barrel.mesh
-    GUID: 16763106103384214741
-  - Name: Boat 1
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/boat_1.mesh
-    GUID: 5597837198141586254
-  - Name: Boat 2
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/boat_2.mesh
-    GUID: 4346537307143043408
-  - Name: Bottle
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/bottle.mesh
-    GUID: 4172400646928810766
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/brick_column_1.mesh
-    GUID: 8958058890886565394
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/brick_tree_base.mesh
-    GUID: 5606148609726903610
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/brick_wall_1.mesh
-    GUID: 13820031340072242801
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/building_segment_1.mesh
-    GUID: 3549250334322316995
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/brick_tree_base.mesh
-    GUID: 16994709111569517170
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/brick_wall_1.mesh
-    GUID: 8119167279744050967
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/building_segment_1.mesh
-    GUID: 3020176742771563421
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/building_segment_2.mesh
-    GUID: 3337681921251472171
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/building_segment_3.mesh
-    GUID: 7342128999157480002
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/building_segment_4.mesh
-    GUID: 18432676635204201043
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/building_segment_5.mesh
-    GUID: 8403765498396048830
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/building_segment_6.mesh
-    GUID: 14193610063533704545
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/chair.mesh
-    GUID: 17595839205806975406
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/circular_table.mesh
-    GUID: 2975569417507807520
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/crate_1.mesh
-    GUID: 14168050247499179552
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/crate_2.mesh
-    GUID: 12664318203516942931
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/dock_1.mesh
-    GUID: 9131470353860217323
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/dock_2.mesh
-    GUID: 17865444670514799942
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/fence_gate.mesh
-    GUID: 15857860595286838697
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/fence_segment_1.mesh
-    GUID: 16960106126103840786
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/fence_segment_2.mesh
-    GUID: 17256605676268040196
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/fireplace.mesh
-    GUID: 15580852852506549302
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/hammer.mesh
-    GUID: 1165359848942748068
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/ladder_1.mesh
-    GUID: 15895499751014200382
-  - Name: Bark_Grey
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Bark_Grey.png
-    GUID: 14873638940177206924
-  - Name: Bark_Grey_3
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Bark_Grey_3.png
-    GUID: 6308003995220731616
-  - Name: Bark_Grey_4
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Bark_Grey_4.png
-    GUID: 16358903782506005718
-  - Name: Bark_Grey_Metallic 2
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Bark_Grey_Metallic 2.png
-    GUID: 4703406622097085829
-  - Name: Bark_Grey_Metallic
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Bark_Grey_Metallic.png
-    GUID: 8720706943531555490
-  - Name: Bark_Grey_normal
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Bark_Grey_normal.png
-    GUID: 7421304969651008267
-  - Name: Barrel
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Barrel.png
-    GUID: 14008545872619181569
-  - Name: Barrel_Metallic 2
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Barrel_Metallic 2.png
-    GUID: 17575796715107731868
-  - Name: Barrel_Metallic
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Barrel_Metallic.png
-    GUID: 6081522791354670120
-  - Name: Barrel_Normal
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Barrel_Normal.png
-    GUID: 2905906928398555917
-  - Name: branch_maple
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/branch_maple.png
-    GUID: 5522678738301007157
-  - Name: branch_maple_translucency
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/branch_maple_translucency.png
-    GUID: 15233955174811405080
-  - Name: Brick_wall_1
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Brick_wall_1.png
-    GUID: 11675155160747172334
-  - Name: Brick_Wall_Metallic 2
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Brick_Wall_Metallic 2.png
-    GUID: 14722928769084756807
-  - Name: Brick_Wall_Metallic
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Brick_Wall_Metallic.png
-    GUID: 13062110182627180
-  - Name: Brick_wall_normal
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Brick_wall_normal.png
-    GUID: 17421355771922369773
-  - Name: Brick_Wall_Occlusion
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Brick_Wall_Occlusion.png
-    GUID: 14856253756871452204
-  - Name: Canvas
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Canvas.png
-    GUID: 14994818698319560697
-  - Name: Canvas_Normal
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Canvas_Normal.png
-    GUID: 3238801197377261160
-  - Name: Cobblestone
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Cobblestone.png
-    GUID: 18241419599601750131
-  - Name: Cobblestone_Metallic
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Cobblestone_Metallic.png
-    GUID: 17151116395899189519
-  - Name: Cobblestone_Occlusion
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Cobblestone_Occlusion.png
-    GUID: 6805702243427034543
-  - Name: dirt_1
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/dirt_1.png
-    GUID: 8329877153407376478
-  - Name: dirt_1_specular
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/dirt_1_specular.png
-    GUID: 6801654684519892540
-  - Name: fence_1
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/fence_1.png
-    GUID: 6342744075675473169
-  - Name: Generic_Metal_1
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Generic_Metal_1.png
-    GUID: 11444392246208880346
-  - Name: Generic_Metal_3
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Generic_Metal_3.png
-    GUID: 9563086118895982756
-  - Name: lamp_1
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/lamp_1.png
-    GUID: 17035051997505527263
-  - Name: Log_End_1
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Log_End_1.png
-    GUID: 16120907009200683367
-  - Name: Log_End_2
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Log_End_2.png
-    GUID: 261690620502372130
-  - Name: Log_End_Occlusion
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Log_End_Occlusion.png
-    GUID: 4443789130507556915
-  - Name: planks_1
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/planks_1.png
-    GUID: 4859008186911108191
-  - Name: planks_1_Metallic 2
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/planks_1_Metallic 2.png
-    GUID: 16239596983405199178
-  - Name: planks_1_Metallic
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/planks_1_Metallic.png
-    GUID: 7996042507723238920
-  - Name: planks_1_normal
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/planks_1_normal.png
-    GUID: 18330120249464288946
-  - Name: Rooftiles
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Rooftiles.png
-    GUID: 4055231237196058648
-  - Name: Rooftiles_Metallic
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Rooftiles_Metallic.png
-    GUID: 14289217336352749965
-  - Name: Rooftiles_normal
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/Rooftiles_normal.png
-    GUID: 17474837630510055190
-  - Name: rope
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/rope.png
-    GUID: 11525443447151451655
-  - Name: rope_normal
-    Type: Odyssey.SourceTexture
-    Path: Textures/Source/Environment/rope_normal.png
-    GUID: 12324364403963501042
-  - Name: Brick_Wall_1
-    Type: Odyssey.Material
-    Path: Materials/Brick_Wall_1.mat
-    GUID: 14770402574313958026
-  - Name: Default
-    Type: Odyssey.Texture2D
-    Path: Textures/Environment/Brick_wall_1.tex2d
-    GUID: 5210788529713619104
   - Name: PBR Skinned
     Type: Odyssey.SourceShader
     Path: Shaders/Source/PBR_Skinned.hlsl
     GUID: 456787683416587321
-  - Name: Default
-    Type: Odyssey.Mesh
-    Path: Meshes/Environment/tower.mesh
-    GUID: 6195154431227879032
-  - Name: Bark_Grey
-    Type: Odyssey.Material
-    Path: Materials/Bark_Grey.mat
-    GUID: 13765641391405978811
-  - Name: Default
-    Type: Odyssey.Texture2D
-    Path: Textures/Environment/Bark_Grey.tex2D
-    GUID: 13649937747991786106
-  - Name: Default
-    Type: Odyssey.Texture2D
-    Path: Textures/Environment/planks_1.tex2D
-    GUID: 14386576293868154267
-  - Name: Planks 1
-    Type: Odyssey.Material
-    Path: Materials/Planks 1.mat
-    GUID: 12331985322653593688
-  - Name: Default
-    Type: Odyssey.Texture2D
-    Path: Textures/Environment/fence_1.tex2D
-    GUID: 10762345787116404470
-  - Name: Fence_1
-    Type: Odyssey.Material
-    Path: Materials/Fence_1.mat
-    GUID: 4405053874687466506
   - Name: PBR
     Type: Odyssey.SourceShader
     Path: Shaders/Source/PBR.hlsl
     GUID: 8792030590727510300
-  - Name: Default
-    Type: Odyssey.Texture2D
-    Path: Textures/Environment/Brick_wall_normal.tex2D
-    GUID: 2053248186768817129
   - Name: Kachujin_normal
     Type: Odyssey.SourceTexture
     Path: Textures/Source/Kachujin_normal.png
@@ -571,3 +95,527 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Monk_normal.tex2D
     GUID: 6832636239839654488
+  - Name: stone_stairs_01
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/stone_stairs_01.fbx
+    GUID: 10067098603415477609
+  - Name: Stone_stairs_03a
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Stone_stairs_03a.fbx
+    GUID: 17040099063196212703
+  - Name: Stone_stairs_05
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Stone_stairs_05.fbx
+    GUID: 15886096403668466474
+  - Name: Stone_stairs_08
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Stone_stairs_08.fbx
+    GUID: 2244631246019375794
+  - Name: T_marble_02_3_BC
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_marble_02_3_BC.png
+    GUID: 13678969231916597539
+  - Name: T_marble_02_3_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_marble_02_3_N.png
+    GUID: 5295076167925503933
+  - Name: T_marble_02_AO_SM
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_marble_02_AO_SM.png
+    GUID: 12867608640204780458
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/stone_stairs_01.mesh
+    GUID: 17575173010726122184
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/stone_stairs_03a.mesh
+    GUID: 9627492122458346974
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/stone_stairs_05.mesh
+    GUID: 17401335171088576210
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/stone_stairs_08.mesh
+    GUID: 5965202573179943386
+  - Name: Default
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Marble_02_3_BC.tex2D
+    GUID: 1433496500175665428
+  - Name: Default
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Marble_02_3_N.tex2D
+    GUID: 4587395924381067169
+  - Name: Default
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Marble_02_3_M.tex2D
+    GUID: 6250925768792989075
+  - Name: Stone Stairs
+    Type: Odyssey.Material
+    Path: Materials/Stone_Stairs.mat
+    GUID: 16911619204229098531
+  - Name: Landing
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Landing.fbx
+    GUID: 567754278369260550
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Landing.mesh
+    GUID: 4809363491030161803
+  - Name: Buttress_level0_00_o
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Buttress_level0_00_o.fbx
+    GUID: 13473007247298148658
+  - Name: Custom_socket_line_01_a
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Custom_socket_line_01_a.fbx
+    GUID: 15565772463670082655
+  - Name: stone_element_28d_wall_line_x2_battlements
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/stone_element_28d_wall_line_x2_battlements.fbx
+    GUID: 7346872719987501576
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Buttress_level0_00_o.mesh
+    GUID: 17556738810588010613
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Custom_socket_line_01_a.mesh
+    GUID: 5090492995806234706
+  - Name: Default
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/stone_element_28d_wall_line_x2_battlements.mesh
+    GUID: 1438372538504425587
+  - Name: T_Pillar_stone_03_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Pillar_stone_03_N.png
+    GUID: 1223131560530663491
+  - Name: T_stone_wall_01_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_stone_wall_01_N.png
+    GUID: 16364410354128084079
+  - Name: T_stone_wall_01_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/T_stone_wall_01_N.tex2D
+    GUID: 11202307513001725368
+  - Name: Stone Wall
+    Type: Odyssey.Material
+    Path: Materials/Stone_Wall.mat
+    GUID: 7887090432482843
+  - Name: cluster_stone_06_a
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/cluster_stone_06_a.fbx
+    GUID: 5683628737468764921
+  - Name: Cluster_stone_06_a
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Cluster_stone_06_a.mesh
+    GUID: 16900634504718078991
+  - Name: Pillar_stone_03_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Pillar_stone_03_N.tex2D
+    GUID: 18131567870834236796
+  - Name: T_Pillar_stone_02_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Pillar_stone_02_N.png
+    GUID: 2314375951324784379
+  - Name: T_Pillar_stone_01_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Pillar_stone_01_N.png
+    GUID: 6066785159679878526
+  - Name: Stone Pillar 01
+    Type: Odyssey.Material
+    Path: Materials/Stone_Pillar_01.mat
+    GUID: 11494956272143746184
+  - Name: Stone Pillar 02
+    Type: Odyssey.Material
+    Path: Materials/Stone_Pillar_02.mat
+    GUID: 2842208577896573398
+  - Name: Pillar_stone_01_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Pillar_stone_01_N.tex2D
+    GUID: 9375859894328604587
+  - Name: Pillar_stone_02_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Pillar_stone_02_N.tex2D
+    GUID: 13969917518176360330
+  - Name: Stone Pillar 03
+    Type: Odyssey.Material
+    Path: Materials/Stone_Pillar_03.mat
+    GUID: 10534666163883095481
+  - Name: Marble Floor
+    Type: Odyssey.Material
+    Path: Materials/Marble Floor.mat
+    GUID: 3853102031685265300
+  - Name: glass_window_04c
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/glass_window_04c.fbx
+    GUID: 11197462475039383579
+  - Name: T_windows_BC_M
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_windows_BC_M.png
+    GUID: 18336429641077396593
+  - Name: T_windows_MT_AO_SM
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_windows_MT_AO_SM.png
+    GUID: 9084043680875973111
+  - Name: T_windows_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_windows_N.png
+    GUID: 18026822756139069533
+  - Name: Windows_BC
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Windows_BC.tex2D
+    GUID: 5207188950727591872
+  - Name: Windows_M
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Windows_M.tex2D
+    GUID: 16192653970862604547
+  - Name: Windows_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Windows_N.tex2D
+    GUID: 10615185705568440426
+  - Name: glass_window
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/glass_window.mesh
+    GUID: 17918263236167194888
+  - Name: Glass Window
+    Type: Odyssey.Material
+    Path: Materials/Glass_Window.mat
+    GUID: 3071517346640755351
+  - Name: ornament_01a
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/ornament_01a.fbx
+    GUID: 13768233537646082378
+  - Name: tower_level0_wall_01_f
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/tower_level0_wall_01_f.fbx
+    GUID: 11219202916144414377
+  - Name: ornament_01a
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/ornament_01a.mesh
+    GUID: 2382757527250924263
+  - Name: tower_level0_wall_01_f
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/tower_level0_wall_01_f.mesh
+    GUID: 13330179292863103688
+  - Name: T_Ornaments_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Ornaments_N.png
+    GUID: 14774965919367279418
+  - Name: Ornaments_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Ornaments_N.tex2D
+    GUID: 8617775628757055184
+  - Name: Buttress_level0_00_a
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Buttress_level0_00_a.fbx
+    GUID: 4384721018586036342
+  - Name: Buttress_level0_00_c
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Buttress_level0_00_c.fbx
+    GUID: 13053422242367430791
+  - Name: sculpture_03
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/sculpture_03.fbx
+    GUID: 15177029265592021927
+  - Name: T_stone_sculptures_01_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_stone_sculptures_01_N.png
+    GUID: 289388346643830810
+  - Name: Stone_sculptures_01_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Stone_sculptures_01_N.tex2D
+    GUID: 13729244023843068852
+  - Name: Buttress_level0_00_a
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Buttress_level0_00_a.mesh
+    GUID: 1986306644513962590
+  - Name: Buttress_level0_00_c
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Buttress_level0_00_c.mesh
+    GUID: 15986346709224944722
+  - Name: sculpture_03
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/sculpture_03.mesh
+    GUID: 14353921652970163184
+  - Name: Stone Sculpture
+    Type: Odyssey.Material
+    Path: Materials/Stone Sculpture.mat
+    GUID: 16452805652338282562
+  - Name: PBR_Decal
+    Type: Odyssey.Shader
+    Path: Shaders/PBR_Decal.shader
+    GUID: 13726779930172400085
+  - Name: Brazier_02
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Brazier_02.fbx
+    GUID: 4660780674775373618
+  - Name: Brazier_iron_stand_01
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Brazier_iron_stand_01.fbx
+    GUID: 5979732383841557109
+  - Name: Column_socle_01
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Column_socle_01.fbx
+    GUID: 12683579607076844000
+  - Name: stone_element_05
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/stone_element_05.fbx
+    GUID: 4235247763161466153
+  - Name: T_Doors_elements_01_BC
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Doors_elements_01_BC.png
+    GUID: 675118583062039885
+  - Name: T_Doors_elements_01_MT_AO_SM
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Doors_elements_01_MT_AO_SM.png
+    GUID: 16724668656498641482
+  - Name: T_Doors_elements_01_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Doors_elements_01_N.png
+    GUID: 6736731579152911184
+  - Name: Doors_elements_01_BC
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Doors_elements_01_BC.tex2D
+    GUID: 2123635673430797876
+  - Name: Doors_elements_01_M
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Doors_elements_01_M.tex2D
+    GUID: 2121362220815426149
+  - Name: Doors_elements_01_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Doors_elements_01_N.tex2D
+    GUID: 16057804515411225806
+  - Name: Brazier_02
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Brazier_02.mesh
+    GUID: 14946945081136084699
+  - Name: Brazier_iron_stand_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Brazier_iron_stand_01.mesh
+    GUID: 9137671057581172594
+  - Name: Column_socle_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Column_socle_01.mesh
+    GUID: 17964267904088391254
+  - Name: stone_element_05
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/stone_element_05.mesh
+    GUID: 9619875415120290558
+  - Name: Metal Doors
+    Type: Odyssey.Material
+    Path: Materials/Doors.mat
+    GUID: 7332157666035654410
+  - Name: Fire VFX
+    Type: Odyssey.Material
+    Path: Materials/Fire_VFX.mat
+    GUID: 9122200999232379991
+  - Name: Fire1
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Fire1.png
+    GUID: 11311962961418756032
+  - Name: Fire1
+    Type: Odyssey.Texture2D
+    Path: Textures/Fire1.tex2D
+    GUID: 13306251931061361116
+  - Name: rock_09
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/rock_09.fbx
+    GUID: 4710216233613423870
+  - Name: T_rock_02_BC
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_rock_02_BC.png
+    GUID: 3543611155993707643
+  - Name: T_rock_02_MT_AO_H_SM
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_rock_02_MT_AO_H_SM.png
+    GUID: 16722785976468588585
+  - Name: T_rock_02_N
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_rock_02_N.png
+    GUID: 10154330964371239816
+  - Name: Rock_02_BC
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Rock_02_BC.tex2D
+    GUID: 262173709281449890
+  - Name: Rock_02_M
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Rock_02_M.tex2D
+    GUID: 17492370988812685835
+  - Name: Rock_02_N
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Rock_02_N.tex2D
+    GUID: 5566965161330113531
+  - Name: Rock_09
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Rock_09.mesh
+    GUID: 658561421433963468
+  - Name: Rock
+    Type: Odyssey.Material
+    Path: Materials/Rock.mat
+    GUID: 16304850672499381298
+  - Name: Stone_gate_01_base
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Stone_gate_01_base.fbx
+    GUID: 13996946070568082664
+  - Name: stone_gate_01_base
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/stone_gate_01_base.mesh
+    GUID: 12860828773237114523
+  - Name: decal_gate_01
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/decal_gate_01.fbx
+    GUID: 3491392411410790474
+  - Name: Decal_gate_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Decal_gate_01.mesh
+    GUID: 15722660542382960456
+  - Name: stone_door_wing_01
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/stone_door_wing_01.fbx
+    GUID: 17672879164980919603
+  - Name: Stone_door_wing_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Stone_door_wing_01.mesh
+    GUID: 4271601825038393822
+  - Name: ornament_pic_10e_01
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/ornament_pic_10e_01.fbx
+    GUID: 10482597606367110868
+  - Name: ornament_pic_10e_02
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/ornament_pic_10e_02.fbx
+    GUID: 15771363607272180992
+  - Name: ornamet_pic_09f
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/ornamet_pic_09f.fbx
+    GUID: 8720396049181160287
+  - Name: ornament_pic_09f
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/ornament_pic_09f.mesh
+    GUID: 927226921128455021
+  - Name: T_Ornaments_decal
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Ornaments_decal.png
+    GUID: 12516201432559931319
+  - Name: T_Ornaments_Shape
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Ornaments_Shape.png
+    GUID: 8695327470103669273
+  - Name: Ornaments_decal
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Ornaments_decal.tex2D
+    GUID: 15224893156691087190
+  - Name: Ornaments_M
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Ornaments_M.tex2D
+    GUID: 437209025483338855
+  - Name: Flak
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Flak.png
+    GUID: 9782568990620543582
+  - Name: Smoke
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Smoke.png
+    GUID: 11649457561614352045
+  - Name: Flak
+    Type: Odyssey.Texture2D
+    Path: Textures/Particles/Flak.tex2D
+    GUID: 15134319680538409167
+  - Name: Smoke
+    Type: Odyssey.Texture2D
+    Path: Textures/Particles/Smoke.tex2D
+    GUID: 7341086997358014686
+  - Name: Flak Particle
+    Type: Odyssey.Material
+    Path: Materials/Particles/Particle_Flak.mat
+    GUID: 6125355969842835682
+  - Name: Smoke Particle
+    Type: Odyssey.Material
+    Path: Materials/Particles/Particle_Smoke.mat
+    GUID: 16605951600674301940
+  - Name: Ornament_pic_10e_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Ornament_pic_10e_01.mesh
+    GUID: 11907695015326494159
+  - Name: Ornament_pic_10e_02
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Ornament_pic_10e_02.mesh
+    GUID: 11362682416421520594
+  - Name: PBR_Decal
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/PBR_Decal.hlsl
+    GUID: 13834704671605831352
+  - Name: Rune_Castle_Decal_Orange
+    Type: Odyssey.Material
+    Path: Materials/Decals/Rune_Castle_Decal_Orange.mat
+    GUID: 14342047184238483103
+  - Name: Ornament_Rune_Gate_Cyan
+    Type: Odyssey.Material
+    Path: Materials/Decals/Rune_Gate_Decal_Cyan.mat
+    GUID: 1378937304713442903
+  - Name: Rune_Gate_Decal_Green
+    Type: Odyssey.Material
+    Path: Materials/Decals/Rune_Gate_Decal_Green.mat
+    GUID: 10126946721482002417
+  - Name: Custom_socket_line_01_d
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Custom_socket_line_01_d.fbx
+    GUID: 3245350314522466270
+  - Name: Custom_socket_line_01_d
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Custom_socket_line_01_d.mesh
+    GUID: 2104968868744331800
+  - Name: Ornament_04_base
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Ornament_04_base.fbx
+    GUID: 4296936123326998561
+  - Name: Ornament_04_base
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Ornament_04_base.mesh
+    GUID: 1535541694286048631
+  - Name: Barrier_Long_1
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Barrier_Long_1.fbx
+    GUID: 904061141947438220
+  - Name: Barrier_Long_1
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Barrier_Long_1.mesh
+    GUID: 14938759012562627960
+  - Name: Column_socle_04_line
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Column_socle_04_line.fbx
+    GUID: 841883425816932384
+  - Name: Column_sockle_04_line
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Column_sockle_04_line.mesh
+    GUID: 10821021688575040574
+  - Name: tower_level2_wall_01_e
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/tower_level2_wall_01_e.fbx
+    GUID: 9867723639002602784
+  - Name: Tower_level2_wall_01_e
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Tower_level2_wall_01_e.mesh
+    GUID: 16791967029605748130
+  - Name: Barrier_Stairs
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Barrier_Stairs.fbx
+    GUID: 39327171277926450
+  - Name: Barrier_Stairs_Middle
+    Type: Odyssey.SourceModel
+    Path: Models/Environment/Barrier_Stairs_Middle.fbx
+    GUID: 12099672218737717190
+  - Name: Barrier_Stairs
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Barrier_Stairs.mesh
+    GUID: 2278662559697851726
+  - Name: Barrier_Stairs_Middle
+    Type: Odyssey.Mesh
+    Path: Meshes/Environment/Barrier_Stairs_Middle.mesh
+    GUID: 16669672280382599985
+  - Name: Rune_Gate_Decal_Yellow
+    Type: Odyssey.Material
+    Path: Materials/Decals/Rune_Gate_Decal_Yellow.mat
+    GUID: 16157047713997452460

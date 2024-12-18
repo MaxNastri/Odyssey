@@ -16,7 +16,7 @@ namespace Odyssey
 		auto image = ResourceManager::GetResource<VulkanImage>(m_Image);
 		image->SetData(buffer, description.ArrayDepth);
 
-		m_Sampler = ResourceManager::Allocate<VulkanTextureSampler>();
+		m_Sampler = ResourceManager::Allocate<VulkanTextureSampler>(m_Image);
 		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(m_Sampler);
 
 		descriptor.imageView = image->GetImageView();

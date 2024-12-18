@@ -19,18 +19,20 @@ namespace Odyssey
 	public:
 		void SetEnabled(bool enabled);
 		void SetMesh(GUID meshGUID);
-		void SetMaterial(GUID materialGUID);
+		void SetMaterial(GUID materialGUID, size_t submesh = 0);
+		void RemoveMaterial(int32_t index = -1);
 
 	public:
 		bool IsEnabled() { return m_Enabled; }
 		Ref<Mesh> GetMesh() { return m_Mesh; }
-		Ref<Material> GetMaterial() { return m_Material; }
+		Ref<Material> GetMaterial(size_t submesh = 0) { return m_Materials[submesh]; }
+		std::vector<Ref<Material>>& GetMaterials() { return m_Materials; }
 
 	private:
 		bool m_Enabled = true;
 		GameObject m_GameObject;
 		Ref<Mesh> m_Mesh;
-		Ref<Material> m_Material;
+		std::vector<Ref<Material>> m_Materials;
 		CLASS_DECLARATION(Odyssey, MeshRenderer)
 	};
 }

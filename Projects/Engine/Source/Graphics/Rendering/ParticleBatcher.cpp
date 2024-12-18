@@ -118,6 +118,9 @@ namespace Odyssey
 			if (!emitter.IsActive() && emitterResources.ParticleCounts.AlivePreSimCount == 0)
 				continue;
 
+			// Store the emitter's material for the rendering pass later
+			emitterResources.Material = emitter.GetMaterial();
+
 			// Start the emit compute pass
 			commandBuffer->BeginCommands();
 			commandBuffer->BindComputePipeline(s_EmitComputePipeline);
@@ -126,9 +129,9 @@ namespace Odyssey
 			emitter.Update(Time::DeltaTime());
 
 			auto& emitterData = emitter.GetEmitterData();
-			emitterData.Rnd.x = (Random::Float01() - 0.5f) * 2.0f;
-			emitterData.Rnd.y = (Random::Float01() - 0.5f) * 2.0f;
-			emitterData.Rnd.z = (Random::Float01() - 0.5f) * 2.0f;
+			emitterData.Rnd.x = (Random::Float01() - 0.5f) * emitter.GetRadius();
+			emitterData.Rnd.y = 0.0f;
+			emitterData.Rnd.z = (Random::Float01() - 0.5f) * emitter.GetRadius();
 			emitterData.Rnd.w = Random::Float01();
 
 			// Update the emitter buffer
@@ -211,6 +214,11 @@ namespace Odyssey
 			s_ResourceIndices.push(s_EntityToResourceIndex[gameObject]);
 			s_EntityToResourceIndex.erase(gameObject);
 		}
+	}
+
+	GUID ParticleBatcher::GetMaterial(size_t index)
+	{
+		return s_EmitterResources[index].Material;
 	}
 
 	uint32_t ParticleBatcher::GetAliveCount(size_t index)

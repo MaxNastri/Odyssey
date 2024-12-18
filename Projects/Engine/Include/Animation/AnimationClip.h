@@ -14,7 +14,7 @@ namespace Odyssey
 		AnimationClip(const Path& assetPath, Ref<SourceModel> sourceModel);
 
 	public:
-		void Save();
+		virtual void Save() override;
 		void Load();
 
 	public:

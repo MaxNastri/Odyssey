@@ -2,5 +2,8 @@ m_SourceAsset: 812973823681236833
 m_GUID: 488672041793267412
 m_Name: Soft Particle
 m_Type: Odyssey.Texture2D
-m_Width: 256
-m_Height: 256
+Width: 256
+Height: 256
+Mip Maps Enabled: 1
+Mip Bias: 0
+Max Mip Count: 0

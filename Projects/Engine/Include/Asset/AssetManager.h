@@ -4,7 +4,7 @@
 #include "BinaryCache.h"
 #include "GUID.h"
 #include "AssetRegistry.h"
-
+#include "AssetList.h"
 #include "Material.h"
 
 namespace Odyssey
@@ -45,21 +45,25 @@ namespace Odyssey
 
 			// Create a new material asset
 			GUID guid = GUID::New();
-			Ref<T> asset = new T(assetPath, std::forward<Args>(params)...);
+			std::string name = assetPath.filename().replace_extension("").string();
 
-			
+			s_LoadedAssets.insert(guid);
+
+			Ref<Asset> asset = s_Assets.emplace_back(new T(assetPath, std::forward<Args>(params)...));
+			s_GUIDToIndex[guid] = s_Assets.size() - 1;
+
 			// Set asset data
 			asset->m_GUID = guid;
-			asset->SetName(assetPath.filename().replace_extension("").string());
+			asset->SetName(name);
 			asset->m_Type = T::Type;
 
 			// Save to disk
 			if (!assetPath.empty())
 				asset->Save();
 
-			s_AssetDatabase->AddAsset(guid, assetPath, "Default", T::Type, false);
+			s_AssetDatabase->AddAsset(guid, assetPath, name, T::Type, false);
 
-			return asset;
+			return asset.As<T>();
 		}
 
 		template<typename T>
@@ -68,6 +72,9 @@ namespace Odyssey
 			static_assert(std::is_base_of<SourceAsset, T>::value, "T is not a dervied class of SourceAsset.");
 
 			Path sourcePath = s_AssetDatabase->GUIDToAssetPath(guid);
+			if (sourcePath.empty())
+				return nullptr;
+
 			Ref<T> sourceAsset = new T(sourcePath);
 
 			// Set the metadata for the source asset
@@ -80,11 +87,19 @@ namespace Odyssey
 		template<typename T>
 		static Ref<T> LoadAsset(GUID guid)
 		{
+			if (s_LoadedAssets.contains(guid))
+				return s_Assets[s_GUIDToIndex[guid]].As<T>();
+
 			// Convert the guid to a path
 			Path assetPath = s_AssetDatabase->GUIDToAssetPath(guid);
 
+			s_LoadedAssets.insert(guid);
+
+			Ref<Asset>& asset = s_Assets.emplace_back(new T(assetPath));
+			s_GUIDToIndex[guid] = s_Assets.size() - 1;
+
 			// Load and return the asset
-			return Ref<T>(new T(assetPath));
+			return asset.As<T>();
 		}
 
 		template<typename T>
@@ -92,6 +107,19 @@ namespace Odyssey
 		{
 			// Convert the path to a guid and load the asset
 			return LoadAsset<T>(s_AssetDatabase->AssetPathToGUID(assetPath));
+		}
+
+		template<typename T>
+		static Ref<T> LoadInstance(const Path& assetPath)
+		{
+			return Ref<T>(new T(assetPath));
+		}
+
+		template<typename T>
+		static Ref<T> LoadInstance(GUID guid)
+		{
+			// Convert the path to a guid and load the asset
+			return LoadInstance<T>(s_AssetDatabase->GUIDToAssetPath(guid));
 		}
 
 	public:
@@ -112,5 +140,10 @@ namespace Odyssey
 	private: // Assets
 		inline static Path s_AssetsDirectory;
 		inline static std::unique_ptr<AssetDatabase> s_AssetDatabase;
+
+	private:
+		inline static std::set<GUID> s_LoadedAssets;
+		inline static std::vector<Ref<Asset>> s_Assets;
+		inline static std::map<GUID, size_t> s_GUIDToIndex;
 	};
 }

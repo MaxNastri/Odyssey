@@ -19,6 +19,7 @@ namespace Odyssey
 
 			std::string registryPath, startupProject;
 
+			root.ReadData("Scene View", m_SceneView);
 			root.ReadData("Startup Project", startupProject);
 			root.ReadData("Editor Registry", registryPath);
 			root.ReadData("Folder Icon", m_FolderIcon.Ref());
@@ -49,6 +50,7 @@ namespace Odyssey
 		AssetSerializer serializer;
 		SerializationNode& root = serializer.GetRoot();
 
+		root.WriteData("Scene View", m_SceneView);
 		root.WriteData("Startup Project", m_StartupProject.string());
 		root.WriteData("Editor Registry", m_EditorRegistry.string());
 		root.WriteData("Folder Icon", m_FolderIcon.CRef());
@@ -71,5 +73,11 @@ namespace Odyssey
 	{
 		if (s_Instance)
 			s_Instance->Save();
+	}
+
+	void Preferences::SetSceneView(mat4 sceneView)
+	{
+		s_Instance->m_SceneView = sceneView;
+		s_Instance->Save();
 	}
 }

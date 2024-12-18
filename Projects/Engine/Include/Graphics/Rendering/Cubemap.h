@@ -16,7 +16,7 @@ namespace Odyssey
 		Cubemap(const Path& assetPath, Ref<SourceTexture> source);
 
 	public:
-		void Save();
+		virtual void Save() override;
 		void Load();
 
 	public:

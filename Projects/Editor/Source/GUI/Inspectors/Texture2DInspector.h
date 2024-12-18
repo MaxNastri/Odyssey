@@ -24,6 +24,9 @@ namespace Odyssey
 		StringDrawer m_NameDrawer;
 		StringDrawer m_TypeDrawer;
 		AssetFieldDrawer m_SourceAssetDrawer;
+		BoolDrawer m_MipMapDrawer;
+		FloatDrawer m_MipBiasDrawer;
+		IntDrawer<uint32_t> m_MaxMipCountDrawer;
 		uint64_t m_PreviewTexture;
 	};
 }

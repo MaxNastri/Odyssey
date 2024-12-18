@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "imgui.h"
+#include "Preferences.h"
 
 namespace Odyssey
 {
@@ -36,6 +37,31 @@ namespace Odyssey
 			modified |= positionDrawer.Draw();
 			modified |= rotationDrawer.Draw();
 			modified |= scaleDrawer.Draw();
+
+			struct Data
+			{
+				float3 pos, rot, scale;
+			};
+
+			if (ImGui::Button("Copy"))
+			{
+				Data data{ positionDrawer.GetValue(), rotationDrawer.GetValue(), scaleDrawer.GetValue() };
+				ClipBoard::Copy("Transform", &data, sizeof(data));
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Paste"))
+			{
+				if (ClipBoard::GetContext() == "Transform")
+				{
+					Data data = ClipBoard::Paste().Read<Data>();
+
+					OnPositionChanged(data.pos);
+					OnRotationChanged(data.rot);
+					OnScaleChanged(data.scale);
+				}
+			}
 		}
 
 		ImGui::Spacing();

@@ -45,6 +45,10 @@ namespace Odyssey
 		if (m_NormalTexture)
 			root.WriteData("Normal Texture", m_NormalTexture->GetGUID().CRef());
 
+		root.WriteData("Emissive Color", m_EmissiveColor);
+		root.WriteData("Emissive Power", m_EmissivePower);
+		root.WriteData("Alpha Clip", m_AlphaClip);
+
 		// Save to disk
 		serializer.WriteToDisk(assetPath);
 	}
@@ -63,6 +67,9 @@ namespace Odyssey
 			root.ReadData("m_Shader", shaderGUID.Ref());
 			root.ReadData("m_Texture", colorTextureGUID.Ref());
 			root.ReadData("Normal Texture", normalTextureGUID.Ref());
+			root.ReadData("Emissive Color", m_EmissiveColor);
+			root.ReadData("Emissive Power", m_EmissivePower);
+			root.ReadData("Alpha Clip", m_AlphaClip);
 
 			if (shaderGUID)
 				m_Shader = AssetManager::LoadAsset<Shader>(shaderGUID);

@@ -13,9 +13,9 @@ namespace Odyssey
 	class Mesh;
 	class Scene;
 	class VulkanGraphicsPipeline;
-	class VulkanUniformBuffer;
 	class VulkanDescriptorLayout;
 	class VulkanTexture;
+	class Light;
 
 	struct SceneData
 	{
@@ -53,39 +53,45 @@ namespace Odyssey
 		}
 	};
 
+	struct alignas(16) MaterialData
+	{
+		float4 EmissiveColor;
+		float AlphaClip;
+	};
+
 	struct alignas(16) SceneLight
 	{
 	public:
-		glm::vec4 Position;
-		glm::vec4 Direction;
-		glm::vec4 Color;
-		uint32_t Type;
-		float Intensity;
-		float Range;
+		float4 Position = float4(0.0f);
+		float4 Direction = float4(0.0f);
+		float4 Color = float4(0.0f);
+		uint32_t Type = 0;
+		float Intensity = 0.0f;
+		float Range = 1.0f;
 	};
 
 	struct alignas(16) LightingData
 	{
 	public:
-		glm::vec4 AmbientColor;
+		float4 AmbientColor = float4(0.0f);
 		std::array<SceneLight, 16> SceneLights;
-		uint32_t LightCount;
+		uint32_t LightCount = 0;
 	};
 
 	struct SetPass
 	{
 	public:
 		SetPass() = default;
-		SetPass(Ref<Material> material, bool skinned, ResourceID descriptorLayout);
 
 	public:
-		void SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout);
+		void SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout, ResourceID materialBuffer);
 
 	private:
 		void SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions);
 
 	public:
 		ResourceID GraphicsPipeline;
+		ResourceID MaterialBuffer;
 		std::map<ShaderType, ResourceID> Shaders;
 		ResourceID ColorTexture;
 		ResourceID NormalTexture;
@@ -102,35 +108,35 @@ namespace Odyssey
 		void ConvertScene(Scene* scene);
 		void ClearSceneData();
 
-		uint32_t SetCameraData(Camera* camera);
+		uint32_t SetSceneData(Camera* camera);
 		bool HasMainCamera() { return m_MainCamera != nullptr; }
 
 	private:
 		void SetupDrawcalls(Scene* scene);
 
 	public:
-		// Uniform structs
-		SceneData sceneData;
-		ObjectUniformData objectData;
-		SkinningData SkinningData;
-		LightingData LightingData;
-
 		// Scene objects
 		Camera* m_MainCamera = nullptr;
+		Light* m_ShadowLight = nullptr;
 		ResourceID SkyboxCubemap;
 		std::vector<SetPass> setPasses;
+		std::map<GUID, size_t> m_GUIDToSetPass;
+
 		std::vector<GUID> ParticleEmitters;
 
 		// Scene uniform buffers
 		std::vector<ResourceID> sceneDataBuffers;
 		std::vector<ResourceID> perObjectUniformBuffers;
 		std::vector<ResourceID> skinningBuffers;
+		std::vector<ResourceID> m_MaterialBuffers;
 		ResourceID LightingBuffer;
 		ResourceID m_DescriptorLayout;
 
 		uint32_t m_NextUniformBuffer = 0;
 		uint32_t m_NextCameraBuffer = 0;
-		const uint32_t Max_Uniform_Buffers = 128;
+		uint32_t m_NextMaterialBuffer = 0;
+
+		const uint32_t Max_Uniform_Buffers = 256;
 		inline static constexpr uint32_t MAX_CAMERAS = 12;
 		inline static constexpr uint32_t MAX_LIGHTS = 16;
 	};

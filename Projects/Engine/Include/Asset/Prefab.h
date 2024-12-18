@@ -12,6 +12,7 @@ namespace Odyssey
 		Prefab(const Path& assetPath);
 
 	public:
+		virtual void Save() override { }
 		void Save(GameObject& prefabInstance);
 		void Load(GameObject& prefabInstance);
 
