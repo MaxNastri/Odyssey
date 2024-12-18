@@ -6,7 +6,7 @@ Odyssey Engine development repository.
 ## Features
 * Vulkan rendering
 * GPU-based particle rendering
-* Blended Keyframe Skeletal Animation
+* Skeletal Animation
 * Realtime shadowmapping
 * Editor
 * C# Scripting
