@@ -6,6 +6,7 @@ Odyssey Engine development repository.
 ## Features
 * Vulkan rendering
 * GPU-based particle rendering
+* Blended Keyframe Skeletal Animation
 * Realtime shadowmapping
 * Editor
 * C# Scripting
@@ -19,4 +20,8 @@ Currently Odyssey is only supported on windows and uses a Visual Studio 2022 bui
 2. Open the Odyssey solution file located in the repository root folder.
 3. Build the solution in Release mode.
 
-## Opening the Sandbox Project
+## Navigating the Editor
+* The editor default opens the Sandbox project.
+* The content browser window displays the files located within the Sandbox project including assets, scripts, etc.
+* Clicking an object in the Scene Hierarchy window will show it's components in the Inspector window.
+* If the object has a Transform component, the transformation gizmo will appear in the Scene View window.
