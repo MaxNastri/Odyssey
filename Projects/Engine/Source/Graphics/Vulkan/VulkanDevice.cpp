@@ -8,7 +8,7 @@ namespace Odyssey
 	{
 		for (const VkExtensionProperties& p : properties)
 		{
-			if (strcmp(p.extensionName, extension) == 0)
+			if (std::strcmp(p.extensionName, extension) == 0)
 			{
 				return true;
 			}
@@ -30,10 +30,9 @@ namespace Odyssey
 	void VulkanDevice::WaitForIdle()
 	{
 		VkResult err = vkDeviceWaitIdle(logicalDevice);
+
 		if (!check_vk_result(err))
-		{
-			Log::Error("(device 1)");
-		}
+			Log::Error("[VulkanDevice] Failed to wait for idle.");
 	}
 
 	void VulkanDevice::CreateLogicalDevice(VulkanPhysicalDevice* physicalDevice)
@@ -48,7 +47,6 @@ namespace Odyssey
 		properties.resize(properties_count);
 		vkEnumerateDeviceExtensionProperties(vkPhysicalDevice, nullptr, &properties_count, properties.data());
 
-
 		std::vector<const char*> device_extensions;
 		device_extensions.push_back("VK_KHR_swapchain");
 
@@ -59,6 +57,17 @@ namespace Odyssey
 		device_extensions.push_back("VK_KHR_multiview");
 		device_extensions.push_back("VK_KHR_maintenance2");
 		device_extensions.push_back(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
+
+		// Validate our extensions are available
+		for (const char* extension : device_extensions)
+		{
+			if (!IsExtensionAvailable(properties, extension))
+			{
+				std::string errorMsg = std::format("[VulkanDevice] Extension not supported: {}", extension);
+				Log::Error(errorMsg);
+				throw std::invalid_argument(errorMsg);
+			}
+		}
 
 		bool allowUnusedAttachments = false;
 		if (IsExtensionAvailable(properties, VK_EXT_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_EXTENSION_NAME))
@@ -109,7 +118,9 @@ namespace Odyssey
 		VkResult err = vkCreateDevice(vkPhysicalDevice, &create_info, allocator, &logicalDevice);
 		if (!check_vk_result(err))
 		{
-			Log::Error("(device 2)");
+			std::string errorMsg = "[VulkanDevice] Failed to create vulkan device";
+			Log::Error(errorMsg);
+			throw std::invalid_argument(errorMsg);
 		}
 
 		volkLoadDevice(logicalDevice);

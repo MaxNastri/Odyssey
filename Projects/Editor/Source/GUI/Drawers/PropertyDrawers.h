@@ -213,6 +213,7 @@ namespace Odyssey
 		virtual bool Draw() override;
 
 	public:
+		void SetValue(float value) { m_Value = value; }
 		float GetValue() { return m_Value; }
 
 	private:

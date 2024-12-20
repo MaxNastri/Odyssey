@@ -23,6 +23,11 @@ namespace Odyssey
 		m_Scene = scene;
 	}
 
+	bool GameObject::IsValid()
+	{
+		return m_Scene && m_Scene->m_Registry.valid(m_Entity);
+	}
+
 	void GameObject::Serialize(SerializationNode& gameObjectNode)
 	{
 		PropertiesComponent& properties = GetComponent<PropertiesComponent>();

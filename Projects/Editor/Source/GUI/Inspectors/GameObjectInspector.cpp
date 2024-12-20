@@ -13,6 +13,7 @@
 #include "LightInspector.h"
 #include "ParticleEmitterInspector.h"
 #include "ScriptInspector.h"
+#include "Events.h"
 
 namespace Odyssey
 {
@@ -66,6 +67,7 @@ namespace Odyssey
 
 	GameObjectInspector::GameObjectInspector(GUID guid)
 	{
+		m_TargetGUID = guid;
 		m_Target = SceneManager::GetActiveScene()->GetGameObject(guid);
 
 		// Note: Priority parameter determines the display order
@@ -80,6 +82,9 @@ namespace Odyssey
 			RegisterComponentType<ScriptComponent, ScriptInspector>();
 			s_ComponentsRegistered = true;
 		}
+
+		auto onSceneModified = [this](SceneModifiedEvent* eventData) { OnSceneModified(eventData); };
+		EventSystem::Listen<SceneModifiedEvent>(onSceneModified);
 
 		CreateInspectors();
 	}
@@ -185,5 +190,15 @@ namespace Odyssey
 	{
 		if (m_Target.HasComponent<PropertiesComponent>())
 			m_Target.SetName(name);
+	}
+	void GameObjectInspector::OnSceneModified(SceneModifiedEvent* eventData)
+	{
+		m_Target = eventData->Scene->GetGameObject(m_TargetGUID);
+
+		if (!m_Target.IsValid())
+		{
+			m_Inspectors.clear();
+			userScriptInspectors.clear();
+		}
 	}
 }

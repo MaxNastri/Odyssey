@@ -10,6 +10,8 @@
 #include "Animator.h"
 #include "ParticleBatcher.h"
 #include "ParticleEmitter.h"
+#include "EventSystem.h"
+#include "Events.h"
 
 namespace Odyssey
 {
@@ -39,6 +41,8 @@ namespace Odyssey
 
 		m_SceneGraph.AddEntity(gameObject);
 
+		EventSystem::Dispatch<SceneModifiedEvent>(this);
+
 		return gameObject;
 	}
 
@@ -46,6 +50,8 @@ namespace Odyssey
 	{
 		// Create the backing entity
 		const auto entity = m_Registry.create();
+
+		EventSystem::Dispatch<SceneModifiedEvent>(this);
 
 		// Return a game object wrapper
 		return GameObject(this, entity);
@@ -56,6 +62,8 @@ namespace Odyssey
 		entt::entity entity = gameObject;
 		m_SceneGraph.RemoveEntityAndChildren(gameObject);
 		m_Registry.destroy(entity);
+
+		EventSystem::Dispatch<SceneModifiedEvent>(this);
 	}
 
 	void Scene::Clear()
@@ -65,6 +73,8 @@ namespace Odyssey
 			DestroyGameObject(GameObject(this, entity));
 		}
 		m_Registry.clear();
+
+		EventSystem::Dispatch<SceneModifiedEvent>(this);
 	}
 
 	void Scene::OnStartRuntime()

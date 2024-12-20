@@ -76,7 +76,10 @@ namespace Odyssey
 	{
 		m_Scene = event->loadedScene;
 
-		m_SkyboxDrawer.SetGUID(m_Scene->GetEnvironmentSettings().Skybox->GetGUID());
-		m_AmbientColorPicker.SetColor(m_Scene->GetEnvironmentSettings().AmbientColor);
+		EnvironmentSettings& settings = m_Scene->GetEnvironmentSettings();
+		m_SkyboxDrawer.SetGUID(settings.Skybox->GetGUID());
+		m_AmbientColorPicker.SetColor(settings.AmbientColor);
+		m_SceneCenterDrawer.SetValue(settings.SceneCenter);
+		m_SceneRadiusDrawer.SetValue(settings.SceneRadius);
 	}
 }

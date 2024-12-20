@@ -8,6 +8,7 @@
 namespace Odyssey
 {
 	class GameObject;
+	struct SceneModifiedEvent;
 
 	class GameObjectInspector : public Inspector
 	{
@@ -24,9 +25,11 @@ namespace Odyssey
 	private:
 		void CreateInspectors();
 		void OnNameChanged(std::string_view name);
+		void OnSceneModified(SceneModifiedEvent* eventData);
 
 	private:
 		GameObject m_Target;
+		GUID m_TargetGUID;
 		std::vector<std::unique_ptr<Inspector>> m_Inspectors;
 		std::vector<ScriptInspector> userScriptInspectors;
 		StringDrawer m_NameDrawer;
