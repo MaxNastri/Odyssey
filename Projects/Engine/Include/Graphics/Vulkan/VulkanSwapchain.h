@@ -11,7 +11,6 @@ namespace Odyssey
 	class VulkanContext;
 	class VulkanDevice;
 	class VulkanSurface;
-	class VulkanRenderTexture;
 
 	class VulkanSwapchain
 	{

@@ -13,8 +13,9 @@
 #include "VulkanPhysicalDevice.h"
 #include "VulkanQueue.h"
 #include "VulkanRenderer.h"
-#include "VulkanRenderTexture.h"
 #include "VulkanWindow.h"
+#include "RenderTarget.h"
+#include "VulkanTexture.h"
 
 namespace Odyssey
 {
@@ -178,11 +179,15 @@ namespace Odyssey
 		commandBuffer->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
-		auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(frame.GetFrameTexture());
-		commandBuffer->TransitionLayouts(renderTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(frame.GetFrameTexture());
+		Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorTexture());
+		commandBuffer->TransitionLayouts(colorTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
-		if (renderTexture->GetResolveImage().IsValid())
-			commandBuffer->TransitionLayouts(renderTexture->GetResolveImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		if (renderTarget->GetColorResolveTexture().IsValid())
+		{
+			Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorResolveTexture());
+			commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		}
 
 		currentFrame = &frame;
 		return true;
@@ -229,12 +234,18 @@ namespace Odyssey
 				m_IMGUIPass->EndPass(params);
 			}
 
-			auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(frame->GetFrameTexture());
+			Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(frame->GetFrameTexture());
 
-			if (renderTexture->GetResolveImage().IsValid())
-				commandBuffer->TransitionLayouts(renderTexture->GetResolveImage(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+			if (renderTarget->GetColorResolveTexture().IsValid())
+			{
+				Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorResolveTexture());
+				commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+			}
 			else
-				commandBuffer->TransitionLayouts(renderTexture->GetImage(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+			{
+				Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorTexture());
+				commandBuffer->TransitionLayouts(colorTexture->GetImage(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+			}
 
 			VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			VkSubmitInfo submitInfo = {};

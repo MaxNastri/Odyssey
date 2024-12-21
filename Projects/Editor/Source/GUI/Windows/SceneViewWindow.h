@@ -11,7 +11,6 @@ namespace Odyssey
 	class Camera;
 	class OpaquePass;
 	class Transform;
-	class VulkanRenderTexture;
 	class VulkanTextureSampler;
 	struct GUISelectionChangedEvent;
 
@@ -49,8 +48,7 @@ namespace Odyssey
 	private: // Rendering stuff
 		Ref<OpaquePass> m_SceneViewPass;
 		uint64_t m_RenderTextureID;
-		ResourceID m_ColorRT;
-		ResourceID m_DepthRT;
+		ResourceID m_RenderTarget;
 		ResourceID m_RTSampler;
 
 	private: // Gizmos

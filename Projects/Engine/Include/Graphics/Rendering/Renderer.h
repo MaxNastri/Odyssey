@@ -7,7 +7,6 @@ namespace Odyssey
 	class Texture2D;
 	class RenderPass;
 	class VulkanRenderer;
-	class VulkanRenderTexture;
 	class VulkanTextureSampler;
 	class VulkanWindow;
 
@@ -17,13 +16,6 @@ namespace Odyssey
 		BackBuffer = 1,
 		SceneView = 2,
 		GameView = 3,
-	};
-
-	struct RenderTarget
-	{
-		RenderTargetType Type;
-		ResourceID ColorAttachment;
-		ResourceID DepthAttachment;
 	};
 
 	struct RendererConfig
@@ -53,7 +45,6 @@ namespace Odyssey
 		static void RegisterRenderTarget(RenderTargetType rtType, ResourceID colorRT, ResourceID depthRT);
 
 	private:
-		inline static std::unordered_map<RenderTargetType, RenderTarget> m_RenderTargets;
 		inline static std::shared_ptr<VulkanRenderer> s_RendererAPI;
 		inline static RendererConfig s_Config;
 	};

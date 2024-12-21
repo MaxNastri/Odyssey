@@ -67,7 +67,7 @@ namespace Odyssey
 		m_TextureDescription.Channels = (uint32_t)channels;
 		m_TextureDescription.ArrayDepth = 6;
 
-		m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, combinedBuffer);
+		m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, &combinedBuffer);
 	}
 
 	void Cubemap::SaveToDisk(const Path& assetPath)

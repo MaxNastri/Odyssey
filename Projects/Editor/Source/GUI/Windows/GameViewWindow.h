@@ -8,7 +8,6 @@
 namespace Odyssey
 {
 	class OpaquePass;
-	class VulkanRenderTexture;
 	class VulkanTextureSampler;
 
 	class GameViewWindow : public DockableWindow
@@ -31,8 +30,7 @@ namespace Odyssey
 
 	private:
 		uint64_t m_RenderTextureID;
-		ResourceID m_ColorRT;
-		ResourceID m_DepthRT;
+		ResourceID m_RenderTarget;
 		ResourceID m_RTSampler;
 
 	private:

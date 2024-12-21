@@ -7,9 +7,9 @@
 #include "VulkanCommandPool.h"
 #include "Events.h"
 #include "VulkanContext.h"
-#include "VulkanRenderTexture.h"
 #include "VulkanTexture.h"
 #include "VulkanTextureSampler.h"
+#include "RenderTarget.h"
 
 namespace Odyssey
 {
@@ -123,16 +123,22 @@ namespace Odyssey
 
 	uint64_t VulkanImgui::AddRenderTexture(ResourceID renderTextureID, ResourceID samplerID)
 	{
-		auto texture = ResourceManager::GetResource<VulkanRenderTexture>(renderTextureID);
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(renderTextureID);
 
 		Ref<VulkanImage> image;
 
-		if (m_Context->GetSampleCount() > 1)
-			image = ResourceManager::GetResource<VulkanImage>(texture->GetResolveImage());
-		else
+		if (renderTarget->GetColorResolveTexture().IsValid())
+		{
+			Ref<VulkanTexture> texture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorResolveTexture());
 			image = ResourceManager::GetResource<VulkanImage>(texture->GetImage());
+		}
+		else
+		{
+			Ref<VulkanTexture> texture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorTexture());
+			image = ResourceManager::GetResource<VulkanImage>(texture->GetImage());
+		}
 
-		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(samplerID);
+		Ref<VulkanTextureSampler> sampler = ResourceManager::GetResource<VulkanTextureSampler>(samplerID);
 
 		VkSampler samplerVk = sampler->GetSamplerVK();
 		VkImageView view = image->GetImageView();

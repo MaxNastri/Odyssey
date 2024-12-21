@@ -11,7 +11,6 @@ VK_FWD_DECLARE(VkSemaphore)
 namespace Odyssey
 {
 	class VulkanContext;
-	class VulkanRenderTexture;
 
 	class VulkanFrame
 	{

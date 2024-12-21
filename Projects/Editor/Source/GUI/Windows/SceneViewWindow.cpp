@@ -6,7 +6,6 @@
 #include "Transform.h"
 #include "ImGuizmo.h"
 #include "ResourceManager.h"
-#include "VulkanRenderTexture.h"
 #include "VulkanRenderer.h"
 #include "VulkanImgui.h"
 #include "Editor.h"
@@ -18,6 +17,8 @@
 #include "DebugRenderer.h"
 #include "GUIManager.h"
 #include "Preferences.h"
+#include "RenderTarget.h"
+#include "VulkanTextureSampler.h"
 
 namespace Odyssey
 {
@@ -73,8 +74,7 @@ namespace Odyssey
 			return modified;
 
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
-		m_SceneViewPass->SetColorRenderTexture(m_ColorRT);
-		m_SceneViewPass->SetDepthRenderTexture(m_DepthRT);
+		m_SceneViewPass->SetRenderTarget(m_RenderTarget);
 
 		// Render gizmos
 		RenderGizmos();
@@ -136,20 +136,21 @@ namespace Odyssey
 	void SceneViewWindow::CreateRenderTexture()
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
-		m_ColorRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
-		m_DepthRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
+		VulkanImageDescription desc;
+		desc.Width = (uint32_t)m_WindowSize.x;
+		desc.Height = (uint32_t)m_WindowSize.y;
+		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(desc, RenderTargetFlags::Color | RenderTargetFlags::Depth);
 		m_RTSampler = ResourceManager::Allocate<VulkanTextureSampler>();
-		m_RenderTextureID = Renderer::AddImguiRenderTexture(m_ColorRT, m_RTSampler);
+		m_RenderTextureID = Renderer::AddImguiRenderTexture(m_RenderTarget, m_RTSampler);
 	}
 
 	void SceneViewWindow::DestroyRenderTexture()
 	{
 		// Destroy the existing render texture
-		if (m_ColorRT.IsValid())
+		if (m_RenderTarget.IsValid())
 		{
 			// Destroy the render texture
-			ResourceManager::Destroy(m_ColorRT);
-			ResourceManager::Destroy(m_DepthRT);
+			ResourceManager::Destroy(m_RenderTarget);
 			ResourceManager::Destroy(m_RTSampler);
 			Renderer::DestroyImguiTexture(m_RenderTextureID);
 		}

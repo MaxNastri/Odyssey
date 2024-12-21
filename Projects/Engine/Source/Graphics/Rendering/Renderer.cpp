@@ -66,9 +66,9 @@ namespace Odyssey
 
 	void Renderer::RegisterRenderTarget(RenderTargetType rtType, ResourceID colorRT, ResourceID depthRT)
 	{
-		auto& renderTarget = m_RenderTargets[rtType];
-		renderTarget.Type = rtType;
-		renderTarget.ColorAttachment = colorRT;
-		renderTarget.DepthAttachment = depthRT;
+		//auto& renderTarget = m_RenderTargets[rtType];
+		//renderTarget.Type = rtType;
+		//renderTarget.ColorAttachment = colorRT;
+		//renderTarget.DepthAttachment = depthRT;
 	}
 }

@@ -187,7 +187,7 @@ namespace Odyssey
 
 				// Shadowmap binds to the fragment shader register 7
 				if (params.Shadowmap.IsValid())
-					m_PushDescriptors->AddRenderTexture(params.Shadowmap, 7);
+					m_PushDescriptors->AddTexture(params.Shadowmap, 7);
 				else
 					m_PushDescriptors->AddTexture(m_WhiteTextureID, 7);
 

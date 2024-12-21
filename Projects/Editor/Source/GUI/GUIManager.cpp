@@ -8,7 +8,6 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
-#include "RayTracingWindow.h"
 #include "RenderPasses.h"
 #include "Scene.h"
 #include "SceneManager.h"

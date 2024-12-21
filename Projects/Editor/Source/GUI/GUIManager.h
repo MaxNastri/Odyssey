@@ -5,7 +5,6 @@
 #include "EditorMenuBar.h"
 #include "GameViewWindow.h"
 #include "InspectorWindow.h"
-#include "RayTracingWindow.h"
 #include "Ref.h"
 #include "SceneHierarchyWindow.h"
 #include "SceneViewWindow.h"
