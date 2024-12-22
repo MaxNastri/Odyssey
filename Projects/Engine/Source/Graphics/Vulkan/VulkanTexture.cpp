@@ -43,8 +43,14 @@ namespace Odyssey
 			auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 			// Transition the image to the proper layout based on format
-			VkImageLayout layout = m_Description.ImageType == ImageType::RenderTexture ?
-				VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
+			
+			if (m_Description.ImageType == ImageType::RenderTexture)
+				layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			else if (m_Description.ImageType == ImageType::DepthTexture)
+				layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			else if (m_Description.ImageType == ImageType::Shadowmap)
+				layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 			commandBuffer->BeginCommands();
 			commandBuffer->TransitionLayouts(m_Image, layout);

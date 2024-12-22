@@ -137,6 +137,7 @@ namespace Odyssey
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
 		VulkanImageDescription desc;
+		desc.ImageType = ImageType::RenderTexture;
 		desc.Width = (uint32_t)m_WindowSize.x;
 		desc.Height = (uint32_t)m_WindowSize.y;
 		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(desc, RenderTargetFlags::Color | RenderTargetFlags::Depth);

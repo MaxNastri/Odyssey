@@ -1,6 +1,7 @@
 #include "RenderTarget.h"
 #include "ResourceManager.h"
 #include "VulkanTexture.h"
+#include "VulkanContext.h"
 
 namespace Odyssey
 {
@@ -9,6 +10,9 @@ namespace Odyssey
 	{
 		if (flags & RenderTargetFlags::Color)
 		{
+			if (context->GetSampleCount() > 1)
+				imageDesc.Samples = context->GetSampleCount();
+
 			// Allocate the color texture
 			m_ColorTexture = ResourceManager::Allocate<VulkanTexture>(imageDesc, nullptr);
 
@@ -18,14 +22,21 @@ namespace Odyssey
 				// Create a resolve texture
 				VulkanImageDescription resolveDesc = imageDesc;
 				resolveDesc.Samples = 1;
-				m_ColorResolveTexture = ResourceManager::Allocate<VulkanImage>(resolveDesc);
+				m_ColorResolveTexture = ResourceManager::Allocate<VulkanTexture>(resolveDesc, nullptr);
 			}
 		}
 
 		if (flags & RenderTargetFlags::Depth)
 		{
+			if (imageDesc.ImageType != ImageType::DepthTexture && imageDesc.ImageType != ImageType::Shadowmap)
+				imageDesc.ImageType = ImageType::DepthTexture;
+
+			if (imageDesc.ImageType != ImageType::Shadowmap && context->GetSampleCount() > 1)
+				imageDesc.Samples = context->GetSampleCount();
+
 			if (!IsDepthFormat(imageDesc.Format))
-				imageDesc.Format = TextureFormat::D24_UNORM_S8_UINT;
+				imageDesc.Format = imageDesc.ImageType == ImageType::Shadowmap ?
+				TextureFormat::D32_SFLOAT : TextureFormat::D24_UNORM_S8_UINT;
 
 			m_DepthTexture = ResourceManager::Allocate<VulkanTexture>(imageDesc, nullptr);
 
@@ -35,16 +46,35 @@ namespace Odyssey
 				// Create a resolve texture
 				VulkanImageDescription resolveDesc = imageDesc;
 				resolveDesc.Samples = 1;
-				m_ColorResolveTexture = ResourceManager::Allocate<VulkanImage>(resolveDesc);
+				m_DepthResolveTexture = ResourceManager::Allocate<VulkanTexture>(resolveDesc, nullptr);
 			}
 		}
 	}
 
-	RenderTarget::RenderTarget(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID image, TextureFormat format, RenderTargetFlags flags)
+	RenderTarget::RenderTarget(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID imageID, TextureFormat format, RenderTargetFlags flags)
 	{
 		if (flags & RenderTargetFlags::Color)
-			m_ColorTexture = ResourceManager::Allocate<VulkanTexture>(image, format);
+		{
+			if (context->GetSampleCount() > 1)
+			{
+				Ref<VulkanImage> image = ResourceManager::GetResource<VulkanImage>(imageID);
+				VulkanImageDescription desc;
+				desc.ImageType = ImageType::RenderTexture;
+				desc.Width = image->GetWidth();
+				desc.Height = image->GetHeight();
+				desc.Samples = context->GetSampleCount();
+				desc.Format = format;
+				m_ColorTexture = ResourceManager::Allocate<VulkanTexture>(desc, nullptr);
+				m_ColorResolveTexture = ResourceManager::Allocate<VulkanTexture>(imageID, format);
+			}
+			else
+			{
+				m_ColorTexture = ResourceManager::Allocate<VulkanTexture>(imageID, format);
+			}
+		}
 		else if (flags & RenderTargetFlags::Depth)
-			m_DepthTexture = ResourceManager::Allocate<VulkanTexture>(image, format);
+		{
+			m_DepthTexture = ResourceManager::Allocate<VulkanTexture>(imageID, format);
+		}
 	}
 }

@@ -194,7 +194,7 @@ namespace Odyssey
 			// Check if msaa is enabled
 			if (colorResolveTextureID.IsValid())
 			{
-				Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorTextureID);
+				Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorResolveTextureID);
 				commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 			}
 		}
@@ -361,7 +361,7 @@ namespace Odyssey
 		Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(colorTextureID);
 		commandBuffer->TransitionLayouts(colorTexture->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-		ResourceID colorResolveTextureID = renderTarget->GetDepthResolveTexture();
+		ResourceID colorResolveTextureID = renderTarget->GetColorResolveTexture();
 		if (colorResolveTextureID.IsValid())
 		{
 			Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorResolveTextureID);
