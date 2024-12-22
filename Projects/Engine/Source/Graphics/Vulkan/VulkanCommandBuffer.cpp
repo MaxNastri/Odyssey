@@ -168,7 +168,7 @@ namespace Odyssey
 		VkPipelineStageFlags srcStage;
 		VkPipelineStageFlags dstStage;
 
-		auto image = ResourceManager::GetResource<VulkanImage>(imageID);
+		Ref<VulkanImage> image = ResourceManager::GetResource<VulkanImage>(imageID);
 
 		if (image->GetLayout() != newLayout)
 		{

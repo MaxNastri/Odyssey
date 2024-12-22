@@ -77,6 +77,9 @@ namespace Odyssey
 
 	VkWriteDescriptorSet VulkanTexture::GetDescriptorInfo()
 	{
+		Ref<VulkanImage> image = ResourceManager::GetResource<VulkanImage>(m_Image);
+		descriptor.imageLayout = image->GetLayout();
+		
 		VkWriteDescriptorSet writeSet{};
 		writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		writeSet.dstSet = 0;
