@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "Transform.h"
 #include "GameObject.h"
+#include "Enum.h"
 
 namespace Odyssey
 {
@@ -22,6 +23,7 @@ namespace Odyssey
 		componentNode.SetMap();
 		componentNode.WriteData("Type", Camera::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
+		componentNode.WriteData("Tag", Enum::ToString(m_Tag));
 		componentNode.WriteData("Field of View", m_FieldOfView);
 		componentNode.WriteData("Near Clip", m_NearClip);
 		componentNode.WriteData("Far Clip", m_FarClip);
@@ -30,11 +32,16 @@ namespace Odyssey
 
 	void Camera::Deserialize(SerializationNode& node)
 	{
+		std::string tag;
 		node.ReadData("Enabled", m_Enabled);
+		node.ReadData("Tag", tag);
 		node.ReadData("Field of View", m_FieldOfView);
 		node.ReadData("Near Clip", m_NearClip);
 		node.ReadData("Far Clip", m_FarClip);
 		node.ReadData("Main Camera", m_MainCamera);
+
+		if (!tag.empty())
+			m_Tag = Enum::ToEnum<Tag>(tag);
 
 		CalculateProjection();
 	}

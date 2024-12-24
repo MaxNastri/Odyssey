@@ -34,16 +34,16 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) = 0;
 
 	public:
+		void SetCamera(uint8_t camera) { m_Camera = camera; }
 		void SetRenderTarget(ResourceID renderTarget) { m_RenderTarget = renderTarget; }
 		void SetLayouts(VkImageLayout beginLayout, VkImageLayout endLayout) { m_BeginLayout = beginLayout; m_EndLayout = endLayout; }
 		void SetClearValue(glm::vec4 clearValue) { m_ClearValue = clearValue; }
 
 	protected:
 		ResourceID m_RenderTarget;
+		uint8_t m_Camera = 0;
 
 		glm::vec4 m_ClearValue;
-		// Starting layout
-		// Ending layout
 		VkImageLayout m_BeginLayout;
 		VkImageLayout m_EndLayout;
 	};
@@ -76,11 +76,9 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) override;
 
 	public:
-		void SetCamera(Camera* camera) { m_Camera = camera; }
 		void AddDebugSubPass();
 
 	private:
-		Camera* m_Camera = nullptr;
 		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
 	};
 

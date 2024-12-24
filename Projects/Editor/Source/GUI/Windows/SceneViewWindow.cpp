@@ -30,6 +30,7 @@ namespace Odyssey
 		m_SceneViewPass = new OpaquePass();
 		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		m_SceneViewPass->AddDebugSubPass();
+		m_SceneViewPass->SetCamera((uint8_t)Camera::Tag::SceneView);
 		Renderer::PushRenderPass(m_SceneViewPass);
 
 		// Create the render texture
@@ -113,6 +114,7 @@ namespace Odyssey
 			camera.SetMainCamera(false);
 			camera.Awake();
 			camera.SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+			camera.SetTag(Camera::Tag::SceneView);
 			transform.SetLocalMatrix(Preferences::GetSceneView());
 
 			// Add the editor properties component to hide this object in the scene hierarchy window
@@ -122,8 +124,6 @@ namespace Odyssey
 			// Make sure we don't serialize this game object
 			PropertiesComponent& engineProperties = m_GameObject.GetComponent<PropertiesComponent>();
 			engineProperties.Serialize = false;
-
-			m_SceneViewPass->SetCamera(&camera);
 		}
 	}
 

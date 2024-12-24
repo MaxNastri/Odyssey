@@ -45,13 +45,14 @@ GameObjects:
     Components:
       - Type: Odyssey.Camera
         Enabled: 1
+        Tag: Main
         Field of View: 45
         Near Clip: 0.1
         Far Clip: 1000
         Main Camera: 1
       - Type: Odyssey.Transform
-        Position: 'x: -1 y: 2 z: -2'
-        Rotation: 'x: 45 y: 45 z: 0'
+        Position: 'x: -4.44295 y: 4.041966 z: -19.037766'
+        Rotation: 'x: 15 y: 25 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - m_ScriptID: 2015860154
         Type: Odyssey.ScriptComponent
@@ -203,6 +204,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Camera
         Enabled: 1
+        Tag: Main
         Field of View: 45
         Near Clip: 0.1
         Far Clip: 1000

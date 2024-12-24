@@ -161,14 +161,13 @@ namespace Odyssey
 		// Search the scene for the main camera
 		for (auto entity : scene->GetAllEntitiesWith<Camera>())
 		{
+			// Get the camera component
 			GameObject gameObject = GameObject(scene, entity);
-			Camera& camera = gameObject.GetComponent<Camera>();
+			Camera* camera = gameObject.TryGetComponent<Camera>();
 
-			if (camera.IsEnabled() && camera.IsMainCamera())
-			{
-				m_MainCamera = &camera;
-				SetSceneData(m_MainCamera);
-			}
+			// Cache the cameras for lookup later
+			uint8_t cameraTag = (uint8_t)camera->GetTag();
+			m_Cameras[cameraTag] = camera;
 		}
 
 		ParticleBatcher::Update();
@@ -190,30 +189,42 @@ namespace Odyssey
 		m_MainCamera = nullptr;
 	}
 
-	uint32_t RenderScene::SetSceneData(Camera* camera)
+	uint32_t RenderScene::SetSceneData(uint8_t cameraTag)
 	{
-		// TODO: Fix this to not use the scene manager
-		EnvironmentSettings envSettings = SceneManager::GetActiveScene()->GetEnvironmentSettings();
+		if (m_Cameras.contains(cameraTag))
+		{
+			Camera* camera = m_Cameras[cameraTag];
 
-		SceneData sceneData;
-		sceneData.View = camera->GetInverseView();
-		sceneData.ViewProjection = camera->GetProjection() * camera->GetInverseView();
+			// TODO: Fix this to not use the scene manager
+			EnvironmentSettings envSettings = SceneManager::GetActiveScene()->GetEnvironmentSettings();
 
-		float4 viewPos = camera->GetView()[3];
-		viewPos.w = 1.0f;
-		sceneData.ViewPosition = viewPos;
+			SceneData sceneData;
+			sceneData.View = camera->GetInverseView();
+			sceneData.ViewProjection = camera->GetProjection() * camera->GetInverseView();
 
-		if (m_ShadowLight)
-			sceneData.LightViewProj = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, m_ShadowLight->GetDirection());
+			float4 viewPos = camera->GetView()[3];
+			viewPos.w = 1.0f;
+			sceneData.ViewPosition = viewPos;
+
+			if (m_ShadowLight)
+				sceneData.LightViewProj = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, m_ShadowLight->GetDirection());
+
+			uint32_t index = m_NextCameraBuffer;
+
+			// Update the scene ubo
+			auto sceneUBO = ResourceManager::GetResource<VulkanBuffer>(sceneDataBuffers[index]);
+			sceneUBO->CopyData(sizeof(sceneData), &sceneData);
+
+			m_NextCameraBuffer++;
+			return index;
+		}
 		
-		uint32_t index = m_NextCameraBuffer;
+		return 0;
+	}
 
-		// Update the scene ubo
-		auto sceneUBO = ResourceManager::GetResource<VulkanBuffer>(sceneDataBuffers[index]);
-		sceneUBO->CopyData(sizeof(sceneData), &sceneData);
-
-		m_NextCameraBuffer++;
-		return index;
+	Camera* RenderScene::GetCamera(uint8_t cameraTag)
+	{
+		return m_Cameras[cameraTag];
 	}
 
 	void RenderScene::SetupDrawcalls(Scene* scene)

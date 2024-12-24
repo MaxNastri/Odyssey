@@ -11,7 +11,7 @@ namespace Odyssey
 {
 	struct RenderSubPassData
 	{
-		Camera* Camera;
+		uint8_t CameraTag;
 		uint32_t CameraIndex;
 	};
 

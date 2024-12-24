@@ -321,13 +321,10 @@ namespace Odyssey
 
 		RenderSubPassData subPassData;
 		subPassData.CameraIndex = RenderScene::MAX_CAMERAS;
+		subPassData.CameraTag = m_Camera;
 
-		// Set either the camera override or the scene's main camera
 		if (m_Camera)
-		{
 			subPassData.CameraIndex = renderScene->SetSceneData(m_Camera);
-			subPassData.Camera = m_Camera;
-		}
 
 		// Check for a valid camera data index
 		if (subPassData.CameraIndex < RenderScene::MAX_CAMERAS)

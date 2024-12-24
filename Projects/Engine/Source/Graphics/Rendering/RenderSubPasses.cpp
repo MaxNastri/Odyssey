@@ -326,7 +326,7 @@ namespace Odyssey
 
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
-		glm::mat4 world = subPassData.Camera->GetView();
+		glm::mat4 world = renderScene->GetCamera(subPassData.CameraTag)->GetView();
 		glm::mat4 posOnly = glm::translate(glm::mat4(1.0f), glm::vec3(world[3][0], world[3][1], world[3][2]));
 		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
 		uniformBuffer->CopyData(sizeof(glm::mat4), &posOnly);
