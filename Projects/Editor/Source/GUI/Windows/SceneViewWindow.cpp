@@ -172,6 +172,8 @@ namespace Odyssey
 
 				ImGuizmo::AllowAxisFlip(SceneViewWindow::AllowFlip);
 				ImGuizmo::SetGizmoSizeClipSpace(0.1f);
+				ImGuizmo::SetDrawlist();
+				ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 				ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj),
 					(ImGuizmo::OPERATION)op, SceneViewWindow::IsLocal ? ImGuizmo::LOCAL : ImGuizmo::WORLD, glm::value_ptr(worldMatrix));
 
