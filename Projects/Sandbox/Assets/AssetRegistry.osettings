@@ -23,62 +23,10 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: Textures/Source/example.png
     GUID: 397722758389800740
-  - Name: Monk
-    Type: Odyssey.SourceModel
-    Path: Models/Monk.gltf
-    GUID: 3270948376729727283
   - Name: Kachujin_diffuse
     Type: Odyssey.SourceTexture
     Path: Textures/Source/Kachujin_diffuse.png
     GUID: 17785645852077111092
-  - Name: Monk
-    Type: Odyssey.SourceModel
-    Path: Models/Monk.glb
-    GUID: 4568083940301679466
-  - Name: Monk Clip
-    Type: Odyssey.AnimationClip
-    Path: 'Animation/Monk-Clip.asset'
-    GUID: 12740900691695561484
-  - Name: Monk Rig
-    Type: Odyssey.AnimationRig
-    Path: 'Animation/Monk-Rig.asset'
-    GUID: 13775651864520599129
-  - Name: Monk Mesh
-    Type: Odyssey.Mesh
-    Path: Meshes/Monk.mesh
-    GUID: 13511586946249507819
-  - Name: Monk BP
-    Type: Odyssey.AnimationBlueprint
-    Path: Animation/MonkBP.rune
-    GUID: 9242731602216417912
-  - Name: Idle
-    Type: Odyssey.SourceModel
-    Path: Models/Idle.glb
-    GUID: 15444575938032090787
-  - Name: Idle
-    Type: Odyssey.AnimationClip
-    Path: 'Animation/Idle-Clip.asset'
-    GUID: 6316788137749762478
-  - Name: Capoeira
-    Type: Odyssey.SourceModel
-    Path: Models/Capoeira.fbx
-    GUID: 11992219883316150973
-  - Name: Monk FBX Clip
-    Type: Odyssey.AnimationClip
-    Path: 'Animation/Monk-FBX-Clip.asset'
-    GUID: 10761971308510954515
-  - Name: Monk FBX Rig
-    Type: Odyssey.AnimationRig
-    Path: 'Animation/Monk-FBX-Rig.asset'
-    GUID: 11787023755999278324
-  - Name: Monk FBX BP
-    Type: Odyssey.AnimationBlueprint
-    Path: 'Animation/Monk-FBX-BP.rune'
-    GUID: 1485679445113041986
-  - Name: Monk FBX
-    Type: Odyssey.Mesh
-    Path: 'Meshes/Monk-FBX.mesh'
-    GUID: 2002632121797997546
   - Name: PBR Skinned
     Type: Odyssey.SourceShader
     Path: Shaders/Source/PBR_Skinned.hlsl
@@ -619,3 +567,31 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/Decals/Rune_Gate_Decal_Yellow.mat
     GUID: 16157047713997452460
+  - Name: Walking
+    Type: Odyssey.SourceModel
+    Path: Models/Walking.fbx
+    GUID: 7227464886548166261
+  - Name: Monk
+    Type: Odyssey.AnimationBlueprint
+    Path: Animation/Blueprints/Monk.rune
+    GUID: 9242731602216417912
+  - Name: Idle
+    Type: Odyssey.SourceModel
+    Path: Models/Idle.fbx
+    GUID: 4052492076156493582
+  - Name: Idle
+    Type: Odyssey.AnimationClip
+    Path: Animation/Clips/Idle.asset
+    GUID: 7837474615774733719
+  - Name: Monk
+    Type: Odyssey.AnimationRig
+    Path: Animation/Rigs/Monk.asset
+    GUID: 10793032812295863475
+  - Name: Monk
+    Type: Odyssey.Mesh
+    Path: Meshes/Characters/Monk.mesh
+    GUID: 16431782286058366551
+  - Name: Walking
+    Type: Odyssey.AnimationClip
+    Path: Animation/Clips/Walking.asset
+    GUID: 9090412378094673848

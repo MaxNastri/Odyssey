@@ -24,6 +24,15 @@ namespace Odyssey
         public static Vector3 operator +(Vector3 lhs, Vector3 rhs) => new Vector3(lhs.X + rhs.X, lhs.Y + rhs.Y, lhs.Z + rhs.Z);
         public static Vector3 operator *(Vector3 vector, float scalar) => new Vector3(vector.X * scalar, vector.Y * scalar, vector.Z * scalar);
 
+        public float Length() { return X + Y + Z; }
+        public void Normalize()
+        {
+            float length = Length();
+            X /= length;
+            Y /= length;
+            Z /= length;
+        }
+
         public override string ToString()
         {
             return $"({X}, {Y}, {Z})";

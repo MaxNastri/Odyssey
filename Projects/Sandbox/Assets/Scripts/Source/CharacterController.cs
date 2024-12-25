@@ -8,13 +8,33 @@ namespace Sandbox
         public float Speed = 10.0f;
 
         private Transform m_Transform;
-
+        private Animator m_Animator;
         protected override void Awake()
         {
             m_Transform = GetComponent<Transform>();
+            m_Animator = GetComponent<Animator>();
         }
 
         protected override void Update()
+        {
+            Vector3 inputDirection = GetInputDirection();
+
+            if (inputDirection.Length() == 0.0f)
+            {
+                if (m_Animator != null)
+                    m_Animator.SetFloat("Speed", 0.0f);
+            }
+            else
+            {
+                if (m_Transform != null)
+                    m_Transform.Position += inputDirection * Speed * Time.DeltaTime;
+
+                if (m_Animator != null)
+                    m_Animator.SetFloat("Speed", Speed);
+            }
+        }
+
+        private Vector3 GetInputDirection()
         {
             Vector3 inputDirection = new Vector3();
 
@@ -31,12 +51,7 @@ namespace Sandbox
             if (Input.GetKeyDown(KeyCode.S))
                 inputDirection.Z -= 1.0f;
 
-            if (inputDirection.X != 0.0f || inputDirection.Y != 0.0f || inputDirection.Z != 0.0f)
-            {
-                if (m_Transform != null)
-                    m_Transform.Position += inputDirection * Speed * Time.DeltaTime;
-            }
+            return inputDirection;
         }
-
     }
 }

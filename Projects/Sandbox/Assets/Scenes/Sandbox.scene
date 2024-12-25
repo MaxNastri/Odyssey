@@ -12,23 +12,23 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Animator
-        Animation Rig: 13775651864520599129
+        Animation Rig: 10793032812295863475
         Animation Blueprint: 9242731602216417912
       - Type: Odyssey.MeshRenderer
         Enabled: 1
-        Mesh: 13511586946249507819
+        Mesh: 16431782286058366551
         Materials:
           - 942766181068811557
           - 942766181068811557
       - Type: Odyssey.Transform
-        Position: 'x: -1.2066789 y: 1.1086733 z: -16.072493'
+        Position: 'x: -0.5482247 y: 1.1055099 z: -16.706512'
         Rotation: 'x: 0 y: -90 z: 0'
         Scale: 'x: 2 y: 2 z: 2'
       - m_ScriptID: 2708052967
         Type: Odyssey.ScriptComponent
         Fields:
           - Name: Speed
-            Value: 15
+            Value: 1.75
       - Type: Odyssey.ParticleEmitter
         Enabled: 0
         Duration: 1

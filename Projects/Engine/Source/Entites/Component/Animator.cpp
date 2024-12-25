@@ -43,17 +43,20 @@ namespace Odyssey
 
 	void Animator::OnEditorUpdate()
 	{
-		if (m_Rig && m_Blueprint)
-		{
-			if (m_BoneGameObjects.size() == 0)
-				CreateBoneGameObjects();
-
-			Update();
-		}
+		//if (m_Rig && m_Blueprint)
+		//{
+		//	if (m_BoneGameObjects.size() == 0)
+		//		CreateBoneGameObjects();
+		//
+		//	Update();
+		//}
 	}
 
 	void Animator::Update()
 	{
+		if (m_BoneGameObjects.size() == 0)
+			CreateBoneGameObjects();
+
 		if (m_Enabled && m_Blueprint)
 			ProcessKeys();
 		else
@@ -103,6 +106,7 @@ namespace Odyssey
 		// Resize our final poses to match the bone count
 		m_FinalPoses.clear();
 		m_FinalPoses.resize(m_Rig->GetBones().size());
+
 	}
 
 	void Animator::SetBlueprint(GUID guid)
