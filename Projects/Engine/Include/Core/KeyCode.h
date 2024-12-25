@@ -9,7 +9,8 @@ namespace Odyssey
         Middle = 3,
         Size = 4,
     };
-    enum KeyCode
+
+    enum KeyCode : uint32_t
     {
         Space = 32,
         Quote = 39,

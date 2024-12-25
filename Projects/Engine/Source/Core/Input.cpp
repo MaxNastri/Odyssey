@@ -1,13 +1,15 @@
 #include "Input.h"
 #include "Log.h"
 #include "Window.h"
+#include "Enum.h"
 
 namespace Odyssey
 {
     void Input::Initialize()
     {
-        keyInput[KeyState::Up].reset();
-        keyInput[KeyState::Press].reset();
+        ZeroMemory(&keyInput[KeyState::Press], sizeof(bool) * 1024);
+        ZeroMemory(&keyInput[KeyState::Down], sizeof(bool) * 1024);
+        ZeroMemory(&keyInput[KeyState::Up], sizeof(bool) * 1024);
     }
 
     bool Input::GetKeyPress(KeyCode keyCode)

@@ -43,7 +43,7 @@ namespace Odyssey
 			Size = 3,
 		};
 
-		inline static std::array<std::bitset<1024>, KeyState::Size> keyInput;
+		inline static std::array<std::array<bool, 1024>, KeyState::Size> keyInput;
 		inline static std::array<bool, MouseButton::Size> mouseInput;
 		inline static float mouseX = 0.0, mouseY = 0.0;
 		inline static float prevMouseX = 0.0, prevMouseY = 0.0;

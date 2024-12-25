@@ -24,6 +24,11 @@ GameObjects:
         Position: 'x: -1.2066789 y: 1.1086733 z: -16.072493'
         Rotation: 'x: 0 y: -90 z: 0'
         Scale: 'x: 2 y: 2 z: 2'
+      - m_ScriptID: 2708052967
+        Type: Odyssey.ScriptComponent
+        Fields:
+          - Name: Speed
+            Value: 15
       - Type: Odyssey.ParticleEmitter
         Enabled: 0
         Duration: 1
@@ -58,7 +63,7 @@ GameObjects:
         Type: Odyssey.ScriptComponent
         Fields:
           - Name: Target
-            Value: 15322439001782158818
+            Value: 0
           - Name: ScaleDirection
             Value: 'x: 0.001 y: 0.001 z: 0.001'
           - Name: PosDirection
@@ -198,7 +203,7 @@ GameObjects:
         Range: 7
   - Sort Order: 10
     Prefab: 0
-    Name: Camera
+    Name: Camera 2
     GUID: 9893354415873056759
     Type: Odyssey.GameObject
     Components:

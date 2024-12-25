@@ -193,8 +193,8 @@ namespace Odyssey
 	{
 		if (!m_DirectoryListeners.contains(folderPath))
 		{
-			m_DirectoryListeners[folderPath] = new DirectoryListener(folderPath, false);
-			m_Watcher.addWatch(folderPath.string(), m_DirectoryListeners[folderPath].Get(), false);
+			m_DirectoryListeners[folderPath] = new DirectoryListener(folderPath, options.Recursive);
+			m_Watcher.addWatch(folderPath.string(), m_DirectoryListeners[folderPath].Get(), options.Recursive);
 		}
 
 		TrackingID id = m_NextID++;

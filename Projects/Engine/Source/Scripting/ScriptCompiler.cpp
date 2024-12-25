@@ -3,6 +3,7 @@
 #include "EventSystem.h"
 #include "Events.h"
 #include "ScriptingManager.h"
+#include "Enum.h"
 
 namespace Odyssey
 {
@@ -30,6 +31,8 @@ namespace Odyssey
 
 	bool ScriptCompiler::BuildUserAssembly()
 	{
+		Log::Info("[ScriptCompiler] Begin building user assembly...");
+
 		if (buildInProgress)
 		{
 			Log::Error("Cannot compile while a build is in progress.");
@@ -115,6 +118,7 @@ namespace Odyssey
 				buildInProgress = false;
 				return false;
 			}
+
 			if (exitCode != STILL_ACTIVE)
 				break;
 		}
@@ -127,6 +131,8 @@ namespace Odyssey
 		// Successful build
 		if (exitCode == 0)
 		{
+			Log::Info("[ScriptCompiler] Successfully built user assembly.");
+
 			Path scriptsFolder = m_Settings.UserScriptsProject.parent_path();
 			Path objFolder = scriptsFolder / "obj";
 
@@ -146,5 +152,6 @@ namespace Odyssey
 	void ScriptCompiler::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
 	{
 		shouldRebuild = !buildInProgress && fileAction != FileActionType::None;
+		Log::Info(std::format("[ScriptCompiler] {} - {}. Rebuilding user assembly: {}", newFilename.string(), Enum::ToString<FileActionType>(fileAction), shouldRebuild));
 	}
 }
