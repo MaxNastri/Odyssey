@@ -224,7 +224,10 @@ namespace Odyssey
 
 	Camera* RenderScene::GetCamera(uint8_t cameraTag)
 	{
-		return m_Cameras[cameraTag];
+		if (m_Cameras.contains(cameraTag))
+			return m_Cameras[cameraTag];
+
+		return nullptr;
 	}
 
 	void RenderScene::SetupDrawcalls(Scene* scene)

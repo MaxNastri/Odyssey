@@ -5,13 +5,15 @@
 namespace Odyssey
 {
 	AnimationClip::AnimationClip(const Path& assetPath)
-		: Asset(assetPath), m_Timeline(this)
+		: Asset(assetPath)
 	{
 		if (Ref<SourceModel> source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
 		{
 			source->AddOnModifiedListener([this]() { OnSourceModified(); });
 			LoadFromSource(source);
 		}
+
+		m_Timeline = AnimationClipTimeline(this);
 	}
 
 	AnimationClip::AnimationClip(const Path& assetPath, Ref<SourceModel> sourceModel)

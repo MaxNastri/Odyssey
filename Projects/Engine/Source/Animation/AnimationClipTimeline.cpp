@@ -8,6 +8,7 @@ namespace Odyssey
 		: m_AnimationClip(animationClip)
 	{
 		m_Duration = (float)m_AnimationClip->GetDuration();
+		Reset();
 	}
 
 	const std::map<std::string, BlendKey>& AnimationClipTimeline::BlendKeys(float deltaTime)
@@ -25,12 +26,18 @@ namespace Odyssey
 		if (m_CurrentTime >= frameTime)
 		{
 			// Update to the next frame
-			size_t maxFrames = m_AnimationClip->GetFrameCount();
+			// TODO: We -1 here because the exporter includes an extra bad frame at the end
+			// The real fix is to modify the exporter to include frames up to duration - 1/30.0f.
+			size_t maxFrames = m_AnimationClip->GetFrameCount() - 1;
+
 			m_PrevFrame = m_NextFrame;
 			m_NextFrame = (m_NextFrame + 1) % maxFrames;
 
 			// Set our time back to the previous frame's time to re-sync
-			m_CurrentTime = m_AnimationClip->GetFrameTime(m_PrevFrame);
+			if (m_CurrentTime > m_Duration)
+			{
+				m_CurrentTime = std::fmod(m_CurrentTime, m_Duration);
+			}
 		}
 
 		for (auto& [boneName, boneKeyframe] : boneKeyframes)

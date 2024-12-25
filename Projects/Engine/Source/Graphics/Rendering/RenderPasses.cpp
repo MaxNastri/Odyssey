@@ -323,6 +323,9 @@ namespace Odyssey
 		subPassData.CameraIndex = RenderScene::MAX_CAMERAS;
 		subPassData.CameraTag = m_Camera;
 
+		if (!renderScene->GetCamera(m_Camera))
+			return;
+
 		if (m_Camera)
 			subPassData.CameraIndex = renderScene->SetSceneData(m_Camera);
 
