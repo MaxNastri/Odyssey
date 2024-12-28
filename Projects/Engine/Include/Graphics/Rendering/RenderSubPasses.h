@@ -115,4 +115,30 @@ namespace Odyssey
 		inline static const GUID& s_ParticleShaderGUID = 16032593712191697003;
 		inline static const GUID& s_ParticleTextureGUID = 488672041793267412;
 	};
+
+	class Opaque2DSubPass : public RenderSubPass
+	{
+	public:
+		virtual void Setup() override;
+		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+
+	private:
+		ResourceID m_GraphicsPipeline;
+
+	private:
+		inline static const GUID Shader_GUID = 16032593712191697003;
+	};
+
+	class Transparent2DSubPass : public RenderSubPass
+	{
+	public:
+		virtual void Setup() override;
+		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+
+	private:
+		ResourceID m_GraphicsPipeline;
+
+	private:
+		inline static const GUID Shader_GUID = 16032593712191697003;
+	};
 }

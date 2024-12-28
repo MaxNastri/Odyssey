@@ -322,7 +322,7 @@ namespace Odyssey
 		auto renderScene = params.renderingData->renderScene;
 
 		if (!renderScene->SkyboxCubemap.IsValid())
-			return;
+			return; 
 
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 

@@ -3,7 +3,6 @@
 #include "EditorEvents.h"
 #include "Events.h"
 #include "EventSystem.h"
-#include "GameObjectInspector.h"
 #include "GUIManager.h"
 #include "imgui.h"
 #include "imgui_internal.h"
