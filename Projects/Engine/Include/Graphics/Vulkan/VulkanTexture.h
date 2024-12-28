@@ -17,6 +17,9 @@ namespace Odyssey
 		VulkanTexture(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID image, TextureFormat format);
 
 	public:
+		virtual void Destroy() override;
+
+	public:
 		uint32_t GetWidth() { return m_Description.Width; }
 		uint32_t GetHeight() { return m_Description.Height; }
 		ResourceID GetImage() { return m_Image; }

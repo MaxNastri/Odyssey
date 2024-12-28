@@ -75,6 +75,12 @@ namespace Odyssey
 		}
 	}
 
+	void VulkanTexture::Destroy()
+	{
+		ResourceManager::Destroy(m_Image);
+		ResourceManager::Destroy(m_Sampler);
+	}
+
 	VkWriteDescriptorSet VulkanTexture::GetDescriptorInfo()
 	{
 		Ref<VulkanImage> image = ResourceManager::GetResource<VulkanImage>(m_Image);

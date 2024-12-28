@@ -77,4 +77,11 @@ namespace Odyssey
 			m_DepthTexture = ResourceManager::Allocate<VulkanTexture>(imageID, format);
 		}
 	}
+	void RenderTarget::Destroy()
+	{
+			ResourceManager::Destroy(m_ColorTexture);
+			ResourceManager::Destroy(m_ColorResolveTexture);
+			ResourceManager::Destroy(m_DepthTexture);
+			ResourceManager::Destroy(m_DepthResolveTexture);
+	}
 }

@@ -18,6 +18,10 @@ namespace Odyssey
 		RenderTarget(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription& imageDesc, RenderTargetFlags flags);
 		RenderTarget(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID image, TextureFormat format, RenderTargetFlags flags);
 
+	public:
+		virtual void Destroy() override;
+
+	public:
 		ResourceID GetColorTexture() { return m_ColorTexture; }
 		ResourceID GetColorResolveTexture() { return m_ColorResolveTexture; }
 		ResourceID GetDepthTexture() { return m_DepthTexture; }
