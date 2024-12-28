@@ -21,6 +21,7 @@ namespace Odyssey
 	{
 		glm::vec4 ViewPosition;
 		mat4 View;
+		mat4 Projection;
 		glm::mat4 ViewProjection;
 		glm::mat4 LightViewProj;
 	};
@@ -125,6 +126,7 @@ namespace Odyssey
 		std::map<uint8_t, Camera*> m_Cameras;
 		ResourceID SkyboxCubemap;
 		std::vector<SetPass> setPasses;
+		std::vector<SpriteDrawcall> SpriteDrawcalls;
 		std::map<GUID, size_t> m_GUIDToSetPass;
 
 		std::vector<GUID> ParticleEmitters;

@@ -17,4 +17,21 @@ namespace Odyssey
 		uint32_t UniformBufferIndex;
 		bool Skinned = false;
 	};
+
+	struct SpriteDrawcall
+	{
+	public:
+		SpriteDrawcall() = default;
+		SpriteDrawcall(float2 position, float2 scale, ResourceID sprite)
+		{
+			Position = position;
+			Scale = scale;
+			Sprite = sprite;
+		}
+
+	public:
+		float2 Position;
+		float2 Scale;
+		ResourceID Sprite;
+	};
 }

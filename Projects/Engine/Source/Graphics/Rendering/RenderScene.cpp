@@ -19,6 +19,7 @@
 #include "ParticleBatcher.h"
 #include "VulkanBuffer.h"
 #include "SceneManager.h"
+#include "SpriteRenderer.h"
 
 namespace Odyssey
 {
@@ -182,6 +183,7 @@ namespace Odyssey
 		}
 
 		setPasses.clear();
+		SpriteDrawcalls.clear();
 		m_GUIDToSetPass.clear();
 		m_NextUniformBuffer = 0;
 		m_NextCameraBuffer = 0;
@@ -200,7 +202,8 @@ namespace Odyssey
 
 			SceneData sceneData;
 			sceneData.View = camera->GetInverseView();
-			sceneData.ViewProjection = camera->GetProjection() * camera->GetInverseView();
+			sceneData.Projection = camera->GetProjection();
+			sceneData.ViewProjection = sceneData.Projection * sceneData.View;
 
 			float4 viewPos = camera->GetView()[3];
 			viewPos.w = 1.0f;
@@ -303,6 +306,22 @@ namespace Odyssey
 				ResourceID skinningID = skinningBuffers[uboIndex];
 				auto skinningBuffer = ResourceManager::GetResource<VulkanBuffer>(skinningID);
 				skinningBuffer->CopyData(sizeof(SkinningData), &skinningData);
+			}
+		}
+
+		for (auto entity : scene->GetAllEntitiesWith<SpriteRenderer, Transform>())
+		{
+			GameObject gameObject = GameObject(scene, entity);
+			SpriteRenderer& spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+			Transform& transform = gameObject.GetComponent<Transform>();
+
+			if (spriteRenderer.IsEnabled())
+			{
+				SpriteDrawcall& drawcall = SpriteDrawcalls.emplace_back();
+				drawcall.Position = transform.GetPosition();
+				drawcall.Scale = transform.GetScale();
+				if (spriteRenderer.GetSprite())
+					drawcall.Sprite = spriteRenderer.GetSprite()->GetTexture();
 			}
 		}
 	}

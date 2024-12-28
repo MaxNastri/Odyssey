@@ -77,6 +77,7 @@ namespace Odyssey
 
 	public:
 		void AddDebugSubPass();
+		void Add2DSubPass();
 
 	private:
 		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;

@@ -376,6 +376,13 @@ namespace Odyssey
 		m_SubPasses.push_back(debugSubPass);
 	}
 
+	void OpaquePass::Add2DSubPass()
+	{
+		auto subPass = std::make_shared<Opaque2DSubPass>();
+		subPass->Setup();
+		m_SubPasses.insert(m_SubPasses.begin() + 1, subPass);
+	}
+
 	void ImguiPass::BeginPass(RenderPassParams& params)
 	{
 		ResourceID commandBufferID = params.GraphicsCommandBuffer;

@@ -15,9 +15,9 @@ namespace Odyssey
 {
 	namespace Utils
 	{
-		inline static bool s_ComponentsRegistered = false;
-		inline static std::unordered_map<std::string, std::function<void(GameObject&)>> s_AddComponentFuncs;
-		inline static std::map<uint32_t, std::function<Ref<Inspector>(GameObject&)>> s_CreateInspectorFuncs;
+		inline bool s_ComponentsRegistered = false;
+		inline std::unordered_map<std::string, std::function<void(GameObject&)>> s_AddComponentFuncs;
+		inline std::map<uint32_t, std::function<Ref<Inspector>(GameObject&)>> s_CreateInspectorFuncs;
 
 		template<typename ComponentType, typename InspectorType>
 		void RegisterComponentType(uint32_t priority)
@@ -317,7 +317,7 @@ namespace Odyssey
 			Utils::RegisterComponentType<Camera, CameraInspector>();
 			Utils::RegisterComponentType<Light, LightInspector>();
 			Utils::RegisterComponentType<MeshRenderer, MeshRendererInspector>();
-			//RegisterComponentType<SpriteRenderer, SpriteRendererInspector>();
+			Utils::RegisterComponentType<SpriteRenderer, SpriteRendererInspector>();
 			Utils::RegisterComponentType<Animator, AnimatorInspector>();
 			Utils::RegisterComponentType<ParticleEmitter, ParticleEmitterInspector>();
 			Utils::RegisterComponentType<ScriptComponent, ScriptInspector>();
@@ -1397,6 +1397,51 @@ namespace Odyssey
 				fieldStorage.SetValue(newValue);
 				break;
 			}
+		}
+	}
+
+	SpriteRendererInspector::SpriteRendererInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+
+	bool SpriteRendererInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (SpriteRenderer* spriteRenderer = m_GameObject.TryGetComponent<SpriteRenderer>())
+				spriteRenderer->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Sprite Renderer", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_SpriteDrawer.Draw())
+			{
+				if (SpriteRenderer* spriteRenderer = m_GameObject.TryGetComponent<SpriteRenderer>())
+					spriteRenderer->SetSprite(m_SpriteDrawer.GetGUID());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void SpriteRendererInspector::InitDrawers()
+	{
+		if (SpriteRenderer* spriteRenderer = m_GameObject.TryGetComponent<SpriteRenderer>())
+		{
+			GUID sprite = spriteRenderer->GetSprite() ? spriteRenderer->GetSprite()->GetGUID() : GUID::Empty();
+			m_SpriteDrawer = AssetFieldDrawer("Sprite", sprite, Texture2D::Type);
 		}
 	}
 }

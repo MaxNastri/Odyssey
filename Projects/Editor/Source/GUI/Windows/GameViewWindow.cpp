@@ -21,6 +21,7 @@ namespace Odyssey
 		m_GameViewPass = new OpaquePass();
 		m_GameViewPass->SetCamera((uint8_t)Camera::Tag::Main);
 		m_GameViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		m_GameViewPass->Add2DSubPass();
 		Renderer::PushRenderPass(m_GameViewPass);
 
 		CreateRenderTexture();

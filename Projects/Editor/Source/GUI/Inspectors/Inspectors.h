@@ -11,6 +11,7 @@
 #include "ParticleEmitter.h"
 #include "Transform.h"
 #include "ScriptComponent.h"
+#include "SpriteRenderer.h"
 
 // Assets
 #include "Material.h"
@@ -155,7 +156,6 @@ namespace Odyssey
 		ColorPicker m_EndColorDrawer;
 	};
 
-
 	class ScriptInspector : public Inspector
 	{
 	public:
@@ -179,6 +179,24 @@ namespace Odyssey
 		GameObject m_GameObject;
 		std::string displayName;
 		std::vector<Ref<PropertyDrawer>> drawers;
+	};
+
+	class SpriteRendererInspector : public Inspector
+	{
+	public:
+		SpriteRendererInspector() = default;
+		SpriteRendererInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		AssetFieldDrawer m_SpriteDrawer;
+		bool m_Enabled;
 	};
 
 	class TransformInspector : public Inspector

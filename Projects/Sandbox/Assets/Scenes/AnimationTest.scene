@@ -44,7 +44,7 @@ GameObjects:
         Speed: 'x: 2.5 y: 5'
   - Sort Order: 2
     Prefab: 0
-    Name: GameObject
+    Name: Sun
     GUID: 11930098143521859490
     Type: Odyssey.GameObject
     Components:
@@ -58,8 +58,42 @@ GameObjects:
         Color: 'x: 1 y: 1 z: 1'
         Intensity: 1
         Range: 1
+  - Sort Order: 3
+    Prefab: 0
+    Name: Sprite
+    GUID: 18333480694344506150
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.SpriteRenderer
+        Enabled: 1
+        Sprite: 379771950876182716
+  - Sort Order: 4
+    Prefab: 0
+    Name: Camera
+    GUID: 880807833467005125
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Camera
+        Enabled: 1
+        Tag: Main
+        Field of View: 45
+        Near Clip: 0.1
+        Far Clip: 1000
+        Main Camera: 1
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
 Scene Graph Nodes:
   - Entity: 15322439001782158818
     Parent: 0
   - Entity: 11930098143521859490
+    Parent: 0
+  - Entity: 18333480694344506150
+    Parent: 0
+  - Entity: 880807833467005125
     Parent: 0

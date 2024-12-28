@@ -123,10 +123,28 @@ namespace Odyssey
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
 
 	private:
-		ResourceID m_GraphicsPipeline;
+		void GetAttributeDescriptions(BinaryBuffer& attributeDescriptions);
 
 	private:
-		inline static const GUID Shader_GUID = 16032593712191697003;
+		Ref<Shader> m_Shader;
+		Ref<Mesh> m_QuadMesh;
+		ResourceID m_GraphicsPipeline;
+		ResourceID m_DescriptorLayout;
+		Ref<VulkanPushDescriptors> m_PushDescriptors;
+		ResourceID m_SpriteDataUBO;
+
+	private:
+		struct SpriteData
+		{
+			float2 Position = float2(0.0f);
+			float2 Scale = float2(1.0f);
+		};
+		SpriteData m_SpriteData;
+
+	private:
+		inline static const GUID Shader_GUID = 712863487126392356;
+		inline static const GUID Quad_Mesh_GUID = 4325336624522892848;
+		inline static const float Quad_Size = 0.1f;
 	};
 
 	class Transparent2DSubPass : public RenderSubPass

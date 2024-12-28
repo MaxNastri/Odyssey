@@ -391,7 +391,7 @@ namespace Odyssey
 	void ParticleSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
 		auto renderScene = params.renderingData->renderScene;
-		auto graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		Ref<VulkanCommandBuffer> graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
 		const std::vector<size_t>& drawList = ParticleBatcher::GetDrawList();
 
@@ -420,5 +420,86 @@ namespace Odyssey
 			graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);
 			graphicsCommandBuffer->Draw(aliveCount * 6, 1, 0, 0);
 		}
+	}
+
+	void Opaque2DSubPass::Setup()
+	{
+		// Create the descriptor layout
+		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
+		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
+		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
+		descriptorLayout->AddBinding("Sprite Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
+		descriptorLayout->AddBinding("Particle Texture", DescriptorType::Sampler, ShaderStage::Fragment, 2);
+		descriptorLayout->Apply();
+
+		m_SpriteDataUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(SpriteData));
+		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
+		m_QuadMesh = AssetManager::LoadAsset<Mesh>(Quad_Mesh_GUID);
+
+		//m_ParticleTexture = AssetManager::LoadAsset<Texture2D>(s_ParticleTextureGUID);
+
+		VulkanPipelineInfo info;
+		info.Shaders = m_Shader->GetResourceMap();
+		info.DescriptorLayout = m_DescriptorLayout;
+		info.BindVertexAttributeDescriptions = true;
+		info.AlphaBlend = false;
+		info.WriteDepth = false;
+		GetAttributeDescriptions(info.AttributeDescriptions);
+
+		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
+		m_PushDescriptors = new VulkanPushDescriptors();
+	}
+
+	void Opaque2DSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
+	{
+		auto renderScene = params.renderingData->renderScene;
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+
+		for (auto& spriteDrawcall : renderScene->SpriteDrawcalls)
+		{
+			m_SpriteData.Position = spriteDrawcall.Position;
+			m_SpriteData.Scale = spriteDrawcall.Scale * Quad_Size;
+
+			// Update the sprite ubo
+			Ref<VulkanBuffer> uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_SpriteDataUBO);
+			uniformBuffer->CopyData(sizeof(SpriteData), &m_SpriteData);
+
+			// Set the pipeline
+			commandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
+
+			// Push the descriptors
+			m_PushDescriptors->Clear();
+			m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
+			m_PushDescriptors->AddBuffer(m_SpriteDataUBO, 1);
+			if (spriteDrawcall.Sprite.IsValid())
+				m_PushDescriptors->AddTexture(spriteDrawcall.Sprite, 2);
+			commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);
+
+			// Bind the buffers and draw
+			// TODO: Convert this into instanced rendering
+			commandBuffer->BindVertexBuffer(m_QuadMesh->GetVertexBuffer());
+			commandBuffer->BindIndexBuffer(m_QuadMesh->GetIndexBuffer());
+			commandBuffer->DrawIndexed(m_QuadMesh->GetIndexCount(), 1, 0, 0, 0);
+		}
+	}
+	void Opaque2DSubPass::GetAttributeDescriptions(BinaryBuffer& attributeDescriptions)
+	{
+		std::vector<VkVertexInputAttributeDescription> descriptions;
+
+		// Position
+		auto& positionDesc = descriptions.emplace_back();
+		positionDesc.binding = 0;
+		positionDesc.location = 0;
+		positionDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		positionDesc.offset = offsetof(Vertex, Position);
+
+		// Position
+		auto& texCoord0Desc = descriptions.emplace_back();
+		texCoord0Desc.binding = 0;
+		texCoord0Desc.location = 1;
+		texCoord0Desc.format = VK_FORMAT_R32G32_SFLOAT;
+		texCoord0Desc.offset = offsetof(Vertex, TexCoord0);
+
+		attributeDescriptions.WriteData(descriptions);
 	}
 }
