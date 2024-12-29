@@ -344,6 +344,19 @@ GameObjects:
         Position: 'x: 18.0082 y: 3.4441497 z: -9.371829'
         Rotation: 'x: -156.55367 y: 32.889973 z: 146.82048'
         Scale: 'x: 4.48806 y: 4.1626496 z: 2.0828729'
+  - Sort Order: 11
+    Prefab: 0
+    Name: GameObject
+    GUID: 10884347818887094767
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.SpriteRenderer
+        Enabled: 1
+        Sprite: 379771950876182716
   - Sort Order: 13
     Prefab: 0
     Name: Rune Gate R
@@ -3068,4 +3081,6 @@ Scene Graph Nodes:
   - Entity: 11819970241144821785
     Parent: 1106467288749509560
   - Entity: 9893354415873056759
+    Parent: 0
+  - Entity: 10884347818887094767
     Parent: 0

@@ -25,6 +25,7 @@ cbuffer SpriteData : register(b1)
 {
     float2 WorldPosition;
     float2 Scale;
+    float2 Fill;
 }
 
 VertexOutput main(VertexInput input)
@@ -41,6 +42,14 @@ VertexOutput main(VertexInput input)
 }
 
 #pragma Fragment
+
+cbuffer SpriteDataFS : register(b1)
+{
+    float2 WorldPositionFS;
+    float2 ScaleFS;
+    float2 FillFS;
+}
+
 Texture2D diffuseTex2D : register(t2);
 SamplerState diffuseSampler : register(s2);
 
@@ -53,8 +62,9 @@ struct FragmentInput
 float4 main(FragmentInput input)
 {
     float4 diffuse = diffuseTex2D.Sample(diffuseSampler, input.TexCoord0);
-    
-    if (diffuse.a < 1.0f)
+    float spriteMask = step(FillFS, input.TexCoord0);
+
+    if (spriteMask || diffuse.a < 1.0f)
         discard;
     
     return diffuse;

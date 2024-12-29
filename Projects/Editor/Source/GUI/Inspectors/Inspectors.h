@@ -196,6 +196,7 @@ namespace Odyssey
 	private:
 		GameObject m_GameObject;
 		AssetFieldDrawer m_SpriteDrawer;
+		RangeSlider m_FillDrawer;
 		bool m_Enabled;
 	};
 

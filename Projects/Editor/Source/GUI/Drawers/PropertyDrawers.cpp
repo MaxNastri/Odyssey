@@ -372,13 +372,23 @@ namespace Odyssey
 		return modified;
 	}
 
-	RangeSlider::RangeSlider(const std::string& label, float2 range, float2 limits, float step, std::function<void(float2)> callback)
+	RangeSlider::RangeSlider(const std::string& label, float2 range, float2 limits, float step, bool drawMinMaxLabels, std::function<void(float2)> callback)
 		: PropertyDrawer(label)
 	{
 		m_Range = range;
 		m_Limits = limits;
 		m_Step = step;
 		m_OnValueModifed = callback;
+		if (drawMinMaxLabels)
+		{
+			m_MinLabel = "Min: %.2f";
+			m_MaxLabel = "Max: %.2f";
+		}
+		else
+		{
+			m_MinLabel = "%.2f";
+			m_MaxLabel = "%.2f";
+		}
 	}
 
 	bool RangeSlider::Draw()
@@ -394,8 +404,9 @@ namespace Odyssey
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(-0.01f);
 			if (ImGui::DragFloatRange2(m_Label.data(), &m_Range.x, &m_Range.y, m_Step, m_Limits.x, m_Limits.y,
-				"Min: %.2f", "Max: %.2f", ImGuiSliderFlags_AlwaysClamp))
+				m_MinLabel.c_str(), m_MaxLabel.c_str(), ImGuiSliderFlags_AlwaysClamp))
 			{
+				modified = true;
 				if (m_OnValueModifed)
 					m_OnValueModifed(m_Range);
 			}

@@ -138,6 +138,7 @@ namespace Odyssey
 		{
 			float2 Position = float2(0.0f);
 			float2 Scale = float2(1.0f);
+			float2 Fill = float2(1.0f);
 		};
 		SpriteData m_SpriteData;
 

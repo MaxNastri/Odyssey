@@ -738,11 +738,11 @@ namespace Odyssey
 
 			m_MaterialDrawer = AssetFieldDrawer("Material", emitter->GetMaterial(), Material::Type,
 				[this](GUID material) { OnMaterialModified(material); });
-			m_LifetimeDrawer = RangeSlider("Lifetime", emitter->GetLifetime(), float2(0.1f, 10.0f), 0.1f,
+			m_LifetimeDrawer = RangeSlider("Lifetime", emitter->GetLifetime(), float2(0.1f, 10.0f), 0.1f, true,
 				[this](float2 lifetime) { OnLifetimeModified(lifetime); });
-			m_SizeDrawer = RangeSlider("Size", emitter->GetSize(), float2(0.1f, 10.0f), 0.1f,
+			m_SizeDrawer = RangeSlider("Size", emitter->GetSize(), float2(0.1f, 10.0f), 0.1f, true,
 				[this](float2 size) { OnSizeModified(size); });
-			m_SpeedDrawer = RangeSlider("Speed", emitter->GetSpeed(), float2(0.1f, 10.0f), 0.1f,
+			m_SpeedDrawer = RangeSlider("Speed", emitter->GetSpeed(), float2(0.1f, 10.0f), 0.1f, true,
 				[this](float2 speed) { OnSpeedModified(speed); });
 			m_StartColorDrawer = ColorPicker("Start Color", emitter->GetStartColor(),
 				[this](float4 color) { OnStartColorModified(color); });
@@ -1429,6 +1429,12 @@ namespace Odyssey
 				if (SpriteRenderer* spriteRenderer = m_GameObject.TryGetComponent<SpriteRenderer>())
 					spriteRenderer->SetSprite(m_SpriteDrawer.GetGUID());
 			}
+
+			if (m_FillDrawer.Draw())
+			{
+				if (SpriteRenderer* spriteRenderer = m_GameObject.TryGetComponent<SpriteRenderer>())
+					spriteRenderer->SetFill(m_FillDrawer.GetValue());
+			}
 		}
 
 		ImGui::PopID();
@@ -1442,6 +1448,7 @@ namespace Odyssey
 		{
 			GUID sprite = spriteRenderer->GetSprite() ? spriteRenderer->GetSprite()->GetGUID() : GUID::Empty();
 			m_SpriteDrawer = AssetFieldDrawer("Sprite", sprite, Texture2D::Type);
+			m_FillDrawer = RangeSlider("Fill", spriteRenderer->GetFill(), float2(0.0f, 1.0f), 0.1f, false);
 		}
 	}
 }

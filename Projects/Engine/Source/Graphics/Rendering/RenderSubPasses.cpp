@@ -153,9 +153,6 @@ namespace Odyssey
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 		auto renderScene = params.renderingData->renderScene;
 
-		// Set our depth bias values back to 0
-		commandBuffer->SetDepthBias(0.0f, 0.0f, 0.0f);
-
 		for (auto& setPass : params.renderingData->renderScene->setPasses)
 		{
 			commandBuffer->BindGraphicsPipeline(setPass.GraphicsPipeline);
@@ -459,6 +456,7 @@ namespace Odyssey
 		{
 			m_SpriteData.Position = spriteDrawcall.Position;
 			m_SpriteData.Scale = spriteDrawcall.Scale * Quad_Size;
+			m_SpriteData.Fill = spriteDrawcall.Fill;
 
 			// Update the sprite ubo
 			Ref<VulkanBuffer> uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_SpriteDataUBO);
@@ -471,8 +469,10 @@ namespace Odyssey
 			m_PushDescriptors->Clear();
 			m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
 			m_PushDescriptors->AddBuffer(m_SpriteDataUBO, 1);
+
 			if (spriteDrawcall.Sprite.IsValid())
 				m_PushDescriptors->AddTexture(spriteDrawcall.Sprite, 2);
+
 			commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);
 
 			// Bind the buffers and draw

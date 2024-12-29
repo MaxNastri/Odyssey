@@ -18,6 +18,7 @@ namespace Odyssey
 		componentNode.WriteData("Type", SpriteRenderer::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Sprite", sprite);
+		componentNode.WriteData("Fill", m_Fill);
 	}
 
 	void SpriteRenderer::Deserialize(SerializationNode& node)
@@ -26,6 +27,7 @@ namespace Odyssey
 
 		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Sprite", sprite.Ref());
+		node.ReadData("Fill", m_Fill);
 
 		if (sprite)
 			SetSprite(sprite);
