@@ -430,10 +430,11 @@ namespace Odyssey
 		descriptorLayout->Apply();
 
 		m_SpriteDataUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(SpriteData));
-		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
-		m_QuadMesh = AssetManager::LoadAsset<Mesh>(Quad_Mesh_GUID);
 
-		//m_ParticleTexture = AssetManager::LoadAsset<Texture2D>(s_ParticleTextureGUID);
+		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
+		m_Shader->AddOnModifiedListener([this]() { OnSpriteShaderModified(); });
+
+		m_QuadMesh = AssetManager::LoadAsset<Mesh>(Quad_Mesh_GUID);
 
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();
@@ -502,5 +503,20 @@ namespace Odyssey
 		texCoord0Desc.offset = offsetof(Vertex, TexCoord0);
 
 		attributeDescriptions.WriteData(descriptions);
+	}
+	void Opaque2DSubPass::OnSpriteShaderModified()
+	{
+		if (m_GraphicsPipeline)
+			ResourceManager::Destroy(m_GraphicsPipeline);
+
+		VulkanPipelineInfo info;
+		info.Shaders = m_Shader->GetResourceMap();
+		info.DescriptorLayout = m_DescriptorLayout;
+		info.BindVertexAttributeDescriptions = true;
+		info.AlphaBlend = false;
+		info.WriteDepth = true;
+		GetAttributeDescriptions(info.AttributeDescriptions);
+
+		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 	}
 }

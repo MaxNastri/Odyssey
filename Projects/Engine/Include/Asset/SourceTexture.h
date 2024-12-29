@@ -3,7 +3,6 @@
 #include "Enums.h"
 #include "TextureImporter.h"
 #include "BinaryBuffer.h"
-#include "FileManager.h"
 
 namespace Odyssey
 {
@@ -13,10 +12,6 @@ namespace Odyssey
 	public:
 		SourceTexture() = default;
 		SourceTexture(const Path& sourcePath);
-		~SourceTexture()
-		{
-			FileManager::Get().UntrackFile(m_TrackingID);
-		}
 
 	public:
 		BinaryBuffer& GetPixelBuffer() { return m_PixelBuffer; }
@@ -26,11 +21,9 @@ namespace Odyssey
 
 	private:
 		void LoadTexture();
-		void OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction);
 
 	private:
 		int32_t m_Width, m_Height, m_Channels;
 		BinaryBuffer m_PixelBuffer;
-		TrackingID m_TrackingID;
 	};
 }

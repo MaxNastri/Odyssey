@@ -124,6 +124,7 @@ namespace Odyssey
 
 	private:
 		void GetAttributeDescriptions(BinaryBuffer& attributeDescriptions);
+		void OnSpriteShaderModified();
 
 	private:
 		Ref<Shader> m_Shader;

@@ -11,10 +11,11 @@ namespace Odyssey
 		m_ShaderLanguage = filename.extension().string().substr(1);
 		Name = filename.replace_extension("").string();
 		ParseShaderFile(sourcePath);
+	}
 
-		FileActionCallback callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction)
-			{ OnFileAction(oldPath, newPath, fileAction); };
-		m_TrackingID = FileManager::Get().TrackFile(sourcePath, callback);
+	void SourceShader::Reload()
+	{
+		ParseShaderFile(m_SourcePath);
 	}
 
 	bool SourceShader::Compile()
@@ -144,15 +145,6 @@ namespace Odyssey
 			}
 
 			m_ShaderCode[shaderParse.ShaderType] = fileContents.substr(start, end);
-		}
-	}
-
-	void SourceShader::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
-	{
-		if (fileAction == FileActionType::Modified)
-		{
-			ParseShaderFile(m_SourcePath);
-			OnSourceModified();
 		}
 	}
 }

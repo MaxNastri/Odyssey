@@ -65,13 +65,13 @@ namespace Odyssey
 
 	void DirectoryListener::handleFileAction(efsw::FileAction& fileAction)
 	{
-		const Path& fullPath = fileAction.Directory / fileAction.Filename;
+		Path fullPath = fileAction.Directory / fileAction.Filename;
 
 		for (FileTracker& fileTracker : FileTrackers)
 		{
 			if (fileTracker.FilePath == fullPath)
 			{
-				if (fileAction.Action == efsw::Action::Add && std::filesystem::file_size(fileAction.Directory / fileAction.Filename) == 0)
+				if (fileAction.Action == efsw::Action::Add && std::filesystem::file_size(fullPath) == 0)
 					continue;
 
 				if (fileTracker.Callback)
@@ -80,7 +80,7 @@ namespace Odyssey
 					// These callbacks are collected and executed on the main thread
 					std::function<void()> pendingCallback = [this, fileAction, fileTracker]()
 						{
-							fileTracker.Callback(fileAction.OldFilename, fileAction.Filename, (FileActionType)fileAction.Action);
+							fileTracker.Callback(fileAction.Directory / fileAction.OldFilename, fileAction.Directory / fileAction.Filename, (FileActionType)fileAction.Action);
 						};
 
 					Lock.Lock(LockState::Write);
