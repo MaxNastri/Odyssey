@@ -321,6 +321,7 @@ namespace Odyssey
 				drawcall.Position = transform.GetPosition();
 				drawcall.Scale = transform.GetScale();
 				drawcall.Fill = spriteRenderer.GetFill();
+				drawcall.BaseColor = spriteRenderer.GetBaseColor();
 
 				if (spriteRenderer.GetSprite())
 					drawcall.Sprite = spriteRenderer.GetSprite()->GetTexture();

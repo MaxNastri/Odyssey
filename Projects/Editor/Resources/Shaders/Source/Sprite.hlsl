@@ -25,6 +25,7 @@ cbuffer SpriteData : register(b1)
 {
     float2 WorldPosition;
     float2 Scale;
+    float4 BaseColor;
     float2 Fill;
 }
 
@@ -47,6 +48,7 @@ cbuffer SpriteDataFS : register(b1)
 {
     float2 WorldPositionFS;
     float2 ScaleFS;
+    float4 BaseColorFS;
     float2 FillFS;
 }
 
@@ -62,10 +64,10 @@ struct FragmentInput
 float4 main(FragmentInput input)
 {
     float4 diffuse = diffuseTex2D.Sample(diffuseSampler, input.TexCoord0);
-    float spriteMask = step(FillFS, input.TexCoord0);
+    float spriteMask = step(FillFS.xy, input.TexCoord0);
 
-    if (spriteMask || diffuse.a < 1.0f)
+    if (spriteMask)
         discard;
     
-    return diffuse;
+    return float4(diffuse.rgb * BaseColorFS.rgb, 1.0f);
 }

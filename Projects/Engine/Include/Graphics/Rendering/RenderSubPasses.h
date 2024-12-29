@@ -134,10 +134,11 @@ namespace Odyssey
 		ResourceID m_SpriteDataUBO;
 
 	private:
-		struct SpriteData
+		struct alignas(16) SpriteData
 		{
 			float2 Position = float2(0.0f);
 			float2 Scale = float2(1.0f);
+			float4 BaseColor = float4(1.0f);
 			float2 Fill = float2(1.0f);
 		};
 		SpriteData m_SpriteData;

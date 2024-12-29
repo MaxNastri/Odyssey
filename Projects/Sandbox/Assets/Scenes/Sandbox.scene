@@ -357,6 +357,8 @@ GameObjects:
       - Type: Odyssey.SpriteRenderer
         Enabled: 1
         Sprite: 379771950876182716
+        Base Color: 'x: 1 y: 0 z: 0 w: 1'
+        Fill: 'x: 0.4 y: 1'
   - Sort Order: 13
     Prefab: 0
     Name: Rune Gate R

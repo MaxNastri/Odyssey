@@ -27,6 +27,7 @@ namespace Odyssey
 		float2 Position;
 		float2 Scale;
 		float2 Fill;
+		float4 BaseColor;
 		ResourceID Sprite;
 	};
 }

@@ -452,10 +452,11 @@ namespace Odyssey
 		auto renderScene = params.renderingData->renderScene;
 		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
-		for (auto& spriteDrawcall : renderScene->SpriteDrawcalls)
+		for (SpriteDrawcall& spriteDrawcall : renderScene->SpriteDrawcalls)
 		{
 			m_SpriteData.Position = spriteDrawcall.Position;
 			m_SpriteData.Scale = spriteDrawcall.Scale * Quad_Size;
+			m_SpriteData.BaseColor = spriteDrawcall.BaseColor;
 			m_SpriteData.Fill = spriteDrawcall.Fill;
 
 			// Update the sprite ubo

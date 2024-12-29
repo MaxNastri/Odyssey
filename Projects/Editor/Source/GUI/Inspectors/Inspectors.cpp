@@ -1435,6 +1435,12 @@ namespace Odyssey
 				if (SpriteRenderer* spriteRenderer = m_GameObject.TryGetComponent<SpriteRenderer>())
 					spriteRenderer->SetFill(m_FillDrawer.GetValue());
 			}
+
+			if (m_BaseColorPicker.Draw())
+			{
+				if (SpriteRenderer* spriteRenderer = m_GameObject.TryGetComponent<SpriteRenderer>())
+					spriteRenderer->SetBaseColor(m_BaseColorPicker.GetColor4());
+			}
 		}
 
 		ImGui::PopID();
@@ -1449,6 +1455,7 @@ namespace Odyssey
 			GUID sprite = spriteRenderer->GetSprite() ? spriteRenderer->GetSprite()->GetGUID() : GUID::Empty();
 			m_SpriteDrawer = AssetFieldDrawer("Sprite", sprite, Texture2D::Type);
 			m_FillDrawer = RangeSlider("Fill", spriteRenderer->GetFill(), float2(0.0f, 1.0f), 0.1f, false);
+			m_BaseColorPicker = ColorPicker("Base Color", spriteRenderer->GetBaseColor());
 		}
 	}
 }

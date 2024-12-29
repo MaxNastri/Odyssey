@@ -18,6 +18,7 @@ namespace Odyssey
 		componentNode.WriteData("Type", SpriteRenderer::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Sprite", sprite);
+		componentNode.WriteData("Base Color", m_BaseColor);
 		componentNode.WriteData("Fill", m_Fill);
 	}
 
@@ -27,6 +28,7 @@ namespace Odyssey
 
 		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Sprite", sprite.Ref());
+		node.ReadData("Base Color", m_BaseColor);
 		node.ReadData("Fill", m_Fill);
 
 		if (sprite)

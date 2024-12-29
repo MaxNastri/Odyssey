@@ -197,6 +197,7 @@ namespace Odyssey
 		GameObject m_GameObject;
 		AssetFieldDrawer m_SpriteDrawer;
 		RangeSlider m_FillDrawer;
+		ColorPicker m_BaseColorPicker;
 		bool m_Enabled;
 	};
 
