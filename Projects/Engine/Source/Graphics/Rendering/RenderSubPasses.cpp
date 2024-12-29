@@ -443,7 +443,7 @@ namespace Odyssey
 		info.DescriptorLayout = m_DescriptorLayout;
 		info.BindVertexAttributeDescriptions = true;
 		info.AlphaBlend = false;
-		info.WriteDepth = false;
+		info.WriteDepth = true;
 		GetAttributeDescriptions(info.AttributeDescriptions);
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
