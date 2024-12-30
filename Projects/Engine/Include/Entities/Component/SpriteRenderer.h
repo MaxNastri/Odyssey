@@ -19,7 +19,7 @@ namespace Odyssey
 	public:
 		void SetEnabled(bool enabled);
 		void SetSprite(GUID guid);
-		void SetFill(float2 fill) { m_Fill = fill; }
+		void SetFill(float2 fill);
 		void SetBaseColor(float4 color) { m_BaseColor = color; }
 
 	public:

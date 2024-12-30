@@ -29,6 +29,8 @@ GameObjects:
         Fields:
           - Name: Speed
             Value: 1.75
+          - Name: SpriteRenderer
+            Value: 15322439001782158818
       - Type: Odyssey.ParticleEmitter
         Enabled: 0
         Duration: 1

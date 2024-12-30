@@ -48,4 +48,8 @@ namespace Odyssey
 		else
 			m_Sprite.Reset();
 	}
+	void SpriteRenderer::SetFill(float2 fill)
+	{
+		m_Fill = glm::clamp(fill, float2(0.0f), float2(1.0f));
+	}
 }
