@@ -323,8 +323,9 @@ namespace Odyssey
 
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
-		glm::mat4 world = renderScene->GetCamera(subPassData.CameraTag)->GetView();
-		glm::mat4 posOnly = glm::translate(glm::mat4(1.0f), glm::vec3(world[3][0], world[3][1], world[3][2]));
+		float3 viewPos = renderScene->GetCamera(subPassData.CameraTag)->GetViewPosition();
+		glm::mat4 posOnly = glm::translate(glm::mat4(1.0f), viewPos);
+
 		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
 		uniformBuffer->CopyData(sizeof(glm::mat4), &posOnly);
 
@@ -424,9 +425,8 @@ namespace Odyssey
 		// Create the descriptor layout
 		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
 		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
-		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		descriptorLayout->AddBinding("Sprite Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
-		descriptorLayout->AddBinding("Particle Texture", DescriptorType::Sampler, ShaderStage::Fragment, 2);
+		descriptorLayout->AddBinding("Sprite Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
+		descriptorLayout->AddBinding("Particle Texture", DescriptorType::Sampler, ShaderStage::Fragment, 1);
 		descriptorLayout->Apply();
 
 		for (size_t i = 0; i < Max_Supported_Sprites; i++)
@@ -452,34 +452,39 @@ namespace Odyssey
 	void Opaque2DSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
 		auto renderScene = params.renderingData->renderScene;
+
 		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		Camera* camera = renderScene->GetCamera(subPassData.CameraTag);
 
 		assert(renderScene->SpriteDrawcalls.size() < Max_Supported_Sprites);
+		assert(camera);
+
+		mat4 orthoProjection = camera->GetScreenSpaceProjection();
 
 		for (size_t i = 0; i < renderScene->SpriteDrawcalls.size(); i++)
 		{
 			SpriteDrawcall& spriteDrawcall = renderScene->SpriteDrawcalls[i];
-			SpriteData& data = m_SpriteDatas[i];
+			SpriteData spriteData = {};
 
-			data.Position = spriteDrawcall.Position;
-			data.Scale = spriteDrawcall.Scale * Quad_Size;
-			data.BaseColor = spriteDrawcall.BaseColor;
-			data.Fill = spriteDrawcall.Fill;
+			// Pack the position and scale into a single float4
+			spriteData.PositionScale = float4(spriteDrawcall.Position, spriteDrawcall.Scale);
+			spriteData.BaseColor = spriteDrawcall.BaseColor;
+			spriteData.Fill = float4(spriteDrawcall.Fill, 0.0f, 0.0f);
+			spriteData.Projection = orthoProjection;
 
 			// Update the sprite ubo
 			Ref<VulkanBuffer> uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_SpriteDataUBO[i]);
-			uniformBuffer->CopyData(sizeof(SpriteData), &data);
+			uniformBuffer->CopyData(sizeof(SpriteData), &spriteData);
 
 			// Set the pipeline
 			commandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
 
 			// Push the descriptors
 			m_PushDescriptors->Clear();
-			m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
-			m_PushDescriptors->AddBuffer(m_SpriteDataUBO[i], 1);
+			m_PushDescriptors->AddBuffer(m_SpriteDataUBO[i], 0);
 
 			if (spriteDrawcall.Sprite.IsValid())
-				m_PushDescriptors->AddTexture(spriteDrawcall.Sprite, 2);
+				m_PushDescriptors->AddTexture(spriteDrawcall.Sprite, 1);
 
 			commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);
 

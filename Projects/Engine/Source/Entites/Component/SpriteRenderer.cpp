@@ -1,6 +1,7 @@
 #include "SpriteRenderer.h"
 #include "AssetManager.h"
 #include "Preferences.h"
+#include "Enum.h"
 
 namespace Odyssey
 {
@@ -21,19 +22,25 @@ namespace Odyssey
 		componentNode.WriteData("Sprite", sprite);
 		componentNode.WriteData("Base Color", m_BaseColor);
 		componentNode.WriteData("Fill", m_Fill);
+		componentNode.WriteData("Anchor Position", Enum::ToString<AnchorPosition>(m_AnchorPoint));
 	}
 
 	void SpriteRenderer::Deserialize(SerializationNode& node)
 	{
 		GUID sprite;
+		std::string anchor;
 
 		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Sprite", sprite.Ref());
 		node.ReadData("Base Color", m_BaseColor);
 		node.ReadData("Fill", m_Fill);
+		node.ReadData("Anchor Position", anchor);
 
 		if (sprite)
 			SetSprite(sprite);
+
+		if (!anchor.empty())
+			m_AnchorPoint = Enum::ToEnum<AnchorPosition>(anchor);
 	}
 
 	void SpriteRenderer::SetEnabled(bool enabled)
@@ -48,6 +55,7 @@ namespace Odyssey
 		else
 			m_Sprite.Reset();
 	}
+
 	void SpriteRenderer::SetFill(float2 fill)
 	{
 		m_Fill = glm::clamp(fill, float2(0.0f), float2(1.0f));

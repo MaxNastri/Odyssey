@@ -204,10 +204,7 @@ namespace Odyssey
 			sceneData.View = camera->GetInverseView();
 			sceneData.Projection = camera->GetProjection();
 			sceneData.ViewProjection = sceneData.Projection * sceneData.View;
-
-			float4 viewPos = camera->GetView()[3];
-			viewPos.w = 1.0f;
-			sceneData.ViewPosition = viewPos;
+			sceneData.ViewPosition = camera->GetViewPosition();
 
 			if (m_ShadowLight)
 				sceneData.LightViewProj = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, m_ShadowLight->GetDirection());

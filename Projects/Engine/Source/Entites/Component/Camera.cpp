@@ -63,6 +63,18 @@ namespace Odyssey
 		return m_View;
 	}
 
+	float4 Camera::GetViewPosition()
+	{
+		float4 viewPos = GetView()[3];
+		viewPos.w = 1.0f;
+		return viewPos;
+	}
+
+	mat4 Camera::GetScreenSpaceProjection()
+	{
+		return glm::ortho(0.0f, m_Width, 0.0f, m_Height, 0.0f, 1.0f);
+	}
+
 	void Camera::SetEnabled(bool enabled)
 	{
 		m_Enabled = enabled;

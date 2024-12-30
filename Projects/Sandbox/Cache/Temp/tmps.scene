@@ -370,14 +370,15 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -0.975 y: -0.35 z: 0'
+        Position: 'x: 155 y: 55 z: 0'
         Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 1.25 y: 0.15 z: 1'
+        Scale: 'x: 150 y: 15 z: 1'
       - Type: Odyssey.SpriteRenderer
         Enabled: 1
         Sprite: 879823474869737113
         Base Color: 'x: 0 y: 1 z: 0 w: 1'
         Fill: 'x: 1 y: 1'
+        Anchor Position: BottomLeft
   - Sort Order: 1
     Prefab: 0
     Name: Mana Bar
@@ -385,14 +386,15 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -0.975 y: -0.385 z: 0'
+        Position: 'x: 155 y: 20 z: 0'
         Rotation: 'x: 0 y: 0 z: 0'
-        Scale: 'x: 1.25 y: 0.15 z: 1'
+        Scale: 'x: 150 y: 15 z: 1'
       - Type: Odyssey.SpriteRenderer
         Enabled: 1
         Sprite: 879823474869737113
         Base Color: 'x: 0 y: 1 z: 1 w: 1'
         Fill: 'x: 1 y: 1'
+        Anchor Position: BottomLeft
   - Sort Order: 13
     Prefab: 0
     Name: Rune Gate R

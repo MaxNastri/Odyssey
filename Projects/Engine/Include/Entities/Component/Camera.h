@@ -33,6 +33,7 @@ namespace Odyssey
 	public:
 		bool IsEnabled() { return m_Enabled; }
 		bool IsMainCamera() { return m_MainCamera; }
+		mat4 GetScreenSpaceProjection();
 
 	public:
 		GameObject& GetGameObject() { return m_GameObject; }
@@ -44,6 +45,7 @@ namespace Odyssey
 		glm::mat4 GetInverseProjection() { return m_InverseProjection; }
 		glm::mat4 GetInverseView();
 		glm::mat4 GetView();
+		float4 GetViewPosition();
 
 	public:
 		void SetMainCamera(bool mainCamera) { m_MainCamera = mainCamera; }

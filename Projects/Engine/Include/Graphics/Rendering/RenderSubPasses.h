@@ -140,17 +140,15 @@ namespace Odyssey
 	private:
 		struct alignas(16) SpriteData
 		{
-			float2 Position = float2(0.0f);
-			float2 Scale = float2(1.0f);
+			float4 PositionScale = float4(0.0f);
 			float4 BaseColor = float4(1.0f);
-			float2 Fill = float2(1.0f);
+			float4 Fill = float4(1.0f);
+			mat4 Projection = mat4(1.0f);
 		};
-		std::array<SpriteData, Max_Supported_Sprites> m_SpriteDatas;
 
 	private:
 		inline static const GUID Shader_GUID = 712863487126392356;
 		inline static const GUID Quad_Mesh_GUID = 4325336624522892848;
-		inline static const float Quad_Size = 0.1f;
 	};
 
 	class Transparent2DSubPass : public RenderSubPass

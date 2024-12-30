@@ -380,7 +380,7 @@ namespace Odyssey
 	{
 		auto subPass = std::make_shared<Opaque2DSubPass>();
 		subPass->Setup();
-		m_SubPasses.insert(m_SubPasses.begin() + 1, subPass);
+		m_SubPasses.push_back(subPass);
 	}
 
 	void ImguiPass::BeginPass(RenderPassParams& params)

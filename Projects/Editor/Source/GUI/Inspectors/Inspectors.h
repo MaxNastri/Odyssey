@@ -202,6 +202,7 @@ namespace Odyssey
 		AssetFieldDrawer m_SpriteDrawer;
 		RangeSlider m_FillDrawer;
 		ColorPicker m_BaseColorPicker;
+		EnumDrawer<SpriteRenderer::AnchorPosition> m_AnchorDrawer;
 		bool m_Enabled;
 	};
 
