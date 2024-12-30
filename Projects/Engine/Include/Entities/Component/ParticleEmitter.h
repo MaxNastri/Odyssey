@@ -78,7 +78,7 @@ namespace Odyssey
 	private:
 		bool m_Enabled;
 		GameObject m_GameObject;
-		bool m_Looping = false;
+		bool m_Looping = true;
 		float m_Duration = 1.0f;
 		uint32_t m_EmissionRate = 100;
 		float m_Radius = 1.0f;

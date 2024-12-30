@@ -33,7 +33,6 @@ namespace Odyssey
 	public:
 		bool IsEnabled() { return m_Enabled; }
 		bool IsMainCamera() { return m_MainCamera; }
-		mat4 GetScreenSpaceProjection();
 
 	public:
 		GameObject& GetGameObject() { return m_GameObject; }
@@ -41,10 +40,15 @@ namespace Odyssey
 		float GetFieldOfView() { return m_FieldOfView; }
 		float GetNearClip() { return m_NearClip; }
 		float GetFarClip() { return m_FarClip; }
-		glm::mat4 GetProjection() { return m_Projection; }
-		glm::mat4 GetInverseProjection() { return m_InverseProjection; }
-		glm::mat4 GetInverseView();
-		glm::mat4 GetView();
+		float GetViewportWidth() { return m_Width; }
+		float GetViewportHeight() { return m_Height; }
+
+	public:
+		mat4 GetProjection() { return m_Projection; }
+		mat4 GetInverseProjection() { return m_InverseProjection; }
+		mat4 GetScreenSpaceProjection();
+		mat4 GetView();
+		mat4 GetInverseView();
 		float4 GetViewPosition();
 
 	public:

@@ -460,14 +460,24 @@ namespace Odyssey
 		assert(camera);
 
 		mat4 orthoProjection = camera->GetScreenSpaceProjection();
+		float width = camera->GetViewportWidth();
+		float height = camera->GetViewportHeight();
 
 		for (size_t i = 0; i < renderScene->SpriteDrawcalls.size(); i++)
 		{
 			SpriteDrawcall& spriteDrawcall = renderScene->SpriteDrawcalls[i];
 			SpriteData spriteData = {};
 
+			float2 anchor = float2(0.0f);
+			if (spriteDrawcall.Anchor == SpriteRenderer::AnchorPosition::BottomRight)
+				anchor.x = width;
+			else if (spriteDrawcall.Anchor == SpriteRenderer::AnchorPosition::TopLeft)
+				anchor.y = height;
+			else if (spriteDrawcall.Anchor == SpriteRenderer::AnchorPosition::TopRight)
+				anchor = float2(width, height);
+			
 			// Pack the position and scale into a single float4
-			spriteData.PositionScale = float4(spriteDrawcall.Position, spriteDrawcall.Scale);
+			spriteData.PositionScale = float4(anchor + spriteDrawcall.Position, spriteDrawcall.Scale);
 			spriteData.BaseColor = spriteDrawcall.BaseColor;
 			spriteData.Fill = float4(spriteDrawcall.Fill, 0.0f, 0.0f);
 			spriteData.Projection = orthoProjection;

@@ -315,6 +315,7 @@ namespace Odyssey
 			if (spriteRenderer.IsEnabled())
 			{
 				SpriteDrawcall& drawcall = SpriteDrawcalls.emplace_back();
+				drawcall.Anchor = spriteRenderer.GetAnchor();
 				drawcall.Position = transform.GetPosition();
 				drawcall.Scale = transform.GetScale();
 				drawcall.Fill = spriteRenderer.GetFill();

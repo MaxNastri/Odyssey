@@ -1,5 +1,6 @@
 #pragma once
 #include "Resource.h"
+#include "SpriteRenderer.h"
 
 namespace Odyssey
 {
@@ -24,6 +25,7 @@ namespace Odyssey
 		SpriteDrawcall() = default;
 
 	public:
+		SpriteRenderer::AnchorPosition Anchor;
 		float2 Position;
 		float2 Scale;
 		float2 Fill;
