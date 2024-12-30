@@ -30,7 +30,7 @@ GameObjects:
           - Name: Speed
             Value: 1.75
           - Name: SpriteRenderer
-            Value: 15322439001782158818
+            Value: 0
       - Type: Odyssey.ParticleEmitter
         Enabled: 0
         Duration: 1
@@ -44,11 +44,6 @@ GameObjects:
         Lifetime: 'x: 1 y: 3'
         Size: 'x: 0.45 y: 0.8'
         Speed: 'x: 2.5 y: 5'
-      - Type: Odyssey.SpriteRenderer
-        Enabled: 1
-        Sprite: 879823474869737113
-        Base Color: 'x: 1 y: 1 z: 1 w: 1'
-        Fill: 'x: 1 y: 1'
   - Sort Order: 1
     Prefab: 0
     Name: Camera
@@ -351,6 +346,53 @@ GameObjects:
         Position: 'x: 18.0082 y: 3.4441497 z: -9.371829'
         Rotation: 'x: -156.55367 y: 32.889973 z: 146.82048'
         Scale: 'x: 4.48806 y: 4.1626496 z: 2.0828729'
+  - Sort Order: 11
+    Prefab: 0
+    Name: Example UI
+    GUID: 15034752785250046219
+    Type: Odyssey.GameObject
+    Components:
+      - m_ScriptID: 1716304757
+        Type: Odyssey.ScriptComponent
+        Fields:
+          - Name: ManaSpeed
+            Value: 1.5
+          - Name: ManaBar
+            Value: 11466837511632542301
+          - Name: HealthSpeed
+            Value: 1
+          - Name: HealthBar
+            Value: 18074110023229524532
+  - Sort Order: 0
+    Prefab: 0
+    Name: Health Bar
+    GUID: 18074110023229524532
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0.975 y: -0.35 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1.25 y: 0.15 z: 1'
+      - Type: Odyssey.SpriteRenderer
+        Enabled: 1
+        Sprite: 879823474869737113
+        Base Color: 'x: 0 y: 1 z: 0 w: 1'
+        Fill: 'x: 1 y: 1'
+  - Sort Order: 1
+    Prefab: 0
+    Name: Mana Bar
+    GUID: 11466837511632542301
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0.975 y: -0.385 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1.25 y: 0.15 z: 1'
+      - Type: Odyssey.SpriteRenderer
+        Enabled: 1
+        Sprite: 879823474869737113
+        Base Color: 'x: 0 y: 1 z: 1 w: 1'
+        Fill: 'x: 1 y: 1'
   - Sort Order: 13
     Prefab: 0
     Name: Rune Gate R
@@ -3076,3 +3118,9 @@ Scene Graph Nodes:
     Parent: 1106467288749509560
   - Entity: 9893354415873056759
     Parent: 0
+  - Entity: 15034752785250046219
+    Parent: 0
+  - Entity: 18074110023229524532
+    Parent: 15034752785250046219
+  - Entity: 11466837511632542301
+    Parent: 15034752785250046219

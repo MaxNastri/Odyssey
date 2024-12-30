@@ -127,12 +127,15 @@ namespace Odyssey
 		void OnSpriteShaderModified();
 
 	private:
+		inline static constexpr size_t Max_Supported_Sprites = 1024;
+
+	private:
 		Ref<Shader> m_Shader;
 		Ref<Mesh> m_QuadMesh;
 		ResourceID m_GraphicsPipeline;
 		ResourceID m_DescriptorLayout;
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
-		ResourceID m_SpriteDataUBO;
+		std::array<ResourceID, Max_Supported_Sprites> m_SpriteDataUBO;
 
 	private:
 		struct alignas(16) SpriteData
@@ -142,7 +145,7 @@ namespace Odyssey
 			float4 BaseColor = float4(1.0f);
 			float2 Fill = float2(1.0f);
 		};
-		SpriteData m_SpriteData;
+		std::array<SpriteData, Max_Supported_Sprites> m_SpriteDatas;
 
 	private:
 		inline static const GUID Shader_GUID = 712863487126392356;

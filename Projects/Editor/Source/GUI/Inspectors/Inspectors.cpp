@@ -6,7 +6,6 @@
 #include "Renderer.h"
 #include "Cubemap.h"
 #include "SceneManager.h"
-#include "EventSystem.h"
 #include "ScriptingManager.h"
 #include "PropertiesComponent.h"
 #include "Events.h"
@@ -325,9 +324,14 @@ namespace Odyssey
 		}
 
 		auto onSceneModified = [this](SceneModifiedEvent* eventData) { OnSceneModified(eventData); };
-		EventSystem::Listen<SceneModifiedEvent>(onSceneModified);
+		m_OnSceneModifiedListener = EventSystem::Listen<SceneModifiedEvent>(onSceneModified);
 
 		CreateInspectors();
+	}
+
+	GameObjectInspector::~GameObjectInspector()
+	{
+		EventSystem::RemoveListener<SceneModifiedEvent>(m_OnSceneModifiedListener);
 	}
 
 	bool GameObjectInspector::Draw()

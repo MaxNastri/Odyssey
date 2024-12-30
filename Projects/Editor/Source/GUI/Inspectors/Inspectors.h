@@ -2,6 +2,7 @@
 #include "GUIElement.h"
 #include "GameObject.h"
 #include "PropertyDrawers.h"
+#include "EventSystem.h"
 
 // Components
 #include "Animator.h"
@@ -28,6 +29,9 @@ namespace Odyssey
 {
 	class Inspector : public GUIElement
 	{
+	public:
+		virtual ~Inspector() = default;
+
 	public:
 		virtual bool Draw() { return false; }
 	};
@@ -229,6 +233,7 @@ namespace Odyssey
 	public:
 		GameObjectInspector() = default;
 		GameObjectInspector(GUID guid);
+		~GameObjectInspector();
 
 	public:
 		virtual bool Draw() override;
@@ -244,6 +249,7 @@ namespace Odyssey
 		std::vector<Ref<Inspector>> m_Inspectors;
 		std::vector<Inspector> userScriptInspectors;
 		StringDrawer m_NameDrawer;
+		Ref<IEventListener> m_OnSceneModifiedListener;
 	};
 
 #pragma endregion

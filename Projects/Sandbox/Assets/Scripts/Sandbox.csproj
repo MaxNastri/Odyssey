@@ -52,6 +52,7 @@
     <Compile Include="Source\Tests\FieldTest.cs" />
     <Compile Include="Source\Tests\MeshRendererTest.cs" />
     <Compile Include="Source\Tests\TransformTest.cs" />
+    <Compile Include="Source\UIManager.cs" />
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>copy /B /Y C:\Git\Odyssey\Projects\Sandbox\Cache\Build\Binaries\net8.0\Sandbox.dll, C:\Git\Odyssey\Projects\Sandbox\Cache\UserAssemblies

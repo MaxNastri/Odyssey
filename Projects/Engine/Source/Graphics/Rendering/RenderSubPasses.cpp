@@ -429,7 +429,8 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Particle Texture", DescriptorType::Sampler, ShaderStage::Fragment, 2);
 		descriptorLayout->Apply();
 
-		m_SpriteDataUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(SpriteData));
+		for (size_t i = 0; i < Max_Supported_Sprites; i++)
+			m_SpriteDataUBO[i] = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(SpriteData));
 
 		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
 		m_Shader->AddOnModifiedListener([this]() { OnSpriteShaderModified(); });
@@ -453,16 +454,21 @@ namespace Odyssey
 		auto renderScene = params.renderingData->renderScene;
 		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
-		for (SpriteDrawcall& spriteDrawcall : renderScene->SpriteDrawcalls)
+		assert(renderScene->SpriteDrawcalls.size() < Max_Supported_Sprites);
+
+		for (size_t i = 0; i < renderScene->SpriteDrawcalls.size(); i++)
 		{
-			m_SpriteData.Position = spriteDrawcall.Position;
-			m_SpriteData.Scale = spriteDrawcall.Scale * Quad_Size;
-			m_SpriteData.BaseColor = spriteDrawcall.BaseColor;
-			m_SpriteData.Fill = spriteDrawcall.Fill;
+			SpriteDrawcall& spriteDrawcall = renderScene->SpriteDrawcalls[i];
+			SpriteData& data = m_SpriteDatas[i];
+
+			data.Position = spriteDrawcall.Position;
+			data.Scale = spriteDrawcall.Scale * Quad_Size;
+			data.BaseColor = spriteDrawcall.BaseColor;
+			data.Fill = spriteDrawcall.Fill;
 
 			// Update the sprite ubo
-			Ref<VulkanBuffer> uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_SpriteDataUBO);
-			uniformBuffer->CopyData(sizeof(SpriteData), &m_SpriteData);
+			Ref<VulkanBuffer> uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_SpriteDataUBO[i]);
+			uniformBuffer->CopyData(sizeof(SpriteData), &data);
 
 			// Set the pipeline
 			commandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
@@ -470,7 +476,7 @@ namespace Odyssey
 			// Push the descriptors
 			m_PushDescriptors->Clear();
 			m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
-			m_PushDescriptors->AddBuffer(m_SpriteDataUBO, 1);
+			m_PushDescriptors->AddBuffer(m_SpriteDataUBO[i], 1);
 
 			if (spriteDrawcall.Sprite.IsValid())
 				m_PushDescriptors->AddTexture(spriteDrawcall.Sprite, 2);
@@ -484,6 +490,7 @@ namespace Odyssey
 			commandBuffer->DrawIndexed(m_QuadMesh->GetIndexCount(), 1, 0, 0, 0);
 		}
 	}
+
 	void Opaque2DSubPass::GetAttributeDescriptions(BinaryBuffer& attributeDescriptions)
 	{
 		std::vector<VkVertexInputAttributeDescription> descriptions;
