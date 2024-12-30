@@ -9,15 +9,29 @@ namespace Sandbox
 
         private Transform m_Transform;
         private Animator m_Animator;
+        private SpriteRenderer m_SpriteRenderer;
+
         protected override void Awake()
         {
             m_Transform = GetComponent<Transform>();
             m_Animator = GetComponent<Animator>();
+            m_SpriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         protected override void Update()
         {
             Vector3 inputDirection = GetInputDirection();
+
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+                m_SpriteRenderer.Fill += new Vector2(1.0f * Time.DeltaTime, 0.0f);
+
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+                m_SpriteRenderer.Fill += new Vector2(-1.0f * Time.DeltaTime, 0.0f);
+
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+                m_SpriteRenderer.BaseColor = Color.Cyan;
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+                m_SpriteRenderer.BaseColor = Color.Green;
 
             if (inputDirection.Length() == 0.0f)
             {

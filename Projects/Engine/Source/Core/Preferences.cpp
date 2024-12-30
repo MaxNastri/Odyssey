@@ -22,6 +22,7 @@ namespace Odyssey
 			root.ReadData("Scene View", m_SceneView);
 			root.ReadData("Startup Project", startupProject);
 			root.ReadData("Editor Registry", registryPath);
+			root.ReadData("Default Sprite", m_DefaultSprite.Ref());
 			root.ReadData("Folder Icon", m_FolderIcon.Ref());
 			root.ReadData("Script Icon", m_ScriptIcon.Ref());
 			root.ReadData("Asset Icon", m_AssetIcon.Ref());
@@ -53,6 +54,7 @@ namespace Odyssey
 		root.WriteData("Scene View", m_SceneView);
 		root.WriteData("Startup Project", m_StartupProject.string());
 		root.WriteData("Editor Registry", m_EditorRegistry.string());
+		root.WriteData("Default Sprite", m_DefaultSprite.CRef());
 		root.WriteData("Folder Icon", m_FolderIcon.CRef());
 		root.WriteData("Script Icon", m_ScriptIcon.CRef());
 		root.WriteData("Asset Icon", m_AssetIcon.CRef());

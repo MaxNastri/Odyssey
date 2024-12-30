@@ -10,6 +10,7 @@
 #include "Mesh.h"
 #include "Animator.h"
 #include "Input.h"
+#include "SpriteRenderer.h"
 
 namespace Odyssey
 {
@@ -270,6 +271,42 @@ namespace Odyssey::InternalCalls
 
 		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
 			renderer->SetMesh(GUID(meshGUID));
+	}
+
+#pragma endregion
+
+#pragma region Sprite Renderer
+
+	void SpriteRenderer_SetFill(uint64_t entityGUID, float2 fill)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (SpriteRenderer* spriteRenderer = gameObject.TryGetComponent<SpriteRenderer>())
+			spriteRenderer->SetFill(fill);
+	}
+
+	void SpriteRenderer_GetFill(uint64_t entityGUID, float2* fill)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (SpriteRenderer* spriteRenderer = gameObject.TryGetComponent<SpriteRenderer>())
+			*fill = spriteRenderer->GetFill();
+	}
+
+	void SpriteRenderer_SetBaseColor(uint64_t entityGUID, float4 color)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (SpriteRenderer* spriteRenderer = gameObject.TryGetComponent<SpriteRenderer>())
+			spriteRenderer->SetBaseColor(color);
+	}
+
+	void SpriteRenderer_GetBaseColor(uint64_t entityGUID, float4* color)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (SpriteRenderer* spriteRenderer = gameObject.TryGetComponent<SpriteRenderer>())
+			*color = spriteRenderer->GetBaseColor();
 	}
 
 #pragma endregion

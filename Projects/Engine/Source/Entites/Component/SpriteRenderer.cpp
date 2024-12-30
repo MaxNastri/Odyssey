@@ -1,12 +1,13 @@
 #include "SpriteRenderer.h"
 #include "AssetManager.h"
+#include "Preferences.h"
 
 namespace Odyssey
 {
 	SpriteRenderer::SpriteRenderer(const GameObject& gameObject)
 		: m_GameObject(gameObject)
 	{
-
+		m_Sprite = AssetManager::LoadAsset<Texture2D>(Preferences::GetDefaultSprite());
 	}
 
 	void SpriteRenderer::Serialize(SerializationNode& node)

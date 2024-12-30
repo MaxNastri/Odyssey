@@ -39,6 +39,7 @@ namespace Odyssey
 		static mat4 GetSceneView() { return s_Instance->m_SceneView; }
 		static const Path& GetStartupProject() { return s_Instance->m_StartupProject; }
 		static const Path& GetEditorRegistry() { return s_Instance->m_EditorRegistry; }
+		static const GUID& GetDefaultSprite() { return s_Instance->m_DefaultSprite; }
 		static const GUID& GetFolderIcon() { return s_Instance->m_FolderIcon; }
 		static const GUID& GetScriptIcon() { return s_Instance->m_ScriptIcon; }
 		static const GUID& GetMaterialIcon() { return s_Instance->m_MaterialIcon; }
@@ -78,5 +79,8 @@ namespace Odyssey
 
 	private: // Debug
 		uint64_t m_DebugRendererVertices;
+
+	private: // Default assets
+		GUID m_DefaultSprite;
 	};
 }

@@ -17,6 +17,7 @@ namespace Odyssey
 		RegisterComponentType<MeshRenderer>(frameworkAssembly, MeshRenderer::Type);
 		RegisterComponentType<Transform>(frameworkAssembly, Transform::Type);
 		RegisterComponentType<ScriptComponent>(frameworkAssembly, ScriptComponent::Type);
+		RegisterComponentType<SpriteRenderer>(frameworkAssembly, SpriteRenderer::Type);
 
 		ADD_INTERNAL_CALL(Animator_IsEnabled);
 		ADD_INTERNAL_CALL(Animator_SetFloat);
@@ -39,6 +40,11 @@ namespace Odyssey
 
 		ADD_INTERNAL_CALL(MeshRenderer_GetMesh);
 		ADD_INTERNAL_CALL(MeshRenderer_SetMesh);
+
+		ADD_INTERNAL_CALL(SpriteRenderer_GetFill);
+		ADD_INTERNAL_CALL(SpriteRenderer_SetFill);
+		ADD_INTERNAL_CALL(SpriteRenderer_GetBaseColor);
+		ADD_INTERNAL_CALL(SpriteRenderer_SetBaseColor);
 
 		ADD_INTERNAL_CALL(Input_GetKeyPress);
 		ADD_INTERNAL_CALL(Input_GetKeyDown);

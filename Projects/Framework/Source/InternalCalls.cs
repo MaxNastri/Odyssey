@@ -60,6 +60,14 @@ namespace Odyssey
         internal static delegate* unmanaged<GUID, GUID, void> MeshRenderer_SetMesh;
         #endregion
 
+        #region Sprite Renderer
+
+        internal static delegate* unmanaged<GUID, Vector2*, void> SpriteRenderer_GetFill;
+        internal static delegate* unmanaged<GUID, Vector2, void> SpriteRenderer_SetFill;
+        internal static delegate* unmanaged<GUID, Color*, void> SpriteRenderer_GetBaseColor;
+        internal static delegate* unmanaged<GUID, Color, void> SpriteRenderer_SetBaseColor;
+        
+        #endregion
         #region Input
 
         internal static delegate* unmanaged<KeyCode, bool> Input_GetKeyPress;
@@ -77,6 +85,7 @@ namespace Odyssey
         internal static delegate* unmanaged<float> Time_GetDeltaTime;
 
         #endregion
+
 #pragma warning restore CS0649
     }
 }
