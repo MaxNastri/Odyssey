@@ -50,4 +50,16 @@ namespace Odyssey
 
 		Scene* loadedScene;
 	};
+
+	struct SceneModifiedEvent : public Event
+	{
+	public:
+		SceneModifiedEvent(Scene* scene)
+		{
+			Scene = scene;
+		}
+
+	public:
+		Scene* Scene;
+	};
 }

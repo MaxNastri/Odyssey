@@ -114,7 +114,7 @@ namespace Odyssey
 		// TODO: Convert this to be dynamically set based on config/per material
 		rasterizer.cullMode = ConvertCullMode(info.CullMode);
 		rasterizer.frontFace = info.FrontCCW ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE;
-		rasterizer.depthBiasEnable = VK_TRUE;
+		rasterizer.depthBiasEnable = info.IsShadow ? VK_TRUE : VK_FALSE;
 
 		// MSAA
 		VkPipelineMultisampleStateCreateInfo multisampling{};

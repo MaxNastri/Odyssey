@@ -1,5 +1,6 @@
 #pragma once
 #include "Resource.h"
+#include "SpriteRenderer.h"
 
 namespace Odyssey
 {
@@ -16,5 +17,19 @@ namespace Odyssey
 		uint32_t IndexCount;
 		uint32_t UniformBufferIndex;
 		bool Skinned = false;
+	};
+
+	struct SpriteDrawcall
+	{
+	public:
+		SpriteDrawcall() = default;
+
+	public:
+		SpriteRenderer::AnchorPosition Anchor;
+		float2 Position;
+		float2 Scale;
+		float2 Fill;
+		float4 BaseColor;
+		ResourceID Sprite;
 	};
 }

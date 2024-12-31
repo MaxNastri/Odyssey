@@ -4,8 +4,8 @@
 #include "VulkanPhysicalDevice.h"
 #include "VulkanSurface.h"
 #include "VulkanImage.h"
-#include "VulkanRenderTexture.h"
 #include "ResourceManager.h"
+#include "RenderTarget.h"
 
 namespace Odyssey
 {
@@ -116,7 +116,7 @@ namespace Odyssey
         for (uint16_t i = 0; i < backbuffers.size(); ++i)
         {
             auto image = ResourceManager::Allocate<VulkanImage>(backbufferImages[i], m_Width, m_Height, 4, format);
-            backbuffers[i] = ResourceManager::Allocate<VulkanRenderTexture>(image, GetTextureFormat(format));
+            backbuffers[i] = ResourceManager::Allocate<RenderTarget>(image, GetTextureFormat(format), RenderTargetFlags::Color);
         }
     }
 

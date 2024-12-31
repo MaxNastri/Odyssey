@@ -8,6 +8,7 @@
 #include "Animator.h"
 #include "Light.h"
 #include "ParticleEmitter.h"
+#include "SpriteRenderer.h"
 
 namespace Odyssey
 {
@@ -21,6 +22,11 @@ namespace Odyssey
 	{
 		m_Entity = (entt::entity)id;
 		m_Scene = scene;
+	}
+
+	bool GameObject::IsValid()
+	{
+		return m_Scene && m_Scene->m_Registry.valid(m_Entity);
 	}
 
 	void GameObject::Serialize(SerializationNode& gameObjectNode)
@@ -53,6 +59,9 @@ namespace Odyssey
 
 		if (ParticleEmitter* particleSystem = TryGetComponent<ParticleEmitter>())
 			particleSystem->Serialize(componentsNode);
+
+		if (SpriteRenderer* spriteRenderer = TryGetComponent<SpriteRenderer>())
+			spriteRenderer->Serialize(componentsNode);
 	}
 
 	void GameObject::Deserialize(SerializationNode& node)
@@ -106,6 +115,11 @@ namespace Odyssey
 			{
 				ParticleEmitter& particleSystem = AddComponent<ParticleEmitter>();
 				particleSystem.Deserialize(componentNode);
+			}
+			else if (componentType == SpriteRenderer::Type)
+			{
+				SpriteRenderer& spriteRenderer = AddComponent<SpriteRenderer>();
+				spriteRenderer.Deserialize(componentNode);
 			}
 		}
 	}

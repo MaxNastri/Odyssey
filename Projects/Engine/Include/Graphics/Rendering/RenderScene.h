@@ -21,6 +21,7 @@ namespace Odyssey
 	{
 		glm::vec4 ViewPosition;
 		mat4 View;
+		mat4 Projection;
 		glm::mat4 ViewProjection;
 		glm::mat4 LightViewProj;
 	};
@@ -108,7 +109,10 @@ namespace Odyssey
 		void ConvertScene(Scene* scene);
 		void ClearSceneData();
 
-		uint32_t SetSceneData(Camera* camera);
+		uint32_t SetSceneData(uint8_t cameraTag);
+
+	public:
+		Camera* GetCamera(uint8_t cameraTag);
 		bool HasMainCamera() { return m_MainCamera != nullptr; }
 
 	private:
@@ -118,8 +122,11 @@ namespace Odyssey
 		// Scene objects
 		Camera* m_MainCamera = nullptr;
 		Light* m_ShadowLight = nullptr;
+
+		std::map<uint8_t, Camera*> m_Cameras;
 		ResourceID SkyboxCubemap;
 		std::vector<SetPass> setPasses;
+		std::vector<SpriteDrawcall> SpriteDrawcalls;
 		std::map<GUID, size_t> m_GUIDToSetPass;
 
 		std::vector<GUID> ParticleEmitters;

@@ -8,7 +8,8 @@
 #include "RenderPasses.h"
 #include "ResourceManager.h"
 #include "Scene.h"
-#include "VulkanRenderTexture.h"
+#include "RenderTarget.h"
+#include "VulkanTextureSampler.h"
 
 namespace Odyssey
 {
@@ -18,7 +19,9 @@ namespace Odyssey
 	{
 		// Rendering stuff
 		m_GameViewPass = new OpaquePass();
+		m_GameViewPass->SetCamera((uint8_t)Camera::Tag::Main);
 		m_GameViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		m_GameViewPass->Add2DSubPass();
 		Renderer::PushRenderPass(m_GameViewPass);
 
 		CreateRenderTexture();
@@ -47,8 +50,7 @@ namespace Odyssey
 
 		// Display the RT as an Imgui image
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
-		m_GameViewPass->SetColorRenderTexture(m_ColorRT);
-		m_GameViewPass->SetDepthRenderTexture(m_DepthRT);
+		m_GameViewPass->SetRenderTarget(m_RenderTarget);
 
 		End();
 		return modified;
@@ -81,6 +83,7 @@ namespace Odyssey
 			{
 				m_MainCamera = gameObject;
 				camera.SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+				camera.SetTag(Camera::Tag::Main);
 			}
 		}
 	}
@@ -88,18 +91,21 @@ namespace Odyssey
 	void GameViewWindow::CreateRenderTexture()
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
-		m_ColorRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
-		m_DepthRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
+
+		VulkanImageDescription desc;
+		desc.ImageType = ImageType::RenderTexture;
+		desc.Width = (uint32_t)m_WindowSize.x;
+		desc.Height = (uint32_t)m_WindowSize.y;
+
+		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(desc, RenderTargetFlags::Color | RenderTargetFlags::Depth);
 		m_RTSampler = ResourceManager::Allocate<VulkanTextureSampler>();
-		m_RenderTextureID = Renderer::AddImguiRenderTexture(m_ColorRT, m_RTSampler);
+		m_RenderTextureID = Renderer::AddImguiRenderTexture(m_RenderTarget, m_RTSampler);
 	}
 
 	void GameViewWindow::DestroyRenderTexture()
 	{
-		if (m_ColorRT)
-			ResourceManager::Destroy(m_ColorRT);
-		if (m_DepthRT)
-			ResourceManager::Destroy(m_DepthRT);
+		if (m_RenderTarget)
+			ResourceManager::Destroy(m_RenderTarget);
 		if (m_RTSampler)
 			ResourceManager::Destroy(m_RTSampler);
 

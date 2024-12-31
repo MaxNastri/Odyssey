@@ -12,12 +12,9 @@ namespace Odyssey
 	public:
 		SourceShader() = default;
 		SourceShader(const Path& sourcePath);
-		~SourceShader()
-		{
-			FileManager::Get().UntrackFile(m_TrackingID);
-		}
 
 	public:
+		void Reload();
 		bool Compile();
 		bool Compile(ShaderType shaderType, BinaryBuffer& codeBuffer);
 
@@ -29,7 +26,6 @@ namespace Odyssey
 	private:
 		void ParseShaderFile(const Path& path);
 		void ParseShaderCode(const std::string& fileContents);
-		void OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction);
 
 	private:
 		std::string m_ShaderName;

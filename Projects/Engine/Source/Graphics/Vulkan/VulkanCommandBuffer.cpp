@@ -8,7 +8,6 @@
 #include "VulkanBuffer.h"
 #include "VulkanImage.h"
 #include "ResourceManager.h"
-#include "VulkanRenderTexture.h"
 #include "VulkanDescriptorLayout.h"
 #include "VulkanPushDescriptors.h"
 
@@ -169,7 +168,7 @@ namespace Odyssey
 		VkPipelineStageFlags srcStage;
 		VkPipelineStageFlags dstStage;
 
-		auto image = ResourceManager::GetResource<VulkanImage>(imageID);
+		Ref<VulkanImage> image = ResourceManager::GetResource<VulkanImage>(imageID);
 
 		if (image->GetLayout() != newLayout)
 		{

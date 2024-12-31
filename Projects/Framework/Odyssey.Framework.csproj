@@ -51,14 +51,18 @@
     <Compile Include="Source\Components\Component.cs" />
     <Compile Include="Source\Components\MeshRenderer.cs" />
     <Compile Include="Source\Components\ScriptComponent.cs" />
+    <Compile Include="Source\Components\SpriteRenderer.cs" />
     <Compile Include="Source\Components\Transform.cs" />
     <Compile Include="Source\Entity.cs" />
+    <Compile Include="Source\Graphics\Texture2D.cs" />
     <Compile Include="Source\GUID.cs" />
     <Compile Include="Source\Graphics\Mesh.cs" />
     <Compile Include="Source\Input\Input.cs" />
     <Compile Include="Source\InternalCalls.cs" />
+    <Compile Include="Source\Math\Color.cs" />
     <Compile Include="Source\Math\Vector2.cs" />
     <Compile Include="Source\Math\Vector3.cs" />
+    <Compile Include="Source\Math\Vector4.cs" />
     <Compile Include="Source\Object.cs" />
     <Compile Include="Source\Time.cs" />
   </ItemGroup>

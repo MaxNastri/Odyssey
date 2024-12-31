@@ -12,7 +12,6 @@ namespace Odyssey
 	class VulkanDevice;
 	class VulkanContext;
 	class GUIElement;
-	class VulkanRenderTexture;
 	class VulkanTextureSampler;
 	class VulkanCommandBuffer;
 

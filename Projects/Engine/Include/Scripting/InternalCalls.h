@@ -10,6 +10,7 @@
 #include "Mesh.h"
 #include "Animator.h"
 #include "Input.h"
+#include "SpriteRenderer.h"
 
 namespace Odyssey
 {
@@ -238,6 +239,22 @@ namespace Odyssey::InternalCalls
 			transform->SetScale(scale);
 	}
 
+	void Transform_GetForward(uint64_t guid, glm::vec3* forward)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (Transform* transform = gameObject.TryGetComponent<Transform>())
+			*forward = transform->Forward();
+	}
+
+	void Transform_GetRight(uint64_t guid, glm::vec3* right)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (Transform* transform = gameObject.TryGetComponent<Transform>())
+			*right = transform->Right();
+	}
+
 #pragma endregion
 
 #pragma region Mesh
@@ -248,6 +265,28 @@ namespace Odyssey::InternalCalls
 			return mesh->GetVertexCount();
 
 		return 0;
+	}
+
+#pragma endregion
+
+#pragma region Texture2D
+
+	void Texture2D_GetWidth(uint64_t guid, uint32_t* value)
+	{
+		if (Ref<Texture2D> texture = AssetManager::LoadAsset<Texture2D>(GUID(guid)))
+			*value = texture->GetWidth();
+	}
+
+	void Texture2D_GetHeight(uint64_t guid, uint32_t* value)
+	{
+		if (Ref<Texture2D> texture = AssetManager::LoadAsset<Texture2D>(GUID(guid)))
+			*value = texture->GetHeight();
+	}
+
+	void Texture2D_GetMipMapsEnabled(uint64_t guid, Coral::Bool32* value)
+	{
+		if (Ref<Texture2D> texture = AssetManager::LoadAsset<Texture2D>(GUID(guid)))
+			*value = texture->GetMipMapsEnabled();
 	}
 
 #pragma endregion
@@ -270,6 +309,59 @@ namespace Odyssey::InternalCalls
 
 		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
 			renderer->SetMesh(GUID(meshGUID));
+	}
+
+#pragma endregion
+
+#pragma region Sprite Renderer
+
+	void SpriteRenderer_SetFill(uint64_t entityGUID, float2 fill)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (SpriteRenderer* spriteRenderer = gameObject.TryGetComponent<SpriteRenderer>())
+			spriteRenderer->SetFill(fill);
+	}
+
+	void SpriteRenderer_GetFill(uint64_t entityGUID, float2* fill)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (SpriteRenderer* spriteRenderer = gameObject.TryGetComponent<SpriteRenderer>())
+			*fill = spriteRenderer->GetFill();
+	}
+
+	void SpriteRenderer_SetBaseColor(uint64_t entityGUID, float4 color)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (SpriteRenderer* spriteRenderer = gameObject.TryGetComponent<SpriteRenderer>())
+			spriteRenderer->SetBaseColor(color);
+	}
+
+	void SpriteRenderer_GetBaseColor(uint64_t entityGUID, float4* color)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (SpriteRenderer* spriteRenderer = gameObject.TryGetComponent<SpriteRenderer>())
+			*color = spriteRenderer->GetBaseColor();
+	}
+
+	void SpriteRenderer_GetSprite(uint64_t entityGUID, uint64_t* spriteGUID)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (SpriteRenderer* spriteRenderer = gameObject.TryGetComponent<SpriteRenderer>())
+			if (Ref<Texture2D> sprite = spriteRenderer->GetSprite())
+				*spriteGUID = sprite->GetGUID();
+	}
+
+	void SpriteRenderer_SetSprite(uint64_t entityGUID, uint64_t spriteGUID)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (SpriteRenderer* spriteRenderer = gameObject.TryGetComponent<SpriteRenderer>())
+			spriteRenderer->SetSprite(spriteGUID);
 	}
 
 #pragma endregion

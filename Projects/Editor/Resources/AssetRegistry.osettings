@@ -26,11 +26,19 @@ Entries:
   - Name: Plane
     Type: Odyssey.SourceModel
     Path: Meshes/Source/Plane.glb
-    GUID: 21283897786241326734
+    GUID: 2837153712531775118
   - Name: Plane
     Type: Odyssey.Mesh
     Path: Meshes/Plane.mesh
     GUID: 3098132783127681236
+  - Name: Quad
+    Type: Odyssey.SourceModel
+    Path: Meshes/Source/Quad.fbx
+    GUID: 17688292389720890447
+  - Name: Quad
+    Type: Odyssey.Mesh
+    Path: Meshes/Quad.mesh
+    GUID: 4325336624522892848
   - Name: Particle Render
     Type: Odyssey.Shader
     Path: Shaders/ParticleRender.shader
@@ -142,4 +150,12 @@ Entries:
   - Name: White
     Type: Odyssey.SourceTexture
     Path: Textures/Source/White.png
-    GUID: 046283651452984366
+    GUID: 46283651452984366
+  - Name: Sprite Shader
+    Type: Odyssey.Shader
+    Path: Shaders/Sprite.shader
+    GUID: 712863487126392356
+  - Name: Sprite Shader
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Sprite.hlsl
+    GUID: 203948423675871234

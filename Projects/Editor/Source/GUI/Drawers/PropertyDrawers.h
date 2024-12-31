@@ -213,6 +213,7 @@ namespace Odyssey
 		virtual bool Draw() override;
 
 	public:
+		void SetValue(float value) { m_Value = value; }
 		float GetValue() { return m_Value; }
 
 	private:
@@ -309,16 +310,21 @@ namespace Odyssey
 	{
 	public:
 		RangeSlider() = default;
-		RangeSlider(const std::string& label, float2 range, float2 limits, float step, std::function<void(float2)> callback = nullptr);
+		RangeSlider(const std::string& label, float2 range, float2 limits, float step, bool drawMinMaxLabels = true, std::function<void(float2)> callback = nullptr);
 
 	public:
 		virtual bool Draw() override;
+
+	public:
+		float2 GetValue() { return m_Range; }
 
 	private:
 		float2 m_Range = float2(0.0f);
 		float2 m_Limits = float2(0.0f);
 		float m_Step = 0.1f;
 		std::function<void(float2)> m_OnValueModifed;
+		std::string m_MinLabel;
+		std::string m_MaxLabel;
 	};
 
 	class StringDrawer : public PropertyDrawer

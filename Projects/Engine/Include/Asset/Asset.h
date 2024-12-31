@@ -2,6 +2,7 @@
 #include "AssetSerializer.h"
 #include "GUID.h"
 #include "Ref.h"
+#include "FileManager.h"
 
 namespace Odyssey
 {
@@ -10,6 +11,7 @@ namespace Odyssey
 	public:
 		SourceAsset() = default;
 		SourceAsset(const Path& sourcePath);
+		~SourceAsset();
 
 	public:
 		void AddOnModifiedListener(std::function<void()> onSourceModified) { m_OnSourceModified.push_back(onSourceModified); }
@@ -32,14 +34,17 @@ namespace Odyssey
 		std::string Name;
 		std::string Type;
 
-	protected:
-		void OnSourceModified();
+	private:
+		void OnSourceModified(const Path& oldPath, const Path& newPath, FileActionType fileAction);
 
 	protected: // Serialized
 		std::string m_SourceAsset;
 		std::string m_SourceExtension;
 		Path m_SourcePath;
 		std::vector<std::function<void()>> m_OnSourceModified;
+
+	private:
+		TrackingID m_TrackingID;
 	};
 
 	class Asset

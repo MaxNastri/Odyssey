@@ -1,18 +1,10 @@
 #include "EditorEvents.h"
 #include "Events.h"
 #include "EventSystem.h"
-#include "GameObjectInspector.h"
 #include "GUIManager.h"
 #include "imgui.h"
 #include "InspectorWindow.h"
-#include "MaterialInspector.h"
-#include "MeshInspector.h"
-#include "MeshRendererInspector.h"
-#include "ShaderInspector.h"
-#include "SourceModelInspector.h"
-#include "SourceShaderInspector.h"
-#include "SourceTextureInspector.h"
-#include "Texture2DInspector.h"
+#include "Inspectors.h"
 
 namespace Odyssey
 {

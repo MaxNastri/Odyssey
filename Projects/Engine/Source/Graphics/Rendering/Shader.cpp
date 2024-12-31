@@ -125,6 +125,12 @@ namespace Odyssey
 	void Shader::OnSourceModified()
 	{
 		if (m_Source)
+		{
+			m_Source->Reload();
 			LoadFromSource(m_Source);
+
+			for (std::function<void()> callback : m_OnModifiedListeners)
+				callback();
+		}
 	}
 }

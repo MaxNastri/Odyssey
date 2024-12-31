@@ -3,7 +3,7 @@ GUID: 6049963977740777600
 Skybox: 16662637833593679810
 Ambient Color: 'x: 0.13523132 y: 0.13523132 z: 0.13523132'
 Scene Center: 'x: 0 y: 0 z: 0'
-Scene Radius: 20
+Scene Radius: 15
 GameObjects:
   - Sort Order: 0
     Prefab: 0
@@ -12,18 +12,23 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Animator
-        Animation Rig: 13775651864520599129
+        Animation Rig: 10793032812295863475
         Animation Blueprint: 9242731602216417912
       - Type: Odyssey.MeshRenderer
         Enabled: 1
-        Mesh: 13511586946249507819
+        Mesh: 16431782286058366551
         Materials:
           - 942766181068811557
           - 942766181068811557
       - Type: Odyssey.Transform
-        Position: 'x: -1.2066789 y: 1.1086733 z: -16.072493'
+        Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 0 y: -90 z: 0'
         Scale: 'x: 2 y: 2 z: 2'
+      - m_ScriptID: 2708052967
+        Type: Odyssey.ScriptComponent
+        Fields:
+          - Name: Speed
+            Value: 1.75
       - Type: Odyssey.ParticleEmitter
         Enabled: 0
         Duration: 1
@@ -37,7 +42,7 @@ GameObjects:
         Lifetime: 'x: 1 y: 3'
         Size: 'x: 0.45 y: 0.8'
         Speed: 'x: 2.5 y: 5'
-  - Sort Order: 1
+  - Sort Order: 0
     Prefab: 0
     Name: Camera
     GUID: 1278710421845013511
@@ -45,19 +50,20 @@ GameObjects:
     Components:
       - Type: Odyssey.Camera
         Enabled: 1
+        Tag: Main
         Field of View: 45
         Near Clip: 0.1
         Far Clip: 1000
         Main Camera: 1
       - Type: Odyssey.Transform
-        Position: 'x: -1 y: 2 z: -2'
-        Rotation: 'x: 45 y: 45 z: 0'
+        Position: 'x: 0 y: 1 z: -2'
+        Rotation: 'x: 15 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - m_ScriptID: 2015860154
         Type: Odyssey.ScriptComponent
         Fields:
           - Name: Target
-            Value: 15322439001782158818
+            Value: 0
           - Name: ScaleDirection
             Value: 'x: 0.001 y: 0.001 z: 0.001'
           - Name: PosDirection
@@ -104,6 +110,21 @@ GameObjects:
         Position: 'x: -14.752569 y: -0.65684116 z: -7.1479607'
         Rotation: 'x: -90.00002 y: 90 z: 1.3672792e-05'
         Scale: 'x: 0.9345321 y: 0.9316467 z: 0.7597751'
+      - m_ScriptID: 116277182
+        Type: Odyssey.ScriptComponent
+        Fields:
+          - Name: RightDoor
+            Value: 2210150299556282946
+          - Name: LeftDoor
+            Value: 7170771395364442661
+          - Name: OpenRadius
+            Value: 3
+          - Name: OpenDistance
+            Value: 0.5
+          - Name: OpenSpeed
+            Value: 0.5
+          - Name: Target
+            Value: 15322439001782158818
   - Sort Order: 1
     Prefab: 0
     Name: Frame Decal
@@ -121,7 +142,7 @@ GameObjects:
         Scale: 'x: 0.92960393 y: 0.7948602 z: 0.96813506'
   - Sort Order: 2
     Prefab: 0
-    Name: Right Wing
+    Name: Right Wing L
     GUID: 2210150299556282946
     Type: Odyssey.GameObject
     Components:
@@ -134,9 +155,24 @@ GameObjects:
         Position: 'x: -14.847408 y: 2.3037639 z: -6.576218'
         Rotation: 'x: -90 y: -90 z: 0'
         Scale: 'x: 0.55599993 y: 0.5452994 z: 0.47530174'
+  - Sort Order: 0
+    Prefab: 0
+    Name: Face Decal R
+    GUID: 6934932188601506167
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 11907695015326494159
+        Materials:
+          - 16157047713997452460
+      - Type: Odyssey.Transform
+        Position: 'x: -0.2 y: 0.25 z: -1.75'
+        Rotation: 'x: -90 y: 180 z: 0'
+        Scale: 'x: 1.5 y: 1.5 z: 0.8'
   - Sort Order: 3
     Prefab: 0
-    Name: Left Wing
+    Name: Left Wing L
     GUID: 7170771395364442661
     Type: Odyssey.GameObject
     Components:
@@ -149,7 +185,7 @@ GameObjects:
         Position: 'x: -14.847408 y: 2.3037639 z: -7.6586995'
         Rotation: 'x: -90 y: 90 z: 0'
         Scale: 'x: 0.55599993 y: 0.5452994 z: 0.47530174'
-  - Sort Order: 4
+  - Sort Order: 0
     Prefab: 0
     Name: Face Decal L
     GUID: 14723231309858642763
@@ -161,24 +197,9 @@ GameObjects:
         Materials:
           - 16157047713997452460
       - Type: Odyssey.Transform
-        Position: 'x: -14.718138 y: 1.65 z: -7.48156'
-        Rotation: 'x: 0 y: 90 z: 0'
-        Scale: 'x: 0.7 y: 0.7 z: 0.8'
-  - Sort Order: 5
-    Prefab: 0
-    Name: Face Decal R
-    GUID: 6934932188601506167
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.MeshRenderer
-        Enabled: 1
-        Mesh: 11907695015326494159
-        Materials:
-          - 16157047713997452460
-      - Type: Odyssey.Transform
-        Position: 'x: -14.718138 y: 1.65 z: -6.7588153'
-        Rotation: 'x: 0 y: 90 z: 0'
-        Scale: 'x: 0.7 y: 0.7 z: 0.8'
+        Position: 'x: -0.2 y: -0.25 z: -1.75'
+        Rotation: 'x: 90 y: 0 z: 0'
+        Scale: 'x: 1.5 y: 1.5 z: 0.8'
   - Sort Order: 6
     Prefab: 0
     Name: Light
@@ -321,6 +342,56 @@ GameObjects:
         Position: 'x: 18.0082 y: 3.4441497 z: -9.371829'
         Rotation: 'x: -156.55367 y: 32.889973 z: 146.82048'
         Scale: 'x: 4.48806 y: 4.1626496 z: 2.0828729'
+  - Sort Order: 11
+    Prefab: 0
+    Name: Example UI
+    GUID: 15034752785250046219
+    Type: Odyssey.GameObject
+    Components:
+      - m_ScriptID: 1716304757
+        Type: Odyssey.ScriptComponent
+        Fields:
+          - Name: ManaSpeed
+            Value: 1.5
+          - Name: Texture
+          - Name: ManaBar
+            Value: 11466837511632542301
+          - Name: HealthSpeed
+            Value: 1
+          - Name: HealthBar
+            Value: 18074110023229524532
+  - Sort Order: 0
+    Prefab: 0
+    Name: Health Bar
+    GUID: 18074110023229524532
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 155 y: 55 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 150 y: 15 z: 1'
+      - Type: Odyssey.SpriteRenderer
+        Enabled: 1
+        Sprite: 879823474869737113
+        Base Color: 'x: 0 y: 1 z: 0 w: 1'
+        Fill: 'x: 1 y: 1'
+        Anchor Position: BottomLeft
+  - Sort Order: 1
+    Prefab: 0
+    Name: Mana Bar
+    GUID: 11466837511632542301
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 155 y: 20 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 150 y: 15 z: 1'
+      - Type: Odyssey.SpriteRenderer
+        Enabled: 1
+        Sprite: 879823474869737113
+        Base Color: 'x: 0 y: 1 z: 1 w: 1'
+        Fill: 'x: 1 y: 1'
+        Anchor Position: BottomLeft
   - Sort Order: 13
     Prefab: 0
     Name: Rune Gate R
@@ -2677,7 +2748,7 @@ Scene Graph Nodes:
   - Entity: 15322439001782158818
     Parent: 0
   - Entity: 1278710421845013511
-    Parent: 0
+    Parent: 15322439001782158818
   - Entity: 1496534082370822112
     Parent: 0
   - Entity: 2990089284477457130
@@ -2881,9 +2952,9 @@ Scene Graph Nodes:
   - Entity: 7170771395364442661
     Parent: 5861699021464848534
   - Entity: 14723231309858642763
-    Parent: 5861699021464848534
+    Parent: 7170771395364442661
   - Entity: 6934932188601506167
-    Parent: 5861699021464848534
+    Parent: 2210150299556282946
   - Entity: 2890828273094723428
     Parent: 5861699021464848534
   - Entity: 1099346680714202200
@@ -3044,3 +3115,9 @@ Scene Graph Nodes:
     Parent: 16354495985923726420
   - Entity: 11819970241144821785
     Parent: 1106467288749509560
+  - Entity: 15034752785250046219
+    Parent: 0
+  - Entity: 18074110023229524532
+    Parent: 15034752785250046219
+  - Entity: 11466837511632542301
+    Parent: 15034752785250046219

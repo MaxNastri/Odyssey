@@ -153,9 +153,6 @@ namespace Odyssey
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 		auto renderScene = params.renderingData->renderScene;
 
-		// Set our depth bias values back to 0
-		commandBuffer->SetDepthBias(0.0f, 0.0f, 0.0f);
-
 		for (auto& setPass : params.renderingData->renderScene->setPasses)
 		{
 			commandBuffer->BindGraphicsPipeline(setPass.GraphicsPipeline);
@@ -187,7 +184,7 @@ namespace Odyssey
 
 				// Shadowmap binds to the fragment shader register 7
 				if (params.Shadowmap.IsValid())
-					m_PushDescriptors->AddRenderTexture(params.Shadowmap, 7);
+					m_PushDescriptors->AddTexture(params.Shadowmap, 7);
 				else
 					m_PushDescriptors->AddTexture(m_WhiteTextureID, 7);
 
@@ -322,12 +319,13 @@ namespace Odyssey
 		auto renderScene = params.renderingData->renderScene;
 
 		if (!renderScene->SkyboxCubemap.IsValid())
-			return;
+			return; 
 
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
-		glm::mat4 world = subPassData.Camera->GetView();
-		glm::mat4 posOnly = glm::translate(glm::mat4(1.0f), glm::vec3(world[3][0], world[3][1], world[3][2]));
+		float3 viewPos = renderScene->GetCamera(subPassData.CameraTag)->GetViewPosition();
+		glm::mat4 posOnly = glm::translate(glm::mat4(1.0f), viewPos);
+
 		auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
 		uniformBuffer->CopyData(sizeof(glm::mat4), &posOnly);
 
@@ -391,7 +389,7 @@ namespace Odyssey
 	void ParticleSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
 		auto renderScene = params.renderingData->renderScene;
-		auto graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		Ref<VulkanCommandBuffer> graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
 		const std::vector<size_t>& drawList = ParticleBatcher::GetDrawList();
 
@@ -420,5 +418,127 @@ namespace Odyssey
 			graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);
 			graphicsCommandBuffer->Draw(aliveCount * 6, 1, 0, 0);
 		}
+	}
+
+	void Opaque2DSubPass::Setup()
+	{
+		// Create the descriptor layout
+		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
+		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
+		descriptorLayout->AddBinding("Sprite Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
+		descriptorLayout->AddBinding("Particle Texture", DescriptorType::Sampler, ShaderStage::Fragment, 1);
+		descriptorLayout->Apply();
+
+		for (size_t i = 0; i < Max_Supported_Sprites; i++)
+			m_SpriteDataUBO[i] = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(SpriteData));
+
+		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
+		m_Shader->AddOnModifiedListener([this]() { OnSpriteShaderModified(); });
+
+		m_QuadMesh = AssetManager::LoadAsset<Mesh>(Quad_Mesh_GUID);
+
+		VulkanPipelineInfo info;
+		info.Shaders = m_Shader->GetResourceMap();
+		info.DescriptorLayout = m_DescriptorLayout;
+		info.BindVertexAttributeDescriptions = true;
+		info.AlphaBlend = false;
+		info.WriteDepth = true;
+		GetAttributeDescriptions(info.AttributeDescriptions);
+
+		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
+		m_PushDescriptors = new VulkanPushDescriptors();
+	}
+
+	void Opaque2DSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
+	{
+		auto renderScene = params.renderingData->renderScene;
+
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		Camera* camera = renderScene->GetCamera(subPassData.CameraTag);
+
+		assert(renderScene->SpriteDrawcalls.size() < Max_Supported_Sprites);
+		assert(camera);
+
+		mat4 orthoProjection = camera->GetScreenSpaceProjection();
+		float width = camera->GetViewportWidth();
+		float height = camera->GetViewportHeight();
+
+		for (size_t i = 0; i < renderScene->SpriteDrawcalls.size(); i++)
+		{
+			SpriteDrawcall& spriteDrawcall = renderScene->SpriteDrawcalls[i];
+			SpriteData spriteData = {};
+
+			float2 anchor = float2(0.0f);
+			if (spriteDrawcall.Anchor == SpriteRenderer::AnchorPosition::BottomRight)
+				anchor.x = width;
+			else if (spriteDrawcall.Anchor == SpriteRenderer::AnchorPosition::TopLeft)
+				anchor.y = height;
+			else if (spriteDrawcall.Anchor == SpriteRenderer::AnchorPosition::TopRight)
+				anchor = float2(width, height);
+			
+			// Pack the position and scale into a single float4
+			spriteData.PositionScale = float4(anchor + spriteDrawcall.Position, spriteDrawcall.Scale);
+			spriteData.BaseColor = spriteDrawcall.BaseColor;
+			spriteData.Fill = float4(spriteDrawcall.Fill, 0.0f, 0.0f);
+			spriteData.Projection = orthoProjection;
+
+			// Update the sprite ubo
+			Ref<VulkanBuffer> uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(m_SpriteDataUBO[i]);
+			uniformBuffer->CopyData(sizeof(SpriteData), &spriteData);
+
+			// Set the pipeline
+			commandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
+
+			// Push the descriptors
+			m_PushDescriptors->Clear();
+			m_PushDescriptors->AddBuffer(m_SpriteDataUBO[i], 0);
+
+			if (spriteDrawcall.Sprite.IsValid())
+				m_PushDescriptors->AddTexture(spriteDrawcall.Sprite, 1);
+
+			commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);
+
+			// Bind the buffers and draw
+			// TODO: Convert this into instanced rendering
+			commandBuffer->BindVertexBuffer(m_QuadMesh->GetVertexBuffer());
+			commandBuffer->BindIndexBuffer(m_QuadMesh->GetIndexBuffer());
+			commandBuffer->DrawIndexed(m_QuadMesh->GetIndexCount(), 1, 0, 0, 0);
+		}
+	}
+
+	void Opaque2DSubPass::GetAttributeDescriptions(BinaryBuffer& attributeDescriptions)
+	{
+		std::vector<VkVertexInputAttributeDescription> descriptions;
+
+		// Position
+		auto& positionDesc = descriptions.emplace_back();
+		positionDesc.binding = 0;
+		positionDesc.location = 0;
+		positionDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		positionDesc.offset = offsetof(Vertex, Position);
+
+		// Position
+		auto& texCoord0Desc = descriptions.emplace_back();
+		texCoord0Desc.binding = 0;
+		texCoord0Desc.location = 1;
+		texCoord0Desc.format = VK_FORMAT_R32G32_SFLOAT;
+		texCoord0Desc.offset = offsetof(Vertex, TexCoord0);
+
+		attributeDescriptions.WriteData(descriptions);
+	}
+	void Opaque2DSubPass::OnSpriteShaderModified()
+	{
+		if (m_GraphicsPipeline)
+			ResourceManager::Destroy(m_GraphicsPipeline);
+
+		VulkanPipelineInfo info;
+		info.Shaders = m_Shader->GetResourceMap();
+		info.DescriptorLayout = m_DescriptorLayout;
+		info.BindVertexAttributeDescriptions = true;
+		info.AlphaBlend = false;
+		info.WriteDepth = true;
+		GetAttributeDescriptions(info.AttributeDescriptions);
+
+		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 	}
 }

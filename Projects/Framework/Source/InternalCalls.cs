@@ -42,6 +42,8 @@ namespace Odyssey
         internal static delegate* unmanaged<GUID, Vector3, void> Transform_SetEulerAngles;
         internal static delegate* unmanaged<GUID, Vector3*, void> Transform_GetScale;
         internal static delegate* unmanaged<GUID, Vector3, void> Transform_SetScale;
+        internal static delegate* unmanaged<GUID, Vector3*, void> Transform_GetForward;
+        internal static delegate* unmanaged<GUID, Vector3*, void> Transform_GetRight;
 
         #endregion
 
@@ -52,6 +54,13 @@ namespace Odyssey
 
         #endregion
 
+        #region Texture2D
+
+        internal static delegate* unmanaged<GUID, uint*, void> Texture2D_GetWidth;
+        internal static delegate* unmanaged<GUID, uint*, void> Texture2D_GetHeight;
+        internal static delegate* unmanaged<GUID, bool*, void> Texture2D_GetMipMapsEnabled;
+
+        #endregion
         #region MeshRenderer
 
         // <EntityGUID, MeshGUID>
@@ -60,6 +69,16 @@ namespace Odyssey
         internal static delegate* unmanaged<GUID, GUID, void> MeshRenderer_SetMesh;
         #endregion
 
+        #region Sprite Renderer
+
+        internal static delegate* unmanaged<GUID, Vector2*, void> SpriteRenderer_GetFill;
+        internal static delegate* unmanaged<GUID, Vector2, void> SpriteRenderer_SetFill;
+        internal static delegate* unmanaged<GUID, Color*, void> SpriteRenderer_GetBaseColor;
+        internal static delegate* unmanaged<GUID, Color, void> SpriteRenderer_SetBaseColor;
+        internal static delegate* unmanaged<GUID, GUID*, void> SpriteRenderer_GetSprite;
+        internal static delegate* unmanaged<GUID, GUID, void> SpriteRenderer_SetSprite;
+        
+        #endregion
         #region Input
 
         internal static delegate* unmanaged<KeyCode, bool> Input_GetKeyPress;
@@ -77,6 +96,7 @@ namespace Odyssey
         internal static delegate* unmanaged<float> Time_GetDeltaTime;
 
         #endregion
+
 #pragma warning restore CS0649
     }
 }

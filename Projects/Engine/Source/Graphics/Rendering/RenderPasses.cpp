@@ -1,7 +1,6 @@
 #include "RenderPasses.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanImage.h"
-#include "VulkanRenderTexture.h"
 #include "Log.h"
 #include "PerFrameRenderingData.h"
 #include "Drawcall.h"
@@ -16,6 +15,8 @@
 #include "VulkanContext.h"
 #include "RenderSubPasses.h"
 
+#include "RenderTarget.h"
+
 namespace Odyssey
 {
 	ShadowPass::ShadowPass()
@@ -27,7 +28,7 @@ namespace Odyssey
 		imageDesc.ImageType = ImageType::Shadowmap;
 		imageDesc.Samples = 1;
 
-		m_DepthRT = ResourceManager::Allocate<VulkanRenderTexture>(imageDesc);
+		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(imageDesc, RenderTargetFlags::Depth);
 		m_SubPasses.push_back(std::make_shared<ShadowSubPass>());
 
 		for (auto& subPass : m_SubPasses)
@@ -54,13 +55,16 @@ namespace Odyssey
 		// Create the rendering attachment for the render target
 		std::vector<VkRenderingAttachmentInfoKHR> attachments;
 
-		if (m_DepthRT.IsValid())
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
+		ResourceID depthTextureID = renderTarget->GetDepthTexture();
+
+		if (depthTextureID.IsValid())
 		{
 			VkClearValue clearValue;
 			clearValue.depthStencil = { 1.0f, 0 };
 
 			// Get the render texture's image
-			auto depthTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_DepthRT);
+			Ref<VulkanTexture> depthTexture = ResourceManager::GetResource<VulkanTexture>(depthTextureID);
 			ResourceID depthAttachmentID = depthTexture->GetImage();
 			width = depthTexture->GetWidth();
 			height = depthTexture->GetHeight();
@@ -133,19 +137,22 @@ namespace Odyssey
 		// End dynamic rendering
 		commandBuffer->EndRendering();
 
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
+		ResourceID depthTextureID = renderTarget->GetDepthTexture();
+
 		// Make sure the RT is valid
-		if (!m_DepthRT.IsValid())
+		if (!depthTextureID.IsValid())
 		{
 			Log::Error("[ShadowPass] Invalid render target for Shadow Pass");
 			return;
 		}
 
 		// Transition the shadowmap for use in the fragment shader
-		auto depthTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_DepthRT);
+		Ref<VulkanTexture> depthTexture = ResourceManager::GetResource<VulkanTexture>(depthTextureID);
 		commandBuffer->TransitionLayouts(depthTexture->GetImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
 
 		// Set the shadowmap for use in other passes
-		params.Shadowmap = m_DepthRT;
+		params.Shadowmap = depthTextureID;
 	}
 
 	OpaquePass::OpaquePass()
@@ -170,20 +177,25 @@ namespace Odyssey
 		uint32_t width = 0;
 		uint32_t height = 0;
 
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
+		ResourceID colorTextureID = renderTarget->GetColorTexture();
+		ResourceID colorResolveTextureID = renderTarget->GetColorResolveTexture();
+
 		// Extract the render target and width/height
-		if (m_ColorRT.IsValid())
+		if (colorTextureID.IsValid())
 		{
-			auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_ColorRT);
-			colorAttachmentImage = renderTexture->GetImage();
-			width = renderTexture->GetWidth();
-			height = renderTexture->GetHeight();
+			Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(colorTextureID);
+			colorAttachmentImage = colorTexture->GetImage();
+			width = colorTexture->GetWidth();
+			height = colorTexture->GetHeight();
 
 			commandBuffer->TransitionLayouts(colorAttachmentImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 			// Check if msaa is enabled
-			if (params.context->GetSampleCount() > 1)
+			if (colorResolveTextureID.IsValid())
 			{
-				commandBuffer->TransitionLayouts(renderTexture->GetResolveImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+				Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorResolveTextureID);
+				commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 			}
 		}
 		else
@@ -201,7 +213,6 @@ namespace Odyssey
 
 		// Create the rendering attachment for the render target
 		std::vector<VkRenderingAttachmentInfoKHR> attachments;
-
 		{
 			auto colorAttachment = ResourceManager::GetResource<VulkanImage>(colorAttachmentImage);
 			VkRenderingAttachmentInfoKHR color_attachment_info{};
@@ -211,10 +222,10 @@ namespace Odyssey
 			color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 
-			if (params.context->GetSampleCount() > 1)
+			if (colorResolveTextureID.IsValid())
 			{
-				auto colorTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_ColorRT);
-				auto resolveImage = ResourceManager::GetResource<VulkanImage>(colorTexture->GetResolveImage());
+				Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorResolveTextureID);
+				Ref<VulkanImage> resolveImage = ResourceManager::GetResource<VulkanImage>(resolveTexture->GetImage());
 
 				color_attachment_info.resolveMode = VK_RESOLVE_MODE_AVERAGE_BIT;
 				color_attachment_info.resolveImageView = resolveImage->GetImageView();
@@ -228,13 +239,18 @@ namespace Odyssey
 			attachments.push_back(color_attachment_info);
 		}
 
-		if (m_DepthRT.IsValid())
+
+		ResourceID depthTextureID = renderTarget->GetDepthTexture();
+		ResourceID depthResolveTextureID = renderTarget->GetDepthResolveTexture();
+
+		if (depthTextureID.IsValid())
 		{
 			VkClearValue clearValue;
 			clearValue.depthStencil = { 1.0f, 0 };
 
 			// Get the render texture's image
-			auto depthTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_DepthRT);
+			Ref<VulkanTexture> depthTexture = ResourceManager::GetResource<VulkanTexture>(depthTextureID);
+			Ref<VulkanImage> depthImage = ResourceManager::GetResource<VulkanImage>(depthTexture->GetImage());
 			ResourceID depthAttachmentID = depthTexture->GetImage();
 
 			// Load the image
@@ -247,9 +263,10 @@ namespace Odyssey
 			depthAttachmentInfo.imageLayout = depthAttachment->GetLayout();
 			depthAttachmentInfo.resolveMode = VK_RESOLVE_MODE_NONE;
 
-			if (params.context->GetSampleCount() > 1)
+			if (depthResolveTextureID.IsValid())
 			{
-				auto resolveImage = ResourceManager::GetResource<VulkanImage>(depthTexture->GetResolveImage());
+				Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(depthResolveTextureID);
+				Ref<VulkanImage> resolveImage = ResourceManager::GetResource<VulkanImage>(resolveTexture->GetImage());
 				depthAttachmentInfo.resolveMode = VK_RESOLVE_MODE_MIN_BIT;
 				depthAttachmentInfo.resolveImageView = resolveImage->GetImageView();
 				depthAttachmentInfo.resolveImageLayout = resolveImage->GetLayout();
@@ -304,13 +321,13 @@ namespace Odyssey
 
 		RenderSubPassData subPassData;
 		subPassData.CameraIndex = RenderScene::MAX_CAMERAS;
+		subPassData.CameraTag = m_Camera;
 
-		// Set either the camera override or the scene's main camera
+		if (!renderScene->GetCamera(m_Camera))
+			return;
+
 		if (m_Camera)
-		{
 			subPassData.CameraIndex = renderScene->SetSceneData(m_Camera);
-			subPassData.Camera = m_Camera;
-		}
 
 		// Check for a valid camera data index
 		if (subPassData.CameraIndex < RenderScene::MAX_CAMERAS)
@@ -330,20 +347,25 @@ namespace Odyssey
 		// End dynamic rendering
 		commandBuffer->EndRendering();
 
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
+		ResourceID colorTextureID = renderTarget->GetColorTexture();
+
 		// Make sure the RT is valid
-		if (!m_ColorRT.IsValid())
+		if (!colorTextureID.IsValid())
 		{
 			Log::Error("(OpaquePass) Invalid render target for OpaquePass");
 			return;
 		}
 
 		// Transition the backbuffer layout for presenting
-		auto colorTexture = ResourceManager::GetResource<VulkanRenderTexture>(m_ColorRT);
+		Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(colorTextureID);
 		commandBuffer->TransitionLayouts(colorTexture->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-		if (params.context->GetSampleCount() > 1)
+		ResourceID colorResolveTextureID = renderTarget->GetColorResolveTexture();
+		if (colorResolveTextureID.IsValid())
 		{
-			commandBuffer->TransitionLayouts(colorTexture->GetResolveImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorResolveTextureID);
+			commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		}
 	}
 
@@ -354,6 +376,13 @@ namespace Odyssey
 		m_SubPasses.push_back(debugSubPass);
 	}
 
+	void OpaquePass::Add2DSubPass()
+	{
+		auto subPass = std::make_shared<Opaque2DSubPass>();
+		subPass->Setup();
+		m_SubPasses.push_back(subPass);
+	}
+
 	void ImguiPass::BeginPass(RenderPassParams& params)
 	{
 		ResourceID commandBufferID = params.GraphicsCommandBuffer;
@@ -362,8 +391,8 @@ namespace Odyssey
 		uint32_t width = params.renderingData->width;
 		uint32_t height = params.renderingData->height;
 
-		// If we don't have a valid RT set, use the back buffer
-		Ref<VulkanRenderTexture> colorTexture = ResourceManager::GetResource<VulkanRenderTexture>(params.FrameTexture);
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(params.FrameTexture);
+		Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorTexture());
 		Ref<VulkanImage> colorImage = ResourceManager::GetResource<VulkanImage>(colorTexture->GetImage());
 
 		VkClearValue clearValue;
@@ -379,9 +408,10 @@ namespace Odyssey
 		color_attachment_info.imageLayout = colorImage->GetLayout();;
 		color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
 
-		if (params.context->GetSampleCount() > 1)
+		if (renderTarget->GetColorResolveTexture().IsValid())
 		{
-			Ref<VulkanImage> resolveImage = ResourceManager::GetResource<VulkanImage>(colorTexture->GetResolveImage());
+			Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorResolveTexture());
+			Ref<VulkanImage> resolveImage = ResourceManager::GetResource<VulkanImage>(resolveTexture->GetImage());
 			color_attachment_info.resolveMode = VK_RESOLVE_MODE_AVERAGE_BIT;
 			color_attachment_info.resolveImageView = resolveImage->GetImageView();
 			color_attachment_info.resolveImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
@@ -440,26 +470,20 @@ namespace Odyssey
 		commandBuffer->EndRendering();
 
 		// Transition the backbuffer layout for presenting
-		auto renderTexture = ResourceManager::GetResource<VulkanRenderTexture>(params.FrameTexture);
-		commandBuffer->TransitionLayouts(renderTexture->GetImage(), m_EndLayout);
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(params.FrameTexture);
+		Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorTexture());
+		commandBuffer->TransitionLayouts(colorTexture->GetImage(), m_EndLayout);
 
-		if (params.context->GetSampleCount() > 1)
+		ResourceID resolveTextureID = renderTarget->GetColorResolveTexture();
+		if (resolveTextureID.IsValid())
 		{
-			commandBuffer->TransitionLayouts(renderTexture->GetResolveImage(), m_EndLayout);
+			Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(resolveTextureID);
+			commandBuffer->TransitionLayouts(resolveTexture->GetImage(), m_EndLayout);
 		}
 	}
 
 	void ImguiPass::SetImguiState(std::shared_ptr<VulkanImgui> imgui)
 	{
 		m_Imgui = imgui;
-	}
-
-	void RenderPass::SetColorRenderTexture(ResourceID colorRT)
-	{
-		m_ColorRT = colorRT;
-	}
-	void RenderPass::SetDepthRenderTexture(ResourceID depthRT)
-	{
-		m_DepthRT = depthRT;
 	}
 }

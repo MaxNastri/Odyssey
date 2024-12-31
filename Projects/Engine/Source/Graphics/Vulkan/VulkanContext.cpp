@@ -16,6 +16,14 @@ namespace Odyssey
 	VulkanContext::VulkanContext()
 	{
 		VkResult result = volkInitialize();
+
+		if (!check_vk_result(result))
+		{
+			std::string errorMsg = "[VulkanContext] Failed to initialize Volk";
+			Log::Error(errorMsg);
+			throw std::invalid_argument(errorMsg);
+		}
+
 		GatherExtensions();
 		CreateInstance();
 		volkLoadInstance(instance);
@@ -91,8 +99,8 @@ namespace Odyssey
 		appInfo.pEngineName = "Odyssey";
 		appInfo.apiVersion = VK_API_VERSION_1_3;
 
-		VkInstanceCreateInfo create_info = {};
-		create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+		VkInstanceCreateInfo createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 
 		// Enumerate available extensions
 		uint32_t properties_count;
@@ -100,9 +108,12 @@ namespace Odyssey
 		vkEnumerateInstanceExtensionProperties(nullptr, &properties_count, nullptr);
 		properties.resize(properties_count);
 		err = vkEnumerateInstanceExtensionProperties(nullptr, &properties_count, properties.data());
+
 		if (!check_vk_result(err))
 		{
-			Log::Error("(context 1)");
+			std::string errorMsg = "[VulkanContext] Failed to enumerate extensions.";
+			Log::Error(errorMsg);
+			throw std::invalid_argument(errorMsg);
 		}
 
 		// Enable required extensions
@@ -113,26 +124,29 @@ namespace Odyssey
 		if (IsExtensionAvailable(properties, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME))
 		{
 			extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-			create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+			createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 		}
 #endif
 
 		if (enableValidation)
 		{
 			const char* layers[] = { "VK_LAYER_KHRONOS_validation" };
-			create_info.enabledLayerCount = 1;
-			create_info.ppEnabledLayerNames = layers;
+			createInfo.enabledLayerCount = 1;
+			createInfo.ppEnabledLayerNames = layers;
 			extensions.push_back("VK_EXT_debug_report");
 		}
 
 		// Create Vulkan Instance
-		create_info.pApplicationInfo = &appInfo;
-		create_info.enabledExtensionCount = (uint32_t)extensions.size();
-		create_info.ppEnabledExtensionNames = extensions.data();
-		err = vkCreateInstance(&create_info, allocator, &instance);
+		createInfo.pApplicationInfo = &appInfo;
+		createInfo.enabledExtensionCount = (uint32_t)extensions.size();
+		createInfo.ppEnabledExtensionNames = extensions.data();
+		err = vkCreateInstance(&createInfo, allocator, &instance);
+
 		if (!check_vk_result(err))
 		{
-			Log::Error("(context 2)");
+			std::string errorMsg = "[VulkanContext] Failed to create vulkan instance.";
+			Log::Error(errorMsg);
+			throw std::invalid_argument(errorMsg);
 		}
 
 		// Setup the debug report callback
@@ -145,9 +159,12 @@ namespace Odyssey
 		debug_report_ci.pfnCallback = debug_report;
 		debug_report_ci.pUserData = nullptr;
 		err = vkCreateDebugReportCallbackEXT(instance, &debug_report_ci, allocator, &debugReport);
+
 		if (!check_vk_result(err))
 		{
-			Log::Error("(context 3)");
+			std::string errorMsg = "[VulkanContext] Failed to attach debug reporting callback.";
+			Log::Error(errorMsg);
+			throw std::invalid_argument(errorMsg);
 		}
 	}
 
@@ -171,13 +188,15 @@ namespace Odyssey
 			m_SampleCount = 4;
 		else if (count & VK_SAMPLE_COUNT_2_BIT)
 			m_SampleCount = 2;
+
+		Log::Info(std::format("[VulkanContext] Detected MSAA support: {}", m_SampleCount));
 	}
 
 	bool VulkanContext::IsExtensionAvailable(std::vector<VkExtensionProperties>& properties, const char* extension)
 	{
 		for (const VkExtensionProperties& p : properties)
 		{
-			if (strcmp(p.extensionName, extension) == 0)
+			if (std::strcmp(p.extensionName, extension) == 0)
 			{
 				return true;
 			}

@@ -6,7 +6,6 @@
 #include "Transform.h"
 #include "ImGuizmo.h"
 #include "ResourceManager.h"
-#include "VulkanRenderTexture.h"
 #include "VulkanRenderer.h"
 #include "VulkanImgui.h"
 #include "Editor.h"
@@ -18,6 +17,8 @@
 #include "DebugRenderer.h"
 #include "GUIManager.h"
 #include "Preferences.h"
+#include "RenderTarget.h"
+#include "VulkanTextureSampler.h"
 
 namespace Odyssey
 {
@@ -29,16 +30,20 @@ namespace Odyssey
 		m_SceneViewPass = new OpaquePass();
 		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		m_SceneViewPass->AddDebugSubPass();
+		m_SceneViewPass->SetCamera((uint8_t)Camera::Tag::SceneView);
 		Renderer::PushRenderPass(m_SceneViewPass);
 
 		// Create the render texture
 		CreateRenderTexture();
 
 		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
-			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
+			([this](SceneLoadedEvent* eventData) { OnSceneLoaded(eventData); });
 
-		m_GUISelectionListener = EventSystem::Listen< GUISelectionChangedEvent>
-			([this](GUISelectionChangedEvent* event) { OnGUISelectionChanged(event); });
+		m_GUISelectionListener = EventSystem::Listen<GUISelectionChangedEvent>
+			([this](GUISelectionChangedEvent* eventData) { OnGUISelectionChanged(eventData); });
+
+		m_PlaymodeStateChangedListener = EventSystem::Listen<PlaymodeStateChangedEvent>
+			([this](PlaymodeStateChangedEvent* eventData) { OnPlaymodeStateChanged(eventData); });
 	}
 
 	void SceneViewWindow::Destroy()
@@ -48,6 +53,16 @@ namespace Odyssey
 			EventSystem::RemoveListener<SceneLoadedEvent>(m_SceneLoadedListener);
 			m_SceneLoadedListener = nullptr;
 		}
+		if (m_GUISelectionListener)
+		{
+			EventSystem::RemoveListener<GUISelectionChangedEvent>(m_GUISelectionListener);
+			m_GUISelectionListener = nullptr;
+		}
+		if (m_PlaymodeStateChangedListener)
+		{
+			EventSystem::RemoveListener<PlaymodeStateChangedEvent>(m_PlaymodeStateChangedListener);
+			m_PlaymodeStateChangedListener = nullptr;
+		}
 		DestroyRenderTexture();
 	}
 
@@ -56,7 +71,7 @@ namespace Odyssey
 		// Reset the camera controller use flag before updating the camera controller
 		m_CameraControllerInUse = false;
 
-		if (m_GameObject.IsValid())
+		if (m_GameObject.IsValid() && m_AllowInput)
 			UpdateCameraController();
 
 		if (!m_CameraControllerInUse)
@@ -73,8 +88,7 @@ namespace Odyssey
 			return modified;
 
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
-		m_SceneViewPass->SetColorRenderTexture(m_ColorRT);
-		m_SceneViewPass->SetDepthRenderTexture(m_DepthRT);
+		m_SceneViewPass->SetRenderTarget(m_RenderTarget);
 
 		// Render gizmos
 		RenderGizmos();
@@ -100,10 +114,10 @@ namespace Odyssey
 		GUIManager::DestroyDockableWindow(this);
 	}
 
-	void SceneViewWindow::OnSceneLoaded(SceneLoadedEvent* event)
+	void SceneViewWindow::OnSceneLoaded(SceneLoadedEvent* eventData)
 	{
 		// Create a new game object and mark it as hidden
-		if (m_ActiveScene = event->loadedScene)
+		if (m_ActiveScene = eventData->loadedScene)
 		{
 			m_GameObject = m_ActiveScene->CreateGameObject();
 			Transform& transform = m_GameObject.AddComponent<Transform>();
@@ -113,6 +127,7 @@ namespace Odyssey
 			camera.SetMainCamera(false);
 			camera.Awake();
 			camera.SetViewportSize(m_WindowSize.x, m_WindowSize.y);
+			camera.SetTag(Camera::Tag::SceneView);
 			transform.SetLocalMatrix(Preferences::GetSceneView());
 
 			// Add the editor properties component to hide this object in the scene hierarchy window
@@ -122,34 +137,47 @@ namespace Odyssey
 			// Make sure we don't serialize this game object
 			PropertiesComponent& engineProperties = m_GameObject.GetComponent<PropertiesComponent>();
 			engineProperties.Serialize = false;
-
-			m_SceneViewPass->SetCamera(&camera);
 		}
 	}
 
-	void SceneViewWindow::OnGUISelectionChanged(GUISelectionChangedEvent* event)
+	void SceneViewWindow::OnGUISelectionChanged(GUISelectionChangedEvent* eventData)
 	{
-		if (event->Selection.Type == GameObject::Type)
-			m_SelectedGO = m_ActiveScene->GetGameObject(event->Selection.GUID);
+		if (eventData->Selection.Type == GameObject::Type)
+			m_SelectedGO = m_ActiveScene->GetGameObject(eventData->Selection.GUID);
+	}
+
+	void SceneViewWindow::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* eventData)
+	{
+		switch (eventData->State)
+		{
+			case PlaymodeState::EnterPlaymode:
+				m_AllowInput = false;
+				break;
+			case PlaymodeState::ExitPlaymode:
+				m_AllowInput = true;
+				break;
+		}
 	}
 
 	void SceneViewWindow::CreateRenderTexture()
 	{
 		// Create a new render texture at the correct size and set it as the render target for the scene view pass
-		m_ColorRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y);
-		m_DepthRT = ResourceManager::Allocate<VulkanRenderTexture>((uint32_t)m_WindowSize.x, (uint32_t)m_WindowSize.y, TextureFormat::D24_UNORM_S8_UINT);
+		VulkanImageDescription desc;
+		desc.ImageType = ImageType::RenderTexture;
+		desc.Width = (uint32_t)m_WindowSize.x;
+		desc.Height = (uint32_t)m_WindowSize.y;
+		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(desc, RenderTargetFlags::Color | RenderTargetFlags::Depth);
 		m_RTSampler = ResourceManager::Allocate<VulkanTextureSampler>();
-		m_RenderTextureID = Renderer::AddImguiRenderTexture(m_ColorRT, m_RTSampler);
+		m_RenderTextureID = Renderer::AddImguiRenderTexture(m_RenderTarget, m_RTSampler);
 	}
 
 	void SceneViewWindow::DestroyRenderTexture()
 	{
 		// Destroy the existing render texture
-		if (m_ColorRT.IsValid())
+		if (m_RenderTarget.IsValid())
 		{
 			// Destroy the render texture
-			ResourceManager::Destroy(m_ColorRT);
-			ResourceManager::Destroy(m_DepthRT);
+			ResourceManager::Destroy(m_RenderTarget);
 			ResourceManager::Destroy(m_RTSampler);
 			Renderer::DestroyImguiTexture(m_RenderTextureID);
 		}
@@ -170,6 +198,8 @@ namespace Odyssey
 
 				ImGuizmo::AllowAxisFlip(SceneViewWindow::AllowFlip);
 				ImGuizmo::SetGizmoSizeClipSpace(0.1f);
+				ImGuizmo::SetDrawlist();
+				ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 				ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj),
 					(ImGuizmo::OPERATION)op, SceneViewWindow::IsLocal ? ImGuizmo::LOCAL : ImGuizmo::WORLD, glm::value_ptr(worldMatrix));
 
@@ -265,7 +295,7 @@ namespace Odyssey
 
 	void SceneViewWindow::UpdateGizmosInput()
 	{
-		if (m_CursorInContentRegion)
+		if (m_CursorInContentRegion && m_AllowInput)
 		{
 			if (Input::GetKeyPress(KeyCode::Q))
 			{

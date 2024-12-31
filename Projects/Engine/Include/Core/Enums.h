@@ -71,6 +71,14 @@ namespace Odyssey
 		D16_UNORM = 124,
 	};
 
+	inline bool IsDepthFormat(TextureFormat format)
+	{
+		return format == TextureFormat::D32_SFLOAT ||
+			format == TextureFormat::D32_SFLOAT_S8_UINT ||
+			format == TextureFormat::D24_UNORM_S8_UINT ||
+			format == TextureFormat::D16_UNORM;
+	}
+
 	enum class ImageTiling
 	{
 		None = 0,

@@ -2,7 +2,7 @@
 #include "Ref.h"
 #include "EditorEnums.h"
 #include "DockableWindow.h"
-#include "Inspector.h"
+#include "Inspectors.h"
 
 namespace Odyssey
 {

@@ -1,0 +1,99 @@
+Scene: Scene_01
+GUID: 6049963977740777600
+Skybox: 16662637833593679810
+Ambient Color: 'x: 0.13523132 y: 0.13523132 z: 0.13523132'
+Scene Center: 'x: 0 y: 0 z: 0'
+Scene Radius: 15
+GameObjects:
+  - Sort Order: 0
+    Prefab: 0
+    Name: Monk GLB
+    GUID: 15322439001782158818
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Animator
+        Animation Rig: 10793032812295863475
+        Animation Blueprint: 9242731602216417912
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 16431782286058366551
+        Materials:
+          - 942766181068811557
+          - 942766181068811557
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: -90 z: 0'
+        Scale: 'x: 2 y: 2 z: 2'
+      - m_ScriptID: 2708052967
+        Type: Odyssey.ScriptComponent
+        Fields:
+          - Name: Speed
+            Value: 0.001
+      - Type: Odyssey.ParticleEmitter
+        Enabled: 0
+        Duration: 1
+        Radius: 1
+        Looping: 0
+        Material: 831665292157922468
+        Emission Rate: 200
+        Start Color: 'x: 0.5124555 y: 0.28449482 z: 0 w: 1'
+        End Color: 'x: 0.24911034 y: 0.1494662 z: 0 w: 0.3647059'
+        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
+        Lifetime: 'x: 1 y: 3'
+        Size: 'x: 0.45 y: 0.8'
+        Speed: 'x: 2.5 y: 5'
+  - Sort Order: 2
+    Prefab: 0
+    Name: Sun
+    GUID: 11930098143521859490
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.Light
+        Enabled: 1
+        Light Type: Directional
+        Color: 'x: 1 y: 1 z: 1'
+        Intensity: 1
+        Range: 1
+  - Sort Order: 3
+    Prefab: 0
+    Name: Sprite
+    GUID: 18333480694344506150
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.SpriteRenderer
+        Enabled: 1
+        Sprite: 379771950876182716
+  - Sort Order: 4
+    Prefab: 0
+    Name: Camera
+    GUID: 880807833467005125
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Camera
+        Enabled: 1
+        Tag: Main
+        Field of View: 45
+        Near Clip: 0.1
+        Far Clip: 1000
+        Main Camera: 1
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+Scene Graph Nodes:
+  - Entity: 15322439001782158818
+    Parent: 0
+  - Entity: 11930098143521859490
+    Parent: 0
+  - Entity: 18333480694344506150
+    Parent: 0
+  - Entity: 880807833467005125
+    Parent: 0

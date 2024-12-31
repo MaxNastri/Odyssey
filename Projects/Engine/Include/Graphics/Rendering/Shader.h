@@ -28,6 +28,7 @@ namespace Odyssey
 
 	public:
 		std::map<ShaderType, ResourceID> GetResourceMap();
+		void AddOnModifiedListener(std::function<void()> callback) { m_OnModifiedListeners.push_back(callback); }
 
 	private:
 		void LoadFromSource(Ref<SourceShader> source);
@@ -46,5 +47,6 @@ namespace Odyssey
 		
 		std::map<ShaderType, ShaderData> m_Shaders;
 		Ref<SourceShader> m_Source;
+		std::vector<std::function<void()>> m_OnModifiedListeners;
 	};
 }

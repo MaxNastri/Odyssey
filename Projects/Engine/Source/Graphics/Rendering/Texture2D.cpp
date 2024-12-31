@@ -90,7 +90,7 @@ namespace Odyssey
 			ResourceManager::Destroy(m_Texture);
 
 		// Allocate a new texture using the source pixel buffer
-		m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, source->GetPixelBuffer());
+		m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, &(source->GetPixelBuffer()));
 	}
 
 	void Texture2D::SaveToDisk(const Path& assetPath)

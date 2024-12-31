@@ -45,8 +45,11 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Log::Error("(phys 1)");
+			std::string errorMsg = "[VulkanDevice] Failed to find physical devices.";
+			Log::Error(errorMsg);
+			throw std::invalid_argument(errorMsg);
 		}
+
 		assert(gpu_count > 0);
 
 		// Get the GPUs
@@ -56,7 +59,9 @@ namespace Odyssey
 
 		if (!check_vk_result(err))
 		{
-			Log::Error("(phys 2)");
+			std::string errorMsg = "[VulkanDevice] Failed to find physical devices.";
+			Log::Error(errorMsg);
+			throw std::invalid_argument(errorMsg);
 		}
 
 		// Find the descrete GPU, if it exists
@@ -80,9 +85,10 @@ namespace Odyssey
 
 		if (physicalDevice == VK_NULL_HANDLE)
 		{
-			// Coulnd't find any GPU
-			Log::Error("[VulkanDevice] Unable to find GPU device");
-			physicalDevice = VK_NULL_HANDLE;
+
+			std::string errorMsg = "[VulkanDevice] Failed to find discrete physical device.";
+			Log::Error(errorMsg);
+			throw std::invalid_argument(errorMsg);
 		}
 	}
 

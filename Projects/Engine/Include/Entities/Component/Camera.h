@@ -8,7 +8,17 @@ namespace Odyssey
 
 	class Camera
 	{
+	private:
 		CLASS_DECLARATION(Odyssey, Camera)
+
+	public:
+		enum class Tag : uint8_t
+		{
+			None = 0,
+			Main = 1,
+			SceneView = 2,
+			Custom = 3,
+		};
 	public:
 		Camera() = default;
 		Camera(const GameObject& gameObject);
@@ -23,22 +33,32 @@ namespace Odyssey
 	public:
 		bool IsEnabled() { return m_Enabled; }
 		bool IsMainCamera() { return m_MainCamera; }
-		glm::mat4 GetProjection() { return m_Projection; }
-		glm::mat4 GetInverseProjection() { return m_InverseProjection; }
-		glm::mat4 GetInverseView();
-		glm::mat4 GetView();
+
+	public:
+		GameObject& GetGameObject() { return m_GameObject; }
+		Camera::Tag GetTag() { return m_Tag; }
 		float GetFieldOfView() { return m_FieldOfView; }
 		float GetNearClip() { return m_NearClip; }
 		float GetFarClip() { return m_FarClip; }
-		GameObject& GetGameObject() { return m_GameObject; }
+		float GetViewportWidth() { return m_Width; }
+		float GetViewportHeight() { return m_Height; }
 
 	public:
+		mat4 GetProjection() { return m_Projection; }
+		mat4 GetInverseProjection() { return m_InverseProjection; }
+		mat4 GetScreenSpaceProjection();
+		mat4 GetView();
+		mat4 GetInverseView();
+		float4 GetViewPosition();
+
+	public:
+		void SetMainCamera(bool mainCamera) { m_MainCamera = mainCamera; }
 		void SetEnabled(bool enabled);
+		void SetTag(Camera::Tag tag) { m_Tag = tag; }
 		void SetFieldOfView(float fov);
 		void SetNearClip(float nearClip);
 		void SetFarClip(float farClip);
 		void SetViewportSize(float width, float height);
-		void SetMainCamera(bool mainCamera) { m_MainCamera = mainCamera; }
 
 	private:
 		void CalculateProjection();
@@ -50,6 +70,7 @@ namespace Odyssey
 		float m_NearClip = 0.1f;
 		float m_FarClip = 1000.0f;
 		bool m_MainCamera = true;
+		Tag m_Tag = Tag::None;
 
 	private: // Non-serialized
 		GameObject m_GameObject;

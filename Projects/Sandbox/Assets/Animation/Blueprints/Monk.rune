@@ -1,0 +1,106 @@
+m_SourceAsset: 0
+m_GUID: 9242731602216417912
+m_Name: Monk
+m_Type: Odyssey.AnimationBlueprint
+Properties:
+  - Name: Speed
+    Type: Float
+    Value: 0
+Animation States:
+  - GUID: 5461339041619586459
+    Name: Idle
+    Clip: 7837474615774733719
+    Position: 'x: -12 y: -118'
+  - GUID: 15727017180173566052
+    Name: Walk
+    Clip: 9090412378094673848
+    Position: 'x: 4 y: 62'
+Animation Links:
+  - GUID: 2622370683570909180
+    Begin State: 5461339041619586459
+    End State: 15727017180173566052
+    Forward Transitions:
+      - Property: Speed
+        Comparison: Greater
+        Value: 0
+    Return Transitions:
+      - Property: Speed
+        Comparison: LessOrEqual
+        Value: 0
+  - GUID: 2622370683570909180
+    Begin State: 5461339041619586459
+    End State: 15727017180173566052
+    Forward Transitions:
+      - Property: Speed
+        Comparison: Greater
+        Value: 0
+    Return Transitions:
+      - Property: Speed
+        Comparison: LessOrEqual
+        Value: 0
+  - GUID: 2622370683570909180
+    Begin State: 5461339041619586459
+    End State: 15727017180173566052
+    Forward Transitions:
+      - Property: Speed
+        Comparison: Greater
+        Value: 0
+    Return Transitions:
+      - Property: Speed
+        Comparison: LessOrEqual
+        Value: 0
+  - GUID: 2622370683570909180
+    Begin State: 5461339041619586459
+    End State: 15727017180173566052
+    Forward Transitions:
+      - Property: Speed
+        Comparison: Greater
+        Value: 0
+    Return Transitions:
+      - Property: Speed
+        Comparison: LessOrEqual
+        Value: 0
+  - GUID: 2622370683570909180
+    Begin State: 5461339041619586459
+    End State: 15727017180173566052
+    Forward Transitions:
+      - Property: Speed
+        Comparison: Greater
+        Value: 0
+    Return Transitions:
+      - Property: Speed
+        Comparison: LessOrEqual
+        Value: 0
+  - GUID: 2622370683570909180
+    Begin State: 5461339041619586459
+    End State: 15727017180173566052
+    Forward Transitions:
+      - Property: Speed
+        Comparison: Greater
+        Value: 0
+    Return Transitions:
+      - Property: Speed
+        Comparison: LessOrEqual
+        Value: 0
+  - GUID: 2622370683570909180
+    Begin State: 5461339041619586459
+    End State: 15727017180173566052
+    Forward Transitions:
+      - Property: Speed
+        Comparison: Greater
+        Value: 0
+    Return Transitions:
+      - Property: Speed
+        Comparison: LessOrEqual
+        Value: 0
+  - GUID: 2622370683570909180
+    Begin State: 5461339041619586459
+    End State: 15727017180173566052
+    Forward Transitions:
+      - Property: Speed
+        Comparison: Greater
+        Value: 0
+    Return Transitions:
+      - Property: Speed
+        Comparison: LessOrEqual
+        Value: 0

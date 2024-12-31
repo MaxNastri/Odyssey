@@ -11,7 +11,7 @@ namespace Odyssey
 {
 	struct RenderSubPassData
 	{
-		Camera* Camera;
+		uint8_t CameraTag;
 		uint32_t CameraIndex;
 	};
 
@@ -114,5 +114,53 @@ namespace Odyssey
 		Ref<Texture2D> m_ParticleTexture;
 		inline static const GUID& s_ParticleShaderGUID = 16032593712191697003;
 		inline static const GUID& s_ParticleTextureGUID = 488672041793267412;
+	};
+
+	class Opaque2DSubPass : public RenderSubPass
+	{
+	public:
+		virtual void Setup() override;
+		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+
+	private:
+		void GetAttributeDescriptions(BinaryBuffer& attributeDescriptions);
+		void OnSpriteShaderModified();
+
+	private:
+		inline static constexpr size_t Max_Supported_Sprites = 1024;
+
+	private:
+		Ref<Shader> m_Shader;
+		Ref<Mesh> m_QuadMesh;
+		ResourceID m_GraphicsPipeline;
+		ResourceID m_DescriptorLayout;
+		Ref<VulkanPushDescriptors> m_PushDescriptors;
+		std::array<ResourceID, Max_Supported_Sprites> m_SpriteDataUBO;
+
+	private:
+		struct alignas(16) SpriteData
+		{
+			float4 PositionScale = float4(0.0f);
+			float4 BaseColor = float4(1.0f);
+			float4 Fill = float4(1.0f);
+			mat4 Projection = mat4(1.0f);
+		};
+
+	private:
+		inline static const GUID Shader_GUID = 712863487126392356;
+		inline static const GUID Quad_Mesh_GUID = 4325336624522892848;
+	};
+
+	class Transparent2DSubPass : public RenderSubPass
+	{
+	public:
+		virtual void Setup() override;
+		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+
+	private:
+		ResourceID m_GraphicsPipeline;
+
+	private:
+		inline static const GUID Shader_GUID = 16032593712191697003;
 	};
 }

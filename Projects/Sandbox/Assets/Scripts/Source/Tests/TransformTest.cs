@@ -23,12 +23,12 @@ namespace Sandbox
 
         protected override void Update()
         {
-            if (Target != null)
-            {
-                Target.Position += (PosDirection * Speed * Time.DeltaTime);
-                Target.EulerAngles += (RotDirection * Speed * Time.DeltaTime);
-                Target.Scale += (ScaleDirection * Speed * Time.DeltaTime);
-            }
+            //if (Target != null)
+            //{
+            //    Target.Position += (PosDirection * Speed * Time.DeltaTime);
+            //    Target.EulerAngles += (RotDirection * Speed * Time.DeltaTime);
+            //    Target.Scale += (ScaleDirection * Speed * Time.DeltaTime);
+            //}
         }
     }
 }

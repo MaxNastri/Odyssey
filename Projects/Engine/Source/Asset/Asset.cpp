@@ -1,6 +1,7 @@
 #include "Asset.h"
 #include "AssetSerializer.h"
 #include "AssetManager.h"
+#include "FileManager.h"
 
 namespace Odyssey
 {
@@ -8,6 +9,14 @@ namespace Odyssey
 	{
 		m_SourcePath = sourcePath;
 		m_SourceExtension = sourcePath.extension().string();
+
+		FileActionCallback callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnSourceModified(oldPath, newPath, fileAction); };
+		m_TrackingID = FileManager::Get().TrackFile(sourcePath, callback);
+	}
+
+	SourceAsset::~SourceAsset()
+	{
+		FileManager::Get().UntrackFile(m_TrackingID);
 	}
 
 	bool SourceAsset::HasMetadata()
@@ -22,10 +31,15 @@ namespace Odyssey
 		Type = type;
 	}
 
-	void SourceAsset::OnSourceModified()
+	void SourceAsset::OnSourceModified(const Path& oldPath, const Path& newPath, FileActionType fileAction)
 	{
-		for (auto& callback : m_OnSourceModified)
-			callback();
+		if (fileAction == FileActionType::Modified && (oldPath == m_SourcePath || newPath == m_SourcePath))
+		{
+			for (auto& callback : m_OnSourceModified)
+			{
+				callback();
+			}
+		}
 	}
 
 	Asset::Asset(const Path& assetPath)

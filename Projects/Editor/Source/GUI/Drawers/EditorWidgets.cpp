@@ -4,6 +4,7 @@
 #include "Transform.h"
 #include "imgui_internal.h"
 #include "Input.h"
+#include "SpriteRenderer.h"
 
 namespace Odyssey
 {
@@ -155,6 +156,23 @@ namespace Odyssey
 		if (m_TypeName == Transform::Type)
 		{
 			for (auto entity : scene->GetAllEntitiesWith<Transform>())
+			{
+				GameObject gameObject = GameObject(scene, entity);
+
+				// Skip any game objects marked to not show in the hierarchy
+				if (EditorPropertiesComponent* properties = gameObject.TryGetComponent<EditorPropertiesComponent>())
+					if (!properties->ShowInHierarchy)
+						continue;
+
+				m_Entities.push_back({ gameObject.GetName(), gameObject.GetGUID() });
+
+				if (gameObject.GetGUID() == m_SelectedEntity)
+					m_SelectedIndex = m_Entities.size() - 1;
+			}
+		}
+		else if (m_TypeName == SpriteRenderer::Type)
+		{
+			for (auto entity : scene->GetAllEntitiesWith<SpriteRenderer>())
 			{
 				GameObject gameObject = GameObject(scene, entity);
 

@@ -11,9 +11,6 @@ namespace Odyssey
 	SourceTexture::SourceTexture(const Path& sourcePath)
 		: SourceAsset(sourcePath)
 	{
-		FileActionCallback callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnFileAction(oldPath, newPath, fileAction); };
-		m_TrackingID = FileManager::Get().TrackFile(sourcePath, callback);
-
 		LoadTexture();
 	}
 
@@ -24,14 +21,5 @@ namespace Odyssey
 
 		size_t bufferSize = sizeof(uint8_t) * m_Width * m_Height * 4;
 		m_PixelBuffer.WriteData(pixels, bufferSize);
-	}
-
-	void SourceTexture::OnFileAction(const Path& oldFilename, const Path& newFilename, FileActionType fileAction)
-	{
-		if (fileAction == FileActionType::Modified)
-		{
-			LoadTexture();
-			OnSourceModified();
-		}
 	}
 }

@@ -19,6 +19,7 @@
 #include "ParticleBatcher.h"
 #include "VulkanBuffer.h"
 #include "SceneManager.h"
+#include "SpriteRenderer.h"
 
 namespace Odyssey
 {
@@ -161,14 +162,13 @@ namespace Odyssey
 		// Search the scene for the main camera
 		for (auto entity : scene->GetAllEntitiesWith<Camera>())
 		{
+			// Get the camera component
 			GameObject gameObject = GameObject(scene, entity);
-			Camera& camera = gameObject.GetComponent<Camera>();
+			Camera* camera = gameObject.TryGetComponent<Camera>();
 
-			if (camera.IsEnabled() && camera.IsMainCamera())
-			{
-				m_MainCamera = &camera;
-				SetSceneData(m_MainCamera);
-			}
+			// Cache the cameras for lookup later
+			uint8_t cameraTag = (uint8_t)camera->GetTag();
+			m_Cameras[cameraTag] = camera;
 		}
 
 		ParticleBatcher::Update();
@@ -183,6 +183,7 @@ namespace Odyssey
 		}
 
 		setPasses.clear();
+		SpriteDrawcalls.clear();
 		m_GUIDToSetPass.clear();
 		m_NextUniformBuffer = 0;
 		m_NextCameraBuffer = 0;
@@ -190,30 +191,43 @@ namespace Odyssey
 		m_MainCamera = nullptr;
 	}
 
-	uint32_t RenderScene::SetSceneData(Camera* camera)
+	uint32_t RenderScene::SetSceneData(uint8_t cameraTag)
 	{
-		// TODO: Fix this to not use the scene manager
-		EnvironmentSettings envSettings = SceneManager::GetActiveScene()->GetEnvironmentSettings();
+		if (m_Cameras.contains(cameraTag))
+		{
+			Camera* camera = m_Cameras[cameraTag];
 
-		SceneData sceneData;
-		sceneData.View = camera->GetInverseView();
-		sceneData.ViewProjection = camera->GetProjection() * camera->GetInverseView();
+			// TODO: Fix this to not use the scene manager
+			EnvironmentSettings envSettings = SceneManager::GetActiveScene()->GetEnvironmentSettings();
 
-		float4 viewPos = camera->GetView()[3];
-		viewPos.w = 1.0f;
-		sceneData.ViewPosition = viewPos;
+			SceneData sceneData;
+			sceneData.View = camera->GetInverseView();
+			sceneData.Projection = camera->GetProjection();
+			sceneData.ViewProjection = sceneData.Projection * sceneData.View;
+			sceneData.ViewPosition = camera->GetViewPosition();
 
-		if (m_ShadowLight)
-			sceneData.LightViewProj = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, m_ShadowLight->GetDirection());
+			if (m_ShadowLight)
+				sceneData.LightViewProj = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, m_ShadowLight->GetDirection());
+
+			uint32_t index = m_NextCameraBuffer;
+
+			// Update the scene ubo
+			auto sceneUBO = ResourceManager::GetResource<VulkanBuffer>(sceneDataBuffers[index]);
+			sceneUBO->CopyData(sizeof(sceneData), &sceneData);
+
+			m_NextCameraBuffer++;
+			return index;
+		}
 		
-		uint32_t index = m_NextCameraBuffer;
+		return 0;
+	}
 
-		// Update the scene ubo
-		auto sceneUBO = ResourceManager::GetResource<VulkanBuffer>(sceneDataBuffers[index]);
-		sceneUBO->CopyData(sizeof(sceneData), &sceneData);
+	Camera* RenderScene::GetCamera(uint8_t cameraTag)
+	{
+		if (m_Cameras.contains(cameraTag))
+			return m_Cameras[cameraTag];
 
-		m_NextCameraBuffer++;
-		return index;
+		return nullptr;
 	}
 
 	void RenderScene::SetupDrawcalls(Scene* scene)
@@ -289,6 +303,26 @@ namespace Odyssey
 				ResourceID skinningID = skinningBuffers[uboIndex];
 				auto skinningBuffer = ResourceManager::GetResource<VulkanBuffer>(skinningID);
 				skinningBuffer->CopyData(sizeof(SkinningData), &skinningData);
+			}
+		}
+
+		for (auto entity : scene->GetAllEntitiesWith<SpriteRenderer, Transform>())
+		{
+			GameObject gameObject = GameObject(scene, entity);
+			SpriteRenderer& spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+			Transform& transform = gameObject.GetComponent<Transform>();
+
+			if (spriteRenderer.IsEnabled())
+			{
+				SpriteDrawcall& drawcall = SpriteDrawcalls.emplace_back();
+				drawcall.Anchor = spriteRenderer.GetAnchor();
+				drawcall.Position = transform.GetPosition();
+				drawcall.Scale = transform.GetScale();
+				drawcall.Fill = spriteRenderer.GetFill();
+				drawcall.BaseColor = spriteRenderer.GetBaseColor();
+
+				if (spriteRenderer.GetSprite())
+					drawcall.Sprite = spriteRenderer.GetSprite()->GetTexture();
 			}
 		}
 	}

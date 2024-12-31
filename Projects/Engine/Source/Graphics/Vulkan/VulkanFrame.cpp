@@ -2,7 +2,6 @@
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
 #include "VulkanPhysicalDevice.h"
-#include "VulkanRenderTexture.h"
 #include "VulkanImage.h"
 
 namespace Odyssey

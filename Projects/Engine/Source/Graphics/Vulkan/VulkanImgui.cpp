@@ -7,9 +7,9 @@
 #include "VulkanCommandPool.h"
 #include "Events.h"
 #include "VulkanContext.h"
-#include "VulkanRenderTexture.h"
 #include "VulkanTexture.h"
 #include "VulkanTextureSampler.h"
+#include "RenderTarget.h"
 
 namespace Odyssey
 {
@@ -26,7 +26,8 @@ namespace Odyssey
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+		// Note: Currently there is a bug with multiple viewports and MSAA
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
@@ -100,12 +101,12 @@ namespace Odyssey
 	{
 		ImGuiIO& io = ImGui::GetIO();
 
-		// Update and Render additional Platform Windows
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-		}
+		// Note: Only required for multiple viewports
+		//if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		//{
+		//	ImGui::UpdatePlatformWindows();
+		//	ImGui::RenderPlatformWindowsDefault();
+		//}
 	}
 
 	uint64_t VulkanImgui::AddTexture(ResourceID textureID)
@@ -123,16 +124,22 @@ namespace Odyssey
 
 	uint64_t VulkanImgui::AddRenderTexture(ResourceID renderTextureID, ResourceID samplerID)
 	{
-		auto texture = ResourceManager::GetResource<VulkanRenderTexture>(renderTextureID);
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(renderTextureID);
 
 		Ref<VulkanImage> image;
 
-		if (m_Context->GetSampleCount() > 1)
-			image = ResourceManager::GetResource<VulkanImage>(texture->GetResolveImage());
-		else
+		if (renderTarget->GetColorResolveTexture().IsValid())
+		{
+			Ref<VulkanTexture> texture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorResolveTexture());
 			image = ResourceManager::GetResource<VulkanImage>(texture->GetImage());
+		}
+		else
+		{
+			Ref<VulkanTexture> texture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorTexture());
+			image = ResourceManager::GetResource<VulkanImage>(texture->GetImage());
+		}
 
-		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(samplerID);
+		Ref<VulkanTextureSampler> sampler = ResourceManager::GetResource<VulkanTextureSampler>(samplerID);
 
 		VkSampler samplerVk = sampler->GetSamplerVK();
 		VkImageView view = image->GetImageView();

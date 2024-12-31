@@ -13,6 +13,8 @@
 #include "GUIManager.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
+#include "SpriteRenderer.h"
+#include "Camera.h"
 
 namespace Odyssey
 {
@@ -184,6 +186,30 @@ namespace Odyssey
 					GameObject gameObject = m_Scene->CreateGameObject();
 					gameObject.AddComponent<Transform>();
 					gameObject.AddComponent<MeshRenderer>();
+				}
+				if (ImGui::MenuItem("2D Object"))
+				{
+					GameObject gameObject = m_Scene->CreateGameObject();
+					gameObject.AddComponent<Transform>();
+					gameObject.AddComponent<SpriteRenderer>();
+				}
+				if (ImGui::MenuItem("Light"))
+				{
+					GameObject gameObject = m_Scene->CreateGameObject();
+					gameObject.AddComponent<Transform>();
+					gameObject.AddComponent<Light>();
+				}
+				if (ImGui::MenuItem("Particle Emitter"))
+				{
+					GameObject gameObject = m_Scene->CreateGameObject();
+					gameObject.AddComponent<Transform>();
+					gameObject.AddComponent<ParticleEmitter>();
+				}
+				if (ImGui::MenuItem("Camera"))
+				{
+					GameObject gameObject = m_Scene->CreateGameObject();
+					gameObject.AddComponent<Transform>();
+					gameObject.AddComponent<Camera>();
 				}
 				ImGui::EndMenu();
 			}
