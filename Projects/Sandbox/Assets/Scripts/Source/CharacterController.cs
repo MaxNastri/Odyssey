@@ -7,8 +7,6 @@ namespace Sandbox
     {
         public float Speed = 10.0f;
 
-        public SpriteRenderer SpriteRenderer;
-
         private Transform m_Transform;
         private Animator m_Animator;
 
@@ -22,18 +20,7 @@ namespace Sandbox
         {
             Vector3 inputDirection = GetInputDirection();
 
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-                SpriteRenderer.Fill += new Vector2(1.0f * Time.DeltaTime, 0.0f);
-
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-                SpriteRenderer.Fill += new Vector2(-1.0f * Time.DeltaTime, 0.0f);
-
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-                SpriteRenderer.BaseColor = Color.Cyan;
-            else if (Input.GetKeyDown(KeyCode.Alpha4))
-                SpriteRenderer.BaseColor = Color.Green;
-
-            if (inputDirection.Length() == 0.0f)
+            if (inputDirection == Vector3.Zero)
             {
                 if (m_Animator != null)
                     m_Animator.SetFloat("Speed", 0.0f);
@@ -41,7 +28,14 @@ namespace Sandbox
             else
             {
                 if (m_Transform != null)
-                    m_Transform.Position += inputDirection * Speed * Time.DeltaTime;
+                {
+                    Vector3 forward = m_Transform.Forward * inputDirection.Z * Speed;
+                    Vector3 right = m_Transform.Right * inputDirection.X * Speed;
+                    Vector3 up = new Vector3(0, inputDirection.Y * Speed, 0);
+                    Vector3 velocity = forward + right + up;
+
+                    m_Transform.Position += velocity * Time.DeltaTime;
+                }
 
                 if (m_Animator != null)
                     m_Animator.SetFloat("Speed", Speed);

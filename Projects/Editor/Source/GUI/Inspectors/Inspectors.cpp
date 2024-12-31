@@ -1250,7 +1250,7 @@ namespace Odyssey
 				CreateEntityDrawer(fieldStorage.Name, storage.ScriptID, fieldID, typeName, initialValue);
 			}
 			// TODO: Convert into IsAssetType check
-			else if (fieldStorage.DataType == DataType::Mesh || fieldStorage.DataType == DataType::Material)
+			else if (fieldStorage.DataType == DataType::Mesh || fieldStorage.DataType == DataType::Material || fieldStorage.DataType == DataType::Texture2D)
 			{
 				GUID initialValue;
 				fieldStorage.TryGetValue(initialValue);

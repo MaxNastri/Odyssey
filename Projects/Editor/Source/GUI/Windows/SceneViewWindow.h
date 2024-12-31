@@ -13,6 +13,7 @@ namespace Odyssey
 	class Transform;
 	class VulkanTextureSampler;
 	struct GUISelectionChangedEvent;
+	struct PlaymodeStateChangedEvent;
 
 	class SceneViewWindow : public DockableWindow
 	{
@@ -27,8 +28,9 @@ namespace Odyssey
 		virtual void OnWindowClose() override;
 
 	private:
-		void OnSceneLoaded(SceneLoadedEvent* event);
-		void OnGUISelectionChanged(GUISelectionChangedEvent* event);
+		void OnSceneLoaded(SceneLoadedEvent* eventData);
+		void OnGUISelectionChanged(GUISelectionChangedEvent* eventData);
+		void OnPlaymodeStateChanged(PlaymodeStateChangedEvent* eventData);
 
 	private:
 		void CreateRenderTexture();
@@ -40,10 +42,12 @@ namespace Odyssey
 	private: // Event listener
 		Ref<IEventListener> m_SceneLoadedListener;
 		Ref<IEventListener> m_GUISelectionListener;
+		Ref<IEventListener> m_PlaymodeStateChangedListener;
 
 	private: // Camera stuff
 		GameObject m_GameObject;
 		bool m_CameraControllerInUse = false;
+		bool m_AllowInput = true;
 
 	private: // Rendering stuff
 		Ref<OpaquePass> m_SceneViewPass;

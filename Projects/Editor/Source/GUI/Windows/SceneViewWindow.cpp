@@ -37,10 +37,13 @@ namespace Odyssey
 		CreateRenderTexture();
 
 		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
-			([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
+			([this](SceneLoadedEvent* eventData) { OnSceneLoaded(eventData); });
 
-		m_GUISelectionListener = EventSystem::Listen< GUISelectionChangedEvent>
-			([this](GUISelectionChangedEvent* event) { OnGUISelectionChanged(event); });
+		m_GUISelectionListener = EventSystem::Listen<GUISelectionChangedEvent>
+			([this](GUISelectionChangedEvent* eventData) { OnGUISelectionChanged(eventData); });
+
+		m_PlaymodeStateChangedListener = EventSystem::Listen<PlaymodeStateChangedEvent>
+			([this](PlaymodeStateChangedEvent* eventData) { OnPlaymodeStateChanged(eventData); });
 	}
 
 	void SceneViewWindow::Destroy()
@@ -50,6 +53,16 @@ namespace Odyssey
 			EventSystem::RemoveListener<SceneLoadedEvent>(m_SceneLoadedListener);
 			m_SceneLoadedListener = nullptr;
 		}
+		if (m_GUISelectionListener)
+		{
+			EventSystem::RemoveListener<GUISelectionChangedEvent>(m_GUISelectionListener);
+			m_GUISelectionListener = nullptr;
+		}
+		if (m_PlaymodeStateChangedListener)
+		{
+			EventSystem::RemoveListener<PlaymodeStateChangedEvent>(m_PlaymodeStateChangedListener);
+			m_PlaymodeStateChangedListener = nullptr;
+		}
 		DestroyRenderTexture();
 	}
 
@@ -58,7 +71,7 @@ namespace Odyssey
 		// Reset the camera controller use flag before updating the camera controller
 		m_CameraControllerInUse = false;
 
-		if (m_GameObject.IsValid())
+		if (m_GameObject.IsValid() && m_AllowInput)
 			UpdateCameraController();
 
 		if (!m_CameraControllerInUse)
@@ -101,10 +114,10 @@ namespace Odyssey
 		GUIManager::DestroyDockableWindow(this);
 	}
 
-	void SceneViewWindow::OnSceneLoaded(SceneLoadedEvent* event)
+	void SceneViewWindow::OnSceneLoaded(SceneLoadedEvent* eventData)
 	{
 		// Create a new game object and mark it as hidden
-		if (m_ActiveScene = event->loadedScene)
+		if (m_ActiveScene = eventData->loadedScene)
 		{
 			m_GameObject = m_ActiveScene->CreateGameObject();
 			Transform& transform = m_GameObject.AddComponent<Transform>();
@@ -127,10 +140,23 @@ namespace Odyssey
 		}
 	}
 
-	void SceneViewWindow::OnGUISelectionChanged(GUISelectionChangedEvent* event)
+	void SceneViewWindow::OnGUISelectionChanged(GUISelectionChangedEvent* eventData)
 	{
-		if (event->Selection.Type == GameObject::Type)
-			m_SelectedGO = m_ActiveScene->GetGameObject(event->Selection.GUID);
+		if (eventData->Selection.Type == GameObject::Type)
+			m_SelectedGO = m_ActiveScene->GetGameObject(eventData->Selection.GUID);
+	}
+
+	void SceneViewWindow::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* eventData)
+	{
+		switch (eventData->State)
+		{
+			case PlaymodeState::EnterPlaymode:
+				m_AllowInput = false;
+				break;
+			case PlaymodeState::ExitPlaymode:
+				m_AllowInput = true;
+				break;
+		}
 	}
 
 	void SceneViewWindow::CreateRenderTexture()
@@ -269,7 +295,7 @@ namespace Odyssey
 
 	void SceneViewWindow::UpdateGizmosInput()
 	{
-		if (m_CursorInContentRegion)
+		if (m_CursorInContentRegion && m_AllowInput)
 		{
 			if (Input::GetKeyPress(KeyCode::Q))
 			{

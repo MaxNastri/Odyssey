@@ -1,4 +1,6 @@
-﻿namespace Odyssey
+﻿using System.Text.RegularExpressions;
+
+namespace Odyssey
 {
     public class SpriteRenderer : Component
     {
@@ -33,6 +35,26 @@
             set
             {
                 unsafe {  InternalCalls.SpriteRenderer_SetBaseColor(Entity.GUID, value); }
+            }
+        }
+
+        public Texture2D Sprite
+        {
+            get
+            {
+                unsafe
+                {
+                    GUID spriteGUID;
+                    InternalCalls.SpriteRenderer_GetSprite(Entity.GUID, &spriteGUID);
+                    return new Texture2D(spriteGUID);
+                }
+            }
+            set
+            {
+                unsafe
+                {
+                    InternalCalls.SpriteRenderer_SetSprite(Entity.GUID, value.Guid);
+                }
             }
         }
     }

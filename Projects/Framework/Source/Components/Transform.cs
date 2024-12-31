@@ -43,5 +43,31 @@
                 unsafe { InternalCalls.Transform_SetScale(Entity.GUID, value); }
             }
         }
+
+        public Vector3 Forward
+        {
+            get
+            {
+                unsafe
+                {
+                    Vector3 forward = new Vector3();
+                    InternalCalls.Transform_GetForward(Entity.GUID, &forward);
+                    return forward;
+                }
+            }
+        }
+
+        public Vector3 Right
+        {
+            get
+            {
+                unsafe
+                {
+                    Vector3 right = new Vector3();
+                    InternalCalls.Transform_GetRight(Entity.GUID, &right);
+                    return right;
+                }
+            }
+        }
     }
 }

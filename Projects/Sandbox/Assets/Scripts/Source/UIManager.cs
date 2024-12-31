@@ -1,9 +1,11 @@
 ﻿using Odyssey;
+using System;
 
 namespace Sandbox
 {
     public class UIManager : Entity
     {
+        public Texture2D Texture;
         public SpriteRenderer HealthBar;
         public SpriteRenderer ManaBar;
         public float HealthSpeed = 1.0f;
@@ -23,6 +25,9 @@ namespace Sandbox
 
             if (ManaBar.Fill.X <= 0.0f || ManaBar.Fill.X >= 1.0f)
                 m_ManaDirection *= -1.0f;
+
+            if (Texture != null && Input.GetKeyDown(KeyCode.Alpha0))
+                HealthBar.Sprite = Texture;
         }
     }
 }
