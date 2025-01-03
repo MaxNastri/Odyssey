@@ -11,7 +11,7 @@ namespace Odyssey
 		Reset();
 	}
 
-	const std::map<std::string, BlendKey>& AnimationClipTimeline::BlendKeys(float deltaTime)
+	std::map<std::string, BlendKey>& AnimationClipTimeline::BlendKeys(float deltaTime)
 	{
 		m_CurrentTime += deltaTime;
 

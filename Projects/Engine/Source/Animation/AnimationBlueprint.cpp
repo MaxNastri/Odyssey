@@ -2,6 +2,7 @@
 #include "AnimationClip.h"
 #include "AnimationNodes.h"
 #include "Enum.h"
+#include "OdysseyTime.h"
 
 namespace Odyssey
 {
@@ -144,6 +145,7 @@ namespace Odyssey
 				{
 					SerializationNode transitionsNode = linkNode.GetNode("Forward Transitions");
 					assert(transitionsNode.IsSequence());
+					assert(transitionsNode.ChildCount() == 0 || transitionsNode.ChildCount() == 1);
 
 					for (size_t i = 0; i < transitionsNode.ChildCount(); i++)
 					{
@@ -151,8 +153,10 @@ namespace Odyssey
 						assert(conditionNode.IsMap());
 
 						std::string propertyName;
+						float blendTime = 1.0f;
 						std::string comparisonName;
 						conditionNode.ReadData("Property", propertyName);
+						conditionNode.ReadData("Blend Time", blendTime);
 						conditionNode.ReadData("Comparison", comparisonName);
 
 						ComparisonOp comparison = Enum::ToEnum<ComparisonOp>(comparisonName);
@@ -189,14 +193,14 @@ namespace Odyssey
 									break;
 							}
 
-							Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer);
-							animationLink->AddTransition(beginState, endState, condition);
+							Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer, blendTime);
+							animationLink->SetTransition(beginState, endState, condition);
 						}
 					}
 				}
 
 
-				// Deserialize forward transitions
+				// Deserialize return transitions
 				{
 					SerializationNode transitionsNode = linkNode.GetNode("Return Transitions");
 					assert(transitionsNode.IsSequence());
@@ -207,8 +211,10 @@ namespace Odyssey
 						assert(conditionNode.IsMap());
 
 						std::string propertyName;
+						float blendTime = 1.0f;
 						std::string comparisonName;
 						conditionNode.ReadData("Property", propertyName);
+						conditionNode.ReadData("Blend Time", blendTime);
 						conditionNode.ReadData("Comparison", comparisonName);
 
 						ComparisonOp comparison = Enum::ToEnum<ComparisonOp>(comparisonName);
@@ -245,8 +251,8 @@ namespace Odyssey
 									break;
 							}
 
-							Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer);
-							animationLink->AddTransition(endState, beginState, condition);
+							Ref<AnimationCondition> condition = new AnimationCondition(animationProperty, comparison, valueBuffer, blendTime);
+							animationLink->SetTransition(endState, beginState, condition);
 						}
 					}
 				}
@@ -335,81 +341,21 @@ namespace Odyssey
 				// Serialize forward transitions
 				{
 					SerializationNode transitionsNode = linkNode.CreateSequenceNode("Forward Transitions");
-					for (Ref<AnimationCondition> condition : animLink->GetForwardTransitions())
-					{
-						SerializationNode conditionNode = transitionsNode.AppendChild();
-						conditionNode.SetMap();
+					SerializationNode conditionNode = transitionsNode.AppendChild();
+					conditionNode.SetMap();
 
-						std::string propertyName = condition->GetPropertyName();
-						ComparisonOp comparison = condition->GetComparison();
-						conditionNode.WriteData("Property", propertyName);
-						conditionNode.WriteData("Comparison", Enum::ToString(comparison));
-
-						switch (condition->GetPropertyType())
-						{
-							case AnimationPropertyType::Trigger:
-							case AnimationPropertyType::Bool:
-							{
-								bool value = condition->GetTargetValue<bool>();
-								conditionNode.WriteData("Value", value);
-								break;
-							}
-							case AnimationPropertyType::Float:
-							{
-								float value = condition->GetTargetValue<float>();
-								conditionNode.WriteData("Value", value);
-								break;
-							}
-							case AnimationPropertyType::Int:
-							{
-								int32_t value = condition->GetTargetValue<int32_t>();
-								conditionNode.WriteData("Value", value);
-								break;
-							}
-							default:
-								break;
-						}
-					}
+					if (Ref<AnimationCondition> forwardTransition = animLink->GetForwardTransition())
+						forwardTransition->Serialize(conditionNode);
 				}
 
 				// Serialize Return transitions
 				{
 					SerializationNode transitionsNode = linkNode.CreateSequenceNode("Return Transitions");
-					for (Ref<AnimationCondition> condition : animLink->GetReturnTransitions())
-					{
-						SerializationNode conditionNode = transitionsNode.AppendChild();
-						conditionNode.SetMap();
+					SerializationNode conditionNode = transitionsNode.AppendChild();
+					conditionNode.SetMap();
 
-						std::string propertyName = condition->GetPropertyName();
-						ComparisonOp comparison = condition->GetComparison();
-						conditionNode.WriteData("Property", propertyName);
-						conditionNode.WriteData("Comparison", Enum::ToString(comparison));
-
-						switch (condition->GetPropertyType())
-						{
-							case AnimationPropertyType::Trigger:
-							case AnimationPropertyType::Bool:
-							{
-								bool value = condition->GetTargetValue<bool>();
-								conditionNode.WriteData("Value", value);
-								break;
-							}
-							case AnimationPropertyType::Float:
-							{
-								float value = condition->GetTargetValue<float>();
-								conditionNode.WriteData("Value", value);
-								break;
-							}
-							case AnimationPropertyType::Int:
-							{
-								int32_t value = condition->GetTargetValue<int32_t>();
-								conditionNode.WriteData("Value", value);
-								break;
-							}
-							default:
-								break;
-						}
-					}
+					if (Ref<AnimationCondition> returnTransition = animLink->GetReturnTransition())
+						returnTransition->Serialize(conditionNode);
 				}
 			}
 		}
@@ -424,17 +370,53 @@ namespace Odyssey
 
 	const std::map<std::string, BlendKey>& AnimationBlueprint::GetKeyframe()
 	{
+		Ref<AnimationState> nextState;
+		float nextBlendTime = 0.0f;
+
+		// Evaluate the links connected to our current state
 		if (m_StateToLinks.contains(m_CurrentState))
 		{
 			auto& links = m_StateToLinks[m_CurrentState];
 
 			for (auto& animationLink : links)
 			{
-				if (animationLink->Evaluate(m_CurrentState))
+				// Evaluate the animation link parameters and give us the next state and blend time
+				if (animationLink->Evaluate(m_CurrentState, nextState, nextBlendTime))
 					break;
 			}
 		}
 
+		// We are transitioning states, setup blending
+		if (m_CurrentState && nextState)
+		{
+			m_PrevState = m_CurrentState;
+			m_CurrentState = nextState;
+			m_CurrentBlendTime = 0.0f;
+			m_EndBlendTime = nextBlendTime;
+		}
+
+		// Check if we are blending between 2 states
+		if (m_PrevState && m_CurrentState)
+		{
+			// Update the blend time clamped to the end blend time
+			m_CurrentBlendTime = std::clamp(m_CurrentBlendTime + Time::DeltaTime(), 0.0f, m_EndBlendTime);
+
+			// Evaluate the current state mixing it with the previous state using the blend time as the ratio
+			const auto& keyMap = m_CurrentState->Evaluate(m_PrevState, m_CurrentBlendTime / m_EndBlendTime);
+
+			// Check if blending is complete
+			if (m_CurrentBlendTime == m_EndBlendTime)
+			{
+				// Reset the blend state
+				m_CurrentBlendTime = 0.0f;
+				m_EndBlendTime = 0.0f;
+				m_PrevState.Reset();
+			}
+
+			return keyMap;
+		}
+
+		// No blending so just evaluate the current state
 		return m_CurrentState->Evaluate();
 	}
 
@@ -555,7 +537,7 @@ namespace Odyssey
 
 			Ref<AnimationLink> animationLink = new AnimationLink(beginState, endState);
 			Ref<AnimationCondition> condition = new AnimationCondition(animProperty, comparisonOp, propertyValue);
-			animationLink->AddTransition(beginState, endState, condition);
+			animationLink->SetTransition(beginState, endState, condition);
 
 			AddLink(animationLink->GetGUID(), beginNode, endNode);
 

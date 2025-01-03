@@ -16,7 +16,8 @@ namespace Odyssey
 		AnimationState(GUID guid, std::string_view name, GUID animationClip);
 
 	public:
-		const std::map<std::string, BlendKey>& Evaluate();
+		std::map<std::string, BlendKey>& Evaluate();
+		std::map<std::string, BlendKey>& Evaluate(Ref<AnimationState>& endState, float blendFactor);
 		void Reset();
 
 	public:

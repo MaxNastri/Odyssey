@@ -64,5 +64,8 @@ namespace Odyssey
 		std::map<GUID, Ref<AnimationState>> m_States;
 		std::map<Ref<AnimationState>, std::vector<Ref<AnimationLink>>> m_StateToLinks;
 		Ref<AnimationState> m_CurrentState;
+		Ref<AnimationState> m_PrevState;
+		float m_CurrentBlendTime = 0.0f;
+		float m_EndBlendTime = 0.0f;
 	};
 }

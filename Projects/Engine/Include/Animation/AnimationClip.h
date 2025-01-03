@@ -18,7 +18,7 @@ namespace Odyssey
 		void Load();
 
 	public:
-		const std::map<std::string, BlendKey>& BlendKeys(float deltaTime);
+		std::map<std::string, BlendKey>& BlendKeys(float deltaTime);
 		void Reset();
 
 	public:

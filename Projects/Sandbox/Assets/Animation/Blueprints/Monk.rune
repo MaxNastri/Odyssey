@@ -21,10 +21,12 @@ Animation Links:
     End State: 15727017180173566052
     Forward Transitions:
       - Property: Speed
+        Blend Time: 0.25
         Comparison: Greater
         Value: 0
     Return Transitions:
       - Property: Speed
+        Blend Time: 0.1
         Comparison: LessOrEqual
         Value: 0
   - GUID: 2622370683570909180
@@ -32,75 +34,11 @@ Animation Links:
     End State: 15727017180173566052
     Forward Transitions:
       - Property: Speed
+        Blend Time: 0.25
         Comparison: Greater
         Value: 0
     Return Transitions:
       - Property: Speed
-        Comparison: LessOrEqual
-        Value: 0
-  - GUID: 2622370683570909180
-    Begin State: 5461339041619586459
-    End State: 15727017180173566052
-    Forward Transitions:
-      - Property: Speed
-        Comparison: Greater
-        Value: 0
-    Return Transitions:
-      - Property: Speed
-        Comparison: LessOrEqual
-        Value: 0
-  - GUID: 2622370683570909180
-    Begin State: 5461339041619586459
-    End State: 15727017180173566052
-    Forward Transitions:
-      - Property: Speed
-        Comparison: Greater
-        Value: 0
-    Return Transitions:
-      - Property: Speed
-        Comparison: LessOrEqual
-        Value: 0
-  - GUID: 2622370683570909180
-    Begin State: 5461339041619586459
-    End State: 15727017180173566052
-    Forward Transitions:
-      - Property: Speed
-        Comparison: Greater
-        Value: 0
-    Return Transitions:
-      - Property: Speed
-        Comparison: LessOrEqual
-        Value: 0
-  - GUID: 2622370683570909180
-    Begin State: 5461339041619586459
-    End State: 15727017180173566052
-    Forward Transitions:
-      - Property: Speed
-        Comparison: Greater
-        Value: 0
-    Return Transitions:
-      - Property: Speed
-        Comparison: LessOrEqual
-        Value: 0
-  - GUID: 2622370683570909180
-    Begin State: 5461339041619586459
-    End State: 15727017180173566052
-    Forward Transitions:
-      - Property: Speed
-        Comparison: Greater
-        Value: 0
-    Return Transitions:
-      - Property: Speed
-        Comparison: LessOrEqual
-        Value: 0
-  - GUID: 2622370683570909180
-    Begin State: 5461339041619586459
-    End State: 15727017180173566052
-    Forward Transitions:
-      - Property: Speed
-        Comparison: Greater
-        Value: 0
-    Return Transitions:
-      - Property: Speed
+        Blend Time: 0.1
         Comparison: LessOrEqual
         Value: 0

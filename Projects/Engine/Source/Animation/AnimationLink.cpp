@@ -1,13 +1,15 @@
 #include "AnimationLink.h"
 #include "AnimationState.h"
+#include "Enum.h"
 
 namespace Odyssey
 {
-	AnimationCondition::AnimationCondition(Ref<AnimationProperty> property, ComparisonOp comparison, const RawBuffer& targetValue)
+	AnimationCondition::AnimationCondition(Ref<AnimationProperty> property, ComparisonOp comparison, const RawBuffer& targetValue, float blendTime)
 	{
 		m_Property = property;
 		m_ComparisonOp = comparison;
 		RawBuffer::Copy(m_TargetValue, targetValue);
+		m_BlendTime = blendTime;
 	}
 
 	bool AnimationCondition::Evaluate()
@@ -89,6 +91,38 @@ namespace Odyssey
 		return false;
 	}
 
+	void AnimationCondition::Serialize(SerializationNode& conditionNode)
+	{
+		conditionNode.WriteData("Property", m_Property->Name);
+		conditionNode.WriteData("Blend Time", m_BlendTime);
+		conditionNode.WriteData("Comparison", Enum::ToString(m_ComparisonOp));
+
+		switch (m_Property->Type)
+		{
+			case AnimationPropertyType::Trigger:
+			case AnimationPropertyType::Bool:
+			{
+				bool value = GetTargetValue<bool>();
+				conditionNode.WriteData("Value", value);
+				break;
+			}
+			case AnimationPropertyType::Float:
+			{
+				float value = GetTargetValue<float>();
+				conditionNode.WriteData("Value", value);
+				break;
+			}
+			case AnimationPropertyType::Int:
+			{
+				int32_t value = GetTargetValue<int32_t>();
+				conditionNode.WriteData("Value", value);
+				break;
+			}
+			default:
+				break;
+		}
+	}
+
 	AnimationLink::AnimationLink(Ref<AnimationState> start, Ref<AnimationState> end)
 		: m_GUID(GUID::New()), m_BeginState(start), m_EndState(end)
 
@@ -101,37 +135,32 @@ namespace Odyssey
 
 	}
 
-	bool AnimationLink::Evaluate(Ref<AnimationState>& currentState)
+	bool AnimationLink::Evaluate(const Ref<AnimationState>& currentState, Ref<AnimationState>& nextState, float& blendTime)
 	{
-		for (Ref<AnimationCondition> condition : m_ForwardTransitions)
+		if (currentState != m_EndState && m_ForwardTransition->Evaluate())
 		{
-			if (currentState != m_EndState && condition->Evaluate())
-			{
-				currentState->Reset();
-				currentState = m_EndState;
-				return true;
-			}
+			nextState = m_EndState;
+			blendTime = m_ForwardTransition->GetBlendTime();
+			return true;
 		}
 
-		for (Ref<AnimationCondition> condition : m_ReturnTransitions)
+		if (currentState != m_BeginState && m_ReturnTransition->Evaluate())
 		{
-			if (currentState != m_BeginState && condition->Evaluate())
-			{
-				currentState->Reset();
-				currentState = m_BeginState;
-				return true;
-			}
+			nextState = m_BeginState;
+			blendTime = m_ReturnTransition->GetBlendTime();
+			return true;
 		}
 
 		return false;
 	}
-	void AnimationLink::AddTransition(Ref<AnimationState> begin, Ref<AnimationState> end, Ref<AnimationCondition>& condition)
+
+	void AnimationLink::SetTransition(Ref<AnimationState> begin, Ref<AnimationState> end, Ref<AnimationCondition>& condition)
 	{
 		// Check for a forward transition (begin -> end)
 		if (m_BeginState == begin && m_EndState == end)
-			m_ForwardTransitions.emplace_back(condition);
+			m_ForwardTransition = condition;
 		// Check for a return transition (end -> begin)
 		else if (m_BeginState == end && m_EndState == begin)
-			m_ReturnTransitions.emplace_back(condition);
+			m_ReturnTransition = condition;
 	}
 }
