@@ -93,9 +93,10 @@ namespace Odyssey
 		if (DrawGameObject(entity, isLeaf))
 		{
 			// Draw the node's children, if they exist
-			for (Ref<SceneNode>& childNode : node->Children)
+			// Reverse iteration since the node's can destroy themselves mid-draw
+			for (int32_t i = (int32_t)node->Children.size() - 1; i >= 0; i--)
 			{
-				DrawSceneNode(childNode);
+				DrawSceneNode(node->Children[i]);
 			}
 
 			// Pop the tree if we have children
@@ -125,7 +126,7 @@ namespace Odyssey
 
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 		{
-			m_Interactions.push_back({ InteractionType::Selection, gameObject.GetGUID()});
+			m_Interactions.push_back({ InteractionType::Selection, gameObject.GetGUID() });
 			m_Selected = gameObject;
 		}
 
@@ -135,6 +136,10 @@ namespace Odyssey
 			{
 				gameObject.Destroy();
 				ImGui::EndPopup();
+
+				if (open && !leaf)
+					ImGui::TreePop();
+
 				return false;
 			}
 
