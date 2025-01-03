@@ -141,11 +141,9 @@ namespace Odyssey
 			case PlaymodeState::EnterPlaymode:
 			{
 				Scene* activeScene = SceneManager::GetActiveScene();
-				Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
-				activeScene->SaveTo(tempPath);
-
 				activeScene->OnStartRuntime();
 				activeScene->Awake();
+
 				m_UpdateScripts = true;
 				break;
 			}
@@ -159,8 +157,10 @@ namespace Odyssey
 				Scene* activeScene = SceneManager::GetActiveScene();
 				activeScene->OnStopRuntime();
 
-				Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
-				SceneManager::LoadScene(tempPath);
+				// Slight hack here, we just load the scene off disk again
+				const Path& scenePath = activeScene->GetPath();
+				SceneManager::LoadScene(scenePath);
+
 				m_UpdateScripts = false;
 				break;
 			}

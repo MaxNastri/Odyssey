@@ -192,16 +192,24 @@ namespace Odyssey
 				Camera& camera = m_GameObject.GetComponent<Camera>();
 				ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 
-				glm::mat4 worldMatrix = transform->GetLocalMatrix();
+
+				glm::mat4 worldMatrix = transform->GetWorldMatrix();
 				glm::mat4 view = camera.GetInverseView();
 				glm::mat4 proj = camera.GetProjection();
+
+				glm::vec3 pretranslation;
+				glm::vec3 prescale;
+				glm::quat prerotation;
+				glm::vec3 preskew;
+				glm::vec4 preperspective;
+				glm::decompose(worldMatrix, prescale, prerotation, pretranslation, preskew, preperspective);
 
 				ImGuizmo::AllowAxisFlip(SceneViewWindow::AllowFlip);
 				ImGuizmo::SetGizmoSizeClipSpace(0.1f);
 				ImGuizmo::SetDrawlist();
 				ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 				ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(proj),
-					(ImGuizmo::OPERATION)op, SceneViewWindow::IsLocal ? ImGuizmo::LOCAL : ImGuizmo::WORLD, glm::value_ptr(worldMatrix));
+					(ImGuizmo::OPERATION)op, ImGuizmo::WORLD, glm::value_ptr(worldMatrix));
 
 				if (ImGuizmo::IsUsing())
 				{
@@ -213,11 +221,11 @@ namespace Odyssey
 					glm::decompose(worldMatrix, scale, rotation, translation, skew, perspective);
 
 					if (op == ImGuizmo::OPERATION::TRANSLATE)
-						transform->SetPosition(translation);
+						transform->AddPosition(translation - pretranslation);
 					else if (op == ImGuizmo::ROTATE)
-						transform->SetRotation(rotation);
+						transform->AddRotation(rotation - prerotation);
 					else if (op == ImGuizmo::SCALE)
-						transform->SetScale(scale);
+						transform->AddScale(scale - prescale);
 				}
 			}
 		}

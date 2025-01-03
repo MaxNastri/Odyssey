@@ -41,6 +41,7 @@ namespace Odyssey
 
 	public:
 		GUID GetGUID() { return m_GUID; }
+		const Path& GetPath() { return m_Path; }
 		SceneGraph& GetSceneGraph() { return m_SceneGraph; }
 		EnvironmentSettings& GetEnvironmentSettings() { return m_EnvironmentSettings; }
 

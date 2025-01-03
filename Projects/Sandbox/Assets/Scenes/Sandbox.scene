@@ -120,7 +120,7 @@ GameObjects:
           - Name: OpenRadius
             Value: 3
           - Name: OpenDistance
-            Value: 0.5
+            Value: 0.75
           - Name: OpenSpeed
             Value: 0.5
           - Name: Target
