@@ -41,9 +41,9 @@ namespace Odyssey
 		void AddChild(const GameObject& entity, const GameObject& child);
 		void RemoveChild(const GameObject& entity, const GameObject& child);
 		std::vector<GameObject> GetChildren(const GameObject& entity);
+		Ref<SceneNode> GetNode(const GameObject& entity);
 
 	private:
-		Ref<SceneNode> FindNode(const GameObject& entity);
 		void RemoveNodeAndChildren(Ref<SceneNode> node);
 		void RemoveParent(Ref<SceneNode> node);
 		void RemoveChildNode(Ref<SceneNode> parentNode, Ref<SceneNode> childNode);

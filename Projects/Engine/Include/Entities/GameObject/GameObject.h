@@ -11,6 +11,9 @@ namespace Odyssey
 	class GameObject
 	{
 	public:
+		CLASS_DECLARATION(Odyssey, GameObject)
+
+	public:
 		GameObject() = default;
 		GameObject(Scene* scene, entt::entity entity);
 		GameObject(Scene* scene, uint32_t id);
@@ -22,7 +25,9 @@ namespace Odyssey
 
 	public:
 		void Serialize(SerializationNode& gameObjectNode);
-		void Deserialize(SerializationNode& node);
+		void SerializeAsPrefab(SerializationNode& gameObjectNode);
+		void Deserialize(SerializationNode& gameObjectNode);
+		void DeserializeAsPrefab(SerializationNode& gameObjectNode);
 
 	public:
 		void SetParent(const GameObject& parent);
@@ -39,6 +44,10 @@ namespace Odyssey
 
 	public:
 		void Destroy();
+
+	private:
+		void Serialize(SerializationNode& gameObjectNode, bool prefab);
+		void Deserialize(SerializationNode& gameObjectNode, bool prefab);
 
 	public:
 		template<typename T, typename... Args>
@@ -62,8 +71,6 @@ namespace Odyssey
 		template<typename T>
 		bool RemoveComponent();
 
-	public:
-		CLASS_DECLARATION(Odyssey, GameObject)
 	private: // Non-serialized
 		entt::entity m_Entity;
 		Scene* m_Scene = nullptr;

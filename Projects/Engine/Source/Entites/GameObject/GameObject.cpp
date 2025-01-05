@@ -31,10 +31,77 @@ namespace Odyssey
 
 	void GameObject::Serialize(SerializationNode& gameObjectNode)
 	{
+		Serialize(gameObjectNode, false);
+	}
+
+	void GameObject::SerializeAsPrefab(SerializationNode& gameObjectNode)
+	{
+		Serialize(gameObjectNode, true);
+	}
+
+	void GameObject::Deserialize(SerializationNode& gameObjectNode)
+	{
+		Deserialize(gameObjectNode, false);
+	}
+
+	void GameObject::DeserializeAsPrefab(SerializationNode& gameObjectNode)
+	{
+		Deserialize(gameObjectNode, true);
+	}
+
+	void GameObject::SetParent(const GameObject& parent)
+	{
+		m_Scene->GetSceneGraph().SetParent(parent, *this);
+	}
+
+	void GameObject::RemoveParent()
+	{
+		m_Scene->GetSceneGraph().RemoveParent(*this);
+	}
+
+	GameObject GameObject::GetParent()
+	{
+		return m_Scene->GetSceneGraph().GetParent(*this);
+	}
+
+	std::vector<GameObject> GameObject::GetChildren()
+	{
+		return m_Scene->GetSceneGraph().GetChildren(*this);
+	}
+
+	const std::string& GameObject::GetName()
+	{
+		return GetComponent<PropertiesComponent>().Name;
+	}
+
+	GUID GameObject::GetGUID()
+	{
+		return GetComponent<PropertiesComponent>().GUID;
+	}
+
+	void GameObject::SetName(std::string_view name)
+	{
+		GetComponent<PropertiesComponent>().Name = name;
+	}
+
+	void GameObject::SetGUID(GUID guid)
+	{
+		GetComponent<PropertiesComponent>().GUID = guid;
+	}
+
+	void GameObject::Destroy()
+	{
+		if (m_Scene)
+			m_Scene->DestroyGameObject(*this);
+	}
+
+	void GameObject::Serialize(SerializationNode& gameObjectNode, bool prefab)
+	{
 		PropertiesComponent& properties = GetComponent<PropertiesComponent>();
 
 		gameObjectNode.WriteData("Name", properties.Name);
-		gameObjectNode.WriteData("GUID", properties.GUID.CRef());
+		if (!prefab)
+			gameObjectNode.WriteData("GUID", properties.GUID.CRef());
 		gameObjectNode.WriteData("Type", Type);
 
 		SerializationNode componentsNode = gameObjectNode.CreateSequenceNode("Components");
@@ -64,13 +131,14 @@ namespace Odyssey
 			spriteRenderer->Serialize(componentsNode);
 	}
 
-	void GameObject::Deserialize(SerializationNode& node)
+	void GameObject::Deserialize(SerializationNode& gameObjectNode, bool prefab)
 	{
 		PropertiesComponent& properties = GetComponent<PropertiesComponent>();
-		node.ReadData("Name", properties.Name);
-		node.ReadData("GUID", properties.GUID.Ref());
+		gameObjectNode.ReadData("Name", properties.Name);
+		if (!prefab)
+			gameObjectNode.ReadData("GUID", properties.GUID.Ref());
 
-		SerializationNode componentsNode = node.GetNode("Components");
+		SerializationNode componentsNode = gameObjectNode.GetNode("Components");
 		assert(componentsNode.IsSequence());
 
 		for (size_t i = 0; i < componentsNode.ChildCount(); ++i)
@@ -122,51 +190,5 @@ namespace Odyssey
 				spriteRenderer.Deserialize(componentNode);
 			}
 		}
-	}
-
-	void GameObject::SetParent(const GameObject& parent)
-	{
-		m_Scene->GetSceneGraph().SetParent(parent, *this);
-	}
-
-	void GameObject::RemoveParent()
-	{
-		m_Scene->GetSceneGraph().RemoveParent(*this);
-	}
-
-	GameObject GameObject::GetParent()
-	{
-		return m_Scene->GetSceneGraph().GetParent(*this);
-	}
-
-	std::vector<GameObject> GameObject::GetChildren()
-	{
-		return m_Scene->GetSceneGraph().GetChildren(*this);
-	}
-
-	const std::string& GameObject::GetName()
-	{
-		return GetComponent<PropertiesComponent>().Name;
-	}
-
-	GUID GameObject::GetGUID()
-	{
-		return GetComponent<PropertiesComponent>().GUID;
-	}
-
-	void GameObject::SetName(std::string_view name)
-	{
-		GetComponent<PropertiesComponent>().Name = name;
-	}
-
-	void GameObject::SetGUID(GUID guid)
-	{
-		GetComponent<PropertiesComponent>().GUID = guid;
-	}
-
-	void GameObject::Destroy()
-	{
-		if (m_Scene)
-			m_Scene->DestroyGameObject(*this);
 	}
 }

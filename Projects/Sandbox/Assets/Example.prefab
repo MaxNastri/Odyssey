@@ -1,0 +1,122 @@
+GameObjects:
+  - Sort Order: 13
+    ID: 0
+    Parent: -1
+    Name: Rune Gate R
+    GUID: 12385148431865297517
+    Type: Odyssey.GameObject
+    Components: []
+  - Sort Order: 0
+    ID: 1
+    Parent: 0
+    Name: Frame
+    GUID: 6852416722376220850
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 12860828773237114523
+        Materials:
+          - 10534666163883095481
+          - 2842208577896573398
+      - Type: Odyssey.Transform
+        Position: 'x: 14.753 y: -0.65684116 z: -7.1479607'
+        Rotation: 'x: -90.00002 y: -90 z: 1.3672792e-05'
+        Scale: 'x: 0.9345321 y: 0.9316467 z: 0.7597751'
+  - Sort Order: 1
+    ID: 2
+    Parent: 0
+    Name: Frame Decal
+    GUID: 9094724526618409671
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 15722660542382960456
+        Materials:
+          - 16157047713997452460
+      - Type: Odyssey.Transform
+        Position: 'x: 14.433 y: 0.5754985 z: -5.652239'
+        Rotation: 'x: 0 y: -90 z: 0'
+        Scale: 'x: 0.92960393 y: 0.7948602 z: 0.96813506'
+  - Sort Order: 2
+    ID: 3
+    Parent: 0
+    Name: Left Wing
+    GUID: 11310437828072623463
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 4271601825038393822
+        Materials:
+          - 10534666163883095481
+      - Type: Odyssey.Transform
+        Position: 'x: 14.847 y: 2.3037639 z: -6.576218'
+        Rotation: 'x: -90 y: -90 z: 0'
+        Scale: 'x: 0.55599993 y: 0.5452994 z: 0.47530174'
+  - Sort Order: 3
+    ID: 4
+    Parent: 0
+    Name: Right Wing
+    GUID: 15417563104418307848
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 4271601825038393822
+        Materials:
+          - 10534666163883095481
+      - Type: Odyssey.Transform
+        Position: 'x: 14.847 y: 2.3037639 z: -7.6586995'
+        Rotation: 'x: -90 y: 90 z: 0'
+        Scale: 'x: 0.55599993 y: 0.5452994 z: 0.47530174'
+  - Sort Order: 4
+    ID: 5
+    Parent: 0
+    Name: Face Decal L
+    GUID: 3262033722598145294
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 11362682416421520594
+        Materials:
+          - 16157047713997452460
+      - Type: Odyssey.Transform
+        Position: 'x: 14.718 y: 1.65 z: -6.757627'
+        Rotation: 'x: 0 y: -90 z: 0'
+        Scale: 'x: 0.7 y: 0.7 z: 0.8'
+  - Sort Order: 5
+    ID: 6
+    Parent: 0
+    Name: Face Decal R
+    GUID: 2778953980231989223
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 11907695015326494159
+        Materials:
+          - 16157047713997452460
+      - Type: Odyssey.Transform
+        Position: 'x: 14.718 y: 1.65 z: -7.4820037'
+        Rotation: 'x: 0 y: -90 z: 0'
+        Scale: 'x: 0.7 y: 0.7 z: 0.8'
+  - Sort Order: 6
+    ID: 7
+    Parent: 0
+    Name: Light
+    GUID: 11383884812507387769
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 13.345901 y: 1.457499 z: -7.1000686'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.Light
+        Enabled: 1
+        Light Type: Point
+        Color: 'x: 0.85490197 y: 0.64705884 z: 0.1254902'
+        Intensity: 0.5
+        Range: 7

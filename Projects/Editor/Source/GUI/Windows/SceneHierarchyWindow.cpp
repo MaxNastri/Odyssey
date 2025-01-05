@@ -15,6 +15,10 @@
 #include "Transform.h"
 #include "SpriteRenderer.h"
 #include "Camera.h"
+#include "Prefab.h"
+#include "AssetManager.h"
+#include "Project.h"
+#include "FileDialogs.h"
 
 namespace Odyssey
 {
@@ -132,6 +136,11 @@ namespace Odyssey
 
 		if (ImGui::BeginPopupContextItem())
 		{
+			if (ImGui::Button("Save as Prefab"))
+			{
+				const Path& path = FileDialogs::SaveFile("Prefab", ".prefab");
+				Ref<Prefab> prefab = AssetManager::CreateAsset<Prefab>(path, gameObject);
+			}
 			if (ImGui::Button("Delete"))
 			{
 				gameObject.Destroy();
@@ -215,6 +224,11 @@ namespace Odyssey
 					GameObject gameObject = m_Scene->CreateGameObject();
 					gameObject.AddComponent<Transform>();
 					gameObject.AddComponent<Camera>();
+				}
+				if (ImGui::MenuItem("Prefab"))
+				{
+					const Path& path = FileDialogs::OpenFile("Prefab", ".prefab");
+					Ref<Prefab> prefab = AssetManager::LoadAsset<Prefab>(path);
 				}
 				ImGui::EndMenu();
 			}

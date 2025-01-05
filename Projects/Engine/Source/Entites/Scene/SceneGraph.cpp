@@ -70,7 +70,7 @@ namespace Odyssey
 			if (connection.Parent)
 			{
 				GameObject parent = scene->GetGameObject(connection.Parent);
-				connection.Node->Parent = FindNode(parent);
+				connection.Node->Parent = GetNode(parent);
 				connection.Node->Parent->Children.push_back(connection.Node);
 
 				PropertiesComponent& properties = connection.Node->Entity.GetComponent<PropertiesComponent>();
@@ -112,14 +112,14 @@ namespace Odyssey
 
 	void SceneGraph::RemoveEntityAndChildren(const GameObject& entity)
 	{
-		if (Ref<SceneNode> node = FindNode(entity))
+		if (Ref<SceneNode> node = GetNode(entity))
 			RemoveNodeAndChildren(node);
 	}
 
 	void SceneGraph::SetParent(const GameObject& parent, const GameObject& entity)
 	{
-		Ref<SceneNode> parentNode = FindNode(parent);
-		Ref<SceneNode> node = FindNode(entity);
+		Ref<SceneNode> parentNode = GetNode(parent);
+		Ref<SceneNode> node = GetNode(entity);
 
 		if (node && parentNode)
 		{
@@ -135,7 +135,7 @@ namespace Odyssey
 
 	void SceneGraph::RemoveParent(const GameObject& entity)
 	{
-		if (Ref<SceneNode> node = FindNode(entity))
+		if (Ref<SceneNode> node = GetNode(entity))
 		{
 			RemoveParent(node);
 
@@ -147,7 +147,7 @@ namespace Odyssey
 
 	GameObject SceneGraph::GetParent(const GameObject& entity)
 	{
-		if (auto node = FindNode(entity))
+		if (auto node = GetNode(entity))
 		{
 			if (node->Parent)
 				return node->Parent->Entity;
@@ -158,8 +158,8 @@ namespace Odyssey
 
 	void SceneGraph::AddChild(const GameObject& entity, const GameObject& child)
 	{
-		auto node = FindNode(entity);
-		auto childNode = FindNode(child);
+		auto node = GetNode(entity);
+		auto childNode = GetNode(child);
 
 		if (node && childNode)
 		{
@@ -175,8 +175,8 @@ namespace Odyssey
 
 	void SceneGraph::RemoveChild(const GameObject& entity, const GameObject& child)
 	{
-		Ref<SceneNode> node = FindNode(entity);
-		Ref<SceneNode> childNode = FindNode(child);
+		Ref<SceneNode> node = GetNode(entity);
+		Ref<SceneNode> childNode = GetNode(child);
 
 		if (node && childNode)
 		{
@@ -189,7 +189,7 @@ namespace Odyssey
 	{
 		std::vector<GameObject> children;
 
-		if (auto node = FindNode(entity))
+		if (auto node = GetNode(entity))
 		{
 			for (size_t i = 0; i < node->Children.size(); i++)
 			{
@@ -200,7 +200,7 @@ namespace Odyssey
 		return children;
 	}
 
-	Ref<SceneNode> SceneGraph::FindNode(const GameObject& entity)
+	Ref<SceneNode> SceneGraph::GetNode(const GameObject& entity)
 	{
 		for (size_t i = 0; i < m_Nodes.size(); i++)
 		{

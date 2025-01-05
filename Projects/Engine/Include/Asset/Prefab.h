@@ -10,14 +10,11 @@ namespace Odyssey
 	public:
 		Prefab() = default;
 		Prefab(const Path& assetPath);
+		Prefab(const Path& assetPath, GameObject& instance);
 
 	public:
 		virtual void Save() override { }
 		void Save(GameObject& prefabInstance);
-		void Load(GameObject& prefabInstance);
-
-	private:
-		void LoadFromDisk(const Path& assetPath);
-		void SaveToDisk(const Path& assetPath);
+		void Load();
 	};
 }

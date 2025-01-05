@@ -22,6 +22,7 @@ namespace Odyssey
 		GameObject CreateGameObject();
 		GameObject CreateEmptyEntity();
 		GameObject GetGameObject(GUID guid) { return m_GUIDToGameObject[guid]; }
+		void AddGameObject(GUID guid, GameObject gameObject);
 
 		void DestroyGameObject(const GameObject& gameObject);
 		void Clear();

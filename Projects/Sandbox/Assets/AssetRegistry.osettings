@@ -595,3 +595,35 @@ Entries:
     Type: Odyssey.AnimationClip
     Path: Animation/Clips/Walking.asset
     GUID: 9090412378094673848
+  - Name: Example
+    Type: Odyssey.Prefab
+    Path: Example.prefab
+    GUID: 11858219320027435379
+  - Name: Example
+    Type: Odyssey.Prefab
+    Path: Example.prefab
+    GUID: 8540773246845000958
+  - Name: Example
+    Type: Odyssey.Prefab
+    Path: Example.prefab
+    GUID: 9678157203198058868
+  - Name: Example
+    Type: Odyssey.Prefab
+    Path: Example.prefab
+    GUID: 16211388725069821432
+  - Name: Example
+    Type: Odyssey.Prefab
+    Path: Example.prefab
+    GUID: 3291554716691024502
+  - Name: Example
+    Type: Odyssey.Prefab
+    Path: Example.prefab
+    GUID: 15087206814425414940
+  - Name: Example
+    Type: Odyssey.Prefab
+    Path: Example.prefab
+    GUID: 9658024089572933274
+  - Name: Rune_Gate
+    Type: Odyssey.Prefab
+    Path: Prefabs/Rune_Gate.prefab
+    GUID: 696440212792686434
