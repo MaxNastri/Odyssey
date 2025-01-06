@@ -42,6 +42,10 @@ namespace Odyssey
 		static std::shared_ptr<VulkanWindow> GetWindow();
 
 	public:
+		static void CaptureCursor();
+		static void ReleaseCursor();
+
+	public:
 		static void RegisterRenderTarget(RenderTargetType rtType, ResourceID colorRT, ResourceID depthRT);
 
 	private:

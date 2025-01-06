@@ -58,6 +58,16 @@ namespace Odyssey
 		return glfwWindowShouldClose(glfwHandle);
 	}
 
+	void Window::CaptureCursor()
+	{
+		glfwSetInputMode(glfwHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+
+	void Window::ReleaseCursor()
+	{
+		glfwSetInputMode(glfwHandle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+
 	Window::~Window()
 	{
 		if (glfwHandle)

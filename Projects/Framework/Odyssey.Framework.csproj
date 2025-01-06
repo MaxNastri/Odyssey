@@ -45,8 +45,9 @@
   <ItemGroup>
     <Compile Include="Source\Animation\AnimationRig.cs" />
     <Compile Include="Source\Asset\Asset.cs" />
+    <Compile Include="Source\Asset\Mesh.cs" />
     <Compile Include="Source\Asset\Prefab.cs" />
-    <Compile Include="Source\Core\Attributes.cs" />
+    <Compile Include="Source\Asset\Texture2D.cs" />
     <Compile Include="Source\Components\Animator.cs" />
     <Compile Include="Source\Components\Camera.cs" />
     <Compile Include="Source\Components\Component.cs" />
@@ -54,20 +55,16 @@
     <Compile Include="Source\Components\ScriptComponent.cs" />
     <Compile Include="Source\Components\SpriteRenderer.cs" />
     <Compile Include="Source\Components\Transform.cs" />
-    <Compile Include="Source\Entity.cs" />
-    <Compile Include="Source\Asset\Texture2D.cs" />
+    <Compile Include="Source\Core\Attributes.cs" />
     <Compile Include="Source\Core\GUID.cs" />
-    <Compile Include="Source\Asset\Mesh.cs" />
-    <Compile Include="Source\Input\Input.cs" />
     <Compile Include="Source\Core\InternalCalls.cs" />
+    <Compile Include="Source\Core\Object.cs" />
+    <Compile Include="Source\Entity.cs" />
+    <Compile Include="Source\Input\Input.cs" />
     <Compile Include="Source\Math\Color.cs" />
     <Compile Include="Source\Math\Vector2.cs" />
     <Compile Include="Source\Math\Vector3.cs" />
     <Compile Include="Source\Math\Vector4.cs" />
-    <Compile Include="Source\Core\Object.cs" />
     <Compile Include="Source\Time.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Source\Graphics\" />
   </ItemGroup>
 </Project>

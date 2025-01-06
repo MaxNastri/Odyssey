@@ -15,6 +15,7 @@
 #include "ParticleBatcher.h"
 #include "Preferences.h"
 #include "FileManager.h"
+#include "Input.h"
 
 namespace Odyssey
 {
@@ -145,11 +146,13 @@ namespace Odyssey
 				activeScene->Awake();
 
 				m_UpdateScripts = true;
+				Renderer::CaptureCursor();
 				break;
 			}
 			case PlaymodeState::PausePlaymode:
 			{
 				m_UpdateScripts = false;
+				Renderer::ReleaseCursor();
 				break;
 			}
 			case PlaymodeState::ExitPlaymode:
@@ -162,6 +165,7 @@ namespace Odyssey
 				SceneManager::LoadScene(scenePath);
 
 				m_UpdateScripts = false;
+				Renderer::ReleaseCursor();
 				break;
 			}
 		}

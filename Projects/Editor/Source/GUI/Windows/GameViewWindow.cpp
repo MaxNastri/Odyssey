@@ -10,6 +10,7 @@
 #include "Scene.h"
 #include "RenderTarget.h"
 #include "VulkanTextureSampler.h"
+#include "Input.h"
 
 namespace Odyssey
 {
@@ -41,12 +42,23 @@ namespace Odyssey
 		DestroyRenderTexture();
 	}
 
+	void GameViewWindow::Update()
+	{
+		if (Input::GetKeyDown(KeyCode::Escape))
+		{
+			Renderer::ReleaseCursor();
+		}
+	}
+
 	bool GameViewWindow::Draw()
 	{
 		bool modified = false;
 
 		if (!Begin())
 			return modified;
+
+		if (m_CursorInContentRegion && ImGui::IsWindowFocused(ImGuiFocusedFlags_DockHierarchy) && Input::GetMouseButtonDown(MouseButton::Left))
+			Renderer::CaptureCursor();
 
 		// Display the RT as an Imgui image
 		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));

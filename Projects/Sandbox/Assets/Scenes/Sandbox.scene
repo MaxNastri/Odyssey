@@ -27,10 +27,12 @@ GameObjects:
       - m_ScriptID: 2708052967
         Type: Odyssey.ScriptComponent
         Fields:
-          - Name: DoorPrefab
-            Value: 0
-          - Name: Speed
-            Value: 1.75
+          - Name: MovementSpeed
+            Value: 2
+          - Name: CameraTransform
+            Value: 1278710421845013511
+          - Name: CameraSpeed
+            Value: 2
       - Type: Odyssey.ParticleEmitter
         Enabled: 0
         Duration: 1
@@ -58,8 +60,8 @@ GameObjects:
         Far Clip: 1000
         Main Camera: 1
       - Type: Odyssey.Transform
-        Position: 'x: 1.0373924e-12 y: 2.0735435 z: -3.9483137'
-        Rotation: 'x: 15 y: 0 z: 0'
+        Position: 'x: 1.4352963e-12 y: 2.5 z: -4'
+        Rotation: 'x: 20 y: 0 z: 3.1239304e-07'
         Scale: 'x: 1 y: 1 z: 1'
       - m_ScriptID: 2015860154
         Type: Odyssey.ScriptComponent

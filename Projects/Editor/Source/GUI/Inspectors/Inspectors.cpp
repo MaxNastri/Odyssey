@@ -9,6 +9,7 @@
 #include "ScriptingManager.h"
 #include "PropertiesComponent.h"
 #include "Events.h"
+#include "Input.h"
 
 namespace Odyssey
 {
@@ -269,12 +270,27 @@ namespace Odyssey
 
 		if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			if (ImGui::IsItemHovered() && Input::GetMouseButtonDown(MouseButton::Right))
+				ImGui::OpenPopup("Component Context Menu");
+
 			modified |= m_LightTypeDrawer.Draw();
 			modified |= m_ColorPicker.Draw();
 			modified |= m_IntensityDrawer.Draw();
 			modified |= m_RangeDrawer.Draw();
 		}
+		else
+		{
+			if (ImGui::IsItemHovered() && Input::GetMouseButtonDown(MouseButton::Right))
+				ImGui::OpenPopup("Component Context Menu");
+		}
 
+		if (ImGui::BeginPopup("Component Context Menu"))
+		{
+			if (ImGui::MenuItem("Remove Component"))
+				m_GameObject.RemoveComponent<Light>();
+
+			ImGui::EndPopup();
+		}
 		ImGui::PopID();
 
 		return modified;
@@ -433,7 +449,11 @@ namespace Odyssey
 	{
 		m_Target = eventData->Scene->GetGameObject(m_TargetGUID);
 
-		if (!m_Target.IsValid())
+		if (m_Target.IsValid())
+		{
+			CreateInspectors();
+		}
+		else
 		{
 			m_Inspectors.clear();
 			userScriptInspectors.clear();

@@ -10,9 +10,13 @@ namespace Odyssey
 	{
 	public:
 		Window();
+		~Window();
+
+	public:
 		bool Update();
 		bool ShouldClose();
-		~Window();
+		void CaptureCursor();
+		void ReleaseCursor();
 
 	public:
 		GLFWwindow* GetWindowHandle() { return glfwHandle; }
