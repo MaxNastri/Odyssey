@@ -11,9 +11,6 @@ namespace Sandbox
         private Transform m_Transform;
         private Animator m_Animator;
 
-        private Entity m_SpawnedDoor;
-
-        private bool allowInstantiate = true;
         protected override void Awake()
         {
             m_Transform = GetComponent<Transform>();
@@ -23,11 +20,6 @@ namespace Sandbox
         protected override void Update()
         {
             HandleMovement();
-            if (allowInstantiate && Input.GetKeyPress(KeyCode.Space))
-            {
-                m_SpawnedDoor = Prefab.LoadInstance(DoorPrefab);
-                allowInstantiate = false;
-            }
         }
 
         private void HandleMovement()

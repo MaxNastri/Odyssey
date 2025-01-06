@@ -76,8 +76,8 @@ VertexOutput main(VertexInput input)
 SkinningOutput SkinVertex(VertexInput input)
 {
     SkinningOutput output;
-    output.Position = float4(0, 0, 0, 1);
-    output.Normal = float4(0, 0, 0, 1);
+    output.Position = float4(0, 0, 0, 0);
+    output.Normal = float4(0, 0, 0, 0);
     float4 vertexPosition = float4(input.Position, 1.0f);
     float4 vertexNormal = float4(input.Normal, 0.0f);
     

@@ -598,20 +598,8 @@ Entries:
   - Name: Rune_Gate
     Type: Odyssey.Prefab
     Path: Prefabs/Rune_Gate.prefab
-    GUID: 696440212792686434
-  - Name: Rune_Gate
-    Type: Odyssey.Prefab
-    Path: Prefabs/Rune_Gate.prefab
-    GUID: 15770847385068825278
-  - Name: Rune_Gate
-    Type: Odyssey.Prefab
-    Path: Prefabs/Rune_Gate.prefab
-    GUID: 184221221928451702
-  - Name: Rune_Gate
-    Type: Odyssey.Prefab
-    Path: Prefabs/Rune_Gate.prefab
-    GUID: 7979358976280089205
-  - Name: Rune_Gate
-    Type: Odyssey.Prefab
-    Path: Prefabs/Rune_Gate.prefab
     GUID: 1351719918552124715
+  - Name: Brazier Prefab
+    Type: Odyssey.Prefab
+    Path: Prefabs/Brazier.prefab
+    GUID: 1184066439124715941

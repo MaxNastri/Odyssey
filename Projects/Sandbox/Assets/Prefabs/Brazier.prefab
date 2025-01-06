@@ -1,0 +1,65 @@
+GameObjects:
+  - Sort Order: 11
+    Parent: 0
+    Name: Brazier Prefab
+    GUID: 12764066439186660431
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 1.4282876 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 12764066439186660431
+    Name: Brazier
+    GUID: 14505116654221504830
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 14946945081136084699
+        Materials:
+          - 7332157666035654410
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: -90 y: 0 z: 0'
+        Scale: 'x: 7 y: 7 z: 7'
+  - Sort Order: -1
+    Parent: 12764066439186660431
+    Name: Fire
+    GUID: 17463487364609857230
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0.2795601 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.ParticleEmitter
+        Enabled: 52
+        Duration: 1
+        Radius: 0.31
+        Looping: 1
+        Material: 9122200999232379991
+        Emission Rate: 50
+        Start Color: 'x: 0.827451 y: 0.5568628 z: 0.31764707 w: 0.8392157'
+        End Color: 'x: 0 y: 0 z: 0 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
+        Lifetime: 'x: 1.5 y: 1.75'
+        Size: 'x: 1 y: 3'
+        Speed: 'x: 0.4 y: 0.6'
+  - Sort Order: -1
+    Parent: 12764066439186660431
+    Name: Light
+    GUID: 7267325018190706810
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0.51127994 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - Type: Odyssey.Light
+        Enabled: 1
+        Light Type: Point
+        Color: 'x: 0.827451 y: 0.38431373 z: 0'
+        Intensity: 2
+        Range: 3

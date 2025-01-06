@@ -23,10 +23,12 @@ GameObjects:
       - Type: Odyssey.Transform
         Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 0 y: -90 z: 0'
-        Scale: 'x: 2 y: 2 z: 2'
+        Scale: 'x: 1 y: 1 z: 1'
       - m_ScriptID: 2708052967
         Type: Odyssey.ScriptComponent
         Fields:
+          - Name: DoorPrefab
+            Value: 0
           - Name: Speed
             Value: 1.75
       - Type: Odyssey.ParticleEmitter
@@ -56,7 +58,7 @@ GameObjects:
         Far Clip: 1000
         Main Camera: 1
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 1 z: -2'
+        Position: 'x: 1.0373924e-12 y: 2.0735435 z: -3.9483137'
         Rotation: 'x: 15 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - m_ScriptID: 2015860154
@@ -354,6 +356,7 @@ GameObjects:
           - Name: ManaSpeed
             Value: 1.5
           - Name: Texture
+            Value: 0
           - Name: ManaBar
             Value: 11466837511632542301
           - Name: HealthSpeed
@@ -1296,16 +1299,16 @@ GameObjects:
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
         Duration: 1
-        Radius: 0.38
+        Radius: 0.31
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
-        Start Color: 'x: 1 y: 0.84313726 z: 0.7764706 w: 0.8627451'
-        End Color: 'x: 1 y: 0.38431373 z: 0 w: 0'
-        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
-        Lifetime: 'x: 0.3 y: 1'
-        Size: 'x: 1 y: 2'
-        Speed: 'x: 1 y: 7'
+        Start Color: 'x: 0.827451 y: 0.5568628 z: 0.31764707 w: 0.8392157'
+        End Color: 'x: 0 y: 0 z: 0 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
+        Lifetime: 'x: 1 y: 1.75'
+        Size: 'x: 2 y: 3'
+        Speed: 'x: 0.4 y: 0.6'
   - Sort Order: 3
     Prefab: 0
     Name: Light
@@ -1373,16 +1376,16 @@ GameObjects:
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
         Duration: 1
-        Radius: 0.38
+        Radius: 0.31
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
-        Start Color: 'x: 1 y: 0.84313726 z: 0.7764706 w: 0.8627451'
-        End Color: 'x: 1 y: 0.38431373 z: 0 w: 0'
-        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
-        Lifetime: 'x: 0.3 y: 1'
-        Size: 'x: 1 y: 2'
-        Speed: 'x: 1 y: 7'
+        Start Color: 'x: 0.827451 y: 0.5568628 z: 0.31764707 w: 0.8392157'
+        End Color: 'x: 0 y: 0 z: 0 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
+        Lifetime: 'x: 1.5 y: 1.75'
+        Size: 'x: 2 y: 3'
+        Speed: 'x: 0.4 y: 0.6'
   - Sort Order: 3
     Prefab: 0
     Name: Light
@@ -1607,22 +1610,22 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 12.185 y: 2.9374561 z: -15.003902'
+        Position: 'x: 12.176584 y: 2.9374561 z: -15.003902'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
         Duration: 1
-        Radius: 0.38
+        Radius: 0.31
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
-        Start Color: 'x: 1 y: 0.84313726 z: 0.7764706 w: 0.8627451'
-        End Color: 'x: 1 y: 0.38431373 z: 0 w: 0'
-        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
-        Lifetime: 'x: 0.3 y: 1'
-        Size: 'x: 1 y: 2'
-        Speed: 'x: 1 y: 7'
+        Start Color: 'x: 0.827451 y: 0.5568628 z: 0.31764707 w: 0.8392157'
+        End Color: 'x: 0 y: 0 z: 0 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
+        Lifetime: 'x: 1.5 y: 1.75'
+        Size: 'x: 2 y: 3'
+        Speed: 'x: 0.4 y: 0.6'
   - Sort Order: 4
     Prefab: 0
     Name: Statue 04
@@ -1684,22 +1687,22 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -12.21497 y: 2.9557183 z: -15.026512'
-        Rotation: 'x: -90 y: 0 z: 0'
+        Position: 'x: -12.198657 y: 2.9309518 z: -15.026512'
+        Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 7 y: 7 z: 7'
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
         Duration: 1
-        Radius: 0.38
+        Radius: 0.31
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
-        Start Color: 'x: 1 y: 0.84313726 z: 0.7764706 w: 0.8627451'
-        End Color: 'x: 1 y: 0.38431373 z: 0 w: 0'
-        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
-        Lifetime: 'x: 0.3 y: 1'
-        Size: 'x: 1 y: 2'
-        Speed: 'x: 1 y: 7'
+        Start Color: 'x: 0.827451 y: 0.5568628 z: 0.31764707 w: 0.8392157'
+        End Color: 'x: 0 y: 0 z: 0 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
+        Lifetime: 'x: 1.5 y: 1.75'
+        Size: 'x: 2.5 y: 3'
+        Speed: 'x: 0.25 y: 0.5'
   - Sort Order: 11
     Prefab: 0
     Name: Walkway
@@ -2320,16 +2323,16 @@ GameObjects:
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
         Duration: 1
-        Radius: 0.38
+        Radius: 0.31
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
-        Start Color: 'x: 1 y: 0.84313726 z: 0.7764706 w: 0.8627451'
-        End Color: 'x: 1 y: 0.38431373 z: 0 w: 0'
-        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
-        Lifetime: 'x: 0.3 y: 1'
-        Size: 'x: 1 y: 2'
-        Speed: 'x: 1 y: 7'
+        Start Color: 'x: 0.827451 y: 0.5568628 z: 0.31764707 w: 0.8392157'
+        End Color: 'x: 0 y: 0 z: 0 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
+        Lifetime: 'x: 1 y: 1.75'
+        Size: 'x: 2 y: 3'
+        Speed: 'x: 0.4 y: 0.6'
   - Sort Order: 4
     Prefab: 0
     Name: Brazier L
@@ -2412,16 +2415,16 @@ GameObjects:
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
         Duration: 1
-        Radius: 0.38
+        Radius: 0.31
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
-        Start Color: 'x: 1 y: 0.3843137 z: 0 w: 0.8627451'
+        Start Color: 'x: 0.827451 y: 0.5568628 z: 0.31764707 w: 0.8392157'
         End Color: 'x: 0 y: 0 z: 0 w: 0'
-        Velocity: 'x: 0 y: 0.1 z: 0 w: 0'
-        Lifetime: 'x: 0.3 y: 1'
-        Size: 'x: 1 y: 2'
-        Speed: 'x: 4 y: 7'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
+        Lifetime: 'x: 1.5 y: 1.75'
+        Size: 'x: 2 y: 3'
+        Speed: 'x: 0.4 y: 0.6'
   - Sort Order: 5
     Prefab: 0
     Name: Alcove R

@@ -56,8 +56,18 @@ namespace Odyssey
 	{
 		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
 		{
-			transform->SetScale(1, 1, 1);
 			m_View = transform->GetWorldMatrix();
+
+			// Decompose back into translation/rotation values
+			glm::vec3 translation;
+			glm::vec3 scale;
+			glm::quat rotation;
+			glm::vec3 skew;
+			glm::vec4 perspective;
+			glm::decompose(m_View, scale, rotation, translation, skew, perspective);
+
+			// Recompose the matrix without scale
+			m_View = glm::translate(glm::identity<mat4>(), translation) * glm::toMat4(rotation);
 		}
 
 		return m_View;
