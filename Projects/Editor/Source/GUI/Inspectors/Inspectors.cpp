@@ -652,16 +652,6 @@ namespace Odyssey
 				GUID Mesh;
 				GUID* Materials = nullptr;
 				size_t MaterialCount = 0;
-
-				~Data()
-				{
-					if (Materials)
-					{
-						delete Materials;
-						Materials = nullptr;
-					}
-					MaterialCount = 0;
-				}
 			};
 
 			if (ImGui::Button("Copy"))
@@ -688,6 +678,7 @@ namespace Odyssey
 					if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 					{
 						Data data = ClipBoard::Paste().Read<Data>();
+
 						meshRenderer->SetMesh(data.Mesh);
 
 						for (size_t i = 0; i < data.MaterialCount; i++)
@@ -1250,7 +1241,7 @@ namespace Odyssey
 				CreateEntityDrawer(fieldStorage.Name, storage.ScriptID, fieldID, typeName, initialValue);
 			}
 			// TODO: Convert into IsAssetType check
-			else if (fieldStorage.DataType == DataType::Mesh || fieldStorage.DataType == DataType::Material || fieldStorage.DataType == DataType::Texture2D)
+			else if (fieldStorage.DataType == DataType::Mesh || fieldStorage.DataType == DataType::Material || fieldStorage.DataType == DataType::Texture2D || fieldStorage.DataType == DataType::Prefab)
 			{
 				GUID initialValue;
 				fieldStorage.TryGetValue(initialValue);

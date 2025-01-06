@@ -16,6 +16,8 @@ namespace Odyssey
 		void Update();
 		void OnDestroy();
 		void Serialize(SerializationNode& node);
+		void SerializeAsPrefab(SerializationNode& node, std::map<GUID, GUID>& remap);
+		void DeserializeAsPrefab(SerializationNode& node, std::map<GUID, GUID>& remap);
 		void Deserialize(SerializationNode& node);
 
 	public:

@@ -50,6 +50,8 @@ namespace Odyssey
 		ADD_INTERNAL_CALL(SpriteRenderer_GetSprite);
 		ADD_INTERNAL_CALL(SpriteRenderer_SetSprite);
 
+		ADD_INTERNAL_CALL(Prefab_LoadInstance);
+
 		ADD_INTERNAL_CALL(Texture2D_GetWidth);
 		ADD_INTERNAL_CALL(Texture2D_GetHeight);
 		ADD_INTERNAL_CALL(Texture2D_GetMipMapsEnabled);

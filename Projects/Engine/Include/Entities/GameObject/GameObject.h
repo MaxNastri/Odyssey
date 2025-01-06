@@ -25,9 +25,9 @@ namespace Odyssey
 
 	public:
 		void Serialize(SerializationNode& gameObjectNode);
-		void SerializeAsPrefab(SerializationNode& gameObjectNode);
+		void SerializeAsPrefab(SerializationNode& gameObjectNode, std::map<GUID, GUID>& remap);
 		void Deserialize(SerializationNode& gameObjectNode);
-		void DeserializeAsPrefab(SerializationNode& gameObjectNode);
+		void DeserializeAsPrefab(SerializationNode& gameObjectNode, std::map<GUID, GUID>& remap);
 
 	public:
 		void SetParent(const GameObject& parent);

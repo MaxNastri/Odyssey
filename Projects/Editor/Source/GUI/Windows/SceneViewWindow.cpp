@@ -205,10 +205,11 @@ namespace Odyssey
 
 				if (ImGuizmo::IsUsing())
 				{
-					if (m_SelectedGO.GetParent().IsValid())
+					GameObject parent = m_SelectedGO.GetParent();
+					if (parent.IsValid())
 					{
-						Transform parent = m_SelectedGO.GetParent().GetComponent<Transform>();
-						worldMatrix = glm::inverse(parent.GetWorldMatrix()) * worldMatrix;
+						if (Transform* parentTransform = parent.TryGetComponent<Transform>())
+							worldMatrix = glm::inverse(parentTransform->GetWorldMatrix()) * worldMatrix;
 					}
 					glm::vec3 translation;
 					glm::vec3 scale;

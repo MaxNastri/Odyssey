@@ -15,6 +15,6 @@ namespace Odyssey
 	public:
 		virtual void Save() override { }
 		void Save(GameObject& prefabInstance);
-		void Load();
+		GameObject LoadInstance();
 	};
 }

@@ -229,6 +229,7 @@ namespace Odyssey
 				{
 					const Path& path = FileDialogs::OpenFile("Prefab", ".prefab");
 					Ref<Prefab> prefab = AssetManager::LoadAsset<Prefab>(path);
+					prefab->LoadInstance();
 				}
 				ImGui::EndMenu();
 			}

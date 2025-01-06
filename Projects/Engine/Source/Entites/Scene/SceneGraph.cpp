@@ -113,7 +113,24 @@ namespace Odyssey
 	void SceneGraph::RemoveEntityAndChildren(const GameObject& entity)
 	{
 		if (Ref<SceneNode> node = GetNode(entity))
-			RemoveNodeAndChildren(node);
+		{
+			// Remove this node from the parent's child list
+			if (node->Parent)
+				RemoveChildNode(node->Parent, node);
+
+			// Get all children under the entity
+			std::vector<GameObject> children = GetAllChildren(entity);
+
+			// Remove the node
+			RemoveNode(node);
+
+			// Remove all children from the scene graph
+			for (size_t i = 0; i < children.size(); i++)
+			{
+				if (Ref<SceneNode> childNode = GetNode(children[i]))
+					RemoveNode(childNode);
+			}
+		}
 	}
 
 	void SceneGraph::SetParent(const GameObject& parent, const GameObject& entity)
@@ -189,7 +206,7 @@ namespace Odyssey
 	{
 		std::vector<GameObject> children;
 
-		if (auto node = GetNode(entity))
+		if (Ref<SceneNode> node = GetNode(entity))
 		{
 			for (size_t i = 0; i < node->Children.size(); i++)
 			{
@@ -197,6 +214,13 @@ namespace Odyssey
 			}
 		}
 
+		return children;
+	}
+
+	std::vector<GameObject> SceneGraph::GetAllChildren(const GameObject& entity)
+	{
+		std::vector<GameObject> children;
+		GetAllChildren(entity, children);
 		return children;
 	}
 
@@ -211,17 +235,8 @@ namespace Odyssey
 		return nullptr;
 	}
 
-	void SceneGraph::RemoveNodeAndChildren(Ref<SceneNode> node)
+	void SceneGraph::RemoveNode(Ref<SceneNode> node)
 	{
-		for (size_t i = 0; i < node->Children.size(); i++)
-		{
-			RemoveNodeAndChildren(node->Children[i]);
-		}
-
-		// Remove this node from the parent's child list
-		if (node->Parent)
-			RemoveChildNode(node->Parent, node);
-
 		for (size_t i = 0; i < m_Nodes.size(); i++)
 		{
 			if (m_Nodes[i]->Entity.Equals(node->Entity))
@@ -262,6 +277,17 @@ namespace Odyssey
 				children.erase(children.begin() + i);
 				break;
 			}
+		}
+	}
+
+	void SceneGraph::GetAllChildren(const GameObject& entity, std::vector<GameObject>& children)
+	{
+		std::vector<GameObject> entityChildren = GetChildren(entity);
+		children.insert(children.end(), entityChildren.begin(), entityChildren.end());
+
+		for (size_t i = 0; i < entityChildren.size(); i++)
+		{
+			GetAllChildren(entityChildren[i], children);
 		}
 	}
 

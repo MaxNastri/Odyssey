@@ -1,7 +1,7 @@
 ﻿namespace Odyssey
 {
     [NativeObject]
-    public class Mesh : Asset<Mesh>
+    public class Mesh : Asset
     {
         internal Mesh() : base() { }
         internal Mesh(ulong guid) : base(guid) { }

@@ -7,7 +7,6 @@ namespace Odyssey
 	Prefab::Prefab(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		Load();
 	}
 
 	Prefab::Prefab(const Path& assetPath, GameObject& instance)
@@ -16,29 +15,24 @@ namespace Odyssey
 		Save(instance);
 	}
 
-	void SerializeNode(Ref<SceneNode> node, SerializationNode& gameObjectsNode, int32_t parentID, int32_t& nodeID)
+	void SerializeGameObject(GameObject& gameObject, SerializationNode& gameObjectsNode, std::map<GUID, GUID>& remap)
 	{
 		// Get the GUID of the parent node, if a parent exists
-		GUID parent = node->Parent->Entity.IsValid() ? node->Parent->Entity.GetGUID() : GUID::Empty();
+		GUID parent = gameObject.GetParent().IsValid() ? gameObject.GetParent().GetGUID() : GUID::Empty();
 		
-		PropertiesComponent properties = node->Entity.GetComponent<PropertiesComponent>();
+		// Check the parent's guid against the remap
+		if (remap.contains(parent))
+			parent = remap[parent];
+
+		PropertiesComponent properties = gameObject.GetComponent<PropertiesComponent>();
+
 		// Append a child and set map
 		SerializationNode gameObjectNode = gameObjectsNode.AppendChild();
 		gameObjectNode.SetMap();
 		gameObjectNode.WriteData("Sort Order", properties.SortOrder);
-		gameObjectNode.WriteData("ID", nodeID);
-		gameObjectNode.WriteData("Parent", parentID);
+		gameObjectNode.WriteData("Parent", parent.CRef());
 
-		node->Entity.Serialize(gameObjectNode);
-
-		parentID = nodeID;
-
-		// Serialize the node's children (depth first)
-		for (size_t i = 0; i < node->Children.size(); i++)
-		{
-			nodeID++;
-			SerializeNode(node->Children[i], gameObjectsNode, parentID, nodeID);
-		}
+		gameObject.SerializeAsPrefab(gameObjectNode, remap);
 	}
 
 	void Prefab::Save(GameObject& prefabInstance)
@@ -54,17 +48,27 @@ namespace Odyssey
 		Scene* scene = SceneManager::GetActiveScene();
 		SceneGraph& sceneGraph = scene->GetSceneGraph();
 		
-		// Get the scene graph node for the game object
-		Ref<SceneNode> node = sceneGraph.GetNode(prefabInstance);
+		// Get all child game objects of the instance
+		std::vector<GameObject> children = sceneGraph.GetAllChildren(prefabInstance);
 
-		// Start serializing
-		int32_t nodeID = 0;
-		SerializeNode(node, gameObjectsNode, -1, nodeID);
+		// Remap the instance's guids to brand new guids before serializing
+		std::map<GUID, GUID> remap;
+		remap[prefabInstance.GetGUID()] = GUID::New();
+
+		// Remap children as well
+		for (auto& child : children)
+			remap[child.GetGUID()] = GUID::New();
+
+		// When we serialize, pass along the remap to serialize the new guids and update any references to the old guids
+		SerializeGameObject(prefabInstance, gameObjectsNode, remap);
+
+		for (auto& child : children)
+			SerializeGameObject(child, gameObjectsNode, remap);
 
 		serializer.WriteToDisk(m_AssetPath);
 	}
 
-	void Prefab::Load()
+	GameObject Prefab::LoadInstance()
 	{
 		AssetDeserializer deserializer(m_AssetPath);
 
@@ -80,43 +84,73 @@ namespace Odyssey
 			Scene* scene = SceneManager::GetActiveScene();
 			SceneGraph& sceneGraph = scene->GetSceneGraph();
 
-			std::map<GUID, size_t> childToParentMap;
-			std::map<size_t, GUID> nodeIDToGUID;
+			// For deserialization, we remap from the GUID stored in the prefab to a brand new instance guid
+			std::map<GUID, GUID> remap;
 
+			GameObject baseGameObject;
+
+			// Run through and gather the guids first so we can remap
 			for (size_t i = 0; i < gameObjectsNode.ChildCount(); i++)
 			{
 				SerializationNode gameObjectNode = gameObjectsNode.GetChild(i);
 				assert(gameObjectNode.IsMap());
 
+				// Read the guid only for now
+				GUID guid;
+				gameObjectNode.ReadData("GUID", guid.Ref());
+
+				// Remap the guid to a brand new instance guid
 				GameObject gameObject = scene->CreateGameObject();
-				PropertiesComponent properties = gameObject.GetComponent<PropertiesComponent>();
-
-				int32_t parent = -1;
-				int32_t nodeID = -1;
-				gameObjectNode.ReadData("Sort Order", properties.SortOrder);
-				gameObjectNode.ReadData("ID", nodeID);
-				gameObjectNode.ReadData("Parent", parent);
-
-				gameObject.DeserializeAsPrefab(gameObjectNode);
-
-				GUID guid = gameObject.GetGUID();
-
-				// Insert into the nodeID -> GUID lookup
-				nodeIDToGUID[nodeID] = guid;
-
-				// Insert into the GUID -> parent node ID lookup
-				if (parent >= 0)
-					childToParentMap[guid] = parent;
+				remap[guid] = gameObject.GetGUID();
 			}
 
-			// Change to local id per game object
-			for (auto& [childGUID, parentNodeID] : childToParentMap)
+			std::map<GUID, GUID> gameObjectToParent;
+
+			// Now run through again and deserialize fully using the remap
+			for (size_t i = 0; i < gameObjectsNode.ChildCount(); i++)
 			{
-				GUID parentGUID = nodeIDToGUID[parentNodeID];
+				SerializationNode gameObjectNode = gameObjectsNode.GetChild(i);
+				assert(gameObjectNode.IsMap());
+
+				GUID parent;
+				GUID guid;
+				int64_t sortOrder;
+				gameObjectNode.ReadData("Sort Order", sortOrder);
+				gameObjectNode.ReadData("Parent", parent.Ref());
+				gameObjectNode.ReadData("GUID", guid.Ref());
+
+				// Remap to the new instance guid
+				GUID instanceGUID = remap[guid];
+
+				// The game object was created in the last loop through when gathering guids
+				GameObject gameObject = scene->GetGameObject(instanceGUID);
+				PropertiesComponent properties = gameObject.GetComponent<PropertiesComponent>();
+				properties.SortOrder = sortOrder;
+
+				// Deserialize as a prefab, passing along the remap
+				gameObject.DeserializeAsPrefab(gameObjectNode, remap);
+
+				if (parent)
+					gameObjectToParent[instanceGUID] = remap[parent];
+				else
+					baseGameObject = gameObject;
+
+			}
+
+			// Modify the scene graph to apply the hierarchy
+			for (auto& [childGUID, parentGUID] : gameObjectToParent)
+			{
 				GameObject child = scene->GetGameObject(childGUID);
 				GameObject parent = scene->GetGameObject(parentGUID);
 				sceneGraph.SetParent(parent, child);
 			}
+
+			// Re-sort after applying the new hierarchy
+			sceneGraph.GetNode(baseGameObject)->SortChildren(true);
+
+			return baseGameObject;
 		}
+
+		return GameObject();
 	}
 }

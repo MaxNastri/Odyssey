@@ -1,6 +1,6 @@
 ﻿namespace Odyssey
 {
-    public class Asset<T>
+    public class Asset
     {
         public GUID Guid { get; internal set; }
 

@@ -50,7 +50,6 @@ namespace Sandbox
             Vector3 toTarget = Target.Position - m_Transform.Position;
 
             float distSq = toTarget.Length();
-            Console.WriteLine($"Distance: {distSq}");
 
             if (distSq < (OpenRadius * OpenRadius))
             {

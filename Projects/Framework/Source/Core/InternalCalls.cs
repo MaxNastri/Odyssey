@@ -54,6 +54,11 @@ namespace Odyssey
 
         #endregion
 
+        #region Prefab
+
+        internal static delegate* unmanaged<GUID, GUID*, void> Prefab_LoadInstance;
+
+        #endregion
         #region Texture2D
 
         internal static delegate* unmanaged<GUID, uint*, void> Texture2D_GetWidth;
@@ -61,6 +66,7 @@ namespace Odyssey
         internal static delegate* unmanaged<GUID, bool*, void> Texture2D_GetMipMapsEnabled;
 
         #endregion
+
         #region MeshRenderer
 
         // <EntityGUID, MeshGUID>

@@ -51,6 +51,7 @@ namespace Odyssey
 		{
 			glm::mat4 world = transform->GetWorldMatrix();
 			emitterData.Position = float4(world[3][0], world[3][1], world[3][2], 1.0f);
+			emitterData.Velocity = float4(glm::normalize(transform->Up()), 0.0f);
 		}
 		return emitterData;
 	}

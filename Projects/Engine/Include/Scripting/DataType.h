@@ -29,6 +29,7 @@ namespace Odyssey
 		Scene = 19,
 		Component = 20,
 		Asset = 21,
+		Prefab = 22,
 	};
 
 	inline uint64_t DataTypeSize(DataType type)
@@ -56,6 +57,7 @@ namespace Odyssey
 		case DataType::Scene: return sizeof(GUID);
 		case DataType::Component: return sizeof(GUID);
 		case DataType::Asset: return sizeof(GUID);
+		case DataType::Prefab: return sizeof(GUID);
 		}
 
 		return 0;
@@ -83,5 +85,6 @@ namespace Odyssey
 		{ "Odyssey.Texture2D", DataType::Texture2D },
 		{ "Odyssey.Scene", DataType::Scene },
 		{ "Odyssey.Asset", DataType::Asset },
+		{ "Odyssey.Prefab", DataType::Prefab },
 	};
 }

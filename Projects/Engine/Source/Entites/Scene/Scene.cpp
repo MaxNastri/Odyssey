@@ -62,25 +62,12 @@ namespace Odyssey
 		m_GUIDToGameObject[guid] = gameObject;
 	}
 
-	void GatherGameObjects(GameObject& current, std::vector<entt::entity>& toDestroy)
-	{
-		toDestroy.push_back(current);
-
-		std::vector<GameObject> children = current.GetChildren();
-		for (size_t i = 0; i < children.size(); i++)
-		{
-			GatherGameObjects(children[i], toDestroy);
-		}
-	}
-
 	void Scene::DestroyGameObject(const GameObject& gameObject)
 	{
-		std::vector<entt::entity> toDestroy;
-
-		GameObject current = gameObject;
-		GatherGameObjects(current, toDestroy);
-
+		std::vector<GameObject> toDestroy = m_SceneGraph.GetAllChildren(gameObject);
 		m_SceneGraph.RemoveEntityAndChildren(gameObject);
+
+		m_Registry.destroy(gameObject);
 
 		for (auto& entity : toDestroy)
 			m_Registry.destroy(entity);

@@ -60,6 +60,104 @@ namespace Odyssey
 		}
 	}
 
+	void ScriptComponent::SerializeAsPrefab(SerializationNode& node, std::map<GUID, GUID>& remap)
+	{
+		// Get the fields from that type
+		auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
+
+		SerializationNode componentNode = node.AppendChild();
+		componentNode.SetMap();
+		componentNode.WriteData("m_ScriptID", m_ScriptID);
+		componentNode.WriteData("Type", ScriptComponent::Type);
+
+		SerializationNode fieldsNode = componentNode.CreateSequenceNode("Fields");
+
+		// Make sure the field still exists on deserialization
+		for (auto& [fieldID, fieldStorage] : storage.Fields)
+		{
+			if (fieldStorage.DataType == DataType::String)
+			{
+				// Do stuff
+				SerializeNativeString(fieldsNode, fieldStorage);
+			}
+			else
+			{
+				// Important: We remap any field storage that contains an old guid reference
+				if (fieldStorage.DataType == DataType::Entity ||
+					fieldStorage.DataType == DataType::Component ||
+					fieldStorage.DataType == DataType::Mesh ||
+					fieldStorage.DataType == DataType::Material ||
+					fieldStorage.DataType == DataType::Texture2D)
+				{
+					GUID value = fieldStorage.GetValue<GUID>();
+					if (remap.contains(value))
+					{
+						value = remap[value];
+						fieldStorage.SetValue<GUID>(value);
+					}
+				}
+				SerializeNativeTypes(fieldsNode, fieldStorage);
+			}
+		}
+	}
+
+	void ScriptComponent::DeserializeAsPrefab(SerializationNode& node, std::map<GUID, GUID>& remap)
+	{
+		// Read the managed type and create an object based on the type
+		node.ReadData("m_ScriptID", m_ScriptID);
+
+		ScriptingManager::AddEntityScript(m_GameObject.GetGUID(), m_ScriptID);
+
+		SerializationNode fieldsNode = node.GetNode("Fields");
+		assert(fieldsNode.IsSequence());
+
+		if (fieldsNode.HasChildren())
+		{
+			for (size_t i = 0; i < fieldsNode.ChildCount(); i++)
+			{
+				SerializationNode fieldNode = fieldsNode.GetChild(i);
+				assert(fieldNode.IsMap());
+
+				std::string fieldName;
+				fieldNode.ReadData("Name", fieldName);
+
+				// Get the fields from that type
+				auto& storage = ScriptingManager::GetScriptStorage(m_GameObject.GetGUID());
+
+				// Make sure the field still exists on deserialization
+				for (auto& [fieldID, fieldStorage] : storage.Fields)
+				{
+					if (fieldStorage.Name == fieldName)
+					{
+						if (fieldStorage.DataType == DataType::String)
+						{
+							DeserializeNativeString(fieldNode, fieldStorage);
+						}
+						else
+						{
+							DeserializeNativeType(fieldNode, fieldStorage);
+
+							// Important: We remap any field storage that contains the prefab's guids to the new instance guids
+							if (fieldStorage.DataType == DataType::Entity ||
+								fieldStorage.DataType == DataType::Component ||
+								fieldStorage.DataType == DataType::Mesh ||
+								fieldStorage.DataType == DataType::Material ||
+								fieldStorage.DataType == DataType::Texture2D)
+							{
+								GUID value = fieldStorage.GetValue<GUID>();
+								if (remap.contains(value))
+								{
+									value = remap[value];
+									fieldStorage.SetValue<GUID>(value);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	void ScriptComponent::Deserialize(SerializationNode& node)
 	{
 		// Read the managed type and create an object based on the type
@@ -198,6 +296,10 @@ namespace Odyssey
 			}
 			case DataType::Entity:
 			case DataType::Component:
+			case DataType::Prefab:
+			case DataType::Mesh:
+			case DataType::Material:
+			case DataType::Texture2D:
 			{
 				GUID value = storage.GetValue<GUID>();
 				fieldNode.WriteData("Value", value.CRef());
@@ -295,6 +397,10 @@ namespace Odyssey
 			}
 			case DataType::Entity:
 			case DataType::Component:
+			case DataType::Prefab:
+			case DataType::Mesh:
+			case DataType::Material:
+			case DataType::Texture2D:
 			{
 				GUID value;
 				node.ReadData("Value", value.Ref());

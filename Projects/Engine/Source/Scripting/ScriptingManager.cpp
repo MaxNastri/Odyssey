@@ -281,8 +281,11 @@ namespace Odyssey
 		for (auto& [fieldID, fieldStorage] : scriptStorage.Fields)
 			fieldStorage.Instance = nullptr;
 
-		scriptStorage.Instance->Destroy();
-		scriptStorage.Instance = nullptr;
+		if (scriptStorage.Instance)
+		{
+			scriptStorage.Instance->Destroy();
+			scriptStorage.Instance = nullptr;
+		}
 	}
 
 	ScriptStorage& ScriptingManager::GetScriptStorage(GUID guid)

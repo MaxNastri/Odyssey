@@ -11,6 +11,7 @@
 #include "Animator.h"
 #include "Input.h"
 #include "SpriteRenderer.h"
+#include "Prefab.h"
 
 namespace Odyssey
 {
@@ -265,6 +266,20 @@ namespace Odyssey::InternalCalls
 			return mesh->GetVertexCount();
 
 		return 0;
+	}
+
+#pragma endregion
+
+#pragma region Prefab
+
+	void Prefab_LoadInstance(uint64_t prefabGUID, uint64_t* instanceGUID)
+	{
+		Ref<Prefab> prefab = AssetManager::LoadAsset<Prefab>(prefabGUID);
+		if (prefab)
+		{
+			GameObject gameObject = prefab->LoadInstance();
+			*instanceGUID = gameObject.GetGUID();
+		}
 	}
 
 #pragma endregion

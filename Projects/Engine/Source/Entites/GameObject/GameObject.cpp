@@ -34,9 +34,45 @@ namespace Odyssey
 		Serialize(gameObjectNode, false);
 	}
 
-	void GameObject::SerializeAsPrefab(SerializationNode& gameObjectNode)
+	void GameObject::SerializeAsPrefab(SerializationNode& gameObjectNode, std::map<GUID, GUID>& remap)
 	{
-		Serialize(gameObjectNode, true);
+		PropertiesComponent& properties = GetComponent<PropertiesComponent>();
+
+		// Remap the guid to the new values in the prefab
+		GUID guid = properties.GUID;
+		if (remap.contains(guid))
+			guid = remap[guid];
+
+		gameObjectNode.WriteData("Name", properties.Name);
+		gameObjectNode.WriteData("GUID", guid.CRef());
+		gameObjectNode.WriteData("Type", Type);
+
+		SerializationNode componentsNode = gameObjectNode.CreateSequenceNode("Components");
+
+		if (Animator* animator = TryGetComponent<Animator>())
+			animator->Serialize(componentsNode);
+
+		if (Camera* camera = TryGetComponent<Camera>())
+			camera->Serialize(componentsNode);
+
+		if (MeshRenderer* meshRenderer = TryGetComponent<MeshRenderer>())
+			meshRenderer->Serialize(componentsNode);
+
+		if (Transform* transform = TryGetComponent<Transform>())
+			transform->Serialize(componentsNode);
+
+		// Important: We use a separate serialize function to pass along the remapped guids
+		if (ScriptComponent* userScript = TryGetComponent<ScriptComponent>())
+			userScript->SerializeAsPrefab(componentsNode, remap);
+
+		if (Light* light = TryGetComponent<Light>())
+			light->Serialize(componentsNode);
+
+		if (ParticleEmitter* particleSystem = TryGetComponent<ParticleEmitter>())
+			particleSystem->Serialize(componentsNode);
+
+		if (SpriteRenderer* spriteRenderer = TryGetComponent<SpriteRenderer>())
+			spriteRenderer->Serialize(componentsNode);
 	}
 
 	void GameObject::Deserialize(SerializationNode& gameObjectNode)
@@ -44,9 +80,69 @@ namespace Odyssey
 		Deserialize(gameObjectNode, false);
 	}
 
-	void GameObject::DeserializeAsPrefab(SerializationNode& gameObjectNode)
+	void GameObject::DeserializeAsPrefab(SerializationNode& gameObjectNode, std::map<GUID, GUID>& remap)
 	{
-		Deserialize(gameObjectNode, true);
+		PropertiesComponent& properties = GetComponent<PropertiesComponent>();
+		gameObjectNode.ReadData("Name", properties.Name);
+		gameObjectNode.ReadData("GUID", properties.GUID.Ref());
+
+		// Remap the guid to the new instance
+		if (remap.contains(properties.GUID))
+			properties.GUID = remap[properties.GUID];
+
+		SerializationNode componentsNode = gameObjectNode.GetNode("Components");
+		assert(componentsNode.IsSequence());
+
+		for (size_t i = 0; i < componentsNode.ChildCount(); ++i)
+		{
+			SerializationNode componentNode = componentsNode.GetChild(i);
+			assert(componentNode.IsMap());
+
+			std::string componentType;
+			componentNode.ReadData("Type", componentType);
+
+			if (componentType == Animator::Type)
+			{
+				Animator& animator = AddComponent<Animator>();
+				animator.Deserialize(componentNode);
+			}
+			else if (componentType == Camera::Type)
+			{
+				Camera& camera = AddComponent<Camera>();
+				camera.Deserialize(componentNode);
+			}
+			else if (componentType == MeshRenderer::Type)
+			{
+				MeshRenderer& meshRenderer = AddComponent<MeshRenderer>();
+				meshRenderer.Deserialize(componentNode);
+			}
+			else if (componentType == Transform::Type)
+			{
+				Transform& transform = AddComponent<Transform>();
+				transform.Deserialize(componentNode);
+			}
+			else if (componentType == ScriptComponent::Type)
+			{
+				// Important: We use a separate deserialize function to pass along the remapped guids
+				ScriptComponent& script = AddComponent<ScriptComponent>();
+				script.DeserializeAsPrefab(componentNode, remap);
+			}
+			else if (componentType == Light::Type)
+			{
+				Light& light = AddComponent<Light>();
+				light.Deserialize(componentNode);
+			}
+			else if (componentType == ParticleEmitter::Type)
+			{
+				ParticleEmitter& particleSystem = AddComponent<ParticleEmitter>();
+				particleSystem.Deserialize(componentNode);
+			}
+			else if (componentType == SpriteRenderer::Type)
+			{
+				SpriteRenderer& spriteRenderer = AddComponent<SpriteRenderer>();
+				spriteRenderer.Deserialize(componentNode);
+			}
+		}
 	}
 
 	void GameObject::SetParent(const GameObject& parent)
