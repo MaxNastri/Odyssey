@@ -152,6 +152,7 @@ namespace Odyssey
 		FloatDrawer m_DurationDrawer;
 		IntDrawer<uint32_t> m_EmissionRateDrawer;
 		FloatDrawer m_RadiusDrawer;
+		FloatDrawer m_AngleDrawer;
 		AssetFieldDrawer m_MaterialDrawer;
 		RangeSlider m_LifetimeDrawer;
 		RangeSlider m_SizeDrawer;

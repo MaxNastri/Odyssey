@@ -37,6 +37,7 @@ GameObjects:
         Enabled: 0
         Duration: 1
         Radius: 1
+        Angle: 0
         Looping: 0
         Material: 831665292157922468
         Emission Rate: 200
@@ -1302,6 +1303,7 @@ GameObjects:
         Enabled: 1
         Duration: 1
         Radius: 0.31
+        Angle: 0
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
@@ -1379,6 +1381,7 @@ GameObjects:
         Enabled: 1
         Duration: 1
         Radius: 0.31
+        Angle: 0
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
@@ -1619,6 +1622,7 @@ GameObjects:
         Enabled: 1
         Duration: 1
         Radius: 0.31
+        Angle: 0
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
@@ -1696,6 +1700,7 @@ GameObjects:
         Enabled: 1
         Duration: 1
         Radius: 0.31
+        Angle: 0
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
@@ -2326,6 +2331,7 @@ GameObjects:
         Enabled: 1
         Duration: 1
         Radius: 0.31
+        Angle: 0
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 50
@@ -2411,22 +2417,23 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -3.5085552 y: 3.3512168 z: 3.3586435'
+        Position: 'x: -3.5105875 y: 3.391904 z: 3.3413568'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
         Duration: 1
-        Radius: 0.31
+        Radius: 0.15
+        Angle: 60
         Looping: 1
         Material: 9122200999232379991
-        Emission Rate: 50
-        Start Color: 'x: 0.827451 y: 0.5568628 z: 0.31764707 w: 0.8392157'
-        End Color: 'x: 0 y: 0 z: 0 w: 0'
+        Emission Rate: 30
+        Start Color: 'x: 0.77935946 y: 0.36719823 z: 0 w: 0.7058824'
+        End Color: 'x: 0 y: 0 z: 0 w: 0.30980393'
         Velocity: 'x: 0 y: 1 z: 0 w: 0'
-        Lifetime: 'x: 1.5 y: 1.75'
+        Lifetime: 'x: 1 y: 1.5'
         Size: 'x: 2 y: 3'
-        Speed: 'x: 0.4 y: 0.6'
+        Speed: 'x: 1 y: 1.5'
   - Sort Order: 5
     Prefab: 0
     Name: Alcove R

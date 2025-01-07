@@ -750,6 +750,7 @@ namespace Odyssey
 			m_EmissionRateDrawer = IntDrawer<uint32_t>("Emission Rate", emitter->GetEmissionRate(), false,
 				[this](uint32_t emissionRate) { OnEmissionRateModified(emissionRate); });
 			m_RadiusDrawer = FloatDrawer("Radius", emitter->GetRadius());
+			m_AngleDrawer = FloatDrawer("Angle", emitter->GetAngle());
 
 			m_MaterialDrawer = AssetFieldDrawer("Material", emitter->GetMaterial(), Material::Type,
 				[this](GUID material) { OnMaterialModified(material); });
@@ -791,6 +792,11 @@ namespace Odyssey
 			{
 				if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
 					emitter->SetRadius(m_RadiusDrawer.GetValue());
+			}
+			if (m_AngleDrawer.Draw())
+			{
+				if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
+					emitter->SetAngle(m_AngleDrawer.GetValue());
 			}
 			modified |= m_StartColorDrawer.Draw();
 			modified |= m_EndColorDrawer.Draw();

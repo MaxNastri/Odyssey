@@ -9,6 +9,9 @@ struct Particle
     float Speed;
 };
 
+#define CIRCLE 0
+#define CONE 1
+
 static const uint Add = 1;
 static const uint Subtract = -1;
 
@@ -28,75 +31,21 @@ cbuffer EmitterData : register(b7)
     float4 StartColor;
     float4 EndColor;
     float4 Velocity;
-    float4 Rnd;
     float2 Lifetime;
     float2 Size;
     float2 Speed;
     uint EmitCount;
     uint EmitterIndex;
+    uint FrameIndex;
+    uint Shape;
+    float Radius;
+    float Angle;
 }
 
-// Random number generator based on: https://github.com/diharaw/helios/blob/master/src/engine/shader/random.glsl
-//struct RNG
-//{
-//    uint2 s; // state
-
-//	// xoroshiro64* random number generator.
-//	// http://prng.di.unimi.it/xoroshiro64star.c
-//    uint rotl(uint x, uint k)
-//    {
-//        return (x << k) | (x >> (32 - k));
-//    }
-//	// Xoroshiro64* RNG
-//    uint next()
-//    {
-//        uint result = s.x * 0x9e3779bb;
-
-//        s.y ^= s.x;
-//        s.x = rotl(s.x, 26) ^ s.y ^ (s.y << 9);
-//        s.y = rotl(s.y, 13);
-
-//        return result;
-//    }
-//	// Thomas Wang 32-bit hash.
-//	// http://www.reedbeta.com/blog/quick-and-easy-gpu-random-numbers-in-d3d11/
-//    uint hash(uint seed)
-//    {
-//        seed = (seed ^ 61) ^ (seed >> 16);
-//        seed *= 9;
-//        seed = seed ^ (seed >> 4);
-//        seed *= 0x27d4eb2d;
-//        seed = seed ^ (seed >> 15);
-//        return seed;
-//    }
-
-//    void init(uint2 id, uint frameIndex)
-//    {
-//        uint s0 = (id.x << 16) | id.y;
-//        uint s1 = frameIndex;
-//        s.x = hash(s0);
-//        s.y = hash(s1);
-//        next();
-//    }
-//    float next_float()
-//    {
-//        uint u = 0x3f800000 | (next() >> 9);
-//        return asfloat(u) - 1.0;
-//    }
-//    uint next_uint(uint nmax)
-//    {
-//        float f = next_float();
-//        return uint(floor(f * nmax));
-//    }
-//    float2 next_float2()
-//    {
-//        return float2(next_float(), next_float());
-//    }
-//    float3 next_float3()
-//    {
-//        return float3(next_float(), next_float(), next_float());
-//    }
-//};
+float random(float2 st)
+{
+    return frac(sin(dot(st.xy, float2(12.9898, 78.233))) * 43758.5453123);
+}
 
 [numthreads(64, 1, 1)]
 void main(uint3 id : SV_DispatchThreadID)
@@ -104,6 +53,10 @@ void main(uint3 id : SV_DispatchThreadID)
     // Don't emit more than we should
     if (id.x >= EmitCount)
         return;
+    
+    float rnd = random(float2(id.x, FrameIndex));
+    float rnd2 = (random(float2(rnd, FrameIndex)) - 0.5f) * 2.0f * Radius;
+    float rnd3 = (random(float2(rnd, rnd2)) - 0.5f) * 2.0f * Radius;
     
     // Revive a dead particle
     int deadCount;
@@ -117,14 +70,27 @@ void main(uint3 id : SV_DispatchThreadID)
     uint particleIndex = DeadBuffer[deadCount - 1];
     Particle particle = ParticleBuffer[particleIndex];
     
-    float lifetime = lerp(Lifetime.x, Lifetime.y, Rnd.w);
+    float lifetime = lerp(Lifetime.x, Lifetime.y, rnd);
+    float4 randomPos = float4(rnd2, 0.0f, rnd3, 0.0f);
     // Construct a particle based on the emitter's params
-    particle.Position = Position + float4(Rnd.x, Rnd.y, Rnd.z, 0.0f);
+    particle.Position = Position + randomPos;
     particle.Color = StartColor;
     particle.Velocity = Velocity;
+    
+    // Apply cone velocity logic
+    if (Angle > 0.0f)
+    {
+        float3 intialVelo = randomPos;
+        float radialAngle = (Angle / 90.0f);
+        float3 radialVelo = radialAngle * intialVelo;
+        float3 upVelo = (1.0f - radialAngle) * float3(0, 1, 0);
+        float3 finalVelo = (radialVelo + upVelo);
+        particle.Velocity = float4(finalVelo, 0.0f);
+    }
+    
     particle.Lifetime = float2(lifetime, lifetime);
-    particle.Size = lerp(Size.x, Size.y, Rnd.w);
-    particle.Speed = lerp(Speed.x, Speed.y, Rnd.w);
+    particle.Size = lerp(Size.x, Size.y, rnd);
+    particle.Speed = lerp(Speed.x, Speed.y, rnd);
     
     ParticleBuffer[particleIndex] = particle;
     
