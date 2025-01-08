@@ -1,6 +1,7 @@
 #include "ParticleEmitter.h"
 #include "Transform.h"
 #include "ParticleBatcher.h"
+#include "Enum.h"
 
 namespace Odyssey
 {
@@ -16,6 +17,7 @@ namespace Odyssey
 		componentNode.SetMap();
 		componentNode.WriteData("Type", ParticleEmitter::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
+		componentNode.WriteData("Shape", Enum::ToString<EmitterShape>(GetShape()));
 		componentNode.WriteData("Duration", m_Duration);
 		componentNode.WriteData("Radius", emitterData.Radius);
 		componentNode.WriteData("Angle", emitterData.Angle);
@@ -32,7 +34,10 @@ namespace Odyssey
 
 	void ParticleEmitter::Deserialize(SerializationNode& node)
 	{
+		std::string shape;
+
 		node.ReadData("Enabled", m_Enabled);
+		node.ReadData("Shape", shape);
 		node.ReadData("Duration", m_Duration);
 		node.ReadData("Radius", emitterData.Radius);
 		node.ReadData("Angle", emitterData.Angle);
@@ -45,6 +50,9 @@ namespace Odyssey
 		node.ReadData("Lifetime", emitterData.Lifetime);
 		node.ReadData("Size", emitterData.Size);
 		node.ReadData("Speed", emitterData.Speed);
+
+		if (!shape.empty())
+			SetShape(Enum::ToEnum<EmitterShape>(shape));
 	}
 
 	ParticleEmitterData& ParticleEmitter::GetEmitterData()

@@ -4,15 +4,21 @@
 
 namespace Odyssey
 {
+	ScriptComponent::ScriptComponent(const GameObject& gameObject)
+		: m_GameObject(gameObject)
+	{
+	}
+
 	ScriptComponent::ScriptComponent(const GameObject& gameObject, const std::string& managedType)
 		: m_GameObject(gameObject)
 	{
 
 	}
 
-	ScriptComponent::ScriptComponent(const GameObject& gameObject)
+	ScriptComponent::ScriptComponent(const GameObject& gameObject, uint32_t scriptID)
 		: m_GameObject(gameObject)
 	{
+		SetScriptID(scriptID);
 	}
 
 	void ScriptComponent::Awake()

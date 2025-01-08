@@ -18,6 +18,10 @@ namespace Odyssey
 	{
 		Circle = 0,
 		Cone = 1,
+		Cube = 2,
+		Donut = 3,
+		Sphere = 4,
+		Mesh = 5,
 	};
 	struct ParticleEmitterData
 	{
@@ -67,6 +71,7 @@ namespace Odyssey
 		void SetSpeed(float2 speed) { emitterData.Speed = speed; }
 		void SetStartColor(float4 color) { emitterData.StartColor = color; }
 		void SetEndColor(float4 color) { emitterData.EndColor = color; }
+		void SetShape(EmitterShape shape) { emitterData.Shape = (uint32_t)shape; }
 
 	public:
 		bool IsEnabled() { return m_Enabled; }
@@ -82,6 +87,7 @@ namespace Odyssey
 		float2 GetSpeed() { return emitterData.Speed; }
 		float GetRadius() { return emitterData.Radius; }
 		float GetAngle() { return emitterData.Angle; }
+		EmitterShape GetShape() { return (EmitterShape)emitterData.Shape; }
 
 	public:
 		ParticleEmitterData emitterData;

@@ -12,6 +12,9 @@ namespace Odyssey
 		ScriptComponent() = default;
 		ScriptComponent(const GameObject& gameObject);
 		ScriptComponent(const GameObject& gameObject, const std::string& managedType);
+		ScriptComponent(const GameObject& gameObject, uint32_t scriptID);
+
+	public:
 		void Awake();
 		void Update();
 		void OnDestroy();

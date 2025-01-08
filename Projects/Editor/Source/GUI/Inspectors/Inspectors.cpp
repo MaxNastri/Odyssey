@@ -407,10 +407,8 @@ namespace Odyssey
 					if (ImGui::Selectable(metadata.Name.c_str()))
 					{
 						if (!m_Target.HasComponent<ScriptComponent>())
-							m_Target.AddComponent<ScriptComponent>();
+							m_Target.AddComponent<ScriptComponent>(metadata.ScriptID);
 
-						ScriptComponent& script = m_Target.GetComponent<ScriptComponent>();
-						script.SetScriptID(metadata.ScriptID);
 						CreateInspectors();
 						modified = true;
 					}
@@ -764,6 +762,7 @@ namespace Odyssey
 				[this](float4 color) { OnStartColorModified(color); });
 			m_EndColorDrawer = ColorPicker("End Color", emitter->GetEndColor(),
 				[this](float4 color) { OnEndColorModified(color); });
+			m_ShapeDrawer = EnumDrawer<EmitterShape>("Shape", emitter->GetShape());
 		}
 	}
 
@@ -788,6 +787,12 @@ namespace Odyssey
 			modified |= m_LoopDrawer.Draw();
 			modified |= m_DurationDrawer.Draw();
 			modified |= m_EmissionRateDrawer.Draw();
+
+			if (m_ShapeDrawer.Draw())
+			{
+				if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
+					emitter->SetShape(m_ShapeDrawer.GetValue());
+			}
 			if (m_RadiusDrawer.Draw())
 			{
 				if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())

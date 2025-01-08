@@ -35,6 +35,7 @@ GameObjects:
             Value: 2
       - Type: Odyssey.ParticleEmitter
         Enabled: 0
+        Shape: Circle
         Duration: 1
         Radius: 1
         Angle: 0
@@ -229,10 +230,20 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0.39275885 y: 1.6360295 z: 1.2253908'
-        Rotation: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 180 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
+      - m_ScriptID: 2124871816
+        Type: Odyssey.ScriptComponent
+        Fields:
+          - Name: MaxSpeed
+            Value: 5
+          - Name: MaxEmissionRate
+            Value: 100
+          - Name: m_Emitter
+            Value: 0
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
+        Shape: Circle
         Duration: 1
         Radius: 0.025
         Angle: 0
@@ -1331,19 +1342,20 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0.0032564402 y: 0 z: 0.041565567'
-        Rotation: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 90 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
+        Shape: Cone
         Duration: 1
-        Radius: 0.15
-        Angle: 60
+        Radius: 0.14
+        Angle: 70
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 30
         Start Color: 'x: 0.78039217 y: 0.36862746 z: 0 w: 0.7058824'
         End Color: 'x: 0 y: 0 z: 0 w: 0'
-        Velocity: 'x: 0 y: 5.9604645e-08 z: -1 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
         Lifetime: 'x: 1 y: 1.5'
         Size: 'x: 2 y: 3'
         Speed: 'x: 1 y: 1.5'
@@ -1419,19 +1431,20 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0.0038622022 y: 0 z: 0.041879088'
-        Rotation: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 90 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
+        Shape: Cone
         Duration: 1
-        Radius: 0.15
-        Angle: 60
+        Radius: 0.14
+        Angle: 70
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 30
         Start Color: 'x: 0.78039217 y: 0.36862746 z: 0 w: 0.7058824'
         End Color: 'x: 0 y: 0 z: 0 w: 0'
-        Velocity: 'x: 0 y: 5.9604645e-08 z: -1 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
         Lifetime: 'x: 1 y: 1.5'
         Size: 'x: 2 y: 3'
         Speed: 'x: 1 y: 1.5'
@@ -1654,19 +1667,20 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0.001832962 y: 0 z: 0.04273534'
-        Rotation: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 90 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
+        Shape: Cone
         Duration: 1
-        Radius: 0.15
-        Angle: 60
+        Radius: 0.14
+        Angle: 70
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 30
         Start Color: 'x: 0.78039217 y: 0.36862746 z: 0 w: 0.7058824'
         End Color: 'x: 0 y: 0 z: 0 w: 0'
-        Velocity: 'x: 0 y: 5.9604645e-08 z: -1 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
         Lifetime: 'x: 1 y: 1.5'
         Size: 'x: 2 y: 3'
         Speed: 'x: 1 y: 1.5'
@@ -1742,19 +1756,20 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0.0045586824 y: 0 z: 0.045143425'
-        Rotation: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 90 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
+        Shape: Cone
         Duration: 1
-        Radius: 0.15
-        Angle: 60
+        Radius: 0.14
+        Angle: 70
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 30
         Start Color: 'x: 0.78039217 y: 0.36862746 z: 0 w: 0.7058824'
         End Color: 'x: 0 y: 0 z: 0 w: 0'
-        Velocity: 'x: 0 y: 5.9604645e-08 z: -1 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
         Lifetime: 'x: 1 y: 1.5'
         Size: 'x: 2 y: 3'
         Speed: 'x: 1 y: 1.5'
@@ -2368,19 +2383,20 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 0 y: -8.881784e-16 z: 0.03913723'
-        Rotation: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 90 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
+        Shape: Cone
         Duration: 1
-        Radius: 0.15
-        Angle: 60
+        Radius: 0.14
+        Angle: 70
         Looping: 1
         Material: 9122200999232379991
         Emission Rate: 30
         Start Color: 'x: 0.78039217 y: 0.36862746 z: 0 w: 0.7058824'
         End Color: 'x: 0 y: 0 z: 0 w: 0'
-        Velocity: 'x: 0 y: 5.9604645e-08 z: -1 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
         Lifetime: 'x: 1 y: 1.5'
         Size: 'x: 2 y: 3'
         Speed: 'x: 1 y: 1.5'
@@ -2473,6 +2489,7 @@ GameObjects:
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
+        Shape: Cone
         Duration: 1
         Radius: 0.14
         Angle: 70

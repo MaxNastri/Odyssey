@@ -12,6 +12,7 @@
 #include "Input.h"
 #include "SpriteRenderer.h"
 #include "Prefab.h"
+#include "ParticleEmitter.h"
 
 namespace Odyssey
 {
@@ -380,6 +381,188 @@ namespace Odyssey::InternalCalls
 	}
 
 #pragma endregion
+
+#pragma region Particle Emitter
+
+	void ParticleEmitter_GetLooping(uint64_t guid, bool* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			*value = emitter->IsLooping();
+	}
+
+	void ParticleEmitter_GetEmissionRate(uint64_t guid, uint32_t* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			*value = emitter->GetEmissionRate();
+	}
+
+	void ParticleEmitter_GetRadius(uint64_t guid, float* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			*value = emitter->GetRadius();
+	}
+
+	void ParticleEmitter_GetAngle(uint64_t guid, float* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			*value = emitter->GetAngle();
+	}
+
+	void ParticleEmitter_GetDuration(uint64_t guid, float* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			*value = emitter->GetDuration();
+	}
+
+	void ParticleEmitter_GetLifetime(uint64_t guid, float2* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			*value = emitter->GetLifetime();
+	}
+
+	void ParticleEmitter_GetSize(uint64_t guid, float2* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			*value = emitter->GetSize();
+	}
+
+	void ParticleEmitter_GetSpeed(uint64_t guid, float2* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			*value = emitter->GetSpeed();
+	}
+
+	void ParticleEmitter_GetStartColor(uint64_t guid, float4* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			*value = emitter->GetStartColor();
+	}
+
+	void ParticleEmitter_GetEndColor(uint64_t guid, float4* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			*value = emitter->GetEndColor();
+	}
+
+	void ParticleEmitter_GetShape(uint64_t guid, uint32_t* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			*value = (uint32_t)emitter->GetShape();
+	}
+
+	void ParticleEmitter_SetLooping(uint64_t guid, bool value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetLooping(value);
+	}
+
+	void ParticleEmitter_SetEmissionRate(uint64_t guid, uint32_t value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetEmissionRate(value);
+	}
+
+	void ParticleEmitter_SetRadius(uint64_t guid, float value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetRadius(value);
+	}
+
+	void ParticleEmitter_SetAngle(uint64_t guid, float value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetAngle(value);
+	}
+
+	void ParticleEmitter_SetDuration(uint64_t guid, float value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetDuration(value);
+	}
+
+	void ParticleEmitter_SetLifetime(uint64_t guid, float2 value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetLifetime(value);
+	}
+
+	void ParticleEmitter_SetSize(uint64_t guid, float2 value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetSize(value);
+	}
+
+	void ParticleEmitter_SetSpeed(uint64_t guid, float2 value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetSpeed(value);
+	}
+
+	void ParticleEmitter_SetStartColor(uint64_t guid, float4 value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetStartColor(value);
+	}
+
+	void ParticleEmitter_SetEndColor(uint64_t guid, float4 value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetEndColor(value);
+	}
+
+	void ParticleEmitter_SetShape(uint64_t guid, uint32_t value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ParticleEmitter* emitter = gameObject.TryGetComponent<ParticleEmitter>())
+			emitter->SetShape((EmitterShape)value);
+	}
+
+#pragma endregion
+
+
 
 #pragma region Input
 

@@ -1,0 +1,35 @@
+GameObjects:
+  - Sort Order: 10
+    Parent: 0
+    Name: Fireball
+    GUID: 10632542489559187550
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0.39275885 y: 1.6360295 z: 1.2253908'
+        Rotation: 'x: 0 y: 180 z: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+      - m_ScriptID: 2124871816
+        Type: Odyssey.ScriptComponent
+        Fields:
+          - Name: MaxSpeed
+            Value: 5
+          - Name: MaxEmissionRate
+            Value: 100
+          - Name: m_Emitter
+            Value: 0
+      - Type: Odyssey.ParticleEmitter
+        Enabled: 1
+        Shape: Circle
+        Duration: 1
+        Radius: 0.025
+        Angle: 0
+        Looping: 1
+        Material: 8139979667651989943
+        Emission Rate: 50
+        Start Color: 'x: 0.6156863 y: 0.26666668 z: 0 w: 0.3882353'
+        End Color: 'x: 0 y: 0 z: 0 w: 0'
+        Velocity: 'x: 0 y: 1 z: 0 w: 0'
+        Lifetime: 'x: 0.5 y: 1'
+        Size: 'x: 2 y: 2.5'
+        Speed: 'x: 0.1 y: 0.25'

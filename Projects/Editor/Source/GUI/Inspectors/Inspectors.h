@@ -159,6 +159,7 @@ namespace Odyssey
 		RangeSlider m_SpeedDrawer;
 		ColorPicker m_StartColorDrawer;
 		ColorPicker m_EndColorDrawer;
+		EnumDrawer<EmitterShape> m_ShapeDrawer;
 	};
 
 	class ScriptInspector : public Inspector

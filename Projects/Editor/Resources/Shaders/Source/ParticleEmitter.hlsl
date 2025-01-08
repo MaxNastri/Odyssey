@@ -11,7 +11,9 @@ struct Particle
 
 #define CIRCLE 0
 #define CONE 1
-#define SPHERE 2
+#define CUBE 2
+#define DONUT 3
+#define SPHERE 4
 
 static const uint Add = 1;
 static const uint Subtract = -1;
@@ -79,6 +81,15 @@ float3 RandomInsideSphere(float id, float radius)
     return float3(x, y, z);
 }
 
+float3 RandomInsideCube(float id, float radius)
+{
+    float rndX = random(float2(id.x, FrameIndex));
+    float rndY = random(float2(id.x, rndX));
+    float rndZ = random(float2(id.x, rndY));
+    
+    return float3(rndX, rndY, rndZ);
+}
+
 [numthreads(64, 1, 1)]
 void main(uint3 id : SV_DispatchThreadID)
 {
@@ -99,27 +110,47 @@ void main(uint3 id : SV_DispatchThreadID)
     // Get the index of the revived particle and assign it to the particle buffer
     uint particleIndex = DeadBuffer[deadCount - 1];
     Particle particle = ParticleBuffer[particleIndex];
-    
-    // Generate a random position and velocity multiplier based on the shape
-    float3 randomPos = RandomInsideCircle(id.x, Radius);
-    particle.Position = Position + float4(randomPos, 0.0f);
+    particle.Position = Position;
     particle.Velocity = Velocity;
     
     // Apply sphere velocity logic
-    //if (Shape == SPHERE)
-    //{
-    //    float4 velocity = float4(normalize(randomPos), 0.0f);
-    //    particle.Velocity = velocity;
-    //}
-    // Apply cone velocity logic
-    if (Angle > 0.0f)
+    if (Shape == CIRCLE)
     {
-        float3 intialVelo = randomPos;
+        particle.Position.xyz += RandomInsideCircle(id.x, Radius);
+    }
+    
+    if (Shape == CONE)
+    {
+        float3 position = RandomInsideCircle(id.x, Radius);
+        float3 initialVelocity = position;
+        
         float radialAngle = (Angle / 90.0f);
-        float3 radialVelo = radialAngle * intialVelo;
+        float3 radialVelo = radialAngle * initialVelocity;
+        
         float3 upVelo = (1.0f - radialAngle) * particle.Velocity.xyz;
-        float3 finalVelo =  radialVelo + upVelo;
+        float3 finalVelo = radialVelo + upVelo;
+        
+        particle.Position.xyz += position;
         particle.Velocity = float4(finalVelo, 0.0f);
+    }
+    
+    if (Shape == CUBE)
+    {
+        float3 position = RandomInsideCube(id.x, Radius);
+        particle.Position.xyz += position;
+        particle.Velocity.xyz = normalize(position);
+    }
+    
+    if (Shape == DONUT)
+    {
+        
+    }
+    
+    if (Shape == SPHERE)
+    {
+        float3 position = RandomInsideSphere(id.x, Radius);
+        particle.Position.xyz += position;
+        particle.Velocity.xyz = normalize(position);
     }
     
     float lifetime = lerp(Lifetime.x, Lifetime.y, rnd);

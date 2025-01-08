@@ -631,3 +631,7 @@ Entries:
     Type: Odyssey.Prefab
     Path: Prefabs/Brazier.prefab
     GUID: 8694393736984464387
+  - Name: Fireball
+    Type: Odyssey.Prefab
+    Path: Prefabs/Fireball.prefab
+    GUID: 11624522031486024579

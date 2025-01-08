@@ -50,6 +50,30 @@ namespace Odyssey
 		ADD_INTERNAL_CALL(SpriteRenderer_GetSprite);
 		ADD_INTERNAL_CALL(SpriteRenderer_SetSprite);
 
+		ADD_INTERNAL_CALL(ParticleEmitter_GetLooping);
+		ADD_INTERNAL_CALL(ParticleEmitter_GetEmissionRate);
+		ADD_INTERNAL_CALL(ParticleEmitter_GetRadius);
+		ADD_INTERNAL_CALL(ParticleEmitter_GetAngle);
+		ADD_INTERNAL_CALL(ParticleEmitter_GetDuration);
+		ADD_INTERNAL_CALL(ParticleEmitter_GetLifetime);
+		ADD_INTERNAL_CALL(ParticleEmitter_GetSize);
+		ADD_INTERNAL_CALL(ParticleEmitter_GetSpeed);
+		ADD_INTERNAL_CALL(ParticleEmitter_GetStartColor);
+		ADD_INTERNAL_CALL(ParticleEmitter_GetEndColor);
+		ADD_INTERNAL_CALL(ParticleEmitter_GetShape);
+
+		ADD_INTERNAL_CALL(ParticleEmitter_SetLooping);
+		ADD_INTERNAL_CALL(ParticleEmitter_SetEmissionRate);
+		ADD_INTERNAL_CALL(ParticleEmitter_SetRadius);
+		ADD_INTERNAL_CALL(ParticleEmitter_SetAngle);
+		ADD_INTERNAL_CALL(ParticleEmitter_SetDuration);
+		ADD_INTERNAL_CALL(ParticleEmitter_SetLifetime);
+		ADD_INTERNAL_CALL(ParticleEmitter_SetSize);
+		ADD_INTERNAL_CALL(ParticleEmitter_SetSpeed);
+		ADD_INTERNAL_CALL(ParticleEmitter_SetStartColor);
+		ADD_INTERNAL_CALL(ParticleEmitter_SetEndColor);
+		ADD_INTERNAL_CALL(ParticleEmitter_SetShape);
+
 		ADD_INTERNAL_CALL(Prefab_LoadInstance);
 
 		ADD_INTERNAL_CALL(Texture2D_GetWidth);
