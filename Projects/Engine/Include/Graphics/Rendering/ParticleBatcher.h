@@ -76,7 +76,7 @@ namespace Odyssey
 		inline static std::queue<size_t> s_ResourceIndices;
 		inline static std::array<PerEmitterResources, MAX_EMITTERS> s_EmitterResources;
 		inline static std::vector<size_t> s_DrawList;
-		inline static uint32_t s_CurrentFrame = 0;
+		inline static uint8_t s_CurrentFrame = 0;
 
 	private: // Shared
 		inline static ResourceID s_CommandPool;

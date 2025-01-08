@@ -1,18 +1,18 @@
 GameObjects:
-  - Sort Order: 11
+  - Sort Order: 0
     Parent: 0
     Name: Brazier Prefab
-    GUID: 12764066439186660431
+    GUID: 10304782568832133636
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 1.4282876 z: 0'
+        Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
-  - Sort Order: -1
-    Parent: 12764066439186660431
+  - Sort Order: 0
+    Parent: 10304782568832133636
     Name: Brazier
-    GUID: 14505116654221504830
+    GUID: 11337624995637621917
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.MeshRenderer
@@ -24,42 +24,43 @@ GameObjects:
         Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: -90 y: 0 z: 0'
         Scale: 'x: 7 y: 7 z: 7'
-  - Sort Order: -1
-    Parent: 12764066439186660431
+  - Sort Order: 0
+    Parent: 11337624995637621917
     Name: Fire
-    GUID: 17463487364609857230
+    GUID: 12881135924233907949
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0.2795601 z: 0'
-        Rotation: 'x: 0 y: 0 z: 0'
+        Position: 'x: 0.0027629137 y: -2.3245811e-06 z: 0.040566653'
+        Rotation: 'x: 90 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.ParticleEmitter
-        Enabled: 52
+        Enabled: 1
         Duration: 1
-        Radius: 0.31
+        Radius: 0.14
+        Angle: 70
         Looping: 1
         Material: 9122200999232379991
-        Emission Rate: 50
-        Start Color: 'x: 0.827451 y: 0.5568628 z: 0.31764707 w: 0.8392157'
+        Emission Rate: 30
+        Start Color: 'x: 0.78039217 y: 0.36862746 z: 0 w: 0.7058824'
         End Color: 'x: 0 y: 0 z: 0 w: 0'
         Velocity: 'x: 0 y: 1 z: 0 w: 0'
-        Lifetime: 'x: 1.5 y: 1.75'
-        Size: 'x: 1 y: 3'
-        Speed: 'x: 0.4 y: 0.6'
-  - Sort Order: -1
-    Parent: 12764066439186660431
+        Lifetime: 'x: 1.25 y: 1.6'
+        Size: 'x: 2 y: 3'
+        Speed: 'x: 1.25 y: 1.5'
+  - Sort Order: 1
+    Parent: 11337624995637621917
     Name: Light
-    GUID: 7267325018190706810
+    GUID: 16792049301144771102
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0.51127994 z: 0'
+        Position: 'x: 0 y: -6.217249e-15 z: 0.07546584'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.Light
         Enabled: 1
         Light Type: Point
-        Color: 'x: 0.827451 y: 0.38431373 z: 0'
+        Color: 'x: 1 y: 0.38431373 z: 0'
         Intensity: 2
-        Range: 3
+        Range: 5

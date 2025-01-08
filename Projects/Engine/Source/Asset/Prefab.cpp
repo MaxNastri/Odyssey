@@ -15,10 +15,10 @@ namespace Odyssey
 		Save(instance);
 	}
 
-	void SerializeGameObject(GameObject& gameObject, SerializationNode& gameObjectsNode, std::map<GUID, GUID>& remap)
+	void SerializeGameObject(GameObject& gameObject, SerializationNode& gameObjectsNode, std::map<GUID, GUID>& remap, bool serializeParent = true)
 	{
 		// Get the GUID of the parent node, if a parent exists
-		GUID parent = gameObject.GetParent().IsValid() ? gameObject.GetParent().GetGUID() : GUID::Empty();
+		GUID parent = gameObject.GetParent().IsValid() && serializeParent ? gameObject.GetParent().GetGUID() : GUID::Empty();
 		
 		// Check the parent's guid against the remap
 		if (remap.contains(parent))
@@ -60,7 +60,7 @@ namespace Odyssey
 			remap[child.GetGUID()] = GUID::New();
 
 		// When we serialize, pass along the remap to serialize the new guids and update any references to the old guids
-		SerializeGameObject(prefabInstance, gameObjectsNode, remap);
+		SerializeGameObject(prefabInstance, gameObjectsNode, remap, false);
 
 		for (auto& child : children)
 			SerializeGameObject(child, gameObjectsNode, remap);

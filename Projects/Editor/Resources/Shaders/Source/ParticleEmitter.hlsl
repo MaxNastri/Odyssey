@@ -11,9 +11,11 @@ struct Particle
 
 #define CIRCLE 0
 #define CONE 1
+#define SPHERE 2
 
 static const uint Add = 1;
 static const uint Subtract = -1;
+static const float PI = 3.14159265f;
 
 static const uint DEAD_COUNT_OFFSET = 0;
 static const uint ALIVE_PRE_SIM_COUNT_OFFSET = DEAD_COUNT_OFFSET + 4;
@@ -47,6 +49,36 @@ float random(float2 st)
     return frac(sin(dot(st.xy, float2(12.9898, 78.233))) * 43758.5453123);
 }
 
+float3 RandomInsideCircle(float id, float radius)
+{
+    float elevationAngle = random(float2(id.x, FrameIndex)) * PI;
+    float azimuth = random(float2(id.x, elevationAngle)) * 2 * PI;
+    
+    float x = Radius * sin(elevationAngle) * cos(azimuth);
+    float y = 0.0f;
+    float z = Radius * cos(elevationAngle);
+    return float3(x, y, z);
+}
+
+float3 RandomInsideUnitPlane(float id)
+{
+    float rndX = random(float2(id.x, FrameIndex));
+    float rndZ = random(float2(rndX, id.x));
+
+    return float3(rndX, 0.0f, rndZ);
+}
+
+float3 RandomInsideSphere(float id, float radius)
+{
+    float elevationAngle = random(float2(id.x, FrameIndex)) * PI;
+    float azimuth = random(float2(id.x, elevationAngle)) * 2 * PI;
+    
+    float x = radius * sin(elevationAngle) * cos(azimuth);
+    float y = radius * sin(elevationAngle) * sin(azimuth);
+    float z = radius * cos(elevationAngle);
+    return float3(x, y, z);
+}
+
 [numthreads(64, 1, 1)]
 void main(uint3 id : SV_DispatchThreadID)
 {
@@ -55,8 +87,6 @@ void main(uint3 id : SV_DispatchThreadID)
         return;
     
     float rnd = random(float2(id.x, FrameIndex));
-    float rnd2 = (random(float2(rnd, FrameIndex)) - 0.5f) * 2.0f * Radius;
-    float rnd3 = (random(float2(rnd, rnd2)) - 0.5f) * 2.0f * Radius;
     
     // Revive a dead particle
     int deadCount;
@@ -70,27 +100,33 @@ void main(uint3 id : SV_DispatchThreadID)
     uint particleIndex = DeadBuffer[deadCount - 1];
     Particle particle = ParticleBuffer[particleIndex];
     
-    float lifetime = lerp(Lifetime.x, Lifetime.y, rnd);
-    float4 randomPos = float4(rnd2, 0.0f, rnd3, 0.0f);
-    // Construct a particle based on the emitter's params
-    particle.Position = Position + randomPos;
-    particle.Color = StartColor;
+    // Generate a random position and velocity multiplier based on the shape
+    float3 randomPos = RandomInsideCircle(id.x, Radius);
+    particle.Position = Position + float4(randomPos, 0.0f);
     particle.Velocity = Velocity;
     
+    // Apply sphere velocity logic
+    //if (Shape == SPHERE)
+    //{
+    //    float4 velocity = float4(normalize(randomPos), 0.0f);
+    //    particle.Velocity = velocity;
+    //}
     // Apply cone velocity logic
     if (Angle > 0.0f)
     {
         float3 intialVelo = randomPos;
         float radialAngle = (Angle / 90.0f);
         float3 radialVelo = radialAngle * intialVelo;
-        float3 upVelo = (1.0f - radialAngle) * float3(0, 1, 0);
-        float3 finalVelo = (radialVelo + upVelo);
+        float3 upVelo = (1.0f - radialAngle) * particle.Velocity.xyz;
+        float3 finalVelo =  radialVelo + upVelo;
         particle.Velocity = float4(finalVelo, 0.0f);
     }
     
+    float lifetime = lerp(Lifetime.x, Lifetime.y, rnd);
     particle.Lifetime = float2(lifetime, lifetime);
     particle.Size = lerp(Size.x, Size.y, rnd);
     particle.Speed = lerp(Speed.x, Speed.y, rnd);
+    particle.Color = StartColor;
     
     ParticleBuffer[particleIndex] = particle;
     

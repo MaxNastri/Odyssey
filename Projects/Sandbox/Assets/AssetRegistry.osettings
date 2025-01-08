@@ -603,3 +603,31 @@ Entries:
     Type: Odyssey.Prefab
     Path: Prefabs/Brazier.prefab
     GUID: 1184066439124715941
+  - Name: Brazier
+    Type: Odyssey.Prefab
+    Path: Prefabs/Brazier.prefab
+    GUID: 8128062876877827857
+  - Name: Brazier
+    Type: Odyssey.Prefab
+    Path: Prefabs/Brazier.prefab
+    GUID: 3559647066524997689
+  - Name: Brazier
+    Type: Odyssey.Prefab
+    Path: Prefabs/Brazier.prefab
+    GUID: 1805957744152691909
+  - Name: Fire
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Fire.png
+    GUID: 12565974379865233330
+  - Name: Fireball
+    Type: Odyssey.Texture2D
+    Path: Textures/Particles/Fireball.tex2D
+    GUID: 10384967190449272024
+  - Name: Particle_Fireball
+    Type: Odyssey.Material
+    Path: Materials/Particles/Particle_Fireball.mat
+    GUID: 8139979667651989943
+  - Name: Brazier
+    Type: Odyssey.Prefab
+    Path: Prefabs/Brazier.prefab
+    GUID: 8694393736984464387
