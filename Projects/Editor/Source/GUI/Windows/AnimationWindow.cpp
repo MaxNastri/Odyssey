@@ -360,7 +360,8 @@ namespace Odyssey
 
 				ImGui::FilledRectSpanTextFree("Return Transitions", float4(1.0f), float4(0.1f, 0.1f, 0.1f, 1.0f), textSize.y, float2(0.0f, 0.0f));
 
-				DrawAnimationCondition(m_AnimationLink->GetReturnTransition());
+				if (m_AnimationLink->GetReturnTransition())
+					DrawAnimationCondition(m_AnimationLink->GetReturnTransition());
 
 				ImGui::PopStyleVar();
 			}

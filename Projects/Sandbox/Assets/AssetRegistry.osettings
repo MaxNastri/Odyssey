@@ -639,3 +639,11 @@ Entries:
     Type: Odyssey.Prefab
     Path: Prefabs/Fireball.prefab
     GUID: 7195273457303028506
+  - Name: Spell
+    Type: Odyssey.SourceModel
+    Path: Models/Spell.fbx
+    GUID: 7148079352929686846
+  - Name: Spell
+    Type: Odyssey.AnimationClip
+    Path: Animation/Clips/Spell.asset
+    GUID: 14136541016961007141

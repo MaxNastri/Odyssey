@@ -97,18 +97,22 @@ namespace Odyssey
 				float2 nodePos = float2(0.0f);
 				GUID nodeGUID;
 				GUID clipGUID;
+				bool entry;
 				std::string stateName;
 
 				stateNode.ReadData("GUID", nodeGUID.Ref());
 				stateNode.ReadData("Name", stateName);
 				stateNode.ReadData("Clip", clipGUID.Ref());
 				stateNode.ReadData("Position", nodePos);
+				stateNode.ReadData("Entry State", entry);
 
 				Ref<AnimationState> state = new AnimationState(nodeGUID, stateName, clipGUID);
+				state->SetEntry(entry);
+
 				Ref<AnimationStateNode> node = AddNode<AnimationStateNode>(nodeGUID, stateName, state);
 				node->SetInitialPosition(nodePos);
 
-				if (!m_CurrentState)
+				if (entry)
 					m_CurrentState = state;
 
 				m_States[node->Guid] = state;
@@ -320,6 +324,7 @@ namespace Odyssey
 			stateNode.WriteData("Name", state->GetName());
 			stateNode.WriteData("Clip", clipGUID);
 			stateNode.WriteData("Position", nodePos);
+			stateNode.WriteData("Entry State", state->IsEntryState());
 		}
 
 		SerializationNode linksNode = root.CreateSequenceNode("Animation Links");

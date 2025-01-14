@@ -32,6 +32,7 @@ namespace Odyssey
 	public:
 		bool IsEnabled() { return m_Enabled; }
 		uint32_t GetScriptID() { return m_ScriptID; }
+		ManagedHandle& GetManagedHandle() { return m_Handle; }
 
 	public:
 		void ClearManagedHandle() { m_Handle.Clear(); }

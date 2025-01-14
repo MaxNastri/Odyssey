@@ -349,8 +349,6 @@ namespace Odyssey
 				}
 			}
 		}
-
-		int d = 0;
 	}
 
 	bool FBXAssetImporter::Import(const Path& modelPath)

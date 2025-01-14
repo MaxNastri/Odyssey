@@ -24,6 +24,7 @@ namespace Odyssey
         internal static delegate* unmanaged<GUID, ReflectionType, void> GameObject_AddComponent;
         internal static delegate* unmanaged<GUID, ReflectionType, bool> GameObject_HasComponent;
         internal static delegate* unmanaged<GUID, ReflectionType, bool> GameObject_RemoveComponent;
+        internal static delegate* unmanaged<GUID, NativeInstance<object>> GameObject_GetScript;
 
         #endregion
 

@@ -21,6 +21,7 @@ namespace Sandbox
 
         public Prefab Fireball;
         public Transform CameraTransform;
+        public Transform FireballTransform;
         public float CameraSpeed = 1.0f;
         public float MovementSpeed = 10.0f;
 
@@ -28,6 +29,11 @@ namespace Sandbox
         private Animator m_Animator;
         private PlayerInput m_Input;
         private Entity m_SpawnedFireball;
+
+        private bool m_IsCasting = false;
+        private float m_CastingTimer = 0.0f;
+        private const float Casting_Duration = 4.267f;
+        private const float Fireball_Spawn_Time = 0.5f;
 
         protected override void Awake()
         {
@@ -40,9 +46,37 @@ namespace Sandbox
             HandleMovement();
             HandleCamera();
 
-            if (m_Input.Alpha1)
-                m_SpawnedFireball = Prefab.LoadInstance(Fireball);
+            if (m_IsCasting)
+            {
+                HandleCasting();
+            }
+            else if (m_Input.Alpha1)
+            {
+                m_IsCasting = true;
+                m_Animator.SetBool("Casting", true);
+            }
         }
+
+        private void HandleCasting()
+        {
+            m_CastingTimer = Math.Min(m_CastingTimer + Time.DeltaTime, Casting_Duration);
+
+            if (m_CastingTimer == Casting_Duration)
+            {
+                m_IsCasting = false;
+                m_Animator.SetBool("Casting", false);
+                m_CastingTimer = 0.0f;
+            }
+
+            // Check if we should spawn the fireball
+            if (m_CastingTimer >= (Casting_Duration * Fireball_Spawn_Time) && m_SpawnedFireball == null)
+            {
+                m_SpawnedFireball = Prefab.LoadInstance(Fireball);
+                FireballMover mover = m_SpawnedFireball.GetScript<FireballMover>();
+                mover.SetTransform(FireballTransform.Position, m_Transform.Forward);
+            }
+        }
+
 
         private void HandleMovement()
         {

@@ -177,6 +177,16 @@ namespace Odyssey::InternalCalls
 		return false;
 	}
 
+	Coral::ManagedObject GameObject_GetScript(uint64_t guid)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (ScriptComponent* script = gameObject.TryGetComponent<ScriptComponent>())
+			return *(script->GetManagedHandle().GetManagedObject());
+
+		return Coral::ManagedObject();
+	}
+
 #pragma endregion
 
 #pragma region Transform

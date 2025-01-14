@@ -31,6 +31,7 @@ namespace Odyssey
 		ADD_INTERNAL_CALL(GameObject_AddComponent);
 		ADD_INTERNAL_CALL(GameObject_HasComponent);
 		ADD_INTERNAL_CALL(GameObject_RemoveComponent);
+		ADD_INTERNAL_CALL(GameObject_GetScript);
 
 		ADD_INTERNAL_CALL(Transform_GetPosition);
 		ADD_INTERNAL_CALL(Transform_SetPosition);
