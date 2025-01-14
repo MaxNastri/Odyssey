@@ -3,7 +3,7 @@ using System;
 
 namespace Sandbox
 {
-    public class DoorController : Entity
+    public class DoorController : Component
     {
         private struct Door
         {

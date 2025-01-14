@@ -26,10 +26,6 @@ namespace Odyssey
             this.GUID = guid;
         }
 
-        protected virtual void Awake() { }
-        protected virtual void Update() { }
-        protected virtual void OnDestroy() { }
-
         public T AddComponent<T>() where T : Component, new()
         {
             Type type = typeof(T);

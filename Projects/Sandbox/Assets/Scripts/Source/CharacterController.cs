@@ -3,17 +3,19 @@ using System;
 
 namespace Sandbox
 {
-    public class CharacterController : Entity
+    public class CharacterController : Component
     {
         public struct PlayerInput
         {
             public Vector3 Movement;
             public Vector2 Camera;
+            public bool Alpha1;
 
             public void Clear()
             {
                 Movement = new Vector3(0, 0, 0);
                 Camera = new Vector2(0, 0);
+                Alpha1 = false;
             }
         }
 
@@ -31,13 +33,15 @@ namespace Sandbox
         {
             m_Transform = GetComponent<Transform>();
             m_Animator = GetComponent<Animator>();
-            m_SpawnedFireball = Prefab.LoadInstance(Fireball);
         }
 
         protected override void Update()
         {
             HandleMovement();
             HandleCamera();
+
+            if (m_Input.Alpha1)
+                m_SpawnedFireball = Prefab.LoadInstance(Fireball);
         }
 
         private void HandleMovement()
@@ -96,6 +100,9 @@ namespace Sandbox
             // Mouse input for the camera
             m_Input.Camera.X = Input.GetMouseAxisHorizontal();
             m_Input.Camera.Y = Input.GetMouseAxisVertical();
+
+            // Input for skills
+            m_Input.Alpha1 = Input.GetKeyDown(KeyCode.Alpha1);
         }
     }
 }

@@ -157,7 +157,7 @@ namespace Odyssey
 			std::string fullName = type->GetFullName();
 			uint32_t scriptID = GenerateFNVHash(fullName);
 
-			if (type->IsSubclassOf(entityType))
+			if (type->IsSubclassOf(entityType) || type->IsSubclassOf(componentType))
 			{
 				ScriptMetadata& metadata = m_ScriptMetdata[scriptID];
 				metadata.Name = fullName;

@@ -3,7 +3,7 @@ using System;
 
 namespace Sandbox
 {
-    public class AssetTest : Entity
+    public class AssetTest : Component
     {
         public Mesh MeshAsset;
 

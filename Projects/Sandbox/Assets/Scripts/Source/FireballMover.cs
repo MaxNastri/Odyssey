@@ -3,7 +3,7 @@ using System;
 
 namespace Sandbox
 {
-    public class FireballMover : Entity
+    public class FireballMover : Component
     {
         public float MaxSpeed = 1.0f;
         public uint MaxEmissionRate = 100;

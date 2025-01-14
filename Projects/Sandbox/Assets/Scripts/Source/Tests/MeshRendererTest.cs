@@ -3,7 +3,7 @@ using System;
 
 namespace Sandbox
 {
-    public class MeshRendererTest : Entity
+    public class MeshRendererTest : Component
     {
         public MeshRenderer MeshRenderer;
         public Mesh MeshTarget;
