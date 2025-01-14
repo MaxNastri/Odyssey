@@ -145,6 +145,17 @@ namespace Odyssey
 				sceneGraph.SetParent(parent, child);
 			}
 
+			if (scene->IsRunning())
+			{
+				baseGameObject.Awake();
+
+				for (auto& [childGUID, parentGUID] : gameObjectToParent)
+				{
+					GameObject child = scene->GetGameObject(childGUID);
+					child.Awake();
+				}
+			}
+
 			// Re-sort after applying the new hierarchy
 			sceneGraph.GetNode(baseGameObject)->SortChildren(true);
 

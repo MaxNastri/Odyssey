@@ -29,6 +29,14 @@ namespace Odyssey
 		return m_Scene && m_Scene->m_Registry.valid(m_Entity);
 	}
 
+	void GameObject::Awake()
+	{
+		if (Camera* camera = TryGetComponent<Camera>())
+			camera->Awake();
+		if (ScriptComponent* script = TryGetComponent<ScriptComponent>())
+			script->Awake();
+	}
+
 	void GameObject::Serialize(SerializationNode& gameObjectNode)
 	{
 		Serialize(gameObjectNode, false);
@@ -102,46 +110,21 @@ namespace Odyssey
 			componentNode.ReadData("Type", componentType);
 
 			if (componentType == Animator::Type)
-			{
-				Animator& animator = AddComponent<Animator>();
-				animator.Deserialize(componentNode);
-			}
+				AddComponent<Animator>(componentNode);
 			else if (componentType == Camera::Type)
-			{
-				Camera& camera = AddComponent<Camera>();
-				camera.Deserialize(componentNode);
-			}
+				AddComponent<Camera>(componentNode);
 			else if (componentType == MeshRenderer::Type)
-			{
-				MeshRenderer& meshRenderer = AddComponent<MeshRenderer>();
-				meshRenderer.Deserialize(componentNode);
-			}
+				AddComponent<MeshRenderer>(componentNode);
 			else if (componentType == Transform::Type)
-			{
-				Transform& transform = AddComponent<Transform>();
-				transform.Deserialize(componentNode);
-			}
+				AddComponent<Transform>();
 			else if (componentType == ScriptComponent::Type)
-			{
-				// Important: We use a separate deserialize function to pass along the remapped guids
-				ScriptComponent& script = AddComponent<ScriptComponent>();
-				script.DeserializeAsPrefab(componentNode, remap);
-			}
+				AddComponent<ScriptComponent>(componentNode, remap);
 			else if (componentType == Light::Type)
-			{
-				Light& light = AddComponent<Light>();
-				light.Deserialize(componentNode);
-			}
+				AddComponent<Light>(componentNode);
 			else if (componentType == ParticleEmitter::Type)
-			{
-				ParticleEmitter& particleSystem = AddComponent<ParticleEmitter>();
-				particleSystem.Deserialize(componentNode);
-			}
+				AddComponent<ParticleEmitter>(componentNode);
 			else if (componentType == SpriteRenderer::Type)
-			{
-				SpriteRenderer& spriteRenderer = AddComponent<SpriteRenderer>();
-				spriteRenderer.Deserialize(componentNode);
-			}
+				AddComponent<SpriteRenderer>(componentNode);
 		}
 	}
 

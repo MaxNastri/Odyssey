@@ -9,6 +9,8 @@ namespace Odyssey
 		EditorPropertiesComponent(const GameObject& gameObject) { }
 
 	public:
+		void Awake() { }
+	public:
 		bool ShowInHierarchy = true;
 	};
 }

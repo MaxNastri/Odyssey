@@ -11,6 +11,7 @@ namespace Odyssey
 	public:
 		ScriptComponent() = default;
 		ScriptComponent(const GameObject& gameObject);
+		ScriptComponent(const GameObject& gameObject, SerializationNode& node, std::map<GUID, GUID>& remap);
 		ScriptComponent(const GameObject& gameObject, const std::string& managedType);
 		ScriptComponent(const GameObject& gameObject, uint32_t scriptID);
 

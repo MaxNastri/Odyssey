@@ -23,6 +23,7 @@ namespace Odyssey
 		Sphere = 4,
 		Mesh = 5,
 	};
+
 	struct ParticleEmitterData
 	{
 		float4 Position = glm::vec4(0,0,0,1);
@@ -46,8 +47,10 @@ namespace Odyssey
 	public:
 		ParticleEmitter() = default;
 		ParticleEmitter(const GameObject& gameObject);
+		ParticleEmitter(const GameObject& gameObject, SerializationNode& node);
 
 	public:
+		void Awake() { }
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 
@@ -104,7 +107,6 @@ namespace Odyssey
 		bool m_Active = true;
 		float m_ActiveTime = 0.0f;
 		float m_EmissionTime = 0.0f;
-		uint32_t m_EmissionCount;
 		uint32_t m_ParticleCount;
 	};
 }

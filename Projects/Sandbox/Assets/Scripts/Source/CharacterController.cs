@@ -17,6 +17,7 @@ namespace Sandbox
             }
         }
 
+        public Prefab Fireball;
         public Transform CameraTransform;
         public float CameraSpeed = 1.0f;
         public float MovementSpeed = 10.0f;
@@ -24,11 +25,13 @@ namespace Sandbox
         private Transform m_Transform;
         private Animator m_Animator;
         private PlayerInput m_Input;
+        private Entity m_SpawnedFireball;
 
         protected override void Awake()
         {
             m_Transform = GetComponent<Transform>();
             m_Animator = GetComponent<Animator>();
+            m_SpawnedFireball = Prefab.LoadInstance(Fireball);
         }
 
         protected override void Update()

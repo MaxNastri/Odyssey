@@ -8,7 +8,12 @@ namespace Odyssey
 	ParticleEmitter::ParticleEmitter(const GameObject& gameObject)
 	{
 		m_GameObject = gameObject;
-		m_EmissionCount = m_EmissionRate;
+	}
+
+	ParticleEmitter::ParticleEmitter(const GameObject& gameObject, SerializationNode& node)
+	{
+		m_GameObject = gameObject;
+		Deserialize(node);
 	}
 
 	void ParticleEmitter::Serialize(SerializationNode& node)

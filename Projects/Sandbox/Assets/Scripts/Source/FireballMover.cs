@@ -7,8 +7,10 @@ namespace Sandbox
     {
         public float MaxSpeed = 1.0f;
         public uint MaxEmissionRate = 100;
+        public Vector3 SpawnPosition;
+        public Vector3 SpawnRotation;
 
-        public ParticleEmitter m_Emitter;
+        private ParticleEmitter m_Emitter;
         private Transform m_Transform;
         private float m_Speed;
         private uint m_StartingEmission = 0;
@@ -18,6 +20,9 @@ namespace Sandbox
             m_Transform = GetComponent<Transform>();
             m_Emitter = GetComponent<ParticleEmitter>();
             m_StartingEmission = m_Emitter.EmissionRate;
+
+            m_Transform.Position = SpawnPosition;
+            m_Transform.EulerAngles = SpawnRotation;
         }
 
         protected override void Update()

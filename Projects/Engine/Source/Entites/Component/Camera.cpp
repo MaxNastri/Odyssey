@@ -10,6 +10,12 @@ namespace Odyssey
 	{
 	}
 
+	Camera::Camera(const GameObject& gameObject, SerializationNode& node)
+		: m_GameObject(gameObject)
+	{
+		Deserialize(node);
+	}
+
 	void Camera::Awake()
 	{
 		// Calculate our matrices

@@ -9,6 +9,15 @@ namespace Odyssey
 	{
 	}
 
+	ScriptComponent::ScriptComponent(const GameObject& gameObject, SerializationNode& node, std::map<GUID, GUID>& remap)
+		: m_GameObject(gameObject)
+	{
+		DeserializeAsPrefab(node, remap);
+
+		GUID guid = m_GameObject.GetGUID();
+		SetManagedHandle(ScriptingManager::Instantiate(guid, (uint64_t)guid));
+	}
+
 	ScriptComponent::ScriptComponent(const GameObject& gameObject, const std::string& managedType)
 		: m_GameObject(gameObject)
 	{

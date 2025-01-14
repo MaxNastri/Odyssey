@@ -1,6 +1,4 @@
 #include "GameObject.h"
-#include "EventSystem.h"
-#include "Events.h"
 
 #pragma once
 
@@ -9,8 +7,7 @@ namespace Odyssey
 	template<typename T, typename ...Args>
 	inline T& GameObject::AddComponent(Args && ...params)
 	{
-		T& component = m_Scene->m_Registry.emplace<T>(m_Entity, *this, std::forward<Args>(params)...);
-		EventSystem::Dispatch<SceneModifiedEvent>(m_Scene);
+		T& component = m_Scene->AddComponent<T>(*this, std::forward<Args>(params)...);
 		return component;
 	}
 

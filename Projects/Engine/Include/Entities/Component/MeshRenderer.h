@@ -11,8 +11,10 @@ namespace Odyssey
 	public:
 		MeshRenderer() = default;
 		MeshRenderer(const GameObject& gameObject);
+		MeshRenderer(const GameObject& gameObject, SerializationNode& node);
 
 	public:
+		void Awake() { }
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 

@@ -10,6 +10,12 @@ namespace Odyssey
 	{
 	}
 
+	MeshRenderer::MeshRenderer(const GameObject& gameObject, SerializationNode& node)
+		: m_GameObject(gameObject)
+	{
+		Deserialize(node);
+	}
+
 	void MeshRenderer::Serialize(SerializationNode& node)
 	{
 		GUID mesh = m_Mesh ? m_Mesh->GetGUID().Ref() : 0;

@@ -114,6 +114,8 @@ namespace Odyssey
 
 	void Scene::Awake()
 	{
+		m_State = SceneState::Awake;
+
 		for (auto entity : m_Registry.view<Camera>())
 		{
 			GameObject gameObject = GameObject(this, entity);
@@ -141,6 +143,8 @@ namespace Odyssey
 
 	void Scene::Update()
 	{
+		m_State = SceneState::Update;
+
 		for (auto entity : m_Registry.view<ScriptComponent>())
 		{
 			GameObject gameObject = GameObject(this, entity);
@@ -158,6 +162,8 @@ namespace Odyssey
 
 	void Scene::OnDestroy()
 	{
+		m_State = SceneState::Destroy;
+
 		for (auto entity : m_Registry.view<ScriptComponent>())
 		{
 			GameObject gameObject = GameObject(this, entity);

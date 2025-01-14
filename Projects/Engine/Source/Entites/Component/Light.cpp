@@ -10,6 +10,12 @@ namespace Odyssey
 
 	}
 
+	Light::Light(const GameObject& gameObject, SerializationNode& node)
+		: m_GameObject(gameObject)
+	{
+		Deserialize(node);
+	}
+
 	void Light::Serialize(SerializationNode& node)
 	{
 		SerializationNode componentNode = node.AppendChild();

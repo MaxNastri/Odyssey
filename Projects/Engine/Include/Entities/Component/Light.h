@@ -14,11 +14,14 @@ namespace Odyssey
 	class Light
 	{
 		CLASS_DECLARATION(Odyssey, Light)
+
 	public:
 		Light() = default;
 		Light(const GameObject& gameObject);
+		Light(const GameObject& gameObject, SerializationNode& node);
 
 	public:
+		void Awake() { }
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 

@@ -14,6 +14,12 @@ namespace Odyssey
 
 	}
 
+	Animator::Animator(const GameObject& gameObject, SerializationNode& node)
+		: m_GameObject(gameObject)
+	{
+		Deserialize(node);
+	}
+
 	void Animator::Serialize(SerializationNode& node)
 	{
 		SerializationNode componentNode = node.AppendChild();
@@ -43,13 +49,13 @@ namespace Odyssey
 
 	void Animator::OnEditorUpdate()
 	{
-		//if (m_Rig && m_Blueprint)
-		//{
-		//	if (m_BoneGameObjects.size() == 0)
-		//		CreateBoneGameObjects();
-		//
-		//	Update();
-		//}
+		if (m_Rig && m_Blueprint)
+		{
+			if (m_BoneGameObjects.size() == 0)
+				CreateBoneGameObjects();
+
+			ProcessKeys();
+		}
 	}
 
 	void Animator::Update()

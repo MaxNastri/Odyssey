@@ -253,6 +253,7 @@ namespace Odyssey
 					case DataType::Texture2D:
 					case DataType::Scene:
 					case DataType::Component:
+					case DataType::Prefab:
 						break;
 					default:
 						break;

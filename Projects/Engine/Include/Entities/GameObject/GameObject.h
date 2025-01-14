@@ -24,6 +24,7 @@ namespace Odyssey
 		bool IsValid();
 
 	public:
+		void Awake();
 		void Serialize(SerializationNode& gameObjectNode);
 		void SerializeAsPrefab(SerializationNode& gameObjectNode, std::map<GUID, GUID>& remap);
 		void Deserialize(SerializationNode& gameObjectNode);

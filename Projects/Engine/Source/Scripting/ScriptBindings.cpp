@@ -15,9 +15,10 @@ namespace Odyssey
 		RegisterComponentType<Animator>(frameworkAssembly, Animator::Type);
 		RegisterComponentType<Camera>(frameworkAssembly, Camera::Type);
 		RegisterComponentType<MeshRenderer>(frameworkAssembly, MeshRenderer::Type);
-		RegisterComponentType<Transform>(frameworkAssembly, Transform::Type);
+		RegisterComponentType<ParticleEmitter>(frameworkAssembly, ParticleEmitter::Type);
 		RegisterComponentType<ScriptComponent>(frameworkAssembly, ScriptComponent::Type);
 		RegisterComponentType<SpriteRenderer>(frameworkAssembly, SpriteRenderer::Type);
+		RegisterComponentType<Transform>(frameworkAssembly, Transform::Type);
 
 		ADD_INTERNAL_CALL(Animator_IsEnabled);
 		ADD_INTERNAL_CALL(Animator_SetFloat);

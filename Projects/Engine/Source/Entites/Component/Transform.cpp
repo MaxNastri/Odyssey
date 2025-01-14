@@ -15,6 +15,17 @@ namespace Odyssey
 		m_Dirty = true;
 	}
 
+	Transform::Transform(const GameObject& gameObject, SerializationNode& node)
+		: m_GameObject(gameObject)
+	{
+		m_Position = glm::vec3(0, 0, 0);
+		m_EulerRotation = glm::vec3(0, 0, 0);
+		m_Rotation = glm::quat(1, 0, 0, 0);
+		m_Scale = glm::vec3(1, 1, 1);
+		m_Dirty = true;
+		Deserialize(node);
+	}
+
 	void Transform::AddPosition(glm::vec3 pos)
 	{
 		m_Position += pos;

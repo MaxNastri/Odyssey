@@ -5,6 +5,8 @@
 #include "GUID.h"
 #include "SceneGraph.h"
 #include "EnvironmentSettings.h"
+#include "EventSystem.h"
+#include "Events.h"
 
 namespace Odyssey
 {
@@ -41,6 +43,7 @@ namespace Odyssey
 		void Load();
 
 	public:
+		bool IsRunning() { return m_State >= SceneState::Awake && m_State < SceneState::Destroy; }
 		GUID GetGUID() { return m_GUID; }
 		const Path& GetPath() { return m_Path; }
 		SceneGraph& GetSceneGraph() { return m_SceneGraph; }
@@ -61,6 +64,25 @@ namespace Odyssey
 			return m_Registry.view<Components...>();
 		}
 
+	private:
+		template<typename T, typename ...Args>
+		inline T& AddComponent(GameObject& gameObject, Args && ...params)
+		{
+			T& component = m_Registry.emplace<T>(gameObject, gameObject, std::forward<Args>(params)...);
+			EventSystem::Dispatch<SceneModifiedEvent>(this);
+			return component;
+		}
+
+	private:
+		enum class SceneState
+		{
+			None = 0,
+			Awake = 1,
+			Start = 2,
+			Update = 3,
+			Destroy = 4,
+		};
+
 	private: // Serialized
 		GUID m_GUID;
 		std::string m_Name;
@@ -74,6 +96,7 @@ namespace Odyssey
 		entt::registry m_Registry;
 		std::map<GUID, GameObject> m_GUIDToGameObject;
 		SceneGraph m_SceneGraph;
+		SceneState m_State = SceneState::None;
 	};
 }
 

@@ -13,8 +13,10 @@ namespace Odyssey
 	public:
 		Animator() = default;
 		Animator(const GameObject& gameObject);
+		Animator(const GameObject& gameObject, SerializationNode& node);
 
 	public:
+		void Awake() { }
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 
