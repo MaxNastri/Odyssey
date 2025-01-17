@@ -155,6 +155,10 @@ namespace Odyssey
 			}
 		}
 
+		// Cache the shadow light view projection matrix
+		if (m_ShadowLight)
+			m_ShadowLightMatrix = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, m_ShadowLight->GetDirection());
+
 		// Update the lighting ubo
 		auto lightingUBO = ResourceManager::GetResource<VulkanBuffer>(LightingBuffer);
 		lightingUBO->CopyData(sizeof(LightingData), &lightingData);
@@ -186,12 +190,11 @@ namespace Odyssey
 		SpriteDrawcalls.clear();
 		m_GUIDToSetPass.clear();
 		m_NextUniformBuffer = 0;
-		m_NextCameraBuffer = 0;
 		m_NextMaterialBuffer = 0;
 		m_MainCamera = nullptr;
 	}
 
-	uint32_t RenderScene::SetSceneData(uint8_t cameraTag)
+	void RenderScene::SetSceneData(uint8_t cameraTag)
 	{
 		if (m_Cameras.contains(cameraTag))
 		{
@@ -207,19 +210,12 @@ namespace Odyssey
 			sceneData.ViewPosition = camera->GetViewPosition();
 
 			if (m_ShadowLight)
-				sceneData.LightViewProj = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, m_ShadowLight->GetDirection());
-
-			uint32_t index = m_NextCameraBuffer;
+				sceneData.LightViewProj = m_ShadowLightMatrix;
 
 			// Update the scene ubo
-			auto sceneUBO = ResourceManager::GetResource<VulkanBuffer>(sceneDataBuffers[index]);
+			Ref<VulkanBuffer> sceneUBO = ResourceManager::GetResource<VulkanBuffer>(sceneDataBuffers[cameraTag]);
 			sceneUBO->CopyData(sizeof(sceneData), &sceneData);
-
-			m_NextCameraBuffer++;
-			return index;
 		}
-		
-		return 0;
 	}
 
 	Camera* RenderScene::GetCamera(uint8_t cameraTag)

@@ -647,3 +647,11 @@ Entries:
     Type: Odyssey.AnimationClip
     Path: Animation/Clips/Spell.asset
     GUID: 14136541016961007141
+  - Name: PBR
+    Type: Odyssey.Shader
+    Path: Shaders/Water.asset
+    GUID: 5634657926911688453
+  - Name: Water
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Water.hlsl
+    GUID: 17942941788463267076

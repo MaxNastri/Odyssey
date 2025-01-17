@@ -14,11 +14,7 @@ struct VertexOutput
 
 cbuffer SceneData : register(b0)
 {
-    float4 ViewPos;
-    float4x4 View;
-    float4x4 Projection;
     float4x4 ViewProjection;
-    float4x4 LightViewProj;
 }
 
 cbuffer ModelData : register(b1)
@@ -48,7 +44,7 @@ VertexOutput main(VertexInput input)
     skinning.Normal = normalize(skinning.Normal);
     skinning.Position.xyz = skinning.Position.xyz + (skinning.Normal.xyz * 0.001f);
     output.Position = mul(Model, skinning.Position);
-    output.Position = mul(LightViewProj, output.Position);
+    output.Position = mul(ViewProjection, output.Position);
     
     return output;
 }

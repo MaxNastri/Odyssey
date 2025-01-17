@@ -12,7 +12,6 @@ namespace Odyssey
 	struct RenderSubPassData
 	{
 		uint8_t CameraTag;
-		uint32_t CameraIndex;
 	};
 
 	class RenderSubPass
@@ -22,7 +21,7 @@ namespace Odyssey
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) { }
 	};
 
-	class ShadowSubPass : public RenderSubPass
+	class DepthSubPass : public RenderSubPass
 	{
 	public:
 		virtual void Setup() override;
@@ -40,6 +39,7 @@ namespace Odyssey
 	private: // Shared
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
 		ResourceID m_DescriptorLayout;
+		ResourceID m_DepthUBO;
 
 	private:
 		inline static const GUID& Shader_GUID = 879318792137863213;
