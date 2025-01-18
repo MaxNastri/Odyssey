@@ -84,6 +84,7 @@ namespace Odyssey
 	{
 		// Clear our draw list from the previous frame
 		s_DrawList.clear();
+		++s_CurrentFrame;
 
 		Scene* scene = SceneManager::GetActiveScene();
 		auto emitterEntities = scene->GetAllEntitiesWith<ParticleEmitter>();
@@ -129,10 +130,7 @@ namespace Odyssey
 			emitter.Update(Time::DeltaTime());
 
 			auto& emitterData = emitter.GetEmitterData();
-			emitterData.Rnd.x = (Random::Float01() - 0.5f) * emitter.GetRadius();
-			emitterData.Rnd.y = 0.0f;
-			emitterData.Rnd.z = (Random::Float01() - 0.5f) * emitter.GetRadius();
-			emitterData.Rnd.w = Random::Float01();
+			emitterData.FrameIndex = s_CurrentFrame;
 
 			// Update the emitter buffer
 			auto emitterBuffer = ResourceManager::GetResource<VulkanBuffer>(emitterResources.EmitterBuffer);
@@ -251,6 +249,7 @@ namespace Odyssey
 
 		// Load the emit shader by GUID
 		s_EmitShader = AssetManager::LoadAsset<Shader>(s_EmitShaderGUID);
+		s_EmitShader->AddOnModifiedListener(OnEmitShaderModified);
 
 		// Create the compute pipeline
 		VulkanPipelineInfo info;
@@ -275,6 +274,7 @@ namespace Odyssey
 
 		// Load the emit shader by GUID
 		s_SimShader = AssetManager::LoadAsset<Shader>(s_SimShaderGUID);
+		s_SimShader->AddOnModifiedListener(OnSimShaderModified);
 
 		// Create the compute pipeline
 		VulkanPipelineInfo info;
@@ -312,5 +312,28 @@ namespace Odyssey
 		counterBuffer->UploadData(&emitterResources.ParticleCounts, m_CounterBufferSize);
 		alivePreSimBuffer->UploadData(emitterResources.AlivePreSimList.data(), m_ListBufferSize);
 		alivePostSimBuffer->UploadData(emitterResources.AlivePostSimList.data(), m_ListBufferSize);
+	}
+
+	void ParticleBatcher::OnEmitShaderModified()
+	{
+		ResourceManager::Destroy(s_EmitComputePipeline);
+
+		// Create the compute pipeline
+		VulkanPipelineInfo info;
+		info.Shaders = s_EmitShader->GetResourceMap();
+		info.DescriptorLayout = s_EmitDescriptorLayout;
+		info.BindVertexAttributeDescriptions = false;
+		s_EmitComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
+	}
+	void ParticleBatcher::OnSimShaderModified()
+	{
+		ResourceManager::Destroy(s_SimComputePipeline);
+
+		// Create the compute pipeline
+		VulkanPipelineInfo info;
+		info.Shaders = s_SimShader->GetResourceMap();
+		info.DescriptorLayout = s_SimDescriptorLayout;
+		info.BindVertexAttributeDescriptions = false;
+		s_SimComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 	}
 }

@@ -1,4 +1,5 @@
 #include "GameObject.h"
+
 #pragma once
 
 namespace Odyssey
@@ -6,7 +7,8 @@ namespace Odyssey
 	template<typename T, typename ...Args>
 	inline T& GameObject::AddComponent(Args && ...params)
 	{
-		return m_Scene->m_Registry.emplace<T>(m_Entity, *this, std::forward<Args>(params)...);
+		T& component = m_Scene->AddComponent<T>(*this, std::forward<Args>(params)...);
+		return component;
 	}
 
 	template<typename T>
@@ -42,6 +44,8 @@ namespace Odyssey
 	template<typename T>
 	inline bool GameObject::RemoveComponent()
 	{
-		return m_Scene->m_Registry.remove<T>(m_Entity);
+		bool remove = m_Scene->m_Registry.remove<T>(m_Entity);
+		EventSystem::Dispatch<SceneModifiedEvent>(m_Scene);
+		return remove;
 	}
 }

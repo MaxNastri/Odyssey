@@ -70,7 +70,7 @@ namespace Odyssey
 			if (connection.Parent)
 			{
 				GameObject parent = scene->GetGameObject(connection.Parent);
-				connection.Node->Parent = FindNode(parent);
+				connection.Node->Parent = GetNode(parent);
 				connection.Node->Parent->Children.push_back(connection.Node);
 
 				PropertiesComponent& properties = connection.Node->Entity.GetComponent<PropertiesComponent>();
@@ -112,14 +112,31 @@ namespace Odyssey
 
 	void SceneGraph::RemoveEntityAndChildren(const GameObject& entity)
 	{
-		if (Ref<SceneNode> node = FindNode(entity))
-			RemoveNodeAndChildren(node);
+		if (Ref<SceneNode> node = GetNode(entity))
+		{
+			// Remove this node from the parent's child list
+			if (node->Parent)
+				RemoveChildNode(node->Parent, node);
+
+			// Get all children under the entity
+			std::vector<GameObject> children = GetAllChildren(entity);
+
+			// Remove the node
+			RemoveNode(node);
+
+			// Remove all children from the scene graph
+			for (size_t i = 0; i < children.size(); i++)
+			{
+				if (Ref<SceneNode> childNode = GetNode(children[i]))
+					RemoveNode(childNode);
+			}
+		}
 	}
 
 	void SceneGraph::SetParent(const GameObject& parent, const GameObject& entity)
 	{
-		Ref<SceneNode> parentNode = FindNode(parent);
-		Ref<SceneNode> node = FindNode(entity);
+		Ref<SceneNode> parentNode = GetNode(parent);
+		Ref<SceneNode> node = GetNode(entity);
 
 		if (node && parentNode)
 		{
@@ -135,7 +152,7 @@ namespace Odyssey
 
 	void SceneGraph::RemoveParent(const GameObject& entity)
 	{
-		if (Ref<SceneNode> node = FindNode(entity))
+		if (Ref<SceneNode> node = GetNode(entity))
 		{
 			RemoveParent(node);
 
@@ -147,7 +164,7 @@ namespace Odyssey
 
 	GameObject SceneGraph::GetParent(const GameObject& entity)
 	{
-		if (auto node = FindNode(entity))
+		if (auto node = GetNode(entity))
 		{
 			if (node->Parent)
 				return node->Parent->Entity;
@@ -158,8 +175,8 @@ namespace Odyssey
 
 	void SceneGraph::AddChild(const GameObject& entity, const GameObject& child)
 	{
-		auto node = FindNode(entity);
-		auto childNode = FindNode(child);
+		auto node = GetNode(entity);
+		auto childNode = GetNode(child);
 
 		if (node && childNode)
 		{
@@ -175,8 +192,8 @@ namespace Odyssey
 
 	void SceneGraph::RemoveChild(const GameObject& entity, const GameObject& child)
 	{
-		Ref<SceneNode> node = FindNode(entity);
-		Ref<SceneNode> childNode = FindNode(child);
+		Ref<SceneNode> node = GetNode(entity);
+		Ref<SceneNode> childNode = GetNode(child);
 
 		if (node && childNode)
 		{
@@ -189,7 +206,7 @@ namespace Odyssey
 	{
 		std::vector<GameObject> children;
 
-		if (auto node = FindNode(entity))
+		if (Ref<SceneNode> node = GetNode(entity))
 		{
 			for (size_t i = 0; i < node->Children.size(); i++)
 			{
@@ -200,7 +217,14 @@ namespace Odyssey
 		return children;
 	}
 
-	Ref<SceneNode> SceneGraph::FindNode(const GameObject& entity)
+	std::vector<GameObject> SceneGraph::GetAllChildren(const GameObject& entity)
+	{
+		std::vector<GameObject> children;
+		GetAllChildren(entity, children);
+		return children;
+	}
+
+	Ref<SceneNode> SceneGraph::GetNode(const GameObject& entity)
 	{
 		for (size_t i = 0; i < m_Nodes.size(); i++)
 		{
@@ -211,17 +235,8 @@ namespace Odyssey
 		return nullptr;
 	}
 
-	void SceneGraph::RemoveNodeAndChildren(Ref<SceneNode> node)
+	void SceneGraph::RemoveNode(Ref<SceneNode> node)
 	{
-		for (size_t i = 0; i < node->Children.size(); i++)
-		{
-			RemoveNodeAndChildren(node->Children[i]);
-		}
-
-		// Remove this node from the parent's child list
-		if (node->Parent)
-			RemoveChildNode(node->Parent, node);
-
 		for (size_t i = 0; i < m_Nodes.size(); i++)
 		{
 			if (m_Nodes[i]->Entity.Equals(node->Entity))
@@ -262,6 +277,17 @@ namespace Odyssey
 				children.erase(children.begin() + i);
 				break;
 			}
+		}
+	}
+
+	void SceneGraph::GetAllChildren(const GameObject& entity, std::vector<GameObject>& children)
+	{
+		std::vector<GameObject> entityChildren = GetChildren(entity);
+		children.insert(children.end(), entityChildren.begin(), entityChildren.end());
+
+		for (size_t i = 0; i < entityChildren.size(); i++)
+		{
+			GetAllChildren(entityChildren[i], children);
 		}
 	}
 

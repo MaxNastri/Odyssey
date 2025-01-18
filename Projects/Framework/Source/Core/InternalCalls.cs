@@ -24,6 +24,7 @@ namespace Odyssey
         internal static delegate* unmanaged<GUID, ReflectionType, void> GameObject_AddComponent;
         internal static delegate* unmanaged<GUID, ReflectionType, bool> GameObject_HasComponent;
         internal static delegate* unmanaged<GUID, ReflectionType, bool> GameObject_RemoveComponent;
+        internal static delegate* unmanaged<GUID, NativeInstance<object>> GameObject_GetScript;
 
         #endregion
 
@@ -54,6 +55,12 @@ namespace Odyssey
 
         #endregion
 
+        #region Prefab
+
+        internal static delegate* unmanaged<GUID, GUID*, void> Prefab_LoadInstance;
+
+        #endregion
+
         #region Texture2D
 
         internal static delegate* unmanaged<GUID, uint*, void> Texture2D_GetWidth;
@@ -61,6 +68,7 @@ namespace Odyssey
         internal static delegate* unmanaged<GUID, bool*, void> Texture2D_GetMipMapsEnabled;
 
         #endregion
+
         #region MeshRenderer
 
         // <EntityGUID, MeshGUID>
@@ -77,8 +85,37 @@ namespace Odyssey
         internal static delegate* unmanaged<GUID, Color, void> SpriteRenderer_SetBaseColor;
         internal static delegate* unmanaged<GUID, GUID*, void> SpriteRenderer_GetSprite;
         internal static delegate* unmanaged<GUID, GUID, void> SpriteRenderer_SetSprite;
-        
+
         #endregion
+
+        #region Particle Emitter
+
+        internal static delegate* unmanaged<GUID, bool*, void> ParticleEmitter_GetLooping;
+        internal static delegate* unmanaged<GUID, uint*, void> ParticleEmitter_GetEmissionRate;
+        internal static delegate* unmanaged<GUID, float*, void> ParticleEmitter_GetRadius;
+        internal static delegate* unmanaged<GUID, float*, void> ParticleEmitter_GetAngle;
+        internal static delegate* unmanaged<GUID, float*, void> ParticleEmitter_GetDuration;
+        internal static delegate* unmanaged<GUID, Vector2*, void> ParticleEmitter_GetLifetime;
+        internal static delegate* unmanaged<GUID, Vector2*, void> ParticleEmitter_GetSize;
+        internal static delegate* unmanaged<GUID, Vector2*, void> ParticleEmitter_GetSpeed;
+        internal static delegate* unmanaged<GUID, Color*, void> ParticleEmitter_GetStartColor;
+        internal static delegate* unmanaged<GUID, Color*, void> ParticleEmitter_GetEndColor;
+        internal static delegate* unmanaged<GUID, EmitterShape*, void> ParticleEmitter_GetShape;
+
+        internal static delegate* unmanaged<GUID, bool, void> ParticleEmitter_SetLooping;
+        internal static delegate* unmanaged<GUID, uint, void> ParticleEmitter_SetEmissionRate;
+        internal static delegate* unmanaged<GUID, float, void> ParticleEmitter_SetRadius;
+        internal static delegate* unmanaged<GUID, float, void> ParticleEmitter_SetAngle;
+        internal static delegate* unmanaged<GUID, float, void> ParticleEmitter_SetDuration;
+        internal static delegate* unmanaged<GUID, Vector2, void> ParticleEmitter_SetLifetime;
+        internal static delegate* unmanaged<GUID, Vector2, void> ParticleEmitter_SetSize;
+        internal static delegate* unmanaged<GUID, Vector2, void> ParticleEmitter_SetSpeed;
+        internal static delegate* unmanaged<GUID, Color, void> ParticleEmitter_SetStartColor;
+        internal static delegate* unmanaged<GUID, Color, void> ParticleEmitter_SetEndColor;
+        internal static delegate* unmanaged<GUID, EmitterShape, void> ParticleEmitter_SetShape;
+
+        #endregion
+
         #region Input
 
         internal static delegate* unmanaged<KeyCode, bool> Input_GetKeyPress;

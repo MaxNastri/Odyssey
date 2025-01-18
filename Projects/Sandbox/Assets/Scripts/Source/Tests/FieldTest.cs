@@ -3,13 +3,13 @@ using Odyssey;
 
 namespace Sandbox
 {
-    public class FieldTest : Entity
+    public class FieldTest : Component
     {
         public int Int;
         public uint Uint;
         public float Float;
         public double Double;
-        public Entity Entity;
+        public Entity OtherEntity;
         public Transform Transform;
         public Camera Camera;
         public MeshRenderer Renderer;

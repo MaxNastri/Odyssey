@@ -95,10 +95,28 @@ namespace Odyssey
 		public:
 			std::string Pragma;
 			size_t FilePos;
+			size_t StartPos;
+			size_t EndPos;
 			ShaderType ShaderType;
 		};
 
+		struct BindingsParseData
+		{
+		public:
+			std::string Pragma;
+			size_t FilePos;
+		};
+
 		std::vector<ShaderParseData> parseData;
+
+		size_t filePos = fileContents.find(Shared_Pragma);
+		if (filePos != std::string::npos)
+		{
+			ShaderParseData& data = parseData.emplace_back();
+			data.Pragma = Shared_Pragma;
+			data.FilePos = filePos;
+			data.ShaderType = ShaderType::None;
+		}
 
 		// Search for each shader pragma while sorting the entries by position
 		for (auto& [shaderType, pragma] : ShaderPragmaMap)
@@ -109,7 +127,7 @@ namespace Odyssey
 			if (filePos == std::string::npos)
 				continue;
 
-			ShaderParseData shaderParse{ pragma, filePos, shaderType };
+			ShaderParseData shaderParse{ pragma, filePos, 0, 0, shaderType };
 			bool inserted = false;
 
 			for (size_t i = 0; i < parseData.size(); i++)
@@ -126,10 +144,11 @@ namespace Odyssey
 				parseData.push_back(shaderParse);
 		}
 
-		// Parse the file contents to extract each shader's code
+		// Now that the parse's are organized by file pos, calculate the end of each parse
 		for (size_t i = 0; i < parseData.size(); i++)
 		{
 			ShaderParseData& shaderParse = parseData[i];
+
 			size_t start = shaderParse.FilePos + shaderParse.Pragma.length();
 			size_t end = std::string::npos;
 
@@ -144,7 +163,29 @@ namespace Odyssey
 				}
 			}
 
-			m_ShaderCode[shaderParse.ShaderType] = fileContents.substr(start, end);
+			shaderParse.StartPos = start;
+			shaderParse.EndPos = end;
+		}
+
+		std::string sharedCode;
+
+		// Now run through and build the shader code for each pragma
+		for (size_t i = 0; i < parseData.size(); i++)
+		{
+			ShaderParseData& shaderParse = parseData[i];
+			std::string shaderCode = fileContents.substr(shaderParse.StartPos, shaderParse.EndPos);
+
+			if (shaderParse.ShaderType == ShaderType::None)
+			{
+				if (shaderParse.Pragma == Shared_Pragma)
+					sharedCode = shaderCode;
+
+				continue;
+			}
+			if (!sharedCode.empty())
+				m_ShaderCode[shaderParse.ShaderType] = sharedCode + "\n" + shaderCode;
+			else
+				m_ShaderCode[shaderParse.ShaderType] = shaderCode;
 		}
 	}
 }

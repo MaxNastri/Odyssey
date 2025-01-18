@@ -29,12 +29,15 @@ cbuffer EmitterData : register(b7)
     float4 StartColor;
     float4 EndColor;
     float4 Velocity;
-    float4 Rnd;
     float2 Lifetime;
     float2 Size;
     float2 Speed;
     uint EmitCount;
     uint EmitterIndex;
+    uint FrameIndex;
+    uint Shape;
+    float Radius;
+    float Angle;
 }
 
 // Per particle

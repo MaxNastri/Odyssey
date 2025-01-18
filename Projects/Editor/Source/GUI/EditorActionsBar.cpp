@@ -82,11 +82,11 @@ namespace Odyssey
 				if (ImGui::Button("Stop", button_size))
 					EventSystem::Dispatch<PlaymodeStateChangedEvent>(PlaymodeState::ExitPlaymode);
 
-				// Draw
-				ImGui::End();
 			}
-
 		}
+
+		// Draw
+		ImGui::End();
 
 		return false;
 	}

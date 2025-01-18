@@ -32,11 +32,14 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
 		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
 		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
-		descriptorLayout->AddBinding("Lighting Data", DescriptorType::Uniform, ShaderStage::Fragment, 3);
-		descriptorLayout->AddBinding("Material Data", DescriptorType::Uniform, ShaderStage::Fragment, 4);
-		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 5);
-		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Fragment, 6);
-		descriptorLayout->AddBinding("Shadowmap", DescriptorType::Sampler, ShaderStage::Fragment, 7);
+		descriptorLayout->AddBinding("Global Data", DescriptorType::Uniform, ShaderStage::Fragment, 3);
+		descriptorLayout->AddBinding("Lighting Data", DescriptorType::Uniform, ShaderStage::Fragment, 4);
+		descriptorLayout->AddBinding("Material Data", DescriptorType::Uniform, ShaderStage::Fragment, 5);
+		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 6);
+		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Fragment, 7);
+		descriptorLayout->AddBinding("Noise", DescriptorType::Sampler, ShaderStage::Fragment, 8);
+		descriptorLayout->AddBinding("Shadowmap", DescriptorType::Sampler, ShaderStage::Fragment, 9);
+		descriptorLayout->AddBinding("Camera Depth", DescriptorType::Sampler, ShaderStage::Fragment, 10);
 		descriptorLayout->Apply();
 
 		// Camera uniform buffer
@@ -155,6 +158,10 @@ namespace Odyssey
 			}
 		}
 
+		// Cache the shadow light view projection matrix
+		if (m_ShadowLight)
+			m_ShadowLightMatrix = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, m_ShadowLight->GetDirection());
+
 		// Update the lighting ubo
 		auto lightingUBO = ResourceManager::GetResource<VulkanBuffer>(LightingBuffer);
 		lightingUBO->CopyData(sizeof(LightingData), &lightingData);
@@ -186,12 +193,11 @@ namespace Odyssey
 		SpriteDrawcalls.clear();
 		m_GUIDToSetPass.clear();
 		m_NextUniformBuffer = 0;
-		m_NextCameraBuffer = 0;
 		m_NextMaterialBuffer = 0;
 		m_MainCamera = nullptr;
 	}
 
-	uint32_t RenderScene::SetSceneData(uint8_t cameraTag)
+	void RenderScene::SetSceneData(uint8_t cameraTag)
 	{
 		if (m_Cameras.contains(cameraTag))
 		{
@@ -207,19 +213,12 @@ namespace Odyssey
 			sceneData.ViewPosition = camera->GetViewPosition();
 
 			if (m_ShadowLight)
-				sceneData.LightViewProj = Light::CalculateViewProj(envSettings.SceneCenter, envSettings.SceneRadius, m_ShadowLight->GetDirection());
-
-			uint32_t index = m_NextCameraBuffer;
+				sceneData.LightViewProj = m_ShadowLightMatrix;
 
 			// Update the scene ubo
-			auto sceneUBO = ResourceManager::GetResource<VulkanBuffer>(sceneDataBuffers[index]);
+			Ref<VulkanBuffer> sceneUBO = ResourceManager::GetResource<VulkanBuffer>(sceneDataBuffers[cameraTag]);
 			sceneUBO->CopyData(sizeof(sceneData), &sceneData);
-
-			m_NextCameraBuffer++;
-			return index;
 		}
-		
-		return 0;
 	}
 
 	Camera* RenderScene::GetCamera(uint8_t cameraTag)
@@ -281,6 +280,7 @@ namespace Odyssey
 					drawcall.IndexCount = submesh->IndexCount;
 					drawcall.UniformBufferIndex = uboIndex;
 					drawcall.Skinned = animator != nullptr;
+					drawcall.SkipDepth = materials[i]->GetGUID() == 14541755926980427327;
 				}
 			}
 
@@ -334,6 +334,9 @@ namespace Odyssey
 		Shaders = info.Shaders = material->GetShader()->GetResourceMap();
 		info.DescriptorLayout = descriptorLayout;
 		info.CullMode = CullMode::Back;
+		info.AlphaBlend = material->GetAlphaBlend();
+		info.WriteDepth = material->GetGUID() == 14541755926980427327 ? false : true;
+		info.Special = material->GetGUID() == 14541755926980427327;
 		SetupAttributeDescriptions(skinned, info.AttributeDescriptions);
 
 		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
@@ -343,6 +346,9 @@ namespace Odyssey
 
 		if (Ref<Texture2D> normalTexture = material->GetNormalTexture())
 			NormalTexture = normalTexture->GetTexture();
+
+		if (Ref<Texture2D> noiseTexture = material->GetNoiseTexture())
+			NoiseTexture = noiseTexture->GetTexture();
 
 		// Store the material buffer for binding
 		MaterialBuffer = materialBuffer;

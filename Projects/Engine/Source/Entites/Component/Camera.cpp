@@ -2,12 +2,19 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "Enum.h"
+#include "Renderer.h"
 
 namespace Odyssey
 {
 	Camera::Camera(const GameObject& gameObject)
 		: m_GameObject(gameObject)
 	{
+	}
+
+	Camera::Camera(const GameObject& gameObject, SerializationNode& node)
+		: m_GameObject(gameObject)
+	{
+		Deserialize(node);
 	}
 
 	void Camera::Awake()
@@ -56,8 +63,18 @@ namespace Odyssey
 	{
 		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
 		{
-			transform->SetScale(1, 1, 1);
 			m_View = transform->GetWorldMatrix();
+
+			// Decompose back into translation/rotation values
+			glm::vec3 translation;
+			glm::vec3 scale;
+			glm::quat rotation;
+			glm::vec3 skew;
+			glm::vec4 perspective;
+			glm::decompose(m_View, scale, rotation, translation, skew, perspective);
+
+			// Recompose the matrix without scale
+			m_View = glm::translate(glm::identity<mat4>(), translation) * glm::toMat4(rotation);
 		}
 
 		return m_View;
@@ -68,6 +85,16 @@ namespace Odyssey
 		float4 viewPos = GetView()[3];
 		viewPos.w = 1.0f;
 		return viewPos;
+	}
+
+	float Camera::GetNearClip()
+	{
+		return Renderer::ReverseDepthEnabled() ? m_FarClip : m_NearClip;
+	}
+
+	float Camera::GetFarClip()
+	{
+		return Renderer::ReverseDepthEnabled() ? m_NearClip : m_FarClip;
 	}
 
 	mat4 Camera::GetScreenSpaceProjection()
@@ -110,7 +137,11 @@ namespace Odyssey
 
 	void Camera::CalculateProjection()
 	{
-		m_Projection = glm::perspectiveFovLH(glm::radians(m_FieldOfView), m_Width, m_Height, m_NearClip, m_FarClip);
+		if (Renderer::ReverseDepthEnabled())
+			m_Projection = glm::perspectiveFovLH(glm::radians(m_FieldOfView), m_Width, m_Height, m_FarClip, m_NearClip);
+		else
+			m_Projection = glm::perspectiveFovLH(glm::radians(m_FieldOfView), m_Width, m_Height, m_NearClip, m_FarClip);
+
 		m_InverseProjection = glm::inverse(m_Projection);
 	}
 

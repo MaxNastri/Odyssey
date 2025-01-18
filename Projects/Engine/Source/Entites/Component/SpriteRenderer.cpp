@@ -11,6 +11,12 @@ namespace Odyssey
 		m_Sprite = AssetManager::LoadAsset<Texture2D>(Preferences::GetDefaultSprite());
 	}
 
+	SpriteRenderer::SpriteRenderer(const GameObject& gameObject, SerializationNode& node)
+		: m_GameObject(gameObject)
+	{
+		Deserialize(node);
+	}
+
 	void SpriteRenderer::Serialize(SerializationNode& node)
 	{
 		uint64_t sprite = m_Sprite ? m_Sprite->GetGUID().Ref() : 0;

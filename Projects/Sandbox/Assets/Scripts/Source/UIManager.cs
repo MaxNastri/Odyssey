@@ -3,7 +3,7 @@ using System;
 
 namespace Sandbox
 {
-    public class UIManager : Entity
+    public class UIManager : Component
     {
         public Texture2D Texture;
         public SpriteRenderer HealthBar;

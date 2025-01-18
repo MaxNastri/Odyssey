@@ -11,11 +11,17 @@ namespace Odyssey
 	public:
 		ScriptComponent() = default;
 		ScriptComponent(const GameObject& gameObject);
+		ScriptComponent(const GameObject& gameObject, SerializationNode& node, std::map<GUID, GUID>& remap);
 		ScriptComponent(const GameObject& gameObject, const std::string& managedType);
+		ScriptComponent(const GameObject& gameObject, uint32_t scriptID);
+
+	public:
 		void Awake();
 		void Update();
 		void OnDestroy();
 		void Serialize(SerializationNode& node);
+		void SerializeAsPrefab(SerializationNode& node, std::map<GUID, GUID>& remap);
+		void DeserializeAsPrefab(SerializationNode& node, std::map<GUID, GUID>& remap);
 		void Deserialize(SerializationNode& node);
 
 	public:
@@ -26,6 +32,7 @@ namespace Odyssey
 	public:
 		bool IsEnabled() { return m_Enabled; }
 		uint32_t GetScriptID() { return m_ScriptID; }
+		ManagedHandle& GetManagedHandle() { return m_Handle; }
 
 	public:
 		void ClearManagedHandle() { m_Handle.Clear(); }

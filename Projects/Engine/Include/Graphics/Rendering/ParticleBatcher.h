@@ -32,6 +32,10 @@ namespace Odyssey
 		static void SwapBuffers(size_t index);
 
 	private:
+		static void OnEmitShaderModified();
+		static void OnSimShaderModified();
+
+	private:
 		inline static constexpr size_t MAX_PARTICLES = 16384;
 		inline static constexpr size_t MAX_EMITTERS = 124;
 
@@ -72,6 +76,7 @@ namespace Odyssey
 		inline static std::queue<size_t> s_ResourceIndices;
 		inline static std::array<PerEmitterResources, MAX_EMITTERS> s_EmitterResources;
 		inline static std::vector<size_t> s_DrawList;
+		inline static uint8_t s_CurrentFrame = 0;
 
 	private: // Shared
 		inline static ResourceID s_CommandPool;

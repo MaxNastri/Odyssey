@@ -47,11 +47,12 @@ namespace Odyssey
 	public:
 		VkImage GetImage() { return m_Image; }
 		VkImageView GetImageView() { return imageView; }
-		uint32_t GetWidth() { return m_Width; }
-		uint32_t GetHeight() { return m_Height; }
-		uint32_t GetArrayDepth() { return m_ArrayDepth; }
+		uint32_t GetWidth() { return m_ImageDesc.Width; }
+		uint32_t GetHeight() { return m_ImageDesc.Height; }
+		uint32_t GetArrayDepth() { return m_ImageDesc.ArrayDepth; }
 		uint32_t GetMipLevels() { return m_MipLevels; }
-		float GetMipBias() { return m_MipBias; }
+		float GetMipBias() { return m_ImageDesc.MipBias; }
+		TextureFormat GetFormat() { return m_ImageDesc.Format; }
 		VkImageLayout GetLayout() { return imageLayout; }
 		std::vector<VkBufferImageCopy> GetCopyRegions() { return m_CopyRegions; }
 
@@ -63,15 +64,13 @@ namespace Odyssey
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
+		VulkanImageDescription m_ImageDesc;
+		uint32_t m_MipLevels = 1;
 		VkImage m_Image;
 		VkImageView imageView;
 		VkImageLayout imageLayout;
 		VkDeviceMemory imageMemory;
 		std::vector<VkBufferImageCopy> m_CopyRegions;
-		uint32_t m_Width, m_Height, m_Channels;
-		uint32_t m_ArrayDepth;
-		uint32_t m_MipLevels;
-		float m_MipBias = 0.0f;
 		ResourceID m_StagingBuffer;
 		bool isDepth = false;
 	};

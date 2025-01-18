@@ -3,7 +3,7 @@ using System;
 
 namespace Sandbox 
 {
-    public class AnimatorTest : Entity
+    public class AnimatorTest : Component
     {
         protected override void Update()
         {

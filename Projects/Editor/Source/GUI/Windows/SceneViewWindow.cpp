@@ -192,7 +192,7 @@ namespace Odyssey
 				Camera& camera = m_GameObject.GetComponent<Camera>();
 				ImGuizmo::SetRect(m_WindowPos.x, m_WindowPos.y, m_WindowSize.x, m_WindowSize.y);
 
-				glm::mat4 worldMatrix = transform->GetLocalMatrix();
+				glm::mat4 worldMatrix = transform->GetWorldMatrix();
 				glm::mat4 view = camera.GetInverseView();
 				glm::mat4 proj = camera.GetProjection();
 
@@ -205,6 +205,12 @@ namespace Odyssey
 
 				if (ImGuizmo::IsUsing())
 				{
+					GameObject parent = m_SelectedGO.GetParent();
+					if (parent.IsValid())
+					{
+						if (Transform* parentTransform = parent.TryGetComponent<Transform>())
+							worldMatrix = glm::inverse(parentTransform->GetWorldMatrix()) * worldMatrix;
+					}
 					glm::vec3 translation;
 					glm::vec3 scale;
 					glm::quat rotation;
@@ -213,11 +219,33 @@ namespace Odyssey
 					glm::decompose(worldMatrix, scale, rotation, translation, skew, perspective);
 
 					if (op == ImGuizmo::OPERATION::TRANSLATE)
+					{
 						transform->SetPosition(translation);
+					}
 					else if (op == ImGuizmo::ROTATE)
+					{
+						// Do this in Euler in an attempt to preserve any full revolutions (> 360)
+						float3 originalRotationEuler = transform->GetEulerRotation();
+
+						// Map original rotation to range [-180, 180] which is what ImGuizmo gives us
+						originalRotationEuler.x = fmodf(originalRotationEuler.x + glm::pi<float>(), glm::two_pi<float>()) - glm::pi<float>();
+						originalRotationEuler.y = fmodf(originalRotationEuler.y + glm::pi<float>(), glm::two_pi<float>()) - glm::pi<float>();
+						originalRotationEuler.z = fmodf(originalRotationEuler.z + glm::pi<float>(), glm::two_pi<float>()) - glm::pi<float>();
+
+						glm::vec3 deltaRotationEuler = glm::eulerAngles(rotation) - originalRotationEuler;
+
+						// Try to avoid drift due numeric precision
+						if (fabs(deltaRotationEuler.x) < 0.001) deltaRotationEuler.x = 0.0f;
+						if (fabs(deltaRotationEuler.y) < 0.001) deltaRotationEuler.y = 0.0f;
+						if (fabs(deltaRotationEuler.z) < 0.001) deltaRotationEuler.z = 0.0f;
+
+						transform->SetRotation(transform->GetEulerRotation() + deltaRotationEuler);
 						transform->SetRotation(rotation);
+					}
 					else if (op == ImGuizmo::SCALE)
-						transform->SetScale(scale);
+					{
+						transform->AddScale(scale);
+					}
 				}
 			}
 		}

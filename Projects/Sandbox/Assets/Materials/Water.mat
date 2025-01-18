@@ -1,0 +1,11 @@
+m_SourceAsset: 0
+m_GUID: 14541755926980427327
+m_Name: Water
+m_Type: Odyssey.Material
+m_Shader: 5634657926911688453
+Normal Texture: 13598105483977622288
+Noise Texture: 15039526264554896991
+Emissive Color: 'x: 0 y: 0 z: 0'
+Emissive Power: 1
+Alpha Clip: 0.5
+Alpha Blend: 0

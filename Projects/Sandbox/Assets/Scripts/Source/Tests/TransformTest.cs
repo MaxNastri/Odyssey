@@ -3,7 +3,7 @@ using Odyssey;
 
 namespace Sandbox
 {
-    public class TransformTest : Entity
+    public class TransformTest : Component
     {
         public Transform Target;
         public float Speed = 1.0f;

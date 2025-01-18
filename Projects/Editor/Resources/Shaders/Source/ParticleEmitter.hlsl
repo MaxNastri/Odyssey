@@ -9,8 +9,15 @@ struct Particle
     float Speed;
 };
 
+#define CIRCLE 0
+#define CONE 1
+#define CUBE 2
+#define DONUT 3
+#define SPHERE 4
+
 static const uint Add = 1;
 static const uint Subtract = -1;
+static const float PI = 3.14159265f;
 
 static const uint DEAD_COUNT_OFFSET = 0;
 static const uint ALIVE_PRE_SIM_COUNT_OFFSET = DEAD_COUNT_OFFSET + 4;
@@ -28,75 +35,60 @@ cbuffer EmitterData : register(b7)
     float4 StartColor;
     float4 EndColor;
     float4 Velocity;
-    float4 Rnd;
     float2 Lifetime;
     float2 Size;
     float2 Speed;
     uint EmitCount;
     uint EmitterIndex;
+    uint FrameIndex;
+    uint Shape;
+    float Radius;
+    float Angle;
 }
 
-// Random number generator based on: https://github.com/diharaw/helios/blob/master/src/engine/shader/random.glsl
-//struct RNG
-//{
-//    uint2 s; // state
+float random(float2 st)
+{
+    return frac(sin(dot(st.xy, float2(12.9898, 78.233))) * 43758.5453123);
+}
 
-//	// xoroshiro64* random number generator.
-//	// http://prng.di.unimi.it/xoroshiro64star.c
-//    uint rotl(uint x, uint k)
-//    {
-//        return (x << k) | (x >> (32 - k));
-//    }
-//	// Xoroshiro64* RNG
-//    uint next()
-//    {
-//        uint result = s.x * 0x9e3779bb;
+float3 RandomInsideCircle(float id, float radius)
+{
+    float elevationAngle = random(float2(id.x, FrameIndex)) * PI;
+    float azimuth = random(float2(id.x, elevationAngle)) * 2 * PI;
+    
+    float x = Radius * sin(elevationAngle) * cos(azimuth);
+    float y = 0.0f;
+    float z = Radius * cos(elevationAngle);
+    return float3(x, y, z);
+}
 
-//        s.y ^= s.x;
-//        s.x = rotl(s.x, 26) ^ s.y ^ (s.y << 9);
-//        s.y = rotl(s.y, 13);
+float3 RandomInsideUnitPlane(float id)
+{
+    float rndX = random(float2(id.x, FrameIndex));
+    float rndZ = random(float2(rndX, id.x));
 
-//        return result;
-//    }
-//	// Thomas Wang 32-bit hash.
-//	// http://www.reedbeta.com/blog/quick-and-easy-gpu-random-numbers-in-d3d11/
-//    uint hash(uint seed)
-//    {
-//        seed = (seed ^ 61) ^ (seed >> 16);
-//        seed *= 9;
-//        seed = seed ^ (seed >> 4);
-//        seed *= 0x27d4eb2d;
-//        seed = seed ^ (seed >> 15);
-//        return seed;
-//    }
+    return float3(rndX, 0.0f, rndZ);
+}
 
-//    void init(uint2 id, uint frameIndex)
-//    {
-//        uint s0 = (id.x << 16) | id.y;
-//        uint s1 = frameIndex;
-//        s.x = hash(s0);
-//        s.y = hash(s1);
-//        next();
-//    }
-//    float next_float()
-//    {
-//        uint u = 0x3f800000 | (next() >> 9);
-//        return asfloat(u) - 1.0;
-//    }
-//    uint next_uint(uint nmax)
-//    {
-//        float f = next_float();
-//        return uint(floor(f * nmax));
-//    }
-//    float2 next_float2()
-//    {
-//        return float2(next_float(), next_float());
-//    }
-//    float3 next_float3()
-//    {
-//        return float3(next_float(), next_float(), next_float());
-//    }
-//};
+float3 RandomInsideSphere(float id, float radius)
+{
+    float elevationAngle = random(float2(id.x, FrameIndex)) * PI;
+    float azimuth = random(float2(id.x, elevationAngle)) * 2 * PI;
+    
+    float x = radius * sin(elevationAngle) * cos(azimuth);
+    float y = radius * sin(elevationAngle) * sin(azimuth);
+    float z = radius * cos(elevationAngle);
+    return float3(x, y, z);
+}
+
+float3 RandomInsideCube(float id, float radius)
+{
+    float rndX = random(float2(id.x, FrameIndex));
+    float rndY = random(float2(id.x, rndX));
+    float rndZ = random(float2(id.x, rndY));
+    
+    return float3(rndX, rndY, rndZ);
+}
 
 [numthreads(64, 1, 1)]
 void main(uint3 id : SV_DispatchThreadID)
@@ -104,6 +96,8 @@ void main(uint3 id : SV_DispatchThreadID)
     // Don't emit more than we should
     if (id.x >= EmitCount)
         return;
+    
+    float rnd = random(float2(id.x, FrameIndex));
     
     // Revive a dead particle
     int deadCount;
@@ -116,15 +110,54 @@ void main(uint3 id : SV_DispatchThreadID)
     // Get the index of the revived particle and assign it to the particle buffer
     uint particleIndex = DeadBuffer[deadCount - 1];
     Particle particle = ParticleBuffer[particleIndex];
-    
-    float lifetime = lerp(Lifetime.x, Lifetime.y, Rnd.w);
-    // Construct a particle based on the emitter's params
-    particle.Position = Position + float4(Rnd.x, Rnd.y, Rnd.z, 0.0f);
-    particle.Color = StartColor;
+    particle.Position = Position;
     particle.Velocity = Velocity;
+    
+    // Apply sphere velocity logic
+    if (Shape == CIRCLE)
+    {
+        particle.Position.xyz += RandomInsideCircle(id.x, Radius);
+    }
+    
+    if (Shape == CONE)
+    {
+        float3 position = RandomInsideCircle(id.x, Radius);
+        float3 initialVelocity = position;
+        
+        float radialAngle = (Angle / 90.0f);
+        float3 radialVelo = radialAngle * initialVelocity;
+        
+        float3 upVelo = (1.0f - radialAngle) * particle.Velocity.xyz;
+        float3 finalVelo = radialVelo + upVelo;
+        
+        particle.Position.xyz += position;
+        particle.Velocity = float4(finalVelo, 0.0f);
+    }
+    
+    if (Shape == CUBE)
+    {
+        float3 position = RandomInsideCube(id.x, Radius);
+        particle.Position.xyz += position;
+        particle.Velocity.xyz = normalize(position);
+    }
+    
+    if (Shape == DONUT)
+    {
+        
+    }
+    
+    if (Shape == SPHERE)
+    {
+        float3 position = RandomInsideSphere(id.x, Radius);
+        particle.Position.xyz += position;
+        particle.Velocity.xyz = normalize(position);
+    }
+    
+    float lifetime = lerp(Lifetime.x, Lifetime.y, rnd);
     particle.Lifetime = float2(lifetime, lifetime);
-    particle.Size = lerp(Size.x, Size.y, Rnd.w);
-    particle.Speed = lerp(Speed.x, Speed.y, Rnd.w);
+    particle.Size = lerp(Size.x, Size.y, rnd);
+    particle.Speed = lerp(Speed.x, Speed.y, rnd);
+    particle.Color = StartColor;
     
     ParticleBuffer[particleIndex] = particle;
     

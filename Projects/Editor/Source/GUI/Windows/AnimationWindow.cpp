@@ -353,144 +353,15 @@ namespace Odyssey
 
 				ImGui::FilledRectSpanTextFree("Transitions", float4(1.0f), float4(0.1f, 0.1f, 0.1f, 1.0f), textSize.y, float2(0.0f, 0.0f));
 
-				{
-					const auto& forwardTransitions = m_AnimationLink->GetForwardTransitions();
-					const std::vector<std::string>& propertyNames = m_Blueprint->GetAllPropertyNames();
+				DrawAnimationCondition(m_AnimationLink->GetForwardTransition());
 
-					for (size_t i = 0; i < forwardTransitions.size(); i++)
-					{
-						Ref<AnimationCondition> condition = forwardTransitions[i];
-						Dropdown propertyDrawer = Dropdown(propertyNames, condition->GetPropertyName());
-						EnumDropdown<ComparisonOp> comparisonDrawer = EnumDropdown<ComparisonOp>(condition->GetComparison());
-
-						ImGui::PushItemWidth(-0.01f);
-						ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-
-						propertyDrawer.Draw();
-						ImGui::SameLine();
-						comparisonDrawer.Draw();
-						ImGui::SameLine();
-						switch (condition->GetPropertyType())
-						{
-							case AnimationPropertyType::Float:
-							{
-								float value = condition->GetTargetValue<float>();
-								if (ImGui::InputFloat("##Label", &value))
-									condition->SetTargetValue<float>(value);
-								break;
-							}
-							case AnimationPropertyType::Int:
-							{
-								int32_t value = condition->GetTargetValue<int32_t>();
-								if (ImGui::InputScalar("##label", ImGuiDataType_S32, &value))
-									condition->SetTargetValue<int32_t>(value);
-								break;
-							}
-							case AnimationPropertyType::Bool:
-							case AnimationPropertyType::Trigger:
-							{
-								bool value = condition->GetTargetValue<bool>();
-								if (ImGui::Checkbox("##label", &value))
-									condition->SetTargetValue<bool>(value);
-								break;
-							}
-							default:
-								break;
-						}
-					}
-
-					float panelWidth = ImGui::GetContentRegionMax().x;
-					float panelHeight = ImGui::GetContentRegionMax().y;
-					float panelLeft = ImGui::GetCursorPosX();
-					auto style = ImGui::GetStyle();
-
-					// + button
-					float2 addButtonSize = ImGui::CalcTextSize("+");
-					addButtonSize.x = addButtonSize.y;
-					float addButtonPosition = panelWidth - addButtonSize.x;
-
-					ImGui::SetCursorPosX(addButtonPosition);
-					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
-					if (ImGui::Button("+", addButtonSize))
-						OpenSelectPropertyMenu();
-					ImGui::PopStyleVar();
-				}
-
+				ImGui::Spacing();
 				ImGui::Separator();
 
 				ImGui::FilledRectSpanTextFree("Return Transitions", float4(1.0f), float4(0.1f, 0.1f, 0.1f, 1.0f), textSize.y, float2(0.0f, 0.0f));
 
-				{
-					const auto& returnTransitions = m_AnimationLink->GetReturnTransitions();
-					const std::vector<std::string>& propertyNames = m_Blueprint->GetAllPropertyNames();
-
-					ImGui::SetNextItemWidth(-0.1f);
-					ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4{ 0.125f, 0.13f, 0.135f, 1.0f });
-
-					if (ImGui::BeginListBox("Return Transitions"))
-					{
-						ImGui::PopStyleColor();
-						for (size_t i = 0; i < returnTransitions.size(); i++)
-						{
-							Ref<AnimationCondition> condition = returnTransitions[i];
-							Dropdown propertyDrawer = Dropdown(propertyNames, condition->GetPropertyName());
-							EnumDropdown<ComparisonOp> comparisonDrawer = EnumDropdown<ComparisonOp>(condition->GetComparison());
-
-							ImGui::PushItemWidth(-0.01f);
-							ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-
-							propertyDrawer.Draw();
-							ImGui::SameLine();
-							comparisonDrawer.Draw();
-							ImGui::SameLine();
-							switch (condition->GetPropertyType())
-							{
-								case AnimationPropertyType::Float:
-								{
-									float value = condition->GetTargetValue<float>();
-									if (ImGui::InputFloat("##Label", &value))
-										condition->SetTargetValue<float>(value);
-									break;
-								}
-								case AnimationPropertyType::Int:
-								{
-									int32_t value = condition->GetTargetValue<int32_t>();
-									if (ImGui::InputScalar("##label", ImGuiDataType_S32, &value))
-										condition->SetTargetValue<int32_t>(value);
-									break;
-								}
-								case AnimationPropertyType::Bool:
-								case AnimationPropertyType::Trigger:
-								{
-									bool value = condition->GetTargetValue<bool>();
-									if (ImGui::Checkbox("##label", &value))
-										condition->SetTargetValue<bool>(value);
-									break;
-								}
-								default:
-									break;
-							}
-						}
-
-						ImGui::EndListBox();
-					}
-
-					float panelWidth = ImGui::GetContentRegionMax().x;
-					float panelHeight = ImGui::GetContentRegionMax().y;
-					float panelLeft = ImGui::GetCursorPosX();
-					auto style = ImGui::GetStyle();
-
-					// + button
-					float2 addButtonSize = ImGui::CalcTextSize("+");
-					addButtonSize.x = addButtonSize.y;
-					float addButtonPosition = panelWidth - addButtonSize.x;
-
-					ImGui::SetCursorPosX(addButtonPosition);
-					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
-					if (ImGui::Button("+", addButtonSize))
-						OpenSelectPropertyMenu();
-					ImGui::PopStyleVar();
-				}
+				if (m_AnimationLink->GetReturnTransition())
+					DrawAnimationCondition(m_AnimationLink->GetReturnTransition());
 
 				ImGui::PopStyleVar();
 			}
@@ -725,6 +596,55 @@ namespace Odyssey
 		}
 
 		ImGui::PopID();
+	}
+
+	void AnimationWindow::DrawAnimationCondition(Ref<AnimationCondition>& condition)
+	{
+		const std::vector<std::string>& propertyNames = m_Blueprint->GetAllPropertyNames();
+		Dropdown propertyDrawer = Dropdown(propertyNames, condition->GetPropertyName());
+		EnumDropdown<ComparisonOp> comparisonDrawer = EnumDropdown<ComparisonOp>(condition->GetComparison());
+
+		ImGui::PushItemWidth(-0.01f);
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+
+		propertyDrawer.Draw();
+		ImGui::SameLine();
+
+		comparisonDrawer.Draw();
+		ImGui::SameLine();
+
+		switch (condition->GetPropertyType())
+		{
+			case AnimationPropertyType::Float:
+			{
+				float value = condition->GetTargetValue<float>();
+				if (ImGui::InputFloat("##Label", &value))
+					condition->SetTargetValue<float>(value);
+				break;
+			}
+			case AnimationPropertyType::Int:
+			{
+				int32_t value = condition->GetTargetValue<int32_t>();
+				if (ImGui::InputScalar("##label", ImGuiDataType_S32, &value))
+					condition->SetTargetValue<int32_t>(value);
+				break;
+			}
+			case AnimationPropertyType::Bool:
+			case AnimationPropertyType::Trigger:
+			{
+				bool value = condition->GetTargetValue<bool>();
+				if (ImGui::Checkbox("##label", &value))
+					condition->SetTargetValue<bool>(value);
+				break;
+			}
+			default:
+				break;
+		}
+
+		FloatDrawer blendTimeDrawer = FloatDrawer("Blend Time", condition->GetBlendTime());
+
+		if (blendTimeDrawer.Draw())
+			condition->SetBlendTime(blendTimeDrawer.GetValue());
 	}
 
 	void AnimationWindow::OpenSelectPropertyMenu()

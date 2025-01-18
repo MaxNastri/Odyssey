@@ -15,6 +15,7 @@
 #include "ParticleBatcher.h"
 #include "Preferences.h"
 #include "FileManager.h"
+#include "Input.h"
 
 namespace Odyssey
 {
@@ -49,7 +50,7 @@ namespace Odyssey
 		}
 
 		// Create the renderer
-		RendererConfig config = { .EnableIMGUI = true };
+		RendererConfig config = { .EnableIMGUI = true, .EnableReverseDepth = true };
 		Renderer::Init(config);
 		Renderer::SetDrawGUIListener(GUIManager::DrawGUI);
 
@@ -104,7 +105,8 @@ namespace Odyssey
 				DebugRenderer::Clear();
 				GUIManager::Update();
 
-				SceneManager::OnEditorUpdate();
+				if (!m_UpdateScripts)
+					SceneManager::OnEditorUpdate();
 
 				// Only update the scene if we are updating scripts (playmode)
 				if (m_UpdateScripts)
@@ -141,17 +143,17 @@ namespace Odyssey
 			case PlaymodeState::EnterPlaymode:
 			{
 				Scene* activeScene = SceneManager::GetActiveScene();
-				Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
-				activeScene->SaveTo(tempPath);
-
 				activeScene->OnStartRuntime();
 				activeScene->Awake();
+
 				m_UpdateScripts = true;
+				Renderer::CaptureCursor();
 				break;
 			}
 			case PlaymodeState::PausePlaymode:
 			{
 				m_UpdateScripts = false;
+				Renderer::ReleaseCursor();
 				break;
 			}
 			case PlaymodeState::ExitPlaymode:
@@ -159,9 +161,12 @@ namespace Odyssey
 				Scene* activeScene = SceneManager::GetActiveScene();
 				activeScene->OnStopRuntime();
 
-				Path tempPath = Project::GetActiveTempDirectory() / TEMP_SCENE_FILE;
-				SceneManager::LoadScene(tempPath);
+				// Slight hack here, we just load the scene off disk again
+				const Path& scenePath = activeScene->GetPath();
+				SceneManager::LoadScene(scenePath);
+
 				m_UpdateScripts = false;
+				Renderer::ReleaseCursor();
 				break;
 			}
 		}

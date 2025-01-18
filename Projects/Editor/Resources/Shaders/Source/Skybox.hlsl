@@ -1,15 +1,4 @@
-#pragma Vertex
-struct VertexInput
-{
-    float3 Position : POSITION;
-};
-
-struct VertexOutput
-{
-    float4 Position : SV_Position;
-    float3 TexCoord0 : TEXCOORD0;
-};
-
+#pragma Shared
 cbuffer SceneData : register(b0)
 {
     float4 ViewPos;
@@ -23,6 +12,21 @@ cbuffer ModelData : register(b1)
 {
     float4x4 Model;
 }
+
+TextureCube skyboxTex2D : register(t3);
+SamplerState skyboxSampler : register(s3);
+
+#pragma Vertex
+struct VertexInput
+{
+    float3 Position : POSITION;
+};
+
+struct VertexOutput
+{
+    float4 Position : SV_Position;
+    float3 TexCoord0 : TEXCOORD0;
+};
 
 VertexOutput main(VertexInput input)
 {
@@ -41,9 +45,6 @@ struct PixelInput
     float4 Position : SV_Position;
     float3 TexCoord0 : TEXCOORD0;
 };
-
-TextureCube skyboxTex2D : register(t3);
-SamplerState skyboxSampler : register(s3);
 
 float4 main(PixelInput input) : SV_Target
 {

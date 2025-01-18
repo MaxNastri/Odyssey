@@ -14,18 +14,31 @@ namespace Odyssey
 		float Speed;
 	};
 
+	enum class EmitterShape : uint32_t
+	{
+		Circle = 0,
+		Cone = 1,
+		Cube = 2,
+		Donut = 3,
+		Sphere = 4,
+		Mesh = 5,
+	};
+
 	struct ParticleEmitterData
 	{
 		float4 Position = glm::vec4(0,0,0,1);
 		float4 StartColor = glm::vec4(1,0,0,1);
 		float4 EndColor = glm::vec4(1,0,0,1);
 		float4 Velocity = glm::vec4(0,0.1f,0,0);
-		float4 Rnd = float4(0.0f);
 		float2 Lifetime = float2(1.0f, 5.0f);
 		float2 Size = float2(0.25f, 1.0f);
 		float2 Speed = float2(0.25f, 1.0f);
 		uint32_t EmitCount = 1;
 		uint32_t EmitterIndex = 0;
+		uint32_t FrameIndex = 0;
+		uint32_t Shape = 0;
+		float Radius = 1.0f;
+		float Angle = 0.0f;
 	};
 
 	class ParticleEmitter
@@ -34,8 +47,10 @@ namespace Odyssey
 	public:
 		ParticleEmitter() = default;
 		ParticleEmitter(const GameObject& gameObject);
+		ParticleEmitter(const GameObject& gameObject, SerializationNode& node);
 
 	public:
+		void Awake() { }
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 
@@ -50,7 +65,8 @@ namespace Odyssey
 		void SetEnabled(bool enabled) { m_Enabled = enabled; }
 		void SetLooping(bool looping) { m_Looping = looping; }
 		void SetEmissionRate(uint32_t emissionRate) { m_EmissionRate = emissionRate; }
-		void SetRadius(float radius) { m_Radius = radius; }
+		void SetRadius(float radius) { emitterData.Radius = radius; }
+		void SetAngle(float angle) { emitterData.Angle = angle; }
 		void SetDuration(float duration) { m_Duration = duration; }
 		void SetLifetime(float2 lifetime) { emitterData.Lifetime = lifetime; }
 		void SetMaterial(GUID material) { m_Material = material; }
@@ -58,6 +74,7 @@ namespace Odyssey
 		void SetSpeed(float2 speed) { emitterData.Speed = speed; }
 		void SetStartColor(float4 color) { emitterData.StartColor = color; }
 		void SetEndColor(float4 color) { emitterData.EndColor = color; }
+		void SetShape(EmitterShape shape) { emitterData.Shape = (uint32_t)shape; }
 
 	public:
 		bool IsEnabled() { return m_Enabled; }
@@ -71,7 +88,10 @@ namespace Odyssey
 		GUID GetMaterial() { return m_Material; }
 		float2 GetSize() { return emitterData.Size; }
 		float2 GetSpeed() { return emitterData.Speed; }
-		float GetRadius() { return m_Radius; }
+		float GetRadius() { return emitterData.Radius; }
+		float GetAngle() { return emitterData.Angle; }
+		EmitterShape GetShape() { return (EmitterShape)emitterData.Shape; }
+
 	public:
 		ParticleEmitterData emitterData;
 
@@ -81,14 +101,12 @@ namespace Odyssey
 		bool m_Looping = true;
 		float m_Duration = 1.0f;
 		uint32_t m_EmissionRate = 100;
-		float m_Radius = 1.0f;
 		GUID m_Material;
 
 	private:
 		bool m_Active = true;
 		float m_ActiveTime = 0.0f;
 		float m_EmissionTime = 0.0f;
-		uint32_t m_EmissionCount;
 		uint32_t m_ParticleCount;
 	};
 }

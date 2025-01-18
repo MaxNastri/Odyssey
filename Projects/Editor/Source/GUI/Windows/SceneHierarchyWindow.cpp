@@ -15,6 +15,10 @@
 #include "Transform.h"
 #include "SpriteRenderer.h"
 #include "Camera.h"
+#include "Prefab.h"
+#include "AssetManager.h"
+#include "Project.h"
+#include "FileDialogs.h"
 
 namespace Odyssey
 {
@@ -93,9 +97,10 @@ namespace Odyssey
 		if (DrawGameObject(entity, isLeaf))
 		{
 			// Draw the node's children, if they exist
-			for (Ref<SceneNode>& childNode : node->Children)
+			// Reverse iteration since the node's can destroy themselves mid-draw
+			for (int32_t i = (int32_t)node->Children.size() - 1; i >= 0; i--)
 			{
-				DrawSceneNode(childNode);
+				DrawSceneNode(node->Children[i]);
 			}
 
 			// Pop the tree if we have children
@@ -125,16 +130,25 @@ namespace Odyssey
 
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 		{
-			m_Interactions.push_back({ InteractionType::Selection, gameObject.GetGUID()});
+			m_Interactions.push_back({ InteractionType::Selection, gameObject.GetGUID() });
 			m_Selected = gameObject;
 		}
 
 		if (ImGui::BeginPopupContextItem())
 		{
+			if (ImGui::Button("Save as Prefab"))
+			{
+				const Path& path = FileDialogs::SaveFile("Prefab", ".prefab");
+				Ref<Prefab> prefab = AssetManager::CreateAsset<Prefab>(path, gameObject);
+			}
 			if (ImGui::Button("Delete"))
 			{
 				gameObject.Destroy();
 				ImGui::EndPopup();
+
+				if (open && !leaf)
+					ImGui::TreePop();
+
 				return false;
 			}
 
@@ -210,6 +224,12 @@ namespace Odyssey
 					GameObject gameObject = m_Scene->CreateGameObject();
 					gameObject.AddComponent<Transform>();
 					gameObject.AddComponent<Camera>();
+				}
+				if (ImGui::MenuItem("Prefab"))
+				{
+					const Path& path = FileDialogs::OpenFile("Prefab", ".prefab");
+					Ref<Prefab> prefab = AssetManager::LoadAsset<Prefab>(path);
+					prefab->LoadInstance();
 				}
 				ImGui::EndMenu();
 			}

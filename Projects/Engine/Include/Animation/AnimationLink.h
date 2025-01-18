@@ -25,15 +25,22 @@ namespace Odyssey
 	{
 	public:
 		AnimationCondition() = default;
-		AnimationCondition(Ref<AnimationProperty> property, ComparisonOp comparison, const RawBuffer& targetValue);
+		AnimationCondition(Ref<AnimationProperty> property, ComparisonOp comparison, const RawBuffer& targetValue, float blendTime = 1.0f);
 
 	public:
 		bool Evaluate();
 
 	public:
+		void Serialize(SerializationNode& conditionNode);
+
+	public:
 		const std::string& GetPropertyName() { return m_Property->Name; }
 		AnimationPropertyType GetPropertyType() { return m_Property->Type; }
 		ComparisonOp GetComparison() { return m_ComparisonOp; }
+
+	public:
+		float GetBlendTime() { return m_BlendTime; }
+		void SetBlendTime(float blendTime) { m_BlendTime = blendTime; }
 
 	public:
 		template<typename T>
@@ -46,6 +53,7 @@ namespace Odyssey
 		Ref<AnimationProperty> m_Property;
 		ComparisonOp m_ComparisonOp;
 		RawBuffer m_TargetValue;
+		float m_BlendTime = 1.0f;
 	};
 
 	class AnimationLink
@@ -55,24 +63,24 @@ namespace Odyssey
 		AnimationLink(GUID guid, Ref<AnimationState> start, Ref<AnimationState> end);
 
 	public:
-		bool Evaluate(Ref<AnimationState>& currentState);
+		bool Evaluate(const Ref<AnimationState>& currentState, Ref<AnimationState>& nextState, float& blendTime);
 
 	public:
-		void AddTransition(Ref<AnimationState> begin, Ref<AnimationState> end, Ref<AnimationCondition>& condition);
+		void SetTransition(Ref<AnimationState> begin, Ref<AnimationState> end, Ref<AnimationCondition>& condition);
 
 	public:
 		GUID GetGUID() { return m_GUID; }
 		Ref<AnimationState> GetBeginState() { return m_BeginState; }
 		Ref<AnimationState> GetEndState() { return m_EndState; }
-		const std::vector<Ref<AnimationCondition>>& GetForwardTransitions() { return m_ForwardTransitions; }
-		const std::vector<Ref<AnimationCondition>>& GetReturnTransitions() { return m_ReturnTransitions; }
+		Ref<AnimationCondition>& GetForwardTransition() { return m_ForwardTransition; }
+		Ref<AnimationCondition>& GetReturnTransition() { return m_ReturnTransition; }
 	
 	private:
 		GUID m_GUID;
 		Ref<AnimationState> m_BeginState;
 		Ref<AnimationState> m_EndState;
 
-		std::vector<Ref<AnimationCondition>> m_ForwardTransitions;
-		std::vector<Ref<AnimationCondition>> m_ReturnTransitions;
+		Ref<AnimationCondition> m_ForwardTransition;
+		Ref<AnimationCondition> m_ReturnTransition;
 	};
 }

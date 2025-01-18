@@ -5,6 +5,7 @@
 #include "Vertex.h"
 #include "VulkanDescriptorLayout.h"
 #include "ResourceManager.h"
+#include "Renderer.h"
 
 namespace Odyssey
 {
@@ -21,6 +22,31 @@ namespace Odyssey
 				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 			default:
 				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		}
+	}
+
+	VkFormat GetVkFormat(TextureFormat format)
+	{
+		switch (format)
+		{
+			case TextureFormat::None:
+			case TextureFormat::R8G8B8_UNORM:
+				return VK_FORMAT_R8G8B8_SRGB;
+			case TextureFormat::R8G8B8A8_SRGB:
+				return VK_FORMAT_R8G8B8A8_SRGB;
+			case TextureFormat::R8G8B8A8_UNORM:
+				return VK_FORMAT_R8G8B8A8_UNORM;
+			case TextureFormat::D24_UNORM_S8_UINT:
+				return VK_FORMAT_D24_UNORM_S8_UINT;
+			case TextureFormat::D16_UNORM:
+				return VK_FORMAT_D16_UNORM;
+			case TextureFormat::D32_SFLOAT:
+				return VK_FORMAT_D32_SFLOAT;
+			case TextureFormat::D32_SFLOAT_S8_UINT:
+				return VK_FORMAT_D32_SFLOAT_S8_UINT;
+			default:
+				return VK_FORMAT_R8G8B8A8_UNORM;
+				break;
 		}
 	}
 
@@ -137,13 +163,14 @@ namespace Odyssey
 		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 		depthStencil.depthTestEnable = VK_TRUE;
 		depthStencil.depthWriteEnable = info.WriteDepth;
-		depthStencil.depthCompareOp = info.IsShadow ? VK_COMPARE_OP_LESS_OR_EQUAL : VK_COMPARE_OP_LESS;
+
+		if (info.IsShadow)
+			depthStencil.depthCompareOp = Renderer::ReverseDepthEnabled() ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL;
+		else
+			depthStencil.depthCompareOp = Renderer::ReverseDepthEnabled() ? VK_COMPARE_OP_GREATER : VK_COMPARE_OP_LESS;
+
 		depthStencil.depthBoundsTestEnable = VK_FALSE;
-		depthStencil.minDepthBounds = 0.0f; // Optional
-		depthStencil.maxDepthBounds = 1.0f; // Optional
 		depthStencil.stencilTestEnable = VK_FALSE;
-		depthStencil.front = {}; // Optional
-		depthStencil.back = {}; // Optional
 
 		// Normal color blending
 		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
@@ -160,8 +187,20 @@ namespace Odyssey
 			colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
 			colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 		}
+		else if (info.Special)
+		{
+			colorBlendAttachment.blendEnable = VK_TRUE;
+			colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT;
+			colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+			colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+			colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+			colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+			colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+			colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+		}
 		else
 		{
+			// Additive blending
 			colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 			colorBlendAttachment.blendEnable = VK_FALSE;
 		}
@@ -171,20 +210,30 @@ namespace Odyssey
 		colorBlending.logicOpEnable = VK_FALSE;
 		colorBlending.attachmentCount = 1;
 		colorBlending.pAttachments = &colorBlendAttachment;
-		colorBlending.blendConstants[0] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
-		colorBlending.blendConstants[1] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
-		colorBlending.blendConstants[2] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
-		colorBlending.blendConstants[3] = info.AlphaBlend ? 1.0f : 0.0f; // Optional
-
-		VkFormat colorAttachmentFormat = VK_FORMAT_R8G8B8A8_UNORM;
-		VkFormat depthAttachmentFormat = VK_FORMAT_D24_UNORM_S8_UINT;
+		colorBlending.blendConstants[0] = 1.0f; // Optional
+		colorBlending.blendConstants[1] = 1.0f; // Optional
+		colorBlending.blendConstants[2] = 1.0f; // Optional
+		colorBlending.blendConstants[3] = 1.0f; // Optional
 
 		VkPipelineRenderingCreateInfoKHR pipeline_rendering_create_info{};
 		pipeline_rendering_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
-		pipeline_rendering_create_info.colorAttachmentCount = 1;
-		pipeline_rendering_create_info.pColorAttachmentFormats = &colorAttachmentFormat;
-		pipeline_rendering_create_info.depthAttachmentFormat = depthAttachmentFormat;
-		pipeline_rendering_create_info.stencilAttachmentFormat = depthAttachmentFormat;
+
+		if (info.ColorFormat == TextureFormat::None)
+		{
+			pipeline_rendering_create_info.colorAttachmentCount = 0;
+		}
+		else
+		{
+			pipeline_rendering_create_info.colorAttachmentCount = 1;
+			VkFormat colorAttachmentFormat = GetVkFormat(info.ColorFormat);
+			assert(colorAttachmentFormat != VK_FORMAT_UNDEFINED);
+			pipeline_rendering_create_info.pColorAttachmentFormats = &colorAttachmentFormat;
+		}
+		if (info.DepthFormat != TextureFormat::None)
+			pipeline_rendering_create_info.depthAttachmentFormat = GetVkFormat(info.DepthFormat);
+
+		if (info.DepthFormat == TextureFormat::D24_UNORM_S8_UINT)
+			pipeline_rendering_create_info.stencilAttachmentFormat = GetVkFormat(info.DepthFormat);
 
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

@@ -157,7 +157,7 @@ namespace Odyssey
 			std::string fullName = type->GetFullName();
 			uint32_t scriptID = GenerateFNVHash(fullName);
 
-			if (type->IsSubclassOf(entityType))
+			if (type->IsSubclassOf(entityType) || type->IsSubclassOf(componentType))
 			{
 				ScriptMetadata& metadata = m_ScriptMetdata[scriptID];
 				metadata.Name = fullName;
@@ -253,6 +253,7 @@ namespace Odyssey
 					case DataType::Texture2D:
 					case DataType::Scene:
 					case DataType::Component:
+					case DataType::Prefab:
 						break;
 					default:
 						break;
@@ -281,8 +282,11 @@ namespace Odyssey
 		for (auto& [fieldID, fieldStorage] : scriptStorage.Fields)
 			fieldStorage.Instance = nullptr;
 
-		scriptStorage.Instance->Destroy();
-		scriptStorage.Instance = nullptr;
+		if (scriptStorage.Instance)
+		{
+			scriptStorage.Instance->Destroy();
+			scriptStorage.Instance = nullptr;
+		}
 	}
 
 	ScriptStorage& ScriptingManager::GetScriptStorage(GUID guid)

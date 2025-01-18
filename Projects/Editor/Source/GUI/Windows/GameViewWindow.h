@@ -17,6 +17,7 @@ namespace Odyssey
 		void Destroy();
 
 	public:
+		virtual void Update() override;
 		virtual bool Draw() override;
 		virtual void OnWindowResize() override;
 		virtual void OnWindowClose() override;

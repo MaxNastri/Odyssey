@@ -1,4 +1,4 @@
-#pragma Vertex
+#pragma Shared
 struct Particle
 {
     float4 Position;
@@ -8,14 +8,6 @@ struct Particle
     float Size;
     float Speed;
 };
-
-struct VertexOutput
-{
-    float4 Position : SV_Position;
-    float2 TexCoord0 : TEXCOORD0;
-    float4 Color : COLOR0;
-};
-
 cbuffer SceneData : register(b0)
 {
     float4 ViewPos;
@@ -26,7 +18,17 @@ cbuffer SceneData : register(b0)
 }
 
 StructuredBuffer<Particle> ParticleBufferVS : register(b2);
+Texture2D diffuseTex2D : register(t3);
+SamplerState diffuseSampler : register(s3);
 StructuredBuffer<uint> AliveBuffer : register(b4);
+
+#pragma Vertex
+struct VertexOutput
+{
+    float4 Position : SV_Position;
+    float2 TexCoord0 : TEXCOORD0;
+    float4 Color : COLOR0;
+};
 
 static const float BillBoardSize = 0.125f;
 
@@ -71,9 +73,6 @@ VertexOutput main(uint id : SV_VertexID)
 }
 
 #pragma Fragment
-Texture2D diffuseTex2D : register(t3);
-SamplerState diffuseSampler : register(s3);
-
 struct FragmentInput
 {
     float4 Position : SV_Position;

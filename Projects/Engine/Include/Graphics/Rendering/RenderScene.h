@@ -96,6 +96,7 @@ namespace Odyssey
 		std::map<ShaderType, ResourceID> Shaders;
 		ResourceID ColorTexture;
 		ResourceID NormalTexture;
+		ResourceID NoiseTexture;
 		std::vector<Drawcall> Drawcalls;
 	};
 
@@ -109,10 +110,11 @@ namespace Odyssey
 		void ConvertScene(Scene* scene);
 		void ClearSceneData();
 
-		uint32_t SetSceneData(uint8_t cameraTag);
+		void SetSceneData(uint8_t cameraTag);
 
 	public:
 		Camera* GetCamera(uint8_t cameraTag);
+		mat4 GetShadowLightMatrix() { return m_ShadowLightMatrix; }
 		bool HasMainCamera() { return m_MainCamera != nullptr; }
 
 	private:
@@ -122,6 +124,7 @@ namespace Odyssey
 		// Scene objects
 		Camera* m_MainCamera = nullptr;
 		Light* m_ShadowLight = nullptr;
+		mat4 m_ShadowLightMatrix;
 
 		std::map<uint8_t, Camera*> m_Cameras;
 		ResourceID SkyboxCubemap;
@@ -140,7 +143,6 @@ namespace Odyssey
 		ResourceID m_DescriptorLayout;
 
 		uint32_t m_NextUniformBuffer = 0;
-		uint32_t m_NextCameraBuffer = 0;
 		uint32_t m_NextMaterialBuffer = 0;
 
 		const uint32_t Max_Uniform_Buffers = 256;

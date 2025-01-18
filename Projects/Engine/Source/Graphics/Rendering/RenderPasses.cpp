@@ -16,20 +16,23 @@
 #include "RenderSubPasses.h"
 
 #include "RenderTarget.h"
+#include "Renderer.h"
 
 namespace Odyssey
 {
-	ShadowPass::ShadowPass()
+	DepthPass::DepthPass(uint8_t cameraTag)
 	{
+		m_Camera = cameraTag;
+
 		VulkanImageDescription imageDesc;
-		imageDesc.Width = Shadowmap_Size;
-		imageDesc.Height = Shadowmap_Size;
-		imageDesc.Format = TextureFormat::D24_UNORM_S8_UINT;
+		imageDesc.Width = Texture_Size;
+		imageDesc.Height = Texture_Size;
+		imageDesc.Format = TextureFormat::D32_SFLOAT;
 		imageDesc.ImageType = ImageType::Shadowmap;
 		imageDesc.Samples = 1;
 
 		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(imageDesc, RenderTargetFlags::Depth);
-		m_SubPasses.push_back(std::make_shared<ShadowSubPass>());
+		m_SubPasses.push_back(std::make_shared<DepthSubPass>());
 
 		for (auto& subPass : m_SubPasses)
 		{
@@ -37,7 +40,7 @@ namespace Odyssey
 		}
 	}
 
-	void ShadowPass::BeginPass(RenderPassParams& params)
+	void DepthPass::BeginPass(RenderPassParams& params)
 	{
 		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -61,7 +64,10 @@ namespace Odyssey
 		if (depthTextureID.IsValid())
 		{
 			VkClearValue clearValue;
-			clearValue.depthStencil = { 1.0f, 0 };
+			if (Renderer::ReverseDepthEnabled())
+				clearValue.depthStencil = { 0.0f, 0 };
+			else
+				clearValue.depthStencil = { 1.0f, 0 };
 
 			// Get the render texture's image
 			Ref<VulkanTexture> depthTexture = ResourceManager::GetResource<VulkanTexture>(depthTextureID);
@@ -119,9 +125,10 @@ namespace Odyssey
 		}
 	}
 
-	void ShadowPass::Execute(RenderPassParams& params)
+	void DepthPass::Execute(RenderPassParams& params)
 	{
 		RenderSubPassData subPassData;
+		subPassData.CameraTag = m_Camera;
 
 		for (auto& renderSubPass : m_SubPasses)
 		{
@@ -129,7 +136,7 @@ namespace Odyssey
 		}
 	}
 
-	void ShadowPass::EndPass(RenderPassParams& params)
+	void DepthPass::EndPass(RenderPassParams& params)
 	{
 		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -151,8 +158,7 @@ namespace Odyssey
 		Ref<VulkanTexture> depthTexture = ResourceManager::GetResource<VulkanTexture>(depthTextureID);
 		commandBuffer->TransitionLayouts(depthTexture->GetImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
 
-		// Set the shadowmap for use in other passes
-		params.Shadowmap = depthTextureID;
+		params.DepthTextures[m_Camera] = depthTextureID;
 	}
 
 	OpaquePass::OpaquePass()
@@ -246,7 +252,10 @@ namespace Odyssey
 		if (depthTextureID.IsValid())
 		{
 			VkClearValue clearValue;
-			clearValue.depthStencil = { 1.0f, 0 };
+			if (Renderer::ReverseDepthEnabled())
+				clearValue.depthStencil = { 0.0f, 0 };
+			else
+				clearValue.depthStencil = { 1.0f, 0 };
 
 			// Get the render texture's image
 			Ref<VulkanTexture> depthTexture = ResourceManager::GetResource<VulkanTexture>(depthTextureID);
@@ -320,17 +329,13 @@ namespace Odyssey
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
 
 		RenderSubPassData subPassData;
-		subPassData.CameraIndex = RenderScene::MAX_CAMERAS;
 		subPassData.CameraTag = m_Camera;
 
 		if (!renderScene->GetCamera(m_Camera))
 			return;
 
-		if (m_Camera)
-			subPassData.CameraIndex = renderScene->SetSceneData(m_Camera);
-
 		// Check for a valid camera data index
-		if (subPassData.CameraIndex < RenderScene::MAX_CAMERAS)
+		if (subPassData.CameraTag < RenderScene::MAX_CAMERAS)
 		{
 			for (auto& renderSubPass : m_SubPasses)
 			{

@@ -31,6 +31,15 @@ namespace Odyssey
         public static bool operator ==(Vector3 lhs, Vector3 rhs) => lhs.Equals(rhs);
         public static bool operator !=(Vector3 lhs, Vector3 rhs) => !lhs.Equals(rhs);
 
+        public static Vector3 Lerp(Vector3 start, Vector3 end, float ratio)
+        {
+            float x = start.X + (end.X - start.X) * ratio;
+            float y = start.Y + (end.Y - start.Y) * ratio;
+            float z = start.Z + (end.Z - start.Z) * ratio;
+
+            return new Vector3(x, y, z);
+        }
+
         public float Length() { return MathF.Abs(X) + MathF.Abs(Y) + MathF.Abs(Z); }
 
         public void Normalize()

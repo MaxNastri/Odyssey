@@ -12,11 +12,7 @@ struct VertexOutput
 
 cbuffer SceneData : register(b0)
 {
-    float4 ViewPos;
-    float4x4 View;
-    float4x4 Projection;
     float4x4 ViewProjection;
-    float4x4 LightViewProj;
 }
 
 cbuffer ModelData : register(b1)
@@ -31,6 +27,6 @@ VertexOutput main(VertexInput input)
     position.xyz = position.xyz + (input.Normal.xyz * 0.001f);
     
     output.Position = mul(Model, position);
-    output.Position = mul(LightViewProj, output.Position);
+    output.Position = mul(ViewProjection, output.Position);
     return output;
 }

@@ -16,15 +16,18 @@ namespace Odyssey
 		AnimationState(GUID guid, std::string_view name, GUID animationClip);
 
 	public:
-		const std::map<std::string, BlendKey>& Evaluate();
+		std::map<std::string, BlendKey>& Evaluate();
+		std::map<std::string, BlendKey>& Evaluate(Ref<AnimationState>& endState, float blendFactor);
 		void Reset();
 
 	public:
+		bool IsEntryState() { return m_IsEntry; }
 		GUID GetGUID() { return m_GUID; }
 		std::string_view GetName();
 		Ref<AnimationClip> GetClip();
 
 	public:
+		void SetEntry(bool entry) { m_IsEntry = entry; }
 		void SetGUID(GUID guid) { m_GUID = guid; }
 		void SetName(std::string_view name) { m_Name = name; }
 		void SetClip(GUID guid);
@@ -33,5 +36,6 @@ namespace Odyssey
 		Ref<AnimationClip> m_AnimationClip;
 		std::string m_Name;
 		GUID m_GUID;
+		bool m_IsEntry = false;
 	};
 }

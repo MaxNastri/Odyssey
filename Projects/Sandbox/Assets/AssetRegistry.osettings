@@ -595,3 +595,91 @@ Entries:
     Type: Odyssey.AnimationClip
     Path: Animation/Clips/Walking.asset
     GUID: 9090412378094673848
+  - Name: Rune_Gate
+    Type: Odyssey.Prefab
+    Path: Prefabs/Rune_Gate.prefab
+    GUID: 1351719918552124715
+  - Name: Brazier Prefab
+    Type: Odyssey.Prefab
+    Path: Prefabs/Brazier.prefab
+    GUID: 1184066439124715941
+  - Name: Brazier
+    Type: Odyssey.Prefab
+    Path: Prefabs/Brazier.prefab
+    GUID: 8128062876877827857
+  - Name: Brazier
+    Type: Odyssey.Prefab
+    Path: Prefabs/Brazier.prefab
+    GUID: 3559647066524997689
+  - Name: Brazier
+    Type: Odyssey.Prefab
+    Path: Prefabs/Brazier.prefab
+    GUID: 1805957744152691909
+  - Name: Fire
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Fire.png
+    GUID: 12565974379865233330
+  - Name: Fireball
+    Type: Odyssey.Texture2D
+    Path: Textures/Particles/Fireball.tex2D
+    GUID: 10384967190449272024
+  - Name: Particle_Fireball
+    Type: Odyssey.Material
+    Path: Materials/Particles/Particle_Fireball.mat
+    GUID: 8139979667651989943
+  - Name: Brazier
+    Type: Odyssey.Prefab
+    Path: Prefabs/Brazier.prefab
+    GUID: 8694393736984464387
+  - Name: Fireball
+    Type: Odyssey.Prefab
+    Path: Prefabs/Fireball.prefab
+    GUID: 11624522031486024579
+  - Name: Fireball
+    Type: Odyssey.Prefab
+    Path: Prefabs/Fireball.prefab
+    GUID: 7195273457303028506
+  - Name: Spell
+    Type: Odyssey.SourceModel
+    Path: Models/Spell.fbx
+    GUID: 7148079352929686846
+  - Name: Spell
+    Type: Odyssey.AnimationClip
+    Path: Animation/Clips/Spell.asset
+    GUID: 14136541016961007141
+  - Name: Water
+    Type: Odyssey.Shader
+    Path: Shaders/Water.asset
+    GUID: 5634657926911688453
+  - Name: Water
+    Type: Odyssey.Material
+    Path: Materials/Water.mat
+    GUID: 14541755926980427327
+  - Name: Water
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Water.hlsl
+    GUID: 8976435431265330478
+  - Name: WaterPlane
+    Type: Odyssey.Mesh
+    Path: Meshes/WaterPlane.mesh
+    GUID: 11237946511379966832
+  - Name: WaterPlane
+    Type: Odyssey.SourceModel
+    Path: Models/WaterPlane.fbx
+    GUID: 14986819559818957489
+  - Name: Water_Normal
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Water_Normal.png
+    GUID: 6185773232014358197
+  - Name: Water_Normal
+    Type: Odyssey.Texture2D
+    Path: Textures/Water_Normal.tex2D
+    GUID: 13598105483977622288
+  - Name: noiseTexture
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/noiseTexture.png
+    GUID: 18364978455404488974
+  - Name: Noise
+    Type: Odyssey.Texture2D
+    Path: Textures/Noise.tex2D
+    GUID: 15039526264554896991

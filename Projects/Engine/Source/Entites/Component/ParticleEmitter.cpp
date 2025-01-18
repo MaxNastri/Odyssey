@@ -1,13 +1,19 @@
 #include "ParticleEmitter.h"
 #include "Transform.h"
 #include "ParticleBatcher.h"
+#include "Enum.h"
 
 namespace Odyssey
 {
 	ParticleEmitter::ParticleEmitter(const GameObject& gameObject)
 	{
 		m_GameObject = gameObject;
-		m_EmissionCount = m_EmissionRate;
+	}
+
+	ParticleEmitter::ParticleEmitter(const GameObject& gameObject, SerializationNode& node)
+	{
+		m_GameObject = gameObject;
+		Deserialize(node);
 	}
 
 	void ParticleEmitter::Serialize(SerializationNode& node)
@@ -16,8 +22,10 @@ namespace Odyssey
 		componentNode.SetMap();
 		componentNode.WriteData("Type", ParticleEmitter::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
+		componentNode.WriteData("Shape", Enum::ToString<EmitterShape>(GetShape()));
 		componentNode.WriteData("Duration", m_Duration);
-		componentNode.WriteData("Radius", m_Radius);
+		componentNode.WriteData("Radius", emitterData.Radius);
+		componentNode.WriteData("Angle", emitterData.Angle);
 		componentNode.WriteData("Looping", m_Looping);
 		componentNode.WriteData("Material", m_Material.CRef());
 		componentNode.WriteData("Emission Rate", m_EmissionRate);
@@ -31,9 +39,13 @@ namespace Odyssey
 
 	void ParticleEmitter::Deserialize(SerializationNode& node)
 	{
+		std::string shape;
+
 		node.ReadData("Enabled", m_Enabled);
+		node.ReadData("Shape", shape);
 		node.ReadData("Duration", m_Duration);
-		node.ReadData("Radius", m_Radius);
+		node.ReadData("Radius", emitterData.Radius);
+		node.ReadData("Angle", emitterData.Angle);
 		node.ReadData("Looping", m_Looping);
 		node.ReadData("Emission Rate", m_EmissionRate);
 		node.ReadData("Material", m_Material.Ref());
@@ -43,6 +55,9 @@ namespace Odyssey
 		node.ReadData("Lifetime", emitterData.Lifetime);
 		node.ReadData("Size", emitterData.Size);
 		node.ReadData("Speed", emitterData.Speed);
+
+		if (!shape.empty())
+			SetShape(Enum::ToEnum<EmitterShape>(shape));
 	}
 
 	ParticleEmitterData& ParticleEmitter::GetEmitterData()
@@ -51,6 +66,7 @@ namespace Odyssey
 		{
 			glm::mat4 world = transform->GetWorldMatrix();
 			emitterData.Position = float4(world[3][0], world[3][1], world[3][2], 1.0f);
+			emitterData.Velocity = glm::normalize(glm::column(world, 1));
 		}
 		return emitterData;
 	}

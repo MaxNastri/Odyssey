@@ -14,7 +14,7 @@ namespace Odyssey
 		AnimationClipTimeline(AnimationClip* animationClip);
 
 	public:
-		const std::map<std::string, BlendKey>& BlendKeys(float deltaTime);
+		std::map<std::string, BlendKey>& BlendKeys(float deltaTime);
 		void Reset();
 
 	public:

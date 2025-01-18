@@ -57,11 +57,20 @@ namespace Odyssey
 		return GameObject(this, entity);
 	}
 
+	void Scene::AddGameObject(GUID guid, GameObject gameObject)
+	{
+		m_GUIDToGameObject[guid] = gameObject;
+	}
+
 	void Scene::DestroyGameObject(const GameObject& gameObject)
 	{
-		entt::entity entity = gameObject;
+		std::vector<GameObject> toDestroy = m_SceneGraph.GetAllChildren(gameObject);
 		m_SceneGraph.RemoveEntityAndChildren(gameObject);
-		m_Registry.destroy(entity);
+
+		m_Registry.destroy(gameObject);
+
+		for (auto& entity : toDestroy)
+			m_Registry.destroy(entity);
 
 		EventSystem::Dispatch<SceneModifiedEvent>(this);
 	}
@@ -105,6 +114,8 @@ namespace Odyssey
 
 	void Scene::Awake()
 	{
+		m_State = SceneState::Awake;
+
 		for (auto entity : m_Registry.view<Camera>())
 		{
 			GameObject gameObject = GameObject(this, entity);
@@ -132,6 +143,8 @@ namespace Odyssey
 
 	void Scene::Update()
 	{
+		m_State = SceneState::Update;
+
 		for (auto entity : m_Registry.view<ScriptComponent>())
 		{
 			GameObject gameObject = GameObject(this, entity);
@@ -149,6 +162,8 @@ namespace Odyssey
 
 	void Scene::OnDestroy()
 	{
+		m_State = SceneState::Destroy;
+
 		for (auto entity : m_Registry.view<ScriptComponent>())
 		{
 			GameObject gameObject = GameObject(this, entity);

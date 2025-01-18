@@ -9,8 +9,10 @@ namespace Odyssey
     public:
         Transform() = default;
         Transform(const GameObject& gameObject);
+        Transform(const GameObject& gameObject, SerializationNode& node);
 
 	public:
+        void Awake() { }
         void Serialize(SerializationNode& node);
         void Deserialize(SerializationNode& node);
 

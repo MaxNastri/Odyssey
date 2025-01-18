@@ -5,3 +5,6 @@ m_Type: Odyssey.Material
 m_Shader: 9634657926911688453
 m_Texture: 262173709281449890
 Normal Texture: 5566965161330113531
+Emissive Color: 'x: 0 y: 0 z: 0'
+Emissive Power: 1
+Alpha Clip: 0.5

@@ -3,7 +3,7 @@ using System;
 
 namespace Sandbox
 {
-    public class SampleScript : Entity
+    public class SampleScript : Component
     {
         public int SpawnCount = 4;
         public float Speed = 10.0f;

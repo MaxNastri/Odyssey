@@ -36,7 +36,7 @@ namespace Odyssey
 			LoadFromSource(source);
 	}
 
-	const std::map<std::string, BlendKey>& AnimationClip::BlendKeys(float deltaTime)
+	std::map<std::string, BlendKey>& AnimationClip::BlendKeys(float deltaTime)
 	{
 		return m_Timeline.BlendKeys(deltaTime);
 	}

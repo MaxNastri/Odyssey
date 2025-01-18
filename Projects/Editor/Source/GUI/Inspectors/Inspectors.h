@@ -152,12 +152,14 @@ namespace Odyssey
 		FloatDrawer m_DurationDrawer;
 		IntDrawer<uint32_t> m_EmissionRateDrawer;
 		FloatDrawer m_RadiusDrawer;
+		FloatDrawer m_AngleDrawer;
 		AssetFieldDrawer m_MaterialDrawer;
 		RangeSlider m_LifetimeDrawer;
 		RangeSlider m_SizeDrawer;
 		RangeSlider m_SpeedDrawer;
 		ColorPicker m_StartColorDrawer;
 		ColorPicker m_EndColorDrawer;
+		EnumDrawer<EmitterShape> m_ShapeDrawer;
 	};
 
 	class ScriptInspector : public Inspector
@@ -275,9 +277,11 @@ namespace Odyssey
 		AssetFieldDrawer m_ShaderDrawer;
 		AssetFieldDrawer m_ColorTextureDrawer;
 		AssetFieldDrawer m_NormalTextureDrawer;
+		AssetFieldDrawer m_NoiseTextureDrawer;
 		ColorPicker m_EmissiveColorDrawer;
 		FloatDrawer m_EmissivePowerDrawer;
 		FloatDrawer m_AlphaClipDrawer;
+		BoolDrawer m_AlphaBlendDrawer;
 	};
 
 	class MeshInspector : public Inspector

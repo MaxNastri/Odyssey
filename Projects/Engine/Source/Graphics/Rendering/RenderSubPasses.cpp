@@ -15,10 +15,12 @@
 #include "VulkanBuffer.h"
 #include "Texture2D.h"
 #include "Light.h"
+#include "OdysseyTime.h"
+#include "Renderer.h"
 
 namespace Odyssey
 {
-	void ShadowSubPass::Setup()
+	void DepthSubPass::Setup()
 	{
 		m_PushDescriptors = new VulkanPushDescriptors();
 		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
@@ -32,6 +34,9 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
 		descriptorLayout->Apply();
 
+		// Allocate the UBO
+		m_DepthUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(glm::mat4));
+
 		// Non-skinned pipeline
 		{
 			VulkanPipelineInfo info;
@@ -39,6 +44,9 @@ namespace Odyssey
 			info.CullMode = CullMode::Front;
 			info.DescriptorLayout = m_DescriptorLayout;
 			info.MSAACountOverride = 1;
+			info.ColorFormat = TextureFormat::None;
+			info.DepthFormat = TextureFormat::D32_SFLOAT;
+			info.IsShadow = true;
 			GetAttributeDescriptions(info.AttributeDescriptions, false);
 
 			m_Pipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
@@ -51,16 +59,32 @@ namespace Odyssey
 			info.CullMode = CullMode::Front;
 			info.DescriptorLayout = m_DescriptorLayout;
 			info.MSAACountOverride = 1;
+			info.ColorFormat = TextureFormat::None;
+			info.DepthFormat = TextureFormat::D32_SFLOAT;
+			info.IsShadow = true;
 			GetAttributeDescriptions(info.AttributeDescriptions, true);
 
 			m_SkinnedPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 		}
 	}
 
-	void ShadowSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
+	void DepthSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
 		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 		auto renderScene = params.renderingData->renderScene;
+
+		mat4 depthMatrix = renderScene->GetShadowLightMatrix();
+
+		// If there is a valid camera tag, use that as the depth matrix
+		if (subPassData.CameraTag > 0)
+		{
+			if (Camera* camera = renderScene->GetCamera(subPassData.CameraTag))
+				depthMatrix = camera->GetProjection() * camera->GetInverseView();
+		}
+
+		// Update the ubo
+		Ref<VulkanBuffer> depthUbo = ResourceManager::GetResource<VulkanBuffer>(m_DepthUBO);
+		depthUbo->CopyData(sizeof(mat4), &depthMatrix);
 
 		for (SetPass& setPass : renderScene->setPasses)
 		{
@@ -68,16 +92,19 @@ namespace Odyssey
 			{
 				Drawcall& drawcall = setPass.Drawcalls[i];
 
+				if (drawcall.SkipDepth)
+					continue;
+
 				// Add the camera and per object data to the push descriptors
 				uint32_t uboIndex = drawcall.UniformBufferIndex;
 				m_PushDescriptors->Clear();
-				m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[0], 0);
+				m_PushDescriptors->AddBuffer(m_DepthUBO, 0);
 				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
 
 				if (drawcall.Skinned)
 					m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
 
-				commandBuffer->SetDepthBias(1.0f, 0.0f, 1.25f);
+				commandBuffer->SetDepthBias(-1.0f, 0.0f, -1.25f);
 
 				// Push the descriptors into the command buffer
 				if (drawcall.Skinned)
@@ -99,7 +126,7 @@ namespace Odyssey
 		}
 	}
 
-	void ShadowSubPass::GetAttributeDescriptions(BinaryBuffer& attributeDescriptions, bool skinned)
+	void DepthSubPass::GetAttributeDescriptions(BinaryBuffer& attributeDescriptions, bool skinned)
 	{
 		std::vector<VkVertexInputAttributeDescription> descriptions;
 
@@ -141,6 +168,7 @@ namespace Odyssey
 	{
 		m_PushDescriptors = new VulkanPushDescriptors();
 
+		m_GlobalDataUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(GlobalData));
 		m_BlackTexture = AssetManager::LoadAsset<Texture2D>(s_BlackTextureGUID);
 		m_BlackTextureID = m_BlackTexture->GetTexture();
 
@@ -152,6 +180,47 @@ namespace Odyssey
 	{
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 		auto renderScene = params.renderingData->renderScene;
+		renderScene->SetSceneData(subPassData.CameraTag);
+
+		if (Camera* camera = renderScene->GetCamera(subPassData.CameraTag))
+		{
+			GlobalData globalData;
+			if (Renderer::ReverseDepthEnabled())
+			{
+				globalData.ZBufferParams.x = -1.0f + (camera->GetFarClip() / camera->GetNearClip());
+				globalData.ZBufferParams.y = 1.0f;
+				globalData.ZBufferParams.z = globalData.ZBufferParams.x / camera->GetFarClip();
+				globalData.ZBufferParams.w = 1.0f / camera->GetFarClip();
+			}
+			else
+			{
+				globalData.ZBufferParams.x = 1.0f - (camera->GetFarClip() / camera->GetNearClip());
+				globalData.ZBufferParams.y = camera->GetFarClip() / camera->GetNearClip();
+				globalData.ZBufferParams.z = globalData.ZBufferParams.x / camera->GetFarClip();
+				globalData.ZBufferParams.w = globalData.ZBufferParams.y / camera->GetFarClip();
+			}
+
+			//x is 1.0 (or –1.0 if currently rendering with a flipped projection matrix), y is the camera’s near plane, z is the camera’s far plane and w is 1/FarPlane.
+			globalData.ProjectionParams.x = -1.0f;
+			globalData.ProjectionParams.y = camera->GetNearClip();
+			globalData.ProjectionParams.z = camera->GetFarClip();
+			globalData.ProjectionParams.w = 1.0f / camera->GetFarClip();
+
+			//x is the width of the camera’s target texture in pixels, y is the height of the camera’s target texture in pixels,
+			// z is 1.0 + 1.0 / width and w is 1.0 + 1.0 / height.
+			globalData.ScreenParams.x = camera->GetViewportWidth();
+			globalData.ScreenParams.y = camera->GetViewportHeight();
+			globalData.ScreenParams.z = 1.0f + (1.0f / globalData.ScreenParams.x);
+			globalData.ScreenParams.w = 1.0f + (1.0f / globalData.ScreenParams.y);
+
+			globalData.Time.x = Time::Elapsed() / 20.0f;
+			globalData.Time.y = Time::Elapsed();
+			globalData.Time.z = Time::Elapsed() * 2.0f;
+			globalData.Time.w = Time::Elapsed() * 3.0f;
+
+			Ref<VulkanBuffer> ubo = ResourceManager::GetResource<VulkanBuffer>(m_GlobalDataUBO);
+			ubo->CopyData(sizeof(GlobalData), &globalData);
+		}
 
 		for (auto& setPass : params.renderingData->renderScene->setPasses)
 		{
@@ -164,29 +233,47 @@ namespace Odyssey
 				// Add the camera and per object data to the push descriptors
 				uint32_t uboIndex = drawcall.UniformBufferIndex;
 				m_PushDescriptors->Clear();
-				m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
+				m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraTag], 0);
 				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
 				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
-				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 3);
-				m_PushDescriptors->AddBuffer(setPass.MaterialBuffer, 4);
+				m_PushDescriptors->AddBuffer(m_GlobalDataUBO, 3);
+				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 4);
+				m_PushDescriptors->AddBuffer(setPass.MaterialBuffer, 5);
 
-				// Color map binds to the fragment shader register 5
+				// Color map binds to the fragment shader register 6
 				if (setPass.ColorTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.ColorTexture, 5);
-				else
-					m_PushDescriptors->AddTexture(m_BlackTextureID, 5);
-
-				// Normal map binds to the fragment shader register 6
-				if (setPass.NormalTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.NormalTexture, 6);
+					m_PushDescriptors->AddTexture(setPass.ColorTexture, 6);
 				else
 					m_PushDescriptors->AddTexture(m_BlackTextureID, 6);
 
-				// Shadowmap binds to the fragment shader register 7
-				if (params.Shadowmap.IsValid())
-					m_PushDescriptors->AddTexture(params.Shadowmap, 7);
+				// Normal map binds to the fragment shader register 7
+				if (setPass.NormalTexture.IsValid())
+					m_PushDescriptors->AddTexture(setPass.NormalTexture, 7);
 				else
-					m_PushDescriptors->AddTexture(m_WhiteTextureID, 7);
+					m_PushDescriptors->AddTexture(m_BlackTextureID, 7);
+
+				// Noise texture binds to the fragment shader register 8
+				if (setPass.NoiseTexture.IsValid())
+					m_PushDescriptors->AddTexture(setPass.NoiseTexture, 8);
+				else
+					m_PushDescriptors->AddTexture(m_BlackTextureID, 8);
+
+				// Shadowmap binds to the fragment shader register 9
+				if (params.Shadowmap().IsValid())
+					m_PushDescriptors->AddTexture(params.Shadowmap(), 9);
+				else
+					m_PushDescriptors->AddTexture(m_WhiteTextureID, 9);
+
+				if (params.DepthTextures.contains(subPassData.CameraTag))
+				{
+					ResourceID cameraDepthTexture = params.DepthTextures[subPassData.CameraTag];
+					if (cameraDepthTexture.IsValid())
+						m_PushDescriptors->AddTexture(cameraDepthTexture, 10);
+				}
+				else
+				{
+					m_PushDescriptors->AddTexture(m_WhiteTextureID, 10);
+				}
 
 				// Push the descriptors into the command buffer
 				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), setPass.GraphicsPipeline);
@@ -213,6 +300,7 @@ namespace Odyssey
 		info.Shaders = m_Shader->GetResourceMap();
 		info.DescriptorLayout = m_DescriptorLayout;
 		info.Topology = Topology::LineList;
+
 		GetAttributeDescriptions(info.AttributeDescriptions);
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
@@ -229,7 +317,7 @@ namespace Odyssey
 		// Push the camera descriptors
 		auto renderScene = params.renderingData->renderScene;
 		m_PushDescriptors->Clear();
-		m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
+		m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraTag], 0);
 
 		// Push the descriptors into the command buffer
 		commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);
@@ -319,7 +407,7 @@ namespace Odyssey
 		auto renderScene = params.renderingData->renderScene;
 
 		if (!renderScene->SkyboxCubemap.IsValid())
-			return; 
+			return;
 
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
@@ -333,7 +421,7 @@ namespace Odyssey
 		commandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
 
 		m_PushDescriptors->Clear();
-		m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
+		m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraTag], 0);
 		m_PushDescriptors->AddBuffer(uboID, 1);
 
 		m_PushDescriptors->AddTexture(renderScene->SkyboxCubemap, 3);
@@ -388,8 +476,9 @@ namespace Odyssey
 
 	void ParticleSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
-		auto renderScene = params.renderingData->renderScene;
 		Ref<VulkanCommandBuffer> graphicsCommandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		auto renderScene = params.renderingData->renderScene;
+		renderScene->SetSceneData(subPassData.CameraTag);
 
 		const std::vector<size_t>& drawList = ParticleBatcher::GetDrawList();
 
@@ -409,7 +498,7 @@ namespace Odyssey
 			}
 
 			m_PushDescriptors->Clear();
-			m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraIndex], 0);
+			m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraTag], 0);
 			m_PushDescriptors->AddBuffer(particleBuffer, 2);
 			m_PushDescriptors->AddTexture(colorTexture, 3);
 			m_PushDescriptors->AddBuffer(aliveBuffer, 4);
@@ -475,7 +564,7 @@ namespace Odyssey
 				anchor.y = height;
 			else if (spriteDrawcall.Anchor == SpriteRenderer::AnchorPosition::TopRight)
 				anchor = float2(width, height);
-			
+
 			// Pack the position and scale into a single float4
 			spriteData.PositionScale = float4(anchor + spriteDrawcall.Position, spriteDrawcall.Scale);
 			spriteData.BaseColor = spriteDrawcall.BaseColor;

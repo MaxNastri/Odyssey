@@ -2,6 +2,7 @@
 #include "VulkanRenderer.h"
 #include "ParticleBatcher.h"
 #include "Texture2D.h"
+#include "VulkanWindow.h"
 
 namespace Odyssey
 {
@@ -10,8 +11,14 @@ namespace Odyssey
 		s_Config = config;
 		s_RendererAPI = std::make_shared<VulkanRenderer>();
 
+		if (s_Config.EnableDepthPrePass)
+		{
+			s_RendererAPI->AddRenderPass(new DepthPass((uint8_t)Camera::Tag::Main));
+			s_RendererAPI->AddRenderPass(new DepthPass((uint8_t)Camera::Tag::SceneView));
+		}
+
 		if (s_Config.ShadowsEnabled)
-			s_RendererAPI->AddRenderPass(new ShadowPass());
+			s_RendererAPI->AddRenderPass(new DepthPass());
 
 		if (s_Config.EnableIMGUI)
 			s_RendererAPI->AddImguiPass();
@@ -62,6 +69,16 @@ namespace Odyssey
 	std::shared_ptr<VulkanWindow> Renderer::GetWindow()
 	{
 		return s_RendererAPI->GetWindow();
+	}
+
+	void Renderer::CaptureCursor()
+	{
+		s_RendererAPI->GetWindow()->GetWindow()->CaptureCursor();
+	}
+
+	void Renderer::ReleaseCursor()
+	{
+		s_RendererAPI->GetWindow()->GetWindow()->ReleaseCursor();
 	}
 
 	void Renderer::RegisterRenderTarget(RenderTargetType rtType, ResourceID colorRT, ResourceID depthRT)

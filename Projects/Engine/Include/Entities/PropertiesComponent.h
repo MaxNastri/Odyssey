@@ -14,6 +14,9 @@ namespace Odyssey
 		PropertiesComponent(const GameObject& gameObject, GUID guid, const std::string& name);
 
 	public:
+		void Awake() { }
+
+	public:
 		GUID GUID;
 		std::string Name = "GameObject";
 		bool Serialize = true;

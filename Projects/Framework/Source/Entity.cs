@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Coral.Managed.Interop;
+using System;
 using System.Collections.Generic;
 
 namespace Odyssey
@@ -26,10 +27,6 @@ namespace Odyssey
             this.GUID = guid;
         }
 
-        protected virtual void Awake() { }
-        protected virtual void Update() { }
-        protected virtual void OnDestroy() { }
-
         public T AddComponent<T>() where T : Component, new()
         {
             Type type = typeof(T);
@@ -56,6 +53,21 @@ namespace Odyssey
         public bool RemoveComponent<T>() where T : Component
         {
             unsafe { return InternalCalls.GameObject_RemoveComponent(this.GUID, typeof(T)); }
+        }
+
+        public T GetScript<T>() where T : Component, new()
+        {
+            if (HasComponent<ScriptComponent>())
+            {
+                unsafe
+                {
+                    NativeInstance<object> instance = InternalCalls.GameObject_GetScript(this.GUID);
+                    if (instance.Get() is T scriptInstance)
+                        return scriptInstance;
+                }
+            }
+
+            return null;
         }
 
         public T GetComponent<T>() where T : Component, new()

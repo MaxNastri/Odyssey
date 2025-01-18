@@ -13,8 +13,10 @@ namespace Odyssey
 	public:
 		Animator() = default;
 		Animator(const GameObject& gameObject);
+		Animator(const GameObject& gameObject, SerializationNode& node);
 
 	public:
+		void Awake() { }
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 
@@ -61,6 +63,7 @@ namespace Odyssey
 		Ref<AnimationBlueprint> m_Blueprint;
 
 	private:
+		GameObject m_RigRoot;
 		std::vector<GameObject> m_BoneGameObjects;
 		std::unordered_map<std::string, GameObject> m_BoneGameObjectsMap;
 		std::map<std::string, glm::mat4> m_BoneTransforms;

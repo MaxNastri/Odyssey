@@ -14,6 +14,12 @@ namespace Odyssey
 
 	}
 
+	Animator::Animator(const GameObject& gameObject, SerializationNode& node)
+		: m_GameObject(gameObject)
+	{
+		Deserialize(node);
+	}
+
 	void Animator::Serialize(SerializationNode& node)
 	{
 		SerializationNode componentNode = node.AppendChild();
@@ -43,13 +49,13 @@ namespace Odyssey
 
 	void Animator::OnEditorUpdate()
 	{
-		//if (m_Rig && m_Blueprint)
-		//{
-		//	if (m_BoneGameObjects.size() == 0)
-		//		CreateBoneGameObjects();
-		//
-		//	Update();
-		//}
+		if (m_Rig && m_Blueprint)
+		{
+			if (m_BoneGameObjects.size() == 0)
+				CreateBoneGameObjects();
+
+			ProcessKeys();
+		}
 	}
 
 	void Animator::Update()
@@ -119,19 +125,39 @@ namespace Odyssey
 		// Destroy any existing bone game objects
 		DestroyBoneGameObjects();
 
+		Scene* scene = m_GameObject.GetScene();
+
+		// Decompose the global matrix so we can apply it to the "rig root"
+		glm::vec3 translation;
+		glm::vec3 scale;
+		glm::quat rotation;
+		glm::vec3 skew;
+		glm::vec4 perspective;
+		glm::decompose(m_Rig->GetGlobalMatrix(), scale, rotation, translation, skew, perspective);
+
 		// Load the rig and get the bones
 		const std::vector<Bone>& bones = m_Rig->GetBones();
 
 		// Resize our bone game objects to match
 		m_BoneGameObjects.resize(bones.size());
 
-		Scene* scene = m_GameObject.GetScene();
+		// Reserve slot 0 for the "rig root" and apply the global matrix
+		m_RigRoot = scene->CreateGameObject();
+		m_RigRoot.SetName("Rig");
+		m_RigRoot.SetParent(m_GameObject);
+
+		Transform& rigRootTransform = m_RigRoot.AddComponent<Transform>();
+		rigRootTransform.SetPosition(translation);
+		rigRootTransform.SetRotation(rotation);
+		rigRootTransform.SetScale(scale);
+
+		// Now create the actual bones
 		for (size_t i = 0; i < bones.size(); i++)
 		{
-			// Set the animator as the parent by default
+			// Set the rig root as the parent by default
 			m_BoneGameObjects[i] = scene->CreateGameObject();
 			m_BoneGameObjects[i].AddComponent<Transform>();
-			m_BoneGameObjects[i].SetParent(m_GameObject);
+			m_BoneGameObjects[i].SetParent(m_RigRoot);
 
 			// Update the map
 			m_BoneGameObjectsMap[bones[i].Name] = m_BoneGameObjects[i];
@@ -142,18 +168,21 @@ namespace Odyssey
 			properties.Name = bones[i].Name;
 		}
 
+		// Now set the proper parent hierarchy
 		for (size_t i = 0; i < m_BoneGameObjects.size(); i++)
 		{
 			const Bone& bone = bones[i];
 			if (bone.ParentIndex > -1)
-			{
 				m_BoneGameObjects[i].SetParent(m_BoneGameObjects[bone.ParentIndex]);
-			}
 		}
 	}
 
 	void Animator::DestroyBoneGameObjects()
 	{
+		// Destroy the rig root
+		m_RigRoot.Destroy();
+
+		// Destroy the bones
 		for (auto& gameObject : m_BoneGameObjects)
 		{
 			gameObject.Destroy();
@@ -183,7 +212,7 @@ namespace Odyssey
 			boneTransform.SetRotation(blendKey.Rotation);
 			boneTransform.SetScale(blendKey.Scale);
 
-			glm::mat4 key = m_Rig->GetGlobalMatrix() * animatorInverse * boneTransform.GetWorldMatrix();
+			glm::mat4 key = animatorInverse * boneTransform.GetWorldMatrix();
 			m_FinalPoses[i] = key * bones[i].InverseBindpose;
 
 			if (m_DebugEnabled)

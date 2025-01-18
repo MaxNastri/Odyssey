@@ -9,6 +9,7 @@
 #include "ScriptingManager.h"
 #include "PropertiesComponent.h"
 #include "Events.h"
+#include "Input.h"
 
 namespace Odyssey
 {
@@ -269,12 +270,27 @@ namespace Odyssey
 
 		if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			if (ImGui::IsItemHovered() && Input::GetMouseButtonDown(MouseButton::Right))
+				ImGui::OpenPopup("Component Context Menu");
+
 			modified |= m_LightTypeDrawer.Draw();
 			modified |= m_ColorPicker.Draw();
 			modified |= m_IntensityDrawer.Draw();
 			modified |= m_RangeDrawer.Draw();
 		}
+		else
+		{
+			if (ImGui::IsItemHovered() && Input::GetMouseButtonDown(MouseButton::Right))
+				ImGui::OpenPopup("Component Context Menu");
+		}
 
+		if (ImGui::BeginPopup("Component Context Menu"))
+		{
+			if (ImGui::MenuItem("Remove Component"))
+				m_GameObject.RemoveComponent<Light>();
+
+			ImGui::EndPopup();
+		}
 		ImGui::PopID();
 
 		return modified;
@@ -391,10 +407,8 @@ namespace Odyssey
 					if (ImGui::Selectable(metadata.Name.c_str()))
 					{
 						if (!m_Target.HasComponent<ScriptComponent>())
-							m_Target.AddComponent<ScriptComponent>();
+							m_Target.AddComponent<ScriptComponent>(metadata.ScriptID);
 
-						ScriptComponent& script = m_Target.GetComponent<ScriptComponent>();
-						script.SetScriptID(metadata.ScriptID);
 						CreateInspectors();
 						modified = true;
 					}
@@ -433,7 +447,11 @@ namespace Odyssey
 	{
 		m_Target = eventData->Scene->GetGameObject(m_TargetGUID);
 
-		if (!m_Target.IsValid())
+		if (m_Target.IsValid())
+		{
+			CreateInspectors();
+		}
+		else
 		{
 			m_Inspectors.clear();
 			userScriptInspectors.clear();
@@ -447,6 +465,7 @@ namespace Odyssey
 			GUID shaderGUID;
 			GUID colorTextureGUID;
 			GUID normalTextureGUID;
+			GUID noiseTextureGUID;
 
 			if (Ref<Shader> shader = m_Material->GetShader())
 				shaderGUID = shader->GetGUID();
@@ -457,14 +476,19 @@ namespace Odyssey
 			if (Ref<Texture2D> normalTexture = m_Material->GetNormalTexture())
 				normalTextureGUID = normalTexture->GetGUID();
 
+			if (Ref<Texture2D> noiseTexture = m_Material->GetNoiseTexture())
+				noiseTextureGUID = noiseTexture->GetGUID();
+
 			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), true);
 			m_NameDrawer = StringDrawer("Name", m_Material->GetName(), false);
 			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type);
 			m_ColorTextureDrawer = AssetFieldDrawer("Color Texture", colorTextureGUID, Texture2D::Type);
 			m_NormalTextureDrawer = AssetFieldDrawer("Normal Texture", normalTextureGUID, Texture2D::Type);
+			m_NoiseTextureDrawer = AssetFieldDrawer("Noise Texture", noiseTextureGUID, Texture2D::Type);
 			m_EmissiveColorDrawer = ColorPicker("Emissive Color", m_Material->GetEmissiveColor());
 			m_EmissivePowerDrawer = FloatDrawer("Emissive Power", m_Material->GetEmissivePower());
 			m_AlphaClipDrawer = FloatDrawer("Alpha Clip", m_Material->GetAlphaClip());
+			m_AlphaBlendDrawer = BoolDrawer("Alpha Blend", m_Material->GetAlphaBlend());
 		}
 	}
 
@@ -507,6 +531,15 @@ namespace Odyssey
 				m_Material->SetNormalTexture(texture);
 		}
 
+		if (m_NoiseTextureDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+
+			if (auto texture = AssetManager::LoadAsset<Texture2D>(m_NoiseTextureDrawer.GetGUID()))
+				m_Material->SetNoiseTexture(texture);
+		}
+
 		if (m_EmissiveColorDrawer.Draw())
 		{
 			m_Dirty = true;
@@ -526,6 +559,13 @@ namespace Odyssey
 			m_Dirty = true;
 			modified = true;
 			m_Material->SetAlphaClip(m_AlphaClipDrawer.GetValue());
+		}
+
+		if (m_AlphaBlendDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+			m_Material->SetAlphaBlend(m_AlphaBlendDrawer.GetValue());
 		}
 
 		if (m_Dirty && ImGui::Button("Save"))
@@ -652,16 +692,6 @@ namespace Odyssey
 				GUID Mesh;
 				GUID* Materials = nullptr;
 				size_t MaterialCount = 0;
-
-				~Data()
-				{
-					if (Materials)
-					{
-						delete Materials;
-						Materials = nullptr;
-					}
-					MaterialCount = 0;
-				}
 			};
 
 			if (ImGui::Button("Copy"))
@@ -688,6 +718,7 @@ namespace Odyssey
 					if (MeshRenderer* meshRenderer = m_GameObject.TryGetComponent<MeshRenderer>())
 					{
 						Data data = ClipBoard::Paste().Read<Data>();
+
 						meshRenderer->SetMesh(data.Mesh);
 
 						for (size_t i = 0; i < data.MaterialCount; i++)
@@ -739,6 +770,7 @@ namespace Odyssey
 			m_EmissionRateDrawer = IntDrawer<uint32_t>("Emission Rate", emitter->GetEmissionRate(), false,
 				[this](uint32_t emissionRate) { OnEmissionRateModified(emissionRate); });
 			m_RadiusDrawer = FloatDrawer("Radius", emitter->GetRadius());
+			m_AngleDrawer = FloatDrawer("Angle", emitter->GetAngle());
 
 			m_MaterialDrawer = AssetFieldDrawer("Material", emitter->GetMaterial(), Material::Type,
 				[this](GUID material) { OnMaterialModified(material); });
@@ -752,6 +784,7 @@ namespace Odyssey
 				[this](float4 color) { OnStartColorModified(color); });
 			m_EndColorDrawer = ColorPicker("End Color", emitter->GetEndColor(),
 				[this](float4 color) { OnEndColorModified(color); });
+			m_ShapeDrawer = EnumDrawer<EmitterShape>("Shape", emitter->GetShape());
 		}
 	}
 
@@ -776,10 +809,21 @@ namespace Odyssey
 			modified |= m_LoopDrawer.Draw();
 			modified |= m_DurationDrawer.Draw();
 			modified |= m_EmissionRateDrawer.Draw();
+
+			if (m_ShapeDrawer.Draw())
+			{
+				if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
+					emitter->SetShape(m_ShapeDrawer.GetValue());
+			}
 			if (m_RadiusDrawer.Draw())
 			{
 				if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
 					emitter->SetRadius(m_RadiusDrawer.GetValue());
+			}
+			if (m_AngleDrawer.Draw())
+			{
+				if (ParticleEmitter* emitter = m_GameObject.TryGetComponent<ParticleEmitter>())
+					emitter->SetAngle(m_AngleDrawer.GetValue());
 			}
 			modified |= m_StartColorDrawer.Draw();
 			modified |= m_EndColorDrawer.Draw();
@@ -1250,7 +1294,7 @@ namespace Odyssey
 				CreateEntityDrawer(fieldStorage.Name, storage.ScriptID, fieldID, typeName, initialValue);
 			}
 			// TODO: Convert into IsAssetType check
-			else if (fieldStorage.DataType == DataType::Mesh || fieldStorage.DataType == DataType::Material || fieldStorage.DataType == DataType::Texture2D)
+			else if (fieldStorage.DataType == DataType::Mesh || fieldStorage.DataType == DataType::Material || fieldStorage.DataType == DataType::Texture2D || fieldStorage.DataType == DataType::Prefab)
 			{
 				GUID initialValue;
 				fieldStorage.TryGetValue(initialValue);

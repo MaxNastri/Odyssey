@@ -35,6 +35,9 @@ namespace Odyssey
 		void DrawAddLinkMenu();
 
 	private:
+		void DrawAnimationCondition(Ref<AnimationCondition>& condition);
+
+	private:
 		void OpenSelectPropertyMenu();
 		void OpenAddPropertyMenu(AnimationPropertyType propertyType);
 		void OpenAddLinkMenu();

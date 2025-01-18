@@ -1,7 +1,7 @@
 ﻿namespace Odyssey
 {
     [NativeObject]
-    public class Texture2D : Asset<Texture2D>
+    public class Texture2D : Asset
     {
         internal Texture2D() : base() { }
         internal Texture2D(ulong guid) : base(guid) { }

@@ -19,8 +19,10 @@ namespace Odyssey
 	public:
 		SpriteRenderer() = default;
 		SpriteRenderer(const GameObject& gameObject);
+		SpriteRenderer(const GameObject& gameObject, SerializationNode& node);
 
 	public:
+		void Awake() { }
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 

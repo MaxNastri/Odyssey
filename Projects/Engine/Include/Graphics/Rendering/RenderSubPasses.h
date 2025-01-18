@@ -12,7 +12,6 @@ namespace Odyssey
 	struct RenderSubPassData
 	{
 		uint8_t CameraTag;
-		uint32_t CameraIndex;
 	};
 
 	class RenderSubPass
@@ -22,7 +21,7 @@ namespace Odyssey
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) { }
 	};
 
-	class ShadowSubPass : public RenderSubPass
+	class DepthSubPass : public RenderSubPass
 	{
 	public:
 		virtual void Setup() override;
@@ -40,6 +39,7 @@ namespace Odyssey
 	private: // Shared
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
 		ResourceID m_DescriptorLayout;
+		ResourceID m_DepthUBO;
 
 	private:
 		inline static const GUID& Shader_GUID = 879318792137863213;
@@ -54,11 +54,19 @@ namespace Odyssey
 
 	private:
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
+		ResourceID m_GlobalDataUBO;
 		Ref<Texture2D> m_BlackTexture;
 		ResourceID m_BlackTextureID;
 		Ref<Texture2D> m_WhiteTexture;
 		ResourceID m_WhiteTextureID;
 
+		struct GlobalData
+		{
+			float4 ZBufferParams;
+			float4 ProjectionParams;
+			float4 ScreenParams;
+			float4 Time;
+		};
 	private:
 		inline static const GUID& s_BlackTextureGUID = 783478723187327676;
 		inline static const GUID& s_WhiteTextureGUID = 879823474869737113;
