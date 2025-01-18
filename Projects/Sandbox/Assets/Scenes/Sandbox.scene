@@ -1,7 +1,7 @@
 Scene: Scene_01
 GUID: 6049963977740777600
 Skybox: 16662637833593679810
-Ambient Color: 'x: 0.13523132 y: 0.13523132 z: 0.13523132'
+Ambient Color: 'x: 0.10320282 y: 0.10246828 z: 0.10246828'
 Scene Center: 'x: 0 y: 0 z: 0'
 Scene Radius: 15
 GameObjects:
@@ -21,7 +21,7 @@ GameObjects:
           - 942766181068811557
           - 942766181068811557
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
+        Position: 'x: -2.700075e-07 y: -0.27966622 z: -4.5299735'
         Rotation: 'x: 0 y: -90 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
       - m_ScriptID: 2708052967
@@ -55,7 +55,7 @@ GameObjects:
   - Sort Order: -1
     Prefab: 0
     Name: Rig
-    GUID: 15277174876545244145
+    GUID: 6316782167489895990
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
@@ -146,6 +146,16 @@ GameObjects:
     Prefab: 0
     Name: Rig
     GUID: 12566788443106753951
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 7
+    Prefab: 0
+    Name: Rig
+    GUID: 15277174876545244145
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
@@ -3316,4 +3326,6 @@ Scene Graph Nodes:
   - Entity: 12566788443106753951
     Parent: 15322439001782158818
   - Entity: 15277174876545244145
+    Parent: 15322439001782158818
+  - Entity: 6316782167489895990
     Parent: 15322439001782158818

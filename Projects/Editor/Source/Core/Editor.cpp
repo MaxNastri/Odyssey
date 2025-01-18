@@ -50,7 +50,7 @@ namespace Odyssey
 		}
 
 		// Create the renderer
-		RendererConfig config = { .EnableIMGUI = true };
+		RendererConfig config = { .EnableIMGUI = true, .EnableReverseDepth = true };
 		Renderer::Init(config);
 		Renderer::SetDrawGUIListener(GUIManager::DrawGUI);
 

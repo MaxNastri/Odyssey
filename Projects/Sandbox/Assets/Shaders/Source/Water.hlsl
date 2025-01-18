@@ -168,7 +168,7 @@ float4 main(PixelInput input) : SV_Target
     float sceneZ = LinearEyeDepth(depthSample);
     float partZ = input.ViewDepth;
     
-    float fade = saturate(1.5f * (sceneZ - partZ));
+    float fade = saturate(1.5f * (partZ - sceneZ));
     
     float3 color = float3(0.0f, 0.55f, 1.0f);
     color *= fade;

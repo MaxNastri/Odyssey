@@ -87,6 +87,16 @@ namespace Odyssey
 		return viewPos;
 	}
 
+	float Camera::GetNearClip()
+	{
+		return Renderer::ReverseDepthEnabled() ? m_FarClip : m_NearClip;
+	}
+
+	float Camera::GetFarClip()
+	{
+		return Renderer::ReverseDepthEnabled() ? m_NearClip : m_FarClip;
+	}
+
 	mat4 Camera::GetScreenSpaceProjection()
 	{
 		return glm::ortho(0.0f, m_Width, 0.0f, m_Height, 0.0f, 1.0f);

@@ -5,6 +5,7 @@
 #include "Vertex.h"
 #include "VulkanDescriptorLayout.h"
 #include "ResourceManager.h"
+#include "Renderer.h"
 
 namespace Odyssey
 {
@@ -162,7 +163,12 @@ namespace Odyssey
 		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 		depthStencil.depthTestEnable = VK_TRUE;
 		depthStencil.depthWriteEnable = info.WriteDepth;
-		depthStencil.depthCompareOp = info.IsShadow ? VK_COMPARE_OP_LESS_OR_EQUAL : VK_COMPARE_OP_LESS;
+
+		if (info.IsShadow)
+			depthStencil.depthCompareOp = Renderer::ReverseDepthEnabled() ? VK_COMPARE_OP_GREATER_OR_EQUAL : VK_COMPARE_OP_LESS_OR_EQUAL;
+		else
+			depthStencil.depthCompareOp = Renderer::ReverseDepthEnabled() ? VK_COMPARE_OP_GREATER : VK_COMPARE_OP_LESS;
+
 		depthStencil.depthBoundsTestEnable = VK_FALSE;
 		depthStencil.stencilTestEnable = VK_FALSE;
 

@@ -39,8 +39,8 @@ namespace Odyssey
 		GameObject& GetGameObject() { return m_GameObject; }
 		Camera::Tag GetTag() { return m_Tag; }
 		float GetFieldOfView() { return m_FieldOfView; }
-		float GetNearClip() { return m_NearClip; }
-		float GetFarClip() { return m_FarClip; }
+		float GetNearClip();
+		float GetFarClip();
 		float GetViewportWidth() { return m_Width; }
 		float GetViewportHeight() { return m_Height; }
 

@@ -245,7 +245,7 @@ float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal
 float CalculateShadowFactor(float3 shadowCoord, float2 offset, float bias)
 {
     float depth = shadowmapTex2D.Sample(shadowmapSampler, shadowCoord.xy + offset).r;
-    return step(shadowCoord.z, depth + bias);
+    return step(depth + bias, shadowCoord.z);
 }
 
 float FilterPCF(float3 shadowCoord, float bias)

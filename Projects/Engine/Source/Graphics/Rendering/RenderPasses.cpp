@@ -16,6 +16,7 @@
 #include "RenderSubPasses.h"
 
 #include "RenderTarget.h"
+#include "Renderer.h"
 
 namespace Odyssey
 {
@@ -63,7 +64,10 @@ namespace Odyssey
 		if (depthTextureID.IsValid())
 		{
 			VkClearValue clearValue;
-			clearValue.depthStencil = { 1.0f, 0 };
+			if (Renderer::ReverseDepthEnabled())
+				clearValue.depthStencil = { 0.0f, 0 };
+			else
+				clearValue.depthStencil = { 1.0f, 0 };
 
 			// Get the render texture's image
 			Ref<VulkanTexture> depthTexture = ResourceManager::GetResource<VulkanTexture>(depthTextureID);
@@ -248,7 +252,10 @@ namespace Odyssey
 		if (depthTextureID.IsValid())
 		{
 			VkClearValue clearValue;
-			clearValue.depthStencil = { 1.0f, 0 };
+			if (Renderer::ReverseDepthEnabled())
+				clearValue.depthStencil = { 0.0f, 0 };
+			else
+				clearValue.depthStencil = { 1.0f, 0 };
 
 			// Get the render texture's image
 			Ref<VulkanTexture> depthTexture = ResourceManager::GetResource<VulkanTexture>(depthTextureID);

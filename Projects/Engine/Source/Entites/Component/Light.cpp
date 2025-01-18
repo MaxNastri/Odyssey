@@ -73,7 +73,7 @@ namespace Odyssey
 
 		// Calculate the view/projection from the light's perspective
 		mat4 view = glm::lookAtLH(position, sceneCenter, float3(0.0f, 1.0f, 0.0f));
-		mat4 proj = glm::ortho(-sceneRadius, sceneRadius, -sceneRadius, sceneRadius, -(sceneRadius + 10.0f), sceneRadius + 10.0f);
+		mat4 proj = glm::ortho(-sceneRadius, sceneRadius, -sceneRadius, sceneRadius, sceneRadius + 10.0f, -(sceneRadius + 10.0f));
 
 		return proj * view;
 	}

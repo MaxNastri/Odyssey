@@ -16,6 +16,7 @@
 #include "Texture2D.h"
 #include "Light.h"
 #include "OdysseyTime.h"
+#include "Renderer.h"
 
 namespace Odyssey
 {
@@ -45,6 +46,7 @@ namespace Odyssey
 			info.MSAACountOverride = 1;
 			info.ColorFormat = TextureFormat::None;
 			info.DepthFormat = TextureFormat::D32_SFLOAT;
+			info.IsShadow = true;
 			GetAttributeDescriptions(info.AttributeDescriptions, false);
 
 			m_Pipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
@@ -59,6 +61,7 @@ namespace Odyssey
 			info.MSAACountOverride = 1;
 			info.ColorFormat = TextureFormat::None;
 			info.DepthFormat = TextureFormat::D32_SFLOAT;
+			info.IsShadow = true;
 			GetAttributeDescriptions(info.AttributeDescriptions, true);
 
 			m_SkinnedPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
@@ -101,7 +104,7 @@ namespace Odyssey
 				if (drawcall.Skinned)
 					m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
 
-				commandBuffer->SetDepthBias(1.0f, 0.0f, 1.25f);
+				commandBuffer->SetDepthBias(-1.0f, 0.0f, -1.25f);
 
 				// Push the descriptors into the command buffer
 				if (drawcall.Skinned)
@@ -182,10 +185,20 @@ namespace Odyssey
 		if (Camera* camera = renderScene->GetCamera(subPassData.CameraTag))
 		{
 			GlobalData globalData;
-			globalData.ZBufferParams.x = 1.0f - (camera->GetFarClip() / camera->GetNearClip());
-			globalData.ZBufferParams.y = camera->GetFarClip() / camera->GetNearClip();
-			globalData.ZBufferParams.z = globalData.ZBufferParams.x / camera->GetFarClip();
-			globalData.ZBufferParams.w = globalData.ZBufferParams.y / camera->GetFarClip();
+			if (Renderer::ReverseDepthEnabled())
+			{
+				globalData.ZBufferParams.x = -1.0f + (camera->GetFarClip() / camera->GetNearClip());
+				globalData.ZBufferParams.y = 1.0f;
+				globalData.ZBufferParams.z = globalData.ZBufferParams.x / camera->GetFarClip();
+				globalData.ZBufferParams.w = 1.0f / camera->GetFarClip();
+			}
+			else
+			{
+				globalData.ZBufferParams.x = 1.0f - (camera->GetFarClip() / camera->GetNearClip());
+				globalData.ZBufferParams.y = camera->GetFarClip() / camera->GetNearClip();
+				globalData.ZBufferParams.z = globalData.ZBufferParams.x / camera->GetFarClip();
+				globalData.ZBufferParams.w = globalData.ZBufferParams.y / camera->GetFarClip();
+			}
 
 			//x is 1.0 (or –1.0 if currently rendering with a flipped projection matrix), y is the camera’s near plane, z is the camera’s far plane and w is 1/FarPlane.
 			globalData.ProjectionParams.x = -1.0f;
