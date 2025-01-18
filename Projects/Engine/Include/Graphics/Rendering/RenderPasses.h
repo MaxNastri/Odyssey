@@ -23,7 +23,10 @@ namespace Odyssey
 		std::shared_ptr<PerFrameRenderingData> renderingData;
 		ResourceID GraphicsCommandBuffer;
 		ResourceID FrameTexture;
-		ResourceID Shadowmap;
+		std::map<uint8_t, ResourceID> DepthTextures;
+
+	public:
+		ResourceID Shadowmap() { return DepthTextures[0]; }
 	};
 
 	class RenderPass
@@ -51,7 +54,7 @@ namespace Odyssey
 	class DepthPass : public RenderPass
 	{
 	public:
-		DepthPass();
+		DepthPass(uint8_t cameraTag = 0);
 
 	public:
 		virtual void BeginPass(RenderPassParams& params) override;

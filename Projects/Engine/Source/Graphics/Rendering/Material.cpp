@@ -45,9 +45,13 @@ namespace Odyssey
 		if (m_NormalTexture)
 			root.WriteData("Normal Texture", m_NormalTexture->GetGUID().CRef());
 
+		if (m_NoiseTexture)
+			root.WriteData("Noise Texture", m_NoiseTexture->GetGUID().CRef());
+
 		root.WriteData("Emissive Color", m_EmissiveColor);
 		root.WriteData("Emissive Power", m_EmissivePower);
 		root.WriteData("Alpha Clip", m_AlphaClip);
+		root.WriteData("Alpha Blend", m_AlphaBlend);
 
 		// Save to disk
 		serializer.WriteToDisk(assetPath);
@@ -63,13 +67,16 @@ namespace Odyssey
 			GUID shaderGUID;
 			GUID colorTextureGUID;
 			GUID normalTextureGUID;
+			GUID noiseTextureGUID;
 
 			root.ReadData("m_Shader", shaderGUID.Ref());
 			root.ReadData("m_Texture", colorTextureGUID.Ref());
 			root.ReadData("Normal Texture", normalTextureGUID.Ref());
+			root.ReadData("Noise Texture", noiseTextureGUID.Ref());
 			root.ReadData("Emissive Color", m_EmissiveColor);
 			root.ReadData("Emissive Power", m_EmissivePower);
 			root.ReadData("Alpha Clip", m_AlphaClip);
+			root.ReadData("Alpha Blend", m_AlphaBlend);
 
 			if (shaderGUID)
 				m_Shader = AssetManager::LoadAsset<Shader>(shaderGUID);
@@ -79,6 +86,9 @@ namespace Odyssey
 
 			if (normalTextureGUID)
 				m_NormalTexture = AssetManager::LoadAsset<Texture2D>(normalTextureGUID);
+
+			if (noiseTextureGUID)
+				m_NoiseTexture = AssetManager::LoadAsset<Texture2D>(noiseTextureGUID);
 		}
 	}
 }

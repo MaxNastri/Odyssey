@@ -37,6 +37,9 @@ cbuffer SkinningData : register(b2)
     float4x4 Bones[128];
 }
 
+Texture2D noiseTex2D : register(t8);
+SamplerState noiseSampler : register(s8);
+
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
@@ -86,28 +89,50 @@ struct LightingOutput
     float3 Diffuse;
 };
 
+cbuffer GlobalData : register(b3)
+{
+    // Values used to linearize the Z buffer (http://www.humus.name/temp/Linearize%20depth.txt)
+    // x = 1-far/near
+    // y = far/near
+    // z = x/far
+    // w = y/far
+    // or in case of a reversed depth buffer (UNITY_REVERSED_Z is 1)
+    // x = -1+far/near
+    // y = 1
+    // z = x/far
+    // w = 1/far
+    float4 ZBufferParams;
+	//x is 1.0 (or –1.0 if currently rendering with a flipped projection matrix), y is the camera’s near plane, z is the camera’s far plane and w is 1/FarPlane.
+    float4 ProjectionParams;
+    //x is the width of the camera’s target texture in pixels, y is the height of the camera’s target texture in pixels,
+	// z is 1.0 + 1.0 / width and w is 1.0 + 1.0 / height.
+    float4 ScreenParams;
+    float4 Time;
+}
+
 // Bindings
-cbuffer LightData : register(b3)
+cbuffer LightData : register(b4)
 {
     float4 AmbientColor;
     Light SceneLights[16];
     uint LightCount;
 }
 
-// Bindings
-cbuffer MaterialData : register(b4)
+cbuffer MaterialData : register(b5)
 {
     // RGB = Emissive Color, A = Emissive Power
     float4 EmissiveColor;
     float alphaClip;
 }
 
-Texture2D diffuseTex2D : register(t5);
-SamplerState diffuseSampler : register(s5);
-Texture2D normalTex2D : register(t6);
-SamplerState normalSampler : register(s6);
-Texture2D shadowmapTex2D : register(t7);
-SamplerState shadowmapSampler : register(s7);
+Texture2D diffuseTex2D : register(t6);
+SamplerState diffuseSampler : register(s6);
+Texture2D normalTex2D : register(t7);
+SamplerState normalSampler : register(s7);
+Texture2D shadowmapTex2D : register(t9);
+SamplerState shadowmapSampler : register(s9);
+Texture2D depthTex2D : register(t10);
+SamplerState depthSampler : register(s10);
 
 // Forward declarations
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord);

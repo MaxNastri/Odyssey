@@ -55,7 +55,7 @@ GameObjects:
   - Sort Order: -1
     Prefab: 0
     Name: Rig
-    GUID: 12086831974100991962
+    GUID: 15277174876545244145
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
@@ -92,6 +92,66 @@ GameObjects:
             Value: 1
           - Name: RotDirection
             Value: 'x: 0 y: 45 z: 0'
+  - Sort Order: 1
+    Prefab: 0
+    Name: Rig
+    GUID: 12086831974100991962
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 2
+    Prefab: 0
+    Name: Rig
+    GUID: 2324085058281101683
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 3
+    Prefab: 0
+    Name: Rig
+    GUID: 8964706734532858303
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 4
+    Prefab: 0
+    Name: Rig
+    GUID: 16876673495101895952
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 5
+    Prefab: 0
+    Name: Rig
+    GUID: 16100935553083204796
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 6
+    Prefab: 0
+    Name: Rig
+    GUID: 12566788443106753951
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 2
     Prefab: 0
     Name: Sun
@@ -236,6 +296,21 @@ GameObjects:
         Color: 'x: 0.85490197 y: 0.64705884 z: 0.1254902'
         Intensity: 0.5
         Range: 7
+  - Sort Order: 10
+    Prefab: 0
+    Name: Water
+    GUID: 18012434648692116970
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 11237946511379966832
+        Materials:
+          - 14541755926980427327
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0.10575694 z: -5.2227464'
+        Rotation: 'x: 0 y: 90 z: 0'
+        Scale: 'x: 0.125 y: 1 z: 0.15'
   - Sort Order: 11
     Prefab: 0
     Name: Rocks R
@@ -2439,7 +2514,7 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -3.5294664 y: 3.1028757 z: 3.3713899'
+        Position: 'x: -3.5153613 y: 3.1028757 z: 3.3713899'
         Rotation: 'x: 0 y: 0 z: 0'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
@@ -3227,4 +3302,18 @@ Scene Graph Nodes:
   - Entity: 17494996583104944783
     Parent: 71833098200386844
   - Entity: 12086831974100991962
+    Parent: 15322439001782158818
+  - Entity: 2324085058281101683
+    Parent: 15322439001782158818
+  - Entity: 18012434648692116970
+    Parent: 0
+  - Entity: 8964706734532858303
+    Parent: 15322439001782158818
+  - Entity: 16876673495101895952
+    Parent: 15322439001782158818
+  - Entity: 16100935553083204796
+    Parent: 15322439001782158818
+  - Entity: 12566788443106753951
+    Parent: 15322439001782158818
+  - Entity: 15277174876545244145
     Parent: 15322439001782158818

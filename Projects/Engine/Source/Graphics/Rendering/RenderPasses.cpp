@@ -19,8 +19,10 @@
 
 namespace Odyssey
 {
-	DepthPass::DepthPass()
+	DepthPass::DepthPass(uint8_t cameraTag)
 	{
+		m_Camera = cameraTag;
+
 		VulkanImageDescription imageDesc;
 		imageDesc.Width = Texture_Size;
 		imageDesc.Height = Texture_Size;
@@ -122,7 +124,7 @@ namespace Odyssey
 	void DepthPass::Execute(RenderPassParams& params)
 	{
 		RenderSubPassData subPassData;
-		subPassData.CameraTag = 0;
+		subPassData.CameraTag = m_Camera;
 
 		for (auto& renderSubPass : m_SubPasses)
 		{
@@ -152,8 +154,7 @@ namespace Odyssey
 		Ref<VulkanTexture> depthTexture = ResourceManager::GetResource<VulkanTexture>(depthTextureID);
 		commandBuffer->TransitionLayouts(depthTexture->GetImage(), VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL);
 
-		// Set the shadowmap for use in other passes
-		params.Shadowmap = depthTextureID;
+		params.DepthTextures[m_Camera] = depthTextureID;
 	}
 
 	OpaquePass::OpaquePass()

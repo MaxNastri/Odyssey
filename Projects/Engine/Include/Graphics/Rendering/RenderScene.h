@@ -96,6 +96,7 @@ namespace Odyssey
 		std::map<ShaderType, ResourceID> Shaders;
 		ResourceID ColorTexture;
 		ResourceID NormalTexture;
+		ResourceID NoiseTexture;
 		std::vector<Drawcall> Drawcalls;
 	};
 

@@ -277,9 +277,11 @@ namespace Odyssey
 		AssetFieldDrawer m_ShaderDrawer;
 		AssetFieldDrawer m_ColorTextureDrawer;
 		AssetFieldDrawer m_NormalTextureDrawer;
+		AssetFieldDrawer m_NoiseTextureDrawer;
 		ColorPicker m_EmissiveColorDrawer;
 		FloatDrawer m_EmissivePowerDrawer;
 		FloatDrawer m_AlphaClipDrawer;
+		BoolDrawer m_AlphaBlendDrawer;
 	};
 
 	class MeshInspector : public Inspector

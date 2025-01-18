@@ -30,6 +30,7 @@ namespace Odyssey
 		bool WriteDepth = true;
 		bool BindVertexAttributeDescriptions = true;
 		bool AlphaBlend = false;
+		bool Special = false;
 		uint32_t MSAACountOverride = 0;
 		bool IsShadow = false;
 		BinaryBuffer AttributeDescriptions;

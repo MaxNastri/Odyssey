@@ -15,6 +15,7 @@
 #include "VulkanBuffer.h"
 #include "Texture2D.h"
 #include "Light.h"
+#include "OdysseyTime.h"
 
 namespace Odyssey
 {
@@ -70,8 +71,8 @@ namespace Odyssey
 		// If there is a valid camera tag, use that as the depth matrix
 		if (subPassData.CameraTag > 0)
 		{
-			Camera* camera = renderScene->GetCamera(subPassData.CameraTag);
-			depthMatrix = camera->GetProjection() * camera->GetInverseView();
+			if (Camera* camera = renderScene->GetCamera(subPassData.CameraTag))
+				depthMatrix = camera->GetProjection() * camera->GetInverseView();
 		}
 
 		// Update the ubo
@@ -83,6 +84,9 @@ namespace Odyssey
 			for (size_t i = 0; i < setPass.Drawcalls.size(); i++)
 			{
 				Drawcall& drawcall = setPass.Drawcalls[i];
+
+				if (drawcall.SkipDepth)
+					continue;
 
 				// Add the camera and per object data to the push descriptors
 				uint32_t uboIndex = drawcall.UniformBufferIndex;
@@ -157,6 +161,7 @@ namespace Odyssey
 	{
 		m_PushDescriptors = new VulkanPushDescriptors();
 
+		m_GlobalDataUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(GlobalData));
 		m_BlackTexture = AssetManager::LoadAsset<Texture2D>(s_BlackTextureGUID);
 		m_BlackTextureID = m_BlackTexture->GetTexture();
 
@@ -169,6 +174,36 @@ namespace Odyssey
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 		auto renderScene = params.renderingData->renderScene;
 		renderScene->SetSceneData(subPassData.CameraTag);
+
+		if (Camera* camera = renderScene->GetCamera(subPassData.CameraTag))
+		{
+			GlobalData globalData;
+			globalData.ZBufferParams.x = 1.0f - (camera->GetFarClip() / camera->GetNearClip());
+			globalData.ZBufferParams.y = camera->GetFarClip() / camera->GetNearClip();
+			globalData.ZBufferParams.z = globalData.ZBufferParams.x / camera->GetFarClip();
+			globalData.ZBufferParams.w = globalData.ZBufferParams.y / camera->GetFarClip();
+
+			//x is 1.0 (or –1.0 if currently rendering with a flipped projection matrix), y is the camera’s near plane, z is the camera’s far plane and w is 1/FarPlane.
+			globalData.ProjectionParams.x = -1.0f;
+			globalData.ProjectionParams.y = camera->GetNearClip();
+			globalData.ProjectionParams.z = camera->GetFarClip();
+			globalData.ProjectionParams.w = 1.0f / camera->GetFarClip();
+
+			//x is the width of the camera’s target texture in pixels, y is the height of the camera’s target texture in pixels,
+			// z is 1.0 + 1.0 / width and w is 1.0 + 1.0 / height.
+			globalData.ScreenParams.x = camera->GetViewportWidth();
+			globalData.ScreenParams.y = camera->GetViewportHeight();
+			globalData.ScreenParams.z = 1.0f + (1.0f / globalData.ScreenParams.x);
+			globalData.ScreenParams.w = 1.0f + (1.0f / globalData.ScreenParams.y);
+
+			globalData.Time.x = Time::Elapsed() / 20.0f;
+			globalData.Time.y = Time::Elapsed();
+			globalData.Time.z = Time::Elapsed() * 2.0f;
+			globalData.Time.w = Time::Elapsed() * 3.0f;
+
+			Ref<VulkanBuffer> ubo = ResourceManager::GetResource<VulkanBuffer>(m_GlobalDataUBO);
+			ubo->CopyData(sizeof(GlobalData), &globalData);
+		}
 
 		for (auto& setPass : params.renderingData->renderScene->setPasses)
 		{
@@ -184,26 +219,44 @@ namespace Odyssey
 				m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraTag], 0);
 				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
 				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
-				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 3);
-				m_PushDescriptors->AddBuffer(setPass.MaterialBuffer, 4);
+				m_PushDescriptors->AddBuffer(m_GlobalDataUBO, 3);
+				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 4);
+				m_PushDescriptors->AddBuffer(setPass.MaterialBuffer, 5);
 
-				// Color map binds to the fragment shader register 5
+				// Color map binds to the fragment shader register 6
 				if (setPass.ColorTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.ColorTexture, 5);
-				else
-					m_PushDescriptors->AddTexture(m_BlackTextureID, 5);
-
-				// Normal map binds to the fragment shader register 6
-				if (setPass.NormalTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.NormalTexture, 6);
+					m_PushDescriptors->AddTexture(setPass.ColorTexture, 6);
 				else
 					m_PushDescriptors->AddTexture(m_BlackTextureID, 6);
 
-				// Shadowmap binds to the fragment shader register 7
-				if (params.Shadowmap.IsValid())
-					m_PushDescriptors->AddTexture(params.Shadowmap, 7);
+				// Normal map binds to the fragment shader register 7
+				if (setPass.NormalTexture.IsValid())
+					m_PushDescriptors->AddTexture(setPass.NormalTexture, 7);
 				else
-					m_PushDescriptors->AddTexture(m_WhiteTextureID, 7);
+					m_PushDescriptors->AddTexture(m_BlackTextureID, 7);
+
+				// Noise texture binds to the fragment shader register 8
+				if (setPass.NoiseTexture.IsValid())
+					m_PushDescriptors->AddTexture(setPass.NoiseTexture, 8);
+				else
+					m_PushDescriptors->AddTexture(m_BlackTextureID, 8);
+
+				// Shadowmap binds to the fragment shader register 9
+				if (params.Shadowmap().IsValid())
+					m_PushDescriptors->AddTexture(params.Shadowmap(), 9);
+				else
+					m_PushDescriptors->AddTexture(m_WhiteTextureID, 9);
+
+				if (params.DepthTextures.contains(subPassData.CameraTag))
+				{
+					ResourceID cameraDepthTexture = params.DepthTextures[subPassData.CameraTag];
+					if (cameraDepthTexture.IsValid())
+						m_PushDescriptors->AddTexture(cameraDepthTexture, 10);
+				}
+				else
+				{
+					m_PushDescriptors->AddTexture(m_WhiteTextureID, 10);
+				}
 
 				// Push the descriptors into the command buffer
 				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), setPass.GraphicsPipeline);
@@ -336,7 +389,7 @@ namespace Odyssey
 		auto renderScene = params.renderingData->renderScene;
 
 		if (!renderScene->SkyboxCubemap.IsValid())
-			return; 
+			return;
 
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
@@ -493,7 +546,7 @@ namespace Odyssey
 				anchor.y = height;
 			else if (spriteDrawcall.Anchor == SpriteRenderer::AnchorPosition::TopRight)
 				anchor = float2(width, height);
-			
+
 			// Pack the position and scale into a single float4
 			spriteData.PositionScale = float4(anchor + spriteDrawcall.Position, spriteDrawcall.Scale);
 			spriteData.BaseColor = spriteDrawcall.BaseColor;

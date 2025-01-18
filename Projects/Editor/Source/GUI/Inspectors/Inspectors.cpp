@@ -465,6 +465,7 @@ namespace Odyssey
 			GUID shaderGUID;
 			GUID colorTextureGUID;
 			GUID normalTextureGUID;
+			GUID noiseTextureGUID;
 
 			if (Ref<Shader> shader = m_Material->GetShader())
 				shaderGUID = shader->GetGUID();
@@ -475,14 +476,19 @@ namespace Odyssey
 			if (Ref<Texture2D> normalTexture = m_Material->GetNormalTexture())
 				normalTextureGUID = normalTexture->GetGUID();
 
+			if (Ref<Texture2D> noiseTexture = m_Material->GetNoiseTexture())
+				noiseTextureGUID = noiseTexture->GetGUID();
+
 			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), true);
 			m_NameDrawer = StringDrawer("Name", m_Material->GetName(), false);
 			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type);
 			m_ColorTextureDrawer = AssetFieldDrawer("Color Texture", colorTextureGUID, Texture2D::Type);
 			m_NormalTextureDrawer = AssetFieldDrawer("Normal Texture", normalTextureGUID, Texture2D::Type);
+			m_NoiseTextureDrawer = AssetFieldDrawer("Noise Texture", noiseTextureGUID, Texture2D::Type);
 			m_EmissiveColorDrawer = ColorPicker("Emissive Color", m_Material->GetEmissiveColor());
 			m_EmissivePowerDrawer = FloatDrawer("Emissive Power", m_Material->GetEmissivePower());
 			m_AlphaClipDrawer = FloatDrawer("Alpha Clip", m_Material->GetAlphaClip());
+			m_AlphaBlendDrawer = BoolDrawer("Alpha Blend", m_Material->GetAlphaBlend());
 		}
 	}
 
@@ -525,6 +531,15 @@ namespace Odyssey
 				m_Material->SetNormalTexture(texture);
 		}
 
+		if (m_NoiseTextureDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+
+			if (auto texture = AssetManager::LoadAsset<Texture2D>(m_NoiseTextureDrawer.GetGUID()))
+				m_Material->SetNoiseTexture(texture);
+		}
+
 		if (m_EmissiveColorDrawer.Draw())
 		{
 			m_Dirty = true;
@@ -544,6 +559,13 @@ namespace Odyssey
 			m_Dirty = true;
 			modified = true;
 			m_Material->SetAlphaClip(m_AlphaClipDrawer.GetValue());
+		}
+
+		if (m_AlphaBlendDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+			m_Material->SetAlphaBlend(m_AlphaBlendDrawer.GetValue());
 		}
 
 		if (m_Dirty && ImGui::Button("Save"))

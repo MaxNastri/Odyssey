@@ -11,6 +11,12 @@ namespace Odyssey
 		s_Config = config;
 		s_RendererAPI = std::make_shared<VulkanRenderer>();
 
+		if (s_Config.EnableDepthPrePass)
+		{
+			s_RendererAPI->AddRenderPass(new DepthPass((uint8_t)Camera::Tag::Main));
+			s_RendererAPI->AddRenderPass(new DepthPass((uint8_t)Camera::Tag::SceneView));
+		}
+
 		if (s_Config.ShadowsEnabled)
 			s_RendererAPI->AddRenderPass(new DepthPass());
 

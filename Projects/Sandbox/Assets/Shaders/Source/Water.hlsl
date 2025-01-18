@@ -13,8 +13,9 @@ struct VertexOutput
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
-    float3 WorldPosition : POSITION1;
-    float4 ShadowCoord : POSITION2;
+    float4 PositionCS : POSITION1;
+    float ViewDepth : POSITION2;
+    float3 WorldPosition : POSITION3;
 };
 
 cbuffer SceneData : register(b0)
@@ -37,9 +38,39 @@ cbuffer SkinningData : register(b2)
     float4x4 Bones[128];
 }
 
+cbuffer GlobalDataVS : register(b3)
+{
+    // Values used to linearize the Z buffer (http://www.humus.name/temp/Linearize%20depth.txt)
+    // x = 1-far/near
+    // y = far/near
+    // z = x/far
+    // w = y/far
+    // or in case of a reversed depth buffer (UNITY_REVERSED_Z is 1)
+    // x = -1+far/near
+    // y = 1
+    // z = x/far
+    // w = 1/far
+    float4 ZBufferParamsVS;
+    
+	//x is 1.0 (or –1.0 if currently rendering with a flipped projection matrix), y is the camera’s near plane, z is the camera’s far plane and w is 1/FarPlane.
+    float4 ProjectionParamsVS;
+    //x is the width of the camera’s target texture in pixels, y is the height of the camera’s target texture in pixels,
+	// z is 1.0 + 1.0 / width and w is 1.0 + 1.0 / height.
+    float4 ScreenParamsVS;
+    float4 TimeVS;
+}
+
+Texture2D noiseTex2D : register(t8);
+SamplerState noiseSampler : register(s8);
+
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
+    float2 texCoord0 = abs(input.TexCoord0);
+    
+    float2 noiseUV = (texCoord0 + (TimeVS.xy * 0.03f));
+    float noiseValue = noiseTex2D.SampleLevel(noiseSampler, noiseUV, 0).r;
+    input.Position.y += (noiseValue * 0.5f);
     
     float4 worldPosition = mul(Model, float4(input.Position, 1.0f));
     float4 normal = float4(normalize(input.Normal.xyz), 0.0f);
@@ -47,11 +78,12 @@ VertexOutput main(VertexInput input)
     
     output.Position = mul(ViewProjection, worldPosition);
     output.WorldPosition = worldPosition.xyz;
-    output.ShadowCoord = mul(LightViewProj, worldPosition);
-    output.ShadowCoord.xyz /= output.ShadowCoord.w;
     output.Normal = normalize(mul(Model, normal).xyz);
     output.Tangent = float4(mul(Model, tangent).xyz, input.Tangent.w);
-    output.TexCoord0 = abs(input.TexCoord0);
+    output.TexCoord0 = texCoord0 * 3.0f;
+    
+    output.PositionCS = output.Position;
+    output.ViewDepth = mul(View, worldPosition).z;
     
     return output;
 }
@@ -67,8 +99,9 @@ struct PixelInput
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
-    float3 WorldPosition : POSITION1;
-    float4 ShadowCoord : POSITION2;
+    float4 PositionCS : POSITION1;
+    float ViewDepth : POSITION2;
+    float3 WorldPosition : POSITION3;
 };
 
 struct Light
@@ -86,42 +119,89 @@ struct LightingOutput
     float3 Diffuse;
 };
 
+cbuffer GlobalData : register(b3)
+{
+    // Values used to linearize the Z buffer (http://www.humus.name/temp/Linearize%20depth.txt)
+    // x = 1-far/near
+    // y = far/near
+    // z = x/far
+    // w = y/far
+    // or in case of a reversed depth buffer (UNITY_REVERSED_Z is 1)
+    // x = -1+far/near
+    // y = 1
+    // z = x/far
+    // w = 1/far
+    float4 ZBufferParams;
+    
+	//x is 1.0 (or –1.0 if currently rendering with a flipped projection matrix), y is the camera’s near plane, z is the camera’s far plane and w is 1/FarPlane.
+    float4 ProjectionParams;
+    //x is the width of the camera’s target texture in pixels, y is the height of the camera’s target texture in pixels,
+	// z is 1.0 + 1.0 / width and w is 1.0 + 1.0 / height.
+    float4 ScreenParams;
+    float4 Time;
+}
+
 // Bindings
-cbuffer LightData : register(b3)
+cbuffer LightData : register(b4)
 {
     float4 AmbientColor;
     Light SceneLights[16];
     uint LightCount;
 }
 
-cbuffer MaterialData : register(b4)
+cbuffer MaterialData : register(b5)
 {
     // RGB = Emissive Color, A = Emissive Power
     float4 EmissiveColor;
     float alphaClip;
 }
 
-Texture2D diffuseTex2D : register(t5);
-SamplerState diffuseSampler : register(s5);
-Texture2D normalTex2D : register(t6);
-SamplerState normalSampler : register(s6);
-Texture2D shadowmapTex2D : register(t7);
-SamplerState shadowmapSampler : register(s7);
+Texture2D diffuseTex2D : register(t6);
+SamplerState diffuseSampler : register(s6);
+Texture2D normalTex2D : register(t7);
+SamplerState normalSampler : register(s7);
+Texture2D shadowmapTex2D : register(t9);
+SamplerState shadowmapSampler : register(s9);
+Texture2D depthTex2D : register(t10);
+SamplerState depthSampler : register(s10);
 
 // Forward declarations
-LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord);
+inline float LinearEyeDepth(float z)
+{
+    return 1.0 / (ZBufferParams.z * z + ZBufferParams.w);
+}
+
+inline float4 ComputeScreenPos(float4 pos)
+{
+    float4 o = pos * 0.5f;
+    o.xy = float2(o.x, o.y * ProjectionParams.x) + o.w * ScreenParams.zw;
+    o.zw = pos.zw;
+    return o;
+}
+
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal);
 float3 CalculateDiffuse(Light light, float3 worldNormal);
-float3 CalculateDirectionalLight(Light light, float3 worldNormal, float3 shadowCoord);
+float3 CalculateDirectionalLight(Light light, float3 worldNormal);
 float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal);
-float CalculateShadowFactor(float3 shadowCoord, float bias);
-float FilterPCF(float3 shadowCoord, float bias);
 
 float4 main(PixelInput input) : SV_Target
 {
+    float4 screenPos = ComputeScreenPos(input.PositionCS / input.PositionCS.w);
+    float depthSample = depthTex2D.Sample(depthSampler, screenPos.xy / screenPos.w);
+    float sceneZ = LinearEyeDepth(depthSample);
+    float partZ = input.ViewDepth;
+    
+    float fade = saturate(1.5f * (sceneZ - partZ));
+    
+    float3 color = float3(0.0f, 0.55f, 1.0f);
+    color *= fade;
+    
+    float2 scrollUV = input.TexCoord0;
+    scrollUV.y += sin(Time) * 2.0f;
+    
     float3 worldNormal = normalize(input.Normal);
     
-    float4 albedo = diffuseTex2D.Sample(diffuseSampler, input.TexCoord0);
-    float3 texNormal = normalTex2D.Sample(normalSampler, input.TexCoord0);
+    float3 texNormal = normalTex2D.Sample(normalSampler, scrollUV);
     bool blankNormalMap = texNormal.x == 0.0f && texNormal.y == 0.0f && texNormal.z == 0.0f;
     
     if (!blankNormalMap)
@@ -139,18 +219,15 @@ float4 main(PixelInput input) : SV_Target
         float3x3 texSpace = float3x3(tangent, binormal, worldNormal);
         worldNormal = mul(texNormal.xyz, texSpace);
     }
+    worldNormal *= fade * 0.4f;
     
-    float3 shadowCoord = input.ShadowCoord.xyz;
-    shadowCoord.x = 0.5f + (shadowCoord.x * 0.5f);
-    shadowCoord.y = 0.5f - (shadowCoord.y * 0.5f);
-    
-    LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal, shadowCoord);
+    LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal);
     
     float3 finalLighting = lighting.Diffuse + AmbientColor.rgb + (EmissiveColor.rgb * EmissiveColor.a);
-    return float4(albedo.rgb, 1.0f) * float4(finalLighting, 1.0f);
+    return float4(color, fade * 0.65f) * float4(finalLighting, 1.0f);
 }
 
-LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord)
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal)
 {
     LightingOutput output;
     output.Diffuse = float4(0, 0, 0, 1);
@@ -160,7 +237,7 @@ LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float
         switch (SceneLights[i].Type)
         {
             case DIRECTIONAL_LIGHT:
-                output.Diffuse += CalculateDirectionalLight(SceneLights[i], worldNormal, shadowCoord);
+                output.Diffuse += CalculateDirectionalLight(SceneLights[i], worldNormal);
                 break;
             case POINT_LIGHT:
                 output.Diffuse += CalculatePointLight(SceneLights[i], worldPosition, worldNormal);
@@ -180,14 +257,10 @@ float3 CalculateDiffuse(Light light, float3 lightVector, float3 worldNormal)
     return light.Color.rgb * light.Intensity * contribution;
 }
 
-float3 CalculateDirectionalLight(Light light, float3 worldNormal, float3 shadowCoord)
+float3 CalculateDirectionalLight(Light light, float3 worldNormal)
 {
     float3 lightVector = -normalize(light.Direction.xyz);
-    
-    float shadowFactor = FilterPCF(shadowCoord, 0.0f);
-    shadowFactor = max(0.0f, shadowFactor * dot(worldNormal, lightVector));
-    
-    return CalculateDiffuse(light, lightVector, worldNormal) * shadowFactor;
+    return CalculateDiffuse(light, lightVector, worldNormal);
 }
 
 float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal)
@@ -203,34 +276,4 @@ float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal
     float attenuation = pow(1.0f - saturate(distance / light.Range), 2);
     
     return CalculateDiffuse(light, lightVector, worldNormal) * attenuation;
-}
-
-float CalculateShadowFactor(float3 shadowCoord, float2 offset, float bias)
-{
-    float depth = shadowmapTex2D.Sample(shadowmapSampler, shadowCoord.xy + offset).r;
-    return step(shadowCoord.z, depth + bias);
-}
-
-float FilterPCF(float3 shadowCoord, float bias)
-{
-    int2 texDimensions;
-    shadowmapTex2D.GetDimensions(texDimensions.x, texDimensions.y);
-    float scale = 1.5f;
-    float dx = (1.0f / float(texDimensions.x));
-    float dy = (1.0f / float(texDimensions.y));
-    
-    float shadowfactor = 0.0f;
-    int count = 0;
-    int range = 3;
-    
-    for (int x = -range; x <= range; x++)
-    {
-        for (int y = -range; y <= range; y++)
-        {
-            shadowfactor += CalculateShadowFactor(shadowCoord, float2(dx * x, dy * y), bias);
-            count++;
-        }
-    }
-    
-    return shadowfactor / float(count);
 }

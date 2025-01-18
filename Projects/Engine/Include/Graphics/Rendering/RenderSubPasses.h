@@ -54,11 +54,19 @@ namespace Odyssey
 
 	private:
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
+		ResourceID m_GlobalDataUBO;
 		Ref<Texture2D> m_BlackTexture;
 		ResourceID m_BlackTextureID;
 		Ref<Texture2D> m_WhiteTexture;
 		ResourceID m_WhiteTextureID;
 
+		struct GlobalData
+		{
+			float4 ZBufferParams;
+			float4 ProjectionParams;
+			float4 ScreenParams;
+			float4 Time;
+		};
 	private:
 		inline static const GUID& s_BlackTextureGUID = 783478723187327676;
 		inline static const GUID& s_WhiteTextureGUID = 879823474869737113;

@@ -32,11 +32,14 @@ namespace Odyssey
 		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
 		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
 		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
-		descriptorLayout->AddBinding("Lighting Data", DescriptorType::Uniform, ShaderStage::Fragment, 3);
-		descriptorLayout->AddBinding("Material Data", DescriptorType::Uniform, ShaderStage::Fragment, 4);
-		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 5);
-		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Fragment, 6);
-		descriptorLayout->AddBinding("Shadowmap", DescriptorType::Sampler, ShaderStage::Fragment, 7);
+		descriptorLayout->AddBinding("Global Data", DescriptorType::Uniform, ShaderStage::Fragment, 3);
+		descriptorLayout->AddBinding("Lighting Data", DescriptorType::Uniform, ShaderStage::Fragment, 4);
+		descriptorLayout->AddBinding("Material Data", DescriptorType::Uniform, ShaderStage::Fragment, 5);
+		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 6);
+		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Fragment, 7);
+		descriptorLayout->AddBinding("Noise", DescriptorType::Sampler, ShaderStage::Fragment, 8);
+		descriptorLayout->AddBinding("Shadowmap", DescriptorType::Sampler, ShaderStage::Fragment, 9);
+		descriptorLayout->AddBinding("Camera Depth", DescriptorType::Sampler, ShaderStage::Fragment, 10);
 		descriptorLayout->Apply();
 
 		// Camera uniform buffer
@@ -277,6 +280,7 @@ namespace Odyssey
 					drawcall.IndexCount = submesh->IndexCount;
 					drawcall.UniformBufferIndex = uboIndex;
 					drawcall.Skinned = animator != nullptr;
+					drawcall.SkipDepth = materials[i]->GetGUID() == 14541755926980427327;
 				}
 			}
 
@@ -330,6 +334,9 @@ namespace Odyssey
 		Shaders = info.Shaders = material->GetShader()->GetResourceMap();
 		info.DescriptorLayout = descriptorLayout;
 		info.CullMode = CullMode::Back;
+		info.AlphaBlend = material->GetAlphaBlend();
+		info.WriteDepth = material->GetGUID() == 14541755926980427327 ? false : true;
+		info.Special = material->GetGUID() == 14541755926980427327;
 		SetupAttributeDescriptions(skinned, info.AttributeDescriptions);
 
 		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
@@ -339,6 +346,9 @@ namespace Odyssey
 
 		if (Ref<Texture2D> normalTexture = material->GetNormalTexture())
 			NormalTexture = normalTexture->GetTexture();
+
+		if (Ref<Texture2D> noiseTexture = material->GetNoiseTexture())
+			NoiseTexture = noiseTexture->GetTexture();
 
 		// Store the material buffer for binding
 		MaterialBuffer = materialBuffer;
