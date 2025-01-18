@@ -26,15 +26,10 @@ namespace Odyssey
 	}
 
 	VulkanImage::VulkanImage(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription& desc)
-		: Resource(id)
+		: Resource(id), m_ImageDesc(desc)
 	{
 		m_Context = context;
-		m_Width = desc.Width;
-		m_Height = desc.Height;
-		m_Channels = desc.Channels;
-		m_ArrayDepth = desc.ArrayDepth;
 		m_MipLevels = GetMipCount(desc);
-		m_MipBias = desc.MipBias;
 
 		isDepth = desc.ImageType == ImageType::DepthTexture || desc.ImageType == ImageType::Shadowmap;
 
@@ -125,11 +120,12 @@ namespace Odyssey
 	{
 		m_Context = context;
 		m_Image = image;
-		m_Width = width;
-		m_Height = height;
-		m_Channels = channels;
-		m_ArrayDepth = 1;
-		m_MipLevels = 1;
+		m_ImageDesc.Width = width;
+		m_ImageDesc.Height = height;
+		m_ImageDesc.Channels = channels;
+		m_ImageDesc.ArrayDepth = 1;
+		m_ImageDesc.MaxMipCount = 1;
+		m_ImageDesc.Format = TextureFormat::R8G8B8A8_UNORM;
 		isDepth = false;
 
 		imageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -141,9 +137,9 @@ namespace Odyssey
 			viewInfo.image = image;
 			viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 			viewInfo.format = format;
-			viewInfo.subresourceRange.aspectMask = isDepth ? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+			viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 			viewInfo.subresourceRange.baseMipLevel = 0;
-			viewInfo.subresourceRange.levelCount = m_MipLevels;
+			viewInfo.subresourceRange.levelCount = m_ImageDesc.MaxMipCount;
 			viewInfo.subresourceRange.baseArrayLayer = 0;
 			viewInfo.subresourceRange.layerCount = 1;
 
@@ -181,8 +177,8 @@ namespace Odyssey
 		bufferCopyRegion.imageSubresource.mipLevel = 0;
 		bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
 		bufferCopyRegion.imageSubresource.layerCount = 1;
-		bufferCopyRegion.imageExtent.width = m_Width;
-		bufferCopyRegion.imageExtent.height = m_Height;
+		bufferCopyRegion.imageExtent.width = m_ImageDesc.Width;
+		bufferCopyRegion.imageExtent.height = m_ImageDesc.Height;
 		bufferCopyRegion.imageExtent.depth = 1;
 		bufferCopyRegion.imageOffset = { 0, 0, 0 };
 		bufferCopyRegion.bufferOffset = 0;
@@ -197,7 +193,7 @@ namespace Odyssey
 
 		// Copy the buffer into the image
 		commandBuffer->BeginCommands();
-		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_Width, m_Height);
+		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_ImageDesc.Width, m_ImageDesc.Height);
 		commandBuffer->EndCommands();
 		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
@@ -222,8 +218,8 @@ namespace Odyssey
 			bufferCopyRegion.imageSubresource.mipLevel = 0;
 			bufferCopyRegion.imageSubresource.baseArrayLayer = (uint32_t)i;
 			bufferCopyRegion.imageSubresource.layerCount = 1;
-			bufferCopyRegion.imageExtent.width = m_Width;
-			bufferCopyRegion.imageExtent.height = m_Height;
+			bufferCopyRegion.imageExtent.width = m_ImageDesc.Width;
+			bufferCopyRegion.imageExtent.height = m_ImageDesc.Height;
 			bufferCopyRegion.imageExtent.depth = 1;
 			bufferCopyRegion.imageOffset = { 0, 0, 0 };
 			bufferCopyRegion.bufferOffset = offset * i;
@@ -239,7 +235,7 @@ namespace Odyssey
 
 		// Copy the buffer into the image
 		commandBuffer->BeginCommands();
-		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_Width, m_Height);
+		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_ImageDesc.Width, m_ImageDesc.Height);
 		commandBuffer->EndCommands();
 		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
@@ -255,7 +251,13 @@ namespace Odyssey
 		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		barrier.image = image->GetImage();
-		barrier.subresourceRange.aspectMask = image->isDepth ? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
+		if (image->GetFormat() == TextureFormat::D24_UNORM_S8_UINT)
+			barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+		else if (image->GetFormat() == TextureFormat::D32_SFLOAT)
+			barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+		else
+			barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+
 		barrier.subresourceRange.baseMipLevel = 0;
 		barrier.subresourceRange.levelCount = image->GetMipLevels();
 		barrier.subresourceRange.baseArrayLayer = 0;

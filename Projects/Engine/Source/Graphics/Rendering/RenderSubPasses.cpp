@@ -43,6 +43,8 @@ namespace Odyssey
 			info.CullMode = CullMode::Front;
 			info.DescriptorLayout = m_DescriptorLayout;
 			info.MSAACountOverride = 1;
+			info.ColorFormat = TextureFormat::None;
+			info.DepthFormat = TextureFormat::D32_SFLOAT;
 			GetAttributeDescriptions(info.AttributeDescriptions, false);
 
 			m_Pipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
@@ -55,6 +57,8 @@ namespace Odyssey
 			info.CullMode = CullMode::Front;
 			info.DescriptorLayout = m_DescriptorLayout;
 			info.MSAACountOverride = 1;
+			info.ColorFormat = TextureFormat::None;
+			info.DepthFormat = TextureFormat::D32_SFLOAT;
 			GetAttributeDescriptions(info.AttributeDescriptions, true);
 
 			m_SkinnedPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
@@ -283,6 +287,7 @@ namespace Odyssey
 		info.Shaders = m_Shader->GetResourceMap();
 		info.DescriptorLayout = m_DescriptorLayout;
 		info.Topology = Topology::LineList;
+
 		GetAttributeDescriptions(info.AttributeDescriptions);
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);

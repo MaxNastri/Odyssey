@@ -2,6 +2,7 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "Enum.h"
+#include "Renderer.h"
 
 namespace Odyssey
 {
@@ -126,7 +127,11 @@ namespace Odyssey
 
 	void Camera::CalculateProjection()
 	{
-		m_Projection = glm::perspectiveFovLH(glm::radians(m_FieldOfView), m_Width, m_Height, m_NearClip, m_FarClip);
+		if (Renderer::ReverseDepthEnabled())
+			m_Projection = glm::perspectiveFovLH(glm::radians(m_FieldOfView), m_Width, m_Height, m_FarClip, m_NearClip);
+		else
+			m_Projection = glm::perspectiveFovLH(glm::radians(m_FieldOfView), m_Width, m_Height, m_NearClip, m_FarClip);
+
 		m_InverseProjection = glm::inverse(m_Projection);
 	}
 

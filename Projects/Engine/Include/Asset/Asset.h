@@ -34,6 +34,9 @@ namespace Odyssey
 		std::string Name;
 		std::string Type;
 
+	protected:
+		void AddDependency(const Path& path);
+
 	private:
 		void OnSourceModified(const Path& oldPath, const Path& newPath, FileActionType fileAction);
 
@@ -44,7 +47,8 @@ namespace Odyssey
 		std::vector<std::function<void()>> m_OnSourceModified;
 
 	private:
-		TrackingID m_TrackingID;
+		std::vector<TrackingID> m_TrackingIDs;
+		std::vector<Path> m_Dependencies;
 	};
 
 	class Asset

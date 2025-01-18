@@ -26,7 +26,7 @@ namespace Odyssey
 		VulkanImageDescription imageDesc;
 		imageDesc.Width = Texture_Size;
 		imageDesc.Height = Texture_Size;
-		imageDesc.Format = TextureFormat::D24_UNORM_S8_UINT;
+		imageDesc.Format = TextureFormat::D32_SFLOAT;
 		imageDesc.ImageType = ImageType::Shadowmap;
 		imageDesc.Samples = 1;
 

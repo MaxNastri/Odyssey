@@ -24,6 +24,31 @@ namespace Odyssey
 		}
 	}
 
+	VkFormat GetVkFormat(TextureFormat format)
+	{
+		switch (format)
+		{
+			case TextureFormat::None:
+			case TextureFormat::R8G8B8_UNORM:
+				return VK_FORMAT_R8G8B8_SRGB;
+			case TextureFormat::R8G8B8A8_SRGB:
+				return VK_FORMAT_R8G8B8A8_SRGB;
+			case TextureFormat::R8G8B8A8_UNORM:
+				return VK_FORMAT_R8G8B8A8_UNORM;
+			case TextureFormat::D24_UNORM_S8_UINT:
+				return VK_FORMAT_D24_UNORM_S8_UINT;
+			case TextureFormat::D16_UNORM:
+				return VK_FORMAT_D16_UNORM;
+			case TextureFormat::D32_SFLOAT:
+				return VK_FORMAT_D32_SFLOAT;
+			case TextureFormat::D32_SFLOAT_S8_UINT:
+				return VK_FORMAT_D32_SFLOAT_S8_UINT;
+			default:
+				return VK_FORMAT_R8G8B8A8_UNORM;
+				break;
+		}
+	}
+
 	VkCullModeFlags ConvertCullMode(CullMode cullMode)
 	{
 		switch (cullMode)
@@ -139,11 +164,7 @@ namespace Odyssey
 		depthStencil.depthWriteEnable = info.WriteDepth;
 		depthStencil.depthCompareOp = info.IsShadow ? VK_COMPARE_OP_LESS_OR_EQUAL : VK_COMPARE_OP_LESS;
 		depthStencil.depthBoundsTestEnable = VK_FALSE;
-		depthStencil.minDepthBounds = 0.0f; // Optional
-		depthStencil.maxDepthBounds = 1.0f; // Optional
 		depthStencil.stencilTestEnable = VK_FALSE;
-		depthStencil.front = {}; // Optional
-		depthStencil.back = {}; // Optional
 
 		// Normal color blending
 		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
@@ -188,15 +209,25 @@ namespace Odyssey
 		colorBlending.blendConstants[2] = 1.0f; // Optional
 		colorBlending.blendConstants[3] = 1.0f; // Optional
 
-		VkFormat colorAttachmentFormat = VK_FORMAT_R8G8B8A8_UNORM;
-		VkFormat depthAttachmentFormat = VK_FORMAT_D24_UNORM_S8_UINT;
-
 		VkPipelineRenderingCreateInfoKHR pipeline_rendering_create_info{};
 		pipeline_rendering_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
-		pipeline_rendering_create_info.colorAttachmentCount = 1;
-		pipeline_rendering_create_info.pColorAttachmentFormats = &colorAttachmentFormat;
-		pipeline_rendering_create_info.depthAttachmentFormat = depthAttachmentFormat;
-		pipeline_rendering_create_info.stencilAttachmentFormat = depthAttachmentFormat;
+
+		if (info.ColorFormat == TextureFormat::None)
+		{
+			pipeline_rendering_create_info.colorAttachmentCount = 0;
+		}
+		else
+		{
+			pipeline_rendering_create_info.colorAttachmentCount = 1;
+			VkFormat colorAttachmentFormat = GetVkFormat(info.ColorFormat);
+			assert(colorAttachmentFormat != VK_FORMAT_UNDEFINED);
+			pipeline_rendering_create_info.pColorAttachmentFormats = &colorAttachmentFormat;
+		}
+		if (info.DepthFormat != TextureFormat::None)
+			pipeline_rendering_create_info.depthAttachmentFormat = GetVkFormat(info.DepthFormat);
+
+		if (info.DepthFormat == TextureFormat::D24_UNORM_S8_UINT)
+			pipeline_rendering_create_info.stencilAttachmentFormat = GetVkFormat(info.DepthFormat);
 
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

@@ -24,23 +24,31 @@ namespace Odyssey
 		bool EnableIMGUI = true;
 		bool ShadowsEnabled = true;
 		bool EnableDepthPrePass = true;
+		bool EnableReverseDepth = false;
 	};
 
 	class Renderer
 	{
 	public:
 		static void Init(const RendererConfig& config);
+		static void SetDrawGUIListener(std::function<void(void)> listener);
+
+	public:
 		static bool Update();
 		static bool Render();
 		static void Destroy();
 
 	public:
 		static void PushRenderPass(Ref<RenderPass> renderPass);
-		static void SetDrawGUIListener(std::function<void(void)> listener);
+
+	public:
 		static uint64_t AddImguiTexture(Ref<Texture2D> texture);
 		static uint64_t AddImguiRenderTexture(ResourceID renderTextureID, ResourceID samplerID);
 		static void DestroyImguiTexture(uint64_t imguiHandle);
+
+	public:
 		static std::shared_ptr<VulkanWindow> GetWindow();
+		static bool ReverseDepthEnabled() { return s_Config.EnableReverseDepth; }
 
 	public:
 		static void CaptureCursor();

@@ -11,12 +11,13 @@ namespace Odyssey
 		m_SourceExtension = sourcePath.extension().string();
 
 		FileActionCallback callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnSourceModified(oldPath, newPath, fileAction); };
-		m_TrackingID = FileManager::Get().TrackFile(sourcePath, callback);
+		m_TrackingIDs.push_back(FileManager::Get().TrackFile(sourcePath, callback));
 	}
 
 	SourceAsset::~SourceAsset()
 	{
-		FileManager::Get().UntrackFile(m_TrackingID);
+		for (auto& trackingID : m_TrackingIDs)
+			FileManager::Get().UntrackFile(trackingID);
 	}
 
 	bool SourceAsset::HasMetadata()
@@ -29,6 +30,17 @@ namespace Odyssey
 		Guid = guid;
 		Name = name;
 		Type = type;
+	}
+
+	void SourceAsset::AddDependency(const Path& path)
+	{
+		// Track the dependency's file
+		FileActionCallback callback = [this](const Path& oldPath, const Path& newPath, FileActionType fileAction) { OnSourceModified(oldPath, newPath, fileAction); };
+		TrackingID id = FileManager::Get().TrackFile(path, callback);
+
+		// Store the dependency
+		m_Dependencies.push_back(path);
+		m_TrackingIDs.push_back(id);
 	}
 
 	void SourceAsset::OnSourceModified(const Path& oldPath, const Path& newPath, FileActionType fileAction)
