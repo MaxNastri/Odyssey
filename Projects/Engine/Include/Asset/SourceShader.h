@@ -33,10 +33,11 @@ namespace Odyssey
 		std::string m_VertexShaderCode;
 		std::string m_FragmentShaderCode;
 		std::map<ShaderType, std::string> m_ShaderCode;
-		TrackingID m_TrackingID;
 		bool m_Compiled = false;
 
 	private:
+		const char* Shared_Pragma = "#pragma Shared";
+
 		inline static std::unordered_map<ShaderType, std::string> ShaderPragmaMap =
 		{
 			{ ShaderType::Vertex, "#pragma Vertex\n" },

@@ -1,17 +1,4 @@
-#pragma Vertex
-struct VertexInput
-{
-    float3 Position : POSITION;
-    float3 Normal : NORMAL;
-    float4 BoneIndices : BLENDINDICES0;
-    float4 BoneWeights : BLENDWEIGHT0;
-};
-
-struct VertexOutput
-{
-    float4 Position : SV_Position;
-};
-
+#pragma Shared
 cbuffer SceneData : register(b0)
 {
     float4x4 ViewProjection;
@@ -26,6 +13,20 @@ cbuffer SkinningData : register(b2)
 {
     float4x4 Bones[128];
 }
+
+#pragma Vertex
+struct VertexInput
+{
+    float3 Position : POSITION;
+    float3 Normal : NORMAL;
+    float4 BoneIndices : BLENDINDICES0;
+    float4 BoneWeights : BLENDWEIGHT0;
+};
+
+struct VertexOutput
+{
+    float4 Position : SV_Position;
+};
 
 struct SkinningOutput
 {

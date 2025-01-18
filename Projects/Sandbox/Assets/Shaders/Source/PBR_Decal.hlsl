@@ -1,20 +1,12 @@
-#pragma Vertex
-struct VertexInput
+#pragma Shared
+struct Light
 {
-    float3 Position : POSITION;
-    float3 Normal : NORMAL;
-    float4 Tangent : TANGENT;
-    float2 TexCoord0 : TEXCOORD0;
-};
-
-struct VertexOutput
-{
-    float4 Position : SV_Position;
-    float3 Normal : NORMAL;
-    float4 Tangent : TANGENT;
-    float2 TexCoord0 : TEXCOORD0;
-    float3 WorldPosition : POSITION1;
-    float4 ShadowCoord : POSITION2;
+    float4 Position;
+    float4 Direction;
+    float4 Color;
+    uint Type;
+    float Intensity;
+    float Range;
 };
 
 cbuffer SceneData : register(b0)
@@ -36,58 +28,6 @@ cbuffer SkinningData : register(b2)
 {
     float4x4 Bones[128];
 }
-
-Texture2D noiseTex2D : register(t8);
-SamplerState noiseSampler : register(s8);
-
-VertexOutput main(VertexInput input)
-{
-    VertexOutput output;
-    
-    float4 worldPosition = mul(Model, float4(input.Position, 1.0f));
-    float4 normal = float4(normalize(input.Normal.xyz), 0.0f);
-    float4 tangent = float4(input.Tangent.xyz, 0.0f);
-    
-    output.Position = mul(ViewProjection, worldPosition);
-    output.WorldPosition = worldPosition.xyz;
-    output.ShadowCoord = mul(LightViewProj, worldPosition);
-    output.ShadowCoord.xyz /= output.ShadowCoord.w;
-    output.Normal = normalize(mul(Model, normal).xyz);
-    output.Tangent = float4(mul(Model, tangent).xyz, input.Tangent.w);
-    output.TexCoord0 = abs(input.TexCoord0);
-    
-    return output;
-}
-
-#pragma Fragment
-#define DIRECTIONAL_LIGHT 0
-#define POINT_LIGHT 1
-#define SPOT_LIGHT 2
-
-struct PixelInput
-{
-    float4 Position : SV_Position;
-    float3 Normal : NORMAL;
-    float4 Tangent : TANGENT;
-    float2 TexCoord0 : TEXCOORD0;
-    float3 WorldPosition : POSITION1;
-    float4 ShadowCoord : POSITION2;
-};
-
-struct Light
-{
-    float4 Position;
-    float4 Direction;
-    float4 Color;
-    uint Type;
-    float Intensity;
-    float Range;
-};
-
-struct LightingOutput
-{
-    float3 Diffuse;
-};
 
 cbuffer GlobalData : register(b3)
 {
@@ -129,10 +69,70 @@ Texture2D diffuseTex2D : register(t6);
 SamplerState diffuseSampler : register(s6);
 Texture2D normalTex2D : register(t7);
 SamplerState normalSampler : register(s7);
+Texture2D noiseTex2D : register(t8);
+SamplerState noiseSampler : register(s8);
 Texture2D shadowmapTex2D : register(t9);
 SamplerState shadowmapSampler : register(s9);
 Texture2D depthTex2D : register(t10);
 SamplerState depthSampler : register(s10);
+
+#pragma Vertex
+struct VertexInput
+{
+    float3 Position : POSITION;
+    float3 Normal : NORMAL;
+    float4 Tangent : TANGENT;
+    float2 TexCoord0 : TEXCOORD0;
+};
+
+struct VertexOutput
+{
+    float4 Position : SV_Position;
+    float3 Normal : NORMAL;
+    float4 Tangent : TANGENT;
+    float2 TexCoord0 : TEXCOORD0;
+    float3 WorldPosition : POSITION1;
+    float4 ShadowCoord : POSITION2;
+};
+
+VertexOutput main(VertexInput input)
+{
+    VertexOutput output;
+    
+    float4 worldPosition = mul(Model, float4(input.Position, 1.0f));
+    float4 normal = float4(normalize(input.Normal.xyz), 0.0f);
+    float4 tangent = float4(input.Tangent.xyz, 0.0f);
+    
+    output.Position = mul(ViewProjection, worldPosition);
+    output.WorldPosition = worldPosition.xyz;
+    output.ShadowCoord = mul(LightViewProj, worldPosition);
+    output.ShadowCoord.xyz /= output.ShadowCoord.w;
+    output.Normal = normalize(mul(Model, normal).xyz);
+    output.Tangent = float4(mul(Model, tangent).xyz, input.Tangent.w);
+    output.TexCoord0 = abs(input.TexCoord0);
+    
+    return output;
+}
+
+#pragma Fragment
+#define DIRECTIONAL_LIGHT 0
+#define POINT_LIGHT 1
+#define SPOT_LIGHT 2
+
+struct PixelInput
+{
+    float4 Position : SV_Position;
+    float3 Normal : NORMAL;
+    float4 Tangent : TANGENT;
+    float2 TexCoord0 : TEXCOORD0;
+    float3 WorldPosition : POSITION1;
+    float4 ShadowCoord : POSITION2;
+};
+
+struct LightingOutput
+{
+    float3 Diffuse;
+};
 
 // Forward declarations
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord);
