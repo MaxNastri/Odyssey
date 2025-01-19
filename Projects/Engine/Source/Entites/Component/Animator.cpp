@@ -31,14 +31,17 @@ namespace Odyssey
 		componentNode.WriteData("Type", Animator::Type);
 		componentNode.WriteData("Animation Rig", rigGUID.CRef());
 		componentNode.WriteData("Animation Blueprint", blueprintGUID.CRef());
+		componentNode.WriteData("Rig Root", m_RigRootGUID.CRef());
 	}
 
 	void Animator::Deserialize(SerializationNode& node)
 	{
 		GUID rigGUID;
 		GUID blueprintGUID;
+
 		node.ReadData("Animation Rig", rigGUID.Ref());
 		node.ReadData("Animation Blueprint", blueprintGUID.Ref());
+		node.ReadData("Rig Root", m_RigRootGUID.Ref());
 
 		if (rigGUID)
 			SetRig(rigGUID);
@@ -51,8 +54,14 @@ namespace Odyssey
 	{
 		if (m_Rig && m_Blueprint)
 		{
+			// Check if we need to spawn/catalog the bones
 			if (m_BoneGameObjects.size() == 0)
-				CreateBoneGameObjects();
+			{
+				if (m_RigRootGUID)
+					CatalogBoneGameObjects();
+				else
+					CreateBoneGameObjects();
+			}
 
 			ProcessKeys();
 		}
@@ -107,12 +116,18 @@ namespace Odyssey
 
 	void Animator::SetRig(GUID guid)
 	{
+		// We are switching to a new rig
+		if (m_Rig && m_Rig->GetGUID() != guid)
+		{
+			m_RigRootGUID = GUID::Empty();
+			DestroyBoneGameObjects();
+		}
+
 		m_Rig = AssetManager::LoadAsset<AnimationRig>(guid);
 
 		// Resize our final poses to match the bone count
 		m_FinalPoses.clear();
 		m_FinalPoses.resize(m_Rig->GetBones().size());
-
 	}
 
 	void Animator::SetBlueprint(GUID guid)
@@ -145,6 +160,7 @@ namespace Odyssey
 		m_RigRoot = scene->CreateGameObject();
 		m_RigRoot.SetName("Rig");
 		m_RigRoot.SetParent(m_GameObject);
+		m_RigRootGUID = m_RigRoot.GetGUID();
 
 		Transform& rigRootTransform = m_RigRoot.AddComponent<Transform>();
 		rigRootTransform.SetPosition(translation);
@@ -158,14 +174,10 @@ namespace Odyssey
 			m_BoneGameObjects[i] = scene->CreateGameObject();
 			m_BoneGameObjects[i].AddComponent<Transform>();
 			m_BoneGameObjects[i].SetParent(m_RigRoot);
+			m_BoneGameObjects[i].SetName(bones[i].Name);
 
 			// Update the map
-			m_BoneGameObjectsMap[bones[i].Name] = m_BoneGameObjects[i];
-
-			// Make sure we don't serialize these transforms
-			PropertiesComponent& properties = m_BoneGameObjects[i].GetComponent<PropertiesComponent>();
-			properties.Serialize = false;
-			properties.Name = bones[i].Name;
+			m_BoneCatalog[bones[i].Name] = m_BoneGameObjects[i];
 		}
 
 		// Now set the proper parent hierarchy
@@ -181,14 +193,28 @@ namespace Odyssey
 	{
 		// Destroy the rig root
 		m_RigRoot.Destroy();
-
-		// Destroy the bones
-		for (auto& gameObject : m_BoneGameObjects)
-		{
-			gameObject.Destroy();
-		}
-
 		m_BoneGameObjects.clear();
+		m_RigRootGUID = GUID::Empty();
+	}
+
+	void Animator::CatalogBoneGameObjects()
+	{
+		m_RigRoot = m_GameObject.GetScene()->GetGameObject(m_RigRootGUID);
+
+		std::vector<GameObject> children = m_RigRoot.GetAllChildren();
+		const std::vector<Bone>& bones = m_Rig->GetBones();
+
+		for (const Bone& bone : bones)
+		{
+			for (GameObject& child : children)
+			{
+				if (child.GetName() == bone.Name)
+				{
+					m_BoneGameObjects.push_back(child);
+					m_BoneCatalog[bone.Name] = child;
+				}
+			}
+		}
 	}
 
 	void Animator::ProcessKeys()
@@ -207,7 +233,7 @@ namespace Odyssey
 			const std::string& boneName = bones[i].Name;
 			BlendKey& blendKey = boneKeys[boneName];
 
-			Transform& boneTransform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
+			Transform& boneTransform = m_BoneCatalog[boneName].GetComponent<Transform>();
 			boneTransform.SetPosition(blendKey.Position);
 			boneTransform.SetRotation(blendKey.Rotation);
 			boneTransform.SetScale(blendKey.Scale);
@@ -228,7 +254,7 @@ namespace Odyssey
 		{
 			const std::string& boneName = bones[i].Name;
 
-			Transform& boneTransform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
+			Transform& boneTransform = m_BoneCatalog[boneName].GetComponent<Transform>();
 			m_FinalPoses[i] = m_Rig->GetRotationOffset() * boneTransform.GetWorldMatrix();
 		}
 	}
@@ -241,7 +267,7 @@ namespace Odyssey
 		{
 			const std::string& boneName = bones[i].Name;
 
-			Transform& boneTransform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
+			Transform& boneTransform = m_BoneCatalog[boneName].GetComponent<Transform>();
 			boneTransform.SetLocalMatrix(mat4(1.0f));
 
 			glm::mat4 key = m_Rig->GetRotationOffset() * boneTransform.GetWorldMatrix();

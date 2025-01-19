@@ -148,6 +148,11 @@ namespace Odyssey
 		return m_Scene->GetSceneGraph().GetChildren(*this);
 	}
 
+	std::vector<GameObject> GameObject::GetAllChildren()
+	{
+		return m_Scene->GetSceneGraph().GetAllChildren(*this);
+	}
+
 	const std::string& GameObject::GetName()
 	{
 		return GetComponent<PropertiesComponent>().Name;
@@ -172,6 +177,9 @@ namespace Odyssey
 	{
 		if (m_Scene)
 			m_Scene->DestroyGameObject(*this);
+
+		m_Entity = entt::entity();
+		m_Scene = nullptr;
 	}
 
 	void GameObject::Serialize(SerializationNode& gameObjectNode, bool prefab)

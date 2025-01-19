@@ -47,6 +47,7 @@ namespace Odyssey
 	private:
 		void CreateBoneGameObjects();
 		void DestroyBoneGameObjects();
+		void CatalogBoneGameObjects();
 		void ProcessKeys();
 		void ProcessTransforms();
 		void ResetToBindpose();
@@ -63,9 +64,12 @@ namespace Odyssey
 		Ref<AnimationBlueprint> m_Blueprint;
 
 	private:
+		GUID m_RigRootGUID;
 		GameObject m_RigRoot;
 		std::vector<GameObject> m_BoneGameObjects;
-		std::unordered_map<std::string, GameObject> m_BoneGameObjectsMap;
+		std::unordered_map<std::string, GameObject> m_BoneCatalog;
+
+	private:
 		std::map<std::string, glm::mat4> m_BoneTransforms;
 		std::vector<glm::mat4> m_FinalPoses;
 		bool m_Playing = false;

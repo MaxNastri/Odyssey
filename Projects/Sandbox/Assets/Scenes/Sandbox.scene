@@ -14,6 +14,7 @@ GameObjects:
       - Type: Odyssey.Animator
         Animation Rig: 10793032812295863475
         Animation Blueprint: 9242731602216417912
+        Rig Root: 7674000140354465462
       - Type: Odyssey.MeshRenderer
         Enabled: 1
         Mesh: 16431782286058366551
@@ -36,7 +37,7 @@ GameObjects:
           - Name: Fireball
             Value: 11624522031486024579
           - Name: FireballTransform
-            Value: 13934948194589128800
+            Value: 2799369125257086860
       - Type: Odyssey.ParticleEmitter
         Enabled: 0
         Shape: Circle
@@ -52,16 +53,6 @@ GameObjects:
         Lifetime: 'x: 1 y: 3'
         Size: 'x: 0.45 y: 0.8'
         Speed: 'x: 2.5 y: 5'
-  - Sort Order: -1
-    Prefab: 0
-    Name: Rig
-    GUID: 6316782167489895990
-    Type: Odyssey.GameObject
-    Components:
-      - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
-        Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
     Name: Camera
@@ -95,72 +86,762 @@ GameObjects:
   - Sort Order: 1
     Prefab: 0
     Name: Rig
-    GUID: 12086831974100991962
+    GUID: 7674000140354465462
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 0 y: 0 z: 0'
         Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Hips'
+    GUID: 1761429206713232161
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0.018628644 y: 1.0275977 z: -0.04874451'
+        Rotation: 'x: 176.91635 y: -46.7007 z: 177.52142'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Spine'
+    GUID: 7402675360494442726
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 4.776741e-06 y: 0.10964568 z: -0.0006200999'
+        Rotation: 'x: 5.2519097 y: -0.8243897 z: -2.3420565'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Spine1'
+    GUID: 3267261049654508803
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -5.731012e-06 y: 0.12633803 z: -0.0035754736'
+        Rotation: 'x: 7.9676104 y: -1.7952106 z: -2.8604589'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Spine2'
+    GUID: 4971999593625805267
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 1.0130785e-17 y: 0.14702389 z: 3.2091593e-11'
+        Rotation: 'x: 14.765015 y: -1.6844827 z: -2.965717'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Neck'
+    GUID: 6454714703709512912
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0.00027856822 y: 0.16208701 z: -0.049877387'
+        Rotation: 'x: -5.450884 y: -4.242244 z: 0.20754567'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Head'
+    GUID: 6911712057929364404
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -3.725291e-11 y: 0.074726254 z: 0.018976849'
+        Rotation: 'x: -5.508438 y: -22.099993 z: 18.432735'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:HeadTop_End'
+    GUID: 10116759885023815067
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -1.8041123e-17 y: 0.25496873 z: 0.064749725'
+        Rotation: 'x: -6.57723e-40 y: -0 z: 3.882513e-19'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 1
+    Prefab: 0
+    Name: 'mixamorig:Leye'
+    GUID: 17354933781417053252
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0.039828956 y: 0.107475735 z: 0.10701073'
+        Rotation: 'x: 0 y: -0 z: -0'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 2
     Prefab: 0
-    Name: Rig
-    GUID: 2324085058281101683
+    Name: 'mixamorig:Reye'
+    GUID: 17225640940470530281
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Position: 'x: 0.033395305 y: 0.106877744 z: 0.106925905'
+        Rotation: 'x: 0 y: -0 z: -0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 1
+    Prefab: 0
+    Name: 'mixamorig:LeftShoulder'
+    GUID: 2600265832683636315
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0.055313047 y: 0.13640432 z: -0.04996299'
+        Rotation: 'x: -73.39354 y: -85.34558 z: -174.96725'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftArm'
+    GUID: 15930088662158743907
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -2.4868996e-16 y: 0.1224749 z: -5.115908e-15'
+        Rotation: 'x: 22.614769 y: 55.975513 z: -16.002111'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftForeArm'
+    GUID: 3695777546769120776
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -3.7303492e-16 y: 0.2924046 z: -1.9895197e-15'
+        Rotation: 'x: -1.1428314e-05 y: -2.5266527e-06 z: -71.61198'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHand'
+    GUID: 4047178835290686901
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 2.8857146e-09 y: 0.2966494 z: -1.4210855e-15'
+        Rotation: 'x: 11.401972 y: -0.18356209 z: -15.244057'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandThumb1'
+    GUID: 5660372584995860291
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0.029522577 y: 0.061320856 z: 0.04040532'
+        Rotation: 'x: 44.034573 y: -8.811423 z: -38.574326'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandThumb2'
+    GUID: 116634039210341397
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -2.1015013e-12 y: 0.02339459 z: 2.867182e-12'
+        Rotation: 'x: 30.81405 y: -30.130522 z: 88.07813'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandThumb3'
+    GUID: 10763869530527156066
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -1.4328805e-12 y: 0.015943838 z: 1.9505818e-12'
+        Rotation: 'x: 23.29384 y: -1.5064877 z: 43.668736'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandThumb4'
+    GUID: 15676012854569699108
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -2.4601122e-12 y: 0.02705644 z: 3.3315928e-12'
+        Rotation: 'x: -2.6239576e-14 y: 1.5902774e-15 z: 1.2722219e-14'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 1
+    Prefab: 0
+    Name: 'mixamorig:LeftHandIndex1'
+    GUID: 12991974955657691408
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0.028818283 y: 0.13242623 z: 0.0030753964'
+        Rotation: 'x: 99.50008 y: -8.071279 z: 6.7259083'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandIndex2'
+    GUID: 13013231170101877196
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -7.5495166e-17 y: 0.021974334 z: 2.842171e-15'
+        Rotation: 'x: 95.429825 y: -7.585382 z: 6.900348'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandIndex3'
+    GUID: 4417028311331237029
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 2.3980818e-16 y: 0.015095063 z: 6.252776e-15'
+        Rotation: 'x: 47.740524 y: -2.2688675 z: 5.1244364'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandIndex4'
+    GUID: 7620390976022294989
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 2.583711e-14 y: 0.016330872 z: -1.9895197e-15'
+        Rotation: 'x: -4.1626708e-10 y: -1.8629069e-15 z: -1.2247387e-15'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 2
+    Prefab: 0
+    Name: 'mixamorig:LeftHandMiddle1'
+    GUID: 10328325171186525697
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0.00025157724 y: 0.13097832 z: -3.365001e-06'
+        Rotation: 'x: 99.48402 y: -8.06938 z: 6.726315'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandMiddle2'
+    GUID: 11885313461160434746
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 2.3092638e-16 y: 0.02284378 z: 4.5474734e-15'
+        Rotation: 'x: 95.44585 y: -7.5873027 z: 6.90006'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandMiddle3'
+    GUID: 1610044902669419962
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -2.0339285e-15 y: 0.023881989 z: -7.1054274e-15'
+        Rotation: 'x: 47.74047 y: -2.2688434 z: 5.1244183'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandMiddle4'
+    GUID: 12122047017067228210
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -5.3645976e-15 y: 0.01750885 z: -2.557954e-15'
+        Rotation: 'x: 1.3265586e-10 y: 1.0580351e-14 z: 8.316731e-15'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 3
     Prefab: 0
-    Name: Rig
-    GUID: 8964706734532858303
+    Name: 'mixamorig:LeftHandRing1'
+    GUID: 3727587897001768000
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Position: 'x: -0.027272549 y: 0.12216392 z: 0.0005742062'
+        Rotation: 'x: 99.50001 y: -8.071268 z: 6.726004'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandRing2'
+    GUID: 2048300858934728830
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0 y: 0.021663513 z: -1.9895197e-15'
+        Rotation: 'x: 95.429886 y: -7.5853796 z: 6.900296'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandRing3'
+    GUID: 15869580281835625893
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -3.7303492e-16 y: 0.018761521 z: 2.2737367e-15'
+        Rotation: 'x: 47.740513 y: -2.2688553 z: 5.124434'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftHandRing4'
+    GUID: 12864643882351762200
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -1.12265755e-14 y: 0.022399597 z: -1.7053025e-15'
+        Rotation: 'x: 1.7498495e-14 y: 1.4785051e-07 z: -4.7830163e-11'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 4
     Prefab: 0
-    Name: Rig
-    GUID: 16876673495101895952
+    Name: 'mixamorig:LeftHandPinky1'
+    GUID: 18007999924831925603
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Position: 'x: -0.050101753 y: 0.10912162 z: 0.002692775'
+        Rotation: 'x: 99.10606 y: -12.072292 z: 6.060421'
         Scale: 'x: 1 y: 1 z: 1'
-  - Sort Order: 5
+  - Sort Order: 0
     Prefab: 0
-    Name: Rig
-    GUID: 16100935553083204796
+    Name: 'mixamorig:LeftHandPinky2'
+    GUID: 18349652857449198359
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Position: 'x: -5.3290704e-17 y: 0.01563469 z: 4.8316907e-15'
+        Rotation: 'x: 95.94269 y: -7.6284223 z: 2.778118'
         Scale: 'x: 1 y: 1 z: 1'
-  - Sort Order: 6
+  - Sort Order: 0
     Prefab: 0
-    Name: Rig
-    GUID: 12566788443106753951
+    Name: 'mixamorig:LeftHandPinky3'
+    GUID: 7060548663028616092
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Position: 'x: 1.5418778e-14 y: 0.012784424 z: -9.094947e-15'
+        Rotation: 'x: 47.740532 y: -2.2688684 z: 5.124442'
         Scale: 'x: 1 y: 1 z: 1'
-  - Sort Order: 7
+  - Sort Order: 0
     Prefab: 0
-    Name: Rig
-    GUID: 15277174876545244145
+    Name: 'mixamorig:LeftHandPinky4'
+    GUID: 3549183913082912763
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 180 y: -5.008956e-06 z: 180'
+        Position: 'x: -2.1440627e-14 y: 0.017362136 z: -1.4210855e-15'
+        Rotation: 'x: -1.156323e-13 y: 6.1964266e-16 z: -1.2264859e-15'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 2
+    Prefab: 0
+    Name: 'mixamorig:RightShoulder'
+    GUID: 15601726430923639009
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0.055313002 y: 0.13640532 z: -0.04996294'
+        Rotation: 'x: -160.40373 y: 89.63523 z: 92.853455'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightArm'
+    GUID: 17919131601014262073
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 5.3290704e-17 y: 0.122476004 z: -1.9042546e-14'
+        Rotation: 'x: 23.826517 y: -24.840015 z: 60.122196'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightForeArm'
+    GUID: 6171588550957794619
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -4.491625e-09 y: 0.292405 z: -1.0610108e-11'
+        Rotation: 'x: -1.1481513e-06 y: -5.1484226e-06 z: 101.56289'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHand'
+    GUID: 2799369125257086860
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -3.105405e-09 y: 0.296649 z: -1.076728e-11'
+        Rotation: 'x: -2.3724363 y: -7.265989 z: 14.543126'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandThumb1'
+    GUID: 3565766567530412483
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0.02952258 y: 0.06132101 z: 0.0404'
+        Rotation: 'x: 52.488674 y: 7.326819 z: 0.89980036'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandThumb2'
+    GUID: 3573424892684444510
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 9.947598e-16 y: 0.023397945 z: -1.1368684e-15'
+        Rotation: 'x: 8.699043 y: 19.987848 z: -95.78885'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandThumb3'
+    GUID: 8226079672363721892
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0 y: 0.015943762 z: -3.410605e-15'
+        Rotation: 'x: 12.394353 y: 3.3259897 z: -43.888615'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandThumb4'
+    GUID: 10194110169117884502
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 5.684342e-16 y: 0.02705649 z: -1.1368684e-15'
+        Rotation: 'x: 3.2600685e-14 y: -9.541664e-15 z: -1.2722219e-14'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 1
+    Prefab: 0
+    Name: 'mixamorig:RightHandIndex1'
+    GUID: 9226342379066675915
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0.028818257 y: 0.13242601 z: 0.00307'
+        Rotation: 'x: 96.799095 y: 7.8245506 z: -6.839662'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandIndex2'
+    GUID: 8257130220053507578
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 4.8849813e-17 y: 0.021975 z: -9.299584e-13'
+        Rotation: 'x: 98.43847 y: 8.022082 z: -6.9226475'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandIndex3'
+    GUID: 13141166901492670645
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 2.9753978e-16 y: 0.015095 z: -1.0564349e-12'
+        Rotation: 'x: 49.23727 y: 2.4278722 z: -5.2953672'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandIndex4'
+    GUID: 16581792887421300834
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 2.220446e-17 y: 0.016331 z: -1.1448264e-12'
+        Rotation: 'x: 1.8260675e-10 y: -2.8080256e-15 z: -1.2722219e-14'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 2
+    Prefab: 0
+    Name: 'mixamorig:RightHandMiddle1'
+    GUID: 9022201101402165862
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0.0002515572 y: 0.130979 z: -1.0000005e-05'
+        Rotation: 'x: 96.79909 y: 7.8245506 z: -6.839628'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandMiddle2'
+    GUID: 6530773007103922292
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -1.0658141e-16 y: 0.022843 z: -8.301981e-13'
+        Rotation: 'x: 98.43846 y: 8.022083 z: -6.9226832'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandMiddle3'
+    GUID: 9851536331449127948
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 2.6645352e-17 y: 0.023882 z: -9.66054e-13'
+        Rotation: 'x: 49.23727 y: 2.427872 z: -5.295377'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandMiddle4'
+    GUID: 12274084161305254520
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 4.440892e-17 y: 0.017509 z: -6.698997e-13'
+        Rotation: 'x: -1.957695e-10 y: -2.8076222e-15 z: 6.8967287e-34'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 3
+    Prefab: 0
+    Name: 'mixamorig:RightHandRing1'
+    GUID: 10037784088655426203
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0.02727264 y: 0.12216399 z: 0.00057'
+        Rotation: 'x: 96.799095 y: 7.824553 z: -6.8396406'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandRing2'
+    GUID: 16562465148629911642
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 2.6645354e-16 y: 0.021664 z: -7.6227024e-13'
+        Rotation: 'x: 98.43847 y: 8.022082 z: -6.9227114'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandRing3'
+    GUID: 11281005811232821571
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -3.7303492e-16 y: 0.018761 z: -6.4062536e-13'
+        Rotation: 'x: 49.23727 y: 2.4278722 z: -5.295372'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandRing4'
+    GUID: 1069861450705269417
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 2.4868996e-16 y: 0.0224 z: -7.5772277e-13'
+        Rotation: 'x: 1.0018756e-09 y: -2.8078664e-15 z: -1.2722219e-14'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 4
+    Prefab: 0
+    Name: 'mixamorig:RightHandPinky1'
+    GUID: 3646595217184061354
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0.050101936 y: 0.109121986 z: 0.00269'
+        Rotation: 'x: 96.799095 y: 7.8245506 z: -6.839679'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandPinky2'
+    GUID: 14054000057494788504
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -3.5527136e-17 y: 0.015635 z: -6.5597305e-13'
+        Rotation: 'x: 98.43846 y: 8.022082 z: -6.922691'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandPinky3'
+    GUID: 3096673438493714110
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 5.3290704e-17 y: 0.012784 z: -5.0647485e-13'
+        Rotation: 'x: 49.23727 y: 2.427872 z: -5.295409'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightHandPinky4'
+    GUID: 15533251149187038484
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 3.5527136e-17 y: 0.017362 z: -7.744916e-13'
+        Rotation: 'x: -1.436683e-39 y: 4.619325e-25 z: 1.2722219e-14'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 1
+    Prefab: 0
+    Name: 'mixamorig:Bow1'
+    GUID: 4406478483186148598
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0.022249732 y: 0.0019266361 z: -0.13789229'
+        Rotation: 'x: -165.65846 y: 0.17809747 z: -33.28218'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Bow2'
+    GUID: 3562695027260629842
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -5.2557425e-12 y: 0.16399832 z: 3.2924136e-11'
+        Rotation: 'x: -15.1651325 y: -1.925272 z: -7.7074904'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Bow3'
+    GUID: 17741941561909899550
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 4.2895461e-13 y: 0.15870059 z: 3.4443913e-11'
+        Rotation: 'x: -6.8933945 y: 0.21511513 z: -10.120692'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Bow4'
+    GUID: 14262132954701726968
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 2.7501556e-12 y: 0.16686875 z: 3.8668065e-11'
+        Rotation: 'x: -5.493369 y: 0.8415674 z: -5.9253697'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 2
+    Prefab: 0
+    Name: 'mixamorig:Bow5'
+    GUID: 9801695189658589426
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0.043657593 y: 0.06581213 z: -0.102231674'
+        Rotation: 'x: -167.19765 y: -0.17743686 z: 33.260597'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Bow6'
+    GUID: 2897518097966978002
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 4.565237e-12 y: 0.15984331 z: 3.20987e-11'
+        Rotation: 'x: -11.827991 y: 1.7190953 z: 7.7604184'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Bow7'
+    GUID: 12480218325513082192
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 2.2041036e-13 y: 0.15897161 z: 3.4512376e-11'
+        Rotation: 'x: -7.033353 y: 0.10301681 z: 10.113841'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:Bow8'
+    GUID: 4379504850534476784
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -2.492655e-12 y: 0.16597368 z: 3.8465085e-11'
+        Rotation: 'x: -7.1960354 y: -0.24724935 z: 2.1855927'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 1
+    Prefab: 0
+    Name: 'mixamorig:LeftUpLeg'
+    GUID: 9102929169032529076
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -0.121042825 y: -0.060532045 z: -0.012332421'
+        Rotation: 'x: 25.275597 y: 19.800642 z: 163.94267'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftLeg'
+    GUID: 14847954075369350473
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -5.7597237e-08 y: 0.46607 z: 1.687539e-16'
+        Rotation: 'x: -50.389088 y: -6.2575793 z: 6.3726125'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftFoot'
+    GUID: 1103421471994893733
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -6.222314e-08 y: 0.50482 z: 1.5987212e-16'
+        Rotation: 'x: 72.66674 y: -12.980863 z: 6.5011306'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftToeBase'
+    GUID: 2341751787487115262
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -2.2533322e-07 y: 0.1775 z: -2.0339285e-15'
+        Rotation: 'x: 35.727196 y: -0.00011164953 z: 4.9467697e-05'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:LeftToe_End'
+    GUID: 175525094946491467
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -7.18185e-08 y: 0.0705 z: -5.170975e-14'
+        Rotation: 'x: 9.4948736e-11 y: 2.0096762e-20 z: 1.6651858e-32'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 2
+    Prefab: 0
+    Name: 'mixamorig:RightUpLeg'
+    GUID: 6315033453533140090
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0.12250156 y: -0.060533803 z: -0.012332389'
+        Rotation: 'x: 13.022711 y: -18.80473 z: -164.91734'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightLeg'
+    GUID: 7476721339609820393
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 1.0599798e-09 y: 0.466068 z: -4.2188474e-17'
+        Rotation: 'x: -46.311848 y: 2.6509285 z: 5.9932365'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightFoot'
+    GUID: 6289506712162853978
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -4.540118e-09 y: 0.50481945 z: 4.8849813e-17'
+        Rotation: 'x: 75.90974 y: 2.17491 z: -12.283654'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightToeBase'
+    GUID: 1994070241468072524
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -8.881784e-17 y: 0.1775 z: -4.440892e-17'
+        Rotation: 'x: 35.892117 y: -0.1329507 z: -0.0964963'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: 0
+    Prefab: 0
+    Name: 'mixamorig:RightToe_End'
+    GUID: 6222145568048163833
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: -1.7763568e-17 y: 0.0705 z: 2.942091e-16'
+        Rotation: 'x: 0 y: -0 z: -0'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 2
     Prefab: 0
@@ -3311,21 +3992,157 @@ Scene Graph Nodes:
     Parent: 71833098200386844
   - Entity: 17494996583104944783
     Parent: 71833098200386844
-  - Entity: 12086831974100991962
-    Parent: 15322439001782158818
-  - Entity: 2324085058281101683
-    Parent: 15322439001782158818
   - Entity: 18012434648692116970
     Parent: 0
-  - Entity: 8964706734532858303
+  - Entity: 7674000140354465462
     Parent: 15322439001782158818
-  - Entity: 16876673495101895952
-    Parent: 15322439001782158818
-  - Entity: 16100935553083204796
-    Parent: 15322439001782158818
-  - Entity: 12566788443106753951
-    Parent: 15322439001782158818
-  - Entity: 15277174876545244145
-    Parent: 15322439001782158818
-  - Entity: 6316782167489895990
-    Parent: 15322439001782158818
+  - Entity: 1761429206713232161
+    Parent: 7674000140354465462
+  - Entity: 7402675360494442726
+    Parent: 1761429206713232161
+  - Entity: 3267261049654508803
+    Parent: 7402675360494442726
+  - Entity: 4971999593625805267
+    Parent: 3267261049654508803
+  - Entity: 6454714703709512912
+    Parent: 4971999593625805267
+  - Entity: 6911712057929364404
+    Parent: 6454714703709512912
+  - Entity: 10116759885023815067
+    Parent: 6911712057929364404
+  - Entity: 17354933781417053252
+    Parent: 6911712057929364404
+  - Entity: 17225640940470530281
+    Parent: 6911712057929364404
+  - Entity: 2600265832683636315
+    Parent: 4971999593625805267
+  - Entity: 15930088662158743907
+    Parent: 2600265832683636315
+  - Entity: 3695777546769120776
+    Parent: 15930088662158743907
+  - Entity: 4047178835290686901
+    Parent: 3695777546769120776
+  - Entity: 5660372584995860291
+    Parent: 4047178835290686901
+  - Entity: 116634039210341397
+    Parent: 5660372584995860291
+  - Entity: 10763869530527156066
+    Parent: 116634039210341397
+  - Entity: 15676012854569699108
+    Parent: 10763869530527156066
+  - Entity: 12991974955657691408
+    Parent: 4047178835290686901
+  - Entity: 13013231170101877196
+    Parent: 12991974955657691408
+  - Entity: 4417028311331237029
+    Parent: 13013231170101877196
+  - Entity: 7620390976022294989
+    Parent: 4417028311331237029
+  - Entity: 10328325171186525697
+    Parent: 4047178835290686901
+  - Entity: 11885313461160434746
+    Parent: 10328325171186525697
+  - Entity: 1610044902669419962
+    Parent: 11885313461160434746
+  - Entity: 12122047017067228210
+    Parent: 1610044902669419962
+  - Entity: 3727587897001768000
+    Parent: 4047178835290686901
+  - Entity: 2048300858934728830
+    Parent: 3727587897001768000
+  - Entity: 15869580281835625893
+    Parent: 2048300858934728830
+  - Entity: 12864643882351762200
+    Parent: 15869580281835625893
+  - Entity: 18007999924831925603
+    Parent: 4047178835290686901
+  - Entity: 18349652857449198359
+    Parent: 18007999924831925603
+  - Entity: 7060548663028616092
+    Parent: 18349652857449198359
+  - Entity: 3549183913082912763
+    Parent: 7060548663028616092
+  - Entity: 15601726430923639009
+    Parent: 4971999593625805267
+  - Entity: 17919131601014262073
+    Parent: 15601726430923639009
+  - Entity: 6171588550957794619
+    Parent: 17919131601014262073
+  - Entity: 2799369125257086860
+    Parent: 6171588550957794619
+  - Entity: 3565766567530412483
+    Parent: 2799369125257086860
+  - Entity: 3573424892684444510
+    Parent: 3565766567530412483
+  - Entity: 8226079672363721892
+    Parent: 3573424892684444510
+  - Entity: 10194110169117884502
+    Parent: 8226079672363721892
+  - Entity: 9226342379066675915
+    Parent: 2799369125257086860
+  - Entity: 8257130220053507578
+    Parent: 9226342379066675915
+  - Entity: 13141166901492670645
+    Parent: 8257130220053507578
+  - Entity: 16581792887421300834
+    Parent: 13141166901492670645
+  - Entity: 9022201101402165862
+    Parent: 2799369125257086860
+  - Entity: 6530773007103922292
+    Parent: 9022201101402165862
+  - Entity: 9851536331449127948
+    Parent: 6530773007103922292
+  - Entity: 12274084161305254520
+    Parent: 9851536331449127948
+  - Entity: 10037784088655426203
+    Parent: 2799369125257086860
+  - Entity: 16562465148629911642
+    Parent: 10037784088655426203
+  - Entity: 11281005811232821571
+    Parent: 16562465148629911642
+  - Entity: 1069861450705269417
+    Parent: 11281005811232821571
+  - Entity: 3646595217184061354
+    Parent: 2799369125257086860
+  - Entity: 14054000057494788504
+    Parent: 3646595217184061354
+  - Entity: 3096673438493714110
+    Parent: 14054000057494788504
+  - Entity: 15533251149187038484
+    Parent: 3096673438493714110
+  - Entity: 4406478483186148598
+    Parent: 7402675360494442726
+  - Entity: 3562695027260629842
+    Parent: 4406478483186148598
+  - Entity: 17741941561909899550
+    Parent: 3562695027260629842
+  - Entity: 14262132954701726968
+    Parent: 17741941561909899550
+  - Entity: 9801695189658589426
+    Parent: 7402675360494442726
+  - Entity: 2897518097966978002
+    Parent: 9801695189658589426
+  - Entity: 12480218325513082192
+    Parent: 2897518097966978002
+  - Entity: 4379504850534476784
+    Parent: 12480218325513082192
+  - Entity: 9102929169032529076
+    Parent: 1761429206713232161
+  - Entity: 14847954075369350473
+    Parent: 9102929169032529076
+  - Entity: 1103421471994893733
+    Parent: 14847954075369350473
+  - Entity: 2341751787487115262
+    Parent: 1103421471994893733
+  - Entity: 175525094946491467
+    Parent: 2341751787487115262
+  - Entity: 6315033453533140090
+    Parent: 1761429206713232161
+  - Entity: 7476721339609820393
+    Parent: 6315033453533140090
+  - Entity: 6289506712162853978
+    Parent: 7476721339609820393
+  - Entity: 1994070241468072524
+    Parent: 6289506712162853978
+  - Entity: 6222145568048163833
+    Parent: 1994070241468072524

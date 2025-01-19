@@ -35,6 +35,7 @@ namespace Odyssey
 		void RemoveParent();
 		GameObject GetParent();
 		std::vector<GameObject> GetChildren();
+		std::vector<GameObject> GetAllChildren();
 		Scene* GetScene() { return m_Scene; }
 
 	public:
