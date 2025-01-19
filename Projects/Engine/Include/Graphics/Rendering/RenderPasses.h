@@ -68,10 +68,10 @@ namespace Odyssey
 		inline static constexpr uint32_t Texture_Size = 4096;
 	};
 
-	class OpaquePass : public RenderPass
+	class RenderObjectsPass : public RenderPass
 	{
 	public:
-		OpaquePass();
+		RenderObjectsPass();
 
 	public:
 		virtual void BeginPass(RenderPassParams& params) override;

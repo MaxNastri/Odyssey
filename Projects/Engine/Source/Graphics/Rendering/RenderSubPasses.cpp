@@ -86,14 +86,11 @@ namespace Odyssey
 		Ref<VulkanBuffer> depthUbo = ResourceManager::GetResource<VulkanBuffer>(m_DepthUBO);
 		depthUbo->CopyData(sizeof(mat4), &depthMatrix);
 
-		for (SetPass& setPass : renderScene->setPasses)
+		for (SetPass& setPass : renderScene->SetPasses[RenderQueue::Opaque])
 		{
 			for (size_t i = 0; i < setPass.Drawcalls.size(); i++)
 			{
 				Drawcall& drawcall = setPass.Drawcalls[i];
-
-				if (drawcall.SkipDepth)
-					continue;
 
 				// Add the camera and per object data to the push descriptors
 				uint32_t uboIndex = drawcall.UniformBufferIndex;
@@ -164,7 +161,12 @@ namespace Odyssey
 		attributeDescriptions.WriteData(descriptions);
 	}
 
-	void OpaqueSubPass::Setup()
+	RenderObjectSubPass::RenderObjectSubPass(RenderQueue renderQueue)
+		: m_RenderQueue(renderQueue)
+	{
+	}
+
+	void RenderObjectSubPass::Setup()
 	{
 		m_PushDescriptors = new VulkanPushDescriptors();
 
@@ -176,7 +178,7 @@ namespace Odyssey
 		m_WhiteTextureID = m_WhiteTexture->GetTexture();
 	}
 
-	void OpaqueSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
+	void RenderObjectSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
 	{
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 		auto renderScene = params.renderingData->renderScene;
@@ -222,7 +224,7 @@ namespace Odyssey
 			ubo->CopyData(sizeof(GlobalData), &globalData);
 		}
 
-		for (auto& setPass : params.renderingData->renderScene->setPasses)
+		for (auto& setPass : params.renderingData->renderScene->SetPasses[m_RenderQueue])
 		{
 			commandBuffer->BindGraphicsPipeline(setPass.GraphicsPipeline);
 

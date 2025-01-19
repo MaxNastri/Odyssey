@@ -8,3 +8,5 @@ Normal Texture: 8617775628757055184
 Emissive Color: 'x: 1 y: 0.38431373 z: 0'
 Emissive Power: 2
 Alpha Clip: 1
+Alpha Blend: 0
+Render Queue: 1

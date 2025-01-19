@@ -161,11 +161,12 @@ namespace Odyssey
 		params.DepthTextures[m_Camera] = depthTextureID;
 	}
 
-	OpaquePass::OpaquePass()
+	RenderObjectsPass::RenderObjectsPass()
 	{
 		m_ClearValue = glm::vec4(0, 0, 0, 1);
 		m_SubPasses.push_back(std::make_shared<SkyboxSubPass>());
-		m_SubPasses.push_back(std::make_shared<OpaqueSubPass>());
+		m_SubPasses.push_back(std::make_shared<RenderObjectSubPass>(RenderQueue::Opaque));
+		m_SubPasses.push_back(std::make_shared<RenderObjectSubPass>(RenderQueue::Transparent));
 		m_SubPasses.push_back(std::make_shared<ParticleSubPass>());
 
 		for (auto& subPass : m_SubPasses)
@@ -174,7 +175,7 @@ namespace Odyssey
 		}
 	}
 
-	void OpaquePass::BeginPass(RenderPassParams& params)
+	void RenderObjectsPass::BeginPass(RenderPassParams& params)
 	{
 		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -324,7 +325,7 @@ namespace Odyssey
 		}
 	}
 
-	void OpaquePass::Execute(RenderPassParams& params)
+	void RenderObjectsPass::Execute(RenderPassParams& params)
 	{
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
 
@@ -344,7 +345,7 @@ namespace Odyssey
 		}
 	}
 
-	void OpaquePass::EndPass(RenderPassParams& params)
+	void RenderObjectsPass::EndPass(RenderPassParams& params)
 	{
 		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
@@ -374,14 +375,14 @@ namespace Odyssey
 		}
 	}
 
-	void OpaquePass::AddDebugSubPass()
+	void RenderObjectsPass::AddDebugSubPass()
 	{
 		std::shared_ptr<DebugSubPass> debugSubPass = std::make_shared<DebugSubPass>();
 		debugSubPass->Setup();
 		m_SubPasses.push_back(debugSubPass);
 	}
 
-	void OpaquePass::Add2DSubPass()
+	void RenderObjectsPass::Add2DSubPass()
 	{
 		auto subPass = std::make_shared<Opaque2DSubPass>();
 		subPass->Setup();

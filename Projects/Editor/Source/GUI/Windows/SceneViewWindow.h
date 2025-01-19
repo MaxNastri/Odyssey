@@ -9,7 +9,7 @@
 namespace Odyssey
 {
 	class Camera;
-	class OpaquePass;
+	class RenderObjectsPass;
 	class Transform;
 	class VulkanTextureSampler;
 	struct GUISelectionChangedEvent;
@@ -50,7 +50,7 @@ namespace Odyssey
 		bool m_AllowInput = true;
 
 	private: // Rendering stuff
-		Ref<OpaquePass> m_SceneViewPass;
+		Ref<RenderObjectsPass> m_SceneViewPass;
 		uint64_t m_RenderTextureID;
 		ResourceID m_RenderTarget;
 		ResourceID m_RTSampler;

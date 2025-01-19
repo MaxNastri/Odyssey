@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "VulkanPushDescriptors.h"
 #include "BinaryBuffer.h"
+#include "Material.h"
 
 namespace Odyssey
 {
@@ -46,9 +47,10 @@ namespace Odyssey
 		inline static const GUID& Skinned_Shader_GUID = 218097783217681239;
 	};
 
-	class OpaqueSubPass : public RenderSubPass
+	class RenderObjectSubPass : public RenderSubPass
 	{
 	public:
+		RenderObjectSubPass(RenderQueue renderQueue);
 		virtual void Setup() override;
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
 
@@ -59,6 +61,7 @@ namespace Odyssey
 		ResourceID m_BlackTextureID;
 		Ref<Texture2D> m_WhiteTexture;
 		ResourceID m_WhiteTextureID;
+		RenderQueue m_RenderQueue;
 
 		struct GlobalData
 		{

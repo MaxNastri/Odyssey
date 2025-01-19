@@ -282,6 +282,7 @@ namespace Odyssey
 		FloatDrawer m_EmissivePowerDrawer;
 		FloatDrawer m_AlphaClipDrawer;
 		BoolDrawer m_AlphaBlendDrawer;
+		EnumDrawer<RenderQueue> m_RenderQueueDrawer;
 	};
 
 	class MeshInspector : public Inspector

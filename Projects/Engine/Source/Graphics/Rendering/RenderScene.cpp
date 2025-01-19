@@ -184,12 +184,13 @@ namespace Odyssey
 
 	void RenderScene::ClearSceneData()
 	{
-		for (auto& setPass : setPasses)
+		for (auto& [renderQueue, setPasses] : SetPasses)
 		{
-			ResourceManager::Destroy(setPass.GraphicsPipeline);
+			for (SetPass& setPass : setPasses)
+				ResourceManager::Destroy(setPass.GraphicsPipeline);
 		}
 
-		setPasses.clear();
+		SetPasses.clear();
 		SpriteDrawcalls.clear();
 		m_GUIDToSetPass.clear();
 		m_NextUniformBuffer = 0;
@@ -251,6 +252,9 @@ namespace Odyssey
 				if (!materials[i] || materials[i]->GetGUID() == 0)
 					continue;
 
+				RenderQueue renderQueue = materials[i]->GetRenderQueue();
+				std::vector<SetPass>& setPasses = SetPasses[renderQueue];
+
 				if (SubMesh* submesh = mesh->GetSubmesh(i))
 				{
 					GUID materialGUID = materials[i]->GetGUID();
@@ -264,10 +268,9 @@ namespace Odyssey
 					else
 					{
 						size_t index = setPasses.size();
-						setPasses.emplace_back();
+						setPass = &setPasses.emplace_back();
 
 						m_GUIDToSetPass[materialGUID] = index;
-						setPass = &setPasses[index];
 
 						setPass->SetMaterial(materials[i], animator != nullptr, m_DescriptorLayout, m_MaterialBuffers[m_NextMaterialBuffer]);
 						m_NextMaterialBuffer++;
@@ -280,7 +283,6 @@ namespace Odyssey
 					drawcall.IndexCount = submesh->IndexCount;
 					drawcall.UniformBufferIndex = uboIndex;
 					drawcall.Skinned = animator != nullptr;
-					drawcall.SkipDepth = materials[i]->GetGUID() == 14541755926980427327;
 				}
 			}
 
@@ -341,6 +343,7 @@ namespace Odyssey
 
 		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 
+		// Textures
 		if (Ref<Texture2D> colorTexture = material->GetColorTexture())
 			ColorTexture = colorTexture->GetTexture();
 
@@ -359,6 +362,9 @@ namespace Odyssey
 		materialData.EmissiveColor = float4(material->GetEmissiveColor(), material->GetEmissivePower());
 		materialData.AlphaClip = material->GetAlphaClip();
 		materialUniform->CopyData(sizeof(MaterialData), &materialData);
+
+		// Store the render queue
+		RenderQueue = material->GetRenderQueue();
 	}
 
 	void SetPass::SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions)

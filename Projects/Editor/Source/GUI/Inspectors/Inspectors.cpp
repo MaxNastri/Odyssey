@@ -489,6 +489,7 @@ namespace Odyssey
 			m_EmissivePowerDrawer = FloatDrawer("Emissive Power", m_Material->GetEmissivePower());
 			m_AlphaClipDrawer = FloatDrawer("Alpha Clip", m_Material->GetAlphaClip());
 			m_AlphaBlendDrawer = BoolDrawer("Alpha Blend", m_Material->GetAlphaBlend());
+			m_RenderQueueDrawer = EnumDrawer<RenderQueue>("Render Queue", m_Material->GetRenderQueue());
 		}
 	}
 
@@ -566,6 +567,13 @@ namespace Odyssey
 			m_Dirty = true;
 			modified = true;
 			m_Material->SetAlphaBlend(m_AlphaBlendDrawer.GetValue());
+		}
+
+		if (m_RenderQueueDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+			m_Material->SetRenderQueue(m_RenderQueueDrawer.GetValue());
 		}
 
 		if (m_Dirty && ImGui::Button("Save"))

@@ -5,6 +5,7 @@
 #include "Drawcall.h"
 #include "Ref.h"
 #include "BinaryBuffer.h"
+#include "Material.h"
 
 namespace Odyssey
 {
@@ -97,6 +98,7 @@ namespace Odyssey
 		ResourceID ColorTexture;
 		ResourceID NormalTexture;
 		ResourceID NoiseTexture;
+		RenderQueue RenderQueue;
 		std::vector<Drawcall> Drawcalls;
 	};
 
@@ -128,7 +130,7 @@ namespace Odyssey
 
 		std::map<uint8_t, Camera*> m_Cameras;
 		ResourceID SkyboxCubemap;
-		std::vector<SetPass> setPasses;
+		std::map<RenderQueue, std::vector<SetPass>> SetPasses;
 		std::vector<SpriteDrawcall> SpriteDrawcalls;
 		std::map<GUID, size_t> m_GUIDToSetPass;
 

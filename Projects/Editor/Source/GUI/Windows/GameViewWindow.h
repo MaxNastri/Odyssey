@@ -7,7 +7,7 @@
 
 namespace Odyssey
 {
-	class OpaquePass;
+	class RenderObjectsPass;
 	class VulkanTextureSampler;
 
 	class GameViewWindow : public DockableWindow
@@ -37,7 +37,7 @@ namespace Odyssey
 	private:
 		Ref<IEventListener> m_SceneLoadListener = nullptr;
 	private:
-		Ref<OpaquePass> m_GameViewPass;
+		Ref<RenderObjectsPass> m_GameViewPass;
 		GameObject m_MainCamera;
 	};
 }

@@ -52,6 +52,7 @@ namespace Odyssey
 		root.WriteData("Emissive Power", m_EmissivePower);
 		root.WriteData("Alpha Clip", m_AlphaClip);
 		root.WriteData("Alpha Blend", m_AlphaBlend);
+		root.WriteData("Render Queue", Enum::ToInt(m_RenderQueue));
 
 		// Save to disk
 		serializer.WriteToDisk(assetPath);
@@ -68,6 +69,7 @@ namespace Odyssey
 			GUID colorTextureGUID;
 			GUID normalTextureGUID;
 			GUID noiseTextureGUID;
+			int32_t renderQueue = 0;
 
 			root.ReadData("m_Shader", shaderGUID.Ref());
 			root.ReadData("m_Texture", colorTextureGUID.Ref());
@@ -77,6 +79,7 @@ namespace Odyssey
 			root.ReadData("Emissive Power", m_EmissivePower);
 			root.ReadData("Alpha Clip", m_AlphaClip);
 			root.ReadData("Alpha Blend", m_AlphaBlend);
+			root.ReadData("Render Queue", renderQueue);
 
 			if (shaderGUID)
 				m_Shader = AssetManager::LoadAsset<Shader>(shaderGUID);
@@ -89,6 +92,9 @@ namespace Odyssey
 
 			if (noiseTextureGUID)
 				m_NoiseTexture = AssetManager::LoadAsset<Texture2D>(noiseTextureGUID);
+
+			if (renderQueue > 0)
+				m_RenderQueue = Enum::ToEnum<RenderQueue>(renderQueue);
 		}
 	}
 }
