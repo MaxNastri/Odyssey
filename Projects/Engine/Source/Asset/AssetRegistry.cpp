@@ -1,4 +1,5 @@
 #include "AssetRegistry.h"
+#include "Preferences.h"
 
 namespace Odyssey
 {
@@ -25,7 +26,7 @@ namespace Odyssey
 		// Make sure this isn't a dupe
 		for (auto& entry : Entries)
 		{
-			if (entry.Guid == guid)
+			if (entry.Guid == guid || entry.Path == path)
 				return;
 		}
 
@@ -159,7 +160,13 @@ namespace Odyssey
 	{
 		if (fileAction == FileActionType::Moved && !oldFilename.empty() && !newFilename.empty())
 		{
-			UpdateAssetPath(oldFilename, newFilename);
+			const std::string& extension = newFilename.extension().string();
+
+			// Validate the new file name has a supported asset extension
+			if (Contains(Preferences::GetAssetExtensions(), extension) || Contains(Preferences::GetSourceExtensions(), extension))
+			{
+				UpdateAssetPath(oldFilename, newFilename);
+			}
 		}
 	}
 }
