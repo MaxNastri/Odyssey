@@ -122,21 +122,31 @@ namespace Odyssey
 		glm::decompose(localMatrix, scale, m_Rotation, m_Position, skew, perspective);
 	}
 
+	float3 Transform::GetWorldPosition()
+	{
+		mat4 worldMatrix = GetWorldMatrix();
+		float3 position = glm::column(worldMatrix, 3);
+		return position;
+	}
+
 	glm::vec3 Transform::Forward()
 	{
-		glm::vec3 row2 = glm::column(m_LocalMatrix, 2);
+		mat4 worldMatrix = GetWorldMatrix();
+		glm::vec3 row2 = glm::column(worldMatrix, 2);
 		return glm::normalize(row2);
 	}
 
 	glm::vec3 Transform::Right()
 	{
-		glm::vec3 row2 = glm::column(m_LocalMatrix, 0);
+		mat4 worldMatrix = GetWorldMatrix();
+		glm::vec3 row2 = glm::column(worldMatrix, 0);
 		return glm::normalize(row2);
 	}
 
 	glm::vec3 Transform::Up()
 	{
-		glm::vec3 row2 = glm::column(m_LocalMatrix, 1);
+		mat4 worldMatrix = GetWorldMatrix();
+		glm::vec3 row2 = glm::column(worldMatrix, 1);
 		return glm::normalize(row2);
 	}
 

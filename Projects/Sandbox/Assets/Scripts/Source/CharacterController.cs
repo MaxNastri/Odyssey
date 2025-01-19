@@ -73,7 +73,8 @@ namespace Sandbox
             {
                 m_SpawnedFireball = Prefab.LoadInstance(Fireball);
                 FireballMover mover = m_SpawnedFireball.GetScript<FireballMover>();
-                mover.SetTransform(FireballTransform.Position, m_Transform.Forward);
+                mover.SetTransform(FireballTransform.WorldPosition, m_Transform.Forward);
+                Console.WriteLine("Spawning fireball at: " + FireballTransform.WorldPosition);
             }
         }
 

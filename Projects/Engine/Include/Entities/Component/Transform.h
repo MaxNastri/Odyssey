@@ -33,6 +33,7 @@ namespace Odyssey
         void SetLocalMatrix(glm::mat4 localMatrix);
 
         glm::vec3 GetPosition() { return m_Position; }
+        float3 GetWorldPosition();
         glm::vec3 GetEulerRotation() { return m_EulerRotation; }
         glm::quat GetRotation() { return m_Rotation; }
         glm::vec3 GetScale() { return m_Scale; }

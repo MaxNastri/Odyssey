@@ -415,6 +415,7 @@ namespace Odyssey
 				// Reset the blend state
 				m_CurrentBlendTime = 0.0f;
 				m_EndBlendTime = 0.0f;
+				m_PrevState->Reset();
 				m_PrevState.Reset();
 			}
 

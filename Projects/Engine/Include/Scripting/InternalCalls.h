@@ -219,6 +219,20 @@ namespace Odyssey::InternalCalls
 			transform->SetPosition(position);
 	}
 
+	void Transform_GetWorldPosition(uint64_t guid, float3* position)
+	{
+		if (!guid)
+		{
+			Log::Error("[InternalCalls] Invalid GUID detected for Transform_GetPosition.");
+			return;
+		}
+
+		GameObject gameObject = GetGameObject(guid);
+
+		if (Transform* transform = gameObject.TryGetComponent<Transform>())
+			*position = transform->GetWorldPosition();
+	}
+
 	void Transform_GetEulerAngles(uint64_t guid, glm::vec3* rotation)
 	{
 		GameObject gameObject = GetGameObject(guid);

@@ -35,6 +35,7 @@ namespace Odyssey
 
 		ADD_INTERNAL_CALL(Transform_GetPosition);
 		ADD_INTERNAL_CALL(Transform_SetPosition);
+		ADD_INTERNAL_CALL(Transform_GetWorldPosition);
 		ADD_INTERNAL_CALL(Transform_GetEulerAngles);
 		ADD_INTERNAL_CALL(Transform_SetEulerAngles);
 		ADD_INTERNAL_CALL(Transform_GetScale);
