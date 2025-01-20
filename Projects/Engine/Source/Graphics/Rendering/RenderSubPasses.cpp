@@ -26,14 +26,6 @@ namespace Odyssey
 		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
 		m_SkinnedShader = AssetManager::LoadAsset<Shader>(Skinned_Shader_GUID);
 
-		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
-
-		Ref<VulkanDescriptorLayout> descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
-		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
-		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
-		descriptorLayout->Apply();
-
 		// Allocate the UBO
 		m_DepthUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(glm::mat4));
 
@@ -42,7 +34,7 @@ namespace Odyssey
 			VulkanPipelineInfo info;
 			info.Shaders = m_Shader->GetResourceMap();
 			info.CullMode = CullMode::Front;
-			info.DescriptorLayout = m_DescriptorLayout;
+			info.DescriptorLayout = m_Shader->GetDescriptorLayout();
 			info.MSAACountOverride = 1;
 			info.ColorFormat = TextureFormat::None;
 			info.DepthFormat = TextureFormat::D32_SFLOAT;
@@ -57,7 +49,7 @@ namespace Odyssey
 			VulkanPipelineInfo info;
 			info.Shaders = m_SkinnedShader->GetResourceMap();
 			info.CullMode = CullMode::Front;
-			info.DescriptorLayout = m_DescriptorLayout;
+			info.DescriptorLayout = m_SkinnedShader->GetDescriptorLayout();
 			info.MSAACountOverride = 1;
 			info.ColorFormat = TextureFormat::None;
 			info.DepthFormat = TextureFormat::D32_SFLOAT;
@@ -290,17 +282,11 @@ namespace Odyssey
 
 	void DebugSubPass::Setup()
 	{
-		// Create the descriptor layout
-		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
-		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
-		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		descriptorLayout->Apply();
-
 		m_Shader = AssetManager::LoadAsset<Shader>(s_DebugShaderGUID);
 
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();
-		info.DescriptorLayout = m_DescriptorLayout;
+		info.DescriptorLayout = m_Shader->GetDescriptorLayout();
 		info.Topology = Topology::LineList;
 
 		GetAttributeDescriptions(info.AttributeDescriptions);
@@ -373,19 +359,11 @@ namespace Odyssey
 
 	void SkyboxSubPass::Setup()
 	{
-		// Create the descriptor layout
-		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
-		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
-		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
-		descriptorLayout->AddBinding("Skybox", DescriptorType::Sampler, ShaderStage::Fragment, 3);
-		descriptorLayout->Apply();
-
 		m_Shader = AssetManager::LoadAsset<Shader>(s_SkyboxShaderGUID);
 
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();
-		info.DescriptorLayout = m_DescriptorLayout;
+		info.DescriptorLayout = m_Shader->GetDescriptorLayout();
 		info.WriteDepth = false;
 		info.CullMode = CullMode::None;
 		GetAttributeDescriptions(info.AttributeDescriptions);
@@ -452,22 +430,13 @@ namespace Odyssey
 
 	void ParticleSubPass::Setup()
 	{
-		// Create the descriptor layout
-		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
-		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
-		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		descriptorLayout->AddBinding("Particle Buffer", DescriptorType::Storage, ShaderStage::Vertex, 2);
-		descriptorLayout->AddBinding("Particle Texture", DescriptorType::Sampler, ShaderStage::Fragment, 3);
-		descriptorLayout->AddBinding("Alive Pre-Sim Buffer", DescriptorType::Storage, ShaderStage::Vertex, 4);
-		descriptorLayout->Apply();
-
 		m_ModelUBO = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(glm::mat4));
 		m_Shader = AssetManager::LoadAsset<Shader>(s_ParticleShaderGUID);
 		m_ParticleTexture = AssetManager::LoadAsset<Texture2D>(s_ParticleTextureGUID);
 
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();
-		info.DescriptorLayout = m_DescriptorLayout;
+		info.DescriptorLayout = m_Shader->GetDescriptorLayout();
 		info.BindVertexAttributeDescriptions = false;
 		info.AlphaBlend = true;
 		info.WriteDepth = false;
@@ -513,13 +482,6 @@ namespace Odyssey
 
 	void Opaque2DSubPass::Setup()
 	{
-		// Create the descriptor layout
-		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
-		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
-		descriptorLayout->AddBinding("Sprite Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		descriptorLayout->AddBinding("Particle Texture", DescriptorType::Sampler, ShaderStage::Fragment, 1);
-		descriptorLayout->Apply();
-
 		for (size_t i = 0; i < Max_Supported_Sprites; i++)
 			m_SpriteDataUBO[i] = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(SpriteData));
 
@@ -530,7 +492,7 @@ namespace Odyssey
 
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();
-		info.DescriptorLayout = m_DescriptorLayout;
+		info.DescriptorLayout = m_Shader->GetDescriptorLayout();
 		info.BindVertexAttributeDescriptions = true;
 		info.AlphaBlend = false;
 		info.WriteDepth = true;
@@ -624,7 +586,7 @@ namespace Odyssey
 
 		VulkanPipelineInfo info;
 		info.Shaders = m_Shader->GetResourceMap();
-		info.DescriptorLayout = m_DescriptorLayout;
+		info.DescriptorLayout = m_Shader->GetDescriptorLayout();
 		info.BindVertexAttributeDescriptions = true;
 		info.AlphaBlend = false;
 		info.WriteDepth = true;

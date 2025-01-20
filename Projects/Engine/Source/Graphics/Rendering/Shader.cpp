@@ -4,6 +4,7 @@
 #include "AssetSerializer.h"
 #include "AssetManager.h"
 #include "SourceShader.h"
+#include "VulkanDescriptorLayout.h"
 
 namespace Odyssey
 {
@@ -13,6 +14,7 @@ namespace Odyssey
 		if (m_Source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
 		{
 			m_Source->AddOnModifiedListener([this]() { OnSourceModified(); });
+			LoadAssetData();
 			LoadFromSource(m_Source);
 		}
 
@@ -72,7 +74,10 @@ namespace Odyssey
 	void Shader::Load()
 	{
 		if (m_Source)
+		{
+			LoadAssetData();
 			LoadFromSource(m_Source);
+		}
 	}
 
 	std::map<ShaderType, ResourceID> Shader::GetResourceMap()
@@ -87,6 +92,49 @@ namespace Odyssey
 		return resourceMap;
 	}
 
+	void Shader::ApplyShaderBindings()
+	{
+		if (m_DescriptorLayout.Invalid())
+			m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
+
+		Ref<VulkanDescriptorLayout> descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
+		
+		for (const ShaderBinding& binding : m_Bindings)
+			descriptorLayout->AddBinding(binding.Name, binding.DescriptorType, binding.Index);
+
+		descriptorLayout->Apply();
+	}
+
+	void Shader::LoadAssetData()
+	{
+		AssetDeserializer deserializer(m_AssetPath);
+
+		if (deserializer.IsValid())
+		{
+			SerializationNode root = deserializer.GetRoot();
+			SerializationNode bindingsNode = root.GetNode("Bindings");
+
+			assert(bindingsNode.IsSequence());
+
+			for (size_t i = 0; i < bindingsNode.ChildCount(); i++)
+			{
+				SerializationNode bindingNode = bindingsNode.GetChild(i);
+				assert(bindingNode.IsMap());
+
+				std::string descriptorType;
+				ShaderBinding& binding = m_Bindings.emplace_back();
+				bindingNode.ReadData("Name", binding.Name);
+				bindingNode.ReadData("Descriptor Type", descriptorType);
+				bindingNode.ReadData("Index", binding.Index);
+
+				assert(!descriptorType.empty());
+				binding.DescriptorType = Enum::ToEnum<DescriptorType>(descriptorType);
+			}
+		}
+
+		if (m_Bindings.size() > 0)
+			ApplyShaderBindings();
+	}
 
 	void Shader::LoadFromSource(Ref<SourceShader> source)
 	{
@@ -119,6 +167,21 @@ namespace Odyssey
 
 		// Serialize metadata first
 		SerializeMetadata(serializer);
+
+		// Serialize the bindings
+		SerializationNode bindingsNode = root.CreateSequenceNode("Bindings");
+
+		for (size_t i = 0; i < m_Bindings.size(); i++)
+		{
+			ShaderBinding& binding = m_Bindings[i];
+			SerializationNode bindingNode = bindingsNode.AppendChild();
+			bindingNode.SetMap();
+
+			bindingNode.WriteData("Name", binding.Name);
+			bindingNode.WriteData("Descriptor Type", Enum::ToString(binding.DescriptorType));
+			bindingNode.WriteData("Index", binding.Index);
+		}
+
 		serializer.WriteToDisk(path);
 	}
 

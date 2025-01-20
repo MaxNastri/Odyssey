@@ -86,7 +86,7 @@ namespace Odyssey
 		SetPass() = default;
 
 	public:
-		void SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout, ResourceID materialBuffer);
+		void SetMaterial(Ref<Material> material, bool skinned, ResourceID materialBuffer);
 
 	private:
 		void SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions);
@@ -142,7 +142,6 @@ namespace Odyssey
 		std::vector<ResourceID> skinningBuffers;
 		std::vector<ResourceID> m_MaterialBuffers;
 		ResourceID LightingBuffer;
-		ResourceID m_DescriptorLayout;
 
 		uint32_t m_NextUniformBuffer = 0;
 		uint32_t m_NextMaterialBuffer = 0;

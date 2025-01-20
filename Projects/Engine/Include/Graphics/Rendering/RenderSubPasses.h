@@ -39,7 +39,6 @@ namespace Odyssey
 
 	private: // Shared
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
-		ResourceID m_DescriptorLayout;
 		ResourceID m_DepthUBO;
 
 	private:
@@ -86,7 +85,6 @@ namespace Odyssey
 		Ref<Shader> m_Shader;
 		ResourceID m_GraphicsPipeline;
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
-		ResourceID m_DescriptorLayout;
 
 	private:
 		inline static const GUID& s_DebugShaderGUID = 3857300505190494605;
@@ -101,7 +99,6 @@ namespace Odyssey
 
 	private:
 		ResourceID m_GraphicsPipeline;
-		ResourceID m_DescriptorLayout;
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
 		ResourceID uboID;
 		Ref<Shader> m_Shader;
@@ -118,7 +115,6 @@ namespace Odyssey
 
 	private:
 		ResourceID m_GraphicsPipeline;
-		ResourceID m_DescriptorLayout;
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
 		ResourceID m_ModelUBO;
 		Ref<Shader> m_Shader;
@@ -144,7 +140,6 @@ namespace Odyssey
 		Ref<Shader> m_Shader;
 		Ref<Mesh> m_QuadMesh;
 		ResourceID m_GraphicsPipeline;
-		ResourceID m_DescriptorLayout;
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
 		std::array<ResourceID, Max_Supported_Sprites> m_SpriteDataUBO;
 

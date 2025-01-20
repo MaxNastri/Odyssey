@@ -920,8 +920,79 @@ namespace Odyssey
 		modified |= m_NameDrawer.Draw();
 		modified |= m_SourceShaderDrawer.Draw();
 
+		DrawShaderBindings();
+
+		if (ImGui::Button("Add Binding"))
+			m_Shader->GetShaderBindings().emplace_back();
+
+		ImGui::SameLine();
+
 		if (ImGui::Button("Compile"))
 			m_Shader->Recompile();
+
+		return modified;
+	}
+
+	bool ShaderInspector::DrawShaderBindings()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		ImGui::Separator();
+
+		// Header for the shader bindings
+		float2 textSize = ImGui::CalcTextSize("Shader Bindings") * 1.1f;
+		ImGui::FilledRectSpanTextFree("Shader Bindings", float4(1.0f), float4(0.1f, 0.1f, 0.1f, 1.0f), textSize.y, float2(0.0f, 0.0f));
+
+		// Draw each shader binding
+		std::vector<ShaderBinding>& bindings = m_Shader->GetShaderBindings();
+		for (ShaderBinding& binding : bindings)
+		{
+
+			ImGui::PushItemWidth(-0.01f);
+			ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+
+			// Name
+			{
+				char buffer[128] = {};
+				binding.Name.copy(buffer, ARRAYSIZE(buffer));
+
+				if (ImGui::InputText("##NameLabel", buffer, IM_ARRAYSIZE(buffer)))
+				{
+					modified = true;
+					m_Dirty = true;
+					binding.Name = std::string(buffer);
+				}
+			}
+
+			ImGui::SameLine();
+
+			// Descriptor type
+			EnumDropdown<DescriptorType> descriptorDrawer = EnumDropdown<DescriptorType>(binding.DescriptorType);
+			if (descriptorDrawer.Draw())
+			{
+				modified = true;
+				m_Dirty = true;
+				binding.DescriptorType = descriptorDrawer.GetValue();
+			}
+
+			ImGui::SameLine();
+
+			// Binding index
+			uint8_t index = binding.Index;
+			if (ImGui::InputScalar("##IndexLabel", ImGuiDataType_U8, &index))
+			{
+				modified = true;
+				m_Dirty = true;
+				binding.Index = index;
+			}
+		}
+
+		if (m_Dirty && ImGui::Button("Apply"))
+			m_Shader->ApplyShaderBindings();
+
+		ImGui::PopID();
 
 		return modified;
 	}

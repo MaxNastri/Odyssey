@@ -10,6 +10,14 @@ namespace Odyssey
 	class VulkanShaderModule;
 	class SourceShader;
 
+	class ShaderBinding
+	{
+	public:
+		std::string Name;
+		DescriptorType DescriptorType;
+		uint8_t Index;
+	};
+
 	class Shader : public Asset
 	{
 	public:
@@ -28,9 +36,15 @@ namespace Odyssey
 
 	public:
 		std::map<ShaderType, ResourceID> GetResourceMap();
-		void AddOnModifiedListener(std::function<void()> callback) { m_OnModifiedListeners.push_back(callback); }
+		ResourceID GetDescriptorLayout() { return m_DescriptorLayout; }
+		std::vector<ShaderBinding>& GetShaderBindings() { return m_Bindings; }
 
+	public:
+		void ApplyShaderBindings();
+		void AddOnModifiedListener(std::function<void()> callback) { m_OnModifiedListeners.push_back(callback); }
+	
 	private:
+		void LoadAssetData();
 		void LoadFromSource(Ref<SourceShader> source);
 		void SaveToDisk(const Path& path);
 
@@ -46,6 +60,10 @@ namespace Odyssey
 		};
 		
 		std::map<ShaderType, ShaderData> m_Shaders;
+		std::vector<ShaderBinding> m_Bindings;
+
+	private:
+		ResourceID m_DescriptorLayout;
 		Ref<SourceShader> m_Source;
 		std::vector<std::function<void()>> m_OnModifiedListeners;
 	};

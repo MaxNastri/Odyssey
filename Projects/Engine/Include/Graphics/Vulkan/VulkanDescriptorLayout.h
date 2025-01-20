@@ -16,7 +16,7 @@ namespace Odyssey
 		void Destroy();
 
 	public:
-		void AddBinding(std::string_view bindingName, DescriptorType type, ShaderStage shaderStage, uint32_t bindingIndex);
+		void AddBinding(std::string_view bindingName, DescriptorType type, uint8_t bindingIndex);
 		void Apply();
 
 	public:

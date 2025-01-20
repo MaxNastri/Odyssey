@@ -25,23 +25,6 @@ namespace Odyssey
 {
 	RenderScene::RenderScene()
 	{
-		// Descriptor layout for the combined uniform buffers
-		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
-
-		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
-		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
-		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
-		descriptorLayout->AddBinding("Global Data", DescriptorType::Uniform, ShaderStage::Fragment, 3);
-		descriptorLayout->AddBinding("Lighting Data", DescriptorType::Uniform, ShaderStage::Fragment, 4);
-		descriptorLayout->AddBinding("Material Data", DescriptorType::Uniform, ShaderStage::Fragment, 5);
-		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 6);
-		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Fragment, 7);
-		descriptorLayout->AddBinding("Noise", DescriptorType::Sampler, ShaderStage::Fragment, 8);
-		descriptorLayout->AddBinding("Shadowmap", DescriptorType::Sampler, ShaderStage::Fragment, 9);
-		descriptorLayout->AddBinding("Camera Depth", DescriptorType::Sampler, ShaderStage::Fragment, 10);
-		descriptorLayout->Apply();
-
 		// Camera uniform buffer
 		for (uint32_t i = 0; i < MAX_CAMERAS; i++)
 		{
@@ -109,8 +92,6 @@ namespace Odyssey
 
 	void RenderScene::Destroy()
 	{
-		ResourceManager::Destroy(m_DescriptorLayout);
-
 		for (auto& resource : sceneDataBuffers)
 		{
 			ResourceManager::Destroy(resource);
@@ -272,7 +253,7 @@ namespace Odyssey
 
 						m_GUIDToSetPass[materialGUID] = index;
 
-						setPass->SetMaterial(materials[i], animator != nullptr, m_DescriptorLayout, m_MaterialBuffers[m_NextMaterialBuffer]);
+						setPass->SetMaterial(materials[i], animator != nullptr, m_MaterialBuffers[m_NextMaterialBuffer]);
 						m_NextMaterialBuffer++;
 					}
 
@@ -329,12 +310,12 @@ namespace Odyssey
 		}
 	}
 
-	void SetPass::SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout, ResourceID materialBuffer)
+	void SetPass::SetMaterial(Ref<Material> material, bool skinned, ResourceID materialBuffer)
 	{
 		// Allocate a graphics pipeline
 		VulkanPipelineInfo info;
 		Shaders = info.Shaders = material->GetShader()->GetResourceMap();
-		info.DescriptorLayout = descriptorLayout;
+		info.DescriptorLayout = material->GetShader()->GetDescriptorLayout();
 		info.CullMode = CullMode::Back;
 		info.AlphaBlend = material->GetAlphaBlend();
 		info.WriteDepth = material->GetGUID() == 14541755926980427327 ? false : true;

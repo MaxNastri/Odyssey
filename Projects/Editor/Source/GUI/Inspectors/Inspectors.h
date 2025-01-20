@@ -318,10 +318,12 @@ namespace Odyssey
 		virtual bool Draw() override;
 
 	private:
+		bool DrawShaderBindings();
 		void OnNameChanged(std::string_view name);
 		void OnSourceAssetChanged(GUID sourceGUID);
 
 	private:
+		bool m_Dirty = false;
 		Ref<Shader> m_Shader;
 		StringDrawer m_GUIDDrawer;
 		StringDrawer m_NameDrawer;
