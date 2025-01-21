@@ -24,11 +24,6 @@ cbuffer ModelData : register(b1)
     float3x3 InverseModel;
 }
 
-cbuffer SkinningData : register(b2)
-{
-    float4x4 Bones[128];
-}
-
 cbuffer GlobalData : register(b3)
 {
     // Values used to linearize the Z buffer (http://www.humus.name/temp/Linearize%20depth.txt)
@@ -58,21 +53,10 @@ cbuffer LightData : register(b4)
     uint LightCount;
 }
 
-cbuffer MaterialData : register(b5)
-{
-    // RGB = Emissive Color, A = Emissive Power
-    float4 EmissiveColor;
-    float alphaClip;
-}
-
-Texture2D diffuseTex2D : register(t6);
-SamplerState diffuseSampler : register(s6);
 Texture2D normalTex2D : register(t7);
 SamplerState normalSampler : register(s7);
 Texture2D noiseTex2D : register(t8);
 SamplerState noiseSampler : register(s8);
-Texture2D shadowmapTex2D : register(t9);
-SamplerState shadowmapSampler : register(s9);
 Texture2D depthTex2D : register(t10);
 SamplerState depthSampler : register(s10);
 
@@ -200,7 +184,7 @@ float4 main(PixelInput input) : SV_Target
     
     LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal);
     
-    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb + (EmissiveColor.rgb * EmissiveColor.a);
+    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb;
     return float4(color, fade * 0.65f) * float4(finalLighting, 1.0f);
 }
 

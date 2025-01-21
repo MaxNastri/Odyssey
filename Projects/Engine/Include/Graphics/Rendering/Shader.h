@@ -37,18 +37,18 @@ namespace Odyssey
 	public:
 		std::map<ShaderType, ResourceID> GetResourceMap();
 		ResourceID GetDescriptorLayout() { return m_DescriptorLayout; }
-		std::vector<ShaderBinding>& GetShaderBindings() { return m_Bindings; }
+		bool HasBinding(std::string bindingName, uint32_t& index);
+		std::map<std::string, ShaderBinding>& GetBindings() { return m_Bindings; }
 
 	public:
-		void ApplyShaderBindings();
 		void AddOnModifiedListener(std::function<void()> callback) { m_OnModifiedListeners.push_back(callback); }
 	
 	private:
-		void LoadAssetData();
 		void LoadFromSource(Ref<SourceShader> source);
 		void SaveToDisk(const Path& path);
 
 	private:
+		void GenerateShaderResources();
 		void OnSourceModified();
 
 	private:
@@ -60,7 +60,7 @@ namespace Odyssey
 		};
 		
 		std::map<ShaderType, ShaderData> m_Shaders;
-		std::vector<ShaderBinding> m_Bindings;
+		std::map<std::string, ShaderBinding> m_Bindings;
 
 	private:
 		ResourceID m_DescriptorLayout;

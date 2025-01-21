@@ -109,6 +109,7 @@ namespace Odyssey
 
 		std::vector<ShaderParseData> parseData;
 
+
 		size_t filePos = fileContents.find(Shared_Pragma);
 		if (filePos != std::string::npos)
 		{

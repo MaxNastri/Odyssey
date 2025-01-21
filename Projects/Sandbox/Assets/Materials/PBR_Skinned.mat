@@ -3,8 +3,11 @@ m_GUID: 942766181068811557
 m_Name: PBR Skinned
 m_Type: Odyssey.Material
 m_Shader: 6712367376531468719
-m_Texture: 379771950876182716
-Normal Texture: 6832636239839654488
+Property Textures:
+  - Property: diffuseSampler
+    Texture: 379771950876182716
+  - Property: normalSampler
+    Texture: 6832636239839654488
 Emissive Color: 'x: 0 y: 0 z: 0'
 Emissive Power: 1
 Alpha Clip: 0.5

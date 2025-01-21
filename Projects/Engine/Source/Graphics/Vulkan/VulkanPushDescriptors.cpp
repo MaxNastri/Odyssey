@@ -10,6 +10,8 @@ namespace Odyssey
 		auto buffer = ResourceManager::GetResource<VulkanBuffer>(bufferID);
 		m_WriteDescriptors.push_back(buffer->GetDescriptorInfo());
 		m_WriteDescriptors[m_WriteDescriptors.size() - 1].dstBinding = bindingIndex;
+		if (bindingIndex == 5)
+			int d = 0;
 	}
 
 	void VulkanPushDescriptors::AddTexture(ResourceID textureID, uint32_t bindingIndex)
@@ -17,6 +19,8 @@ namespace Odyssey
 		auto texture = ResourceManager::GetResource<VulkanTexture>(textureID);
 		m_WriteDescriptors.push_back(texture->GetDescriptorInfo());
 		m_WriteDescriptors[m_WriteDescriptors.size() - 1].dstBinding = bindingIndex;
+		if (bindingIndex == 5)
+			int d = 0;
 	}
 
 	void VulkanPushDescriptors::Clear()

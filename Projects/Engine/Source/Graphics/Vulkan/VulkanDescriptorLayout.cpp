@@ -57,7 +57,7 @@ namespace Odyssey
 		vkDestroyDescriptorSetLayout(m_Context->GetDeviceVK(), m_Layout, allocator);
 	}
 
-	void VulkanDescriptorLayout::AddBinding(std::string_view bindingName, DescriptorType type, uint8_t bindingIndex)
+	void VulkanDescriptorLayout::AddBinding(std::string_view bindingName, DescriptorType type, uint32_t bindingIndex)
 	{
 		VkDescriptorSetLayoutBinding layoutBinding{};
 		layoutBinding.descriptorType = ConvertDescriptorType(type);

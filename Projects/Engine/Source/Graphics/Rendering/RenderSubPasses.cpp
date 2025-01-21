@@ -80,9 +80,41 @@ namespace Odyssey
 
 		for (SetPass& setPass : renderScene->SetPasses[RenderQueue::Opaque])
 		{
+			// Skinned
 			for (size_t i = 0; i < setPass.Drawcalls.size(); i++)
 			{
 				Drawcall& drawcall = setPass.Drawcalls[i];
+
+				// Skip non-skinned drawcalls
+				if (!drawcall.Skinned)
+					continue;
+
+				// Add the camera and per object data to the push descriptors
+				uint32_t uboIndex = drawcall.UniformBufferIndex;
+				m_PushDescriptors->Clear();
+				m_PushDescriptors->AddBuffer(m_DepthUBO, 0);
+				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
+				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
+
+				commandBuffer->SetDepthBias(-1.0f, 0.0f, -1.25f);
+
+				commandBuffer->BindGraphicsPipeline(m_SkinnedPipeline);
+				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_SkinnedPipeline);
+
+				// Set the per-object descriptor buffer offset
+				commandBuffer->BindVertexBuffer(drawcall.VertexBufferID);
+				commandBuffer->BindIndexBuffer(drawcall.IndexBufferID);
+				commandBuffer->DrawIndexed(drawcall.IndexCount, 1, 0, 0, 0);
+			}
+
+			// Non-skinned
+			for (size_t i = 0; i < setPass.Drawcalls.size(); i++)
+			{
+				Drawcall& drawcall = setPass.Drawcalls[i];
+
+				// Skip skinned drawcalls
+				if (drawcall.Skinned)
+					continue;
 
 				// Add the camera and per object data to the push descriptors
 				uint32_t uboIndex = drawcall.UniformBufferIndex;
@@ -90,22 +122,11 @@ namespace Odyssey
 				m_PushDescriptors->AddBuffer(m_DepthUBO, 0);
 				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
 
-				if (drawcall.Skinned)
-					m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
-
 				commandBuffer->SetDepthBias(-1.0f, 0.0f, -1.25f);
 
 				// Push the descriptors into the command buffer
-				if (drawcall.Skinned)
-				{
-					commandBuffer->BindGraphicsPipeline(m_SkinnedPipeline);
-					commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_SkinnedPipeline);
-				}
-				else
-				{
-					commandBuffer->BindGraphicsPipeline(m_Pipeline);
-					commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_Pipeline);
-				}
+				commandBuffer->BindGraphicsPipeline(m_Pipeline);
+				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_Pipeline);
 
 				// Set the per-object descriptor buffer offset
 				commandBuffer->BindVertexBuffer(drawcall.VertexBufferID);
@@ -216,7 +237,7 @@ namespace Odyssey
 			ubo->CopyData(sizeof(GlobalData), &globalData);
 		}
 
-		for (auto& setPass : params.renderingData->renderScene->SetPasses[m_RenderQueue])
+		for (SetPass& setPass : params.renderingData->renderScene->SetPasses[m_RenderQueue])
 		{
 			commandBuffer->BindGraphicsPipeline(setPass.GraphicsPipeline);
 
@@ -227,46 +248,61 @@ namespace Odyssey
 				// Add the camera and per object data to the push descriptors
 				uint32_t uboIndex = drawcall.UniformBufferIndex;
 				m_PushDescriptors->Clear();
-				m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraTag], 0);
-				m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], 1);
-				m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
-				m_PushDescriptors->AddBuffer(m_GlobalDataUBO, 3);
-				m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, 4);
-				m_PushDescriptors->AddBuffer(setPass.MaterialBuffer, 5);
 
-				// Color map binds to the fragment shader register 6
-				if (setPass.ColorTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.ColorTexture, 6);
-				else
-					m_PushDescriptors->AddTexture(m_BlackTextureID, 6);
+				if (setPass.ShaderBindings.contains("SceneData"))
+				{
+					uint32_t index = setPass.ShaderBindings["SceneData"].Index;
+					m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraTag], index);
+				}
+				if (setPass.ShaderBindings.contains("ModelData"))
+				{
+					uint32_t index = setPass.ShaderBindings["ModelData"].Index;
+					m_PushDescriptors->AddBuffer(renderScene->perObjectUniformBuffers[uboIndex], index);
+				}
+				if (setPass.ShaderBindings.contains("SkinningData"))
+				{
+					uint32_t index = setPass.ShaderBindings["SkinningData"].Index;
+					m_PushDescriptors->AddBuffer(renderScene->skinningBuffers[uboIndex], 2);
+				}
+				if (setPass.ShaderBindings.contains("GlobalData"))
+				{
+					uint32_t index = setPass.ShaderBindings["GlobalData"].Index;
+					m_PushDescriptors->AddBuffer(m_GlobalDataUBO, index);
+				}
+				if (setPass.ShaderBindings.contains("LightData"))
+				{
+					uint32_t index = setPass.ShaderBindings["LightData"].Index;
+					m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, index);
+				}
+				if (setPass.ShaderBindings.contains("MaterialData"))
+				{
+					uint32_t index = setPass.ShaderBindings["MaterialData"].Index;
+					m_PushDescriptors->AddBuffer(setPass.MaterialBuffer, 5);
+				}
 
-				// Normal map binds to the fragment shader register 7
-				if (setPass.NormalTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.NormalTexture, 7);
-				else
-					m_PushDescriptors->AddTexture(m_BlackTextureID, 7);
+				// Add the texture assets for the set pass
+				for (auto& [propertyName, texture] : setPass.Textures)
+				{
+					if (setPass.ShaderBindings.contains(propertyName))
+					{
+						uint32_t index = setPass.ShaderBindings[propertyName].Index;
+						m_PushDescriptors->AddTexture(texture->GetTexture(), index);
+					}
+				}
 
-				// Noise texture binds to the fragment shader register 8
-				if (setPass.NoiseTexture.IsValid())
-					m_PushDescriptors->AddTexture(setPass.NoiseTexture, 8);
-				else
-					m_PushDescriptors->AddTexture(m_BlackTextureID, 8);
+				// Add the built-in engine textures for the set pass
+				if (setPass.ShaderBindings.contains("shadowmapSampler"))
+				{
+					uint32_t index = setPass.ShaderBindings["shadowmapSampler"].Index;
+					m_PushDescriptors->AddTexture(params.Shadowmap(), index);
+				}
 
-				// Shadowmap binds to the fragment shader register 9
-				if (params.Shadowmap().IsValid())
-					m_PushDescriptors->AddTexture(params.Shadowmap(), 9);
-				else
-					m_PushDescriptors->AddTexture(m_WhiteTextureID, 9);
-
-				if (params.DepthTextures.contains(subPassData.CameraTag))
+				// Add the built-in engine textures for the set pass
+				if (setPass.ShaderBindings.contains("depthSampler"))
 				{
 					ResourceID cameraDepthTexture = params.DepthTextures[subPassData.CameraTag];
-					if (cameraDepthTexture.IsValid())
-						m_PushDescriptors->AddTexture(cameraDepthTexture, 10);
-				}
-				else
-				{
-					m_PushDescriptors->AddTexture(m_WhiteTextureID, 10);
+					uint32_t index = setPass.ShaderBindings["depthSampler"].Index;
+					m_PushDescriptors->AddTexture(cameraDepthTexture, index);
 				}
 
 				// Push the descriptors into the command buffer
@@ -460,19 +496,29 @@ namespace Odyssey
 			ResourceID aliveBuffer = ParticleBatcher::GetAliveBuffer(index);
 			GUID materialGUID = ParticleBatcher::GetMaterial(index);
 
-			ResourceID colorTexture = m_ParticleTexture->GetTexture();
-
-			if (Ref<Material> material = AssetManager::LoadAsset<Material>(materialGUID))
-			{
-				if (Ref<Texture2D> texture = material->GetColorTexture())
-					colorTexture = texture->GetTexture();
-			}
-
 			m_PushDescriptors->Clear();
 			m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraTag], 0);
 			m_PushDescriptors->AddBuffer(particleBuffer, 2);
-			m_PushDescriptors->AddTexture(colorTexture, 3);
 			m_PushDescriptors->AddBuffer(aliveBuffer, 4);
+
+			// Load the material
+			if (Ref<Material> material = AssetManager::LoadAsset<Material>(materialGUID))
+			{
+				auto textures = material->GetTextures();
+				auto& shaderBindings = m_Shader->GetBindings();
+
+				// Go through each of the material's textures
+				for (auto& [propertyName, texture] : textures)
+				{
+					// Check the property against our shader
+					if (shaderBindings.contains(propertyName))
+					{
+						// Push the texture to the specified index
+						uint32_t index = shaderBindings[propertyName].Index;
+						m_PushDescriptors->AddTexture(texture->GetTexture(), index);
+					}
+				}
+			}
 
 			graphicsCommandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
 			graphicsCommandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);

@@ -325,14 +325,8 @@ namespace Odyssey
 		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 
 		// Textures
-		if (Ref<Texture2D> colorTexture = material->GetColorTexture())
-			ColorTexture = colorTexture->GetTexture();
-
-		if (Ref<Texture2D> normalTexture = material->GetNormalTexture())
-			NormalTexture = normalTexture->GetTexture();
-
-		if (Ref<Texture2D> noiseTexture = material->GetNoiseTexture())
-			NoiseTexture = noiseTexture->GetTexture();
+		ShaderBindings = material->GetShader()->GetBindings();
+		Textures = material->GetTextures();
 
 		// Store the material buffer for binding
 		MaterialBuffer = materialBuffer;

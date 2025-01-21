@@ -5,6 +5,7 @@
 #include "AssetManager.h"
 #include "SourceShader.h"
 #include "VulkanDescriptorLayout.h"
+#include "spirv_cross/spirv_reflect.hpp"
 
 namespace Odyssey
 {
@@ -14,55 +15,45 @@ namespace Odyssey
 		if (m_Source = AssetManager::LoadSourceAsset<SourceShader>(m_SourceAsset))
 		{
 			m_Source->AddOnModifiedListener([this]() { OnSourceModified(); });
-			LoadAssetData();
 			LoadFromSource(m_Source);
-		}
-
-		for (auto& [shaderType, shaderData] : m_Shaders)
-		{
-			if (shaderData.CodeBuffer)
-				shaderData.ShaderModule = ResourceManager::Allocate<VulkanShaderModule>(shaderType, shaderData.CodeBuffer);
 		}
 	}
 
 	Shader::Shader(const Path& assetPath, Ref<SourceShader> source)
 		: Asset(assetPath), m_Source(source)
 	{
-		std::vector<ShaderType> shaderTypes = source->GetShaderTypes();
-		for (ShaderType shaderType : shaderTypes)
-		{
-			auto& shaderData = m_Shaders[shaderType];
-			if (source->Compile(shaderType, shaderData.CodeBuffer))
-			{
-				//shaderData.CodeGUID = AssetManager::CreateBinaryAsset(shaderData.CodeBuffer);
-				shaderData.ShaderModule = ResourceManager::Allocate<VulkanShaderModule>(shaderType, shaderData.CodeBuffer);
-			}
-		}
-
+		Recompile();
 		SetSourceAsset(source->GetGUID());
 	}
-
 
 	void Shader::Recompile()
 	{
 		if (m_Source)
 		{
-			auto shaderTypes = m_Source->GetShaderTypes();
-			for (auto shaderType : shaderTypes)
+			m_Shaders.clear();
+
+			std::vector<ShaderType> shaderTypes = m_Source->GetShaderTypes();
+
+			for (ShaderType shaderType : shaderTypes)
 			{
 				BinaryBuffer tempBuffer;
 				auto& shaderData = m_Shaders[shaderType];
 
+				// Compile the shader
 				if (m_Source->Compile(shaderType, tempBuffer))
 				{
-					shaderData.CodeBuffer = tempBuffer;
-
+					// Destroy the previous shader module, if loaded
 					if (shaderData.ShaderModule)
 						ResourceManager::Destroy(shaderData.ShaderModule);
 
+					// Load a new shader module with the updated code
+					shaderData.CodeBuffer = tempBuffer;
 					shaderData.ShaderModule = ResourceManager::Allocate<VulkanShaderModule>(shaderType, shaderData.CodeBuffer);
 				}
 			}
+
+			// Reflect the shader code and generate the shader resources
+			GenerateShaderResources();
 		}
 	}
 
@@ -75,7 +66,6 @@ namespace Odyssey
 	{
 		if (m_Source)
 		{
-			LoadAssetData();
 			LoadFromSource(m_Source);
 		}
 	}
@@ -92,48 +82,15 @@ namespace Odyssey
 		return resourceMap;
 	}
 
-	void Shader::ApplyShaderBindings()
+	bool Shader::HasBinding(std::string bindingName, uint32_t& index)
 	{
-		if (m_DescriptorLayout.Invalid())
-			m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
-
-		Ref<VulkanDescriptorLayout> descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
-		
-		for (const ShaderBinding& binding : m_Bindings)
-			descriptorLayout->AddBinding(binding.Name, binding.DescriptorType, binding.Index);
-
-		descriptorLayout->Apply();
-	}
-
-	void Shader::LoadAssetData()
-	{
-		AssetDeserializer deserializer(m_AssetPath);
-
-		if (deserializer.IsValid())
+		if (m_Bindings.contains(bindingName))
 		{
-			SerializationNode root = deserializer.GetRoot();
-			SerializationNode bindingsNode = root.GetNode("Bindings");
-
-			assert(bindingsNode.IsSequence());
-
-			for (size_t i = 0; i < bindingsNode.ChildCount(); i++)
-			{
-				SerializationNode bindingNode = bindingsNode.GetChild(i);
-				assert(bindingNode.IsMap());
-
-				std::string descriptorType;
-				ShaderBinding& binding = m_Bindings.emplace_back();
-				bindingNode.ReadData("Name", binding.Name);
-				bindingNode.ReadData("Descriptor Type", descriptorType);
-				bindingNode.ReadData("Index", binding.Index);
-
-				assert(!descriptorType.empty());
-				binding.DescriptorType = Enum::ToEnum<DescriptorType>(descriptorType);
-			}
+			index = m_Bindings[bindingName].Index;
+			return true;
 		}
 
-		if (m_Bindings.size() > 0)
-			ApplyShaderBindings();
+		return false;
 	}
 
 	void Shader::LoadFromSource(Ref<SourceShader> source)
@@ -144,20 +101,8 @@ namespace Odyssey
 			shaderData.CodeBuffer.Clear();
 			ResourceManager::Destroy(shaderData.ShaderModule);
 		}
-		m_Shaders.clear();
 
-		auto shaderTypes = source->GetShaderTypes();
-		for (auto shaderType : shaderTypes)
-		{
-			BinaryBuffer tempBuffer;
-			auto& shaderData = m_Shaders[shaderType];
-
-			if (source->Compile(shaderType, tempBuffer))
-			{
-				shaderData.CodeBuffer = tempBuffer;
-				shaderData.ShaderModule = ResourceManager::Allocate<VulkanShaderModule>(shaderType, shaderData.CodeBuffer);
-			}
-		}
+		Recompile();
 	}
 
 	void Shader::SaveToDisk(const Path& path)
@@ -167,22 +112,99 @@ namespace Odyssey
 
 		// Serialize metadata first
 		SerializeMetadata(serializer);
+		serializer.WriteToDisk(path);
+	}
 
-		// Serialize the bindings
-		SerializationNode bindingsNode = root.CreateSequenceNode("Bindings");
+	void Shader::GenerateShaderResources()
+	{
+		// Destroy the previous layout, if it exists
+		if (m_DescriptorLayout)
+			ResourceManager::Destroy(m_DescriptorLayout);
 
-		for (size_t i = 0; i < m_Bindings.size(); i++)
+		m_Bindings.clear();
+
+		// Create a new layout
+		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
+		Ref<VulkanDescriptorLayout> descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
+
+		for (auto& [shaderType, shaderData] : m_Shaders)
 		{
-			ShaderBinding& binding = m_Bindings[i];
-			SerializationNode bindingNode = bindingsNode.AppendChild();
-			bindingNode.SetMap();
+			// Parse the spirv code so it can be reflected
+			spirv_cross::CompilerReflection refl(shaderData.CodeBuffer. Convert<uint32_t>());
+			spirv_cross::ShaderResources resources = refl.get_shader_resources();
 
-			bindingNode.WriteData("Name", binding.Name);
-			bindingNode.WriteData("Descriptor Type", Enum::ToString(binding.DescriptorType));
-			bindingNode.WriteData("Index", binding.Index);
+			// Reflect texture sampler bindings
+			for (spirv_cross::Resource& resource : resources.sampled_images)
+			{
+				std::string name = refl.get_name(resource.base_type_id);
+				uint32_t set = refl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+				uint32_t binding = refl.get_decoration(resource.id, spv::DecorationBinding);
+
+				if (!m_Bindings.contains(name))
+				{
+					ShaderBinding& bindingData = m_Bindings[name];
+					bindingData.Name = name;
+					bindingData.DescriptorType = DescriptorType::Sampler;
+					bindingData.Index = binding;
+
+					descriptorLayout->AddBinding(name, DescriptorType::Sampler, binding);
+				}
+			}
+
+			// Reflect sampler state bindings (texture cubes, etc)
+			for (spirv_cross::Resource& resource : resources.separate_samplers)
+			{
+				std::string name = refl.get_name(resource.id);
+				uint32_t set = refl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+				uint32_t binding = refl.get_decoration(resource.id, spv::DecorationBinding);
+
+				if (!m_Bindings.contains(name))
+				{
+					ShaderBinding& bindingData = m_Bindings[name];
+					bindingData.Name = name;
+					bindingData.DescriptorType = DescriptorType::Sampler;
+					bindingData.Index = binding;
+
+					descriptorLayout->AddBinding(name, DescriptorType::Sampler, binding);
+				}
+			}
+
+			// Reflect uniform buffer bindings
+			for (spirv_cross::Resource& resource : resources.uniform_buffers)
+			{
+				std::string name = refl.get_name(resource.base_type_id);
+				uint32_t set = refl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+				uint32_t binding = refl.get_decoration(resource.id, spv::DecorationBinding);
+
+				if (!m_Bindings.contains(name))
+				{
+					ShaderBinding& bindingData = m_Bindings[name];
+					bindingData.Name = name;
+					bindingData.DescriptorType = DescriptorType::Uniform;
+					bindingData.Index = binding;
+					descriptorLayout->AddBinding(name, DescriptorType::Uniform, binding);
+				}
+			}
+
+			// Reflect storage buffer bindings
+			for (spirv_cross::Resource& resource : resources.storage_buffers)
+			{
+				std::string name = refl.get_name(resource.id);
+				uint32_t set = refl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+				uint32_t binding = refl.get_decoration(resource.id, spv::DecorationBinding);
+
+				if (!m_Bindings.contains(name))
+				{
+					ShaderBinding& bindingData = m_Bindings[name];
+					bindingData.Name = name;
+					bindingData.DescriptorType = DescriptorType::Storage;
+					bindingData.Index = binding;
+					descriptorLayout->AddBinding(name, DescriptorType::Storage, binding);
+				}
+			}
 		}
 
-		serializer.WriteToDisk(path);
+		descriptorLayout->Apply();
 	}
 
 	void Shader::OnSourceModified()

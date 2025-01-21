@@ -3,8 +3,11 @@ m_GUID: 11494956272143746184
 m_Name: Stone Pillar 01
 m_Type: Odyssey.Material
 m_Shader: 9634657926911688453
-m_Texture: 1433496500175665428
-Normal Texture: 9375859894328604587
+Property Textures:
+  - Property: diffuseSampler
+    Texture: 1433496500175665428
+  - Property: normalSampler
+    Texture: 9375859894328604587
 Emissive Color: 'x: 0 y: 0 z: 0'
 Emissive Power: 1
 Alpha Clip: 0.5

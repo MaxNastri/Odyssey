@@ -26,7 +26,6 @@ static const uint ALIVE_POST_SIM_COUNT_OFFSET = ALIVE_PRE_SIM_COUNT_OFFSET + 4;
 RWStructuredBuffer<Particle> ParticleBuffer : register(b2);
 RWByteAddressBuffer CounterBuffer : register(b3);
 RWStructuredBuffer<uint> AliveBufferPreSim : register(b4);
-RWStructuredBuffer<uint> AliveBufferPostSim : register(b5);
 RWStructuredBuffer<uint> DeadBuffer : register(b6);
 
 cbuffer EmitterData : register(b7)

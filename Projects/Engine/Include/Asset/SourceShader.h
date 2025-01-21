@@ -37,6 +37,7 @@ namespace Odyssey
 
 	private:
 		const char* Shared_Pragma = "#pragma Shared";
+		inline static const std::string Include_Pragma = "#pragma include";
 
 		inline static std::unordered_map<ShaderType, std::string> ShaderPragmaMap =
 		{

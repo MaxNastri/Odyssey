@@ -3,8 +3,11 @@ m_GUID: 3071517346640755351
 m_Name: Glass Window
 m_Type: Odyssey.Material
 m_Shader: 9634657926911688453
-m_Texture: 5207188950727591872
-Normal Texture: 10615185705568440426
+Property Textures:
+  - Property: diffuseSampler
+    Texture: 5207188950727591872
+  - Property: normalSampler
+    Texture: 10615185705568440426
 Emissive Color: 'x: 0 y: 0 z: 0'
 Emissive Power: 1
 Alpha Clip: 0.5

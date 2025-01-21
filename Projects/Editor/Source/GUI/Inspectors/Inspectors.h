@@ -318,7 +318,6 @@ namespace Odyssey
 		virtual bool Draw() override;
 
 	private:
-		bool DrawShaderBindings();
 		void OnNameChanged(std::string_view name);
 		void OnSourceAssetChanged(GUID sourceGUID);
 

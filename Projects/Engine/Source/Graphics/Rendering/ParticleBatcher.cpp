@@ -141,7 +141,6 @@ namespace Odyssey
 			s_PushDescriptors->AddBuffer(emitterResources.ParticleBuffer, 2);
 			s_PushDescriptors->AddBuffer(emitterResources.CounterBuffer, 3);
 			s_PushDescriptors->AddBuffer(emitterResources.AlivePreSimBuffer, 4);
-			s_PushDescriptors->AddBuffer(emitterResources.AlivePostSimBuffer, 5);
 			s_PushDescriptors->AddBuffer(emitterResources.DeadBuffer, 6);
 			s_PushDescriptors->AddBuffer(emitterResources.EmitterBuffer, 7);
 

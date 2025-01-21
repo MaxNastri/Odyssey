@@ -39,14 +39,14 @@ namespace Odyssey
 		if (m_Shader)
 			root.WriteData("m_Shader", m_Shader->GetGUID().CRef());
 
-		if (m_ColorTexture)
-			root.WriteData("m_Texture", m_ColorTexture->GetGUID().CRef());
-
-		if (m_NormalTexture)
-			root.WriteData("Normal Texture", m_NormalTexture->GetGUID().CRef());
-
-		if (m_NoiseTexture)
-			root.WriteData("Noise Texture", m_NoiseTexture->GetGUID().CRef());
+		SerializationNode texturesNode = root.CreateSequenceNode("Property Textures");
+		for (auto& [propertyName, texture] : m_Textures)
+		{
+			SerializationNode textureNode = texturesNode.AppendChild();
+			textureNode.SetMap();
+			textureNode.WriteData("Property", propertyName);
+			textureNode.WriteData("Texture", texture->GetGUID().CRef());
+		}
 
 		root.WriteData("Emissive Color", m_EmissiveColor);
 		root.WriteData("Emissive Power", m_EmissivePower);
@@ -64,17 +64,26 @@ namespace Odyssey
 		if (deserializer.IsValid())
 		{
 			SerializationNode root = deserializer.GetRoot();
-
 			GUID shaderGUID;
-			GUID colorTextureGUID;
-			GUID normalTextureGUID;
-			GUID noiseTextureGUID;
 			int32_t renderQueue = 0;
 
 			root.ReadData("m_Shader", shaderGUID.Ref());
-			root.ReadData("m_Texture", colorTextureGUID.Ref());
-			root.ReadData("Normal Texture", normalTextureGUID.Ref());
-			root.ReadData("Noise Texture", noiseTextureGUID.Ref());
+
+			SerializationNode texturesNode = root.GetNode("Property Textures");
+			for (size_t i = 0; i < texturesNode.ChildCount(); i++)
+			{
+				SerializationNode textureNode = texturesNode.GetChild(i);
+				assert(textureNode.IsMap());
+			
+				std::string property;
+				GUID textureGUID;
+				textureNode.ReadData("Property", property);
+				textureNode.ReadData("Texture", textureGUID.Ref());
+			
+				if (!property.empty() && textureGUID)
+					m_Textures[property] = AssetManager::LoadAsset<Texture2D>(textureGUID);
+			}
+
 			root.ReadData("Emissive Color", m_EmissiveColor);
 			root.ReadData("Emissive Power", m_EmissivePower);
 			root.ReadData("Alpha Clip", m_AlphaClip);
@@ -84,17 +93,13 @@ namespace Odyssey
 			if (shaderGUID)
 				m_Shader = AssetManager::LoadAsset<Shader>(shaderGUID);
 
-			if (colorTextureGUID)
-				m_ColorTexture = AssetManager::LoadAsset<Texture2D>(colorTextureGUID);
-
-			if (normalTextureGUID)
-				m_NormalTexture = AssetManager::LoadAsset<Texture2D>(normalTextureGUID);
-
-			if (noiseTextureGUID)
-				m_NoiseTexture = AssetManager::LoadAsset<Texture2D>(noiseTextureGUID);
-
 			if (renderQueue > 0)
 				m_RenderQueue = Enum::ToEnum<RenderQueue>(renderQueue);
 		}
+	}
+
+	void Material::SetTexture(std::string propertyName, GUID texture)
+	{
+		m_Textures[propertyName] = AssetManager::LoadAsset<Texture2D>(texture);
 	}
 }

@@ -470,15 +470,6 @@ namespace Odyssey
 			if (Ref<Shader> shader = m_Material->GetShader())
 				shaderGUID = shader->GetGUID();
 
-			if (Ref<Texture2D> texture2D = m_Material->GetColorTexture())
-				colorTextureGUID = texture2D->GetGUID();
-
-			if (Ref<Texture2D> normalTexture = m_Material->GetNormalTexture())
-				normalTextureGUID = normalTexture->GetGUID();
-
-			if (Ref<Texture2D> noiseTexture = m_Material->GetNoiseTexture())
-				noiseTextureGUID = noiseTexture->GetGUID();
-
 			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), true);
 			m_NameDrawer = StringDrawer("Name", m_Material->GetName(), false);
 			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type);
@@ -514,32 +505,9 @@ namespace Odyssey
 				m_Material->SetShader(shader);
 		}
 
-		if (m_ColorTextureDrawer.Draw())
-		{
-			m_Dirty = true;
-			modified = true;
-
-			if (auto texture = AssetManager::LoadAsset<Texture2D>(m_ColorTextureDrawer.GetGUID()))
-				m_Material->SetColorTexture(texture);
-		}
-
-		if (m_NormalTextureDrawer.Draw())
-		{
-			m_Dirty = true;
-			modified = true;
-
-			if (auto texture = AssetManager::LoadAsset<Texture2D>(m_NormalTextureDrawer.GetGUID()))
-				m_Material->SetNormalTexture(texture);
-		}
-
-		if (m_NoiseTextureDrawer.Draw())
-		{
-			m_Dirty = true;
-			modified = true;
-
-			if (auto texture = AssetManager::LoadAsset<Texture2D>(m_NoiseTextureDrawer.GetGUID()))
-				m_Material->SetNoiseTexture(texture);
-		}
+		Ref<Shader> shader = m_Material->GetShader();
+		auto& shaderBindings = shader->GetBindings();
+		auto textures = m_Material->GetTextures();
 
 		if (m_EmissiveColorDrawer.Draw())
 		{
@@ -574,6 +542,44 @@ namespace Odyssey
 			m_Dirty = true;
 			modified = true;
 			m_Material->SetRenderQueue(m_RenderQueueDrawer.GetValue());
+		}
+
+		for (auto& [propertyName, shaderBinding] : shaderBindings)
+		{
+			if (shaderBinding.DescriptorType == DescriptorType::Sampler)
+			{
+				std::string displayName = propertyName;
+				displayName[0] = std::toupper(displayName[0]);
+
+				// Remove any reference to sampler for the display name
+				size_t pos = displayName.find("Sampler");
+				if (pos != std::string::npos)
+					displayName = displayName.substr(0, pos);
+
+				pos = displayName.find("Texture");
+				if (pos != std::string::npos)
+				{
+					// Split the texture into its own word with a captial T
+					std::string texture = displayName.substr(pos, displayName.length());
+					texture[0] = std::toupper(texture[0]);
+					displayName = displayName.substr(0, pos) + " " + texture;
+				}
+				else
+				{
+					displayName = displayName + " Texture";
+				}
+
+
+				GUID textureGUID = textures.contains(propertyName) ? textures[propertyName]->GetGUID() : GUID::Empty();
+				AssetFieldDrawer textureDrawer = AssetFieldDrawer(displayName, textureGUID, Texture2D::Type);
+
+				if (textureDrawer.Draw())
+				{
+					m_Dirty = true;
+					modified = true;
+					m_Material->SetTexture(propertyName, textureDrawer.GetGUID());
+				}
+			}
 		}
 
 		if (m_Dirty && ImGui::Button("Save"))
@@ -920,79 +926,10 @@ namespace Odyssey
 		modified |= m_NameDrawer.Draw();
 		modified |= m_SourceShaderDrawer.Draw();
 
-		DrawShaderBindings();
-
-		if (ImGui::Button("Add Binding"))
-			m_Shader->GetShaderBindings().emplace_back();
-
 		ImGui::SameLine();
 
 		if (ImGui::Button("Compile"))
 			m_Shader->Recompile();
-
-		return modified;
-	}
-
-	bool ShaderInspector::DrawShaderBindings()
-	{
-		bool modified = false;
-
-		ImGui::PushID(this);
-
-		ImGui::Separator();
-
-		// Header for the shader bindings
-		float2 textSize = ImGui::CalcTextSize("Shader Bindings") * 1.1f;
-		ImGui::FilledRectSpanTextFree("Shader Bindings", float4(1.0f), float4(0.1f, 0.1f, 0.1f, 1.0f), textSize.y, float2(0.0f, 0.0f));
-
-		// Draw each shader binding
-		std::vector<ShaderBinding>& bindings = m_Shader->GetShaderBindings();
-		for (ShaderBinding& binding : bindings)
-		{
-
-			ImGui::PushItemWidth(-0.01f);
-			ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-
-			// Name
-			{
-				char buffer[128] = {};
-				binding.Name.copy(buffer, ARRAYSIZE(buffer));
-
-				if (ImGui::InputText("##NameLabel", buffer, IM_ARRAYSIZE(buffer)))
-				{
-					modified = true;
-					m_Dirty = true;
-					binding.Name = std::string(buffer);
-				}
-			}
-
-			ImGui::SameLine();
-
-			// Descriptor type
-			EnumDropdown<DescriptorType> descriptorDrawer = EnumDropdown<DescriptorType>(binding.DescriptorType);
-			if (descriptorDrawer.Draw())
-			{
-				modified = true;
-				m_Dirty = true;
-				binding.DescriptorType = descriptorDrawer.GetValue();
-			}
-
-			ImGui::SameLine();
-
-			// Binding index
-			uint8_t index = binding.Index;
-			if (ImGui::InputScalar("##IndexLabel", ImGuiDataType_U8, &index))
-			{
-				modified = true;
-				m_Dirty = true;
-				binding.Index = index;
-			}
-		}
-
-		if (m_Dirty && ImGui::Button("Apply"))
-			m_Shader->ApplyShaderBindings();
-
-		ImGui::PopID();
 
 		return modified;
 	}

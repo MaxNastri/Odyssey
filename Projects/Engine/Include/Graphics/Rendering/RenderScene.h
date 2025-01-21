@@ -92,12 +92,12 @@ namespace Odyssey
 		void SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions);
 
 	public:
+		std::map<std::string, ShaderBinding> ShaderBindings;
+		std::map<std::string, Ref<Texture2D>> Textures;
+
 		ResourceID GraphicsPipeline;
 		ResourceID MaterialBuffer;
 		std::map<ShaderType, ResourceID> Shaders;
-		ResourceID ColorTexture;
-		ResourceID NormalTexture;
-		ResourceID NoiseTexture;
 		RenderQueue RenderQueue;
 		std::vector<Drawcall> Drawcalls;
 	};
