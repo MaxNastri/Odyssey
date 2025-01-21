@@ -29,6 +29,8 @@ namespace Odyssey
 	private:
 		void SaveToDisk(const Path& path);
 		void LoadFromDisk(const Path& path);
+		void CreatePipeline();
+		void OnShaderModified();
 
 	public:
 		Ref<Shader> GetShader() { return m_Shader; }
@@ -38,22 +40,25 @@ namespace Odyssey
 		RenderQueue GetRenderQueue() const { return m_RenderQueue; }
 		BlendMode GetBlendMode() { return m_BlendMode; }
 		bool GetDepthWrite() { return m_DepthWrite; }
+		ResourceID GetPipeline();
 
 	public:
-		void SetShader(Ref<Shader> shader) { m_Shader = shader; }
+		void SetShader(Ref<Shader> shader);
 		void SetTexture(std::string propertyName, GUID texture);
 		void SetEmissiveColor(float3 emissive) { m_EmissiveColor = emissive; }
 		void SetEmissivePower(float power) { m_EmissivePower = power; }
 		void SetAlphaClip(float clip) { m_AlphaClip = clip; }
 		void SetRenderQueue(RenderQueue queue) { m_RenderQueue = queue; }
-		void SetBlendMode(BlendMode blendMode) { m_BlendMode = blendMode; }
-		void SetDepthWrite(bool write) { m_DepthWrite = write; }
+		void SetBlendMode(BlendMode blendMode);
+		void SetDepthWrite(bool write);
 
 	public:
 		std::map<std::string, Ref<Texture2D>> GetTextures() { return m_Textures; }
 
 	private:
 		std::map<std::string, Ref<Texture2D>> m_Textures;
+		ResourceID m_GraphicsPipeline;
+		bool m_RemakePipeline = false;
 
 		Ref<Shader> m_Shader;
 		float3 m_EmissiveColor = float3(0.0f);

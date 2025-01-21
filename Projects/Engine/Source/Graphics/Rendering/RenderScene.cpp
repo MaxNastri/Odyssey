@@ -165,12 +165,6 @@ namespace Odyssey
 
 	void RenderScene::ClearSceneData()
 	{
-		for (auto& [renderQueue, setPasses] : SetPasses)
-		{
-			for (SetPass& setPass : setPasses)
-				ResourceManager::Destroy(setPass.GraphicsPipeline);
-		}
-
 		SetPasses.clear();
 		SpriteDrawcalls.clear();
 		m_GUIDToSetPass.clear();
@@ -312,16 +306,8 @@ namespace Odyssey
 
 	void SetPass::SetMaterial(Ref<Material> material, bool skinned, ResourceID materialBuffer)
 	{
-		// Allocate a graphics pipeline
-		VulkanPipelineInfo info;
-		Shaders = info.Shaders = material->GetShader()->GetResourceMap();
-		info.DescriptorLayout = material->GetShader()->GetDescriptorLayout();
-		info.CullMode = CullMode::Back;
-		info.SetBlendMode = material->GetBlendMode();
-		info.WriteDepth = material->GetDepthWrite();
-		info.AttributeDescriptions = material->GetShader()->GetVertexAttributes();
-
-		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
+		Shaders = material->GetShader()->GetResourceMap();
+		GraphicsPipeline = material->GetPipeline();
 
 		// Textures
 		ShaderBindings = material->GetShader()->GetBindings();

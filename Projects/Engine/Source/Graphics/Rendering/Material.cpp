@@ -3,6 +3,8 @@
 #include "Texture2D.h"
 #include "AssetManager.h"
 #include "AssetSerializer.h"
+#include "VulkanGraphicsPipeline.h"
+#include "ResourceManager.h"
 
 namespace Odyssey
 {
@@ -94,7 +96,11 @@ namespace Odyssey
 			root.ReadData("Depth Write", m_DepthWrite);
 
 			if (shaderGUID)
+			{
 				m_Shader = AssetManager::LoadAsset<Shader>(shaderGUID);
+				auto onShaderModified = [this]() { OnShaderModified(); };
+				m_Shader->AddOnModifiedListener(onShaderModified);
+			}
 
 			if (renderQueue > 0)
 				m_RenderQueue = Enum::ToEnum<RenderQueue>(renderQueue);
@@ -102,10 +108,62 @@ namespace Odyssey
 			if (!blendMode.empty())
 				m_BlendMode = Enum::ToEnum<BlendMode>(blendMode);
 		}
+
+		CreatePipeline();
+	}
+
+	void Material::CreatePipeline()
+	{
+		if (m_GraphicsPipeline.IsValid())
+			ResourceManager::Destroy(m_GraphicsPipeline);
+
+		// Create the pipeline
+		VulkanPipelineInfo info;
+		info.Shaders = m_Shader->GetResourceMap();
+		info.DescriptorLayout = m_Shader->GetDescriptorLayout();
+		info.CullMode = CullMode::Back;
+		info.SetBlendMode = m_BlendMode;
+		info.WriteDepth = m_DepthWrite;
+		info.AttributeDescriptions = m_Shader->GetVertexAttributes();
+		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
+	}
+
+	void Material::OnShaderModified()
+	{
+		m_RemakePipeline = true;
+	}
+
+	ResourceID Material::GetPipeline()
+	{
+		if (m_RemakePipeline)
+		{
+			CreatePipeline();
+			m_RemakePipeline = false;
+		}
+
+		return m_GraphicsPipeline;
+	}
+
+	void Material::SetShader(Ref<Shader> shader)
+	{
+		m_Shader = shader;
+		m_RemakePipeline = true;
 	}
 
 	void Material::SetTexture(std::string propertyName, GUID texture)
 	{
 		m_Textures[propertyName] = AssetManager::LoadAsset<Texture2D>(texture);
+	}
+
+	void Material::SetBlendMode(BlendMode blendMode)
+	{
+		m_BlendMode = blendMode;
+		m_RemakePipeline = true;
+	}
+
+	void Material::SetDepthWrite(bool write)
+	{
+		m_DepthWrite = write;
+		m_RemakePipeline = true;
 	}
 }
