@@ -88,9 +88,6 @@ namespace Odyssey
 	public:
 		void SetMaterial(Ref<Material> material, bool skinned, ResourceID materialBuffer);
 
-	private:
-		void SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions);
-
 	public:
 		std::map<std::string, ShaderBinding> ShaderBindings;
 		std::map<std::string, Ref<Texture2D>> Textures;

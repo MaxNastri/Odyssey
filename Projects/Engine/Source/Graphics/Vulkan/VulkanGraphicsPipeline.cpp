@@ -6,6 +6,7 @@
 #include "VulkanDescriptorLayout.h"
 #include "ResourceManager.h"
 #include "Renderer.h"
+#include "Material.h"
 
 namespace Odyssey
 {
@@ -113,7 +114,7 @@ namespace Odyssey
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-		if (info.BindVertexAttributeDescriptions)
+		if (info.AttributeDescriptions.GetSize() > 0)
 		{
 			VkVertexInputBindingDescription bindingDescription = Vertex::GetBindingDescription();
 			vertexInputInfo.vertexBindingDescriptionCount = 1;
@@ -175,9 +176,9 @@ namespace Odyssey
 		// Normal color blending
 		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 
-		if (info.AlphaBlend)
+		if (info.SetBlendMode == BlendMode::AlphaBlend)
 		{
-			// Additive blending
+			// Alpha blend
 			colorBlendAttachment.blendEnable = VK_TRUE;
 			colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 			colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
@@ -187,8 +188,9 @@ namespace Odyssey
 			colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
 			colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 		}
-		else if (info.Special)
+		else if (info.SetBlendMode == BlendMode::Additive)
 		{
+			// Additive blend
 			colorBlendAttachment.blendEnable = VK_TRUE;
 			colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT;
 			colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
@@ -200,7 +202,7 @@ namespace Odyssey
 		}
 		else
 		{
-			// Additive blending
+			// No blending
 			colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 			colorBlendAttachment.blendEnable = VK_FALSE;
 		}

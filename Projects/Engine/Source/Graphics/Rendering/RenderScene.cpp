@@ -317,10 +317,9 @@ namespace Odyssey
 		Shaders = info.Shaders = material->GetShader()->GetResourceMap();
 		info.DescriptorLayout = material->GetShader()->GetDescriptorLayout();
 		info.CullMode = CullMode::Back;
-		info.AlphaBlend = material->GetAlphaBlend();
-		info.WriteDepth = material->GetGUID() == 14541755926980427327 ? false : true;
-		info.Special = material->GetGUID() == 14541755926980427327;
-		SetupAttributeDescriptions(skinned, info.AttributeDescriptions);
+		info.SetBlendMode = material->GetBlendMode();
+		info.WriteDepth = material->GetDepthWrite();
+		info.AttributeDescriptions = material->GetShader()->GetVertexAttributes();
 
 		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
 
@@ -340,57 +339,5 @@ namespace Odyssey
 
 		// Store the render queue
 		RenderQueue = material->GetRenderQueue();
-	}
-
-	void SetPass::SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions)
-	{
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-
-		// Position
-		auto& positionDesc = attributeDescriptions.emplace_back();
-		positionDesc.binding = 0;
-		positionDesc.location = 0;
-		positionDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
-		positionDesc.offset = offsetof(Vertex, Position);
-
-		// Normal
-		auto& normalDesc = attributeDescriptions.emplace_back();
-		normalDesc.binding = 0;
-		normalDesc.location = 1;
-		normalDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
-		normalDesc.offset = offsetof(Vertex, Normal);
-
-		// Tangent
-		auto& tangentDesc = attributeDescriptions.emplace_back();
-		tangentDesc.binding = 0;
-		tangentDesc.location = 2;
-		tangentDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
-		tangentDesc.offset = offsetof(Vertex, Tangent);
-
-		// TexCoord0
-		auto& texCoord0Desc = attributeDescriptions.emplace_back();
-		texCoord0Desc.binding = 0;
-		texCoord0Desc.location = 3;
-		texCoord0Desc.format = VK_FORMAT_R32G32_SFLOAT;
-		texCoord0Desc.offset = offsetof(Vertex, TexCoord0);
-
-		if (skinned)
-		{
-			// Bone Indices
-			auto& indicesDesc = attributeDescriptions.emplace_back();
-			indicesDesc.binding = 0;
-			indicesDesc.location = 4;
-			indicesDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
-			indicesDesc.offset = offsetof(Vertex, BoneIndices);
-
-			// Bone Weights
-			auto& weightsDesc = attributeDescriptions.emplace_back();
-			weightsDesc.binding = 0;
-			weightsDesc.location = 5;
-			weightsDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
-			weightsDesc.offset = offsetof(Vertex, BoneWeights);
-		}
-
-		descriptions.WriteData(attributeDescriptions);
 	}
 }

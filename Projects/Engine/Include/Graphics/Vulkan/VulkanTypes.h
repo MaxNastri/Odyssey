@@ -28,9 +28,7 @@ namespace Odyssey
 		CullMode CullMode = CullMode::None;
 		bool FrontCCW = false;
 		bool WriteDepth = true;
-		bool BindVertexAttributeDescriptions = true;
-		bool AlphaBlend = false;
-		bool Special = false;
+		BlendMode SetBlendMode = BlendMode::None;
 		TextureFormat ColorFormat = TextureFormat::R8G8B8A8_UNORM;
 		TextureFormat DepthFormat = TextureFormat::D24_UNORM_S8_UINT;
 		uint32_t MSAACountOverride = 0;

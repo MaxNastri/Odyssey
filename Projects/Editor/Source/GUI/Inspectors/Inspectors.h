@@ -281,8 +281,9 @@ namespace Odyssey
 		ColorPicker m_EmissiveColorDrawer;
 		FloatDrawer m_EmissivePowerDrawer;
 		FloatDrawer m_AlphaClipDrawer;
-		BoolDrawer m_AlphaBlendDrawer;
 		EnumDrawer<RenderQueue> m_RenderQueueDrawer;
+		EnumDrawer<BlendMode> m_BlendModeDrawer;
+		BoolDrawer m_DepthWriteDrawer;
 	};
 
 	class MeshInspector : public Inspector

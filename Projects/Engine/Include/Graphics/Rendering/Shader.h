@@ -37,8 +37,11 @@ namespace Odyssey
 	public:
 		std::map<ShaderType, ResourceID> GetResourceMap();
 		ResourceID GetDescriptorLayout() { return m_DescriptorLayout; }
-		bool HasBinding(std::string bindingName, uint32_t& index);
+		BinaryBuffer& GetVertexAttributes() { return m_VertexAttributes; }
 		std::map<std::string, ShaderBinding>& GetBindings() { return m_Bindings; }
+
+	public:
+		bool HasBinding(std::string bindingName, uint32_t& index);
 
 	public:
 		void AddOnModifiedListener(std::function<void()> callback) { m_OnModifiedListeners.push_back(callback); }
@@ -49,6 +52,7 @@ namespace Odyssey
 
 	private:
 		void GenerateShaderResources();
+		void GenerateVertexLayout();
 		void OnSourceModified();
 
 	private:
@@ -61,6 +65,7 @@ namespace Odyssey
 		
 		std::map<ShaderType, ShaderData> m_Shaders;
 		std::map<std::string, ShaderBinding> m_Bindings;
+		BinaryBuffer m_VertexAttributes;
 
 	private:
 		ResourceID m_DescriptorLayout;

@@ -44,4 +44,13 @@ namespace Odyssey
 	{
 		return std::find(vector.begin(), vector.end(), search) != vector.end();
 	}
+
+	inline static std::string ToLower(const std::string& str)
+	{
+		std::string copy = str;
+		std::transform(copy.begin(), copy.end(), copy.begin(),
+			[](unsigned char c) { return std::tolower(c); });
+
+		return copy;
+	}
 }

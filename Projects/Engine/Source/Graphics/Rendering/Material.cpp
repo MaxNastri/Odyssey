@@ -51,8 +51,9 @@ namespace Odyssey
 		root.WriteData("Emissive Color", m_EmissiveColor);
 		root.WriteData("Emissive Power", m_EmissivePower);
 		root.WriteData("Alpha Clip", m_AlphaClip);
-		root.WriteData("Alpha Blend", m_AlphaBlend);
 		root.WriteData("Render Queue", Enum::ToInt(m_RenderQueue));
+		root.WriteData("Blend Mode", Enum::ToString(m_BlendMode));
+		root.WriteData("Depth Write", m_DepthWrite);
 
 		// Save to disk
 		serializer.WriteToDisk(assetPath);
@@ -66,6 +67,7 @@ namespace Odyssey
 			SerializationNode root = deserializer.GetRoot();
 			GUID shaderGUID;
 			int32_t renderQueue = 0;
+			std::string blendMode;
 
 			root.ReadData("m_Shader", shaderGUID.Ref());
 
@@ -87,14 +89,18 @@ namespace Odyssey
 			root.ReadData("Emissive Color", m_EmissiveColor);
 			root.ReadData("Emissive Power", m_EmissivePower);
 			root.ReadData("Alpha Clip", m_AlphaClip);
-			root.ReadData("Alpha Blend", m_AlphaBlend);
 			root.ReadData("Render Queue", renderQueue);
+			root.ReadData("Blend Mode", blendMode);
+			root.ReadData("Depth Write", m_DepthWrite);
 
 			if (shaderGUID)
 				m_Shader = AssetManager::LoadAsset<Shader>(shaderGUID);
 
 			if (renderQueue > 0)
 				m_RenderQueue = Enum::ToEnum<RenderQueue>(renderQueue);
+
+			if (!blendMode.empty())
+				m_BlendMode = Enum::ToEnum<BlendMode>(blendMode);
 		}
 	}
 

@@ -3,6 +3,7 @@
 #include "Ref.h"
 #include "Shader.h"
 #include "Texture2D.h"
+#include "Enums.h"
 #include "Enum.h"
 
 namespace Odyssey
@@ -34,8 +35,9 @@ namespace Odyssey
 		float3 GetEmissiveColor() { return m_EmissiveColor; }
 		float GetEmissivePower() { return m_EmissivePower; }
 		float GetAlphaClip() { return m_AlphaClip; }
-		bool GetAlphaBlend() { return m_AlphaBlend; }
 		RenderQueue GetRenderQueue() const { return m_RenderQueue; }
+		BlendMode GetBlendMode() { return m_BlendMode; }
+		bool GetDepthWrite() { return m_DepthWrite; }
 
 	public:
 		void SetShader(Ref<Shader> shader) { m_Shader = shader; }
@@ -43,8 +45,9 @@ namespace Odyssey
 		void SetEmissiveColor(float3 emissive) { m_EmissiveColor = emissive; }
 		void SetEmissivePower(float power) { m_EmissivePower = power; }
 		void SetAlphaClip(float clip) { m_AlphaClip = clip; }
-		void SetAlphaBlend(bool blend) { m_AlphaBlend = blend; }
 		void SetRenderQueue(RenderQueue queue) { m_RenderQueue = queue; }
+		void SetBlendMode(BlendMode blendMode) { m_BlendMode = blendMode; }
+		void SetDepthWrite(bool write) { m_DepthWrite = write; }
 
 	public:
 		std::map<std::string, Ref<Texture2D>> GetTextures() { return m_Textures; }
@@ -56,7 +59,8 @@ namespace Odyssey
 		float3 m_EmissiveColor = float3(0.0f);
 		float m_EmissivePower = 1.0f;
 		float m_AlphaClip = 0.5f;
-		bool m_AlphaBlend = false;
 		RenderQueue m_RenderQueue = RenderQueue::None;
+		BlendMode m_BlendMode = BlendMode::None;
+		bool m_DepthWrite = true;
 	};
 }

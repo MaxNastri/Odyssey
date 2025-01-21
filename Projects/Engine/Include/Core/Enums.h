@@ -37,6 +37,13 @@ namespace Odyssey
 		Cubemap = 3,
 	};
 
+	enum class BlendMode : uint32_t
+	{
+		None = 0,
+		Additive = 1,
+		AlphaBlend = 2,
+	};
+
 	enum class CubemapFace
 	{
 		None = 0,

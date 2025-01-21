@@ -479,8 +479,9 @@ namespace Odyssey
 			m_EmissiveColorDrawer = ColorPicker("Emissive Color", m_Material->GetEmissiveColor());
 			m_EmissivePowerDrawer = FloatDrawer("Emissive Power", m_Material->GetEmissivePower());
 			m_AlphaClipDrawer = FloatDrawer("Alpha Clip", m_Material->GetAlphaClip());
-			m_AlphaBlendDrawer = BoolDrawer("Alpha Blend", m_Material->GetAlphaBlend());
 			m_RenderQueueDrawer = EnumDrawer<RenderQueue>("Render Queue", m_Material->GetRenderQueue());
+			m_BlendModeDrawer = EnumDrawer<BlendMode>("Blend Mode", m_Material->GetBlendMode());
+			m_DepthWriteDrawer = BoolDrawer("Depth Write", m_Material->GetDepthWrite());
 		}
 	}
 
@@ -505,10 +506,6 @@ namespace Odyssey
 				m_Material->SetShader(shader);
 		}
 
-		Ref<Shader> shader = m_Material->GetShader();
-		auto& shaderBindings = shader->GetBindings();
-		auto textures = m_Material->GetTextures();
-
 		if (m_EmissiveColorDrawer.Draw())
 		{
 			m_Dirty = true;
@@ -523,6 +520,20 @@ namespace Odyssey
 			m_Material->SetEmissivePower(m_EmissivePowerDrawer.GetValue());
 		}
 
+		if (m_RenderQueueDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+			m_Material->SetRenderQueue(m_RenderQueueDrawer.GetValue());
+		}
+
+		if (m_BlendModeDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+			m_Material->SetBlendMode(m_BlendModeDrawer.GetValue());
+		}
+
 		if (m_AlphaClipDrawer.Draw())
 		{
 			m_Dirty = true;
@@ -530,19 +541,16 @@ namespace Odyssey
 			m_Material->SetAlphaClip(m_AlphaClipDrawer.GetValue());
 		}
 
-		if (m_AlphaBlendDrawer.Draw())
+		if (m_DepthWriteDrawer.Draw())
 		{
 			m_Dirty = true;
 			modified = true;
-			m_Material->SetAlphaBlend(m_AlphaBlendDrawer.GetValue());
+			m_Material->SetDepthWrite(m_DepthWriteDrawer.GetValue());
 		}
 
-		if (m_RenderQueueDrawer.Draw())
-		{
-			m_Dirty = true;
-			modified = true;
-			m_Material->SetRenderQueue(m_RenderQueueDrawer.GetValue());
-		}
+		Ref<Shader> shader = m_Material->GetShader();
+		auto& shaderBindings = shader->GetBindings();
+		auto textures = m_Material->GetTextures();
 
 		for (auto& [propertyName, shaderBinding] : shaderBindings)
 		{

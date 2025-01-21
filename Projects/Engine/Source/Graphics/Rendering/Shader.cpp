@@ -6,6 +6,7 @@
 #include "SourceShader.h"
 #include "VulkanDescriptorLayout.h"
 #include "spirv_cross/spirv_reflect.hpp"
+#include "Vertex.h"
 
 namespace Odyssey
 {
@@ -115,6 +116,77 @@ namespace Odyssey
 		serializer.WriteToDisk(path);
 	}
 
+	VkFormat GetVertexFormat(spirv_cross::SPIRType inputType)
+	{
+		switch (inputType.basetype)
+		{
+			case spirv_cross::SPIRType::Float:
+			{
+				if (inputType.vecsize == 1)
+					return VK_FORMAT_R32_SFLOAT;
+				else if (inputType.vecsize == 2)
+					return VK_FORMAT_R32G32_SFLOAT;
+				else if (inputType.vecsize == 3)
+					return VK_FORMAT_R32G32B32_SFLOAT;
+				else if (inputType.vecsize == 4)
+					return VK_FORMAT_R32G32B32A32_SFLOAT;
+				break;
+			}
+			case spirv_cross::SPIRType::UInt:
+			{
+				if (inputType.vecsize == 1)
+					return VK_FORMAT_R32_UINT;
+				else if (inputType.vecsize == 2)
+					return VK_FORMAT_R32G32_UINT;
+				else if (inputType.vecsize == 3)
+					return VK_FORMAT_R32G32B32_UINT;
+				else if (inputType.vecsize == 4)
+					return VK_FORMAT_R32G32B32A32_UINT;
+				break;
+			}
+			case spirv_cross::SPIRType::UInt64:
+			{
+				if (inputType.vecsize == 1)
+					return VK_FORMAT_R64_UINT;
+				else if (inputType.vecsize == 2)
+					return VK_FORMAT_R64G64_UINT;
+				else if (inputType.vecsize == 3)
+					return VK_FORMAT_R64G64B64_UINT;
+				else if (inputType.vecsize == 4)
+					return VK_FORMAT_R64G64B64A64_UINT;
+				break;
+			}
+			case spirv_cross::SPIRType::Int:
+			{
+				if (inputType.vecsize == 1)
+					return VK_FORMAT_R32_SINT;
+				else if (inputType.vecsize == 2)
+					return VK_FORMAT_R32G32_SINT;
+				else if (inputType.vecsize == 3)
+					return VK_FORMAT_R32G32B32_SINT;
+				else if (inputType.vecsize == 4)
+					return VK_FORMAT_R32G32B32A32_SINT;
+				break;
+			}
+			case spirv_cross::SPIRType::Int64:
+			{
+				if (inputType.vecsize == 1)
+					return VK_FORMAT_R64_SINT;
+				else if (inputType.vecsize == 2)
+					return VK_FORMAT_R64G64_SINT;
+				else if (inputType.vecsize == 3)
+					return VK_FORMAT_R64G64B64_SINT;
+				else if (inputType.vecsize == 4)
+					return VK_FORMAT_R64G64B64A64_SINT;
+				break;
+			}
+			default:
+				break;
+		}
+
+		assert(0);
+		return VK_FORMAT_R32G32B32A32_SFLOAT;
+	}
 	void Shader::GenerateShaderResources()
 	{
 		// Destroy the previous layout, if it exists
@@ -130,8 +202,35 @@ namespace Odyssey
 		for (auto& [shaderType, shaderData] : m_Shaders)
 		{
 			// Parse the spirv code so it can be reflected
-			spirv_cross::CompilerReflection refl(shaderData.CodeBuffer. Convert<uint32_t>());
+			spirv_cross::CompilerReflection refl(shaderData.CodeBuffer.Convert<uint32_t>());
 			spirv_cross::ShaderResources resources = refl.get_shader_resources();
+
+			if (shaderType == ShaderType::Vertex)
+			{
+				// BUild vertex attribute descriptions from the inputs
+				std::vector<VkVertexInputAttributeDescription> descriptions;
+
+				for (size_t i = 0; i < resources.stage_inputs.size(); i++)
+				{
+					spirv_cross::Resource& input = resources.stage_inputs[i];
+					spirv_cross::SPIRType inputType = refl.get_type(input.type_id);
+					std::string inputName = Odyssey::ToLower(input.name);
+
+					std::string inputTag = "input.";
+					size_t inputPos = inputName.find("input.");
+					if (inputPos != std::string::npos)
+						inputName = inputName.substr(inputPos + inputTag.length());
+
+					VkVertexInputAttributeDescription& inputDesc = descriptions.emplace_back();
+					inputDesc.binding = 0;
+					inputDesc.location = i;
+					inputDesc.format = GetVertexFormat(inputType);
+					inputDesc.offset = Vertex::GetOffset(inputName);
+				}
+
+				if (descriptions.size() > 0)
+					m_VertexAttributes.WriteData(descriptions);
+			}
 
 			// Reflect texture sampler bindings
 			for (spirv_cross::Resource& resource : resources.sampled_images)
@@ -205,6 +304,44 @@ namespace Odyssey
 		}
 
 		descriptorLayout->Apply();
+	}
+
+	void Shader::GenerateVertexLayout()
+	{
+		//std::vector<VkVertexInputAttributeDescription> descriptions;
+
+		//// Position
+		//auto& positionDesc = descriptions.emplace_back();
+		//positionDesc.binding = 0;
+		//positionDesc.location = 0;
+		//positionDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		//positionDesc.offset = offsetof(Vertex, Position);
+
+		//// Normal
+		//auto& normalDesc = descriptions.emplace_back();
+		//normalDesc.binding = 0;
+		//normalDesc.location = 1;
+		//normalDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
+		//normalDesc.offset = offsetof(Vertex, Normal);
+
+		//if (skinned)
+		//{
+		//	// Bone Indices
+		//	auto& indicesDesc = descriptions.emplace_back();
+		//	indicesDesc.binding = 0;
+		//	indicesDesc.location = 2;
+		//	indicesDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		//	indicesDesc.offset = offsetof(Vertex, BoneIndices);
+
+		//	// Bone Weights
+		//	auto& weightsDesc = descriptions.emplace_back();
+		//	weightsDesc.binding = 0;
+		//	weightsDesc.location = 3;
+		//	weightsDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		//	weightsDesc.offset = offsetof(Vertex, BoneWeights);
+		//}
+
+		//attributeDescriptions.WriteData(descriptions);
 	}
 
 	void Shader::OnSourceModified()

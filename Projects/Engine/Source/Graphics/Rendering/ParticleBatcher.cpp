@@ -243,7 +243,6 @@ namespace Odyssey
 		VulkanPipelineInfo info;
 		info.Shaders = s_EmitShader->GetResourceMap();
 		info.DescriptorLayout = s_EmitShader->GetDescriptorLayout();
-		info.BindVertexAttributeDescriptions = false;
 		s_EmitComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 	}
 
@@ -257,7 +256,6 @@ namespace Odyssey
 		VulkanPipelineInfo info;
 		info.Shaders = s_SimShader->GetResourceMap();
 		info.DescriptorLayout = s_SimShader->GetDescriptorLayout();
-		info.BindVertexAttributeDescriptions = false;
 		s_SimComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 	}
 
@@ -299,7 +297,6 @@ namespace Odyssey
 		VulkanPipelineInfo info;
 		info.Shaders = s_EmitShader->GetResourceMap();
 		info.DescriptorLayout = s_EmitShader->GetDescriptorLayout();
-		info.BindVertexAttributeDescriptions = false;
 		s_EmitComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 	}
 	void ParticleBatcher::OnSimShaderModified()
@@ -310,7 +307,6 @@ namespace Odyssey
 		VulkanPipelineInfo info;
 		info.Shaders = s_SimShader->GetResourceMap();
 		info.DescriptorLayout = s_SimShader->GetDescriptorLayout();
-		info.BindVertexAttributeDescriptions = false;
 		s_SimComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 	}
 }
