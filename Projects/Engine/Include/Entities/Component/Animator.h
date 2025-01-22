@@ -39,7 +39,7 @@ namespace Odyssey
 		GUID GetBlueprintAsset();
 		void SetRig(GUID animationRigGUID);
 		void SetBlueprint(GUID animationClipGUID);
-		void SetDebugEnabled(bool enabled) { m_DebugEnabled = enabled; }
+		void SetDebugEnabled(bool enabled);
 
 	public:
 		const std::vector<glm::mat4>& GetFinalPoses() { return m_FinalPoses; }
@@ -53,9 +53,7 @@ namespace Odyssey
 		void ResetToBindpose();
 
 	private:
-		void DebugDrawBones();
-		void DebugDrawKey(const glm::mat4& key);
-		void DebugDrawBone(const Bone& bone);
+		void DebugDraw();
 
 	private:
 		bool m_Enabled = true;
@@ -76,6 +74,7 @@ namespace Odyssey
 
 	private:
 		bool m_DebugEnabled = false;
+		uint32_t m_DebugID;
 	};
 
 }

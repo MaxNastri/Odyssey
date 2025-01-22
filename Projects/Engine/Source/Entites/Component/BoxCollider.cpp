@@ -1,6 +1,8 @@
 #include "BoxCollider.h"
 #include "PhysicsLayers.h"
 #include "Enum.h"
+#include "Transform.h"
+#include "DebugRenderer.h"
 
 namespace Odyssey
 {
@@ -43,5 +45,33 @@ namespace Odyssey
 	void BoxCollider::SetEnabled(bool enabled)
 	{
 		m_Enabled = enabled;
+	}
+
+	void BoxCollider::SetDebugEnabled(bool enabled)
+	{
+		if (enabled != m_DebugEnabled)
+		{
+			m_DebugEnabled = enabled;
+
+			if (m_DebugEnabled)
+				m_DebugID = DebugRenderer::Register([this]() { DebugDraw(); });
+			else
+				DebugRenderer::Deregister(m_DebugID);
+		}
+	}
+	void BoxCollider::DebugDraw()
+	{
+		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
+		{
+			float3 position, scale;
+			quat rotation;
+			transform->DecomposeWorldMatrix(position, rotation, scale);
+
+			float3 right = transform->Right();
+			float3 up = transform->Up();
+			float3 forward = transform->Forward();
+
+			DebugRenderer::AddOrientedBox(position + m_Center, m_Extents, right, up, forward, float3(0.0f, 1.0f, 0.0f));
+		}
 	}
 }

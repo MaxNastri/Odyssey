@@ -137,6 +137,19 @@ namespace Odyssey
 		m_Blueprint = AssetManager::LoadInstance<AnimationBlueprint>(guid);
 	}
 
+	void Animator::SetDebugEnabled(bool enabled)
+	{
+		if (enabled != m_DebugEnabled)
+		{
+			m_DebugEnabled = enabled;
+
+			if (m_DebugEnabled)
+				m_DebugID = DebugRenderer::Register([this]() { DebugDraw(); });
+			else
+				DebugRenderer::Deregister(m_DebugID);
+		}
+	}
+
 	void Animator::CreateBoneGameObjects()
 	{
 		// Destroy any existing bone game objects
@@ -242,9 +255,6 @@ namespace Odyssey
 
 			glm::mat4 key = animatorInverse * boneTransform.GetWorldMatrix();
 			m_FinalPoses[i] = key * bones[i].InverseBindpose;
-
-			if (m_DebugEnabled)
-				DebugDrawKey(boneTransform.GetWorldMatrix());
 		}
 	}
 
@@ -277,50 +287,23 @@ namespace Odyssey
 		}
 	}
 
-	void Animator::DebugDrawBones()
+	void Animator::DebugDraw()
 	{
-		auto& transform = m_GameObject.GetComponent<Transform>();
-		for (auto& boneGameObject : m_BoneGameObjects)
+		for (auto& [boneName, boneObject] : m_BoneCatalog)
 		{
-			auto& boneTransform = boneGameObject.GetComponent<Transform>();
-			glm::mat4 finalPose = boneTransform.GetWorldMatrix();
+			Transform& boneTransform = boneObject.GetComponent<Transform>();
+
+			// Decompose the world matrix
+			glm::mat4 worldSpace = boneTransform.GetWorldMatrix();
 			glm::vec3 translation;
 			glm::vec3 scale;
 			glm::quat rotation;
 			glm::vec3 skew;
 			glm::vec4 perspective;
-			glm::decompose(finalPose, scale, rotation, translation, skew, perspective);
+			glm::decompose(worldSpace, scale, rotation, translation, skew, perspective);
 
+			// Add a sphere at the world-space position
 			DebugRenderer::AddSphere(translation, 0.025f, glm::vec4(0, 1, 0, 1));
 		}
-	}
-
-	void Animator::DebugDrawKey(const glm::mat4& key)
-	{
-		auto& transform = m_GameObject.GetComponent<Transform>();
-		glm::mat4 worldSpace = key;
-		glm::vec3 translation;
-		glm::vec3 scale;
-		glm::quat rotation;
-		glm::vec3 skew;
-		glm::vec4 perspective;
-		glm::decompose(worldSpace, scale, rotation, translation, skew, perspective);
-
-		DebugRenderer::AddSphere(translation, 0.025f, glm::vec4(0, 1, 0, 1));
-	}
-
-	void Animator::DebugDrawBone(const Bone& bone)
-	{
-		auto& transform = m_GameObject.GetComponent<Transform>();
-
-		glm::mat4 boneTransform = transform.GetWorldMatrix() * bone.Bindpose;
-		glm::vec3 translation;
-		glm::vec3 scale;
-		glm::quat rotation;
-		glm::vec3 skew;
-		glm::vec4 perspective;
-		glm::decompose(boneTransform, scale, rotation, translation, skew, perspective);
-
-		DebugRenderer::AddSphere(translation, 0.025f, glm::vec4(0, 1, 0, 1));
 	}
 }

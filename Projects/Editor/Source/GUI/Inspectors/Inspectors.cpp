@@ -1581,6 +1581,11 @@ namespace Odyssey
 				if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
 					boxCollider->SetExtents(m_ExtentsDrawer.GetValue());
 			}
+			if (m_DebugDrawer.Draw())
+			{
+				if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+					boxCollider->SetDebugEnabled(m_DebugDrawer.GetValue());
+			}
 		}
 
 		ImGui::PopID();
@@ -1595,6 +1600,7 @@ namespace Odyssey
 			m_CenterDrawer = Vector3Drawer("Center", boxCollider->GetCenter(), float3(0.0f), false);
 			m_ExtentsDrawer = Vector3Drawer("Extents", boxCollider->GetExtents(), float3(1.0f), false);
 			m_LayerDrawer = EnumDrawer<PhysicsLayer>("Physics Layer", boxCollider->GetLayer());
+			m_DebugDrawer = BoolDrawer("Enable Debug", false, false);
 		}
 	}
 

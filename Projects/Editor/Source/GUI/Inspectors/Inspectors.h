@@ -274,6 +274,7 @@ namespace Odyssey
 		Vector3Drawer m_CenterDrawer;
 		Vector3Drawer m_ExtentsDrawer;
 		EnumDrawer<PhysicsLayer> m_LayerDrawer;
+		BoolDrawer m_DebugDrawer;
 		bool m_Enabled;
 	};
 

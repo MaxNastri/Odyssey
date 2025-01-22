@@ -286,6 +286,7 @@ namespace Odyssey
 		info.Shaders = m_Shader->GetResourceMap();
 		info.DescriptorLayout = m_Shader->GetDescriptorLayout();
 		info.Topology = Topology::LineList;
+		info.CullMode = CullMode::None;
 		info.AttributeDescriptions = m_Shader->GetVertexAttributes();
 
 		m_GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);

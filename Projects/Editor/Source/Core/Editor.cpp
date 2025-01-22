@@ -105,7 +105,6 @@ namespace Odyssey
 
 				// Process any changes made to the user's managed dll
 				m_ScriptCompiler->Process();
-				DebugRenderer::Clear();
 				GUIManager::Update();
 
 				if (!m_UpdateScripts)
@@ -117,6 +116,7 @@ namespace Odyssey
 
 				PhysicsSystem::Update();
 
+				DebugRenderer::Update();
 				running = Renderer::Update();
 				Renderer::Render();
 			}
