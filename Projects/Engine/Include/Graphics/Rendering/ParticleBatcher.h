@@ -36,8 +36,8 @@ namespace Odyssey
 		static void OnSimShaderModified();
 
 	private:
-		inline static constexpr size_t MAX_PARTICLES = 16384;
-		inline static constexpr size_t MAX_EMITTERS = 124;
+		inline static constexpr size_t MAX_PARTICLES = 4096;
+		inline static constexpr size_t MAX_EMITTERS = 64;
 
 		struct ParticleCounts
 		{

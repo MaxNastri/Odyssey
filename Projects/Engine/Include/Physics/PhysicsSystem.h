@@ -1,91 +1,52 @@
 #pragma once
-#include <Jolt/RegisterTypes.h>
-#include <Jolt/Core/Factory.h>
-#include <Jolt/Core/TempAllocator.h>
-#include <Jolt/Core/JobSystemThreadPool.h>
-#include <Jolt/Physics/PhysicsSettings.h>
-#include <Jolt/Physics/PhysicsSystem.h>
-#include <Jolt/Physics/Collision/Shape/BoxShape.h>
-#include <Jolt/Physics/Collision/Shape/SphereShape.h>
-#include <Jolt/Physics/Body/BodyCreationSettings.h>
-#include <Jolt/Physics/Body/BodyActivationListener.h>
+#include "PhysicsLayers.h"
+#include "PhysicsListeners.h"
 
 namespace Odyssey
 {
-	namespace PhysicsLayers
-	{
-		static constexpr ObjectLayer Static = 0;
-		static constexpr ObjectLayer Dynamic = 1;
-		static constexpr ObjectLayer Count = 2;
-	}
-
-	class PhysicsLayerFilter : public ObjectLayerPairFilter
-	{
-	public:
-		virtual bool ShouldCollider(ObjectLayer obj1, ObjectLayer obj2)
-		{
-			switch (obj1)
-			{
-				case PhysicsLayers::Static:
-					return obj2 == PhysicsLayers::Dynamic;
-				case PhysicsLayers::Dynamic:
-					return true;
-				default:
-					assert(false);
-					return false;
-			}
-		}
-	};
-
-	namespace BroadPhaseLayers
-	{
-		static constexpr BroadPhaseLayer Static(0);
-		static constexpr BroadPhaseLayer Dynamic(1);
-		static constexpr uint32_t Count(2);
-	}
-
-	// Defines a mapping between object and broadphase layers
-	class BroadPhaseLayerMap final : public BroadPhaseLayerInterface
-	{
-	public:
-		BroadPhaseLayerMap()
-		{
-			m_ObjectToBroadPhase[PhysicsLayers::Static] = BroadPhaseLayers::Static;
-			m_ObjectToBroadPhase[PhysicsLayers::Dynamic] = BroadPhaseLayers::Dynamic;
-		}
-
-		virtual uint32_t GetNumBroadPhaseLayers() const override
-		{
-			return BroadPhaseLayers::Count;
-		}
-
-		virtual BroadPhaseLayer GetBroadPhaseLayer(ObjectLayer objLayer) const override
-		{
-			assert(objLayer < PhysicsLayers::Count);
-			return m_ObjectToBroadPhase[objLayer];
-		}
-
-#if defined(JPH_EXTERNAL_PROFILE) || defined(JPH_PROFILE_ENABLED)
-		virtual const char* GetBroadPhaseLayerName(BroadPhaseLayer inLayer) const override
-		{
-			switch ((BroadPhaseLayer::Type)inLayer)
-			{
-				case (BroadPhaseLayer::Type)BroadPhaseLayers::Static:
-					return "Static";
-				case (BroadPhaseLayer::Type)BroadPhaseLayers::Dynamic:
-					return "Dynamic";
-				default:
-					JPH_ASSERT(false);
-					return "INVALID";
-			}
-		}
-#endif
-	private:
-		BroadPhaseLayer m_ObjectToBroadPhase[PhysicsLayers::Count];
-	};
-
 	class PhysicsSystem
 	{
+	public:
+		PhysicsSystem();
+		~PhysicsSystem();
 
+	public:
+		static void Init();
+		static void Update();
+		static void Destroy();
+
+		static BodyID Register(float3 position, float3 extents, PhysicsLayer layer);
+		static void Deregister(BodyID id);
+		static BodyInterface& GetBodyInterface();
+
+	private:
+		void FixedUpdate();
+		BodyID RegisterBody(float3 position, float3 extents, PhysicsLayer layer);
+		void DeregisterBody(BodyID id);
+		BodyInterface& GetPhysicsBodyInterface();
+
+	private:
+		// Singleton
+		inline static PhysicsSystem* s_Instance = nullptr;
+
+	private:
+		JPH::PhysicsSystem m_PhysicsSystem;
+		JobSystemThreadPool* m_JobSystem;
+		TempAllocatorImpl* m_Allocator;
+
+		// Create mapping table from object layer to broadphase layer
+		// Note: As this is an interface, PhysicsSystem will take a reference to this so this instance needs to stay alive!
+		// Also have a look at BroadPhaseLayerInterfaceTable or BroadPhaseLayerInterfaceMask for a simpler interface.
+		BroadPhaseLayerMap m_BroadPhaseLayerMap;
+
+		// Create class that filters object vs broadphase layers
+		// Note: As this is an interface, PhysicsSystem will take a reference to this so this instance needs to stay alive!
+		// Also have a look at ObjectVsBroadPhaseLayerFilterTable or ObjectVsBroadPhaseLayerFilterMask for a simpler interface.
+		BroadPhaseLayerFilter m_BroadPhaseLayerFilter;
+
+		// Create class that filters object vs object layers
+		// Note: As this is an interface, PhysicsSystem will take a reference to this so this instance needs to stay alive!
+		// Also have a look at ObjectLayerPairFilterTable or ObjectLayerPairFilterMask for a simpler interface.
+		ObjectLayerFilter m_PhysicsLayerFilter;
 	};
 }

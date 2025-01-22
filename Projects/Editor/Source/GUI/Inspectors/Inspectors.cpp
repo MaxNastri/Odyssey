@@ -336,6 +336,8 @@ namespace Odyssey
 			Utils::RegisterComponentType<Animator, AnimatorInspector>();
 			Utils::RegisterComponentType<ParticleEmitter, ParticleEmitterInspector>();
 			Utils::RegisterComponentType<ScriptComponent, ScriptInspector>();
+			Utils::RegisterComponentType<BoxCollider, BoxColliderInspector>();
+			Utils::RegisterComponentType<RigidBody, RigidBodyInspector>();
 			Utils::s_ComponentsRegistered = true;
 		}
 
@@ -1538,5 +1540,97 @@ namespace Odyssey
 			m_BaseColorPicker = ColorPicker("Base Color", spriteRenderer->GetBaseColor());
 			m_AnchorDrawer = EnumDrawer<SpriteRenderer::AnchorPosition>("Anchor Position", spriteRenderer->GetAnchor());
 		}
+	}
+
+	BoxColliderInspector::BoxColliderInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+
+	bool BoxColliderInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+				boxCollider->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Box Collider", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_LayerDrawer.Draw())
+			{
+				if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+					boxCollider->SetLayer(m_LayerDrawer.GetValue());
+			}
+			if (m_CenterDrawer.Draw())
+			{
+				if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+					boxCollider->SetCenter(m_CenterDrawer.GetValue());
+			}
+			if (m_ExtentsDrawer.Draw())
+			{
+				if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+					boxCollider->SetExtents(m_ExtentsDrawer.GetValue());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void BoxColliderInspector::InitDrawers()
+	{
+		if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+		{
+			m_CenterDrawer = Vector3Drawer("Center", boxCollider->GetCenter(), float3(0.0f), false);
+			m_ExtentsDrawer = Vector3Drawer("Extents", boxCollider->GetExtents(), float3(1.0f), false);
+			m_LayerDrawer = EnumDrawer<PhysicsLayer>("Physics Layer", boxCollider->GetLayer());
+		}
+	}
+
+	RigidBodyInspector::RigidBodyInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+
+	bool RigidBodyInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+				rigidBody->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Rigid Body", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void RigidBodyInspector::InitDrawers()
+	{
+
 	}
 }

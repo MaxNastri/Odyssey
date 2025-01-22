@@ -44,7 +44,6 @@ project "Odyssey.Editor"
         "JPH_DEBUG_RENDERER",
         "JPH_FLOATING_POINT_EXCEPTIONS_ENABLED",
         "JPH_ENABLE_ASSERTS",
-        "JPH_PROFILE_ENABLED",
     }
 
     filter { "system:windows" }

@@ -16,6 +16,7 @@
 #include "Preferences.h"
 #include "FileManager.h"
 #include "Input.h"
+#include "PhysicsSystem.h"
 
 namespace Odyssey
 {
@@ -48,6 +49,8 @@ namespace Odyssey
 			settings.SourceAssetExtensionMap = Preferences::GetSourceExtensionsMap();
 			AssetManager::CreateDatabase(settings);
 		}
+
+		PhysicsSystem::Init();
 
 		// Create the renderer
 		RendererConfig config = { .EnableIMGUI = true, .EnableReverseDepth = true };
@@ -112,11 +115,14 @@ namespace Odyssey
 				if (m_UpdateScripts)
 					SceneManager::Update();
 
+				PhysicsSystem::Update();
+
 				running = Renderer::Update();
 				Renderer::Render();
 			}
 		}
 
+		PhysicsSystem::Destroy();
 		Renderer::Destroy();
 		ScriptingManager::Destroy();
 	}

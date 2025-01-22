@@ -31,7 +31,7 @@
 #include "glm.h"
 using namespace glm;
 
-#include "Jolt/Jolt.h"
+#include <Jolt/Jolt.h>
 using namespace JPH;
 
 using Path = std::filesystem::path;

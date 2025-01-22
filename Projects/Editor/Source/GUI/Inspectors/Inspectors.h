@@ -13,6 +13,8 @@
 #include "Transform.h"
 #include "ScriptComponent.h"
 #include "SpriteRenderer.h"
+#include "RigidBody.h"
+#include "BoxCollider.h"
 
 // Assets
 #include "Material.h"
@@ -255,6 +257,42 @@ namespace Odyssey
 		Ref<IEventListener> m_OnSceneModifiedListener;
 	};
 
+	class BoxColliderInspector : public Inspector
+	{
+	public:
+		BoxColliderInspector() = default;
+		BoxColliderInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		Vector3Drawer m_CenterDrawer;
+		Vector3Drawer m_ExtentsDrawer;
+		EnumDrawer<PhysicsLayer> m_LayerDrawer;
+		bool m_Enabled;
+	};
+
+	class RigidBodyInspector : public Inspector
+	{
+	public:
+		RigidBodyInspector() = default;
+		RigidBodyInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		bool m_Enabled;
+	};
 #pragma endregion
 
 #pragma region Assets

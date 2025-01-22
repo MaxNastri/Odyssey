@@ -9,6 +9,8 @@
 #include "Light.h"
 #include "ParticleEmitter.h"
 #include "SpriteRenderer.h"
+#include "BoxCollider.h"
+#include "RigidBody.h"
 
 namespace Odyssey
 {
@@ -81,6 +83,12 @@ namespace Odyssey
 
 		if (SpriteRenderer* spriteRenderer = TryGetComponent<SpriteRenderer>())
 			spriteRenderer->Serialize(componentsNode);
+
+		if (BoxCollider* boxCollider = TryGetComponent<BoxCollider>())
+			boxCollider->Serialize(componentsNode);
+
+		if (RigidBody* rigidBody = TryGetComponent<RigidBody>())
+			rigidBody->Serialize(componentsNode);
 	}
 
 	void GameObject::Deserialize(SerializationNode& gameObjectNode)
@@ -125,6 +133,10 @@ namespace Odyssey
 				AddComponent<ParticleEmitter>(componentNode);
 			else if (componentType == SpriteRenderer::Type)
 				AddComponent<SpriteRenderer>(componentNode);
+			else if (componentType == BoxCollider::Type)
+				AddComponent<BoxCollider>(componentNode);
+			else if (componentType == RigidBody::Type)
+				AddComponent<RigidBody>(componentNode);
 		}
 	}
 
@@ -216,6 +228,12 @@ namespace Odyssey
 
 		if (SpriteRenderer* spriteRenderer = TryGetComponent<SpriteRenderer>())
 			spriteRenderer->Serialize(componentsNode);
+
+		if (BoxCollider* boxCollider = TryGetComponent<BoxCollider>())
+			boxCollider->Serialize(componentsNode);
+
+		if (RigidBody* rigidBody = TryGetComponent<RigidBody>())
+			rigidBody->Serialize(componentsNode);
 	}
 
 	void GameObject::Deserialize(SerializationNode& gameObjectNode, bool prefab)
@@ -275,6 +293,16 @@ namespace Odyssey
 			{
 				SpriteRenderer& spriteRenderer = AddComponent<SpriteRenderer>();
 				spriteRenderer.Deserialize(componentNode);
+			}
+			else if (componentType == BoxCollider::Type)
+			{
+				BoxCollider& boxCollider = AddComponent<BoxCollider>();
+				boxCollider.Deserialize(componentNode);
+			}
+			else if (componentType == RigidBody::Type)
+			{
+				RigidBody& rigidBody = AddComponent<RigidBody>();
+				rigidBody.Deserialize(componentNode);
 			}
 		}
 	}

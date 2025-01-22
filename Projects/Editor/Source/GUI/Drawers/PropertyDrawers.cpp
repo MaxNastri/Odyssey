@@ -562,7 +562,7 @@ namespace Odyssey
 			ImGui::PopStyleVar();
 			ImGui::PopID();
 
-			if (modified)
+			if (modified && onValueModified)
 				onValueModified(m_Value);
 
 			ImGui::EndTable();

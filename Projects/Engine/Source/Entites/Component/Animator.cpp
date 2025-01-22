@@ -29,6 +29,7 @@ namespace Odyssey
 		GUID blueprintGUID = m_Blueprint->GetGUID();
 
 		componentNode.WriteData("Type", Animator::Type);
+		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Animation Rig", rigGUID.CRef());
 		componentNode.WriteData("Animation Blueprint", blueprintGUID.CRef());
 		componentNode.WriteData("Rig Root", m_RigRootGUID.CRef());
@@ -39,6 +40,7 @@ namespace Odyssey
 		GUID rigGUID;
 		GUID blueprintGUID;
 
+		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Animation Rig", rigGUID.Ref());
 		node.ReadData("Animation Blueprint", blueprintGUID.Ref());
 		node.ReadData("Rig Root", m_RigRootGUID.Ref());

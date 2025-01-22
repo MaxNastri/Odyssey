@@ -12,6 +12,7 @@
 #include "ParticleEmitter.h"
 #include "EventSystem.h"
 #include "Events.h"
+#include "RigidBody.h"
 
 namespace Odyssey
 {
@@ -110,6 +111,15 @@ namespace Odyssey
 			script.ClearManagedHandle();
 			ScriptingManager::DestroyInstance(guid);
 		}
+
+		for (auto entity : m_Registry.view<RigidBody>())
+		{
+			GameObject gameObject = GameObject(this, entity);
+			GUID guid = gameObject.GetGUID();
+
+			RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
+			rigidBody.Destroy();
+		}
 	}
 
 	void Scene::Awake()
@@ -128,6 +138,12 @@ namespace Odyssey
 			GameObject gameObject = GameObject(this, entity);
 			ScriptComponent& script = gameObject.GetComponent<ScriptComponent>();
 			script.Awake();
+		}
+		for (auto entity : m_Registry.view<RigidBody>())
+		{
+			GameObject gameObject = GameObject(this, entity);
+			RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
+			rigidBody.Awake();
 		}
 	}
 
@@ -157,6 +173,12 @@ namespace Odyssey
 			GameObject gameObject = GameObject(this, entity);
 			Animator& animator = gameObject.GetComponent<Animator>();
 			animator.Update();
+		}
+		for (auto entity : m_Registry.view<RigidBody>())
+		{
+			GameObject gameObject = GameObject(this, entity);
+			RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
+			rigidBody.Update();
 		}
 	}
 
