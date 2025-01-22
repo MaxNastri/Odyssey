@@ -9,6 +9,7 @@ namespace Odyssey
 {
 	class RenderObjectsPass;
 	class VulkanTextureSampler;
+	struct PlaymodeStateChangedEvent;
 
 	class GameViewWindow : public DockableWindow
 	{
@@ -24,6 +25,7 @@ namespace Odyssey
 
 	private:
 		void OnSceneLoaded(SceneLoadedEvent* event);
+		void OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event);
 
 	private:
 		void CreateRenderTexture();
@@ -36,6 +38,8 @@ namespace Odyssey
 
 	private:
 		Ref<IEventListener> m_SceneLoadListener = nullptr;
+		Ref<IEventListener> m_PlaymodeStateListener = nullptr;
+
 	private:
 		Ref<RenderObjectsPass> m_GameViewPass;
 		GameObject m_MainCamera;

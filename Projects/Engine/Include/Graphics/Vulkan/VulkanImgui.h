@@ -46,6 +46,7 @@ namespace Odyssey
 		uint64_t AddRenderTexture(ResourceID renderTextureID, ResourceID samplerID);
 		void RemoveTexture(uint64_t id);
 		void SetFont(Path fontFile, float fontSize);
+		void SetMouseInputEnabled(bool enabled) { m_MouseInputEnabled = enabled; }
 
 	private:
 		void CreateDescriptorPool();
@@ -56,6 +57,7 @@ namespace Odyssey
 		std::map<int64_t, VkDescriptorSet> m_RenderTextures;
 		VkDescriptorPool descriptorPool;
 		std::function<void(void)> m_DrawGUIListener;
+		bool m_MouseInputEnabled = false;
 
 	private:
 		std::vector<std::function<void()>> m_PendingDestroys;

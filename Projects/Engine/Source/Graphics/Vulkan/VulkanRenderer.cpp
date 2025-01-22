@@ -140,6 +140,18 @@ namespace Odyssey
 		m_IMGUIPass->SetImguiState(m_Imgui);
 	}
 
+	void VulkanRenderer::CaptureCursor()
+	{
+		m_Window->GetWindow()->CaptureCursor();
+		m_Imgui->SetMouseInputEnabled(false);
+	}
+
+	void VulkanRenderer::ReleaseCursor()
+	{
+		m_Window->GetWindow()->ReleaseCursor();
+		m_Imgui->SetMouseInputEnabled(true);
+	}
+
 	bool VulkanRenderer::BeginFrame(VulkanFrame*& currentFrame)
 	{
 		VkDevice vkDevice = m_Context->GetDevice()->GetLogicalDevice();

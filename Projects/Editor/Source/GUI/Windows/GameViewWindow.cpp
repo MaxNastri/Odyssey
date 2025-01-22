@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Editor.h"
+#include "EditorEvents.h"
 #include "EventSystem.h"
 #include "GameViewWindow.h"
 #include "GUIManager.h"
@@ -28,8 +29,9 @@ namespace Odyssey
 		CreateRenderTexture();
 
 		// Listen for the scene loaded event
-		auto onSceneLoaded = [this](SceneLoadedEvent* event) { OnSceneLoaded(event); };
-		m_SceneLoadListener = EventSystem::Listen<SceneLoadedEvent>(onSceneLoaded);
+		m_SceneLoadListener = EventSystem::Listen<SceneLoadedEvent>([this](SceneLoadedEvent* event) { OnSceneLoaded(event); });
+		m_PlaymodeStateListener = EventSystem::Listen<PlaymodeStateChangedEvent>
+			([this](PlaymodeStateChangedEvent* event) { OnPlaymodeStateChanged(event); });
 	}
 
 	void GameViewWindow::Destroy()
@@ -39,15 +41,20 @@ namespace Odyssey
 			EventSystem::RemoveListener<SceneLoadedEvent>(m_SceneLoadListener);
 			m_SceneLoadListener = nullptr;
 		}
+
+		if (m_PlaymodeStateListener)
+		{
+			EventSystem::RemoveListener<PlaymodeStateChangedEvent>(m_PlaymodeStateListener);
+			m_PlaymodeStateListener = nullptr;
+		}
+
 		DestroyRenderTexture();
 	}
 
 	void GameViewWindow::Update()
 	{
 		if (Input::GetKeyDown(KeyCode::Escape))
-		{
 			Renderer::ReleaseCursor();
-		}
 	}
 
 	bool GameViewWindow::Draw()
@@ -96,6 +103,28 @@ namespace Odyssey
 				m_MainCamera = gameObject;
 				camera.SetViewportSize(m_WindowSize.x, m_WindowSize.y);
 				camera.SetTag(Camera::Tag::Main);
+			}
+		}
+	}
+
+	void GameViewWindow::OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event)
+	{
+		switch (event->State)
+		{
+			case PlaymodeState::EnterPlaymode:
+			{
+				Renderer::CaptureCursor();
+				break;
+			}
+			case PlaymodeState::PausePlaymode:
+			{
+				Renderer::ReleaseCursor();
+				break;
+			}
+			case PlaymodeState::ExitPlaymode:
+			{
+				Renderer::ReleaseCursor();
+				break;
 			}
 		}
 	}

@@ -34,11 +34,14 @@ namespace Odyssey
 	public:
 		void AddRenderPass(Ref<RenderPass> renderPass) { m_RenderPasses.push_back(renderPass); }
 		void AddImguiPass();
+		void CaptureCursor();
+		void ReleaseCursor();
 
 	public:
 		std::shared_ptr<VulkanImgui> GetImGui() { return m_Imgui; }
 		std::shared_ptr<VulkanWindow> GetWindow() { return m_Window; }
 		static uint32_t GetFrameIndex() { return s_FrameIndex; }
+
 	private:
 		bool BeginFrame(VulkanFrame*& currentFrame);
 		void RenderFrame();
