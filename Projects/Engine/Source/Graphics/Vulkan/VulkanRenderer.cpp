@@ -16,12 +16,15 @@
 #include "VulkanWindow.h"
 #include "RenderTarget.h"
 #include "VulkanTexture.h"
+#include "VulkanAllocator.h"
 
 namespace Odyssey
 {
 	VulkanRenderer::VulkanRenderer()
 	{
 		m_Context = std::make_shared<VulkanContext>();
+
+		VulkanAllocator::Init(m_Context);
 		ResourceManager::Initialize(m_Context);
 		m_Context->SetupResources();
 

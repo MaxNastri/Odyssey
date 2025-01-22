@@ -186,7 +186,7 @@ namespace Odyssey
 		auto image = ResourceManager::GetResource<VulkanImage>(imageID);
 
 		auto copyRegions = image->GetCopyRegions();
-		vkCmdCopyBufferToImage(m_CommandBuffer, buffer->buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, (uint32_t)copyRegions.size(), copyRegions.data());
+		vkCmdCopyBufferToImage(m_CommandBuffer, buffer->m_Buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, (uint32_t)copyRegions.size(), copyRegions.data());
 
 		uint32_t mipLevels = image->GetMipLevels();
 
@@ -276,7 +276,7 @@ namespace Odyssey
 	{
 		VkDeviceSize offsets[] = { 0 };
 		auto vertexBuffer = ResourceManager::GetResource<VulkanBuffer>(vertexBufferID);
-		vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, &(vertexBuffer->buffer), offsets);
+		vkCmdBindVertexBuffers(m_CommandBuffer, 0, 1, &(vertexBuffer->m_Buffer), offsets);
 	}
 
 	void VulkanCommandBuffer::CopyBufferToBuffer(ResourceID source, ResourceID destination, size_t dataSize)
@@ -288,13 +288,13 @@ namespace Odyssey
 		copyRegion.srcOffset = 0; // Optional
 		copyRegion.dstOffset = 0; // Optional
 		copyRegion.size = dataSize;
-		vkCmdCopyBuffer(m_CommandBuffer, srcBuffer->buffer, dstBuffer->buffer, 1, &copyRegion);
+		vkCmdCopyBuffer(m_CommandBuffer, srcBuffer->m_Buffer, dstBuffer->m_Buffer, 1, &copyRegion);
 	}
 
 	void VulkanCommandBuffer::BindIndexBuffer(ResourceID indexBufferID)
 	{
 		auto indexBuffer = ResourceManager::GetResource<VulkanBuffer>(indexBufferID);
-		vkCmdBindIndexBuffer(m_CommandBuffer, indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT32);
+		vkCmdBindIndexBuffer(m_CommandBuffer, indexBuffer->m_Buffer, 0, VK_INDEX_TYPE_UINT32);
 	}
 
 	void VulkanCommandBuffer::PushDescriptorsGraphics(VulkanPushDescriptors* descriptors, ResourceID pipelineID)

@@ -57,6 +57,8 @@ namespace Odyssey
 		device_extensions.push_back("VK_KHR_multiview");
 		device_extensions.push_back("VK_KHR_maintenance2");
 		device_extensions.push_back(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
+		device_extensions.push_back("VK_KHR_bind_memory2");
+		device_extensions.push_back("VK_KHR_get_memory_requirements2");
 
 		// Validate our extensions are available
 		for (const char* extension : device_extensions)
