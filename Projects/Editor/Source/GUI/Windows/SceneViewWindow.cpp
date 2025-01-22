@@ -244,7 +244,7 @@ namespace Odyssey
 					}
 					else if (op == ImGuizmo::SCALE)
 					{
-						transform->AddScale(scale);
+						transform->SetScale(scale);
 					}
 				}
 			}
@@ -298,7 +298,7 @@ namespace Odyssey
 				glm::vec3 up = transform->Up() * inputVel.y;
 				glm::vec3 fwd = transform->Forward() * inputVel.z;
 				glm::vec3 velocity = (right + up + fwd) * speed * (1.0f / 144.0f);
-				transform->AddPosition(velocity);
+				transform->SetPosition(transform->GetPosition() + velocity);
 			}
 
 			float mouseH = (float)Input::GetMouseAxisHorizontal();
@@ -306,13 +306,11 @@ namespace Odyssey
 
 			if (mouseH != 0.0f || mouseV != 0.0f)
 			{
-				glm::vec3 yaw = vec3(0, 1, 0) * mouseH * (1.0f / 144.0f) * 15.0f;
-				glm::vec3 pitch = vec3(1, 0, 0) * mouseV * (1.0f / 144.0f) * 15.0f;
-				yaw.z = 0.0f;
-				pitch.z = 0.0f;
+				float yaw = mouseH * (1.0f / 144.0f) * 15.0f;
+				float pitch = mouseV * (1.0f / 144.0f) * 15.0f;
 
-				transform->AddRotation(yaw);
-				transform->AddRotation(pitch);
+				float3 euler = transform->GetEulerRotation();
+				transform->SetRotation(float3(euler.x + pitch, euler.y + yaw, 0.0f));
 			}
 
 			// TODO: Move this to a timer or (ideally) into one of the destroy functions

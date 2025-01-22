@@ -150,16 +150,12 @@ namespace Odyssey
 					RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
 
 					// Get the post-physics simulation position and rotation in world space
-					Vec3 simPositionV3;
-					Quat simRotationQ;
-					GetBodyInterface().GetPositionAndRotation(rigidBody.GetBodyID(), simPositionV3, simRotationQ);
+					Vec3 simPosition;
+					Quat simRotation;
+					GetBodyInterface().GetPositionAndRotation(rigidBody.GetBodyID(), simPosition, simRotation);
 
-					// Convert to glm
-					float3 simPosition = float3(simPositionV3[0], simPositionV3[1], simPositionV3[2]);
-					quat simRotation = quat(simRotationQ.GetW(), simRotationQ.GetX(), simRotationQ.GetY(), simRotationQ.GetZ());
-
-					transform.SetPosition(simPosition);
-					transform.SetRotation(simRotation);
+					transform.SetPosition(ToFloat3(simPosition));
+					transform.SetRotation(ToQuat(simRotation));
 					transform.SetLocalSpace();
 				}
 			}

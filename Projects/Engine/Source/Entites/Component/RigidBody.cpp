@@ -68,6 +68,18 @@ namespace Odyssey
 		node.ReadData("Enabled", m_Enabled);
 	}
 
+	void RigidBody::AddLinearVelocity(float3 velocity)
+	{
+		BodyInterface& bodyInterface = PhysicsSystem::GetBodyInterface();
+		bodyInterface.AddLinearVelocity(m_BodyID, ToJoltVec3(velocity));
+	}
+
+	void RigidBody::SetLinearVelocity(float3 velocity)
+	{
+		BodyInterface& bodyInterface = PhysicsSystem::GetBodyInterface();
+		bodyInterface.SetLinearVelocity(m_BodyID, ToJoltVec3(velocity));
+	}
+
 	void RigidBody::SetEnabled(bool enabled)
 	{
 		m_Enabled = enabled;

@@ -244,7 +244,7 @@ namespace Odyssey
 			m_FinalPoses[i] = key * bones[i].InverseBindpose;
 
 			if (m_DebugEnabled)
-				DebugDrawKey(key);
+				DebugDrawKey(boneTransform.GetWorldMatrix());
 		}
 	}
 

@@ -162,7 +162,7 @@ namespace Odyssey
 	void AnimatorInspector::OnDebugEnabledModified(bool enabled)
 	{
 		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
-			animator->SetFloat("Speed", enabled ? 10.0f : 0.0f);
+			animator->SetDebugEnabled(enabled);
 	}
 
 	CameraInspector::CameraInspector(GameObject& gameObject)

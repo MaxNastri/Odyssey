@@ -21,6 +21,10 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
+		void AddLinearVelocity(float3 velocity);
+		void SetLinearVelocity(float3 velocity);
+
+	public:
 		void SetEnabled(bool enabled);
 
 	public:
