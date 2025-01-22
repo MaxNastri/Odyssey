@@ -27,23 +27,26 @@ namespace Odyssey
 				PhysicsLayer layer = collider->GetLayer();
 				float3 extents = collider->GetExtents();
 				float3 center = collider->GetCenter();
-				float3 worldPos = transform->GetWorldPosition();
 
-				m_BodyID = PhysicsSystem::Register(center + worldPos, extents, layer);
+				float3 position, scale;
+				quat rotation;
+				transform->DecomposeWorldMatrix(position, rotation, scale);
+
+				m_BodyID = PhysicsSystem::Register(center + position, rotation, extents, layer);
 			}
 		}
 	}
 
 	void RigidBody::Update()
 	{
-		if (BoxCollider* collider = m_GameObject.TryGetComponent<BoxCollider>())
-		{
-			if (collider->GetLayer() == PhysicsLayer::Dynamic)
-			{
-				BodyInterface& bodyInterface = PhysicsSystem::GetBodyInterface();
-				bodyInterface.AddLinearVelocity(m_BodyID, Vec3(0, -1.0f, 0));
-			}
-		}
+		//if (BoxCollider* collider = m_GameObject.TryGetComponent<BoxCollider>())
+		//{
+		//	if (collider->GetLayer() == PhysicsLayer::Dynamic)
+		//	{
+		//		BodyInterface& bodyInterface = PhysicsSystem::GetBodyInterface();
+		//		bodyInterface.AddLinearVelocity(m_BodyID, Vec3(0, -1.0f * Time::DeltaTime(), 0));
+		//	}
+		//}
 	}
 
 	void RigidBody::Destroy()

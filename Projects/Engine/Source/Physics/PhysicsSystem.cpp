@@ -82,9 +82,9 @@ namespace Odyssey
 		s_Instance = nullptr;
 	}
 
-	BodyID PhysicsSystem::Register(float3 position, float3 extents, PhysicsLayer layer)
+	BodyID PhysicsSystem::Register(float3 position, quat rotation, float3 extents, PhysicsLayer layer)
 	{
-		return s_Instance->RegisterBody(position, extents, layer);
+		return s_Instance->RegisterBody(position, rotation, extents, layer);
 	}
 
 	void PhysicsSystem::Deregister(BodyID id)
@@ -105,16 +105,43 @@ namespace Odyssey
 		// If you take larger steps than 1 / 60th of a second you need to do multiple collision steps in order to keep the simulation stable. Do 1 collision step per 1 / 60th of a second (round up).
 		const int cCollisionSteps = 1;
 
+		// Broadphase results, will apply buoyancy to any body that intersects with the water volume
+		// ADDS A COOL WATER FLOATING EFFECT
+		class MyCollector : public CollideShapeBodyCollector
+		{
+		public:
+			MyCollector(JPH::PhysicsSystem* inSystem, RVec3Arg inSurfacePosition, Vec3Arg inSurfaceNormal, float inDeltaTime) : mSystem(inSystem), mSurfacePosition(inSurfacePosition), mSurfaceNormal(inSurfaceNormal), mDeltaTime(inDeltaTime) { }
+
+			virtual void			AddHit(const BodyID& inBodyID) override
+			{
+				BodyLockWrite lock(mSystem->GetBodyLockInterface(), inBodyID);
+				Body& body = lock.GetBody();
+				if (body.IsActive())
+					body.ApplyBuoyancyImpulse(mSurfacePosition, mSurfaceNormal, 1.9f, 0.75f, 0.05f, Vec3(0.2f, 0.0f, 0.0f), mSystem->GetGravity(), mDeltaTime);
+			}
+
+		private:
+			JPH::PhysicsSystem* mSystem;
+			RVec3					mSurfacePosition;
+			Vec3					mSurfaceNormal;
+			float					mDeltaTime;
+		};
+
+		MyCollector collector(&m_PhysicsSystem, Vec3(0, 1.0f, 0), Vec3::sAxisY(), Time::DeltaTime());
+
+		// Apply buoyancy to all bodies that intersect with the water
+		AABox water_box(-Vec3(100, 100, 100), Vec3(100, 0, 100));
+		water_box.Translate(Vec3(Vec3(0, 1.0f, 0)));
+		m_PhysicsSystem.GetBroadPhaseQuery().CollideAABox(water_box, collector, SpecifiedBroadPhaseLayerFilter(BroadPhaseLayers::Dynamic), SpecifiedObjectLayerFilter(PhysicsLayers::Dynamic));
+
 		// Step the world
 		m_PhysicsSystem.Update(Time::DeltaTime(), cCollisionSteps, m_Allocator, m_JobSystem);
 
+		// Writeback to the transform
 		if (Scene* activeScene = SceneManager::GetActiveScene())
 		{
 			if (activeScene->IsRunning())
 			{
-				std::string dt = std::to_string(1.0f / Time::DeltaTime());
-				Log::Info(dt);
-
 				auto view = activeScene->GetAllEntitiesWith<Transform, RigidBody>();
 				for (auto& entity : view)
 				{
@@ -122,18 +149,24 @@ namespace Odyssey
 					Transform& transform = gameObject.GetComponent<Transform>();
 					RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
 
-					Vec3 postPosition = GetBodyInterface().GetPosition(rigidBody.GetBodyID());
-					float3 postSimPos = float3(postPosition[0], postPosition[1], postPosition[2]);
-					float3 worldPosition = transform.GetWorldPosition();
+					// Get the post-physics simulation position and rotation in world space
+					Vec3 simPositionV3;
+					Quat simRotationQ;
+					GetBodyInterface().GetPositionAndRotation(rigidBody.GetBodyID(), simPositionV3, simRotationQ);
 
-					float3 delta = postSimPos - worldPosition;
-					transform.SetPosition(postSimPos);
+					// Convert to glm
+					float3 simPosition = float3(simPositionV3[0], simPositionV3[1], simPositionV3[2]);
+					quat simRotation = quat(simRotationQ.GetW(), simRotationQ.GetX(), simRotationQ.GetY(), simRotationQ.GetZ());
+
+					transform.SetPosition(simPosition);
+					transform.SetRotation(simRotation);
+					transform.SetLocalSpace();
 				}
 			}
 		}
 	}
 
-	BodyID PhysicsSystem::RegisterBody(float3 position, float3 extents, PhysicsLayer layer)
+	BodyID PhysicsSystem::RegisterBody(float3 position, quat rotation, float3 extents, PhysicsLayer layer)
 	{
 		// The main way to interact with the bodies in the physics system is through the body interface. There is a locking and a non-locking
 		// variant of this. We're going to use the locking version (even though we're not planning to access bodies from multiple threads)
@@ -151,7 +184,8 @@ namespace Odyssey
 
 		// Create the settings for the body itself. Note that here you can also set other properties like the restitution / friction.
 		EMotionType motion = layer == PhysicsLayer::Static ? EMotionType::Static : EMotionType::Dynamic;
-		BodyCreationSettings floor_settings(floor_shape, RVec3(position.x, position.y, position.z), Quat::sIdentity(), motion, (uint32_t)layer);
+		Quat rotationQ = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
+		BodyCreationSettings floor_settings(floor_shape, RVec3(position.x, position.y, position.z), rotationQ, motion, (uint32_t)layer);
 
 		// Create the actual rigid body
 		Body* floor = body_interface.CreateBody(floor_settings); // Note that if we run out of bodies this can return nullptr

@@ -64,30 +64,8 @@ namespace Odyssey
 			if (desc.ImageType == ImageType::Cubemap)
 				imageInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 
-			if (vkCreateImage(device, &imageInfo, allocator, &m_Image) != VK_SUCCESS)
-			{
-				Log::Error("[VulkanImage] Failed to create image");
-				return;
-			}
-		}
-
-		// Image memory
-		{
-			VkMemoryRequirements memRequirements;
-			vkGetImageMemoryRequirements(device, m_Image, &memRequirements);
-
-			VkMemoryAllocateInfo allocInfo{};
-			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-			allocInfo.allocationSize = memRequirements.size;
-			allocInfo.memoryTypeIndex = FindMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-			if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
-			{
-				Log::Error("(VulkanImage) Failed to allocate image memory");
-				return;
-			}
-
-			vkBindImageMemory(device, m_Image, imageMemory, 0);
+			VulkanAllocator allocator("Image");
+			m_MemoryAllocation = allocator.AllocateImage(imageInfo, VMA_MEMORY_USAGE_AUTO, m_Image);
 		}
 
 		// Image view
@@ -153,22 +131,19 @@ namespace Odyssey
 
 	void VulkanImage::Destroy()
 	{
-		vkDestroyImage(m_Context->GetDeviceVK(), m_Image, allocator);
-		vkDestroyImageView(m_Context->GetDeviceVK(), imageView, allocator);
-		vkFreeMemory(m_Context->GetDeviceVK(), imageMemory, allocator);
+		VulkanAllocator allocator("Image");
+		allocator.DestroyImage(m_Image, m_MemoryAllocation);
+		vkDestroyImageView(m_Context->GetDeviceVK(), imageView, nullptr);
 
 		m_Image = VK_NULL_HANDLE;
 		imageView = VK_NULL_HANDLE;
-		imageMemory = VK_NULL_HANDLE;
 	}
 
 	void VulkanImage::SetData(BinaryBuffer& buffer)
 	{
-		if (!m_StagingBuffer.IsValid())
-			m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
-
 		// Set the staging buffer's memory
-		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
+		ResourceID stagingBufferID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
+		Ref<VulkanBuffer> stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(stagingBufferID);
 		stagingBuffer->CopyData(buffer.GetSize(), buffer.GetData().data());
 
 		// Generate a copy region for this new set of data
@@ -193,21 +168,21 @@ namespace Odyssey
 
 		// Copy the buffer into the image
 		commandBuffer->BeginCommands();
-		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_ImageDesc.Width, m_ImageDesc.Height);
+		commandBuffer->CopyBufferToImage(stagingBufferID, m_ResourceID, m_ImageDesc.Width, m_ImageDesc.Height);
 		commandBuffer->EndCommands();
 		commandBuffer->SubmitGraphics();
+
 		commandPool->ReleaseBuffer(commandBufferID);
+		ResourceManager::Destroy(stagingBufferID);
 	}
 
 	void VulkanImage::SetData(BinaryBuffer& buffer, size_t arrayDepth)
 	{
 		size_t offset = buffer.GetSize() / arrayDepth;
 
-		if (!m_StagingBuffer.IsValid())
-			m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
-
 		// Set the staging buffer's memory
-		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
+		ResourceID stagingBufferID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
+		Ref<VulkanBuffer> stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(stagingBufferID);
 		stagingBuffer->CopyData(buffer.GetSize(), buffer.GetData().data());
 
 		// Generate a copy region for this new set of data
@@ -228,17 +203,18 @@ namespace Odyssey
 		}
 
 		// Allocate a command buffer
-		ResourceID commandPoolID = m_Context->GetGraphicsCommandPool();
-		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+		Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		// Copy the buffer into the image
 		commandBuffer->BeginCommands();
-		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_ImageDesc.Width, m_ImageDesc.Height);
+		commandBuffer->CopyBufferToImage(stagingBufferID, m_ResourceID, m_ImageDesc.Width, m_ImageDesc.Height);
 		commandBuffer->EndCommands();
 		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
+
+		ResourceManager::Destroy(stagingBufferID);
 	}
 
 	VkImageMemoryBarrier VulkanImage::CreateMemoryBarrier(ResourceID imageID, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage)

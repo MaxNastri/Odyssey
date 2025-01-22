@@ -3,6 +3,7 @@
 #include "VulkanGlobals.h"
 #include "Resource.h"
 #include "BinaryBuffer.h"
+#include "VulkanAllocator.h"
 
 VK_FWD_DECLARE(VkImage)
 VK_FWD_DECLARE(VkDeviceMemory)
@@ -64,14 +65,13 @@ namespace Odyssey
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
+		VkImage m_Image;
+		VmaAllocation m_MemoryAllocation;
 		VulkanImageDescription m_ImageDesc;
 		uint32_t m_MipLevels = 1;
-		VkImage m_Image;
 		VkImageView imageView;
 		VkImageLayout imageLayout;
-		VkDeviceMemory imageMemory;
 		std::vector<VkBufferImageCopy> m_CopyRegions;
-		ResourceID m_StagingBuffer;
 		bool isDepth = false;
 	};
 }

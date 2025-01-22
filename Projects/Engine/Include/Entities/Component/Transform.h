@@ -34,6 +34,7 @@ namespace Odyssey
 
         glm::vec3 GetPosition() { return m_Position; }
         float3 GetWorldPosition();
+
         glm::vec3 GetEulerRotation() { return m_EulerRotation; }
         glm::quat GetRotation() { return m_Rotation; }
         glm::vec3 GetScale() { return m_Scale; }
@@ -44,6 +45,8 @@ namespace Odyssey
         glm::mat4x4 GetWorldMatrix();
 
     public:
+        void SetLocalSpace();
+        void DecomposeWorldMatrix(float3& pos, quat& rotation, float3& scale);
         void RotateAround(glm::vec3 center, glm::vec3 axis, float degrees, bool worldSpace);
         void LookAt(float3 center, float3 up);
 

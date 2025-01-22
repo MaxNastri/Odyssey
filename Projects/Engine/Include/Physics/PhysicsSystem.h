@@ -15,13 +15,13 @@ namespace Odyssey
 		static void Update();
 		static void Destroy();
 
-		static BodyID Register(float3 position, float3 extents, PhysicsLayer layer);
+		static BodyID Register(float3 position, quat rotation, float3 extents, PhysicsLayer layer);
 		static void Deregister(BodyID id);
 		static BodyInterface& GetBodyInterface();
 
 	private:
 		void FixedUpdate();
-		BodyID RegisterBody(float3 position, float3 extents, PhysicsLayer layer);
+		BodyID RegisterBody(float3 position, quat rotation, float3 extents, PhysicsLayer layer);
 		void DeregisterBody(BodyID id);
 		BodyInterface& GetPhysicsBodyInterface();
 

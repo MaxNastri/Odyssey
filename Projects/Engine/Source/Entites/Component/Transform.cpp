@@ -176,6 +176,25 @@ namespace Odyssey
 		return worldMatrix;
 	}
 
+	void Transform::SetLocalSpace()
+	{
+		GameObject parent = m_GameObject.GetParent();
+		if (parent.IsValid())
+		{
+			Transform& parentTransform = parent.GetComponent<Transform>();
+			ComposeLocalMatrix();
+			m_LocalMatrix = glm::inverse(parentTransform.GetWorldMatrix()) * m_LocalMatrix;
+		}
+
+	}
+
+	void Transform::DecomposeWorldMatrix(float3& position, quat& rotation, float3& scale)
+	{
+		float3 skew;
+		float4 perspective;
+		glm::decompose(GetWorldMatrix(), scale, rotation, position, skew, perspective);
+	}
+
 	void Transform::RotateAround(glm::vec3 center, glm::vec3 axis, float degrees, bool worldSpace)
 	{
 		glm::quat targetRotation = glm::angleAxis(glm::radians(degrees), axis);
