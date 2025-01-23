@@ -13,6 +13,7 @@
 #include "SpriteRenderer.h"
 #include "Prefab.h"
 #include "ParticleEmitter.h"
+#include "RigidBody.h"
 
 namespace Odyssey
 {
@@ -586,6 +587,64 @@ namespace Odyssey::InternalCalls
 
 #pragma endregion
 
+#pragma region Rigid Body
+
+	void RigidBody_GetLinearVelocity(uint64_t guid, float3* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			*value = rigidBody->GetLinearVelocity();
+	}
+
+	void RigidBody_SetLinearVelocity(uint64_t guid, float3 value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			 rigidBody->SetLinearVelocity(value);
+	}
+
+	void RigidBody_AddLinearVelocity(uint64_t guid, float3 value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			 rigidBody->AddLinearVelocity(value);
+	}
+
+	void RigidBody_GetFriction(uint64_t guid, float* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			*value = rigidBody->GetFriction();
+	}
+
+	void RigidBody_SetFriction(uint64_t guid, float value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			rigidBody->SetFriction(value);
+	}
+
+	void RigidBody_GetMaxLinearVelocity(uint64_t guid, float* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			*value = rigidBody->GetMaxLinearVelocity();
+	}
+
+	void RigidBody_SetMaxLinearVelocity(uint64_t guid, float value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			rigidBody->SetMaxLinearVelocity(value);
+	}
+#pragma endregion
 
 
 #pragma region Input

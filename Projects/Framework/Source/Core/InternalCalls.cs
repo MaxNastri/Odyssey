@@ -117,6 +117,18 @@ namespace Odyssey
 
         #endregion
 
+        #region Rigid Body
+
+        internal static delegate* unmanaged<GUID, Vector3*, void> RigidBody_GetLinearVelocity;
+        internal static delegate* unmanaged<GUID, Vector3, void> RigidBody_SetLinearVelocity;
+        internal static delegate* unmanaged<GUID, Vector3, void> RigidBody_AddLinearVelocity;
+        internal static delegate* unmanaged<GUID, float*, void> RigidBody_GetFriction;
+        internal static delegate* unmanaged<GUID, float, void> RigidBody_SetFriction;
+        internal static delegate* unmanaged<GUID, float*, void> RigidBody_GetMaxLinearVelocity;
+        internal static delegate* unmanaged<GUID, float, void> RigidBody_SetMaxLinearVelocity;
+
+        #endregion
+
         #region Input
 
         internal static delegate* unmanaged<KeyCode, bool> Input_GetKeyPress;

@@ -4,6 +4,7 @@
 #include "MeshRenderer.h"
 #include "ScriptComponent.h"
 #include "Transform.h"
+#include "RigidBody.h"
 #include "InternalCalls.h"
 
 namespace Odyssey
@@ -19,6 +20,7 @@ namespace Odyssey
 		RegisterComponentType<ScriptComponent>(frameworkAssembly, ScriptComponent::Type);
 		RegisterComponentType<SpriteRenderer>(frameworkAssembly, SpriteRenderer::Type);
 		RegisterComponentType<Transform>(frameworkAssembly, Transform::Type);
+		RegisterComponentType<RigidBody>(frameworkAssembly, RigidBody::Type);
 
 		ADD_INTERNAL_CALL(Animator_IsEnabled);
 		ADD_INTERNAL_CALL(Animator_SetFloat);
@@ -76,6 +78,14 @@ namespace Odyssey
 		ADD_INTERNAL_CALL(ParticleEmitter_SetStartColor);
 		ADD_INTERNAL_CALL(ParticleEmitter_SetEndColor);
 		ADD_INTERNAL_CALL(ParticleEmitter_SetShape);
+
+		ADD_INTERNAL_CALL(RigidBody_GetLinearVelocity);
+		ADD_INTERNAL_CALL(RigidBody_SetLinearVelocity);
+		ADD_INTERNAL_CALL(RigidBody_AddLinearVelocity);
+		ADD_INTERNAL_CALL(RigidBody_GetFriction);
+		ADD_INTERNAL_CALL(RigidBody_SetFriction);
+		ADD_INTERNAL_CALL(RigidBody_GetMaxLinearVelocity);
+		ADD_INTERNAL_CALL(RigidBody_SetMaxLinearVelocity);
 
 		ADD_INTERNAL_CALL(Prefab_LoadInstance);
 

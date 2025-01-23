@@ -1189,7 +1189,7 @@ namespace Odyssey
 		{
 			Transform& transform = m_GameObject.GetComponent<Transform>();
 			positionDrawer.SetValue(transform.GetPosition());
-			rotationDrawer.SetValue(transform.GetEulerRotation());
+			rotationDrawer.SetValue(transform.GetEulerRotation(false));
 			scaleDrawer.SetValue(transform.GetScale());
 
 			modified |= positionDrawer.Draw();
@@ -1237,7 +1237,7 @@ namespace Odyssey
 	{
 		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
 		{
-			transform->SetRotation(rotation);
+			transform->SetRotation(rotation, false);
 		}
 	}
 
@@ -1628,6 +1628,16 @@ namespace Odyssey
 
 		if (ImGui::CollapsingHeader("Rigid Body", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			if (m_FrictionDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetFriction(m_FrictionDrawer.GetValue());
+			}
+			if (m_MaxLinearVelocityDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetMaxLinearVelocity(m_MaxLinearVelocityDrawer.GetValue());
+			}
 		}
 
 		ImGui::PopID();
@@ -1637,6 +1647,10 @@ namespace Odyssey
 
 	void RigidBodyInspector::InitDrawers()
 	{
-
+		if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+		{
+			m_FrictionDrawer = FloatDrawer("Friction", rigidBody->GetFriction());
+			m_MaxLinearVelocityDrawer = FloatDrawer("Max Linear Velocity", rigidBody->GetMaxLinearVelocity());
+		}
 	}
 }

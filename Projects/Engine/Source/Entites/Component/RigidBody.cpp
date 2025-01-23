@@ -20,9 +20,9 @@ namespace Odyssey
 
 	void RigidBody::Awake()
 	{
-		if (BoxCollider* collider = m_GameObject.TryGetComponent<BoxCollider>())
+		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
 		{
-			if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
+			if (BoxCollider* collider = m_GameObject.TryGetComponent<BoxCollider>())
 			{
 				PhysicsLayer layer = collider->GetLayer();
 				float3 extents = collider->GetExtents();
@@ -32,7 +32,8 @@ namespace Odyssey
 				quat rotation;
 				transform->DecomposeWorldMatrix(position, rotation, scale);
 
-				m_BodyID = PhysicsSystem::Register(center + position, rotation, extents, layer);
+				m_Body = PhysicsSystem::RegisterBox(center + position, rotation,  extents, m_Properties, layer);
+				m_BodyID = m_Body->GetID();
 			}
 		}
 	}
@@ -51,7 +52,8 @@ namespace Odyssey
 
 	void RigidBody::Destroy()
 	{
-		PhysicsSystem::Deregister(m_BodyID);
+		PhysicsSystem::Deregister(m_Body);
+		m_Body = nullptr;
 	}
 
 	void RigidBody::Serialize(SerializationNode& node)
@@ -61,27 +63,78 @@ namespace Odyssey
 
 		componentNode.WriteData("Type", RigidBody::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
+		componentNode.WriteData("Friction", m_Properties.Friction);
+		componentNode.WriteData("Max Linear Velocity", m_Properties.MaxLinearVelocity);
 	}
 
 	void RigidBody::Deserialize(SerializationNode& node)
 	{
 		node.ReadData("Enabled", m_Enabled);
+		node.ReadData("Friction", m_Properties.Friction);
+		node.ReadData("Max Linear Velocity", m_Properties.MaxLinearVelocity);
 	}
 
 	void RigidBody::AddLinearVelocity(float3 velocity)
 	{
-		BodyInterface& bodyInterface = PhysicsSystem::GetBodyInterface();
-		bodyInterface.AddLinearVelocity(m_BodyID, ToJoltVec3(velocity));
+		if (m_Body)
+		{
+			BodyInterface& bodyInterface = PhysicsSystem::GetBodyInterface();
+			Vec3 currentVelocity = bodyInterface.GetLinearVelocity(m_BodyID);
+			bodyInterface.SetLinearVelocity(m_BodyID, currentVelocity + ToJoltVec3(velocity));
+		}
+	}
+
+	float3 RigidBody::GetLinearVelocity()
+	{
+		if (m_Body)
+		{
+			BodyInterface& bodyInterface = PhysicsSystem::GetBodyInterface();
+			Vec3 currentVelocity = bodyInterface.GetLinearVelocity(m_BodyID);
+			return ToFloat3(currentVelocity);
+		}
+
+		return float3(0.0f);
+	}
+
+	float RigidBody::GetFriction()
+	{
+		return m_Properties.Friction;
+	}
+
+	float RigidBody::GetMaxLinearVelocity()
+	{
+		return m_Properties.MaxLinearVelocity;
 	}
 
 	void RigidBody::SetLinearVelocity(float3 velocity)
 	{
-		BodyInterface& bodyInterface = PhysicsSystem::GetBodyInterface();
-		bodyInterface.SetLinearVelocity(m_BodyID, ToJoltVec3(velocity));
+		if (m_Body)
+			PhysicsSystem::GetBodyInterface().SetLinearVelocity(m_BodyID, ToJoltVec3(velocity));
+	}
+
+	void RigidBody::SetMaxLinearVelocity(float velocity)
+	{
+		m_Properties.MaxLinearVelocity = velocity;
+
+		if (m_Body)
+			m_Body->GetMotionProperties()->SetMaxLinearVelocity(m_Properties.MaxLinearVelocity);
+	}
+
+	void RigidBody::SetFriction(float friction)
+	{
+		m_Properties.Friction = std::clamp(friction, 0.0f, 1.0f);
+
+		if (m_Body)
+			PhysicsSystem::GetBodyInterface().SetFriction(m_BodyID, m_Properties.Friction);
 	}
 
 	void RigidBody::SetEnabled(bool enabled)
 	{
 		m_Enabled = enabled;
+	}
+
+	BodyID RigidBody::GetBodyID()
+	{
+		return m_Body->GetID();
 	}
 }

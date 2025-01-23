@@ -53,6 +53,7 @@
     <Compile Include="Source\Components\Component.cs" />
     <Compile Include="Source\Components\MeshRenderer.cs" />
     <Compile Include="Source\Components\ParticleEmitter.cs" />
+    <Compile Include="Source\Components\RigidBody.cs" />
     <Compile Include="Source\Components\ScriptComponent.cs" />
     <Compile Include="Source\Components\SpriteRenderer.cs" />
     <Compile Include="Source\Components\Transform.cs" />

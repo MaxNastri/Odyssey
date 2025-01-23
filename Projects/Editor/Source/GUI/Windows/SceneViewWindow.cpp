@@ -19,6 +19,7 @@
 #include "Preferences.h"
 #include "RenderTarget.h"
 #include "VulkanTextureSampler.h"
+#include "OdysseyTime.h"
 
 namespace Odyssey
 {
@@ -239,7 +240,6 @@ namespace Odyssey
 						if (fabs(deltaRotationEuler.y) < 0.001) deltaRotationEuler.y = 0.0f;
 						if (fabs(deltaRotationEuler.z) < 0.001) deltaRotationEuler.z = 0.0f;
 
-						transform->SetRotation(transform->GetEulerRotation() + deltaRotationEuler);
 						transform->SetRotation(rotation);
 					}
 					else if (op == ImGuizmo::SCALE)
@@ -297,7 +297,7 @@ namespace Odyssey
 				glm::vec3 right = transform->Right() * inputVel.x;
 				glm::vec3 up = transform->Up() * inputVel.y;
 				glm::vec3 fwd = transform->Forward() * inputVel.z;
-				glm::vec3 velocity = (right + up + fwd) * speed * (1.0f / 144.0f);
+				glm::vec3 velocity = (right + up + fwd) * speed * Time::DeltaTime();
 				transform->SetPosition(transform->GetPosition() + velocity);
 			}
 
@@ -306,11 +306,11 @@ namespace Odyssey
 
 			if (mouseH != 0.0f || mouseV != 0.0f)
 			{
-				float yaw = mouseH * (1.0f / 144.0f) * 15.0f;
-				float pitch = mouseV * (1.0f / 144.0f) * 15.0f;
+				float yaw = mouseH * Time::DeltaTime() * 15.0f;
+				float pitch = mouseV * Time::DeltaTime() * 15.0f;
 
-				float3 euler = transform->GetEulerRotation();
-				transform->SetRotation(float3(euler.x + pitch, euler.y + yaw, 0.0f));
+				float3 euler = transform->GetEulerRotation(false);
+				transform->SetRotation(float3(euler.x + pitch, euler.y + yaw, 0.0f), false);
 			}
 
 			// TODO: Move this to a timer or (ideally) into one of the destroy functions

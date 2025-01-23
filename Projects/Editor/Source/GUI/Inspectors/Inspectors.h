@@ -293,6 +293,8 @@ namespace Odyssey
 	private:
 		GameObject m_GameObject;
 		bool m_Enabled;
+		FloatDrawer m_FrictionDrawer;
+		FloatDrawer m_MaxLinearVelocityDrawer;
 	};
 #pragma endregion
 

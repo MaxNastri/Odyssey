@@ -8,7 +8,7 @@
 
 namespace Odyssey
 {
-	PhysicsSystem::PhysicsSystem()
+	void PhysicsSystem::Init()
 	{
 		RegisterDefaultAllocator();
 		Factory::sInstance = new Factory();
@@ -45,18 +45,17 @@ namespace Odyssey
 		// A body activation listener gets notified when bodies activate and go to sleep
 		// Note that this is called from a job so whatever you do here needs to be thread safe.
 		// Registering one is entirely optional.
-		PhysicsBodyActivationListener body_activation_listener;
+		//PhysicsBodyActivationListener body_activation_listener;
 		//m_PhysicsSystem.SetBodyActivationListener(&body_activation_listener);
 
 		// A contact listener gets notified when bodies (are about to) collide, and when they separate again.
 		// Note that this is called from a job so whatever you do here needs to be thread safe.
 		// Registering one is entirely optional.
-		PhysicsContactListener contact_listener;
+		//PhysicsContactListener contact_listener;
 		//m_PhysicsSystem.SetContactListener(&contact_listener);
-
 	}
 
-	PhysicsSystem::~PhysicsSystem()
+	void PhysicsSystem::Destroy()
 	{
 		// Unregisters all types with the factory and cleans up the default material
 		UnregisterTypes();
@@ -72,33 +71,53 @@ namespace Odyssey
 		m_JobSystem = nullptr;
 	}
 
-	void PhysicsSystem::Init()
+	Body* PhysicsSystem::RegisterBox(float3 position, quat rotation, float3 extents, BodyProperties& properties, PhysicsLayer layer)
 	{
-		s_Instance = new PhysicsSystem();
+		BodyInterface& body_interface = m_PhysicsSystem.GetBodyInterface();
+
+		// Create the box shape settings
+		BoxShapeSettings shapeSettings(ToJoltVec3(extents));
+		shapeSettings.SetEmbedded();
+
+		// Create the shape
+		ShapeSettings::ShapeResult shapeResult = shapeSettings.Create();
+		ShapeRefC floor_shape = shapeResult.Get();
+
+		// Create the settings for the body itself. Note that here you can also set other properties like the restitution / friction.
+		EMotionType motion = layer == PhysicsLayer::Static ? EMotionType::Static : EMotionType::Dynamic;
+		BodyCreationSettings bodySettings(floor_shape, ToJoltVec3(position), ToJoltQuat(rotation), motion, (uint32_t)layer);
+
+		// Apply our body properties to the creation settings
+		bodySettings.mMaxLinearVelocity = properties.MaxLinearVelocity;
+		bodySettings.mFriction = properties.Friction;
+
+		// Create the actual rigid body
+		Body* body = body_interface.CreateBody(bodySettings); // Note that if we run out of bodies this can return nullptr
+
+		// Add it to the world
+		body_interface.AddBody(body->GetID(), EActivation::Activate);
+
+		// Optional step: Before starting the physics simulation you can optimize the broad phase. This improves collision detection performance (it's pointless here because we only have 2 bodies).
+		// You should definitely not call this every frame or when e.g. streaming in a new level section as it is an expensive operation.
+		// Instead insert all new objects in batches instead of 1 at a time to keep the broad phase efficient.
+		m_PhysicsSystem.OptimizeBroadPhase();
+
+		return body;
 	}
 
-	void PhysicsSystem::Destroy()
+	void PhysicsSystem::Deregister(Body* body)
 	{
-		delete s_Instance;
-		s_Instance = nullptr;
-	}
-
-	BodyID PhysicsSystem::Register(float3 position, quat rotation, float3 extents, PhysicsLayer layer)
-	{
-		return s_Instance->RegisterBody(position, rotation, extents, layer);
-	}
-
-	void PhysicsSystem::Deregister(BodyID id)
-	{
-		s_Instance->DeregisterBody(id);
+		BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
+		bodyInterface.RemoveBody(body->GetID());
+		bodyInterface.DestroyBody(body->GetID());
 	}
 
 	BodyInterface& PhysicsSystem::GetBodyInterface()
 	{
-		return s_Instance->GetPhysicsBodyInterface();
+		return m_PhysicsSystem.GetBodyInterface();
 	}
 
-	void PhysicsSystem::FixedUpdate()
+	void PhysicsSystem::Update()
 	{
 		// We simulate the physics world in discrete time steps. 60 Hz is a good rate to update the physics system.
 		const float cDeltaTime = 1.0f / 60.0f;
@@ -135,6 +154,33 @@ namespace Odyssey
 		//water_box.Translate(Vec3(Vec3(0, 1.0f, 0)));
 		//m_PhysicsSystem.GetBroadPhaseQuery().CollideAABox(water_box, collector, SpecifiedBroadPhaseLayerFilter(BroadPhaseLayers::Dynamic), SpecifiedObjectLayerFilter(PhysicsLayers::Dynamic));
 
+
+		// Writeback to the transform
+		if (Scene* activeScene = SceneManager::GetActiveScene())
+		{
+			if (activeScene->IsRunning())
+			{
+				auto view = activeScene->GetAllEntitiesWith<Transform, RigidBody, BoxCollider>();
+				for (auto& entity : view)
+				{
+					GameObject gameObject = GameObject(activeScene, entity);
+					Transform& transform = gameObject.GetComponent<Transform>();
+					RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
+					BoxCollider& boxCollider = gameObject.GetComponent<BoxCollider>();
+
+					if (boxCollider.GetLayer() == PhysicsLayer::Dynamic)
+					{
+						float3 position, scale;
+						quat rotation;
+						transform.DecomposeWorldMatrix(position, rotation, scale);
+
+						GetBodyInterface().SetPositionAndRotation(rigidBody.GetBodyID(), ToJoltVec3(position) + ToJoltVec3(boxCollider.GetCenter()), ToJoltQuat(rotation), EActivation::Activate);
+					}
+				}
+			}
+		}
+
+#if 1
 		// Step the world
 		m_PhysicsSystem.Update(Time::DeltaTime(), cCollisionSteps, m_Allocator, m_JobSystem);
 
@@ -162,68 +208,6 @@ namespace Odyssey
 				}
 			}
 		}
-	}
-
-	BodyID PhysicsSystem::RegisterBody(float3 position, quat rotation, float3 extents, PhysicsLayer layer)
-	{
-		// The main way to interact with the bodies in the physics system is through the body interface. There is a locking and a non-locking
-		// variant of this. We're going to use the locking version (even though we're not planning to access bodies from multiple threads)
-		BodyInterface& body_interface = m_PhysicsSystem.GetBodyInterface();
-
-		// Next we can create a rigid body to serve as the floor, we make a large box
-		// Create the settings for the collision volume (the shape).
-		// Note that for simple shapes (like boxes) you can also directly construct a BoxShape.
-		BoxShapeSettings floor_shape_settings(Vec3(extents.x, extents.y, extents.z));
-		floor_shape_settings.SetEmbedded(); // A ref counted object on the stack (base class RefTarget) should be marked as such to prevent it from being freed when its reference count goes to 0.
-
-		// Create the shape
-		ShapeSettings::ShapeResult floor_shape_result = floor_shape_settings.Create();
-		ShapeRefC floor_shape = floor_shape_result.Get(); // We don't expect an error here, but you can check floor_shape_result for HasError() / GetError()
-
-		// Create the settings for the body itself. Note that here you can also set other properties like the restitution / friction.
-		EMotionType motion = layer == PhysicsLayer::Static ? EMotionType::Static : EMotionType::Dynamic;
-		Quat rotationQ = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
-		BodyCreationSettings floor_settings(floor_shape, RVec3(position.x, position.y, position.z), rotationQ, motion, (uint32_t)layer);
-
-		// Create the actual rigid body
-		Body* floor = body_interface.CreateBody(floor_settings); // Note that if we run out of bodies this can return nullptr
-
-		// Add it to the world
-		body_interface.AddBody(floor->GetID(), EActivation::Activate);
-
-		//{
-		//	// Now create a dynamic body to bounce on the floor
-		//	// Note that this uses the shorthand version of creating and adding a body to the world
-		//	BodyCreationSettings sphere_settings(new SphereShape(0.5f), RVec3(0.0f, 2.0f, 0.0f), Quat::sIdentity(), EMotionType::Dynamic, PhysicsLayers::Dynamic);
-		//	BodyID sphere_id = body_interface.CreateAndAddBody(sphere_settings, EActivation::Activate);
-		//
-		//	// Now you can interact with the dynamic body, in this case we're going to give it a velocity.
-		//	// (note that if we had used CreateBody then we could have set the velocity straight on the body before adding it to the physics system)
-		//	body_interface.SetLinearVelocity(sphere_id, Vec3(0.0f, -5.0f, 0.0f));
-		//}
-
-		// Optional step: Before starting the physics simulation you can optimize the broad phase. This improves collision detection performance (it's pointless here because we only have 2 bodies).
-		// You should definitely not call this every frame or when e.g. streaming in a new level section as it is an expensive operation.
-		// Instead insert all new objects in batches instead of 1 at a time to keep the broad phase efficient.
-		m_PhysicsSystem.OptimizeBroadPhase();
-
-		return floor->GetID();
-	}
-
-	void PhysicsSystem::DeregisterBody(BodyID id)
-	{
-		BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
-		bodyInterface.RemoveBody(id);
-		bodyInterface.DestroyBody(id);
-	}
-
-	BodyInterface& PhysicsSystem::GetPhysicsBodyInterface()
-	{
-		return m_PhysicsSystem.GetBodyInterface();
-	}
-
-	void PhysicsSystem::Update()
-	{
-		s_Instance->FixedUpdate();
+#endif
 	}
 }

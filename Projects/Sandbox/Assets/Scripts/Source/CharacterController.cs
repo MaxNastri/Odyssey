@@ -26,6 +26,7 @@ namespace Sandbox
         public float MovementSpeed = 10.0f;
 
         private Transform m_Transform;
+        private RigidBody m_RigidBody;
         private Animator m_Animator;
         private PlayerInput m_Input;
         private Entity m_SpawnedFireball;
@@ -38,6 +39,7 @@ namespace Sandbox
         protected override void Awake()
         {
             m_Transform = GetComponent<Transform>();
+            m_RigidBody = GetComponent<RigidBody>();
             m_Animator = GetComponent<Animator>();
         }
 
@@ -68,6 +70,7 @@ namespace Sandbox
                 m_CastingTimer = 0.0f;
             }
 
+
             // Check if we should spawn the fireball
             if (m_CastingTimer >= (Casting_Duration * Fireball_Spawn_Time) && m_SpawnedFireball == null)
             {
@@ -77,7 +80,6 @@ namespace Sandbox
                 Console.WriteLine("Spawning fireball at: " + FireballTransform.WorldPosition);
             }
         }
-
 
         private void HandleMovement()
         {
@@ -97,7 +99,8 @@ namespace Sandbox
                     Vector3 up = new Vector3(0, m_Input.Movement.Y * MovementSpeed, 0);
                     Vector3 velocity = forward + right + up;
 
-                    m_Transform.Position += velocity * Time.DeltaTime;
+
+                    m_RigidBody.LinearVelocity = (velocity);
                 }
 
                 if (m_Animator != null)

@@ -19,7 +19,7 @@ namespace Odyssey
     public:
         void SetPosition(float3 position);
         void SetPosition(float x, float y, float z);
-        void SetRotation(float3 eulerAngles);
+        void SetRotation(float3 eulerAngles, bool radians = true);
         void SetRotation(quat orientation);
         void SetScale(float3 scaleFactor);
         void SetScale(float x, float y, float z);
@@ -29,7 +29,7 @@ namespace Odyssey
         float3 GetPosition() { return m_Position; }
         float3 GetWorldPosition();
 
-        float3 GetEulerRotation() { return m_EulerRotation; }
+        float3 GetEulerRotation(bool radians = true);
         quat GetRotation() { return m_Rotation; }
         float3 GetScale() { return m_Scale; }
         float3 Forward();
@@ -45,7 +45,7 @@ namespace Odyssey
         void LookAt(float3 center, float3 up);
 
     private:
-        void CalculateEulerRotations();
+        void SetEulerRotation(float3 eulerAngles);
         void ComposeLocalMatrix();
         void Reset();
 
