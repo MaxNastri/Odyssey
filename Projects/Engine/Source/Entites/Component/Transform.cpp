@@ -129,9 +129,11 @@ namespace Odyssey
 		GameObject parent = m_GameObject.GetParent();
 		if (parent.IsValid())
 		{
-			Transform& parentTransform = parent.GetComponent<Transform>();
-			ComposeLocalMatrix();
-			m_LocalMatrix = glm::inverse(parentTransform.GetWorldMatrix()) * m_LocalMatrix;
+			if (Transform* parentTransform = parent.TryGetComponent<Transform>())
+			{
+				ComposeLocalMatrix();
+				m_LocalMatrix = glm::inverse(parentTransform->GetWorldMatrix()) * m_LocalMatrix;
+			}
 		}
 
 	}

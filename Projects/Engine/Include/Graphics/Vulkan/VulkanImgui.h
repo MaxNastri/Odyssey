@@ -57,7 +57,7 @@ namespace Odyssey
 		std::map<int64_t, VkDescriptorSet> m_RenderTextures;
 		VkDescriptorPool descriptorPool;
 		std::function<void(void)> m_DrawGUIListener;
-		bool m_MouseInputEnabled = false;
+		bool m_MouseInputEnabled = true;
 
 	private:
 		std::vector<std::function<void()>> m_PendingDestroys;

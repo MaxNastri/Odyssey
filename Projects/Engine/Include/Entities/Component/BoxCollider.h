@@ -41,7 +41,7 @@ namespace Odyssey
 		bool m_DebugEnabled = false;
 		uint32_t m_DebugID;
 		GameObject m_GameObject;
-		PhysicsLayer m_PhysicsLayer;
+		PhysicsLayer m_PhysicsLayer = PhysicsLayer::Static;
 		float3 m_Extents = float3(1.0f);
 		float3 m_Center = float3(0.0f);
 	};

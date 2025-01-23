@@ -4,6 +4,7 @@
 #include "Transform.h"
 #include "RigidBody.h"
 #include "OdysseyTime.h"
+#include "BoxCollider.h"
 
 namespace Odyssey
 {
@@ -107,32 +108,32 @@ namespace Odyssey
 
 		// Broadphase results, will apply buoyancy to any body that intersects with the water volume
 		// ADDS A COOL WATER FLOATING EFFECT
-		class MyCollector : public CollideShapeBodyCollector
-		{
-		public:
-			MyCollector(JPH::PhysicsSystem* inSystem, RVec3Arg inSurfacePosition, Vec3Arg inSurfaceNormal, float inDeltaTime) : mSystem(inSystem), mSurfacePosition(inSurfacePosition), mSurfaceNormal(inSurfaceNormal), mDeltaTime(inDeltaTime) { }
+		//class MyCollector : public CollideShapeBodyCollector
+		//{
+		//public:
+		//	MyCollector(JPH::PhysicsSystem* inSystem, RVec3Arg inSurfacePosition, Vec3Arg inSurfaceNormal, float inDeltaTime) : mSystem(inSystem), mSurfacePosition(inSurfacePosition), mSurfaceNormal(inSurfaceNormal), mDeltaTime(inDeltaTime) { }
 
-			virtual void			AddHit(const BodyID& inBodyID) override
-			{
-				BodyLockWrite lock(mSystem->GetBodyLockInterface(), inBodyID);
-				Body& body = lock.GetBody();
-				if (body.IsActive())
-					body.ApplyBuoyancyImpulse(mSurfacePosition, mSurfaceNormal, 1.9f, 0.75f, 0.05f, Vec3(0.2f, 0.0f, 0.0f), mSystem->GetGravity(), mDeltaTime);
-			}
+		//	virtual void			AddHit(const BodyID& inBodyID) override
+		//	{
+		//		BodyLockWrite lock(mSystem->GetBodyLockInterface(), inBodyID);
+		//		Body& body = lock.GetBody();
+		//		if (body.IsActive())
+		//			body.ApplyBuoyancyImpulse(mSurfacePosition, mSurfaceNormal, 1.9f, 0.75f, 0.05f, Vec3(0.2f, 0.0f, 0.0f), mSystem->GetGravity(), mDeltaTime);
+		//	}
 
-		private:
-			JPH::PhysicsSystem* mSystem;
-			RVec3					mSurfacePosition;
-			Vec3					mSurfaceNormal;
-			float					mDeltaTime;
-		};
+		//private:
+		//	JPH::PhysicsSystem* mSystem;
+		//	RVec3					mSurfacePosition;
+		//	Vec3					mSurfaceNormal;
+		//	float					mDeltaTime;
+		//};
 
-		MyCollector collector(&m_PhysicsSystem, Vec3(0, 1.0f, 0), Vec3::sAxisY(), Time::DeltaTime());
+		//MyCollector collector(&m_PhysicsSystem, Vec3(0, 1.0f, 0), Vec3::sAxisY(), Time::DeltaTime());
 
-		// Apply buoyancy to all bodies that intersect with the water
-		AABox water_box(-Vec3(100, 100, 100), Vec3(100, 0, 100));
-		water_box.Translate(Vec3(Vec3(0, 1.0f, 0)));
-		m_PhysicsSystem.GetBroadPhaseQuery().CollideAABox(water_box, collector, SpecifiedBroadPhaseLayerFilter(BroadPhaseLayers::Dynamic), SpecifiedObjectLayerFilter(PhysicsLayers::Dynamic));
+		//// Apply buoyancy to all bodies that intersect with the water
+		//AABox water_box(-Vec3(100, 100, 100), Vec3(100, 0, 100));
+		//water_box.Translate(Vec3(Vec3(0, 1.0f, 0)));
+		//m_PhysicsSystem.GetBroadPhaseQuery().CollideAABox(water_box, collector, SpecifiedBroadPhaseLayerFilter(BroadPhaseLayers::Dynamic), SpecifiedObjectLayerFilter(PhysicsLayers::Dynamic));
 
 		// Step the world
 		m_PhysicsSystem.Update(Time::DeltaTime(), cCollisionSteps, m_Allocator, m_JobSystem);
@@ -142,19 +143,20 @@ namespace Odyssey
 		{
 			if (activeScene->IsRunning())
 			{
-				auto view = activeScene->GetAllEntitiesWith<Transform, RigidBody>();
+				auto view = activeScene->GetAllEntitiesWith<Transform, RigidBody, BoxCollider>();
 				for (auto& entity : view)
 				{
 					GameObject gameObject = GameObject(activeScene, entity);
 					Transform& transform = gameObject.GetComponent<Transform>();
 					RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
+					BoxCollider& boxCollider = gameObject.GetComponent<BoxCollider>();
 
 					// Get the post-physics simulation position and rotation in world space
 					Vec3 simPosition;
 					Quat simRotation;
 					GetBodyInterface().GetPositionAndRotation(rigidBody.GetBodyID(), simPosition, simRotation);
 
-					transform.SetPosition(ToFloat3(simPosition));
+					transform.SetPosition(ToFloat3(simPosition) - boxCollider.GetCenter());
 					transform.SetRotation(ToQuat(simRotation));
 					transform.SetLocalSpace();
 				}
