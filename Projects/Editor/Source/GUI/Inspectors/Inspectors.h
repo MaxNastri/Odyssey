@@ -15,6 +15,7 @@
 #include "SpriteRenderer.h"
 #include "RigidBody.h"
 #include "BoxCollider.h"
+#include "SphereCollider.h"
 
 // Assets
 #include "Material.h"
@@ -273,7 +274,26 @@ namespace Odyssey
 		GameObject m_GameObject;
 		Vector3Drawer m_CenterDrawer;
 		Vector3Drawer m_ExtentsDrawer;
-		EnumDrawer<PhysicsLayer> m_LayerDrawer;
+		BoolDrawer m_DebugDrawer;
+		bool m_Enabled;
+	};
+
+	class SphereColliderInspector : public Inspector
+	{
+	public:
+		SphereColliderInspector() = default;
+		SphereColliderInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		Vector3Drawer m_CenterDrawer;
+		FloatDrawer m_RadiusDrawer;
 		BoolDrawer m_DebugDrawer;
 		bool m_Enabled;
 	};
@@ -293,6 +313,7 @@ namespace Odyssey
 	private:
 		GameObject m_GameObject;
 		bool m_Enabled;
+		EnumDrawer<PhysicsLayer> m_LayerDrawer;
 		FloatDrawer m_FrictionDrawer;
 		FloatDrawer m_MaxLinearVelocityDrawer;
 	};

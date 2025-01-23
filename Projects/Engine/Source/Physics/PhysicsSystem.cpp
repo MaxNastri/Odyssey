@@ -5,6 +5,7 @@
 #include "RigidBody.h"
 #include "OdysseyTime.h"
 #include "BoxCollider.h"
+#include "SphereCollider.h"
 
 namespace Odyssey
 {
@@ -105,6 +106,40 @@ namespace Odyssey
 		return body;
 	}
 
+	Body* PhysicsSystem::RegisterSphere(float3 position, quat rotation, float radius, BodyProperties& properties, PhysicsLayer layer)
+	{
+		BodyInterface& body_interface = m_PhysicsSystem.GetBodyInterface();
+
+		// Create the box shape settings
+		SphereShapeSettings shapeSettings(radius);
+		shapeSettings.SetEmbedded();
+
+		// Create the shape
+		ShapeSettings::ShapeResult shapeResult = shapeSettings.Create();
+		ShapeRefC shapeRef = shapeResult.Get();
+
+		// Create the settings for the body itself. Note that here you can also set other properties like the restitution / friction.
+		EMotionType motion = layer == PhysicsLayer::Static ? EMotionType::Static : EMotionType::Dynamic;
+		BodyCreationSettings bodySettings(shapeRef, ToJoltVec3(position), ToJoltQuat(rotation), motion, (uint32_t)layer);
+
+		// Apply our body properties to the creation settings
+		bodySettings.mMaxLinearVelocity = properties.MaxLinearVelocity;
+		bodySettings.mFriction = properties.Friction;
+
+		// Create the actual rigid body
+		Body* body = body_interface.CreateBody(bodySettings); // Note that if we run out of bodies this can return nullptr
+
+		// Add it to the world
+		body_interface.AddBody(body->GetID(), EActivation::Activate);
+
+		// Optional step: Before starting the physics simulation you can optimize the broad phase. This improves collision detection performance (it's pointless here because we only have 2 bodies).
+		// You should definitely not call this every frame or when e.g. streaming in a new level section as it is an expensive operation.
+		// Instead insert all new objects in batches instead of 1 at a time to keep the broad phase efficient.
+		m_PhysicsSystem.OptimizeBroadPhase();
+
+		return body;
+	}
+
 	void PhysicsSystem::Deregister(Body* body)
 	{
 		BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
@@ -155,7 +190,7 @@ namespace Odyssey
 		//m_PhysicsSystem.GetBroadPhaseQuery().CollideAABox(water_box, collector, SpecifiedBroadPhaseLayerFilter(BroadPhaseLayers::Dynamic), SpecifiedObjectLayerFilter(PhysicsLayers::Dynamic));
 
 
-		// Writeback to the transform
+		// Read from the transform
 		if (Scene* activeScene = SceneManager::GetActiveScene())
 		{
 			if (activeScene->IsRunning())
@@ -168,7 +203,7 @@ namespace Odyssey
 					RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
 					BoxCollider& boxCollider = gameObject.GetComponent<BoxCollider>();
 
-					if (boxCollider.GetLayer() == PhysicsLayer::Dynamic)
+					if (rigidBody.GetLayer() == PhysicsLayer::Dynamic)
 					{
 						float3 position, scale;
 						quat rotation;
@@ -177,10 +212,27 @@ namespace Odyssey
 						GetBodyInterface().SetPositionAndRotation(rigidBody.GetBodyID(), ToJoltVec3(position) + ToJoltVec3(boxCollider.GetCenter()), ToJoltQuat(rotation), EActivation::Activate);
 					}
 				}
+
+				auto sphereView = activeScene->GetAllEntitiesWith<Transform, RigidBody, SphereCollider>();
+				for (auto& entity : sphereView)
+				{
+					GameObject gameObject = GameObject(activeScene, entity);
+					Transform& transform = gameObject.GetComponent<Transform>();
+					RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
+					SphereCollider& sphereCollider = gameObject.GetComponent<SphereCollider>();
+
+					if (rigidBody.GetLayer() == PhysicsLayer::Dynamic)
+					{
+						float3 position, scale;
+						quat rotation;
+						transform.DecomposeWorldMatrix(position, rotation, scale);
+
+						GetBodyInterface().SetPositionAndRotation(rigidBody.GetBodyID(), ToJoltVec3(position) + ToJoltVec3(sphereCollider.GetCenter()), ToJoltQuat(rotation), EActivation::Activate);
+					}
+				}
 			}
 		}
 
-#if 1
 		// Step the world
 		m_PhysicsSystem.Update(Time::DeltaTime(), cCollisionSteps, m_Allocator, m_JobSystem);
 
@@ -206,8 +258,25 @@ namespace Odyssey
 					transform.SetRotation(ToQuat(simRotation));
 					transform.SetLocalSpace();
 				}
+
+				auto sphereView = activeScene->GetAllEntitiesWith<Transform, RigidBody, SphereCollider>();
+				for (auto& entity : sphereView)
+				{
+					GameObject gameObject = GameObject(activeScene, entity);
+					Transform& transform = gameObject.GetComponent<Transform>();
+					RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
+					SphereCollider& sphereCollider = gameObject.GetComponent<SphereCollider>();
+
+					// Get the post-physics simulation position and rotation in world space
+					Vec3 simPosition;
+					Quat simRotation;
+					GetBodyInterface().GetPositionAndRotation(rigidBody.GetBodyID(), simPosition, simRotation);
+
+					transform.SetPosition(ToFloat3(simPosition) - sphereCollider.GetCenter());
+					transform.SetRotation(ToQuat(simRotation));
+					transform.SetLocalSpace();
+				}
 			}
 		}
-#endif
 	}
 }

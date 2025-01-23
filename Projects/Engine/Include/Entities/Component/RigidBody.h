@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "AssetSerializer.h"
-#include <Jolt/Physics/Body/BodyID.h>
+#include "PhysicsLayers.h"
 
 namespace JPH
 {
@@ -46,9 +46,11 @@ namespace Odyssey
 
 	public:
 		void SetEnabled(bool enabled);
+		void SetLayer(PhysicsLayer layer) { m_PhysicsLayer = layer; }
 
 	public:
 		bool IsEnabled() { return m_Enabled; }
+		PhysicsLayer GetLayer() { return m_PhysicsLayer; }
 		BodyID GetBodyID();
 
 	private:
@@ -58,6 +60,7 @@ namespace Odyssey
 		BodyID m_BodyID;
 
 	private: // Serialized
+		PhysicsLayer m_PhysicsLayer = PhysicsLayer::Static;
 		BodyProperties m_Properties;
 	};
 }

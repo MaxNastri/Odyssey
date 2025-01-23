@@ -55,6 +55,7 @@
     <Compile Include="Source\Components\ParticleEmitter.cs" />
     <Compile Include="Source\Components\RigidBody.cs" />
     <Compile Include="Source\Components\ScriptComponent.cs" />
+    <Compile Include="Source\Components\SphereCollider.cs" />
     <Compile Include="Source\Components\SpriteRenderer.cs" />
     <Compile Include="Source\Components\Transform.cs" />
     <Compile Include="Source\Core\Attributes.cs" />

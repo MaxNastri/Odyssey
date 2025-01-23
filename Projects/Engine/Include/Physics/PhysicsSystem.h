@@ -13,6 +13,7 @@ namespace Odyssey
 		static void Destroy();
 
 		static Body* RegisterBox(float3 position, quat rotation, float3 extents, BodyProperties& properties, PhysicsLayer layer);
+		static Body* RegisterSphere(float3 position, quat rotation, float radius, BodyProperties& properties, PhysicsLayer layer);
 		static void Deregister(Body* body);
 		static BodyInterface& GetBodyInterface();
 

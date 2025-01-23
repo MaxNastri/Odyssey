@@ -337,6 +337,7 @@ namespace Odyssey
 			Utils::RegisterComponentType<ParticleEmitter, ParticleEmitterInspector>();
 			Utils::RegisterComponentType<ScriptComponent, ScriptInspector>();
 			Utils::RegisterComponentType<BoxCollider, BoxColliderInspector>();
+			Utils::RegisterComponentType<SphereCollider, SphereColliderInspector>();
 			Utils::RegisterComponentType<RigidBody, RigidBodyInspector>();
 			Utils::s_ComponentsRegistered = true;
 		}
@@ -1566,11 +1567,6 @@ namespace Odyssey
 
 		if (ImGui::CollapsingHeader("Box Collider", ImGuiTreeNodeFlags_DefaultOpen))
 		{
-			if (m_LayerDrawer.Draw())
-			{
-				if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
-					boxCollider->SetLayer(m_LayerDrawer.GetValue());
-			}
 			if (m_CenterDrawer.Draw())
 			{
 				if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
@@ -1597,9 +1593,66 @@ namespace Odyssey
 	{
 		if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
 		{
+			m_Enabled = boxCollider->IsEnabled();
 			m_CenterDrawer = Vector3Drawer("Center", boxCollider->GetCenter(), float3(0.0f), false);
 			m_ExtentsDrawer = Vector3Drawer("Extents", boxCollider->GetExtents(), float3(1.0f), false);
-			m_LayerDrawer = EnumDrawer<PhysicsLayer>("Physics Layer", boxCollider->GetLayer());
+			m_DebugDrawer = BoolDrawer("Enable Debug", false, false);
+		}
+	}
+
+	SphereColliderInspector::SphereColliderInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+
+	bool SphereColliderInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+				boxCollider->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Sphere Collider", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_CenterDrawer.Draw())
+			{
+				if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
+					sphereCollider->SetCenter(m_CenterDrawer.GetValue());
+			}
+			if (m_RadiusDrawer.Draw())
+			{
+				if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
+					sphereCollider->SetRadius(m_RadiusDrawer.GetValue());
+			}
+			if (m_DebugDrawer.Draw())
+			{
+				if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
+					sphereCollider->SetDebugEnabled(m_DebugDrawer.GetValue());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void SphereColliderInspector::InitDrawers()
+	{
+		if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
+		{
+			m_Enabled = sphereCollider->IsEnabled();
+			m_CenterDrawer = Vector3Drawer("Center", sphereCollider->GetCenter(), float3(0.0f), false);
+			m_RadiusDrawer = FloatDrawer("Radius", sphereCollider->GetRadius());
 			m_DebugDrawer = BoolDrawer("Enable Debug", false, false);
 		}
 	}
@@ -1628,6 +1681,11 @@ namespace Odyssey
 
 		if (ImGui::CollapsingHeader("Rigid Body", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			if (m_LayerDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetLayer(m_LayerDrawer.GetValue());
+			}
 			if (m_FrictionDrawer.Draw())
 			{
 				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
@@ -1649,6 +1707,8 @@ namespace Odyssey
 	{
 		if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
 		{
+			m_Enabled = rigidBody->IsEnabled();
+			m_LayerDrawer = EnumDrawer<PhysicsLayer>("Physics Layer", rigidBody->GetLayer());
 			m_FrictionDrawer = FloatDrawer("Friction", rigidBody->GetFriction());
 			m_MaxLinearVelocityDrawer = FloatDrawer("Max Linear Velocity", rigidBody->GetMaxLinearVelocity());
 		}

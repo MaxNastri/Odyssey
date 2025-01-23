@@ -39,6 +39,14 @@ Entries:
     Type: Odyssey.Mesh
     Path: Meshes/Quad.mesh
     GUID: 4325336624522892848
+  - Name: Sphere
+    Type: Odyssey.SourceModel
+    Path: Meshes/Source/Sphere.fbx
+    GUID: 11273813467457834612
+  - Name: Sphere
+    Type: Odyssey.Mesh
+    Path: Meshes/Sphere.mesh
+    GUID: 1128309179832727657
   - Name: Particle Render
     Type: Odyssey.Shader
     Path: Shaders/ParticleRender.shader

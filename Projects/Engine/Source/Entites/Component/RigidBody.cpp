@@ -1,8 +1,9 @@
 #include "RigidBody.h"
 #include "BoxCollider.h"
+#include "SphereCollider.h"
 #include "Transform.h"
 #include "PhysicsSystem.h"
-#include "OdysseyTime.h"
+#include "Enum.h"
 
 namespace Odyssey
 {
@@ -24,7 +25,6 @@ namespace Odyssey
 		{
 			if (BoxCollider* collider = m_GameObject.TryGetComponent<BoxCollider>())
 			{
-				PhysicsLayer layer = collider->GetLayer();
 				float3 extents = collider->GetExtents();
 				float3 center = collider->GetCenter();
 
@@ -32,7 +32,19 @@ namespace Odyssey
 				quat rotation;
 				transform->DecomposeWorldMatrix(position, rotation, scale);
 
-				m_Body = PhysicsSystem::RegisterBox(center + position, rotation,  extents, m_Properties, layer);
+				m_Body = PhysicsSystem::RegisterBox(center + position, rotation,  extents, m_Properties, m_PhysicsLayer);
+				m_BodyID = m_Body->GetID();
+			}
+			else if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
+			{
+				float3 center = sphereCollider->GetCenter();
+				float radius = sphereCollider->GetRadius();
+
+				float3 position, scale;
+				quat rotation;
+				transform->DecomposeWorldMatrix(position, rotation, scale);
+
+				m_Body = PhysicsSystem::RegisterSphere(center + position, rotation, radius, m_Properties, m_PhysicsLayer);
 				m_BodyID = m_Body->GetID();
 			}
 		}
@@ -63,15 +75,21 @@ namespace Odyssey
 
 		componentNode.WriteData("Type", RigidBody::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
+		componentNode.WriteData("Physics Layer", Enum::ToString(m_PhysicsLayer));
 		componentNode.WriteData("Friction", m_Properties.Friction);
 		componentNode.WriteData("Max Linear Velocity", m_Properties.MaxLinearVelocity);
 	}
 
 	void RigidBody::Deserialize(SerializationNode& node)
 	{
+		std::string layer;
 		node.ReadData("Enabled", m_Enabled);
+		node.ReadData("Physics Layer", layer);
 		node.ReadData("Friction", m_Properties.Friction);
 		node.ReadData("Max Linear Velocity", m_Properties.MaxLinearVelocity);
+
+		if (!layer.empty())
+			m_PhysicsLayer = Enum::ToEnum<PhysicsLayer>(layer);
 	}
 
 	void RigidBody::AddLinearVelocity(float3 velocity)

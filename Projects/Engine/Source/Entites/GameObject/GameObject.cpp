@@ -11,6 +11,7 @@
 #include "SpriteRenderer.h"
 #include "BoxCollider.h"
 #include "RigidBody.h"
+#include "SphereCollider.h"
 
 namespace Odyssey
 {
@@ -87,6 +88,9 @@ namespace Odyssey
 		if (BoxCollider* boxCollider = TryGetComponent<BoxCollider>())
 			boxCollider->Serialize(componentsNode);
 
+		if (SphereCollider* sphereCollider = TryGetComponent<SphereCollider>())
+			sphereCollider->Serialize(componentsNode);
+
 		if (RigidBody* rigidBody = TryGetComponent<RigidBody>())
 			rigidBody->Serialize(componentsNode);
 	}
@@ -135,6 +139,8 @@ namespace Odyssey
 				AddComponent<SpriteRenderer>(componentNode);
 			else if (componentType == BoxCollider::Type)
 				AddComponent<BoxCollider>(componentNode);
+			else if (componentType == SphereCollider::Type)
+				AddComponent<SphereCollider>(componentNode);
 			else if (componentType == RigidBody::Type)
 				AddComponent<RigidBody>(componentNode);
 		}
@@ -232,6 +238,9 @@ namespace Odyssey
 		if (BoxCollider* boxCollider = TryGetComponent<BoxCollider>())
 			boxCollider->Serialize(componentsNode);
 
+		if (SphereCollider* sphereCollider = TryGetComponent<SphereCollider>())
+			sphereCollider->Serialize(componentsNode);
+
 		if (RigidBody* rigidBody = TryGetComponent<RigidBody>())
 			rigidBody->Serialize(componentsNode);
 	}
@@ -298,6 +307,11 @@ namespace Odyssey
 			{
 				BoxCollider& boxCollider = AddComponent<BoxCollider>();
 				boxCollider.Deserialize(componentNode);
+			}
+			else if (componentType == SphereCollider::Type)
+			{
+				SphereCollider& sphereCollider = AddComponent<SphereCollider>();
+				sphereCollider.Deserialize(componentNode);
 			}
 			else if (componentType == RigidBody::Type)
 			{
