@@ -1,17 +1,6 @@
 #include "GameObject.h"
 #include "Scene.h"
-#include "PropertiesComponent.h"
-#include "Camera.h"
-#include "MeshRenderer.h"
-#include "Transform.h"
-#include "ScriptComponent.h"
-#include "Animator.h"
-#include "Light.h"
-#include "ParticleEmitter.h"
-#include "SpriteRenderer.h"
-#include "BoxCollider.h"
-#include "RigidBody.h"
-#include "SphereCollider.h"
+#include "Components.h"
 
 namespace Odyssey
 {
@@ -88,6 +77,9 @@ namespace Odyssey
 		if (BoxCollider* boxCollider = TryGetComponent<BoxCollider>())
 			boxCollider->Serialize(componentsNode);
 
+		if (CapsuleCollider* capsuleCollider = TryGetComponent<CapsuleCollider>())
+			capsuleCollider->Serialize(componentsNode);
+
 		if (SphereCollider* sphereCollider = TryGetComponent<SphereCollider>())
 			sphereCollider->Serialize(componentsNode);
 
@@ -139,6 +131,8 @@ namespace Odyssey
 				AddComponent<SpriteRenderer>(componentNode);
 			else if (componentType == BoxCollider::Type)
 				AddComponent<BoxCollider>(componentNode);
+			else if (componentType == CapsuleCollider::Type)
+				AddComponent<CapsuleCollider>(componentNode);
 			else if (componentType == SphereCollider::Type)
 				AddComponent<SphereCollider>(componentNode);
 			else if (componentType == RigidBody::Type)
@@ -238,6 +232,9 @@ namespace Odyssey
 		if (BoxCollider* boxCollider = TryGetComponent<BoxCollider>())
 			boxCollider->Serialize(componentsNode);
 
+		if (CapsuleCollider* capsuleCollider = TryGetComponent<CapsuleCollider>())
+			capsuleCollider->Serialize(componentsNode);
+
 		if (SphereCollider* sphereCollider = TryGetComponent<SphereCollider>())
 			sphereCollider->Serialize(componentsNode);
 
@@ -307,6 +304,11 @@ namespace Odyssey
 			{
 				BoxCollider& boxCollider = AddComponent<BoxCollider>();
 				boxCollider.Deserialize(componentNode);
+			}
+			else if (componentType == CapsuleCollider::Type)
+			{
+				CapsuleCollider& capsuleCollider = AddComponent<CapsuleCollider>();
+				capsuleCollider.Deserialize(componentNode);
 			}
 			else if (componentType == SphereCollider::Type)
 			{

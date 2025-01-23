@@ -5,17 +5,7 @@
 #include "EventSystem.h"
 
 // Components
-#include "Animator.h"
-#include "Camera.h"
-#include "Light.h"
-#include "MeshRenderer.h"
-#include "ParticleEmitter.h"
-#include "Transform.h"
-#include "ScriptComponent.h"
-#include "SpriteRenderer.h"
-#include "RigidBody.h"
-#include "BoxCollider.h"
-#include "SphereCollider.h"
+#include "Components.h"
 
 // Assets
 #include "Material.h"
@@ -278,6 +268,27 @@ namespace Odyssey
 		bool m_Enabled;
 	};
 
+	class CapsuleColliderInspector : public Inspector
+	{
+	public:
+		CapsuleColliderInspector() = default;
+		CapsuleColliderInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		Vector3Drawer m_CenterDrawer;
+		FloatDrawer m_RadiusDrawer;
+		FloatDrawer m_HeightDrawer;
+		BoolDrawer m_DebugDrawer;
+		bool m_Enabled;
+	};
+
 	class SphereColliderInspector : public Inspector
 	{
 	public:
@@ -317,6 +328,7 @@ namespace Odyssey
 		FloatDrawer m_FrictionDrawer;
 		FloatDrawer m_MaxLinearVelocityDrawer;
 	};
+
 #pragma endregion
 
 #pragma region Assets

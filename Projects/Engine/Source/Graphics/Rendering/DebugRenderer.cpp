@@ -164,8 +164,8 @@ namespace Odyssey
 
 	void DebugRenderer::AddCylinder(float3 center, float radius, float halfHeight, float3 color)
 	{
-		float3 topCenter = center + float3(0.0f, halfHeight - (radius * 0.5f), 0.0f);
-		float3 bottomCenter = center - float3(0.0f, halfHeight + (radius * 0.5f), 0.0f);
+		float3 topCenter = center + float3(0.0f, halfHeight, 0.0f);
+		float3 bottomCenter = center - float3(0.0f, halfHeight, 0.0f);
 
 		// Top ring around the center
 		size_t topRingStart = m_VertexCount;
@@ -186,8 +186,8 @@ namespace Odyssey
 
 	void DebugRenderer::AddCapsule(float3 center, float radius, float halfHeight, float3 color)
 	{
-		float3 topPos = center + float3(0, halfHeight - (radius / 2.0f), 0.0f);
-		float3 botPos = center - float3(0, halfHeight + (radius / 2.0f), 0.0f);
+		float3 topPos = center + float3(0, halfHeight, 0.0f);
+		float3 botPos = center - float3(0, halfHeight, 0.0f);
 
 		// Add a cylinder
 		AddCylinder(center, radius, halfHeight, color);

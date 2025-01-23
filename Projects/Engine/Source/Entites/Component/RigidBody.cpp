@@ -1,6 +1,5 @@
 #include "RigidBody.h"
-#include "BoxCollider.h"
-#include "SphereCollider.h"
+#include "Colliders.h"
 #include "Transform.h"
 #include "PhysicsSystem.h"
 #include "Enum.h"
@@ -45,6 +44,19 @@ namespace Odyssey
 				transform->DecomposeWorldMatrix(position, rotation, scale);
 
 				m_Body = PhysicsSystem::RegisterSphere(center + position, rotation, radius, m_Properties, m_PhysicsLayer);
+				m_BodyID = m_Body->GetID();
+			}
+			else if (CapsuleCollider* capsuleCollider = m_GameObject.TryGetComponent<CapsuleCollider>())
+			{
+				float3 center = capsuleCollider->GetCenter();
+				float radius = capsuleCollider->GetRadius();
+				float height = capsuleCollider->GetHeight();
+
+				float3 position, scale;
+				quat rotation;
+				transform->DecomposeWorldMatrix(position, rotation, scale);
+
+				m_Body = PhysicsSystem::RegisterCapsule(center + position, rotation, radius, height, m_Properties, m_PhysicsLayer);
 				m_BodyID = m_Body->GetID();
 			}
 		}

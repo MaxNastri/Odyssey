@@ -47,6 +47,14 @@ Entries:
     Type: Odyssey.Mesh
     Path: Meshes/Sphere.mesh
     GUID: 1128309179832727657
+  - Name: Capsule
+    Type: Odyssey.SourceModel
+    Path: Meshes/Source/Capsule.fbx
+    GUID: 8719236786327537231
+  - Name: Capsule
+    Type: Odyssey.Mesh
+    Path: Meshes/Capsule.mesh
+    GUID: 4365288742579813271
   - Name: Particle Render
     Type: Odyssey.Shader
     Path: Shaders/ParticleRender.shader

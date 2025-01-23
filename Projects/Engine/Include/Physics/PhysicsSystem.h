@@ -14,8 +14,12 @@ namespace Odyssey
 
 		static Body* RegisterBox(float3 position, quat rotation, float3 extents, BodyProperties& properties, PhysicsLayer layer);
 		static Body* RegisterSphere(float3 position, quat rotation, float radius, BodyProperties& properties, PhysicsLayer layer);
+		static Body* RegisterCapsule(float3 position, quat rotation, float radius, float height, BodyProperties& properties, PhysicsLayer layer);
 		static void Deregister(Body* body);
 		static BodyInterface& GetBodyInterface();
+
+	private:
+		static Body* CreateBody(ShapeRefC shapeRef, float3 position, quat rotation, BodyProperties& properties, PhysicsLayer layer);
 
 	private:
 		inline static JPH::PhysicsSystem m_PhysicsSystem;

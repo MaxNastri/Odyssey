@@ -337,6 +337,7 @@ namespace Odyssey
 			Utils::RegisterComponentType<ParticleEmitter, ParticleEmitterInspector>();
 			Utils::RegisterComponentType<ScriptComponent, ScriptInspector>();
 			Utils::RegisterComponentType<BoxCollider, BoxColliderInspector>();
+			Utils::RegisterComponentType<CapsuleCollider, CapsuleColliderInspector>();
 			Utils::RegisterComponentType<SphereCollider, SphereColliderInspector>();
 			Utils::RegisterComponentType<RigidBody, RigidBodyInspector>();
 			Utils::s_ComponentsRegistered = true;
@@ -1596,7 +1597,68 @@ namespace Odyssey
 			m_Enabled = boxCollider->IsEnabled();
 			m_CenterDrawer = Vector3Drawer("Center", boxCollider->GetCenter(), float3(0.0f), false);
 			m_ExtentsDrawer = Vector3Drawer("Extents", boxCollider->GetExtents(), float3(1.0f), false);
-			m_DebugDrawer = BoolDrawer("Enable Debug", false, false);
+			m_DebugDrawer = BoolDrawer("Enable Debug", boxCollider->IsDebugEnabled(), false);
+		}
+	}
+
+	CapsuleColliderInspector::CapsuleColliderInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+	bool CapsuleColliderInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+				boxCollider->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Capsule Collider", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_CenterDrawer.Draw())
+			{
+				if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
+					collider->SetCenter(m_CenterDrawer.GetValue());
+			}
+			if (m_RadiusDrawer.Draw())
+			{
+				if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
+					collider->SetRadius(m_RadiusDrawer.GetValue());
+			}
+			if (m_HeightDrawer.Draw())
+			{
+				if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
+					collider->SetHeight(m_HeightDrawer.GetValue());
+			}
+			if (m_DebugDrawer.Draw())
+			{
+				if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
+					collider->SetDebugEnabled(m_DebugDrawer.GetValue());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+	void CapsuleColliderInspector::InitDrawers()
+	{
+		if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
+		{
+			m_Enabled = collider->IsEnabled();
+			m_CenterDrawer = Vector3Drawer("Center", collider->GetCenter(), float3(0.0f), false);
+			m_RadiusDrawer = FloatDrawer("Radius", collider->GetRadius());
+			m_HeightDrawer = FloatDrawer("Height", collider->GetHeight());
+			m_DebugDrawer = BoolDrawer("Enable Debug", collider->IsDebugEnabled(), false);
 		}
 	}
 
@@ -1653,7 +1715,7 @@ namespace Odyssey
 			m_Enabled = sphereCollider->IsEnabled();
 			m_CenterDrawer = Vector3Drawer("Center", sphereCollider->GetCenter(), float3(0.0f), false);
 			m_RadiusDrawer = FloatDrawer("Radius", sphereCollider->GetRadius());
-			m_DebugDrawer = BoolDrawer("Enable Debug", false, false);
+			m_DebugDrawer = BoolDrawer("Enable Debug", sphereCollider->IsDebugEnabled(), false);
 		}
 	}
 

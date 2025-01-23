@@ -1,0 +1,12 @@
+#pragma once
+#include "Animator.h"
+#include "Camera.h"
+#include "Colliders.h"
+#include "Light.h"
+#include "MeshRenderer.h"
+#include "ParticleEmitter.h"
+#include "PropertiesComponent.h"
+#include "RigidBody.h"
+#include "ScriptComponent.h"
+#include "SpriteRenderer.h"
+#include "Transform.h"
