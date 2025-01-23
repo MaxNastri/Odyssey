@@ -27,16 +27,19 @@ namespace Odyssey
 	public:
 		static void Update();
 		static void AddSphere(float3 center, float radius, float3 color);
-		static void AddRing(float3 center, float4 majorAxis, float4 minorAxis, float3 color);
+		static void AddRing(float3 center, float4 majorAxis, float4 minorAxis, float3 color, bool half = false);
 		static void AddAABB(float3 center, float3 extents, float3 color);
 		static void AddOrientedBox(float3 center, float3 extents, float3 right, float3 up, float3 forward, float3 color);
 		static void AddLine(float3 startPosition, float3 startColor, float3 endPosition, float3 endColor);
+		static void AddCylinder(float3 center, float radius, float halfHeight, float3 color);
+		static void AddCapsule(float3 center, float radius, float halfHeight, float3 color);
 
 	public:
 		static ResourceID GetVertexBuffer();
 		static size_t GetVertexCount() { return m_VertexCount; }
 
 	private:
+		inline static constexpr size_t Ring_Segments = 32;
 		inline static ResourceID m_VertexBufferID;
 		inline static Settings m_Settings;
 		inline static std::vector<Vertex> m_Vertices;

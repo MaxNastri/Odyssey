@@ -59,12 +59,15 @@ namespace Odyssey
 		AddRing(center, { 0, radius, 0, 0 }, { 0, 0, radius, 0 }, color);
 	}
 
-	void DebugRenderer::AddRing(float3 center, float4 majorAxis, float4 minorAxis, float3 color)
+	void DebugRenderer::AddRing(float3 center, float4 majorAxis, float4 minorAxis, float3 color, bool half)
 	{
-		const size_t ringSegments = 32;
-		Vertex vertices[ringSegments + 1];
+		// Determine how many ring segments to add
+		size_t ringSegments = half ? (Ring_Segments / 2) + 1 : Ring_Segments;
+		std::vector<Vertex> vertices;
+		vertices.resize(ringSegments + 1);
 
-		constexpr float angleDelta = glm::two_pi<float>() / float(ringSegments);
+		// The delta angle will always be measured using the full ring segments
+		constexpr float angleDelta = glm::two_pi<float>() / Ring_Segments;
 		float cosDelta = cosf(angleDelta);
 		float sinDelta = sinf(angleDelta);
 
@@ -74,17 +77,17 @@ namespace Odyssey
 
 		for (size_t i = 0; i < ringSegments; i++)
 		{
-			float4 pos = (majorAxis * incrementalCos) + float4(center, 0);
-			pos = (minorAxis * incrementalSin) + pos;
-			vertices[i].Position = pos;
+			vertices[i].Position = (majorAxis * incrementalCos) + (minorAxis * incrementalSin) + float4(center, 0);
 			vertices[i].Color = float4(color, 1.0f);
 
+			// Advance the angles
 			float4 newCos = (incrementalCos * cosDelta) - (incrementalSin * sinDelta);
 			float4 newSin = (incrementalCos * sinDelta) + (incrementalSin * cosDelta);
 			incrementalCos = newCos;
 			incrementalSin = newSin;
 		}
 
+		// Connect the ring back to the first vertex
 		vertices[ringSegments] = vertices[0];
 
 		for (size_t i = 0; i < ringSegments; i++)
@@ -94,8 +97,8 @@ namespace Odyssey
 			m_Vertices[m_VertexCount] = vertices[i + 1];
 			++m_VertexCount;
 		}
-
 	}
+
 	void DebugRenderer::AddAABB(float3 center, float3 extents, float3 color)
 	{
 		// Add a box oriented to normalized world space
@@ -157,6 +160,45 @@ namespace Odyssey
 		m_Vertices[m_VertexCount].Position = endPosition;
 		m_Vertices[m_VertexCount].Color = float4(endColor, 1.0f);
 		++m_VertexCount;
+	}
+
+	void DebugRenderer::AddCylinder(float3 center, float radius, float halfHeight, float3 color)
+	{
+		float3 topCenter = center + float3(0.0f, halfHeight - (radius * 0.5f), 0.0f);
+		float3 bottomCenter = center - float3(0.0f, halfHeight + (radius * 0.5f), 0.0f);
+
+		// Top ring around the center
+		size_t topRingStart = m_VertexCount;
+		AddRing(topCenter, { radius, 0, 0, 0 }, { 0, 0, radius, 0 }, color);
+
+		// Bottom ring around the center
+		size_t bottomRingStart = m_VertexCount;
+		AddRing(bottomCenter, { radius, 0, 0, 0 }, { 0, 0, radius, 0 }, color);
+
+		// 4 lines connecting the two rings together
+		// Note: Each line moves along a quarter of the ring segment per iteration
+		size_t offset = Ring_Segments / 2;
+		for (size_t i = 0; i < 4; i++)
+		{
+			AddLine(m_Vertices[topRingStart + (offset * i)].Position, color, m_Vertices[bottomRingStart + (offset * i)].Position, color);
+		}
+	}
+
+	void DebugRenderer::AddCapsule(float3 center, float radius, float halfHeight, float3 color)
+	{
+		float3 topPos = center + float3(0, halfHeight - (radius / 2.0f), 0.0f);
+		float3 botPos = center - float3(0, halfHeight + (radius / 2.0f), 0.0f);
+
+		// Add a cylinder
+		AddCylinder(center, radius, halfHeight, color);
+
+		// Top half-ring cap
+		AddRing(topPos, { radius, 0, 0, 0 }, { 0, radius, 0, 0 }, color, true);
+		AddRing(topPos, { 0, 0, radius, 0 }, { 0, radius, 0, 0 }, color, true);
+
+		// Bottom half-ring cap
+		AddRing(botPos, { radius, 0, 0, 0 }, { 0, -radius, 0, 0 }, color, true);
+		AddRing(botPos, { 0, 0, radius, 0 }, { 0, -radius, 0, 0 }, color, true);
 	}
 
 	ResourceID DebugRenderer::GetVertexBuffer()
