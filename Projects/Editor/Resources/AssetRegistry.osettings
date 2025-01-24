@@ -95,6 +95,14 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: Textures/Source/Folder_Default.png
     GUID: 898173491239897822
+  - Name: Gizmos
+    Type: Odyssey.Texture2D
+    Path: Textures/Gizmos.tex2D
+    GUID: 109172389627832897
+  - Name: Gizmos
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Gizmos.png
+    GUID: 551712382346221443
   - Name: Particles
     Type: Odyssey.Material
     Path: Materials/Particles.asset

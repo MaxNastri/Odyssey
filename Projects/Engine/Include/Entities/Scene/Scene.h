@@ -69,7 +69,7 @@ namespace Odyssey
 		inline T& AddComponent(GameObject& gameObject, Args && ...params)
 		{
 			T& component = m_Registry.emplace<T>(gameObject, gameObject, std::forward<Args>(params)...);
-			EventSystem::Dispatch<SceneModifiedEvent>(this);
+			EventSystem::Dispatch<SceneModifiedEvent>(this, SceneModifiedEvent::Modification::AddComponent);
 			return component;
 		}
 

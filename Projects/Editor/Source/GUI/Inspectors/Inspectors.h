@@ -43,14 +43,12 @@ namespace Odyssey
 	private:
 		void OnRigModified(GUID guid);
 		void OnBlueprintModified(GUID guid);
-		void OnDebugEnabledModified(bool enabled);
 
 	private:
 		bool m_AnimatorEnabled;
 		GameObject m_GameObject;
 		AssetFieldDrawer m_RigDrawer;
 		AssetFieldDrawer m_BlueprintDrawer;
-		BoolDrawer m_DebugEnabledDrawer;
 	};
 
 	class CameraInspector : public Inspector
@@ -270,7 +268,6 @@ namespace Odyssey
 		FloatDrawer m_MaxStrengthDrawer;
 		FloatDrawer m_PaddingDrawer;
 		BoolDrawer m_InnerBodyDrawer;
-		BoolDrawer m_DebugDrawer;
 		bool m_Enabled;
 	};
 
@@ -290,7 +287,6 @@ namespace Odyssey
 		GameObject m_GameObject;
 		Vector3Drawer m_CenterDrawer;
 		Vector3Drawer m_ExtentsDrawer;
-		BoolDrawer m_DebugDrawer;
 		bool m_Enabled;
 	};
 
@@ -311,7 +307,6 @@ namespace Odyssey
 		Vector3Drawer m_CenterDrawer;
 		FloatDrawer m_RadiusDrawer;
 		FloatDrawer m_HeightDrawer;
-		BoolDrawer m_DebugDrawer;
 		bool m_Enabled;
 	};
 
@@ -331,7 +326,6 @@ namespace Odyssey
 		GameObject m_GameObject;
 		Vector3Drawer m_CenterDrawer;
 		FloatDrawer m_RadiusDrawer;
-		BoolDrawer m_DebugDrawer;
 		bool m_Enabled;
 	};
 

@@ -74,7 +74,7 @@ namespace Odyssey
 		//}
 	}
 
-	void RigidBody::Destroy()
+	void RigidBody::OnDestroy()
 	{
 		PhysicsSystem::Deregister(m_Body);
 		m_Body = nullptr;

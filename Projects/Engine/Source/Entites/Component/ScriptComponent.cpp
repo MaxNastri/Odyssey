@@ -46,6 +46,9 @@ namespace Odyssey
 	{
 		if (m_Handle.IsValid())
 			m_Handle.Invoke("Void OnDestroy()");
+
+		ClearManagedHandle();
+		ScriptingManager::DestroyInstance(m_GameObject.GetGUID());
 	}
 
 	void ScriptComponent::Serialize(SerializationNode& node)

@@ -20,6 +20,11 @@ namespace Odyssey
 		Deserialize(node);
 	}
 
+	void Animator::OnDestroy()
+	{
+		SetDebugEnabled(false);
+	}
+
 	void Animator::Serialize(SerializationNode& node)
 	{
 		SerializationNode componentNode = node.AppendChild();

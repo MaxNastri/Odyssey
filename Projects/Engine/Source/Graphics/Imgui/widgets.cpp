@@ -408,7 +408,7 @@ namespace ImGui
 
 		// Get the min and max without window padding
 		float2 min = ImGui::GetWindowContentRegionMin() + windowPos - windowPadding + padding;
-		float2 max = float2((ImGui::GetWindowContentRegionMax() + windowPos).x + windowPadding.x + padding.x, min.y + height);
+		float2 max = float2((ImGui::GetWindowContentRegionMax() + windowPos).x + windowPadding.x - padding.x, min.y + height);
 
 		// Draw the rect
 		ImGui::GetWindowDrawList()->PushClipRect(min, max);

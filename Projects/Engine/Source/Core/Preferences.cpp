@@ -28,6 +28,7 @@ namespace Odyssey
 			root.ReadData("Asset Icon", m_AssetIcon.Ref());
 			root.ReadData("Material Icon", m_MaterialIcon.Ref());
 			root.ReadData("Mesh Icon", m_MeshIcon.Ref());
+			root.ReadData("Gizmo Icon", m_GizmoIcon.Ref());
 			root.ReadData("Asset Extensions", m_AssetExtensions);
 			root.ReadData("Source Extensions", m_SourceExtensionsToType);
 
@@ -58,6 +59,7 @@ namespace Odyssey
 		root.WriteData("Folder Icon", m_FolderIcon.CRef());
 		root.WriteData("Script Icon", m_ScriptIcon.CRef());
 		root.WriteData("Asset Icon", m_AssetIcon.CRef());
+		root.WriteData("Gizmo Icon", m_GizmoIcon.CRef());
 		root.WriteData("Material Icon", m_MaterialIcon.CRef());
 		root.WriteData("Mesh Icon", m_MeshIcon.CRef());
 		root.WriteData("Asset Extensions", m_AssetExtensions);

@@ -16,6 +16,11 @@ namespace Odyssey
 		Deserialize(node);
 	}
 
+	void BoxCollider::OnDestroy()
+	{
+		SetDebugEnabled(false);
+	}
+
 	void BoxCollider::Serialize(SerializationNode& node)
 	{
 		SerializationNode componentNode = node.AppendChild();
@@ -79,6 +84,11 @@ namespace Odyssey
 		Deserialize(node);
 	}
 
+	void CapsuleCollider::OnDestroy()
+	{
+		SetDebugEnabled(false);
+	}
+
 	void CapsuleCollider::Serialize(SerializationNode& node)
 	{
 		SerializationNode componentNode = node.AppendChild();
@@ -128,6 +138,11 @@ namespace Odyssey
 		: m_GameObject(gameObject)
 	{
 		Deserialize(node);
+	}
+
+	void SphereCollider::OnDestroy()
+	{
+		SetDebugEnabled(false);
 	}
 
 	void SphereCollider::Serialize(SerializationNode& node)

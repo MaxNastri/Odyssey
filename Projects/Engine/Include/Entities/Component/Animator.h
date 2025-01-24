@@ -17,6 +17,7 @@ namespace Odyssey
 
 	public:
 		void Awake() { }
+		void OnDestroy();
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 

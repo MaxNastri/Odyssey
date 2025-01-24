@@ -14,7 +14,7 @@ namespace Odyssey
 
 	public:
 		void Awake() { }
-		void Destroy() { }
+		void OnDestroy();
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 
@@ -52,7 +52,7 @@ namespace Odyssey
 
 	public:
 		void Awake() { }
-		void Destroy() { }
+		void OnDestroy();
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 
@@ -93,7 +93,7 @@ namespace Odyssey
 
 	public:
 		void Awake() { }
-		void Destroy() { }
+		void OnDestroy();
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 

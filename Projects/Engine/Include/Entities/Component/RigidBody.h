@@ -30,7 +30,7 @@ namespace Odyssey
 	public:
 		void Awake();
 		void Update();
-		void Destroy();
+		void OnDestroy();
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 

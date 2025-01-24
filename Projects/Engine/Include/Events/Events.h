@@ -53,13 +53,23 @@ namespace Odyssey
 
 	struct SceneModifiedEvent : public Event
 	{
+		enum class Modification
+		{
+			None = 0,
+			DeleteGameObject = 1,
+			CreateGameObject = 2,
+			AddComponent = 3,
+			RemoveComponent = 4,
+		};
 	public:
-		SceneModifiedEvent(Scene* scene)
+		SceneModifiedEvent(Scene* scene, Modification mod)
 		{
 			Scene = scene;
+			Modification = mod;
 		}
 
 	public:
 		Scene* Scene;
+		Modification Modification;
 	};
 }

@@ -97,9 +97,6 @@ namespace Odyssey
 
 			m_BlueprintDrawer = AssetFieldDrawer("Blueprint", animator->GetBlueprintAsset(), AnimationBlueprint::Type,
 				[this](GUID guid) { OnBlueprintModified(guid); });
-
-			m_DebugEnabledDrawer = BoolDrawer("Debug", false, false,
-				[this](bool enabled) { OnDebugEnabledModified(enabled); });
 		}
 	}
 
@@ -123,7 +120,6 @@ namespace Odyssey
 		{
 			m_RigDrawer.Draw();
 			m_BlueprintDrawer.Draw();
-			m_DebugEnabledDrawer.Draw();
 
 			if (ImGui::Button("Play"))
 			{
@@ -157,12 +153,6 @@ namespace Odyssey
 	{
 		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
 			animator->SetBlueprint(guid);
-	}
-
-	void AnimatorInspector::OnDebugEnabledModified(bool enabled)
-	{
-		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
-			animator->SetDebugEnabled(enabled);
 	}
 
 	CameraInspector::CameraInspector(GameObject& gameObject)
@@ -1604,11 +1594,6 @@ namespace Odyssey
 				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
 					controller->SetHasInnerBody(m_InnerBodyDrawer.GetValue());
 			}
-			if (m_DebugDrawer.Draw())
-			{
-				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
-					controller->SetDebugEnabled(m_DebugDrawer.GetValue());
-			}
 		}
 
 		ImGui::PopID();
@@ -1629,7 +1614,6 @@ namespace Odyssey
 			m_MaxStrengthDrawer = FloatDrawer("Max Strength", controller->GetMaxStrength());
 			m_PaddingDrawer = FloatDrawer("Character Padding", controller->GetPadding());
 			m_InnerBodyDrawer = BoolDrawer("Create Inner Body", controller->HasInnerBody());
-			m_DebugDrawer = BoolDrawer("Enable Debug", controller->IsDebugEnabled());
 		}
 	}
 
@@ -1667,11 +1651,6 @@ namespace Odyssey
 				if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
 					boxCollider->SetExtents(m_ExtentsDrawer.GetValue());
 			}
-			if (m_DebugDrawer.Draw())
-			{
-				if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
-					boxCollider->SetDebugEnabled(m_DebugDrawer.GetValue());
-			}
 		}
 
 		ImGui::PopID();
@@ -1686,7 +1665,6 @@ namespace Odyssey
 			m_Enabled = boxCollider->IsEnabled();
 			m_CenterDrawer = Vector3Drawer("Center", boxCollider->GetCenter(), float3(0.0f), false);
 			m_ExtentsDrawer = Vector3Drawer("Extents", boxCollider->GetExtents(), float3(1.0f), false);
-			m_DebugDrawer = BoolDrawer("Enable Debug", boxCollider->IsDebugEnabled(), false);
 		}
 	}
 
@@ -1728,11 +1706,6 @@ namespace Odyssey
 				if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
 					collider->SetHeight(m_HeightDrawer.GetValue());
 			}
-			if (m_DebugDrawer.Draw())
-			{
-				if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
-					collider->SetDebugEnabled(m_DebugDrawer.GetValue());
-			}
 		}
 
 		ImGui::PopID();
@@ -1747,7 +1720,6 @@ namespace Odyssey
 			m_CenterDrawer = Vector3Drawer("Center", collider->GetCenter(), float3(0.0f), false);
 			m_RadiusDrawer = FloatDrawer("Radius", collider->GetRadius());
 			m_HeightDrawer = FloatDrawer("Height", collider->GetHeight());
-			m_DebugDrawer = BoolDrawer("Enable Debug", collider->IsDebugEnabled(), false);
 		}
 	}
 
@@ -1785,11 +1757,6 @@ namespace Odyssey
 				if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
 					sphereCollider->SetRadius(m_RadiusDrawer.GetValue());
 			}
-			if (m_DebugDrawer.Draw())
-			{
-				if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
-					sphereCollider->SetDebugEnabled(m_DebugDrawer.GetValue());
-			}
 		}
 
 		ImGui::PopID();
@@ -1804,7 +1771,6 @@ namespace Odyssey
 			m_Enabled = sphereCollider->IsEnabled();
 			m_CenterDrawer = Vector3Drawer("Center", sphereCollider->GetCenter(), float3(0.0f), false);
 			m_RadiusDrawer = FloatDrawer("Radius", sphereCollider->GetRadius());
-			m_DebugDrawer = BoolDrawer("Enable Debug", sphereCollider->IsDebugEnabled(), false);
 		}
 	}
 

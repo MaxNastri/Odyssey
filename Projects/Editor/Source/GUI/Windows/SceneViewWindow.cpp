@@ -1,4 +1,4 @@
-#include "SceneViewWindow.h"
+﻿#include "SceneViewWindow.h"
 #include <imgui.h>
 #include "Scene.h"
 #include "SceneManager.h"
@@ -20,6 +20,8 @@
 #include "RenderTarget.h"
 #include "VulkanTextureSampler.h"
 #include "OdysseyTime.h"
+#include "ThumbnailManager.h"
+#include "Gizmos.h"
 
 namespace Odyssey
 {
@@ -36,6 +38,8 @@ namespace Odyssey
 
 		// Create the render texture
 		CreateRenderTexture();
+		Gizmos::Init();
+		m_GizmoIcon = ThumbnailManager::LoadThumbnail(Preferences::GetGizmoIcon());
 
 		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
 			([this](SceneLoadedEvent* eventData) { OnSceneLoaded(eventData); });
@@ -88,8 +92,14 @@ namespace Odyssey
 		if (!Begin())
 			return modified;
 
-		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
+		float2 startCursor = ImGui::GetCursorPos();
+
+		// Render the scene view
+		ImGui::Image((void*)m_RenderTextureID, ImVec2(m_WindowSize.x, m_WindowSize.y));
 		m_SceneViewPass->SetRenderTarget(m_RenderTarget);
+
+		// Draw the menu bar
+		DrawMenuBar(startCursor);
 
 		// Render gizmos
 		RenderGizmos();
@@ -181,6 +191,44 @@ namespace Odyssey
 			ResourceManager::Destroy(m_RenderTarget);
 			ResourceManager::Destroy(m_RTSampler);
 			Renderer::DestroyImguiTexture(m_RenderTextureID);
+		}
+	}
+
+	void SceneViewWindow::DrawMenuBar(float2 menuPosition)
+	{
+		float2 buttonSize = float2(ImGui::GetFrameHeight());
+		float4 bgColor = ImGui::GetStyle().Colors[ImGuiCol_WindowBg];
+		const float yPadding = 2.0f;
+		const float itemSpacing = ImGui::GetStyle().ItemSpacing.x * 0.0f;
+		const float yAnchor = menuPosition.y - m_WindowPadding.y + yPadding;
+
+		// Background
+		ImGui::FilledRectSpan(bgColor, 30.0f, float2(0.0f));
+
+		// Gizmo button
+		float2 position = float2(ImGui::GetContentRegionAvail().x - buttonSize.x + m_WindowPadding.x, yAnchor);
+		ImGui::SetCursorPos(position);
+
+		if (ImGui::ImageButton((void*)m_GizmoIcon, buttonSize, float2(0.0f), float2(1.0f), 0))
+		{
+			if (ImGui::IsPopupOpen("##GizmoPopup"))
+				ImGui::CloseCurrentPopup();
+			else
+				ImGui::OpenPopup("##GizmoPopup");
+		}
+
+		if (ImGui::BeginPopup("##GizmoPopup"))
+		{
+			for (auto& [componentName, info] : Gizmos::GetGizmoInfo())
+			{
+				ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
+
+				if (ImGui::MenuItem(componentName.c_str(), "", &info.Enabled))
+					info.OnGizmoModified(info.Enabled);
+
+				ImGui::PopItemFlag();
+			}
+			ImGui::EndPopup();
 		}
 	}
 

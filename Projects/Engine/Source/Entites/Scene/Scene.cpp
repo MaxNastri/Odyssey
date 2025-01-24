@@ -9,8 +9,12 @@
 
 namespace Odyssey
 {
+#define EXECUTE_ON_COMPONENTS(ComponentType, Func) \
+for (auto entity : m_Registry.view<ComponentType>()) GameObject(this, entity).GetComponent<ComponentType>().Func();
+
 	Scene::Scene()
 	{
+
 	}
 
 	Scene::Scene(const Path& assetPath)
@@ -35,7 +39,7 @@ namespace Odyssey
 
 		m_SceneGraph.AddEntity(gameObject);
 
-		EventSystem::Dispatch<SceneModifiedEvent>(this);
+		EventSystem::Dispatch<SceneModifiedEvent>(this, SceneModifiedEvent::Modification::CreateGameObject);
 
 		return gameObject;
 	}
@@ -45,7 +49,7 @@ namespace Odyssey
 		// Create the backing entity
 		const auto entity = m_Registry.create();
 
-		EventSystem::Dispatch<SceneModifiedEvent>(this);
+		EventSystem::Dispatch<SceneModifiedEvent>(this, SceneModifiedEvent::Modification::CreateGameObject);
 
 		// Return a game object wrapper
 		return GameObject(this, entity);
@@ -66,7 +70,7 @@ namespace Odyssey
 		for (auto& entity : toDestroy)
 			m_Registry.destroy(entity);
 
-		EventSystem::Dispatch<SceneModifiedEvent>(this);
+		EventSystem::Dispatch<SceneModifiedEvent>(this, SceneModifiedEvent::Modification::DeleteGameObject);
 	}
 
 	void Scene::Clear()
@@ -77,7 +81,7 @@ namespace Odyssey
 		}
 		m_Registry.clear();
 
-		EventSystem::Dispatch<SceneModifiedEvent>(this);
+		EventSystem::Dispatch<SceneModifiedEvent>(this, SceneModifiedEvent::Modification::DeleteGameObject);
 	}
 
 	void Scene::OnStartRuntime()
@@ -94,111 +98,44 @@ namespace Odyssey
 
 	void Scene::OnStopRuntime()
 	{
-		for (auto entity : m_Registry.view<ScriptComponent>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			GUID guid = gameObject.GetGUID();
-
-			ScriptComponent& script = gameObject.GetComponent<ScriptComponent>();
-			script.OnDestroy();
-			script.ClearManagedHandle();
-			ScriptingManager::DestroyInstance(guid);
-		}
-
-		for (auto entity : m_Registry.view<RigidBody>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			GUID guid = gameObject.GetGUID();
-
-			RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
-			rigidBody.Destroy();
-		}
-		for (auto entity : m_Registry.view<CharacterController>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			GUID guid = gameObject.GetGUID();
-
-			CharacterController& characterController = gameObject.GetComponent<CharacterController>();
-			characterController.Destroy();
-		}
+		EXECUTE_ON_COMPONENTS(ScriptComponent, OnDestroy);
+		EXECUTE_ON_COMPONENTS(RigidBody, OnDestroy);
+		EXECUTE_ON_COMPONENTS(CharacterController, OnDestroy);
 	}
 
 	void Scene::Awake()
 	{
 		m_State = SceneState::Awake;
 
-		for (auto entity : m_Registry.view<Camera>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			auto& camera = gameObject.GetComponent<Camera>();
-			camera.Awake();
-		}
-
-		for (auto entity : m_Registry.view<ScriptComponent>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			ScriptComponent& script = gameObject.GetComponent<ScriptComponent>();
-			script.Awake();
-		}
-		for (auto entity : m_Registry.view<RigidBody>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
-			rigidBody.Awake();
-		}
-		for (auto entity : m_Registry.view<CharacterController>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			CharacterController& controller = gameObject.GetComponent<CharacterController>();
-			controller.Awake();
-		}
+		EXECUTE_ON_COMPONENTS(Camera, Awake);
+		EXECUTE_ON_COMPONENTS(ScriptComponent, Awake);
+		EXECUTE_ON_COMPONENTS(RigidBody, Awake);
+		EXECUTE_ON_COMPONENTS(CharacterController, Awake);
 	}
 
 	void Scene::OnEditorUpdate()
 	{
-		for (auto entity : m_Registry.view<Animator>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			Animator& animator = gameObject.GetComponent<Animator>();
-			animator.OnEditorUpdate();
-		}
+		EXECUTE_ON_COMPONENTS(Animator, OnEditorUpdate);
 	}
 
 	void Scene::Update()
 	{
 		m_State = SceneState::Update;
 
-		for (auto entity : m_Registry.view<ScriptComponent>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			auto& userScript = gameObject.GetComponent<ScriptComponent>();
-			userScript.Update();
-		}
-
-		for (auto entity : m_Registry.view<Animator>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			Animator& animator = gameObject.GetComponent<Animator>();
-			animator.Update();
-		}
-		for (auto entity : m_Registry.view<RigidBody>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
-			rigidBody.Update();
-		}
+		EXECUTE_ON_COMPONENTS(ScriptComponent, Update);
+		EXECUTE_ON_COMPONENTS(Animator, Update);
+		EXECUTE_ON_COMPONENTS(RigidBody, Update);
 	}
 
 	void Scene::OnDestroy()
 	{
 		m_State = SceneState::Destroy;
-
-		for (auto entity : m_Registry.view<ScriptComponent>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			auto& userScript = gameObject.GetComponent<ScriptComponent>();
-			userScript.OnDestroy();
-		}
+		EXECUTE_ON_COMPONENTS(ScriptComponent, OnDestroy);
+		EXECUTE_ON_COMPONENTS(Animator, OnDestroy);
+		EXECUTE_ON_COMPONENTS(BoxCollider, OnDestroy);
+		EXECUTE_ON_COMPONENTS(SphereCollider, OnDestroy);
+		EXECUTE_ON_COMPONENTS(BoxCollider, OnDestroy);
+		EXECUTE_ON_COMPONENTS(CharacterController, OnDestroy);
 	}
 
 	void Scene::SaveTo(const Path& savePath)

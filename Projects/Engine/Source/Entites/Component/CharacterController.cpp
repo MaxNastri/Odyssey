@@ -23,10 +23,13 @@ namespace Odyssey
 		CreateShape();
 	}
 
-	void CharacterController::Destroy()
+	void CharacterController::OnDestroy()
 	{
-		PhysicsSystem::DeregisterCharacter(m_Character);
+		if (m_Character)
+			PhysicsSystem::DeregisterCharacter(m_Character);
+
 		m_Character.Reset();
+		SetDebugEnabled(false);
 	}
 
 	void CharacterController::Serialize(SerializationNode& node)

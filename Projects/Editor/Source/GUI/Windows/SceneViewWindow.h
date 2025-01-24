@@ -35,6 +35,7 @@ namespace Odyssey
 	private:
 		void CreateRenderTexture();
 		void DestroyRenderTexture();
+		void DrawMenuBar(float2 menuPosition);
 		void RenderGizmos();
 		void UpdateCameraController();
 		void UpdateGizmosInput();
@@ -59,6 +60,7 @@ namespace Odyssey
 		Scene* m_ActiveScene;
 		GameObject m_SelectedGO;
 		uint32_t op = 7;
+		uint64_t m_GizmoIcon;
 
 	public:
 		// TODO: Move these to editor settings file
