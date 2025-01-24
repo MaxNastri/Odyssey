@@ -126,6 +126,12 @@ namespace Odyssey
 		BodyCreationSettings bodySettings(shapeRef, ToJoltVec3(position), ToJoltQuat(rotation), motion, (uint32_t)layer);
 
 		// Apply our body properties to the creation settings
+		if (properties.Mass > 0.0f)
+		{
+			bodySettings.mOverrideMassProperties = EOverrideMassProperties::CalculateInertia;
+			bodySettings.mMassPropertiesOverride = { properties.Mass, Mat44::sZero() };
+		}
+
 		bodySettings.mMaxLinearVelocity = properties.MaxLinearVelocity;
 		bodySettings.mFriction = properties.Friction;
 		bodySettings.mGravityFactor = properties.GravityFactor;
@@ -199,48 +205,14 @@ namespace Odyssey
 					quat rotation;
 					transform.DecomposeWorldMatrix(position, rotation, scale);
 
-					Ref<CharacterVirtual> character = controller.GetCharacter();
+					controller.GetCharacter()->SetPosition(ToJoltVec3(position));
+					controller.UpdateVelocity(m_PhysicsSystem.GetGravity(), Time::DeltaTime());
 
-					character->SetPosition(ToJoltVec3(position));
-
-
-
-
-					// TODO: Move this section into the character controller function call
-
-					// Current vertical velocity
-					Vec3 prevFrameVelocity = ToJoltVec3(controller.PrevFrameLinearVelocity);
-					Vec3 current_vertical_velocity = prevFrameVelocity.Dot(character->GetUp()) * character->GetUp();
-
-					// What the user input for velocity
-					Vec3 userVelocity = controller.GetCharacter()->GetLinearVelocity();
-					Vec3 new_velocity = Vec3::sZero();
-
-					// Velocity of the ground
-					Vec3 ground_Velocity = character->GetGroundVelocity();
-
-					if (character->GetGroundState() == CharacterVirtual::EGroundState::OnGround	// If on ground
-						&& !character->IsSlopeTooSteep(character->GetGroundNormal()))			// Inertia disabled: And not on a slope that is too steep
-					{
-						// Assume velocity of ground when on ground
-						new_velocity = ground_Velocity;
-					}
-					else
-						new_velocity = current_vertical_velocity;
-
-					// Apply gravity
-					new_velocity += m_PhysicsSystem.GetGravity() * Time::DeltaTime();
-
-					// Apply user input velocity
-					new_velocity += userVelocity;
-
-					character->SetLinearVelocity(new_velocity);
-
-					CharacterVirtual::ExtendedUpdateSettings update_settings;
+					CharacterVirtual::ExtendedUpdateSettings updateSettings;
 
 					controller.GetCharacter()->ExtendedUpdate(Time::DeltaTime(),
 						m_PhysicsSystem.GetGravity(),
-						update_settings,
+						updateSettings,
 						m_PhysicsSystem.GetDefaultBroadPhaseLayerFilter(PhysicsLayers::Dynamic),
 						m_PhysicsSystem.GetDefaultLayerFilter(PhysicsLayers::Dynamic),
 						{ },
@@ -320,13 +292,11 @@ namespace Odyssey
 					CharacterController& controller = gameObject.GetComponent<CharacterController>();
 
 					float3 position = ToFloat3(controller.GetCharacter()->GetPosition());
-					controller.PrevFrameLinearVelocity = ToFloat3(controller.GetCharacter()->GetLinearVelocity());
-
-					controller.GetCharacter()->SetLinearVelocity(Vec3::sZero());
-
+					controller.ResetVelocity();
 					transform.SetPosition(position);
 					transform.SetLocalSpace();
 				}
+
 				auto view = activeScene->GetAllEntitiesWith<Transform, RigidBody, BoxCollider>();
 				for (auto& entity : view)
 				{

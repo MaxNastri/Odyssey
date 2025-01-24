@@ -1584,6 +1584,26 @@ namespace Odyssey
 				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
 					controller->SetHeight(m_HeightDrawer.GetValue());
 			}
+			if (m_MaxSlopeDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetMaxSlope(glm::radians(m_MaxSlopeDrawer.GetValue()));
+			}
+			if (m_MaxStrengthDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetMaxStrength(m_MaxStrengthDrawer.GetValue());
+			}
+			if (m_PaddingDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetPadding(m_PaddingDrawer.GetValue());
+			}
+			if (m_InnerBodyDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetHasInnerBody(m_InnerBodyDrawer.GetValue());
+			}
 			if (m_DebugDrawer.Draw())
 			{
 				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
@@ -1604,7 +1624,12 @@ namespace Odyssey
 			m_CenterDrawer = Vector3Drawer("Center", controller->GetCenter(), float3(0.0f), false);
 			m_RadiusDrawer = FloatDrawer("Radius", controller->GetRadius());
 			m_HeightDrawer = FloatDrawer("Height", controller->GetHeight());
-			m_DebugDrawer = BoolDrawer("Enable Debug", controller->IsDebugEnabled(), false);
+			m_InertiaDrawer = BoolDrawer("Enable Inertia", controller->IsInertiaEnabled());
+			m_MaxSlopeDrawer = FloatDrawer("Max Slope", glm::degrees(controller->GetMaxSlope()));
+			m_MaxStrengthDrawer = FloatDrawer("Max Strength", controller->GetMaxStrength());
+			m_PaddingDrawer = FloatDrawer("Character Padding", controller->GetPadding());
+			m_InnerBodyDrawer = BoolDrawer("Create Inner Body", controller->HasInnerBody());
+			m_DebugDrawer = BoolDrawer("Enable Debug", controller->IsDebugEnabled());
 		}
 	}
 

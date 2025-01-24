@@ -265,6 +265,11 @@ namespace Odyssey
 		Vector3Drawer m_CenterDrawer;
 		FloatDrawer m_RadiusDrawer;
 		FloatDrawer m_HeightDrawer;
+		BoolDrawer m_InertiaDrawer;
+		FloatDrawer m_MaxSlopeDrawer;
+		FloatDrawer m_MaxStrengthDrawer;
+		FloatDrawer m_PaddingDrawer;
+		BoolDrawer m_InnerBodyDrawer;
 		BoolDrawer m_DebugDrawer;
 		bool m_Enabled;
 	};

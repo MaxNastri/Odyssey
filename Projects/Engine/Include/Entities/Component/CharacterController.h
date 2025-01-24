@@ -20,6 +20,9 @@ namespace Odyssey
 		void Deserialize(SerializationNode& node);
 
 	public:
+		void UpdateVelocity(Vec3 gravity, float dt);
+		void ResetVelocity();
+
 		void SetLinearVelocity(float3 velocity);
 		float3 GetLinearVelocity();
 
@@ -30,6 +33,10 @@ namespace Odyssey
 		void SetCenter(float3 center) { m_Center = center; }
 		void SetRadius(float radius) { m_Radius = radius; }
 		void SetHeight(float height) { m_Height = height; }
+		void SetMaxSlope(float maxSlope) { m_MaxSlopeAngle = maxSlope; }
+		void SetMaxStrength(float strength) { m_MaxStrength = strength; }
+		void SetPadding(float padding) { m_CharacterPadding = padding; }
+		void SetHasInnerBody(float enabled) { m_CreateInnerBody = enabled; }
 
 	public:
 		bool IsEnabled() { return m_Enabled; }
@@ -38,6 +45,10 @@ namespace Odyssey
 		float3 GetCenter() { return m_Center; }
 		float GetRadius() { return m_Radius; }
 		float GetHeight() { return m_Height; }
+		float GetMaxSlope() { return m_MaxSlopeAngle; }
+		float GetMaxStrength() { return m_MaxStrength; }
+		float GetPadding() { return m_CharacterPadding; }
+		bool HasInnerBody() { return m_CreateInnerBody; }
 		Ref<CharacterVirtual> GetCharacter() { return m_Character; }
 
 	private:
@@ -51,8 +62,11 @@ namespace Odyssey
 		GameObject m_GameObject;
 		Ref<CharacterVirtual> m_Character;
 
-	public:
-		float3 PrevFrameLinearVelocity = float3(0.0f);
+	private:
+		static constexpr float Inner_Shape_Fraction = 0.9f;
+
+	private:
+		float3 m_PrevFrameLinearVelocity = float3(0.0f);
 
 	private:
 		float3 m_Center = float3(0.0f);
@@ -63,11 +77,8 @@ namespace Odyssey
 		float m_MaxStrength = 100.0f;
 		float m_CharacterPadding = 0.02f;
 		float m_PenetrationRecoverySpeed = 1.0f;
-		float m_PredictiveContactDistance = 1.1f;
+		float m_PredictiveContactDistance = 0.1f;
 		bool m_CreateInnerBody = false;
 		int m_BackFaceMode = 1;
-
-	private:
-		static constexpr float Inner_Shape_Fraction = 0.9f;
 	};
 }

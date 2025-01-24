@@ -49,6 +49,43 @@ namespace Odyssey
 		node.ReadData("Height", m_Height);
 	}
 
+	void CharacterController::UpdateVelocity(Vec3 gravity, float dt)
+	{
+		Vec3 prevFrameVelocity = ToJoltVec3(m_PrevFrameLinearVelocity);
+		Vec3 lastVerticalVelocity = prevFrameVelocity.Dot(m_Character->GetUp()) * m_Character->GetUp();
+
+		// What the user input for velocity
+		Vec3 inputVelocity = m_Character->GetLinearVelocity();
+		Vec3 totalVelocity = Vec3::sZero();
+
+		// Velocity of the ground
+		Vec3 groundVelocity = m_Character->GetGroundVelocity();
+
+		if (m_Character->GetGroundState() == CharacterVirtual::EGroundState::OnGround	// If on ground
+			&& !m_Character->IsSlopeTooSteep(m_Character->GetGroundNormal()))			// Inertia disabled: And not on a slope that is too steep
+		{
+			// Assume velocity of ground when on ground
+			totalVelocity = groundVelocity;
+		}
+		else
+			totalVelocity = lastVerticalVelocity;
+
+		// Apply gravity
+		totalVelocity += gravity * dt;
+
+		// Apply user input velocity
+		totalVelocity += inputVelocity;
+
+		// Set the new combined velocity
+		m_Character->SetLinearVelocity(totalVelocity);
+	}
+
+	void CharacterController::ResetVelocity()
+	{
+		m_PrevFrameLinearVelocity = ToFloat3(m_Character->GetLinearVelocity());
+		m_Character->SetLinearVelocity(Vec3::sZero());
+	}
+
 	void CharacterController::SetLinearVelocity(float3 velocity)
 	{
 		m_Character->SetLinearVelocity(ToJoltVec3(velocity));
@@ -91,8 +128,8 @@ namespace Odyssey
 		settings->mPredictiveContactDistance = m_PredictiveContactDistance;
 		settings->mSupportingVolume = Plane(Vec3::sAxisY(), -m_Radius);
 		settings->mEnhancedInternalEdgeRemoval = false;
-		//settings->mInnerBodyShape = innerShape;
-		//settings->mInnerBodyLayer = PhysicsLayers::Dynamic;
+		settings->mInnerBodyShape = innerShape;
+		settings->mInnerBodyLayer = PhysicsLayers::Dynamic;
 		m_Character = PhysicsSystem::RegisterCharacter(settings);
 	}
 
