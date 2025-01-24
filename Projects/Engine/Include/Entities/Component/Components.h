@@ -1,6 +1,7 @@
 #pragma once
 #include "Animator.h"
 #include "Camera.h"
+#include "CharacterController.h"
 #include "Colliders.h"
 #include "Light.h"
 #include "MeshRenderer.h"

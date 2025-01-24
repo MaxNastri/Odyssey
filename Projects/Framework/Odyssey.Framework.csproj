@@ -50,6 +50,7 @@
     <Compile Include="Source\Asset\Texture2D.cs" />
     <Compile Include="Source\Components\Animator.cs" />
     <Compile Include="Source\Components\Camera.cs" />
+    <Compile Include="Source\Components\CharacterController.cs" />
     <Compile Include="Source\Components\Component.cs" />
     <Compile Include="Source\Components\MeshRenderer.cs" />
     <Compile Include="Source\Components\ParticleEmitter.cs" />

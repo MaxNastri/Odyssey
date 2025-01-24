@@ -8,12 +8,9 @@
 #include "OdysseyTime.h"
 #include "AssetManager.h"
 #include "Mesh.h"
-#include "Animator.h"
 #include "Input.h"
-#include "SpriteRenderer.h"
 #include "Prefab.h"
-#include "ParticleEmitter.h"
-#include "RigidBody.h"
+#include "Components.h"
 
 namespace Odyssey
 {
@@ -644,6 +641,28 @@ namespace Odyssey::InternalCalls
 		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
 			rigidBody->SetMaxLinearVelocity(value);
 	}
+#pragma endregion
+
+#pragma region Character Controller
+
+
+	void CharacterController_GetLinearVelocity(uint64_t guid, float3* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (CharacterController* controller = gameObject.TryGetComponent<CharacterController>())
+			*value = controller->GetLinearVelocity();
+	}
+
+	void CharacterController_SetLinearVelocity(uint64_t guid, float3 value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (CharacterController* controller = gameObject.TryGetComponent<CharacterController>())
+			controller->SetLinearVelocity(value);
+	}
+
+
 #pragma endregion
 
 

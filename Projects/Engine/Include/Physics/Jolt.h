@@ -13,6 +13,8 @@
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 #include <Jolt/Physics/Body/BodyID.h>
+#include <Jolt/Physics/Character/Character.h>
+#include <Jolt/Physics/Character/CharacterVirtual.h>
 
 namespace Odyssey
 {

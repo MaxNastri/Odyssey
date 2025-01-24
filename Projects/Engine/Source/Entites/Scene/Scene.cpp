@@ -1,18 +1,11 @@
 #include "Scene.h"
 #include "AssetSerializer.h"
 #include "GameObject.h"
-#include "Camera.h"
-#include "PropertiesComponent.h"
-#include "MeshRenderer.h"
-#include "Transform.h"
-#include "ScriptComponent.h"
 #include "ScriptingManager.h"
-#include "Animator.h"
 #include "ParticleBatcher.h"
-#include "ParticleEmitter.h"
 #include "EventSystem.h"
 #include "Events.h"
-#include "RigidBody.h"
+#include "Components.h"
 
 namespace Odyssey
 {
@@ -120,6 +113,14 @@ namespace Odyssey
 			RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
 			rigidBody.Destroy();
 		}
+		for (auto entity : m_Registry.view<CharacterController>())
+		{
+			GameObject gameObject = GameObject(this, entity);
+			GUID guid = gameObject.GetGUID();
+
+			CharacterController& characterController = gameObject.GetComponent<CharacterController>();
+			characterController.Destroy();
+		}
 	}
 
 	void Scene::Awake()
@@ -144,6 +145,12 @@ namespace Odyssey
 			GameObject gameObject = GameObject(this, entity);
 			RigidBody& rigidBody = gameObject.GetComponent<RigidBody>();
 			rigidBody.Awake();
+		}
+		for (auto entity : m_Registry.view<CharacterController>())
+		{
+			GameObject gameObject = GameObject(this, entity);
+			CharacterController& controller = gameObject.GetComponent<CharacterController>();
+			controller.Awake();
 		}
 	}
 

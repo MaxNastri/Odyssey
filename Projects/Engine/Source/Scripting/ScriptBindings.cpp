@@ -21,6 +21,7 @@ namespace Odyssey
 		RegisterComponentType<SpriteRenderer>(frameworkAssembly, SpriteRenderer::Type);
 		RegisterComponentType<Transform>(frameworkAssembly, Transform::Type);
 		RegisterComponentType<RigidBody>(frameworkAssembly, RigidBody::Type);
+		RegisterComponentType<CharacterController>(frameworkAssembly, CharacterController::Type);
 
 		ADD_INTERNAL_CALL(Animator_IsEnabled);
 		ADD_INTERNAL_CALL(Animator_SetFloat);
@@ -86,6 +87,9 @@ namespace Odyssey
 		ADD_INTERNAL_CALL(RigidBody_SetFriction);
 		ADD_INTERNAL_CALL(RigidBody_GetMaxLinearVelocity);
 		ADD_INTERNAL_CALL(RigidBody_SetMaxLinearVelocity);
+
+		ADD_INTERNAL_CALL(CharacterController_GetLinearVelocity);
+		ADD_INTERNAL_CALL(CharacterController_SetLinearVelocity);
 
 		ADD_INTERNAL_CALL(Prefab_LoadInstance);
 

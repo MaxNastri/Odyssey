@@ -248,6 +248,27 @@ namespace Odyssey
 		Ref<IEventListener> m_OnSceneModifiedListener;
 	};
 
+	class CharacterControllerInspector : public Inspector
+	{
+	public:
+		CharacterControllerInspector() = default;
+		CharacterControllerInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		Vector3Drawer m_CenterDrawer;
+		FloatDrawer m_RadiusDrawer;
+		FloatDrawer m_HeightDrawer;
+		BoolDrawer m_DebugDrawer;
+		bool m_Enabled;
+	};
+
 	class BoxColliderInspector : public Inspector
 	{
 	public:

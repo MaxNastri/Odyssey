@@ -129,6 +129,13 @@ namespace Odyssey
 
         #endregion
 
+        #region Character Controller
+
+        internal static delegate* unmanaged<GUID, Vector3*, void> CharacterController_GetLinearVelocity;
+        internal static delegate* unmanaged<GUID, Vector3, void> CharacterController_SetLinearVelocity;
+        
+
+        #endregion
         #region Input
 
         internal static delegate* unmanaged<KeyCode, bool> Input_GetKeyPress;

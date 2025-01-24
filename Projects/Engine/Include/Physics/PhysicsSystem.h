@@ -2,9 +2,33 @@
 #include "PhysicsLayers.h"
 #include "PhysicsListeners.h"
 #include "RigidBody.h"
+#include "Colliders.h"
 
 namespace Odyssey
 {
+	class CharacterVsCharacterSolver : public CharacterContactListener
+	{
+	public:
+		CharacterVsCharacterSolver() = default;
+
+	public:
+		void AddCharacter(Ref<CharacterVirtual> character)
+		{
+			m_CharacterVsCharacterCollision.Add(character.Get());
+			character->SetCharacterVsCharacterCollision(&m_CharacterVsCharacterCollision);
+			character->SetListener(this);
+		}
+
+		void RemoveCharacter(Ref<CharacterVirtual> character)
+		{
+			m_CharacterVsCharacterCollision.Remove(character.Get());
+			character->SetCharacterVsCharacterCollision(nullptr);
+			character->SetListener(nullptr);
+		}
+	private:
+		CharacterVsCharacterCollisionSimple m_CharacterVsCharacterCollision;
+	};
+
 	class PhysicsSystem
 	{
 	public:
@@ -18,8 +42,15 @@ namespace Odyssey
 		static void Deregister(Body* body);
 		static BodyInterface& GetBodyInterface();
 
+	public:
+		static Ref<CharacterVirtual> RegisterCharacter(Ref<CharacterVirtualSettings>& settings);
+		static void DeregisterCharacter(Ref<CharacterVirtual>& character);
+
 	private:
 		static Body* CreateBody(ShapeRefC shapeRef, float3 position, quat rotation, BodyProperties& properties, PhysicsLayer layer);
+
+	private:
+		inline static CharacterVsCharacterSolver s_CharacterSolver;
 
 	private:
 		inline static JPH::PhysicsSystem m_PhysicsSystem;

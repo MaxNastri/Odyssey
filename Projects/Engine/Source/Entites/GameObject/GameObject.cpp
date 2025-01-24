@@ -74,6 +74,9 @@ namespace Odyssey
 		if (SpriteRenderer* spriteRenderer = TryGetComponent<SpriteRenderer>())
 			spriteRenderer->Serialize(componentsNode);
 
+		if (CharacterController* characterController = TryGetComponent<CharacterController>())
+			characterController->Serialize(componentsNode);
+
 		if (BoxCollider* boxCollider = TryGetComponent<BoxCollider>())
 			boxCollider->Serialize(componentsNode);
 
@@ -129,6 +132,8 @@ namespace Odyssey
 				AddComponent<ParticleEmitter>(componentNode);
 			else if (componentType == SpriteRenderer::Type)
 				AddComponent<SpriteRenderer>(componentNode);
+			else if (componentType == CharacterController::Type)
+				AddComponent<CharacterController>(componentNode);
 			else if (componentType == BoxCollider::Type)
 				AddComponent<BoxCollider>(componentNode);
 			else if (componentType == CapsuleCollider::Type)
@@ -229,6 +234,9 @@ namespace Odyssey
 		if (SpriteRenderer* spriteRenderer = TryGetComponent<SpriteRenderer>())
 			spriteRenderer->Serialize(componentsNode);
 
+		if (CharacterController* characterController = TryGetComponent<CharacterController>())
+			characterController->Serialize(componentsNode);
+
 		if (BoxCollider* boxCollider = TryGetComponent<BoxCollider>())
 			boxCollider->Serialize(componentsNode);
 
@@ -299,6 +307,11 @@ namespace Odyssey
 			{
 				SpriteRenderer& spriteRenderer = AddComponent<SpriteRenderer>();
 				spriteRenderer.Deserialize(componentNode);
+			}
+			else if (componentType == CharacterController::Type)
+			{
+				CharacterController& characterController = AddComponent<CharacterController>();
+				characterController.Deserialize(componentNode);
 			}
 			else if (componentType == BoxCollider::Type)
 			{

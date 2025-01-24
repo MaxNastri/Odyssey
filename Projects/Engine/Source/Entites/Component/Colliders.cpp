@@ -115,7 +115,7 @@ namespace Odyssey
 	void CapsuleCollider::DebugDraw()
 	{
 		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
-			DebugRenderer::AddCapsule(transform->GetWorldPosition() + m_Center, m_Radius, m_Height, float3(0.0f, 1.0f, 0.0f));
+			DebugRenderer::AddCapsule(transform->GetWorldPosition() + m_Center, m_Radius, m_Height * 0.5f, float3(0.0f, 1.0f, 0.0f));
 	}
 
 	SphereCollider::SphereCollider(const GameObject& gameObject)

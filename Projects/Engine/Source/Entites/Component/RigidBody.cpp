@@ -88,8 +88,10 @@ namespace Odyssey
 		componentNode.WriteData("Type", RigidBody::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Physics Layer", Enum::ToString(m_PhysicsLayer));
+		componentNode.WriteData("Mass", m_Properties.Mass);
 		componentNode.WriteData("Friction", m_Properties.Friction);
 		componentNode.WriteData("Max Linear Velocity", m_Properties.MaxLinearVelocity);
+		componentNode.WriteData("Gravity Factor", m_Properties.GravityFactor);
 	}
 
 	void RigidBody::Deserialize(SerializationNode& node)
@@ -97,8 +99,10 @@ namespace Odyssey
 		std::string layer;
 		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Physics Layer", layer);
+		node.ReadData("Mass", m_Properties.Mass);
 		node.ReadData("Friction", m_Properties.Friction);
 		node.ReadData("Max Linear Velocity", m_Properties.MaxLinearVelocity);
+		node.ReadData("Gravity Factor", m_Properties.GravityFactor);
 
 		if (!layer.empty())
 			m_PhysicsLayer = Enum::ToEnum<PhysicsLayer>(layer);

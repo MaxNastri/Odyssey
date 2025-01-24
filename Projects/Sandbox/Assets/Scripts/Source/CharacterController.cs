@@ -26,7 +26,7 @@ namespace Sandbox
         public float MovementSpeed = 10.0f;
 
         private Transform m_Transform;
-        private RigidBody m_RigidBody;
+        private Odyssey.CharacterController m_CharacterController;
         private Animator m_Animator;
         private PlayerInput m_Input;
         private Entity m_SpawnedFireball;
@@ -39,7 +39,7 @@ namespace Sandbox
         protected override void Awake()
         {
             m_Transform = GetComponent<Transform>();
-            m_RigidBody = GetComponent<RigidBody>();
+            m_CharacterController = GetComponent<Odyssey.CharacterController>();
             m_Animator = GetComponent<Animator>();
         }
 
@@ -99,8 +99,7 @@ namespace Sandbox
                     Vector3 up = new Vector3(0, m_Input.Movement.Y * MovementSpeed, 0);
                     Vector3 velocity = forward + right + up;
 
-
-                    m_RigidBody.LinearVelocity = (velocity);
+                    m_CharacterController.LinearVelocity = (velocity);
                 }
 
                 if (m_Animator != null)

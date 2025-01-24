@@ -13,8 +13,10 @@ namespace Odyssey
 	struct BodyProperties
 	{
 	public:
+		float Mass = 0.0f;
 		float Friction = 0.5f;
 		float MaxLinearVelocity = 5.0f;
+		float GravityFactor = 1.0f;
 	};
 
 	class RigidBody

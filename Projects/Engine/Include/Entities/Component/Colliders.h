@@ -79,8 +79,8 @@ namespace Odyssey
 		uint32_t m_DebugID;
 		GameObject m_GameObject;
 		float3 m_Center = float3(0.0f);
-		float m_Radius = 0.0f;
-		float m_Height = 1.0f;
+		float m_Radius = 1.0f;
+		float m_Height = 2.0f;
 	};
 
 	class SphereCollider

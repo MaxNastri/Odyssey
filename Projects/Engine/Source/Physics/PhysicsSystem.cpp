@@ -5,6 +5,7 @@
 #include "RigidBody.h"
 #include "OdysseyTime.h"
 #include "Colliders.h"
+#include "CharacterController.h"
 
 namespace Odyssey
 {
@@ -88,7 +89,7 @@ namespace Odyssey
 	Body* PhysicsSystem::RegisterCapsule(float3 position, quat rotation, float radius, float height, BodyProperties& properties, PhysicsLayer layer)
 	{
 		// Create the capsule shape
-		ShapeRefC shapeRef = CapsuleShapeSettings(height, radius).Create().Get();
+		ShapeRefC shapeRef = CapsuleShapeSettings(height * 0.5f, radius).Create().Get();
 		return CreateBody(shapeRef, position, rotation, properties, layer);
 	}
 
@@ -104,6 +105,18 @@ namespace Odyssey
 		return m_PhysicsSystem.GetBodyInterface();
 	}
 
+	Ref<CharacterVirtual> PhysicsSystem::RegisterCharacter(Ref<CharacterVirtualSettings>& settings)
+	{
+		Ref<CharacterVirtual> character = new CharacterVirtual(settings.Get(), RVec3::sZero(), Quat::sIdentity(), 0, &m_PhysicsSystem);
+		s_CharacterSolver.AddCharacter(character);
+		return character;
+	}
+
+	void PhysicsSystem::DeregisterCharacter(Ref<CharacterVirtual>& character)
+	{
+		s_CharacterSolver.RemoveCharacter(character);
+	}
+
 	Body* PhysicsSystem::CreateBody(ShapeRefC shapeRef, float3 position, quat rotation, BodyProperties& properties, PhysicsLayer layer)
 	{
 		BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
@@ -115,6 +128,7 @@ namespace Odyssey
 		// Apply our body properties to the creation settings
 		bodySettings.mMaxLinearVelocity = properties.MaxLinearVelocity;
 		bodySettings.mFriction = properties.Friction;
+		bodySettings.mGravityFactor = properties.GravityFactor;
 
 		// Create the actual rigid body
 		Body* body = bodyInterface.CreateBody(bodySettings); // Note that if we run out of bodies this can return nullptr
@@ -173,6 +187,67 @@ namespace Odyssey
 		{
 			if (activeScene->IsRunning())
 			{
+				auto characterView = activeScene->GetAllEntitiesWith<Transform, CharacterController>();
+
+				for (auto& entity : characterView)
+				{
+					GameObject gameObject = GameObject(activeScene, entity);
+					Transform& transform = gameObject.GetComponent<Transform>();
+					CharacterController& controller = gameObject.GetComponent<CharacterController>();
+
+					float3 position, scale;
+					quat rotation;
+					transform.DecomposeWorldMatrix(position, rotation, scale);
+
+					Ref<CharacterVirtual> character = controller.GetCharacter();
+
+					character->SetPosition(ToJoltVec3(position));
+
+
+
+
+					// TODO: Move this section into the character controller function call
+
+					// Current vertical velocity
+					Vec3 prevFrameVelocity = ToJoltVec3(controller.PrevFrameLinearVelocity);
+					Vec3 current_vertical_velocity = prevFrameVelocity.Dot(character->GetUp()) * character->GetUp();
+
+					// What the user input for velocity
+					Vec3 userVelocity = controller.GetCharacter()->GetLinearVelocity();
+					Vec3 new_velocity = Vec3::sZero();
+
+					// Velocity of the ground
+					Vec3 ground_Velocity = character->GetGroundVelocity();
+
+					if (character->GetGroundState() == CharacterVirtual::EGroundState::OnGround	// If on ground
+						&& !character->IsSlopeTooSteep(character->GetGroundNormal()))			// Inertia disabled: And not on a slope that is too steep
+					{
+						// Assume velocity of ground when on ground
+						new_velocity = ground_Velocity;
+					}
+					else
+						new_velocity = current_vertical_velocity;
+
+					// Apply gravity
+					new_velocity += m_PhysicsSystem.GetGravity() * Time::DeltaTime();
+
+					// Apply user input velocity
+					new_velocity += userVelocity;
+
+					character->SetLinearVelocity(new_velocity);
+
+					CharacterVirtual::ExtendedUpdateSettings update_settings;
+
+					controller.GetCharacter()->ExtendedUpdate(Time::DeltaTime(),
+						m_PhysicsSystem.GetGravity(),
+						update_settings,
+						m_PhysicsSystem.GetDefaultBroadPhaseLayerFilter(PhysicsLayers::Dynamic),
+						m_PhysicsSystem.GetDefaultLayerFilter(PhysicsLayers::Dynamic),
+						{ },
+						{ },
+						*m_Allocator);
+				}
+
 				auto view = activeScene->GetAllEntitiesWith<Transform, RigidBody, BoxCollider>();
 				for (auto& entity : view)
 				{
@@ -237,6 +312,21 @@ namespace Odyssey
 		{
 			if (activeScene->IsRunning())
 			{
+				auto characterView = activeScene->GetAllEntitiesWith<Transform, CharacterController>();
+				for (auto& entity : characterView)
+				{
+					GameObject gameObject = GameObject(activeScene, entity);
+					Transform& transform = gameObject.GetComponent<Transform>();
+					CharacterController& controller = gameObject.GetComponent<CharacterController>();
+
+					float3 position = ToFloat3(controller.GetCharacter()->GetPosition());
+					controller.PrevFrameLinearVelocity = ToFloat3(controller.GetCharacter()->GetLinearVelocity());
+
+					controller.GetCharacter()->SetLinearVelocity(Vec3::sZero());
+
+					transform.SetPosition(position);
+					transform.SetLocalSpace();
+				}
 				auto view = activeScene->GetAllEntitiesWith<Transform, RigidBody, BoxCollider>();
 				for (auto& entity : view)
 				{

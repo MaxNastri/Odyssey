@@ -54,15 +54,11 @@ GameObjects:
         Lifetime: 'x: 1 y: 3'
         Size: 'x: 0.45 y: 0.8'
         Speed: 'x: 2.5 y: 5'
-      - Type: Odyssey.BoxCollider
+      - Type: Odyssey.CharacterController
         Enabled: 1
-        Center: 'x: 0 y: 1 z: 0'
-        Extents: 'x: 0.6 y: 1 z: 0.6'
-      - Type: Odyssey.RigidBody
-        Enabled: 1
-        Physics Layer: Dynamic
-        Friction: 0.6
-        Max Linear Velocity: 10
+        Center: 'x: 0 y: 0.9 z: 0'
+        Radius: 0.5
+        Height: 1
   - Sort Order: 0
     Prefab: 0
     Name: Camera
@@ -110,8 +106,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -0.018707957 y: 1.045793 z: 0.004407582'
-        Rotation: 'x: -0.026503649 y: -0.9161128 z: -0.014168816 w: 0.39979264'
+        Position: 'x: 0.008191691 y: 1.0401324 z: -0.045165993'
+        Rotation: 'x: -0.036211878 y: -0.91622275 z: -0.014952096 w: 0.39874932'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -121,7 +117,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 4.776741e-06 y: 0.10964568 z: -0.0006200999'
-        Rotation: 'x: 0.041290477 y: -0.0073763304 z: -0.02125331 w: 0.9988939'
+        Rotation: 'x: 0.041765213 y: -0.006919826 z: -0.020684237 w: 0.99888927'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -131,7 +127,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -5.731012e-06 y: 0.12633803 z: -0.0035754736'
-        Rotation: 'x: 0.060571086 y: -0.015783936 z: -0.01954658 w: 0.9978477'
+        Rotation: 'x: 0.061319638 y: -0.014365321 z: -0.025588555 w: 0.9976867'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -141,7 +137,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 1.0130785e-17 y: 0.14702389 z: 3.2091593e-11'
-        Rotation: 'x: 0.11959269 y: -0.016486976 z: -0.019508932 w: 0.99249446'
+        Rotation: 'x: 0.120374724 y: -0.014866621 z: -0.025559003 w: 0.9922882'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -151,7 +147,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 0.00027856822 y: 0.16208701 z: -0.049877387'
-        Rotation: 'x: -0.039474774 y: -0.037471116 z: 0.00019436076 w: 0.99851763'
+        Rotation: 'x: -0.042430926 y: -0.040222526 z: 0.003492391 w: 0.9982833'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -161,7 +157,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -3.725291e-11 y: 0.074726254 z: 0.018976849'
-        Rotation: 'x: 0.01648669 y: -0.20223747 z: 0.16546652 w: 0.96511596'
+        Rotation: 'x: -0.023955388 y: -0.20770928 z: 0.13626772 w: 0.9683564'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -180,7 +176,7 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -0.039828956 y: 0.107475735 z: 0.10701073'
+        Position: 'x: -0.039828956 y: 0.10747573 z: 0.10701073'
         Rotation: 'x: 0 y: -0 z: -0 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 2
@@ -201,7 +197,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0.055313047 y: 0.13640432 z: -0.04996299'
-        Rotation: 'x: 0.5633986 y: -0.41345996 z: 0.6078477 w: 0.3770333'
+        Rotation: 'x: 0.5593691 y: -0.4166358 z: 0.6096879 w: 0.37656537'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -210,8 +206,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -2.4868996e-16 y: 0.1224749 z: -5.115908e-15'
-        Rotation: 'x: 0.18372093 y: 0.4659491 z: -0.1335336 w: 0.8551649'
+        Position: 'x: -2.4868996e-16 y: 0.122474894 z: -5.115908e-15'
+        Rotation: 'x: 0.21399586 y: 0.42321464 z: -0.15514384 w: 0.8666173'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -221,7 +217,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -3.7303492e-16 y: 0.2924046 z: -1.9895197e-15'
-        Rotation: 'x: 1.0981514e-08 y: 7.212862e-08 z: -0.5960893 w: 0.8029182'
+        Rotation: 'x: 2.466302e-08 y: 6.393523e-08 z: -0.6026377 w: 0.7980149'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -231,7 +227,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 2.8857146e-09 y: 0.2966494 z: -1.4210855e-15'
-        Rotation: 'x: 0.0960888 y: 0.0062837694 z: -0.13566272 w: 0.98606443'
+        Rotation: 'x: 0.108517185 y: 0.00013149527 z: -0.1337333 w: 0.98505807'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -240,8 +236,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0.029522577 y: 0.061320856 z: 0.04040532'
-        Rotation: 'x: 0.32927734 y: -0.19067925 z: -0.27812746 w: 0.8819654'
+        Position: 'x: 0.02952258 y: 0.061320856 z: 0.04040532'
+        Rotation: 'x: 0.32927734 y: -0.19067924 z: -0.27812746 w: 0.8819654'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -250,8 +246,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -2.1015013e-12 y: 0.02339459 z: 2.8671822e-12'
-        Rotation: 'x: 0.35860938 y: -0.0017965578 z: 0.6967741 w: 0.6212101'
+        Position: 'x: -2.1015013e-12 y: 0.02339459 z: 2.867182e-12'
+        Rotation: 'x: 0.35860938 y: -0.0017965578 z: 0.69677407 w: 0.6212101'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -261,7 +257,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -1.4328805e-12 y: 0.015943838 z: 1.9505818e-12'
-        Rotation: 'x: 0.19217032 y: 0.063125804 z: 0.36669892 w: 0.90808463'
+        Rotation: 'x: 0.1921703 y: 0.063125804 z: 0.36669892 w: 0.9080845'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -281,7 +277,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 0.028818283 y: 0.13242623 z: 0.0030753964'
-        Rotation: 'x: 0.7626968 y: -0.00073297496 z: 0.091429755 w: 0.6402607'
+        Rotation: 'x: 0.7626968 y: -0.00073297496 z: 0.09142975 w: 0.64026064'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -290,8 +286,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -7.549517e-17 y: 0.021974334 z: 2.842171e-15'
-        Rotation: 'x: 0.7395264 y: 3.1800394e-07 z: 0.089248955 w: 0.6671847'
+        Position: 'x: -7.5495166e-17 y: 0.021974334 z: 2.842171e-15'
+        Rotation: 'x: 0.7395264 y: 3.1800394e-07 z: 0.08924895 w: 0.66718465'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -301,7 +297,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 2.3980818e-16 y: 0.015095063 z: 6.252776e-15'
-        Rotation: 'x: 0.40499258 y: 4.378149e-08 z: 0.048876125 w: 0.91301274'
+        Rotation: 'x: 0.40499258 y: 4.3781487e-08 z: 0.048876125 w: 0.9130126'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -311,7 +307,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 2.583711e-14 y: 0.016330872 z: -1.9895197e-15'
-        Rotation: 'x: -3.6326155e-12 y: -1.6256931e-17 z: -1.0687862e-17 w: 1'
+        Rotation: 'x: -3.6326155e-12 y: -1.625693e-17 z: -1.0687862e-17 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 2
     Prefab: 0
@@ -320,8 +316,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0.00025157724 y: 0.13097832 z: -3.3650008e-06'
-        Rotation: 'x: 0.76260734 y: -0.0007323596 z: 0.09141936 w: 0.6403687'
+        Position: 'x: 0.00025157724 y: 0.13097832 z: -3.365001e-06'
+        Rotation: 'x: 0.76260734 y: -0.00073235953 z: 0.09141936 w: 0.64036864'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -331,7 +327,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 2.3092638e-16 y: 0.02284378 z: 4.5474734e-15'
-        Rotation: 'x: 0.7396195 y: -3.511418e-07 z: 0.08925959 w: 0.66708004'
+        Rotation: 'x: 0.7396195 y: -3.5114175e-07 z: 0.08925959 w: 0.66708'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -341,7 +337,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -2.0339285e-15 y: 0.023881989 z: -7.1054274e-15'
-        Rotation: 'x: 0.40499216 y: 1.4451874e-07 z: 0.04887589 w: 0.91301286'
+        Rotation: 'x: 0.40499216 y: 1.4451872e-07 z: 0.04887589 w: 0.91301286'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -351,7 +347,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -5.3645976e-15 y: 0.01750885 z: -2.557954e-15'
-        Rotation: 'x: 1.1576408e-12 y: 9.2330985e-17 z: 7.257717e-17 w: 1'
+        Rotation: 'x: 1.1576407e-12 y: 9.233098e-17 z: 7.257717e-17 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 3
     Prefab: 0
@@ -361,7 +357,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0.027272549 y: 0.12216392 z: 0.0005742062'
-        Rotation: 'x: 0.7626965 y: -0.00073233084 z: 0.0914302 w: 0.64026093'
+        Rotation: 'x: 0.76269644 y: -0.0007323308 z: 0.0914302 w: 0.64026093'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -371,7 +367,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0 y: 0.021663513 z: -1.9895197e-15'
-        Rotation: 'x: 0.73952675 y: 4.0441343e-08 z: 0.089248635 w: 0.66718435'
+        Rotation: 'x: 0.73952675 y: 4.0441343e-08 z: 0.089248635 w: 0.6671843'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -381,7 +377,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -3.7303492e-16 y: 0.018761521 z: 2.2737367e-15'
-        Rotation: 'x: 0.40499252 y: 1.247917e-07 z: 0.048876062 w: 0.91301274'
+        Rotation: 'x: 0.4049925 y: 1.247917e-07 z: 0.04887606 w: 0.9130126'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -391,7 +387,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -1.12265755e-14 y: 0.022399597 z: -1.7053025e-15'
-        Rotation: 'x: 1.5270371e-16 y: 1.2902392e-09 z: -4.173969e-13 w: 1'
+        Rotation: 'x: 1.5270371e-16 y: 1.2902392e-09 z: -4.1739688e-13 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 4
     Prefab: 0
@@ -401,7 +397,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0.050101753 y: 0.10912162 z: 0.002692775'
-        Rotation: 'x: 0.75933564 y: -0.02811817 z: 0.114016496 w: 0.6400149'
+        Rotation: 'x: 0.7593356 y: -0.02811817 z: 0.1140165 w: 0.6400149'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -410,7 +406,7 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -5.3290704e-17 y: 0.01563469 z: 4.831691e-15'
+        Position: 'x: -5.3290704e-17 y: 0.01563469 z: 4.8316907e-15'
         Rotation: 'x: 0.74202657 y: -0.02655635 z: 0.06559187 w: 0.66662514'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
@@ -421,7 +417,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 1.5418778e-14 y: 0.012784424 z: -9.094947e-15'
-        Rotation: 'x: 0.40499267 y: 5.8016216e-08 z: 0.048876174 w: 0.9130126'
+        Rotation: 'x: 0.40499267 y: 5.8016212e-08 z: 0.048876174 w: 0.9130126'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -431,7 +427,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -2.1440627e-14 y: 0.017362136 z: -1.4210855e-15'
-        Rotation: 'x: -1.0090822e-15 y: 5.407403e-18 z: -1.0703108e-17 w: 1'
+        Rotation: 'x: -1.0090822e-15 y: 5.4074025e-18 z: -1.0703108e-17 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 2
     Prefab: 0
@@ -440,8 +436,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0.055313002 y: 0.13640532 z: -0.049962945'
-        Rotation: 'x: -0.5649129 y: -0.4271512 z: 0.5669762 w: -0.42065814'
+        Position: 'x: 0.055313002 y: 0.13640532 z: -0.04996294'
+        Rotation: 'x: -0.56722 y: -0.4254013 z: 0.56551546 w: -0.42129263'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -451,7 +447,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 5.3290704e-17 y: 0.122476004 z: -1.9042546e-14'
-        Rotation: 'x: 0.26480275 y: -0.10801417 z: 0.50863636 w: 0.812097'
+        Rotation: 'x: 0.24997759 y: -0.07694349 z: 0.48309723 w: 0.8355884'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -461,7 +457,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -4.491625e-09 y: 0.292405 z: -1.0610108e-11'
-        Rotation: 'x: 2.3898917e-08 y: -2.4218007e-08 z: 0.7746331 w: 0.6324109'
+        Rotation: 'x: -3.3473643e-08 y: -1.426537e-07 z: 0.7805984 w: 0.6250328'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -470,8 +466,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -3.1054053e-09 y: 0.296649 z: -1.0767281e-11'
-        Rotation: 'x: -0.032235395 y: -0.07667258 z: 0.13730244 w: 0.9870309'
+        Position: 'x: -3.1054048e-09 y: 0.296649 z: -1.076728e-11'
+        Rotation: 'x: -0.018691584 y: -0.12270368 z: 0.14516863 w: 0.9815908'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -480,7 +476,7 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -0.02952258 y: 0.06132101 z: 0.0404'
+        Position: 'x: -0.02952258 y: 0.061321013 z: 0.0404'
         Rotation: 'x: 0.44083285 y: 0.060771845 z: -0.021225162 w: 0.89527804'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
@@ -491,7 +487,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 9.947598e-16 y: 0.023397945 z: -1.1368684e-15'
-        Rotation: 'x: 0.17846255 y: 0.060612604 z: -0.7373736 w: 0.6486582'
+        Rotation: 'x: 0.17846255 y: 0.060612604 z: -0.73737353 w: 0.6486582'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -501,7 +497,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0 y: 0.015943762 z: -3.410605e-15'
-        Rotation: 'x: 0.11086872 y: -0.013563877 z: -0.37427068 w: 0.9205681'
+        Rotation: 'x: 0.110868715 y: -0.013563876 z: -0.37427068 w: 0.9205681'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -531,7 +527,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 4.8849813e-17 y: 0.021975 z: -9.299584e-13'
-        Rotation: 'x: 0.7567401 y: 1.4983507e-07 z: -0.092207715 w: 0.6471802'
+        Rotation: 'x: 0.7567401 y: 1.4983507e-07 z: -0.092207715 w: 0.64718014'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -540,8 +536,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 2.9753978e-16 y: 0.015095 z: -1.0564349e-12'
-        Rotation: 'x: 0.41692805 y: 1.172384e-07 z: -0.050801888 w: 0.90751874'
+        Position: 'x: 2.9753978e-16 y: 0.015094999 z: -1.0564349e-12'
+        Rotation: 'x: 0.41692805 y: 1.172384e-07 z: -0.050801884 w: 0.9075187'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -561,7 +557,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0.0002515572 y: 0.130979 z: -1.0000005e-05'
-        Rotation: 'x: 0.7474239 y: 0.0007157064 z: -0.09044264 w: 0.658162'
+        Rotation: 'x: 0.7474239 y: 0.0007157064 z: -0.09044264 w: 0.65816194'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -571,7 +567,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -1.0658141e-16 y: 0.022843 z: -8.301981e-13'
-        Rotation: 'x: 0.7567401 y: -7.952011e-08 z: -0.09220792 w: 0.6471802'
+        Rotation: 'x: 0.7567401 y: -7.952011e-08 z: -0.09220792 w: 0.64718014'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -581,7 +577,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 2.6645352e-17 y: 0.023882 z: -9.66054e-13'
-        Rotation: 'x: 0.41692805 y: 7.962069e-08 z: -0.05080197 w: 0.90751874'
+        Rotation: 'x: 0.41692805 y: 7.962069e-08 z: -0.050801966 w: 0.9075187'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -591,7 +587,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 4.440892e-17 y: 0.017509 z: -6.698997e-13'
-        Rotation: 'x: -1.7084112e-12 y: -2.4501126e-17 z: -4.1857993e-29 w: 1'
+        Rotation: 'x: -1.7084112e-12 y: -2.4501124e-17 z: -4.1857993e-29 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 3
     Prefab: 0
@@ -600,8 +596,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0.02727264 y: 0.12216399 z: 0.00057'
-        Rotation: 'x: 0.747424 y: 0.00071563316 z: -0.090442725 w: 0.658162'
+        Position: 'x: 0.027272642 y: 0.122163996 z: 0.00057'
+        Rotation: 'x: 0.7474239 y: 0.00071563304 z: -0.09044271 w: 0.6581619'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -611,7 +607,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 2.6645354e-16 y: 0.021664 z: -7.6227024e-13'
-        Rotation: 'x: 0.7567401 y: -2.73688e-07 z: -0.09220809 w: 0.6471801'
+        Rotation: 'x: 0.7567401 y: -2.73688e-07 z: -0.09220808 w: 0.6471801'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -621,7 +617,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -3.7303492e-16 y: 0.018761 z: -6.4062536e-13'
-        Rotation: 'x: 0.41692805 y: 9.998091e-08 z: -0.050801925 w: 0.90751874'
+        Rotation: 'x: 0.41692805 y: 9.99809e-08 z: -0.05080192 w: 0.9075187'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -631,7 +627,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 2.4868996e-16 y: 0.0224 z: -7.5772277e-13'
-        Rotation: 'x: 8.743015e-12 y: -2.4503257e-17 z: -1.110223e-16 w: 1'
+        Rotation: 'x: 8.743014e-12 y: -2.4503257e-17 z: -1.110223e-16 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 4
     Prefab: 0
@@ -640,8 +636,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0.050101936 y: 0.109121986 z: 0.00269'
-        Rotation: 'x: 0.7474239 y: 0.0007153767 z: -0.09044294 w: 0.6581619'
+        Position: 'x: 0.050101936 y: 0.10912199 z: 0.00269'
+        Rotation: 'x: 0.7474239 y: 0.0007153766 z: -0.090442926 w: 0.6581619'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -651,7 +647,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -3.5527136e-17 y: 0.015635 z: -6.5597305e-13'
-        Rotation: 'x: 0.7567401 y: -1.3781022e-07 z: -0.09220797 w: 0.6471802'
+        Rotation: 'x: 0.7567401 y: -1.3781022e-07 z: -0.09220797 w: 0.64718014'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -661,7 +657,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 5.3290704e-17 y: 0.012784 z: -5.0647485e-13'
-        Rotation: 'x: 0.41692805 y: -3.5606476e-08 z: -0.050802216 w: 0.90751874'
+        Rotation: 'x: 0.41692805 y: -3.5606476e-08 z: -0.050802216 w: 0.9075187'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -681,7 +677,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -0.022249732 y: 0.0019266361 z: -0.13789229'
-        Rotation: 'x: -0.9505668 y: 0.2843212 z: -0.034269925 w: 0.12004046'
+        Rotation: 'x: -0.9505668 y: 0.2843212 z: -0.034269925 w: 0.120040454'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -690,7 +686,7 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -5.255743e-12 y: 0.16399832 z: 3.2924136e-11'
+        Position: 'x: -5.2557425e-12 y: 0.16399832 z: 3.2924136e-11'
         Rotation: 'x: -0.13275711 y: -0.0077484064 z: -0.06882461 w: 0.9887258'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
@@ -701,7 +697,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 4.2895464e-13 y: 0.15870059 z: 3.4443913e-11'
-        Rotation: 'x: -0.059720226 y: 0.0071693985 z: -0.08793281 w: 0.9943088'
+        Rotation: 'x: -0.05972023 y: 0.0071693985 z: -0.0879328 w: 0.99430877'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -711,7 +707,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 2.7501556e-12 y: 0.16686875 z: 3.8668065e-11'
-        Rotation: 'x: -0.047475852 y: 0.009802476 z: -0.05127333 w: 0.99750745'
+        Rotation: 'x: -0.04747585 y: 0.009802474 z: -0.051273327 w: 0.9975074'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 2
     Prefab: 0
@@ -720,7 +716,7 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0.043657593 y: 0.06581213 z: -0.10223167'
+        Position: 'x: 0.043657593 y: 0.06581213 z: -0.102231674'
         Rotation: 'x: -0.95214725 y: -0.28457594 z: 0.030433256 w: 0.10726616'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
@@ -730,8 +726,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 4.565237e-12 y: 0.15984333 z: 3.20987e-11'
-        Rotation: 'x: -0.10379751 y: 0.00791563 z: 0.06884506 w: 0.9921813'
+        Position: 'x: 4.565237e-12 y: 0.15984331 z: 3.20987e-11'
+        Rotation: 'x: -0.103797495 y: 0.00791563 z: 0.06884506 w: 0.9921813'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -741,7 +737,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 2.2041036e-13 y: 0.15897161 z: 3.4512376e-11'
-        Rotation: 'x: -0.06117937 y: -0.0045129457 z: 0.08803429 w: 0.9942267'
+        Rotation: 'x: -0.061179362 y: -0.0045129457 z: 0.08803429 w: 0.9942267'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -750,8 +746,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -2.492655e-12 y: 0.1659737 z: 3.8465085e-11'
-        Rotation: 'x: -0.06270337 y: -0.003349875 z: 0.018898722 w: 0.9978477'
+        Position: 'x: -2.492655e-12 y: 0.16597368 z: 3.8465085e-11'
+        Rotation: 'x: -0.06270337 y: -0.0033498749 z: 0.018898722 w: 0.9978477'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 1
     Prefab: 0
@@ -760,8 +756,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -0.12104283 y: -0.060532045 z: -0.012332421'
-        Rotation: 'x: 0.13175455 y: -0.21539114 z: -0.9503013 w: -0.18213928'
+        Position: 'x: -0.121042825 y: -0.06053205 z: -0.012332421'
+        Rotation: 'x: 0.13874222 y: -0.23503608 z: -0.9445292 w: -0.18268368'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -770,8 +766,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: -5.7597237e-08 y: 0.46607 z: 1.687539e-16'
-        Rotation: 'x: -0.33232456 y: -0.08621811 z: 0.0009810089 w: 0.93921554'
+        Position: 'x: -5.759724e-08 y: 0.46607 z: 1.687539e-16'
+        Rotation: 'x: -0.39434642 y: -0.07620399 z: 0.021514112 w: 0.9155441'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -781,7 +777,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -6.222314e-08 y: 0.50482 z: 1.5987212e-16'
-        Rotation: 'x: 0.5520031 y: -0.011756151 z: 0.14956245 w: 0.8202351'
+        Rotation: 'x: 0.58527577 y: -0.050801158 z: 0.12075518 w: 0.8001811'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -791,7 +787,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -2.2533322e-07 y: 0.1775 z: -2.0339285e-15'
-        Rotation: 'x: 0.30675197 y: -7.9493236e-07 z: 7.097517e-07 w: 0.9517895'
+        Rotation: 'x: 0.30675197 y: -7.949323e-07 z: 7.0975165e-07 w: 0.9517895'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -801,7 +797,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -7.18185e-08 y: 0.0705 z: -5.170975e-14'
-        Rotation: 'x: 8.2858405e-13 y: 1.7537734e-22 z: -0 w: 1'
+        Rotation: 'x: 8.28584e-13 y: 1.7537734e-22 z: -0 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 2
     Prefab: 0
@@ -810,8 +806,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 0.12250156 y: -0.060533803 z: -0.012332389'
-        Rotation: 'x: -0.13474867 y: -0.14340061 z: -0.9745076 w: 0.10776946'
+        Position: 'x: 0.12250157 y: -0.060533803 z: -0.012332389'
+        Rotation: 'x: -0.14154619 y: -0.12303097 z: -0.9744662 w: 0.12346618'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -820,8 +816,8 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
-        Position: 'x: 1.0599798e-09 y: 0.466068 z: -4.2188474e-17'
-        Rotation: 'x: -0.38537222 y: -0.022982556 z: 0.048911702 w: 0.9211775'
+        Position: 'x: 1.0599798e-09 y: 0.46606797 z: -4.2188474e-17'
+        Rotation: 'x: -0.36038852 y: -0.012084181 z: 0.05412349 w: 0.93115234'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -831,7 +827,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -4.540118e-09 y: 0.50481945 z: 4.8849813e-17'
-        Rotation: 'x: 0.61955893 y: -0.043637734 z: -0.082351156 w: 0.77939767'
+        Rotation: 'x: 0.6023128 y: -0.050066408 z: -0.09449581 w: 0.7910646'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -841,7 +837,7 @@ GameObjects:
     Components:
       - Type: Odyssey.Transform
         Position: 'x: -8.881784e-17 y: 0.1775 z: -4.440892e-17'
-        Rotation: 'x: 0.30675352 y: 1.5864314e-09 z: -6.348459e-07 w: 0.951789'
+        Rotation: 'x: 0.307785 y: -0.0009980564 z: -0.00032474907 w: 0.95145535'
         Scale: 'x: 1 y: 1 z: 1'
   - Sort Order: 0
     Prefab: 0
@@ -1004,7 +1000,7 @@ GameObjects:
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.MeshRenderer
-        Enabled: 1
+        Enabled: 0
         Mesh: 11237946511379966832
         Materials:
           - 14541755926980427327
@@ -1211,8 +1207,10 @@ GameObjects:
       - Type: Odyssey.RigidBody
         Enabled: 1
         Physics Layer: Static
+        Mass: 0
         Friction: 0.5
         Max Linear Velocity: 50
+        Gravity Factor: 1
   - Sort Order: 12
     Prefab: 0
     Name: Physics Dynamic
@@ -1225,7 +1223,7 @@ GameObjects:
         Materials:
           - 3853102031685265300
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 5.291541 z: -3.8997405'
+        Position: 'x: 0 y: 5.291541 z: -2.8740535'
         Rotation: 'x: 0 y: 0 z: 0 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.BoxCollider
@@ -1235,8 +1233,10 @@ GameObjects:
       - Type: Odyssey.RigidBody
         Enabled: 1
         Physics Layer: Dynamic
+        Mass: 0
         Friction: 0.5
         Max Linear Velocity: 50
+        Gravity Factor: 1
   - Sort Order: 13
     Prefab: 0
     Name: Rune Gate R
@@ -1362,7 +1362,7 @@ GameObjects:
         Materials:
           - 3853102031685265300
       - Type: Odyssey.Transform
-        Position: 'x: -0.8027122 y: 8.00087 z: -4.17985'
+        Position: 'x: -0.8027122 y: 8.00087 z: -2.3889358'
         Rotation: 'x: 0 y: 0 z: 0 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.SphereCollider
@@ -1372,8 +1372,10 @@ GameObjects:
       - Type: Odyssey.RigidBody
         Enabled: 1
         Physics Layer: Dynamic
+        Mass: 0
         Friction: 0.5
         Max Linear Velocity: 50
+        Gravity Factor: 1
   - Sort Order: 14
     Prefab: 0
     Name: Dynamic Capsule
@@ -1386,19 +1388,21 @@ GameObjects:
         Materials:
           - 3853102031685265300
       - Type: Odyssey.Transform
-        Position: 'x: 0 y: 3.9779177 z: -10.53602'
+        Position: 'x: 0 y: 3.9779177 z: -12.830911'
         Rotation: 'x: 0 y: 0 z: 0 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
       - Type: Odyssey.CapsuleCollider
         Enabled: 1
         Center: 'x: 0 y: 0 z: 0'
         Radius: 1
-        Height: 1
+        Height: 2
       - Type: Odyssey.RigidBody
         Enabled: 1
         Physics Layer: Dynamic
+        Mass: 0
         Friction: 0.5
         Max Linear Velocity: 5
+        Gravity Factor: 1
   - Sort Order: 16
     Prefab: 0
     Name: Rocks L
@@ -1794,8 +1798,10 @@ GameObjects:
       - Type: Odyssey.RigidBody
         Enabled: 1
         Physics Layer: Static
+        Mass: 0
         Friction: 0.5
         Max Linear Velocity: 50
+        Gravity Factor: 1
   - Sort Order: 10
     Prefab: 0
     Name: Stairs L

@@ -340,6 +340,7 @@ namespace Odyssey
 			Utils::RegisterComponentType<CapsuleCollider, CapsuleColliderInspector>();
 			Utils::RegisterComponentType<SphereCollider, SphereColliderInspector>();
 			Utils::RegisterComponentType<RigidBody, RigidBodyInspector>();
+			Utils::RegisterComponentType<CharacterController, CharacterControllerInspector>();
 			Utils::s_ComponentsRegistered = true;
 		}
 
@@ -1544,6 +1545,69 @@ namespace Odyssey
 		}
 	}
 
+	CharacterControllerInspector::CharacterControllerInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+
+	bool CharacterControllerInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+				controller->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Character Controller", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_CenterDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetCenter(m_CenterDrawer.GetValue());
+			}
+			if (m_RadiusDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetRadius(m_RadiusDrawer.GetValue());
+			}
+			if (m_HeightDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetHeight(m_HeightDrawer.GetValue());
+			}
+			if (m_DebugDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetDebugEnabled(m_DebugDrawer.GetValue());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void CharacterControllerInspector::InitDrawers()
+	{
+		if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+		{
+			m_Enabled = controller->IsEnabled();
+			m_CenterDrawer = Vector3Drawer("Center", controller->GetCenter(), float3(0.0f), false);
+			m_RadiusDrawer = FloatDrawer("Radius", controller->GetRadius());
+			m_HeightDrawer = FloatDrawer("Height", controller->GetHeight());
+			m_DebugDrawer = BoolDrawer("Enable Debug", controller->IsDebugEnabled(), false);
+		}
+	}
+
 	BoxColliderInspector::BoxColliderInspector(GameObject& gameObject)
 	{
 		m_GameObject = gameObject;
@@ -1614,8 +1678,8 @@ namespace Odyssey
 
 		if (ImGui::Checkbox("##enabled", &m_Enabled))
 		{
-			if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
-				boxCollider->SetEnabled(m_Enabled);
+			if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
+				collider->SetEnabled(m_Enabled);
 
 			modified = true;
 		}
@@ -1676,8 +1740,8 @@ namespace Odyssey
 
 		if (ImGui::Checkbox("##enabled", &m_Enabled))
 		{
-			if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
-				boxCollider->SetEnabled(m_Enabled);
+			if (SphereCollider* collider = m_GameObject.TryGetComponent<SphereCollider>())
+				collider->SetEnabled(m_Enabled);
 
 			modified = true;
 		}
