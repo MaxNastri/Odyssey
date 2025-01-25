@@ -51,6 +51,9 @@ namespace Odyssey
 		bool HasInnerBody() { return m_CreateInnerBody; }
 		Ref<CharacterVirtual> GetCharacter() { return m_Character; }
 
+	public:
+		bool IsGrounded();
+
 	private:
 		void CreateShape();
 		void DebugDraw();

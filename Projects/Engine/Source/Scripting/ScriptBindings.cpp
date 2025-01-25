@@ -90,6 +90,7 @@ namespace Odyssey
 
 		ADD_INTERNAL_CALL(CharacterController_GetLinearVelocity);
 		ADD_INTERNAL_CALL(CharacterController_SetLinearVelocity);
+		ADD_INTERNAL_CALL(CharacterController_IsGrounded);
 
 		ADD_INTERNAL_CALL(Prefab_LoadInstance);
 

@@ -24,5 +24,18 @@ namespace Odyssey
                 unsafe { InternalCalls.CharacterController_SetLinearVelocity(Entity.GUID, value); }
             }
         }
+
+        public bool IsGrounded
+        {
+            get
+            {
+                unsafe
+                {
+                    bool value;
+                    InternalCalls.CharacterController_IsGrounded(Entity.GUID, &value);
+                    return value;
+                }
+            }
+        }
     }
 }

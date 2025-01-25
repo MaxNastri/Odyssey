@@ -1803,6 +1803,21 @@ namespace Odyssey
 				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
 					rigidBody->SetLayer(m_LayerDrawer.GetValue());
 			}
+			if (m_SurfaceVelocityDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetSurfaceVelocity(m_SurfaceVelocityDrawer.GetValue());
+			}
+			if (m_KinematicDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetKinematic(m_KinematicDrawer.GetValue());
+			}
+			if (m_MassDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetMass(m_MassDrawer.GetValue());
+			}
 			if (m_FrictionDrawer.Draw())
 			{
 				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
@@ -1826,6 +1841,9 @@ namespace Odyssey
 		{
 			m_Enabled = rigidBody->IsEnabled();
 			m_LayerDrawer = EnumDrawer<PhysicsLayer>("Physics Layer", rigidBody->GetLayer());
+			m_SurfaceVelocityDrawer = Vector3Drawer("Surface Velocity", rigidBody->GetSurfaceVelocity(), float3(0.0f), false);
+			m_KinematicDrawer = BoolDrawer("Kinematic", rigidBody->IsKinematic());
+			m_MassDrawer = FloatDrawer("Mass", rigidBody->GetMass());
 			m_FrictionDrawer = FloatDrawer("Friction", rigidBody->GetFriction());
 			m_MaxLinearVelocityDrawer = FloatDrawer("Max Linear Velocity", rigidBody->GetMaxLinearVelocity());
 		}

@@ -95,6 +95,9 @@ namespace Odyssey
 
 	void PhysicsSystem::Deregister(Body* body)
 	{
+		if (s_BodyProperties.contains(body->GetID()))
+			s_BodyProperties.erase(body->GetID());
+
 		BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
 		bodyInterface.RemoveBody(body->GetID());
 		bodyInterface.DestroyBody(body->GetID());
@@ -105,16 +108,24 @@ namespace Odyssey
 		return m_PhysicsSystem.GetBodyInterface();
 	}
 
+	BodyProperties* PhysicsSystem::GetBodyProperties(BodyID id)
+	{
+		if (s_BodyProperties.contains(id))
+			return s_BodyProperties[id];
+
+		return nullptr;
+	}
+
 	Ref<CharacterVirtual> PhysicsSystem::RegisterCharacter(Ref<CharacterVirtualSettings>& settings)
 	{
 		Ref<CharacterVirtual> character = new CharacterVirtual(settings.Get(), RVec3::sZero(), Quat::sIdentity(), 0, &m_PhysicsSystem);
-		s_CharacterSolver.AddCharacter(character);
+		character->SetListener(&s_CharacterSolver);
 		return character;
 	}
 
 	void PhysicsSystem::DeregisterCharacter(Ref<CharacterVirtual>& character)
 	{
-		s_CharacterSolver.RemoveCharacter(character);
+		character->SetListener(nullptr);
 	}
 
 	Body* PhysicsSystem::CreateBody(ShapeRefC shapeRef, float3 position, quat rotation, BodyProperties& properties, PhysicsLayer layer)
@@ -122,7 +133,13 @@ namespace Odyssey
 		BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
 
 		// Create the settings for the body itself. Note that here you can also set other properties like the restitution / friction.
-		EMotionType motion = layer == PhysicsLayer::Static ? EMotionType::Static : EMotionType::Dynamic;
+		EMotionType motion = EMotionType::Static;
+
+		if (properties.Kinematic)
+			motion = EMotionType::Kinematic;
+		else if (layer == PhysicsLayer::Dynamic)
+			motion = EMotionType::Dynamic;
+
 		BodyCreationSettings bodySettings(shapeRef, ToJoltVec3(position), ToJoltQuat(rotation), motion, (uint32_t)layer);
 
 		// Apply our body properties to the creation settings
@@ -147,6 +164,7 @@ namespace Odyssey
 		// Instead insert all new objects in batches instead of 1 at a time to keep the broad phase efficient.
 		m_PhysicsSystem.OptimizeBroadPhase();
 
+		s_BodyProperties[body->GetID()] = &properties;
 		return body;
 	}
 

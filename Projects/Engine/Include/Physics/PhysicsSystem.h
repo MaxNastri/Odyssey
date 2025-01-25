@@ -6,29 +6,6 @@
 
 namespace Odyssey
 {
-	class CharacterVsCharacterSolver : public CharacterContactListener
-	{
-	public:
-		CharacterVsCharacterSolver() = default;
-
-	public:
-		void AddCharacter(Ref<CharacterVirtual> character)
-		{
-			m_CharacterVsCharacterCollision.Add(character.Get());
-			character->SetCharacterVsCharacterCollision(&m_CharacterVsCharacterCollision);
-			character->SetListener(this);
-		}
-
-		void RemoveCharacter(Ref<CharacterVirtual> character)
-		{
-			m_CharacterVsCharacterCollision.Remove(character.Get());
-			character->SetCharacterVsCharacterCollision(nullptr);
-			character->SetListener(nullptr);
-		}
-	private:
-		CharacterVsCharacterCollisionSimple m_CharacterVsCharacterCollision;
-	};
-
 	class PhysicsSystem
 	{
 	public:
@@ -39,18 +16,20 @@ namespace Odyssey
 		static Body* RegisterBox(float3 position, quat rotation, float3 extents, BodyProperties& properties, PhysicsLayer layer);
 		static Body* RegisterSphere(float3 position, quat rotation, float radius, BodyProperties& properties, PhysicsLayer layer);
 		static Body* RegisterCapsule(float3 position, quat rotation, float radius, float height, BodyProperties& properties, PhysicsLayer layer);
+		static Ref<CharacterVirtual> RegisterCharacter(Ref<CharacterVirtualSettings>& settings);
 		static void Deregister(Body* body);
-		static BodyInterface& GetBodyInterface();
+		static void DeregisterCharacter(Ref<CharacterVirtual>& character);
 
 	public:
-		static Ref<CharacterVirtual> RegisterCharacter(Ref<CharacterVirtualSettings>& settings);
-		static void DeregisterCharacter(Ref<CharacterVirtual>& character);
+		static BodyInterface& GetBodyInterface();
+		static BodyProperties* GetBodyProperties(BodyID id);
 
 	private:
 		static Body* CreateBody(ShapeRefC shapeRef, float3 position, quat rotation, BodyProperties& properties, PhysicsLayer layer);
 
 	private:
-		inline static CharacterVsCharacterSolver s_CharacterSolver;
+		inline static std::map<BodyID, BodyProperties*> s_BodyProperties;
+		inline static CharacterPhysicsListener s_CharacterSolver;
 
 	private:
 		inline static JPH::PhysicsSystem m_PhysicsSystem;

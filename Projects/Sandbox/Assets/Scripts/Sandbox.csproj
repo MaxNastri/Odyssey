@@ -48,6 +48,7 @@
     <Compile Include="Source\CharacterController.cs" />
     <Compile Include="Source\DoorController.cs" />
     <Compile Include="Source\FireballMover.cs" />
+    <Compile Include="Source\PlatformMover.cs" />
     <Compile Include="Source\Sample.cs" />
     <Compile Include="Source\Tests\AnimatorTest.cs" />
     <Compile Include="Source\Tests\AssetTest.cs" />

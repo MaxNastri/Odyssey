@@ -662,6 +662,13 @@ namespace Odyssey::InternalCalls
 			controller->SetLinearVelocity(value);
 	}
 
+	void CharacterController_IsGrounded(uint64_t guid, bool* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (CharacterController* controller = gameObject.TryGetComponent<CharacterController>())
+			*value = controller->IsGrounded();
+	}
 
 #pragma endregion
 

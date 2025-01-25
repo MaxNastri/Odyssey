@@ -112,6 +112,11 @@ namespace Odyssey
 		}
 	}
 
+	bool CharacterController::IsGrounded()
+	{
+		return m_Character->GetGroundState() == JPH::CharacterBase::EGroundState::OnGround;
+	}
+
 	void CharacterController::CreateShape()
 	{
 		Vec3 position = Vec3(0.0f, m_Height * 0.5f + m_Radius, 0.0f);

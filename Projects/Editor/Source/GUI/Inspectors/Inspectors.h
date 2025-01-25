@@ -345,6 +345,9 @@ namespace Odyssey
 		GameObject m_GameObject;
 		bool m_Enabled;
 		EnumDrawer<PhysicsLayer> m_LayerDrawer;
+		Vector3Drawer m_SurfaceVelocityDrawer;
+		BoolDrawer m_KinematicDrawer;
+		FloatDrawer m_MassDrawer;
 		FloatDrawer m_FrictionDrawer;
 		FloatDrawer m_MaxLinearVelocityDrawer;
 	};

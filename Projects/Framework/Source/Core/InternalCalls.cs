@@ -133,6 +133,7 @@ namespace Odyssey
 
         internal static delegate* unmanaged<GUID, Vector3*, void> CharacterController_GetLinearVelocity;
         internal static delegate* unmanaged<GUID, Vector3, void> CharacterController_SetLinearVelocity;
+        internal static delegate* unmanaged<GUID, bool*, void> CharacterController_IsGrounded;
         
 
         #endregion

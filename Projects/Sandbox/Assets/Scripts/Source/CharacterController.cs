@@ -24,6 +24,7 @@ namespace Sandbox
         public Transform FireballTransform;
         public float CameraSpeed = 1.0f;
         public float MovementSpeed = 10.0f;
+        public float JumpHeight = 20.0f;
 
         private Transform m_Transform;
         private Odyssey.CharacterController m_CharacterController;
@@ -96,10 +97,17 @@ namespace Sandbox
                 {
                     Vector3 forward = m_Transform.Forward * m_Input.Movement.Z * MovementSpeed;
                     Vector3 right = m_Transform.Right * m_Input.Movement.X * MovementSpeed;
-                    Vector3 up = new Vector3(0, m_Input.Movement.Y * MovementSpeed, 0);
-                    Vector3 velocity = forward + right + up;
+                    Vector3 velocity = forward + right;
 
-                    m_CharacterController.LinearVelocity = (velocity);
+                    if (m_CharacterController.IsGrounded)
+                    {
+                        Vector3 up = new Vector3(0, m_Input.Movement.Y * JumpHeight, 0);
+                        velocity += up;
+                    }
+
+                    Console.WriteLine(m_CharacterController.IsGrounded);
+
+                    m_CharacterController.LinearVelocity = velocity;
                 }
 
                 if (m_Animator != null)

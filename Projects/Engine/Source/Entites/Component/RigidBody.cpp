@@ -88,10 +88,12 @@ namespace Odyssey
 		componentNode.WriteData("Type", RigidBody::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Physics Layer", Enum::ToString(m_PhysicsLayer));
+		componentNode.WriteData("Kinematic", m_Properties.Kinematic);
 		componentNode.WriteData("Mass", m_Properties.Mass);
 		componentNode.WriteData("Friction", m_Properties.Friction);
 		componentNode.WriteData("Max Linear Velocity", m_Properties.MaxLinearVelocity);
 		componentNode.WriteData("Gravity Factor", m_Properties.GravityFactor);
+		componentNode.WriteData("Surface Velocity", m_Properties.SurfaceVelocity);
 	}
 
 	void RigidBody::Deserialize(SerializationNode& node)
@@ -99,10 +101,12 @@ namespace Odyssey
 		std::string layer;
 		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Physics Layer", layer);
+		node.ReadData("Kinematic", m_Properties.Kinematic);
 		node.ReadData("Mass", m_Properties.Mass);
 		node.ReadData("Friction", m_Properties.Friction);
 		node.ReadData("Max Linear Velocity", m_Properties.MaxLinearVelocity);
 		node.ReadData("Gravity Factor", m_Properties.GravityFactor);
+		node.ReadData("Surface Velocity", m_Properties.SurfaceVelocity);
 
 		if (!layer.empty())
 			m_PhysicsLayer = Enum::ToEnum<PhysicsLayer>(layer);
@@ -118,6 +122,11 @@ namespace Odyssey
 		}
 	}
 
+	void RigidBody::AddSurfaceVelocity(float3 velocity)
+	{
+		m_Properties.SurfaceVelocity += velocity;
+	}
+
 	float3 RigidBody::GetLinearVelocity()
 	{
 		if (m_Body)
@@ -128,6 +137,21 @@ namespace Odyssey
 		}
 
 		return float3(0.0f);
+	}
+
+	float3 RigidBody::GetSurfaceVelocity()
+	{
+		return m_Properties.SurfaceVelocity;
+	}
+
+	bool RigidBody::IsKinematic()
+	{
+		return m_Properties.Kinematic;
+	}
+
+	float RigidBody::GetMass()
+	{
+		return m_Properties.Mass;
 	}
 
 	float RigidBody::GetFriction()
@@ -154,12 +178,27 @@ namespace Odyssey
 			m_Body->GetMotionProperties()->SetMaxLinearVelocity(m_Properties.MaxLinearVelocity);
 	}
 
+	void RigidBody::SetKinematic(bool kinematic)
+	{
+		m_Properties.Kinematic = kinematic;
+	}
+
+	void RigidBody::SetMass(float mass)
+	{
+		m_Properties.Mass = mass;
+	}
+
 	void RigidBody::SetFriction(float friction)
 	{
 		m_Properties.Friction = std::clamp(friction, 0.0f, 1.0f);
 
 		if (m_Body)
 			PhysicsSystem::GetBodyInterface().SetFriction(m_BodyID, m_Properties.Friction);
+	}
+
+	void RigidBody::SetSurfaceVelocity(float3 velocity)
+	{
+		m_Properties.SurfaceVelocity = velocity;
 	}
 
 	void RigidBody::SetEnabled(bool enabled)
