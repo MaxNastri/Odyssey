@@ -207,15 +207,17 @@ namespace Odyssey
 					GameObject gameObject = GameObject(activeScene, entity);
 					Transform& transform = gameObject.GetComponent<Transform>();
 					CharacterController& controller = gameObject.GetComponent<CharacterController>();
-
+					Ref<Character> character = controller.GetCharacter();
 					float3 position, scale;
 					quat rotation;
 					transform.DecomposeWorldMatrix(position, rotation, scale);
 
-					controller.GetCharacter()->SetPosition(ToJoltVec3(position));
+					character->SetPosition(ToJoltVec3(position));
 					controller.UpdateVelocity(m_PhysicsSystem.GetGravity(), Time::DeltaTime());
 
 					CharacterVirtual::ExtendedUpdateSettings updateSettings;
+					updateSettings.mStickToFloorStepDown = -character->GetUp() * updateSettings.mStickToFloorStepDown.Length();
+					updateSettings.mWalkStairsStepUp = character->GetUp() * updateSettings.mWalkStairsStepUp.Length();
 
 					controller.GetCharacter()->ExtendedUpdate(Time::DeltaTime(),
 						m_PhysicsSystem.GetGravity(),

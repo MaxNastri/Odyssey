@@ -1,29 +1,25 @@
 GameObjects:
-  - Sort Order: 10
+  - Sort Order: 16
     Parent: 0
     Name: Fireball
-    GUID: 13060331640847941416
+    GUID: 1545122444625150316
     Type: Odyssey.GameObject
     Components:
       - Type: Odyssey.Transform
         Position: 'x: 0 y: 0 z: 0'
-        Rotation: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
         Scale: 'x: 1 y: 1 z: 1'
       - m_ScriptID: 2124871816
         Type: Odyssey.ScriptComponent
         Fields:
           - Name: MaxSpeed
             Value: 5
-          - Name: SpawnPosition
-            Value: 'x: 0 y: 2 z: -2'
           - Name: MaxEmissionRate
             Value: 100
-          - Name: SpawnRotation
-            Value: 'x: 0 y: 180 z: 0'
       - Type: Odyssey.ParticleEmitter
         Enabled: 1
         Shape: Circle
-        Duration: 1
+        Duration: 0.5
         Radius: 0.025
         Angle: 0
         Looping: 1
@@ -35,3 +31,18 @@ GameObjects:
         Lifetime: 'x: 0.5 y: 1'
         Size: 'x: 2 y: 2.5'
         Speed: 'x: 0.1 y: 0.25'
+      - Type: Odyssey.SphereCollider
+        Enabled: 1
+        Center: 'x: 0 y: 0.05 z: 0'
+        Radius: 0.1
+      - Type: Odyssey.RigidBody
+        Enabled: 1
+        Physics Layer: Dynamic
+        Kinematic: 0
+        Mass: 0
+        Friction: 0.5
+        Max Linear Velocity: 5
+        Gravity Factor: 1
+        Surface Velocity: 'x: 0 y: 0 z: 0'
+        Push Character: 0
+        Receive Force: 0

@@ -15,7 +15,7 @@ namespace Odyssey
 	RigidBody::RigidBody(const GameObject& gameObject, SerializationNode& node)
 		: m_GameObject(gameObject)
 	{
-
+		Deserialize(node);
 	}
 
 	void RigidBody::Awake()

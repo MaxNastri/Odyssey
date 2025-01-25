@@ -27,6 +27,8 @@ namespace Odyssey
 			camera->Awake();
 		if (ScriptComponent* script = TryGetComponent<ScriptComponent>())
 			script->Awake();
+		if (RigidBody* rigidBody = TryGetComponent<RigidBody>())
+			rigidBody->Awake();
 	}
 
 	void GameObject::Serialize(SerializationNode& gameObjectNode)

@@ -74,6 +74,7 @@ namespace Odyssey
 		Vec3 totalVelocity = Vec3::sZero();
 
 		// Velocity of the ground
+		m_Character->UpdateGroundVelocity();
 		Vec3 groundVelocity = m_Character->GetGroundVelocity();
 
 		if (m_Character->GetGroundState() == CharacterVirtual::EGroundState::OnGround	// If on ground

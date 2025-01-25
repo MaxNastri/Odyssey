@@ -253,7 +253,7 @@ namespace Odyssey
 	{
 		m_Position = float3(0, 0, 0);
 		m_EulerRotation = float3(0, 0, 0);
-		m_Rotation = quat(0, 0, 0, 1);
+		m_Rotation = quat(1,0,0,0);
 		m_Scale = float3(1, 1, 1);
 
 		//parent = nullptr;
