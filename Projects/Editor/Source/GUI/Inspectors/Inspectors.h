@@ -265,6 +265,8 @@ namespace Odyssey
 		FloatDrawer m_HeightDrawer;
 		BoolDrawer m_InertiaDrawer;
 		FloatDrawer m_MaxSlopeDrawer;
+		FloatDrawer m_StepUpDrawer;
+		FloatDrawer m_StepDownDrawer;
 		FloatDrawer m_MaxStrengthDrawer;
 		FloatDrawer m_PaddingDrawer;
 		BoolDrawer m_InnerBodyDrawer;

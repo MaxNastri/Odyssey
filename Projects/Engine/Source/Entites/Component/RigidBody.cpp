@@ -31,7 +31,7 @@ namespace Odyssey
 				quat rotation;
 				transform->DecomposeWorldMatrix(position, rotation, scale);
 
-				m_Body = PhysicsSystem::RegisterBox(center + position, rotation,  extents, m_Properties, m_PhysicsLayer);
+				m_Body = PhysicsSystem::RegisterBox(m_GameObject, center + position, rotation,  extents, m_Properties, m_PhysicsLayer);
 				m_BodyID = m_Body->GetID();
 			}
 			else if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
@@ -43,7 +43,7 @@ namespace Odyssey
 				quat rotation;
 				transform->DecomposeWorldMatrix(position, rotation, scale);
 
-				m_Body = PhysicsSystem::RegisterSphere(center + position, rotation, radius, m_Properties, m_PhysicsLayer);
+				m_Body = PhysicsSystem::RegisterSphere(m_GameObject, center + position, rotation, radius, m_Properties, m_PhysicsLayer);
 				m_BodyID = m_Body->GetID();
 			}
 			else if (CapsuleCollider* capsuleCollider = m_GameObject.TryGetComponent<CapsuleCollider>())
@@ -56,7 +56,7 @@ namespace Odyssey
 				quat rotation;
 				transform->DecomposeWorldMatrix(position, rotation, scale);
 
-				m_Body = PhysicsSystem::RegisterCapsule(center + position, rotation, radius, height, m_Properties, m_PhysicsLayer);
+				m_Body = PhysicsSystem::RegisterCapsule(m_GameObject, center + position, rotation, radius, height, m_Properties, m_PhysicsLayer);
 				m_BodyID = m_Body->GetID();
 			}
 		}
@@ -64,14 +64,7 @@ namespace Odyssey
 
 	void RigidBody::Update()
 	{
-		//if (BoxCollider* collider = m_GameObject.TryGetComponent<BoxCollider>())
-		//{
-		//	if (collider->GetLayer() == PhysicsLayer::Dynamic)
-		//	{
-		//		BodyInterface& bodyInterface = PhysicsSystem::GetBodyInterface();
-		//		bodyInterface.AddLinearVelocity(m_BodyID, Vec3(0, -1.0f * Time::DeltaTime(), 0));
-		//	}
-		//}
+
 	}
 
 	void RigidBody::OnDestroy()

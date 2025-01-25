@@ -73,25 +73,40 @@ namespace Odyssey
 		m_JobSystem = nullptr;
 	}
 
-	Body* PhysicsSystem::RegisterBox(float3 position, quat rotation, float3 extents, BodyProperties& properties, PhysicsLayer layer)
+	Body* PhysicsSystem::RegisterBox(GameObject& gameObject, float3 position, quat rotation, float3 extents, BodyProperties& properties, PhysicsLayer layer)
 	{
 		// Create the box shape settings
-		ShapeRefC boxShape = BoxShapeSettings(ToJoltVec3(extents)).Create().Get();
-		return CreateBody(boxShape, position, rotation, properties, layer);
+		ShapeRefC shapeRef = BoxShapeSettings(ToJoltVec3(extents)).Create().Get();
+
+		// Create and track the body
+		Body* body = CreateBody(shapeRef, position, rotation, properties, layer);
+		s_BodyToGameObject[body->GetID()] = gameObject;
+
+		return body;
 	}
 
-	Body* PhysicsSystem::RegisterSphere(float3 position, quat rotation, float radius, BodyProperties& properties, PhysicsLayer layer)
+	Body* PhysicsSystem::RegisterSphere(GameObject& gameObject, float3 position, quat rotation, float radius, BodyProperties& properties, PhysicsLayer layer)
 	{
 		// Create the sphere shape
 		ShapeRefC shapeRef = SphereShapeSettings(radius).Create().Get();
-		return CreateBody(shapeRef, position, rotation, properties, layer);
+
+		// Create and track the body
+		Body* body = CreateBody(shapeRef, position, rotation, properties, layer);
+		s_BodyToGameObject[body->GetID()] = gameObject;
+
+		return body;
 	}
 
-	Body* PhysicsSystem::RegisterCapsule(float3 position, quat rotation, float radius, float height, BodyProperties& properties, PhysicsLayer layer)
+	Body* PhysicsSystem::RegisterCapsule(GameObject& gameObject, float3 position, quat rotation, float radius, float height, BodyProperties& properties, PhysicsLayer layer)
 	{
 		// Create the capsule shape
 		ShapeRefC shapeRef = CapsuleShapeSettings(height * 0.5f, radius).Create().Get();
-		return CreateBody(shapeRef, position, rotation, properties, layer);
+
+		// Create and track the body
+		Body* body = CreateBody(shapeRef, position, rotation, properties, layer);
+		s_BodyToGameObject[body->GetID()] = gameObject;
+
+		return body;
 	}
 
 	void PhysicsSystem::Deregister(Body* body)
@@ -122,15 +137,33 @@ namespace Odyssey
 		return new BodyLockWrite(m_PhysicsSystem.GetBodyLockInterface(), bodyID);
 	}
 
+	GameObject PhysicsSystem::GetBodyGameObject(BodyID bodyID)
+	{
+		if (s_BodyToGameObject.contains(bodyID))
+			return s_BodyToGameObject[bodyID];
+
+		return GameObject();
+	}
+
+	GameObject PhysicsSystem::GetCharacterGameObject(CharacterVirtual* character)
+	{
+		if (s_CharacterToGameObject.contains(character))
+			return s_CharacterToGameObject[character];
+
+		return GameObject();
+	}
+
 	Vec3 PhysicsSystem::GetGravity()
 	{
 		return m_PhysicsSystem.GetGravity();
 	}
 
-	Ref<CharacterVirtual> PhysicsSystem::RegisterCharacter(Ref<CharacterVirtualSettings>& settings)
+	Ref<CharacterVirtual> PhysicsSystem::RegisterCharacter(GameObject& gameObject, Ref<CharacterVirtualSettings>& settings)
 	{
 		Ref<CharacterVirtual> character = new CharacterVirtual(settings.Get(), RVec3::sZero(), Quat::sIdentity(), 0, &m_PhysicsSystem);
 		character->SetListener(&s_CharacterSolver);
+
+		s_CharacterToGameObject[character.Get()] = gameObject;
 		return character;
 	}
 
@@ -207,17 +240,18 @@ namespace Odyssey
 					GameObject gameObject = GameObject(activeScene, entity);
 					Transform& transform = gameObject.GetComponent<Transform>();
 					CharacterController& controller = gameObject.GetComponent<CharacterController>();
-					Ref<Character> character = controller.GetCharacter();
+					Ref<CharacterVirtual> character = controller.GetCharacter();
 					float3 position, scale;
 					quat rotation;
 					transform.DecomposeWorldMatrix(position, rotation, scale);
 
+					character->SetRotation(ToJoltQuat(rotation));
 					character->SetPosition(ToJoltVec3(position));
 					controller.UpdateVelocity(m_PhysicsSystem.GetGravity(), Time::DeltaTime());
 
 					CharacterVirtual::ExtendedUpdateSettings updateSettings;
-					updateSettings.mStickToFloorStepDown = -character->GetUp() * updateSettings.mStickToFloorStepDown.Length();
-					updateSettings.mWalkStairsStepUp = character->GetUp() * updateSettings.mWalkStairsStepUp.Length();
+					updateSettings.mStickToFloorStepDown = -character->GetUp() * controller.GetStepDown();
+					updateSettings.mWalkStairsStepUp = character->GetUp() * controller.GetStepUp();
 
 					controller.GetCharacter()->ExtendedUpdate(Time::DeltaTime(),
 						m_PhysicsSystem.GetGravity(),
@@ -286,7 +320,7 @@ namespace Odyssey
 		}
 
 		// Step the world
-		m_PhysicsSystem.Update(Time::DeltaTime(), cCollisionSteps, m_Allocator, m_JobSystem);
+		m_PhysicsSystem.Update(Time::DeltaTime(), 2, m_Allocator, m_JobSystem);
 
 		// Writeback to the transform
 		if (Scene* activeScene = SceneManager::GetActiveScene())

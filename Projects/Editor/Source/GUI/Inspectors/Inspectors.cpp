@@ -1580,6 +1580,16 @@ namespace Odyssey
 				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
 					controller->SetMaxSlope(glm::radians(m_MaxSlopeDrawer.GetValue()));
 			}
+			if (m_StepUpDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetStepUp(glm::radians(m_StepUpDrawer.GetValue()));
+			}
+			if (m_StepDownDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetStepDown(glm::radians(m_StepDownDrawer.GetValue()));
+			}
 			if (m_MaxStrengthDrawer.Draw())
 			{
 				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
@@ -1612,6 +1622,8 @@ namespace Odyssey
 			m_HeightDrawer = FloatDrawer("Height", controller->GetHeight());
 			m_InertiaDrawer = BoolDrawer("Enable Inertia", controller->IsInertiaEnabled());
 			m_MaxSlopeDrawer = FloatDrawer("Max Slope", glm::degrees(controller->GetMaxSlope()));
+			m_StepUpDrawer = FloatDrawer("Step Up", controller->GetStepUp());
+			m_StepDownDrawer = FloatDrawer("Step Down", controller->GetStepDown());
 			m_MaxStrengthDrawer = FloatDrawer("Max Strength", controller->GetMaxStrength());
 			m_PaddingDrawer = FloatDrawer("Character Padding", controller->GetPadding());
 			m_InnerBodyDrawer = BoolDrawer("Create Inner Body", controller->HasInnerBody());

@@ -13,10 +13,10 @@ namespace Odyssey
 		static void Update();
 		static void Destroy();
 
-		static Body* RegisterBox(float3 position, quat rotation, float3 extents, BodyProperties& properties, PhysicsLayer layer);
-		static Body* RegisterSphere(float3 position, quat rotation, float radius, BodyProperties& properties, PhysicsLayer layer);
-		static Body* RegisterCapsule(float3 position, quat rotation, float radius, float height, BodyProperties& properties, PhysicsLayer layer);
-		static Ref<CharacterVirtual> RegisterCharacter(Ref<CharacterVirtualSettings>& settings);
+		static Body* RegisterBox(GameObject& gameObject, float3 position, quat rotation, float3 extents, BodyProperties& properties, PhysicsLayer layer);
+		static Body* RegisterSphere(GameObject& gameObject, float3 position, quat rotation, float radius, BodyProperties& properties, PhysicsLayer layer);
+		static Body* RegisterCapsule(GameObject& gameObject, float3 position, quat rotation, float radius, float height, BodyProperties& properties, PhysicsLayer layer);
+		static Ref<CharacterVirtual> RegisterCharacter(GameObject& gameObject, Ref<CharacterVirtualSettings>& settings);
 		static void Deregister(Body* body);
 		static void DeregisterCharacter(Ref<CharacterVirtual>& character);
 
@@ -24,6 +24,8 @@ namespace Odyssey
 		static BodyInterface& GetBodyInterface();
 		static BodyProperties* GetBodyProperties(BodyID id);
 		static BodyLockWrite* GetBodyLock(BodyID bodyID);
+		static GameObject GetBodyGameObject(BodyID bodyID);
+		static GameObject GetCharacterGameObject(CharacterVirtual* character);
 		static Vec3 GetGravity();
 
 	private:
@@ -31,6 +33,8 @@ namespace Odyssey
 
 	private:
 		inline static std::map<BodyID, BodyProperties*> s_BodyProperties;
+		inline static std::map<BodyID, GameObject> s_BodyToGameObject;
+		inline static std::map<CharacterVirtual*, GameObject> s_CharacterToGameObject;
 		inline static CharacterPhysicsListener s_CharacterSolver;
 
 	private:

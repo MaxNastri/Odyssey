@@ -45,6 +45,8 @@ namespace Odyssey
 		componentNode.WriteData("Height", m_Height);
 		componentNode.WriteData("Inertia Enabled", m_EnableInertia);
 		componentNode.WriteData("Max Slope", m_MaxSlopeAngle);
+		componentNode.WriteData("Step Up", m_StepUp);
+		componentNode.WriteData("Step Down", m_StepDown);
 		componentNode.WriteData("Max Strength", m_MaxStrength);
 		componentNode.WriteData("Character Padding", m_CharacterPadding);
 		componentNode.WriteData("Create Inner Body", m_CreateInnerBody);
@@ -59,6 +61,8 @@ namespace Odyssey
 		node.ReadData("Height", m_Height);
 		node.ReadData("Inertia Enabled", m_EnableInertia);
 		node.ReadData("Max Slope", m_MaxSlopeAngle);
+		node.ReadData("Step Up", m_StepUp);
+		node.ReadData("Step Down", m_StepDown);
 		node.ReadData("Max Strength", m_MaxStrength);
 		node.ReadData("Character Padding", m_CharacterPadding);
 		node.ReadData("Create Inner Body", m_CreateInnerBody);
@@ -94,6 +98,7 @@ namespace Odyssey
 
 		// Set the new combined velocity
 		m_Character->SetLinearVelocity(totalVelocity);
+		m_PrevFrameLinearVelocity = ToFloat3(totalVelocity);
 	}
 
 	void CharacterController::ResetVelocity()
@@ -132,7 +137,7 @@ namespace Odyssey
 
 	void CharacterController::CreateShape()
 	{
-		Vec3 position = ToJoltVec3(m_Center);
+		Vec3 position = ToJoltVec3(float3(m_Center.x, 0.5f * m_Height + m_Radius, m_Center.z));
 
 		ShapeRefC shape = RotatedTranslatedShapeSettings(position, Quat::sIdentity(),
 			new CapsuleShape(m_Height * 0.5f, m_Radius)).Create().Get();
@@ -152,7 +157,7 @@ namespace Odyssey
 		settings->mEnhancedInternalEdgeRemoval = false;
 		settings->mInnerBodyShape = innerShape;
 		settings->mInnerBodyLayer = PhysicsLayers::Dynamic;
-		m_Character = PhysicsSystem::RegisterCharacter(settings);
+		m_Character = PhysicsSystem::RegisterCharacter(m_GameObject, settings);
 	}
 
 	void CharacterController::DebugDraw()
