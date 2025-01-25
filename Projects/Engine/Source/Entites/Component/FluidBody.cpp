@@ -83,13 +83,13 @@ namespace Odyssey
 
 	void FluidBody::AddHit(const BodyID& inBodyID)
 	{
-		BodyLockWrite* lock = PhysicsSystem::GetBodyLock(inBodyID);
+		BodyLockWrite* lock = PhysicsSystem::Instance().GetBodyLock(inBodyID);
 		Body& body = lock->GetBody();
 
 		if (body.IsActive() && !body.IsKinematic())
 		{
 			body.ApplyBuoyancyImpulse(m_SurfacePosition, m_SurfaceNormal, m_Buoyancy, m_LinearDrag, m_AngularDrag,
-				ToJoltVec3(m_FluidVelocity), PhysicsSystem::GetGravity() * m_GravityFactor, Time::DeltaTime());
+				ToJoltVec3(m_FluidVelocity), PhysicsSystem::Instance().GetGravity() * m_GravityFactor, Time::DeltaTime());
 		}
 
 		delete lock;

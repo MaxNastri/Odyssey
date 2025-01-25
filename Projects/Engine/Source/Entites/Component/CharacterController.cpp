@@ -26,7 +26,7 @@ namespace Odyssey
 	void CharacterController::OnDestroy()
 	{
 		if (m_Character)
-			PhysicsSystem::DeregisterCharacter(m_Character);
+			PhysicsSystem::Instance().DeregisterCharacter(m_Character);
 
 		m_Character.Reset();
 		SetDebugEnabled(false);
@@ -157,7 +157,7 @@ namespace Odyssey
 		settings->mEnhancedInternalEdgeRemoval = false;
 		settings->mInnerBodyShape = innerShape;
 		settings->mInnerBodyLayer = PhysicsLayers::Dynamic;
-		m_Character = PhysicsSystem::RegisterCharacter(m_GameObject, settings);
+		m_Character = PhysicsSystem::Instance().RegisterCharacter(m_GameObject, settings);
 	}
 
 	void CharacterController::DebugDraw()

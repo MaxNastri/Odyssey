@@ -8,53 +8,63 @@ namespace Odyssey
 {
 	class PhysicsSystem
 	{
-	public:
+	public: // Singleton
 		static void Init();
 		static void Update();
 		static void Destroy();
+		static PhysicsSystem& Instance() { return *s_Instance; }
 
-		static Body* RegisterBox(GameObject& gameObject, float3 position, quat rotation, float3 extents, BodyProperties& properties, PhysicsLayer layer);
-		static Body* RegisterSphere(GameObject& gameObject, float3 position, quat rotation, float radius, BodyProperties& properties, PhysicsLayer layer);
-		static Body* RegisterCapsule(GameObject& gameObject, float3 position, quat rotation, float radius, float height, BodyProperties& properties, PhysicsLayer layer);
-		static Ref<CharacterVirtual> RegisterCharacter(GameObject& gameObject, Ref<CharacterVirtualSettings>& settings);
-		static void Deregister(Body* body);
-		static void DeregisterCharacter(Ref<CharacterVirtual>& character);
+	private:
+		PhysicsSystem();
+		~PhysicsSystem();
 
 	public:
-		static BodyInterface& GetBodyInterface();
-		static BodyProperties* GetBodyProperties(BodyID id);
-		static BodyLockWrite* GetBodyLock(BodyID bodyID);
-		static GameObject GetBodyGameObject(BodyID bodyID);
-		static GameObject GetCharacterGameObject(CharacterVirtual* character);
-		static Vec3 GetGravity();
+		Body* RegisterBox(GameObject& gameObject, float3 position, quat rotation, float3 extents, BodyProperties& properties, PhysicsLayer layer);
+		Body* RegisterSphere(GameObject& gameObject, float3 position, quat rotation, float radius, BodyProperties& properties, PhysicsLayer layer);
+		Body* RegisterCapsule(GameObject& gameObject, float3 position, quat rotation, float radius, float height, BodyProperties& properties, PhysicsLayer layer);
+		Ref<CharacterVirtual> RegisterCharacter(GameObject& gameObject, Ref<CharacterVirtualSettings>& settings);
+		void Deregister(Body* body);
+		void DeregisterCharacter(Ref<CharacterVirtual>& character);
+
+	public:
+		BodyInterface& GetBodyInterface();
+		BodyProperties* GetBodyProperties(BodyID id);
+		BodyLockWrite* GetBodyLock(BodyID bodyID);
+		GameObject GetBodyGameObject(BodyID bodyID);
+		GameObject GetCharacterGameObject(CharacterVirtual* character);
+		Vec3 GetGravity();
 
 	private:
-		static Body* CreateBody(ShapeRefC shapeRef, float3 position, quat rotation, BodyProperties& properties, PhysicsLayer layer);
+		void FixedUpdate();
+		Body* CreateBody(ShapeRefC shapeRef, float3 position, quat rotation, BodyProperties& properties, PhysicsLayer layer);
+
+	private: // Singleton
+		inline static PhysicsSystem* s_Instance = nullptr;
 
 	private:
-		inline static std::map<BodyID, BodyProperties*> s_BodyProperties;
-		inline static std::map<BodyID, GameObject> s_BodyToGameObject;
-		inline static std::map<CharacterVirtual*, GameObject> s_CharacterToGameObject;
-		inline static CharacterPhysicsListener s_CharacterSolver;
+		std::map<BodyID, BodyProperties*> s_BodyProperties;
+		std::map<BodyID, GameObject> s_BodyToGameObject;
+		std::map<CharacterVirtual*, GameObject> s_CharacterToGameObject;
+		CharacterPhysicsListener s_CharacterSolver;
 
 	private:
-		inline static JPH::PhysicsSystem m_PhysicsSystem;
-		inline static JobSystemThreadPool* m_JobSystem;
-		inline static TempAllocatorImpl* m_Allocator;
+		JPH::PhysicsSystem m_PhysicsSystem;
+		JobSystemThreadPool* m_JobSystem;
+		TempAllocatorImpl* m_Allocator;
 
 		// Create mapping table from object layer to broadphase layer
 		// Note: As this is an interface, PhysicsSystem will take a reference to this so this instance needs to stay alive!
 		// Also have a look at BroadPhaseLayerInterfaceTable or BroadPhaseLayerInterfaceMask for a simpler interface.
-		inline static BroadPhaseLayerMap m_BroadPhaseLayerMap;
+		BroadPhaseLayerMap m_BroadPhaseLayerMap;
 
 		// Create class that filters object vs broadphase layers
 		// Note: As this is an interface, PhysicsSystem will take a reference to this so this instance needs to stay alive!
 		// Also have a look at ObjectVsBroadPhaseLayerFilterTable or ObjectVsBroadPhaseLayerFilterMask for a simpler interface.
-		inline static BroadPhaseLayerFilter m_BroadPhaseLayerFilter;
+		BroadPhaseLayerFilter m_BroadPhaseLayerFilter;
 
 		// Create class that filters object vs object layers
 		// Note: As this is an interface, PhysicsSystem will take a reference to this so this instance needs to stay alive!
 		// Also have a look at ObjectLayerPairFilterTable or ObjectLayerPairFilterMask for a simpler interface.
-		inline static ObjectLayerFilter m_PhysicsLayerFilter;
+		ObjectLayerFilter m_PhysicsLayerFilter;
 	};
 }

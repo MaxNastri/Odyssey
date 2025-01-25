@@ -31,7 +31,7 @@ namespace Odyssey
 				quat rotation;
 				transform->DecomposeWorldMatrix(position, rotation, scale);
 
-				m_Body = PhysicsSystem::RegisterBox(m_GameObject, center + position, rotation,  extents, m_Properties, m_PhysicsLayer);
+				m_Body = PhysicsSystem::Instance().RegisterBox(m_GameObject, center + position, rotation,  extents, m_Properties, m_PhysicsLayer);
 				m_BodyID = m_Body->GetID();
 			}
 			else if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
@@ -43,7 +43,7 @@ namespace Odyssey
 				quat rotation;
 				transform->DecomposeWorldMatrix(position, rotation, scale);
 
-				m_Body = PhysicsSystem::RegisterSphere(m_GameObject, center + position, rotation, radius, m_Properties, m_PhysicsLayer);
+				m_Body = PhysicsSystem::Instance().RegisterSphere(m_GameObject, center + position, rotation, radius, m_Properties, m_PhysicsLayer);
 				m_BodyID = m_Body->GetID();
 			}
 			else if (CapsuleCollider* capsuleCollider = m_GameObject.TryGetComponent<CapsuleCollider>())
@@ -56,7 +56,7 @@ namespace Odyssey
 				quat rotation;
 				transform->DecomposeWorldMatrix(position, rotation, scale);
 
-				m_Body = PhysicsSystem::RegisterCapsule(m_GameObject, center + position, rotation, radius, height, m_Properties, m_PhysicsLayer);
+				m_Body = PhysicsSystem::Instance().RegisterCapsule(m_GameObject, center + position, rotation, radius, height, m_Properties, m_PhysicsLayer);
 				m_BodyID = m_Body->GetID();
 			}
 		}
@@ -69,7 +69,7 @@ namespace Odyssey
 
 	void RigidBody::OnDestroy()
 	{
-		PhysicsSystem::Deregister(m_Body);
+		PhysicsSystem::Instance().Deregister(m_Body);
 		m_Body = nullptr;
 	}
 
@@ -113,7 +113,7 @@ namespace Odyssey
 	{
 		if (m_Body)
 		{
-			BodyInterface& bodyInterface = PhysicsSystem::GetBodyInterface();
+			BodyInterface& bodyInterface = PhysicsSystem::Instance().GetBodyInterface();
 			Vec3 currentVelocity = bodyInterface.GetLinearVelocity(m_BodyID);
 			bodyInterface.SetLinearVelocity(m_BodyID, currentVelocity + ToJoltVec3(velocity));
 		}
@@ -128,7 +128,7 @@ namespace Odyssey
 	{
 		if (m_Body)
 		{
-			BodyInterface& bodyInterface = PhysicsSystem::GetBodyInterface();
+			BodyInterface& bodyInterface = PhysicsSystem::Instance().GetBodyInterface();
 			Vec3 currentVelocity = bodyInterface.GetLinearVelocity(m_BodyID);
 			return ToFloat3(currentVelocity);
 		}
@@ -174,7 +174,7 @@ namespace Odyssey
 	void RigidBody::SetLinearVelocity(float3 velocity)
 	{
 		if (m_Body)
-			PhysicsSystem::GetBodyInterface().SetLinearVelocity(m_BodyID, ToJoltVec3(velocity));
+			PhysicsSystem::Instance().GetBodyInterface().SetLinearVelocity(m_BodyID, ToJoltVec3(velocity));
 	}
 
 	void RigidBody::SetMaxLinearVelocity(float velocity)
@@ -200,7 +200,7 @@ namespace Odyssey
 		m_Properties.Friction = std::clamp(friction, 0.0f, 1.0f);
 
 		if (m_Body)
-			PhysicsSystem::GetBodyInterface().SetFriction(m_BodyID, m_Properties.Friction);
+			PhysicsSystem::Instance().GetBodyInterface().SetFriction(m_BodyID, m_Properties.Friction);
 	}
 
 	void RigidBody::SetSurfaceVelocity(float3 velocity)

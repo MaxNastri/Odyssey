@@ -12,6 +12,23 @@ namespace Odyssey
 {
 	void PhysicsSystem::Init()
 	{
+		s_Instance = new PhysicsSystem();
+		
+	}
+
+	void PhysicsSystem::Update()
+	{
+		s_Instance->FixedUpdate();
+	}
+
+	void PhysicsSystem::Destroy()
+	{
+		delete s_Instance;
+		s_Instance = nullptr;
+	}
+
+	PhysicsSystem::PhysicsSystem()
+	{
 		RegisterDefaultAllocator();
 		Factory::sInstance = new Factory();
 		RegisterTypes();
@@ -57,7 +74,7 @@ namespace Odyssey
 		//m_PhysicsSystem.SetContactListener(&contact_listener);
 	}
 
-	void PhysicsSystem::Destroy()
+	PhysicsSystem::~PhysicsSystem()
 	{
 		// Unregisters all types with the factory and cleans up the default material
 		UnregisterTypes();
@@ -212,7 +229,7 @@ namespace Odyssey
 		return body;
 	}
 
-	void PhysicsSystem::Update()
+	void PhysicsSystem::FixedUpdate()
 	{
 		// We simulate the physics world in discrete time steps. 60 Hz is a good rate to update the physics system.
 		const float cDeltaTime = 1.0f / 60.0f;
