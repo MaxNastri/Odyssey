@@ -330,6 +330,7 @@ namespace Odyssey
 			Utils::RegisterComponentType<CapsuleCollider, CapsuleColliderInspector>();
 			Utils::RegisterComponentType<SphereCollider, SphereColliderInspector>();
 			Utils::RegisterComponentType<RigidBody, RigidBodyInspector>();
+			Utils::RegisterComponentType<FluidBody, FluidBodyInspector>();
 			Utils::RegisterComponentType<CharacterController, CharacterControllerInspector>();
 			Utils::s_ComponentsRegistered = true;
 		}
@@ -1858,6 +1859,86 @@ namespace Odyssey
 			m_MaxLinearVelocityDrawer = FloatDrawer("Max Linear Velocity", rigidBody->GetMaxLinearVelocity());
 			m_PushCharacterDrawer = BoolDrawer("Can Push Character", rigidBody->CanPushCharacter());
 			m_ReceiveForceDrawer = BoolDrawer("Receive Character Force", rigidBody->CanReceiveForce());
+		}
+	}
+	FluidBodyInspector::FluidBodyInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+
+	bool FluidBodyInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+				rigidBody->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Fluid Body", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_CenterDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetCenter(m_CenterDrawer.GetValue());
+			}
+			if (m_ExtentsDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetExtents(m_ExtentsDrawer.GetValue());
+			}
+			if (m_BuoyancyDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetBuoyancy(m_BuoyancyDrawer.GetValue());
+			}
+			if (m_LinearDragDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetLinearDrag(m_LinearDragDrawer.GetValue());
+			}
+			if (m_AngularDragDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetAngularDrag(m_AngularDragDrawer.GetValue());
+			}
+			if (m_FluidVelocityDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetFluidVelocity(m_FluidVelocityDrawer.GetValue());
+			}
+			if (m_GravityFactorDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetGravityFactor(m_GravityFactorDrawer.GetValue());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void FluidBodyInspector::InitDrawers()
+	{
+		if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+		{
+			m_Enabled = fluidBody->IsEnabled();
+			m_CenterDrawer = Vector3Drawer("Center", fluidBody->GetCenter(), float3(0.0f), false);
+			m_ExtentsDrawer = Vector3Drawer("Extents", fluidBody->GetExtents(), float3(0.0f), false);
+			m_BuoyancyDrawer = FloatDrawer("Buoyancy", fluidBody->GetBuoyancy());
+			m_LinearDragDrawer = FloatDrawer("Linear Drag", fluidBody->GetLinearDrag());
+			m_AngularDragDrawer = FloatDrawer("Angular Drag", fluidBody->GetAngularDrag());
+			m_FluidVelocityDrawer = Vector3Drawer("Fluid Velocity", fluidBody->GetFluidVelocity(), float3(0.0f), false);
+			m_GravityFactorDrawer = FloatDrawer("Gravity Factor", fluidBody->GetGravityFactor());
 		}
 	}
 }

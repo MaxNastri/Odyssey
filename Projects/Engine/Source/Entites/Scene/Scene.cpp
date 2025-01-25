@@ -36,11 +36,9 @@ for (auto entity : m_Registry.view<ComponentType>()) GameObject(this, entity).Ge
 		PropertiesComponent& properties = gameObject.AddComponent<PropertiesComponent>(GUID::New());
 
 		m_GUIDToGameObject[gameObject.GetGUID()] = gameObject;
-
 		m_SceneGraph.AddEntity(gameObject);
 
 		EventSystem::Dispatch<SceneModifiedEvent>(this, SceneModifiedEvent::Modification::CreateGameObject);
-
 		return gameObject;
 	}
 
@@ -101,6 +99,7 @@ for (auto entity : m_Registry.view<ComponentType>()) GameObject(this, entity).Ge
 		EXECUTE_ON_COMPONENTS(ScriptComponent, OnDestroy);
 		EXECUTE_ON_COMPONENTS(RigidBody, OnDestroy);
 		EXECUTE_ON_COMPONENTS(CharacterController, OnDestroy);
+		EXECUTE_ON_COMPONENTS(FluidBody, OnDestroy);
 	}
 
 	void Scene::Awake()
@@ -136,6 +135,7 @@ for (auto entity : m_Registry.view<ComponentType>()) GameObject(this, entity).Ge
 		EXECUTE_ON_COMPONENTS(SphereCollider, OnDestroy);
 		EXECUTE_ON_COMPONENTS(BoxCollider, OnDestroy);
 		EXECUTE_ON_COMPONENTS(CharacterController, OnDestroy);
+		EXECUTE_ON_COMPONENTS(FluidBody, OnDestroy);
 	}
 
 	void Scene::SaveTo(const Path& savePath)

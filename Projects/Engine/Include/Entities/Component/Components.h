@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "CharacterController.h"
 #include "Colliders.h"
+#include "FluidBody.h"
 #include "Light.h"
 #include "MeshRenderer.h"
 #include "ParticleEmitter.h"

@@ -354,6 +354,30 @@ namespace Odyssey
 		BoolDrawer m_ReceiveForceDrawer;
 	};
 
+	class FluidBodyInspector : public Inspector
+	{
+	public:
+		FluidBodyInspector() = default;
+		FluidBodyInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		bool m_Enabled;
+		Vector3Drawer m_CenterDrawer;
+		Vector3Drawer m_ExtentsDrawer;
+		FloatDrawer m_BuoyancyDrawer;
+		FloatDrawer m_LinearDragDrawer;
+		FloatDrawer m_AngularDragDrawer;
+		Vector3Drawer m_FluidVelocityDrawer;
+		FloatDrawer m_GravityFactorDrawer;
+	};
+
 #pragma endregion
 
 #pragma region Assets

@@ -88,6 +88,9 @@ namespace Odyssey
 
 		if (RigidBody* rigidBody = TryGetComponent<RigidBody>())
 			rigidBody->Serialize(componentsNode);
+
+		if (FluidBody* fluidBody = TryGetComponent<FluidBody>())
+			fluidBody->Serialize(componentsNode);
 	}
 
 	void GameObject::Deserialize(SerializationNode& gameObjectNode)
@@ -142,6 +145,8 @@ namespace Odyssey
 				AddComponent<SphereCollider>(componentNode);
 			else if (componentType == RigidBody::Type)
 				AddComponent<RigidBody>(componentNode);
+			else if (componentType == FluidBody::Type)
+				AddComponent<FluidBody>(componentNode);
 		}
 	}
 
@@ -248,6 +253,9 @@ namespace Odyssey
 
 		if (RigidBody* rigidBody = TryGetComponent<RigidBody>())
 			rigidBody->Serialize(componentsNode);
+
+		if (FluidBody* fluidBody = TryGetComponent<FluidBody>())
+			fluidBody->Serialize(componentsNode);
 	}
 
 	void GameObject::Deserialize(SerializationNode& gameObjectNode, bool prefab)
@@ -332,6 +340,11 @@ namespace Odyssey
 			{
 				RigidBody& rigidBody = AddComponent<RigidBody>();
 				rigidBody.Deserialize(componentNode);
+			}
+			else if (componentType == FluidBody::Type)
+			{
+				FluidBody& fluidBody = AddComponent<FluidBody>();
+				fluidBody.Deserialize(componentNode);
 			}
 		}
 	}

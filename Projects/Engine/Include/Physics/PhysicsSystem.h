@@ -23,6 +23,8 @@ namespace Odyssey
 	public:
 		static BodyInterface& GetBodyInterface();
 		static BodyProperties* GetBodyProperties(BodyID id);
+		static BodyLockWrite* GetBodyLock(BodyID bodyID);
+		static Vec3 GetGravity();
 
 	private:
 		static Body* CreateBody(ShapeRefC shapeRef, float3 position, quat rotation, BodyProperties& properties, PhysicsLayer layer);

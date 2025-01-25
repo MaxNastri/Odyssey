@@ -40,16 +40,28 @@ namespace Odyssey
 		componentNode.WriteData("Type", CharacterController::Type);
 		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Center", m_Center);
+		componentNode.WriteData("Radius", m_Mass);
 		componentNode.WriteData("Radius", m_Radius);
 		componentNode.WriteData("Height", m_Height);
+		componentNode.WriteData("Inertia Enabled", m_EnableInertia);
+		componentNode.WriteData("Max Slope", m_MaxSlopeAngle);
+		componentNode.WriteData("Max Strength", m_MaxStrength);
+		componentNode.WriteData("Character Padding", m_CharacterPadding);
+		componentNode.WriteData("Create Inner Body", m_CreateInnerBody);
 	}
 
 	void CharacterController::Deserialize(SerializationNode& node)
 	{
 		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Center", m_Center);
+		node.ReadData("Mass", m_Mass);
 		node.ReadData("Radius", m_Radius);
 		node.ReadData("Height", m_Height);
+		node.ReadData("Inertia Enabled", m_EnableInertia);
+		node.ReadData("Max Slope", m_MaxSlopeAngle);
+		node.ReadData("Max Strength", m_MaxStrength);
+		node.ReadData("Character Padding", m_CharacterPadding);
+		node.ReadData("Create Inner Body", m_CreateInnerBody);
 	}
 
 	void CharacterController::UpdateVelocity(Vec3 gravity, float dt)
@@ -129,6 +141,7 @@ namespace Odyssey
 		Ref<CharacterVirtualSettings> settings = new CharacterVirtualSettings();
 		settings->mMaxSlopeAngle = m_MaxSlopeAngle;
 		settings->mMaxStrength = m_MaxStrength;
+		settings->mMass = m_Mass;
 		settings->mShape = shape;
 		settings->mBackFaceMode = (EBackFaceMode)m_BackFaceMode;
 		settings->mCharacterPadding = m_CharacterPadding;

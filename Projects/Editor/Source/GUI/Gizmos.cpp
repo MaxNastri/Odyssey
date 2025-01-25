@@ -30,6 +30,7 @@ namespace Odyssey
 		REGISTER_GIZMO(SphereCollider);
 		REGISTER_GIZMO(CapsuleCollider);
 		REGISTER_GIZMO(CharacterController);
+		REGISTER_GIZMO(FluidBody);
 
 		m_OnSceneModified = EventSystem::Listen<SceneModifiedEvent>(OnSceneModified);
 		m_OnSceneLoaded = EventSystem::Listen<SceneLoadedEvent>(OnSceneLoaded);

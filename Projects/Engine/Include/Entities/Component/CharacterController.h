@@ -31,6 +31,7 @@ namespace Odyssey
 		void SetInertiaEnabled(bool enabled) { m_EnableInertia = enabled; }
 		void SetDebugEnabled(bool enabled);
 		void SetCenter(float3 center) { m_Center = center; }
+		void SetMass(float mass) { m_Mass = mass; }
 		void SetRadius(float radius) { m_Radius = radius; }
 		void SetHeight(float height) { m_Height = height; }
 		void SetMaxSlope(float maxSlope) { m_MaxSlopeAngle = maxSlope; }
@@ -43,6 +44,7 @@ namespace Odyssey
 		bool IsDebugEnabled() { return m_DebugEnabled; }
 		bool IsInertiaEnabled() { return m_EnableInertia; }
 		float3 GetCenter() { return m_Center; }
+		float GetMass() { return m_Mass; }
 		float GetRadius() { return m_Radius; }
 		float GetHeight() { return m_Height; }
 		float GetMaxSlope() { return m_MaxSlopeAngle; }
@@ -73,6 +75,7 @@ namespace Odyssey
 
 	private:
 		float3 m_Center = float3(0.0f);
+		float m_Mass = 70.0f;
 		float m_Radius = 1.0f;
 		float m_Height = 2.0f;
 		bool m_EnableInertia = true;

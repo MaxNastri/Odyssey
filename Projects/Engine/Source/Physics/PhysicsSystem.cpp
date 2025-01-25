@@ -5,6 +5,7 @@
 #include "RigidBody.h"
 #include "OdysseyTime.h"
 #include "Colliders.h"
+#include "FluidBody.h"
 #include "CharacterController.h"
 
 namespace Odyssey
@@ -116,6 +117,16 @@ namespace Odyssey
 		return nullptr;
 	}
 
+	BodyLockWrite* PhysicsSystem::GetBodyLock(BodyID bodyID)
+	{
+		return new BodyLockWrite(m_PhysicsSystem.GetBodyLockInterface(), bodyID);
+	}
+
+	Vec3 PhysicsSystem::GetGravity()
+	{
+		return m_PhysicsSystem.GetGravity();
+	}
+
 	Ref<CharacterVirtual> PhysicsSystem::RegisterCharacter(Ref<CharacterVirtualSettings>& settings)
 	{
 		Ref<CharacterVirtual> character = new CharacterVirtual(settings.Get(), RVec3::sZero(), Quat::sIdentity(), 0, &m_PhysicsSystem);
@@ -176,41 +187,19 @@ namespace Odyssey
 		// If you take larger steps than 1 / 60th of a second you need to do multiple collision steps in order to keep the simulation stable. Do 1 collision step per 1 / 60th of a second (round up).
 		const int cCollisionSteps = 1;
 
-		// Broadphase results, will apply buoyancy to any body that intersects with the water volume
-		// ADDS A COOL WATER FLOATING EFFECT
-		class MyCollector : public CollideShapeBodyCollector
-		{
-		public:
-			MyCollector(JPH::PhysicsSystem* inSystem, RVec3Arg inSurfacePosition, Vec3Arg inSurfaceNormal, float inDeltaTime) : mSystem(inSystem), mSurfacePosition(inSurfacePosition), mSurfaceNormal(inSurfaceNormal), mDeltaTime(inDeltaTime) { }
-
-			virtual void			AddHit(const BodyID& inBodyID) override
-			{
-				BodyLockWrite lock(mSystem->GetBodyLockInterface(), inBodyID);
-				Body& body = lock.GetBody();
-				if (body.IsActive() && !body.IsKinematic())
-					body.ApplyBuoyancyImpulse(mSurfacePosition, mSurfaceNormal, 1.9f, 0.75f, 0.05f, Vec3(0.2f, 0.0f, 0.0f), mSystem->GetGravity(), mDeltaTime);
-			}
-
-		private:
-			JPH::PhysicsSystem* mSystem;
-			RVec3					mSurfacePosition;
-			Vec3					mSurfaceNormal;
-			float					mDeltaTime;
-		};
-
-		MyCollector collector(&m_PhysicsSystem, Vec3(0, 1.0f, 0), Vec3::sAxisY(), Time::DeltaTime());
-
-		// Apply buoyancy to all bodies that intersect with the water
-		AABox water_box(-Vec3(100, 100, 100), Vec3(100, 0, 100));
-		water_box.Translate(Vec3(Vec3(0, 1.0f, 0)));
-		m_PhysicsSystem.GetBroadPhaseQuery().CollideAABox(water_box, collector, SpecifiedBroadPhaseLayerFilter(BroadPhaseLayers::Dynamic), SpecifiedObjectLayerFilter(PhysicsLayers::Dynamic));
-
-
 		// Read from the transform
 		if (Scene* activeScene = SceneManager::GetActiveScene())
 		{
 			if (activeScene->IsRunning())
 			{
+				auto fluidView = activeScene->GetAllEntitiesWith<Transform, FluidBody>();
+				for (auto& entity : fluidView)
+				{
+					GameObject gameObject = GameObject(activeScene, entity);
+					FluidBody& fluidBody = gameObject.GetComponent<FluidBody>();
+					fluidBody.CheckCollision(m_PhysicsSystem.GetBroadPhaseQuery());
+				}
+
 				auto characterView = activeScene->GetAllEntitiesWith<Transform, CharacterController>();
 
 				for (auto& entity : characterView)
