@@ -175,10 +175,36 @@ namespace Odyssey
 		return m_PhysicsSystem.GetGravity();
 	}
 
+	void PhysicsSystem::OnContactAdded(const CharacterVirtual* inCharacter, const BodyID& inBodyID2, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, CharacterContactSettings& ioSettings)
+	{
+		if (BodyProperties* properties = GetBodyProperties(inBodyID2))
+		{
+			ioSettings.mCanPushCharacter = properties->PushCharacter;
+			ioSettings.mCanReceiveImpulses = properties->ReceiveForce;
+		}
+	}
+
+	void PhysicsSystem::OnAdjustBodyVelocity(const CharacterVirtual* inCharacter, const Body& inBody2, Vec3& ioLinearVelocity, Vec3& ioAngularVelocity)
+	{
+		// Apply the surface velocity to the character
+		if (BodyProperties* properties = GetBodyProperties(inBody2.GetID()))
+			ioLinearVelocity += ToJoltVec3(properties->SurfaceVelocity);
+	}
+
+	void PhysicsSystem::OnCharacterContactAdded(const CharacterVirtual* inCharacter, const CharacterVirtual* inOtherCharacter, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, CharacterContactSettings& ioSettings)
+	{
+
+	}
+
+	void PhysicsSystem::OnContactSolve(const CharacterVirtual* inCharacter, const BodyID& inBodyID2, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, Vec3Arg inContactVelocity, const PhysicsMaterial* inContactMaterial, Vec3Arg inCharacterVelocity, Vec3& ioNewCharacterVelocity)
+	{
+
+	}
+
 	Ref<CharacterVirtual> PhysicsSystem::RegisterCharacter(GameObject& gameObject, Ref<CharacterVirtualSettings>& settings)
 	{
 		Ref<CharacterVirtual> character = new CharacterVirtual(settings.Get(), RVec3::sZero(), Quat::sIdentity(), 0, &m_PhysicsSystem);
-		character->SetListener(&s_CharacterSolver);
+		character->SetListener(this);
 
 		s_CharacterToGameObject[character.Get()] = gameObject;
 		return character;

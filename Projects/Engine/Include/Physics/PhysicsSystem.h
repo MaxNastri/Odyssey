@@ -1,12 +1,12 @@
 #pragma once
+#include "Jolt.h"
 #include "PhysicsLayers.h"
-#include "PhysicsListeners.h"
 #include "RigidBody.h"
 #include "Colliders.h"
 
 namespace Odyssey
 {
-	class PhysicsSystem
+	class PhysicsSystem : public JPH::CharacterContactListener
 	{
 	public: // Singleton
 		static void Init();
@@ -34,6 +34,19 @@ namespace Odyssey
 		GameObject GetCharacterGameObject(CharacterVirtual* character);
 		Vec3 GetGravity();
 
+	public: // Character contact listeners
+		// Called whenever the character collides with a body.
+		virtual void OnContactAdded(const CharacterVirtual* inCharacter, const BodyID& inBodyID2, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, CharacterContactSettings& ioSettings) override;
+
+		// Callback to adjust the velocity of a body as seen by the character. Can be adjusted to e.g. implement a conveyor belt or an inertial dampener system of a sci-fi space ship.
+		virtual void OnAdjustBodyVelocity(const CharacterVirtual* inCharacter, const Body& inBody2, Vec3& ioLinearVelocity, Vec3& ioAngularVelocity) override;
+
+		// Called whenever the character collides with a virtual character.
+		virtual void OnCharacterContactAdded(const CharacterVirtual* inCharacter, const CharacterVirtual* inOtherCharacter, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, CharacterContactSettings& ioSettings) override;
+
+		// Called whenever the character movement is solved and a constraint is hit. Allows the listener to override the resulting character velocity (e.g. by preventing sliding along certain surfaces).
+		virtual void OnContactSolve(const CharacterVirtual* inCharacter, const BodyID& inBodyID2, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, Vec3Arg inContactVelocity, const PhysicsMaterial* inContactMaterial, Vec3Arg inCharacterVelocity, Vec3& ioNewCharacterVelocity) override;
+	
 	private:
 		void FixedUpdate();
 		Body* CreateBody(ShapeRefC shapeRef, float3 position, quat rotation, BodyProperties& properties, PhysicsLayer layer);
@@ -45,7 +58,6 @@ namespace Odyssey
 		std::map<BodyID, BodyProperties*> s_BodyProperties;
 		std::map<BodyID, GameObject> s_BodyToGameObject;
 		std::map<CharacterVirtual*, GameObject> s_CharacterToGameObject;
-		CharacterPhysicsListener s_CharacterSolver;
 
 	private:
 		JPH::PhysicsSystem m_PhysicsSystem;
