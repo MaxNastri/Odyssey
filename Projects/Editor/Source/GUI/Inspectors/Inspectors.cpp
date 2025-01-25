@@ -1828,6 +1828,16 @@ namespace Odyssey
 				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
 					rigidBody->SetMaxLinearVelocity(m_MaxLinearVelocityDrawer.GetValue());
 			}
+			if (m_PushCharacterDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetPushCharacter(m_PushCharacterDrawer.GetValue());
+			}
+			if (m_ReceiveForceDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetReceiveForce(m_ReceiveForceDrawer.GetValue());
+			}
 		}
 
 		ImGui::PopID();
@@ -1846,6 +1856,8 @@ namespace Odyssey
 			m_MassDrawer = FloatDrawer("Mass", rigidBody->GetMass());
 			m_FrictionDrawer = FloatDrawer("Friction", rigidBody->GetFriction());
 			m_MaxLinearVelocityDrawer = FloatDrawer("Max Linear Velocity", rigidBody->GetMaxLinearVelocity());
+			m_PushCharacterDrawer = BoolDrawer("Can Push Character", rigidBody->CanPushCharacter());
+			m_ReceiveForceDrawer = BoolDrawer("Receive Character Force", rigidBody->CanReceiveForce());
 		}
 	}
 }

@@ -350,6 +350,8 @@ namespace Odyssey
 		FloatDrawer m_MassDrawer;
 		FloatDrawer m_FrictionDrawer;
 		FloatDrawer m_MaxLinearVelocityDrawer;
+		BoolDrawer m_PushCharacterDrawer;
+		BoolDrawer m_ReceiveForceDrawer;
 	};
 
 #pragma endregion

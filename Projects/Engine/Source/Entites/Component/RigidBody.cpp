@@ -94,6 +94,8 @@ namespace Odyssey
 		componentNode.WriteData("Max Linear Velocity", m_Properties.MaxLinearVelocity);
 		componentNode.WriteData("Gravity Factor", m_Properties.GravityFactor);
 		componentNode.WriteData("Surface Velocity", m_Properties.SurfaceVelocity);
+		componentNode.WriteData("Push Character", m_Properties.PushCharacter);
+		componentNode.WriteData("Receive Force", m_Properties.ReceiveForce);
 	}
 
 	void RigidBody::Deserialize(SerializationNode& node)
@@ -107,6 +109,8 @@ namespace Odyssey
 		node.ReadData("Max Linear Velocity", m_Properties.MaxLinearVelocity);
 		node.ReadData("Gravity Factor", m_Properties.GravityFactor);
 		node.ReadData("Surface Velocity", m_Properties.SurfaceVelocity);
+		node.ReadData("Push Character", m_Properties.PushCharacter);
+		node.ReadData("Receive Force", m_Properties.ReceiveForce);
 
 		if (!layer.empty())
 			m_PhysicsLayer = Enum::ToEnum<PhysicsLayer>(layer);
@@ -164,6 +168,16 @@ namespace Odyssey
 		return m_Properties.MaxLinearVelocity;
 	}
 
+	bool RigidBody::CanPushCharacter()
+	{
+		return m_Properties.PushCharacter;
+	}
+
+	bool RigidBody::CanReceiveForce()
+	{
+		return m_Properties.ReceiveForce;
+	}
+
 	void RigidBody::SetLinearVelocity(float3 velocity)
 	{
 		if (m_Body)
@@ -199,6 +213,16 @@ namespace Odyssey
 	void RigidBody::SetSurfaceVelocity(float3 velocity)
 	{
 		m_Properties.SurfaceVelocity = velocity;
+	}
+
+	void RigidBody::SetPushCharacter(bool enabled)
+	{
+		m_Properties.PushCharacter = enabled;
+	}
+
+	void RigidBody::SetReceiveForce(bool enabled)
+	{
+		m_Properties.ReceiveForce = enabled;
 	}
 
 	void RigidBody::SetEnabled(bool enabled)

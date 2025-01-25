@@ -19,6 +19,8 @@ namespace Odyssey
 		float MaxLinearVelocity = 5.0f;
 		float GravityFactor = 1.0f;
 		float3 SurfaceVelocity = float3(0.0f);
+		bool PushCharacter = false;
+		bool ReceiveForce = false;
 	};
 
 	class RigidBody
@@ -43,6 +45,8 @@ namespace Odyssey
 		float GetMass();
 		float GetFriction();
 		float GetMaxLinearVelocity();
+		bool CanPushCharacter();
+		bool CanReceiveForce();
 
 	public:
 		void SetLinearVelocity(float3 velocity);
@@ -51,6 +55,8 @@ namespace Odyssey
 		void SetMass(float mass);
 		void SetFriction(float friction);
 		void SetSurfaceVelocity(float3 velocity);
+		void SetPushCharacter(bool enabled);
+		void SetReceiveForce(bool enabled);
 
 	public:
 		void AddLinearVelocity(float3 velocity);

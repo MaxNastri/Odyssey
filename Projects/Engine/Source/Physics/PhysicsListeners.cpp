@@ -5,7 +5,11 @@ namespace Odyssey
 {
 	void CharacterPhysicsListener::OnContactAdded(const CharacterVirtual* inCharacter, const BodyID& inBodyID2, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, CharacterContactSettings& ioSettings)
 	{
-
+		if (BodyProperties* properties = PhysicsSystem::GetBodyProperties(inBodyID2))
+		{
+			ioSettings.mCanPushCharacter = properties->PushCharacter;
+			ioSettings.mCanReceiveImpulses = properties->ReceiveForce;
+		}
 	}
 
 	void CharacterPhysicsListener::OnAdjustBodyVelocity(const CharacterVirtual* inCharacter, const Body& inBody2, Vec3& ioLinearVelocity, Vec3& ioAngularVelocity)
