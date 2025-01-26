@@ -544,48 +544,50 @@ namespace Odyssey
 			m_Material->SetDepthWrite(m_DepthWriteDrawer.GetValue());
 		}
 
-		Ref<Shader> shader = m_Material->GetShader();
-		auto& shaderBindings = shader->GetBindings();
-		auto textures = m_Material->GetTextures();
-
-		for (auto& [propertyName, shaderBinding] : shaderBindings)
+		if (Ref<Shader> shader = m_Material->GetShader())
 		{
-			if (shaderBinding.DescriptorType == DescriptorType::Sampler)
+			auto& shaderBindings = shader->GetBindings();
+			auto textures = m_Material->GetTextures();
+
+			for (auto& [propertyName, shaderBinding] : shaderBindings)
 			{
-				std::string displayName = propertyName;
-				displayName[0] = std::toupper(displayName[0]);
-
-				// Remove any reference to sampler for the display name
-				size_t pos = displayName.find("Sampler");
-				if (pos != std::string::npos)
-					displayName = displayName.substr(0, pos);
-
-				pos = displayName.find("Texture");
-				if (pos != std::string::npos)
+				if (shaderBinding.DescriptorType == DescriptorType::Sampler)
 				{
-					// Split the texture into its own word with a captial T
-					std::string texture = displayName.substr(pos, displayName.length());
-					texture[0] = std::toupper(texture[0]);
-					displayName = displayName.substr(0, pos) + " " + texture;
-				}
-				else
-				{
-					displayName = displayName + " Texture";
-				}
+					std::string displayName = propertyName;
+					displayName[0] = std::toupper(displayName[0]);
+
+					// Remove any reference to sampler for the display name
+					size_t pos = displayName.find("Sampler");
+					if (pos != std::string::npos)
+						displayName = displayName.substr(0, pos);
+
+					pos = displayName.find("Texture");
+					if (pos != std::string::npos)
+					{
+						// Split the texture into its own word with a captial T
+						std::string texture = displayName.substr(pos, displayName.length());
+						texture[0] = std::toupper(texture[0]);
+						displayName = displayName.substr(0, pos) + " " + texture;
+					}
+					else
+					{
+						displayName = displayName + " Texture";
+					}
 
 
-				GUID textureGUID = textures.contains(propertyName) ? textures[propertyName]->GetGUID() : GUID::Empty();
-				AssetFieldDrawer textureDrawer = AssetFieldDrawer(displayName, textureGUID, Texture2D::Type);
+					GUID textureGUID = textures.contains(propertyName) ? textures[propertyName]->GetGUID() : GUID::Empty();
+					AssetFieldDrawer textureDrawer = AssetFieldDrawer(displayName, textureGUID, Texture2D::Type);
 
-				if (textureDrawer.Draw())
-				{
-					m_Dirty = true;
-					modified = true;
-					m_Material->SetTexture(propertyName, textureDrawer.GetGUID());
+					if (textureDrawer.Draw())
+					{
+						m_Dirty = true;
+						modified = true;
+						m_Material->SetTexture(propertyName, textureDrawer.GetGUID());
+					}
 				}
 			}
 		}
-
+		
 		if (m_Dirty && ImGui::Button("Save"))
 		{
 			if (m_Material->GetName() != m_NameDrawer.GetValue())

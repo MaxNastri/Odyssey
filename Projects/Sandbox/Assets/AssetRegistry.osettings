@@ -683,3 +683,15 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Noise.tex2D
     GUID: 15039526264554896991
+  - Name: Grass
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Grass.hlsl
+    GUID: 11132493293122750107
+  - Name: Grass
+    Type: Odyssey.Shader
+    Path: Shaders/Grass.shader
+    GUID: 7381450375696147196
+  - Name: Grass
+    Type: Odyssey.Material
+    Path: Materials/FX/Grass.mat
+    GUID: 18223639673061157840

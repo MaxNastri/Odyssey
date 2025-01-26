@@ -21,6 +21,8 @@ namespace Odyssey
 				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 			case Topology::TriangleStrip:
 				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+			case Topology::PatchList:
+				return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
 			default:
 				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		}
@@ -81,6 +83,13 @@ namespace Odyssey
 			// Skip compute shaders for graphics pipelines
 			if (shaderType == ShaderType::Compute)
 				continue;
+
+			if (shaderType == ShaderType::Geometry)
+			{
+				info.CullMode = CullMode::None;
+			}
+			if (shaderType == ShaderType::Hull || shaderType == ShaderType::Domain)
+				info.Topology = Topology::PatchList;
 
 			auto shader = ResourceManager::GetResource<VulkanShaderModule>(ResourceID);
 
@@ -237,6 +246,12 @@ namespace Odyssey
 		if (info.DepthFormat == TextureFormat::D24_UNORM_S8_UINT)
 			pipeline_rendering_create_info.stencilAttachmentFormat = GetVkFormat(info.DepthFormat);
 
+		VkPipelineTessellationStateCreateInfo tesselationInfo = {};
+		tesselationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+		tesselationInfo.patchControlPoints = 3;
+		tesselationInfo.pNext = nullptr;
+		tesselationInfo.flags = 0;
+
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineInfo.stageCount = (uint32_t)shaderStages.size();
@@ -249,6 +264,7 @@ namespace Odyssey
 		pipelineInfo.pDepthStencilState = &depthStencil; // Optional
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDynamicState = &dynamicState;
+		pipelineInfo.pTessellationState = &tesselationInfo;
 		pipelineInfo.layout = m_PipelineLayout;
 		pipelineInfo.renderPass = nullptr;
 		pipelineInfo.pNext = &pipeline_rendering_create_info;

@@ -187,6 +187,7 @@ namespace Odyssey
 		assert(0);
 		return VK_FORMAT_R32G32B32A32_SFLOAT;
 	}
+
 	void Shader::GenerateShaderResources()
 	{
 		// Destroy the previous layout, if it exists
@@ -304,44 +305,6 @@ namespace Odyssey
 		}
 
 		descriptorLayout->Apply();
-	}
-
-	void Shader::GenerateVertexLayout()
-	{
-		//std::vector<VkVertexInputAttributeDescription> descriptions;
-
-		//// Position
-		//auto& positionDesc = descriptions.emplace_back();
-		//positionDesc.binding = 0;
-		//positionDesc.location = 0;
-		//positionDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
-		//positionDesc.offset = offsetof(Vertex, Position);
-
-		//// Normal
-		//auto& normalDesc = descriptions.emplace_back();
-		//normalDesc.binding = 0;
-		//normalDesc.location = 1;
-		//normalDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
-		//normalDesc.offset = offsetof(Vertex, Normal);
-
-		//if (skinned)
-		//{
-		//	// Bone Indices
-		//	auto& indicesDesc = descriptions.emplace_back();
-		//	indicesDesc.binding = 0;
-		//	indicesDesc.location = 2;
-		//	indicesDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
-		//	indicesDesc.offset = offsetof(Vertex, BoneIndices);
-
-		//	// Bone Weights
-		//	auto& weightsDesc = descriptions.emplace_back();
-		//	weightsDesc.binding = 0;
-		//	weightsDesc.location = 3;
-		//	weightsDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
-		//	weightsDesc.offset = offsetof(Vertex, BoneWeights);
-		//}
-
-		//attributeDescriptions.WriteData(descriptions);
 	}
 
 	void Shader::OnSourceModified()

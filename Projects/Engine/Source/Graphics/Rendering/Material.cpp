@@ -109,7 +109,8 @@ namespace Odyssey
 				m_BlendMode = Enum::ToEnum<BlendMode>(blendMode);
 		}
 
-		CreatePipeline();
+		if (m_Shader)
+			CreatePipeline();
 	}
 
 	void Material::CreatePipeline()

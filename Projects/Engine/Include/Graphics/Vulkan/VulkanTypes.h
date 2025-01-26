@@ -10,6 +10,7 @@ namespace Odyssey
 		LineList = 1,
 		TriangleList = 2,
 		TriangleStrip = 3,
+		PatchList = 4,
 	};
 
 	enum class CullMode

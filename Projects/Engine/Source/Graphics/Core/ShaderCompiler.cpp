@@ -34,6 +34,10 @@ namespace Odyssey
 			type = shaderc_compute_shader;
 		if (settings.ShaderType == ShaderType::Geometry)
 			type = shaderc_geometry_shader;
+		if (settings.ShaderType == ShaderType::Hull)
+			type = shaderc_tess_control_shader;
+		if (settings.ShaderType == ShaderType::Domain)
+			type = shaderc_tess_evaluation_shader;
 
 		shaderc::SpvCompilationResult result =
 			compiler.CompileGlslToSpv(settings.ShaderCode, type, settings.ShaderName.c_str(), compilerOptions);

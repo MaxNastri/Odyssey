@@ -52,7 +52,6 @@ namespace Odyssey
 
 	private:
 		void GenerateShaderResources();
-		void GenerateVertexLayout();
 		void OnSourceModified();
 
 	private:

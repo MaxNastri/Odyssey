@@ -44,7 +44,9 @@ namespace Odyssey
 			{ ShaderType::Vertex, "#pragma Vertex\n" },
 			{ ShaderType::Fragment, "#pragma Fragment\n" },
 			{ ShaderType::Compute, "#pragma Compute\n" },
-			{ ShaderType::Geometry, "#pragma Geometry\n" }
+			{ ShaderType::Geometry, "#pragma Geometry\n" },
+			{ ShaderType::Hull, "#pragma Hull\n" },
+			{ ShaderType::Domain, "#pragma Domain\n" },
 		};
 	};
 }

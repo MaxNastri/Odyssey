@@ -108,6 +108,9 @@ namespace Odyssey
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		deviceFeatures.logicOp = true;
 		deviceFeatures.samplerAnisotropy = true;
+		deviceFeatures.geometryShader = true;
+		deviceFeatures.tessellationShader = true;
+
 		VkDeviceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		create_info.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]);

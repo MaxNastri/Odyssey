@@ -27,6 +27,8 @@ namespace Odyssey
 		Vertex = 2,
 		Compute = 3,
 		Geometry = 4,
+		Hull = 5,
+		Domain = 6
 	};
 
 	enum class TextureType
@@ -91,7 +93,6 @@ namespace Odyssey
 		None = 0,
 		Optimal = 1,
 		Linear = 2,
-
 	};
 
 	enum class ShaderType : uint32_t
@@ -101,5 +102,7 @@ namespace Odyssey
 		Vertex = 2,
 		Compute = 3,
 		Geometry = 4,
+		Hull = 5,
+		Domain = 6
 	};
 }
