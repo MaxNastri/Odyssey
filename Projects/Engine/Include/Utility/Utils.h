@@ -4,6 +4,19 @@
 
 namespace Odyssey
 {
+	inline void Hash(std::size_t& seed, const uint64_t& val)
+	{
+		seed ^= std::hash<uint64_t>{}(val)+0x9e3779b97f4a7c15LLU + (seed << 12) + (seed >> 4);
+	}
+
+	inline std::size_t HashCombine(uint64_t a, uint64_t b)
+	{
+		std::size_t seed = 0;
+		Hash(seed, a);
+		Hash(seed, b);
+		return seed;
+	}
+
 	static constexpr uint32_t GenerateFNVHash(std::string_view str)
 	{
 		constexpr uint32_t FNV_PRIME = 16777619u;

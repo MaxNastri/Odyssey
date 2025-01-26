@@ -105,8 +105,6 @@ namespace Sandbox
                         velocity += up;
                     }
 
-                    Console.WriteLine(m_CharacterController.IsGrounded);
-
                     m_CharacterController.LinearVelocity = velocity;
                 }
 

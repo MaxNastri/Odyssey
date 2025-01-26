@@ -3,10 +3,33 @@
 #include "PhysicsLayers.h"
 #include "RigidBody.h"
 #include "Colliders.h"
+#include "ReadWriteLock.h"
 
 namespace Odyssey
 {
-	class PhysicsSystem : public JPH::CharacterContactListener
+	enum class CollisionState
+	{
+		None = 0,
+		Enter = 1,
+		Stay = 2,
+		Exit = 3,
+	};
+
+	struct CollisionData
+	{
+	public:
+		CollisionData() = default;
+		CollisionData(uint64_t id) : ID(id) { }
+
+	public:
+		uint64_t ID = 0;
+		CollisionState State = CollisionState::None;;
+		GameObject Body1;
+		GameObject Body2;
+		float3 ContactNormal = float3(0.0f);
+	};
+
+	class PhysicsSystem : public JPH::CharacterContactListener, public JPH::ContactListener
 	{
 	public: // Singleton
 		static void Init();
@@ -31,7 +54,7 @@ namespace Odyssey
 		BodyProperties* GetBodyProperties(BodyID id);
 		BodyLockWrite* GetBodyLock(BodyID bodyID);
 		GameObject GetBodyGameObject(BodyID bodyID);
-		GameObject GetCharacterGameObject(CharacterVirtual* character);
+		GameObject GetCharacterGameObject(const CharacterVirtual* character);
 		Vec3 GetGravity();
 
 	public: // Character contact listeners
@@ -46,9 +69,16 @@ namespace Odyssey
 
 		// Called whenever the character movement is solved and a constraint is hit. Allows the listener to override the resulting character velocity (e.g. by preventing sliding along certain surfaces).
 		virtual void OnContactSolve(const CharacterVirtual* inCharacter, const BodyID& inBodyID2, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, Vec3Arg inContactVelocity, const PhysicsMaterial* inContactMaterial, Vec3Arg inCharacterVelocity, Vec3& ioNewCharacterVelocity) override;
-	
+
+		virtual ValidateResult OnContactValidate(const Body& inBody1, const Body& inBody2, RVec3Arg inBaseOffset, const CollideShapeResult& inCollisionResult) override;
+
+		virtual void OnContactAdded(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold, ContactSettings& ioSettings) override;
+
 	private:
 		void FixedUpdate();
+		void PreProcessCollisionData();
+		void ProcessCollisionData();
+
 		Body* CreateBody(ShapeRefC shapeRef, float3 position, quat rotation, BodyProperties& properties, PhysicsLayer layer);
 
 	private: // Singleton
@@ -57,7 +87,11 @@ namespace Odyssey
 	private:
 		std::map<BodyID, BodyProperties*> s_BodyProperties;
 		std::map<BodyID, GameObject> s_BodyToGameObject;
-		std::map<CharacterVirtual*, GameObject> s_CharacterToGameObject;
+		std::map<const CharacterVirtual*, GameObject> s_CharacterToGameObject;
+
+	private: // Collision
+		ReadWriteLock m_CollisionDataLock;
+		std::unordered_map<uint64_t, CollisionData> m_CollisionData;
 
 	private:
 		JPH::PhysicsSystem m_PhysicsSystem;

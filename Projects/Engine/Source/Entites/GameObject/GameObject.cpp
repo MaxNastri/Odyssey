@@ -31,6 +31,24 @@ namespace Odyssey
 			rigidBody->Awake();
 	}
 
+	void GameObject::OnCollisionEnter(GameObject& body, float3 contactNormal)
+	{
+		if (ScriptComponent* script = TryGetComponent<ScriptComponent>())
+			script->OnCollisionEnter(body, contactNormal);
+	}
+
+	void GameObject::OnCollisionStay(GameObject& body, float3 contactNormal)
+	{
+		if (ScriptComponent* script = TryGetComponent<ScriptComponent>())
+			script->OnCollisionStay(body, contactNormal);
+	}
+
+	void GameObject::OnCollisionExit(GameObject& body)
+	{
+		if (ScriptComponent* script = TryGetComponent<ScriptComponent>())
+			script->OnCollisionExit(body);
+	}
+
 	void GameObject::Serialize(SerializationNode& gameObjectNode)
 	{
 		Serialize(gameObjectNode, false);

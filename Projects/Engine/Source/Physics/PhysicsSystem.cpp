@@ -13,7 +13,6 @@ namespace Odyssey
 	void PhysicsSystem::Init()
 	{
 		s_Instance = new PhysicsSystem();
-		
 	}
 
 	void PhysicsSystem::Update()
@@ -60,6 +59,7 @@ namespace Odyssey
 		// Now we can create the actual physics system.
 		m_PhysicsSystem;
 		m_PhysicsSystem.Init(cMaxBodies, cNumBodyMutexes, cMaxBodyPairs, cMaxContactConstraints, m_BroadPhaseLayerMap, m_BroadPhaseLayerFilter, m_PhysicsLayerFilter);
+		m_PhysicsSystem.SetContactListener(this);
 
 		// A body activation listener gets notified when bodies activate and go to sleep
 		// Note that this is called from a job so whatever you do here needs to be thread safe.
@@ -162,7 +162,7 @@ namespace Odyssey
 		return GameObject();
 	}
 
-	GameObject PhysicsSystem::GetCharacterGameObject(CharacterVirtual* character)
+	GameObject PhysicsSystem::GetCharacterGameObject(const CharacterVirtual* character)
 	{
 		if (s_CharacterToGameObject.contains(character))
 			return s_CharacterToGameObject[character];
@@ -198,7 +198,51 @@ namespace Odyssey
 
 	void PhysicsSystem::OnContactSolve(const CharacterVirtual* inCharacter, const BodyID& inBodyID2, const SubShapeID& inSubShapeID2, RVec3Arg inContactPosition, Vec3Arg inContactNormal, Vec3Arg inContactVelocity, const PhysicsMaterial* inContactMaterial, Vec3Arg inCharacterVelocity, Vec3& ioNewCharacterVelocity)
 	{
+		m_CollisionDataLock.Lock(LockState::Write);
+		GameObject body1 = GetCharacterGameObject(inCharacter);
+		GameObject body2 = GetBodyGameObject(inBodyID2);
+		uint64_t collisionID = HashCombine(body1.GetGUID(), body2.GetGUID());
 
+		if (!m_CollisionData.contains(collisionID))
+			m_CollisionData[collisionID] = CollisionData(collisionID);
+
+		CollisionData& data = m_CollisionData[collisionID];
+		if (data.State == CollisionState::Enter || data.State == CollisionState::Exit)
+			data.State = CollisionState::Stay;
+		else
+			data.State = CollisionState::Enter;
+
+		data.Body1 = body1;
+		data.Body2 = body2;
+		data.ContactNormal = ToFloat3(inContactNormal);
+		m_CollisionDataLock.Unlock(LockState::Write);
+	}
+
+	ValidateResult PhysicsSystem::OnContactValidate(const Body& inBody1, const Body& inBody2, RVec3Arg inBaseOffset, const CollideShapeResult& inCollisionResult)
+	{
+		return ValidateResult::AcceptAllContactsForThisBodyPair;
+	}
+
+	void PhysicsSystem::OnContactAdded(const Body& inBody1, const Body& inBody2, const ContactManifold& inManifold, ContactSettings& ioSettings)
+	{
+		m_CollisionDataLock.Lock(LockState::Write);
+		GameObject body1 = GetBodyGameObject(inBody1.GetID());
+		GameObject body2 = GetBodyGameObject(inBody2.GetID());
+		uint64_t collisionID = HashCombine(body1.GetGUID(), body2.GetGUID());
+
+		if (!m_CollisionData.contains(collisionID))
+			m_CollisionData[collisionID] = CollisionData(collisionID);
+
+		CollisionData& data = m_CollisionData[collisionID];
+		if (data.State == CollisionState::Enter || data.State == CollisionState::Exit)
+			data.State = CollisionState::Stay;
+		else
+			data.State = CollisionState::Enter;
+
+		data.Body1 = body1;
+		data.Body2 = body2;
+		data.ContactNormal = ToFloat3(inManifold.mWorldSpaceNormal);
+		m_CollisionDataLock.Unlock(LockState::Write);
 	}
 
 	Ref<CharacterVirtual> PhysicsSystem::RegisterCharacter(GameObject& gameObject, Ref<CharacterVirtualSettings>& settings)
@@ -268,6 +312,8 @@ namespace Odyssey
 		{
 			if (activeScene->IsRunning())
 			{
+				PreProcessCollisionData();
+
 				auto fluidView = activeScene->GetAllEntitiesWith<Transform, FluidBody>();
 				for (auto& entity : fluidView)
 				{
@@ -436,7 +482,57 @@ namespace Odyssey
 					transform.SetRotation(ToQuat(simRotation));
 					transform.SetLocalSpace();
 				}
+
+				ProcessCollisionData();
 			}
 		}
+	}
+
+	void PhysicsSystem::PreProcessCollisionData()
+	{
+		m_CollisionDataLock.Lock(LockState::Read);
+
+		std::vector<uint64_t> removals;
+		for (auto& [collisionID, data] : m_CollisionData)
+		{
+			// Move collision enter or stay to exit
+			// If there is a continued collision, this will flip back to stay on next physics processing
+			if (data.State == CollisionState::Enter || data.State == CollisionState::Stay)
+				data.State = CollisionState::Exit;
+			else if (data.State == CollisionState::Exit)
+				removals.push_back(collisionID);
+		}
+
+		// Remove the stale collision data
+		for (size_t i = 0; i < removals.size(); i++)
+			m_CollisionData.erase(removals[i]);
+
+		m_CollisionDataLock.Unlock(LockState::Read);
+	}
+
+	void PhysicsSystem::ProcessCollisionData()
+	{
+		m_CollisionDataLock.Lock(LockState::Read);
+
+		for (auto& [collisionID, data] : m_CollisionData)
+		{
+			switch (data.State)
+			{
+				case CollisionState::Enter:
+					data.Body1.OnCollisionEnter(data.Body2, data.ContactNormal);
+					data.Body2.OnCollisionEnter(data.Body1, data.ContactNormal);
+					break;
+				case CollisionState::Stay:
+					data.Body1.OnCollisionStay(data.Body2, data.ContactNormal);
+					data.Body2.OnCollisionStay(data.Body1, data.ContactNormal);
+					break;
+				case CollisionState::Exit:
+					data.Body1.OnCollisionExit(data.Body2);
+					data.Body2.OnCollisionExit(data.Body1);
+					break;
+			}
+		}
+
+		m_CollisionDataLock.Unlock(LockState::Read);
 	}
 }

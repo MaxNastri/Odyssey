@@ -1,4 +1,6 @@
-﻿namespace Odyssey
+﻿using System;
+
+namespace Odyssey
 {
     [NativeObject]
     public abstract class Component
@@ -16,6 +18,9 @@
         protected virtual void Awake() { }
         protected virtual void Update() { }
         protected virtual void OnDestroy() { }
+        protected virtual void OnCollisionEnter(Entity entity, Vector3 contactNormal) { }
+        protected virtual void OnCollisionStay(Entity entity, Vector3 contactNormal) { }
+        protected virtual void OnCollisionExit(Entity entity) { }
 
         public T AddComponent<T>() where T : Component, new()
         {
@@ -36,5 +41,9 @@
         {
             return Entity.GetComponent<T>();
         }
+
+        private void OnCollisionEnterInternal(ulong guid, Vector3 contactNormal) => OnCollisionEnter(new Entity(guid), contactNormal);
+        private void OnCollisionStayInternal(ulong guid, Vector3 contactNormal) => OnCollisionStay(new Entity(guid), contactNormal);
+        private void OnCollisionExitInternal(ulong guid) => OnCollisionExit(new Entity(guid));
     }
 }

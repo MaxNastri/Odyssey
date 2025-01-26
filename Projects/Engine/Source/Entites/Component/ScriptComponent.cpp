@@ -33,22 +33,40 @@ namespace Odyssey
 	void ScriptComponent::Awake()
 	{
 		if (m_Handle.IsValid())
-			m_Handle.Invoke("Void Awake()");
+			m_Handle.Invoke("Awake");
 	}
 
 	void ScriptComponent::Update()
 	{
 		if (m_Handle.IsValid())
-			m_Handle.Invoke("Void Update()");
+			m_Handle.Invoke("Update");
 	}
 
 	void ScriptComponent::OnDestroy()
 	{
 		if (m_Handle.IsValid())
-			m_Handle.Invoke("Void OnDestroy()");
+			m_Handle.Invoke("OnDestroy");
 
 		ClearManagedHandle();
 		ScriptingManager::DestroyInstance(m_GameObject.GetGUID());
+	}
+
+	void ScriptComponent::OnCollisionEnter(GameObject& body, float3 contactNormal)
+	{
+		if (m_Handle.IsValid())
+			m_Handle.Invoke("OnCollisionEnterInternal", (uint64_t)body.GetGUID(), contactNormal);
+	}
+
+	void ScriptComponent::OnCollisionStay(GameObject& body, float3 contactNormal)
+	{
+		if (m_Handle.IsValid())
+			m_Handle.Invoke("OnCollisionStayInternal", (uint64_t)body.GetGUID(), contactNormal);
+	}
+
+	void ScriptComponent::OnCollisionExit(GameObject& body)
+	{
+		if (m_Handle.IsValid())
+			m_Handle.Invoke("OnCollisionExitInternal", (uint64_t)body.GetGUID());
 	}
 
 	void ScriptComponent::Serialize(SerializationNode& node)
