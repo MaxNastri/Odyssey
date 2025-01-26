@@ -131,6 +131,9 @@ namespace Odyssey
 		if (s_BodyProperties.contains(body->GetID()))
 			s_BodyProperties.erase(body->GetID());
 
+		if (s_BodyToGameObject.contains(body->GetID()))
+			s_BodyToGameObject.erase(body->GetID());
+
 		BodyInterface& bodyInterface = m_PhysicsSystem.GetBodyInterface();
 		bodyInterface.RemoveBody(body->GetID());
 		bodyInterface.DestroyBody(body->GetID());
@@ -257,6 +260,8 @@ namespace Odyssey
 	void PhysicsSystem::DeregisterCharacter(Ref<CharacterVirtual>& character)
 	{
 		character->SetListener(nullptr);
+		if (s_CharacterToGameObject.contains(character.Get()))
+			s_CharacterToGameObject.erase(character.Get());
 	}
 
 	Body* PhysicsSystem::CreateBody(ShapeRefC shapeRef, float3 position, quat rotation, BodyProperties& properties, PhysicsLayer layer)

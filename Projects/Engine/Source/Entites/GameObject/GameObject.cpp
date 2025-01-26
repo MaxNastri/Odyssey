@@ -146,7 +146,7 @@ namespace Odyssey
 			else if (componentType == MeshRenderer::Type)
 				AddComponent<MeshRenderer>(componentNode);
 			else if (componentType == Transform::Type)
-				AddComponent<Transform>();
+				AddComponent<Transform>(componentNode);
 			else if (componentType == ScriptComponent::Type)
 				AddComponent<ScriptComponent>(componentNode, remap);
 			else if (componentType == Light::Type)

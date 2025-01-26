@@ -1,5 +1,5 @@
 #pragma Shared
-static int tesselationLevel = 5;
+static int tesselationLevel = 35;
 static float tessAlpha = 1.0f;
 
 struct PnPatch
@@ -22,6 +22,16 @@ struct ConstantsHSOutput
     float TessLevelInner : SV_InsideTessFactor;
 };
 
+struct Light
+{
+    float4 Position;
+    float4 Direction;
+    float4 Color;
+    uint Type;
+    float Intensity;
+    float Range;
+};
+
 cbuffer SceneData : register(b0)
 {
     float4 ViewPos;
@@ -37,7 +47,7 @@ cbuffer ModelData : register(b1)
     float3x3 InverseModel;
 }
 
-cbuffer GlobalData : register(b3)
+cbuffer GlobalData : register(b2)
 {
     // Values used to linearize the Z buffer (http://www.humus.name/temp/Linearize%20depth.txt)
     // x = 1-far/near
@@ -59,8 +69,18 @@ cbuffer GlobalData : register(b3)
     float4 Time;
 }
 
-Texture2D noiseTex2D : register(t8);
-SamplerState noiseSampler : register(s8);
+Texture2D noiseTex2D : register(t3);
+SamplerState noiseSampler : register(s3);
+Texture2D distortionTex2D : register(t4);
+SamplerState distortionSampler : register(s4);
+
+cbuffer LightData : register(b5)
+{
+    float4 AmbientColor;
+    Light SceneLights[16];
+    uint LightCount;
+}
+
 
 #pragma Vertex
 struct VertexInput
@@ -73,7 +93,7 @@ struct VertexInput
 
 struct VertexOutput
 {
-    float4 Position : SV_POSITION;
+    float4 Position : POSITION;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
@@ -92,7 +112,7 @@ VertexOutput main(VertexInput input)
 #pragma Hull
 struct HullInput
 {
-    float4 Position : SV_POSITION;
+    float4 Position : POSITION;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
@@ -100,7 +120,7 @@ struct HullInput
 
 struct HullOutput
 {
-    float4 Position : SV_POSITION;
+    float4 Position : POSITION;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
@@ -195,7 +215,7 @@ HullOutput main(InputPatch<HullInput, 3> patch, uint InvocationID : SV_OutputCon
 #pragma Domain
 struct DomainInput
 {
-    float4 Position : SV_POSITION;
+    float4 Position : POSITION;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
@@ -204,7 +224,7 @@ struct DomainInput
 
 struct DSOutput
 {
-    float4 Position : SV_POSITION;
+    float4 Position : POSITION;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
@@ -297,21 +317,26 @@ DSOutput main(ConstantsHSOutput input, float3 TessCoord : SV_DomainLocation, con
 }
 
 #pragma Geometry
-#define BLADE_SEGMENTS 2
+#define BLADE_SEGMENTS 5
 
 // Modifiable
-static float bendFactor = 0.5f;
-static float bladeWidth = 0.05f;
+static float bendFactor = 0.15f;
+static float bladeWidth = 0.09f;
 static float bladeWidthRandom = 0.02f;
-static float bladeHeight = 0.5f;
-static float bladeHeightRandom = 0.3f;
+static float bladeHeight = 0.9f;
+static float bladeHeightRandom = 0.2f;
+static float2 windFrequency = float2(0.05f, 0.05f);
+static float windStrength = 0.2f;
+static float distortionTiling = 0.01f;
+static float bladeForward = 0.25f;
+static float bladeCurve = 1.5f;
 
 // Constants
 static const float PI = 3.14159265f;
 
 struct GeometryInput
 {
-    float4 Position : SV_POSITION;
+    float4 Position : POSITION;
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
@@ -320,7 +345,9 @@ struct GeometryInput
 struct GeometryOutput
 {
     float4 Position : SV_Position;
+    float3 Normal : NORMAL;
     float2 TexCoord0 : TEXCOORD0;
+    float3 WorldPosition : POSITION1;
 };
 
 float random(float2 st)
@@ -346,16 +373,27 @@ float3x3 AngleAxis3x3(float angle, float3 axis)
     );
 }
 
-GeometryOutput GetOutput(float3 pos, float2 uv, float4 color)
+GeometryOutput GetOutput(float3 pos, float3 normal, float2 uv)
 {
     GeometryOutput output;
-    float4 worldPos = mul(Model, float4(pos, 1.0f));
-    output.Position = mul(ViewProjection, worldPos);
+    output.WorldPosition = mul(Model, float4(pos, 1.0f));
+    output.Position = mul(ViewProjection, float4(output.WorldPosition, 1.0f));
+    output.Normal = mul(Model, float4(normal, 0.0f));
     output.TexCoord0 = uv;
     return output;
 }
 
-[maxvertexcount(3)]
+GeometryOutput GenerateGrassVertex(float3 position, float width, float height, float forward, float2 uv, float3x3 transformation)
+{
+    float3 tangentPoint = float3(width, forward, height);
+    float3 localPosition = position + mul(transformation, tangentPoint);
+    float3 tangentNormal = normalize(float3(0, -1, forward));
+    float3 localNormal = mul(transformation, tangentNormal);
+    
+    return GetOutput(localPosition, localNormal, uv);
+}
+
+[maxvertexcount(BLADE_SEGMENTS * 2 + 1)]
 void main(uint primitiveID : SV_PrimitiveID, triangle GeometryInput input[3], inout TriangleStream<GeometryOutput> triStream)
 {
     float3 vPosition = input[0].Position.xyz;
@@ -368,28 +406,135 @@ void main(uint primitiveID : SV_PrimitiveID, triangle GeometryInput input[3], in
     vTangent.y, vBinormal.y, vNormal.y,
     vTangent.z, vBinormal.z, vNormal.z);
     
-    float3x3 rndRotation = AngleAxis3x3(random(vPosition.xz) * 2.0f * PI, float3(0, 0, 1));
+    float3x3 facingRotation = AngleAxis3x3(random(vPosition.xz) * 2.0f * PI, float3(0, 0, 1));
     float3x3 bendRotation = AngleAxis3x3(random(vPosition.zx) * bendFactor * PI * 0.5f, float3(-1, 0, 0));
     
-    float3x3 transformation = mul(rndRotation, bendRotation);
+    // Wind
+    float2 uv = ((vPosition.xz * distortionTiling) + windFrequency) * Time.y;
+    float2 windTex = distortionTex2D.SampleLevel(distortionSampler, uv, 0).xy;
+    
+    // Normalize to -1 to 1 and apply wind strength
+    float2 windVelocity = (windTex * 2.0f - 1.0f) * windStrength;
+    float3 windNormal = normalize(float3(windVelocity, 0.0f));
+    
+    float3x3 windRotation = AngleAxis3x3(PI * windVelocity.x, windNormal);
+    
+    float3x3 transformation = mul(facingRotation, bendRotation);
+    transformation = mul(windRotation, transformation);
     transformation = mul(tangentToLocal, transformation);
+    
+    float3x3 transformationFacing = mul(tangentToLocal, facingRotation);
     
     float height = (random(vPosition.xy) * 2.0f - 1.0f) * bladeHeightRandom + bladeHeight;
     float width = (random(vPosition.xz) * 2.0f - 1.0f) * bladeWidthRandom + bladeWidth;
+    float forward = random(vPosition.yz) * bladeForward;
     
-    triStream.Append(GetOutput(vPosition + mul(transformation, float3(width, 0, 0)), float2(0, 0), float4(0, 0, 0, 1)));
-    triStream.Append(GetOutput(vPosition + mul(transformation, float3(-width, 0, 0)), float2(1, 0), float4(0, 0, 0, 1)));
-    triStream.Append(GetOutput(vPosition + mul(transformation, float3(0, 0, height)), float2(0.5, 1), float4(0, 0, 0, 1)));
+    for (int i = 0; i < BLADE_SEGMENTS; i++)
+    {
+        // Blade progress
+        float t = i / (float) BLADE_SEGMENTS;
+        
+        float segmentWidth = width * (1.0f - t);
+        float segmentHeight = height * t;
+        float segmentForward = pow(t, bladeCurve) * forward;
+        
+        float3x3 transform = i == 0 ? transformationFacing : transformation;
+        
+        triStream.Append(GenerateGrassVertex(vPosition, segmentWidth, segmentHeight, segmentForward, float2(0, t), transform));
+        triStream.Append(GenerateGrassVertex(vPosition, -segmentWidth, segmentHeight, segmentForward, float2(1, t), transform));
+    }
+    
+    triStream.Append(GenerateGrassVertex(vPosition, 0, height, forward, float2(0.5f, 1), transformation));
 }
 
 #pragma Fragment
+#define DIRECTIONAL_LIGHT 0
+#define POINT_LIGHT 1
+#define SPOT_LIGHT 2
+
+static float3 topColor = float3(0.5f, 0.75f, 0.0f);
+static float3 bottomColor = float3(0.15f, 0.35f, 0.0f);
+
+struct LightingOutput
+{
+    float3 Diffuse;
+};
+
 struct PixelInput
 {
     float4 Position : SV_Position;
+    float3 Normal : NORMAL;
     float2 TexCoord0 : TEXCOORD0;
+    float3 WorldPosition : POSITION1;
 };
 
-float4 main(PixelInput input) : SV_Target
+// Forward declarations
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal);
+float3 CalculateDiffuse(Light light, float3 worldNormal);
+float3 CalculateDirectionalLight(Light light, float3 worldNormal);
+float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal);
+
+float4 main(PixelInput input, bool facing : SV_IsFrontFace) : SV_Target
 {
-    return lerp(float4(0.1f, 0.5f, 0.0, 1), float4(0.5f, 1.0f, 0.0f, 1.0f), input.TexCoord0.y);
+    float3 normal = facing > 0 ? -input.Normal : input.Normal;
+    normal = normal * 0.5f + 0.5f;
+    
+    LightingOutput lighting = CalculateLighting(input.WorldPosition, normal);
+    
+    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb;
+    float3 albedo = lerp(bottomColor, topColor * finalLighting, input.TexCoord0.y);
+    
+    return float4(albedo, 1.0f);
+}
+
+
+LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal)
+{
+    LightingOutput output;
+    output.Diffuse = float4(0, 0, 0, 1);
+    
+    for (uint i = 0; i < LightCount; i++)
+    {
+        switch (SceneLights[i].Type)
+        {
+            case DIRECTIONAL_LIGHT:
+                output.Diffuse += CalculateDirectionalLight(SceneLights[i], worldNormal);
+                break;
+            case POINT_LIGHT:
+                output.Diffuse += CalculatePointLight(SceneLights[i], worldPosition, worldNormal);
+                break;
+        }
+
+    }
+    return output;
+}
+
+float3 CalculateDiffuse(Light light, float3 lightVector, float3 worldNormal)
+{
+    float contribution = max(0.0f, dot(worldNormal, lightVector));
+    
+    // Half-lambert equation modified to be squared instead of cubed
+    contribution = pow((contribution * 0.5f) + 0.5f, 3);
+    return light.Color.rgb * light.Intensity * contribution;
+}
+
+float3 CalculateDirectionalLight(Light light, float3 worldNormal)
+{
+    float3 lightVector = -normalize(light.Direction.xyz);
+    return CalculateDiffuse(light, lightVector, worldNormal);
+}
+
+float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal)
+{
+    float3 lightVector = light.Position.xyz - worldPosition;
+    
+    // Manually normalize the light vector so
+    // we can use the distance in our attenuation calculation
+    float distance = length(lightVector);
+    lightVector /= distance;
+    
+    // Squared exponential falloff
+    float attenuation = pow(1.0f - saturate(distance / light.Range), 2);
+    
+    return CalculateDiffuse(light, lightVector, worldNormal) * attenuation;
 }

@@ -64,7 +64,7 @@ namespace Odyssey
 		uint32_t extensionsCount = 0;
 
 	private: // Debugging
-		bool enableValidation = true;
+		bool enableValidation = false;
 		VkDebugReportCallbackEXT debugReport = VK_NULL_HANDLE;
 	};
 }

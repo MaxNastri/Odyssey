@@ -1,0 +1,146 @@
+GameObjects:
+  - Sort Order: 16
+    Parent: 0
+    Name: Grass
+    GUID: 17899903799656689324
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 17899903799656689324
+    Name: Patch 1
+    GUID: 11716521301123597187
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 18223639673061157840
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 17899903799656689324
+    Name: Patch 2
+    GUID: 7382659643547237672
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 18223639673061157840
+      - Type: Odyssey.Transform
+        Position: 'x: 2 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 17899903799656689324
+    Name: Patch 3
+    GUID: 8473310498021725001
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 18223639673061157840
+      - Type: Odyssey.Transform
+        Position: 'x: -2 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 17899903799656689324
+    Name: Patch 4
+    GUID: 11243674191829542369
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 18223639673061157840
+      - Type: Odyssey.Transform
+        Position: 'x: -2 y: 0 z: 2'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 17899903799656689324
+    Name: Patch 5
+    GUID: 6546193883773125456
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 18223639673061157840
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 2'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 17899903799656689324
+    Name: Patch 6
+    GUID: 8803522382756690756
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 18223639673061157840
+      - Type: Odyssey.Transform
+        Position: 'x: 2 y: 0 z: 2'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 17899903799656689324
+    Name: Patch 7
+    GUID: 17121098671676592129
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 18223639673061157840
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: -2'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 17899903799656689324
+    Name: Patch 8
+    GUID: 16798590684505254065
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 18223639673061157840
+      - Type: Odyssey.Transform
+        Position: 'x: -2 y: 0 z: -2'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 17899903799656689324
+    Name: Patch 9
+    GUID: 4017583616872197713
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3098132783127681236
+        Materials:
+          - 18223639673061157840
+      - Type: Odyssey.Transform
+        Position: 'x: 2 y: 0 z: -2'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
