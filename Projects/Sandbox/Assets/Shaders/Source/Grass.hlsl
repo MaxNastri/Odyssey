@@ -393,58 +393,68 @@ GeometryOutput GenerateGrassVertex(float3 position, float width, float height, f
     return GetOutput(localPosition, localNormal, uv);
 }
 
-[maxvertexcount(BLADE_SEGMENTS * 2 + 1)]
+[maxvertexcount(3 * (BLADE_SEGMENTS * 2 + 1) + 3)]
 void main(uint primitiveID : SV_PrimitiveID, triangle GeometryInput input[3], inout TriangleStream<GeometryOutput> triStream)
 {
-    float3 vPosition = input[0].Position.xyz;
-    float3 vNormal = input[0].Normal;
-    float4 vTangent = input[0].Tangent;
-    float3 vBinormal = cross(vNormal, vTangent.xyz) * vTangent.w;
+    for (int index = 0; index < 3; index++)
+    {
+        float3 vPosition = input[index].Position.xyz;
+        float3 vNormal = input[index].Normal;
+        float4 vTangent = input[index].Tangent;
+        float3 vBinormal = cross(vNormal, vTangent.xyz) * vTangent.w;
     
-    float3x3 tangentToLocal = float3x3(
-    vTangent.x, vBinormal.x, vNormal.x,
-    vTangent.y, vBinormal.y, vNormal.y,
-    vTangent.z, vBinormal.z, vNormal.z);
+        float3x3 tangentToLocal = float3x3(
+        vTangent.x, vBinormal.x, vNormal.x,
+        vTangent.y, vBinormal.y, vNormal.y,
+        vTangent.z, vBinormal.z, vNormal.z);
     
-    float3x3 facingRotation = AngleAxis3x3(random(vPosition.xz) * 2.0f * PI, float3(0, 0, 1));
-    float3x3 bendRotation = AngleAxis3x3(random(vPosition.zx) * bendFactor * PI * 0.5f, float3(-1, 0, 0));
+        float3x3 facingRotation = AngleAxis3x3(random(vPosition.xz) * 2.0f * PI, float3(0, 0, 1));
+        float3x3 bendRotation = AngleAxis3x3(random(vPosition.zx) * bendFactor * PI * 0.5f, float3(-1, 0, 0));
     
     // Wind
-    float2 uv = ((vPosition.xz * distortionTiling) + windFrequency) * Time.y;
-    float2 windTex = distortionTex2D.SampleLevel(distortionSampler, uv, 0).xy;
+        float2 uv = ((vPosition.xz * distortionTiling) + windFrequency) * Time.y;
+        float2 windTex = distortionTex2D.SampleLevel(distortionSampler, uv, 0).xy;
     
     // Normalize to -1 to 1 and apply wind strength
-    float2 windVelocity = (windTex * 2.0f - 1.0f) * windStrength;
-    float3 windNormal = normalize(float3(windVelocity, 0.0f));
+        float2 windVelocity = (windTex * 2.0f - 1.0f) * windStrength;
+        float3 windNormal = normalize(float3(windVelocity, 0.0f));
     
-    float3x3 windRotation = AngleAxis3x3(PI * windVelocity.x, windNormal);
+        float3x3 windRotation = AngleAxis3x3(PI * windVelocity.x, windNormal);
     
-    float3x3 transformation = mul(facingRotation, bendRotation);
-    transformation = mul(windRotation, transformation);
-    transformation = mul(tangentToLocal, transformation);
+        float3x3 transformation = mul(facingRotation, bendRotation);
+        transformation = mul(windRotation, transformation);
+        transformation = mul(tangentToLocal, transformation);
     
-    float3x3 transformationFacing = mul(tangentToLocal, facingRotation);
+        float3x3 transformationFacing = mul(tangentToLocal, facingRotation);
     
-    float height = (random(vPosition.xy) * 2.0f - 1.0f) * bladeHeightRandom + bladeHeight;
-    float width = (random(vPosition.xz) * 2.0f - 1.0f) * bladeWidthRandom + bladeWidth;
-    float forward = random(vPosition.yz) * bladeForward;
+        float height = (random(vPosition.xy) * 2.0f - 1.0f) * bladeHeightRandom + bladeHeight;
+        float width = (random(vPosition.xz) * 2.0f - 1.0f) * bladeWidthRandom + bladeWidth;
+        float forward = random(vPosition.yz) * bladeForward;
     
-    for (int i = 0; i < BLADE_SEGMENTS; i++)
-    {
+        for (int i = 0; i < BLADE_SEGMENTS; i++)
+        {
         // Blade progress
-        float t = i / (float) BLADE_SEGMENTS;
+            float t = i / (float) BLADE_SEGMENTS;
         
-        float segmentWidth = width * (1.0f - t);
-        float segmentHeight = height * t;
-        float segmentForward = pow(t, bladeCurve) * forward;
+            float segmentWidth = width * (1.0f - t);
+            float segmentHeight = height * t;
+            float segmentForward = pow(t, bladeCurve) * forward;
         
-        float3x3 transform = i == 0 ? transformationFacing : transformation;
+            float3x3 transform = i == 0 ? transformationFacing : transformation;
         
-        triStream.Append(GenerateGrassVertex(vPosition, segmentWidth, segmentHeight, segmentForward, float2(0, t), transform));
-        triStream.Append(GenerateGrassVertex(vPosition, -segmentWidth, segmentHeight, segmentForward, float2(1, t), transform));
+            triStream.Append(GenerateGrassVertex(vPosition, segmentWidth, segmentHeight, segmentForward, float2(0, t), transform));
+            triStream.Append(GenerateGrassVertex(vPosition, -segmentWidth, segmentHeight, segmentForward, float2(1, t), transform));
+        }
+    
+        triStream.Append(GenerateGrassVertex(vPosition, 0, height, forward, float2(0.5f, 1), transformation));
+        triStream.RestartStrip();
     }
     
-    triStream.Append(GenerateGrassVertex(vPosition, 0, height, forward, float2(0.5f, 1), transformation));
+    triStream.Append(GetOutput(input[0].Position.xyz, input[0].Normal, input[0].TexCoord0));
+    triStream.Append(GetOutput(input[1].Position.xyz, input[1].Normal, input[1].TexCoord0));
+    triStream.Append(GetOutput(input[2].Position.xyz, input[2].Normal, input[2].TexCoord0));
+    triStream.RestartStrip();
+
 }
 
 #pragma Fragment
@@ -452,7 +462,7 @@ void main(uint primitiveID : SV_PrimitiveID, triangle GeometryInput input[3], in
 #define POINT_LIGHT 1
 #define SPOT_LIGHT 2
 
-static float3 topColor = float3(0.5f, 0.75f, 0.0f);
+static float3 topColor = float3(0.45f, 0.65f, 0.0f);
 static float3 bottomColor = float3(0.15f, 0.35f, 0.0f);
 
 struct LightingOutput

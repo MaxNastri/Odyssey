@@ -5,7 +5,7 @@ m_Type: Odyssey.Material
 m_Shader: 7381450375696147196
 Property Textures:
   - Property: distortionSampler
-    Texture: 5401951732196823232
+    Texture: 15039526264554896991
   - Property: noiseSampler
     Texture: 15039526264554896991
 Emissive Color: 'x: 0 y: 0 z: 0'
