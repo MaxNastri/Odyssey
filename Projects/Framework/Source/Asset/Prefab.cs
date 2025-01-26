@@ -15,5 +15,10 @@ namespace Odyssey
                 return new Entity(instance);
             }
         }
+
+        public static void DestroyInstance(Entity instance)
+        {
+            unsafe { InternalCalls.Prefab_DestroyInstance(instance.GUID); }
+        }
     }
 }

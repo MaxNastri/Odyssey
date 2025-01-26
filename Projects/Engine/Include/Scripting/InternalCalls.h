@@ -105,6 +105,12 @@ namespace Odyssey::InternalCalls
 		return gameObject.GetGUID();
 	}
 
+	void GameObject_Destroy(uint64_t guid)
+	{
+		GameObject gameObject = GetGameObject(guid);
+		gameObject.Destroy();
+	}
+
 	Coral::String GameObject_GetName(uint64_t guid)
 	{
 		GameObject gameObject = GetGameObject(guid);
@@ -303,6 +309,12 @@ namespace Odyssey::InternalCalls
 			GameObject gameObject = prefab->LoadInstance();
 			*instanceGUID = gameObject.GetGUID();
 		}
+	}
+
+	void Prefab_DestroyInstance(uint64_t instanceGUID)
+	{
+		GameObject gameObject = GetGameObject(instanceGUID);
+		gameObject.Destroy();
 	}
 
 #pragma endregion

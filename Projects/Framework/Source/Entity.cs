@@ -13,18 +13,18 @@ namespace Odyssey
 
         protected Entity()
         {
-            this.GUID = new GUID(0);
+            GUID = new GUID(0);
         }
 
         // Internal constructor so we can control how the object is created natively
         internal Entity(ulong guid)
         {
-            this.GUID = new GUID(guid);
+            GUID = new GUID(guid);
         }
 
         internal Entity(GUID guid)
         {
-            this.GUID = guid;
+            GUID = guid;
         }
 
         public T AddComponent<T>() where T : Component, new()
@@ -32,27 +32,27 @@ namespace Odyssey
             Type type = typeof(T);
 
             // Check if we already have a component of this type
-            if (this.HasComponent<T>())
-                return this.GetComponent<T>();
+            if (HasComponent<T>())
+                return GetComponent<T>();
 
             // Add the internal component
-            unsafe { InternalCalls.GameObject_AddComponent(this.GUID, type); }
+            unsafe { InternalCalls.GameObject_AddComponent(GUID, type); }
 
             // Construct a new component and cache it
             T component = new T() { Entity = this };
-            this.componentCache[type] = component;
+            componentCache[type] = component;
 
             return component;
         }
 
         public bool HasComponent<T>() where T : Component
         {
-            unsafe { return InternalCalls.GameObject_HasComponent(this.GUID, typeof(T)); }
+            unsafe { return InternalCalls.GameObject_HasComponent(GUID, typeof(T)); }
         }
 
         public bool RemoveComponent<T>() where T : Component
         {
-            unsafe { return InternalCalls.GameObject_RemoveComponent(this.GUID, typeof(T)); }
+            unsafe { return InternalCalls.GameObject_RemoveComponent(GUID, typeof(T)); }
         }
 
         public T GetScript<T>() where T : Component, new()
@@ -75,19 +75,19 @@ namespace Odyssey
             Type type = typeof(T);
 
             // Check the game object for this type
-            if (!this.HasComponent<T>())
+            if (!HasComponent<T>())
             {
                 // The game object doesn't have this type, remove any instances from the cache
-                this.componentCache.Remove(type);
+                componentCache.Remove(type);
                 return null;
             }
 
             // The native game object has the component, but its not in the cache
-            if (!this.componentCache.ContainsKey(type))
+            if (!componentCache.ContainsKey(type))
             {
                 // Construct a new managed component and cache it
                 T component = new T() { Entity = this };
-                this.componentCache[type] = component;
+                componentCache[type] = component;
                 return component;
             }
 
@@ -101,10 +101,15 @@ namespace Odyssey
             return new Entity(guid);
         }
 
+        public void Destroy()
+        {
+            unsafe { InternalCalls.GameObject_Destroy(GUID); }
+        }
+
         public string Name
         {
-            get { unsafe { return InternalCalls.GameObject_GetName(this.GUID); } }
-            set { unsafe { InternalCalls.GameObject_SetName(this.GUID, value); } }
+            get { unsafe { return InternalCalls.GameObject_GetName(GUID); } }
+            set { unsafe { InternalCalls.GameObject_SetName(GUID, value); } }
         }
     }
 }

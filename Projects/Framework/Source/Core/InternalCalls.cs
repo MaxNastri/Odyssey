@@ -19,6 +19,7 @@ namespace Odyssey
         #region GameObject
 
         internal static delegate* unmanaged<GUID> GameObject_Create;
+        internal static delegate* unmanaged<GUID, void> GameObject_Destroy;
         internal static delegate* unmanaged<GUID, NativeString> GameObject_GetName;
         internal static delegate* unmanaged<GUID, NativeString, void> GameObject_SetName;
         internal static delegate* unmanaged<GUID, ReflectionType, void> GameObject_AddComponent;
@@ -59,6 +60,7 @@ namespace Odyssey
         #region Prefab
 
         internal static delegate* unmanaged<GUID, GUID*, void> Prefab_LoadInstance;
+        internal static delegate* unmanaged<GUID, void> Prefab_DestroyInstance;
 
         #endregion
 

@@ -43,5 +43,10 @@ namespace Sandbox
                 m_Emitter.EmissionRate = emission;
             }
         }
+
+        protected override void OnCollisionEnter(Entity entity, Vector3 contactNormal)
+        {
+            Prefab.DestroyInstance(Entity);
+        }
     }
 }

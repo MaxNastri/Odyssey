@@ -93,6 +93,7 @@ namespace Odyssey
 		ADD_INTERNAL_CALL(CharacterController_IsGrounded);
 
 		ADD_INTERNAL_CALL(Prefab_LoadInstance);
+		ADD_INTERNAL_CALL(Prefab_DestroyInstance);
 
 		ADD_INTERNAL_CALL(Texture2D_GetWidth);
 		ADD_INTERNAL_CALL(Texture2D_GetHeight);
