@@ -541,14 +541,14 @@ namespace Odyssey
 		}
 	}
 
-	struct Sampler
+	struct AnimationSampler
 	{
 		std::vector<float> inputs;
 		std::vector<glm::vec4> outputsVec4;
 		std::vector<float> outputs;
 	};
 
-	struct Channel
+	struct AnimationChannel
 	{
 		int32_t TargetNODE = -1;
 		int32_t SamplerIndex = -1;
@@ -564,12 +564,12 @@ namespace Odyssey
 		{
 			std::string name = anim.name;
 
-			std::vector<Odyssey::Sampler> samplers;
-			std::vector<Odyssey::Channel> channels;
+			std::vector<AnimationSampler> samplers;
+			std::vector<AnimationChannel> channels;
 
 			for (auto& sampler : anim.samplers)
 			{
-				Odyssey::Sampler customSampler;
+				AnimationSampler customSampler;
 				// Custom interpolation not supported
 				//if (sampler.interpolation == "LINEAR") {}
 				//if (sampler.interpolation == "STEP") {}
@@ -643,7 +643,7 @@ namespace Odyssey
 
 			for (auto& source : anim.channels)
 			{
-				Odyssey::Channel myChannel;
+				AnimationChannel myChannel;
 
 				if (source.target_path == "rotation")
 					myChannel.IsRotation = true;
@@ -683,7 +683,7 @@ namespace Odyssey
 					auto& bone = m_RigData.Bones[targetName];
 					auto& boneKeyframe = m_AnimationData.BoneKeyframes[bone.Name];
 					boneKeyframe.SetBoneName(bone.Name);
-					Odyssey::Sampler& sampler = samplers[channel.SamplerIndex];
+					AnimationSampler& sampler = samplers[channel.SamplerIndex];
 
 					for (size_t i = 0; i < sampler.inputs.size(); i++)
 					{

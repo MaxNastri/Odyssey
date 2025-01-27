@@ -82,6 +82,39 @@ namespace Odyssey
 				}
 			}
 		}
+
+		inline std::string ConvertToDisplayName(const std::string& str)
+		{
+			std::string copy = str;
+			copy[0] = std::toupper(copy[0]);
+
+			std::vector<size_t> upperPos;
+			upperPos.push_back(0);
+
+			// Store the position of all upper case characters
+			for (size_t i = 1; i < copy.length(); i++)
+			{
+				if (copy[i] == std::toupper(copy[i]))
+				{
+					upperPos.push_back(i);
+				}
+			}
+
+			upperPos.push_back(copy.length());
+
+			std::string displayName = "";
+
+			// Concat 
+			for (size_t i = 1; i < upperPos.size(); i++)
+			{
+				if (i > 1 && i < upperPos.size())
+					displayName += " ";
+
+				displayName += copy.substr(upperPos[i - 1], upperPos[i] - upperPos[i - 1]);
+			}
+
+			return displayName;
+		}
 	}
 
 	AnimatorInspector::AnimatorInspector(GameObject& gameObject)
@@ -593,7 +626,7 @@ namespace Odyssey
 			{
 				case PropertyType::Float:
 				{
-					FloatDrawer propertyDrawer = FloatDrawer(materialProperty.Name, m_Material->GetFloat(materialProperty.Name));
+					FloatDrawer propertyDrawer = FloatDrawer(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetFloat(materialProperty.Name));
 					if (propertyDrawer.Draw())
 					{
 						m_Material->SetFloat(materialProperty.Name, propertyDrawer.GetValue());
@@ -604,7 +637,7 @@ namespace Odyssey
 				}
 				case PropertyType::Float2:
 				{
-					Vector2Drawer propertyDrawer = Vector2Drawer(materialProperty.Name, m_Material->GetFloat3(materialProperty.Name));
+					Vector2Drawer propertyDrawer = Vector2Drawer(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetFloat2(materialProperty.Name));
 					if (propertyDrawer.Draw())
 					{
 						m_Material->SetFloat2(materialProperty.Name, propertyDrawer.GetValue());
@@ -615,7 +648,7 @@ namespace Odyssey
 				}
 				case PropertyType::Float3:
 				{
-					ColorPicker propertyDrawer = ColorPicker(materialProperty.Name, m_Material->GetFloat3(materialProperty.Name));
+					ColorPicker propertyDrawer = ColorPicker(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetFloat3(materialProperty.Name));
 					if (propertyDrawer.Draw())
 					{
 						m_Material->SetFloat3(materialProperty.Name, propertyDrawer.GetColor3());
@@ -626,7 +659,7 @@ namespace Odyssey
 				}
 				case PropertyType::Float4:
 				{
-					ColorPicker propertyDrawer = ColorPicker(materialProperty.Name, m_Material->GetFloat4(materialProperty.Name));
+					ColorPicker propertyDrawer = ColorPicker(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetFloat4(materialProperty.Name));
 					if (propertyDrawer.Draw())
 					{
 						m_Material->SetFloat4(materialProperty.Name, propertyDrawer.GetColor4());
@@ -637,7 +670,7 @@ namespace Odyssey
 				}
 				case PropertyType::Bool:
 				{
-					BoolDrawer propertyDrawer = BoolDrawer(materialProperty.Name, m_Material->GetBool(materialProperty.Name));
+					BoolDrawer propertyDrawer = BoolDrawer(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetBool(materialProperty.Name));
 					if (propertyDrawer.Draw())
 					{
 						m_Material->SetBool(materialProperty.Name, propertyDrawer.GetValue());
@@ -971,10 +1004,8 @@ namespace Odyssey
 		if (m_Shader = AssetManager::LoadAsset<Shader>(guid))
 		{
 			m_GUIDDrawer = StringDrawer("GUID", m_Shader->GetGUID().String(), true);
-			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(), false,
-				[this](std::string_view name) { OnNameChanged(name); });
-			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSourceAsset(), SourceShader::Type,
-				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
+			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(), false);
+			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSourceAsset(), SourceShader::Type);
 		}
 	}
 
@@ -982,34 +1013,117 @@ namespace Odyssey
 	{
 		bool modified = false;
 
-		modified |= m_GUIDDrawer.Draw();
-		modified |= m_NameDrawer.Draw();
-		modified |= m_SourceShaderDrawer.Draw();
+		m_GUIDDrawer.Draw();
 
-		ImGui::SameLine();
+		if (m_NameDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+		}
+		
+		if (m_SourceShaderDrawer.Draw())
+		{
+			m_Shader->SetSourceAsset(m_SourceShaderDrawer.GetGUID());
+		}
+
+		modified |= DrawMaterialProperties();
 
 		if (ImGui::Button("Compile"))
 			m_Shader->Recompile();
 
+		if (m_Dirty)
+		{
+			ImGui::SameLine();
+
+			if (ImGui::Button("Save"))
+			{
+				if (m_Shader->GetName() != m_NameDrawer.GetValue())
+					m_Shader->SetName(m_NameDrawer.GetValue());
+
+				m_Shader->Save();
+				m_Dirty = false;
+			}
+		}
+
 		return modified;
 	}
 
-	void ShaderInspector::OnNameChanged(std::string_view name)
+	bool ShaderInspector::DrawMaterialProperties()
 	{
-		if (m_Shader)
-		{
-			m_Shader->SetName(name);
-			m_Shader->Save();
-		}
-	}
+		bool modified = false;
 
-	void ShaderInspector::OnSourceAssetChanged(GUID sourceGUID)
-	{
-		if (m_Shader)
+		MaterialBufferData& materialData = m_Shader->GetMaterialBufferData();
+
+		for (const MaterialProperty& materialProperty : materialData.Properties)
 		{
-			m_Shader->SetSourceAsset(sourceGUID);
-			m_Shader->Save();
+			switch (materialProperty.Type)
+			{
+				case PropertyType::Float:
+				{
+					FloatDrawer propertyDrawer = FloatDrawer(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<float>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						float value = propertyDrawer.GetValue();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float2:
+				{
+					Vector2Drawer propertyDrawer = Vector2Drawer(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<float2>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						float2 value = propertyDrawer.GetValue();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float3:
+				{
+					ColorPicker propertyDrawer = ColorPicker(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<float3>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						float3 value = propertyDrawer.GetColor3();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float4:
+				{
+					ColorPicker propertyDrawer = ColorPicker(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<float4>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						float4 value = propertyDrawer.GetColor4();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Bool:
+				{
+					BoolDrawer propertyDrawer = BoolDrawer(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<bool>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						bool value = propertyDrawer.GetValue();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				default:
+					break;
+			}
 		}
+
+		return modified;
 	}
 
 	SourceModelInspector::SourceModelInspector(GUID guid)

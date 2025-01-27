@@ -443,8 +443,7 @@ namespace Odyssey
 		virtual bool Draw() override;
 
 	private:
-		void OnNameChanged(std::string_view name);
-		void OnSourceAssetChanged(GUID sourceGUID);
+		bool DrawMaterialProperties();
 
 	private:
 		bool m_Dirty = false;

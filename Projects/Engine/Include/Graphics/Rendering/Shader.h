@@ -4,7 +4,7 @@
 #include "Resource.h"
 #include "BinaryBuffer.h"
 #include "SourceShader.h"
-#include "RawBuffer.h"
+#include "MaterialProperty.h"
 
 namespace Odyssey
 {
@@ -19,27 +19,8 @@ namespace Odyssey
 		uint8_t Index;
 	};
 
-	enum class PropertyType
-	{
-		Unknown = 0,
-		Float = 1,
-		Float2 = 2,
-		Float3 = 3,
-		Float4 = 4,
-		Bool = 5,
-	};
-
-	struct MaterialProperty
-	{
-		std::string Name;
-		size_t Offset;
-		size_t Size;
-		PropertyType Type;
-	};
-
 	class Shader : public Asset
 	{
-	public:
 		CLASS_DECLARATION(Odyssey, Shader)
 	public:
 		Shader() = default;
@@ -61,8 +42,7 @@ namespace Odyssey
 
 	public:
 		bool HasBinding(std::string bindingName, uint32_t& index);
-		const std::vector<MaterialProperty>& GetMaterialProperties() { return m_MaterialBufferProperties; }
-		size_t GetMaterialPropertiesSize() { return m_MaterialBufferSize; }
+		MaterialBufferData& GetMaterialBufferData() { return m_MaterialBufferData; }
 
 	public:
 		uint32_t AddOnModifiedListener(std::function<void()> callback);
@@ -71,6 +51,7 @@ namespace Odyssey
 	private:
 		void LoadFromSource(Ref<SourceShader> source);
 		void SaveToDisk(const Path& path);
+		void LoadMaterialDefaults();
 
 	private:
 		void GenerateShaderResources();
@@ -89,14 +70,13 @@ namespace Odyssey
 			BinaryBuffer CodeBuffer;
 			ResourceID ShaderModule;
 		};
-		
+
 		std::map<ShaderType, ShaderData> m_Shaders;
 		std::map<std::string, ShaderBinding> m_Bindings;
 		BinaryBuffer m_VertexAttributes;
 
 	private:
-		std::vector<MaterialProperty> m_MaterialBufferProperties;
-		size_t m_MaterialBufferSize = 0;
+		MaterialBufferData m_MaterialBufferData;
 
 	private:
 		ResourceID m_DescriptorLayout;

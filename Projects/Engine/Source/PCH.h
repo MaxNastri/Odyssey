@@ -28,6 +28,9 @@
 #include "PCH.h"
 #include "Utils.h"
 #include "Globals.h"
+#include "Ref.h"
+#include "Enum.h"
+#include "Enums.h"
 
 #include "glm.h"
 using namespace glm;

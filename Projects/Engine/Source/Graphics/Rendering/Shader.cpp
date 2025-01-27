@@ -66,9 +66,7 @@ namespace Odyssey
 	void Shader::Load()
 	{
 		if (m_Source)
-		{
 			LoadFromSource(m_Source);
-		}
 	}
 
 	std::map<ShaderType, ResourceID> Shader::GetResourceMap()
@@ -125,6 +123,7 @@ namespace Odyssey
 		}
 
 		Recompile();
+		LoadMaterialDefaults();
 	}
 
 	void Shader::SaveToDisk(const Path& path)
@@ -134,7 +133,109 @@ namespace Odyssey
 
 		// Serialize metadata first
 		SerializeMetadata(serializer);
+
+		SerializationNode propertiesNode = root.CreateSequenceNode("Properties");
+		for (MaterialProperty& materialProperty : m_MaterialBufferData.Properties)
+		{
+			SerializationNode propertyNode = propertiesNode.AppendChild();
+			propertyNode.SetMap();
+			propertyNode.WriteData("Name", materialProperty.Name);
+			propertyNode.WriteData("Type", Enum::ToString(materialProperty.Type));
+
+			switch (materialProperty.Type)
+			{
+				case PropertyType::Float:
+					propertyNode.WriteData("Default Value", m_MaterialBufferData.GetValue<float>(materialProperty.Name));
+					break;
+				case PropertyType::Float2:
+					propertyNode.WriteData("Default Value", m_MaterialBufferData.GetValue<float2>(materialProperty.Name));
+					break;
+				case PropertyType::Float3:
+					propertyNode.WriteData("Default Value", m_MaterialBufferData.GetValue<float3>(materialProperty.Name));
+					break;
+				case PropertyType::Float4:
+					propertyNode.WriteData("Default Value", m_MaterialBufferData.GetValue<float4>(materialProperty.Name));
+					break;
+				case PropertyType::Bool:
+					propertyNode.WriteData("Default Value", m_MaterialBufferData.GetValue<bool>(materialProperty.Name));
+					break;
+				default:
+					break;
+			}
+		}
+
 		serializer.WriteToDisk(path);
+	}
+
+	void Shader::LoadMaterialDefaults()
+	{
+		AssetDeserializer deserializer(m_AssetPath);
+		if (deserializer.IsValid())
+		{
+			SerializationNode root = deserializer.GetRoot();
+			SerializationNode propertiesNode;
+
+			if (root.TryGetNode("Properties", propertiesNode))
+			{
+				for (size_t i = 0; i < propertiesNode.ChildCount(); i++)
+				{
+					SerializationNode propertyNode = propertiesNode.GetChild(i);
+					assert(propertyNode.IsMap());
+
+					std::string name;
+					std::string typeName;
+					PropertyType propertyType = PropertyType::Unknown;
+
+					propertyNode.ReadData("Name", name);
+					propertyNode.ReadData("Type", typeName);
+
+					if (!typeName.empty())
+						propertyType = Enum::ToEnum<PropertyType>(typeName);
+
+					if (m_MaterialBufferData.PropertyMap.contains(name))
+					{
+						switch (propertyType)
+						{
+							case Odyssey::PropertyType::Float:
+							{
+								float serializedValue;
+								propertyNode.ReadData("Default Value", serializedValue);
+								m_MaterialBufferData.SetValue(name, &serializedValue);
+								break;
+							}
+							case Odyssey::PropertyType::Float2:
+							{
+								float2 serializedValue;
+								propertyNode.ReadData("Default Value", serializedValue);
+								m_MaterialBufferData.SetValue(name, &serializedValue);
+								break;
+							}
+							case Odyssey::PropertyType::Float3:
+							{
+								float3 serializedValue;
+								propertyNode.ReadData("Default Value", serializedValue);
+								m_MaterialBufferData.SetValue(name, &serializedValue);
+								break;
+							}
+							case Odyssey::PropertyType::Float4:
+							{
+								float4 serializedValue;
+								propertyNode.ReadData("Default Value", serializedValue);
+								m_MaterialBufferData.SetValue(name, &serializedValue);
+								break;
+							}
+							case Odyssey::PropertyType::Bool:
+							{
+								bool serializedValue;
+								propertyNode.ReadData("Default Value", serializedValue);
+								m_MaterialBufferData.SetValue(name, &serializedValue);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	VkFormat GetVertexFormat(spirv_cross::SPIRType inputType)
@@ -245,7 +346,7 @@ namespace Odyssey
 
 					VkVertexInputAttributeDescription& inputDesc = descriptions.emplace_back();
 					inputDesc.binding = 0;
-					inputDesc.location = i;
+					inputDesc.location = (uint32_t)i;
 					inputDesc.format = GetVertexFormat(inputType);
 					inputDesc.offset = Vertex::GetOffset(inputName);
 				}
@@ -297,22 +398,21 @@ namespace Odyssey
 				uint32_t set = refl.get_decoration(resource.id, spv::DecorationDescriptorSet);
 				uint32_t binding = refl.get_decoration(resource.id, spv::DecorationBinding);
 
-				if (name == "MaterialData" && m_MaterialBufferProperties.size() == 0)
+				if (name == "MaterialData" && m_MaterialBufferData.Properties.size() == 0)
 				{
 					spirv_cross::SPIRType type = refl.get_type(resource.base_type_id);
 					size_t memberCount = type.member_types.size();
 
-					// Store the buffer size
-					m_MaterialBufferSize = refl.get_declared_struct_size(type);
+					std::vector<MaterialProperty> properties;
 
 					for (size_t i = 0; i < type.member_types.size(); i++)
 					{
-						MaterialProperty& materialProperty = m_MaterialBufferProperties.emplace_back();
-						materialProperty.Name = refl.get_member_name(type.self, i);
+						MaterialProperty& materialProperty = properties.emplace_back();
+						materialProperty.Name = refl.get_member_name(type.self, (uint32_t)i);
 
 						// Get member offset and size within this struct.
-						materialProperty.Offset = refl.type_struct_member_offset(type, i);
-						materialProperty.Size = refl.get_declared_struct_member_size(type, i);
+						materialProperty.Offset = refl.type_struct_member_offset(type, (uint32_t)i);
+						materialProperty.Size = refl.get_declared_struct_member_size(type, (uint32_t)i);
 
 						auto& memberType = refl.get_type(type.member_types[i]);
 
@@ -348,6 +448,9 @@ namespace Odyssey
 						//	size_t matrix_stride = refl.type_struct_member_matrix_stride(type, i);
 						//}
 					}
+
+					// Set the material properties into the data
+					m_MaterialBufferData.Set(properties, refl.get_declared_struct_size(type));
 				}
 				
 				if (!m_Bindings.contains(name))

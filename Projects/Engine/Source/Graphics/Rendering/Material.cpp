@@ -86,7 +86,6 @@ namespace Odyssey
 			}
 		}
 
-
 		// Save to disk
 		serializer.WriteToDisk(assetPath);
 	}
@@ -252,8 +251,8 @@ namespace Odyssey
 		// Listen for when the new shader is modified
 		m_ListenerID = m_Shader->AddOnModifiedListener([this]() { OnShaderModified(); });
 
-		// Set the material properties and size
-		m_MaterialData.Set(shader->GetMaterialProperties(), shader->GetMaterialPropertiesSize());
+		// Copy the material buffer data from the shader (including defaults)
+		m_MaterialData.CopyFrom(shader->GetMaterialBufferData());
 
 		// Mark the pipeline to be remade
 		m_RemakePipeline = true;
