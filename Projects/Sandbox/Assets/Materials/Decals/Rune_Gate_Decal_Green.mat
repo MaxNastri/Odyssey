@@ -12,4 +12,4 @@ Emissive Color: 'x: 0 y: 1 z: 0'
 Emissive Power: 2
 Alpha Clip: 0.005
 Alpha Blend: 0
-Render Queue: 1
+Render Queue: Opaque

@@ -159,6 +159,9 @@ namespace Odyssey
 				case PropertyType::Bool:
 					propertyNode.WriteData("Default Value", m_MaterialBufferData.GetValue<bool>(materialProperty.Name));
 					break;
+				case PropertyType::Int32:
+					propertyNode.WriteData("Default Value", m_MaterialBufferData.GetValue<int32_t>(materialProperty.Name));
+					break;
 				default:
 					break;
 			}
@@ -227,6 +230,13 @@ namespace Odyssey
 							case Odyssey::PropertyType::Bool:
 							{
 								bool serializedValue;
+								propertyNode.ReadData("Default Value", serializedValue);
+								m_MaterialBufferData.SetValue(name, &serializedValue);
+								break;
+							}
+							case Odyssey::PropertyType::Int32:
+							{
+								int32_t serializedValue;
 								propertyNode.ReadData("Default Value", serializedValue);
 								m_MaterialBufferData.SetValue(name, &serializedValue);
 								break;
@@ -430,6 +440,8 @@ namespace Odyssey
 								break;
 							case spirv_cross::SPIRType::Boolean:
 								materialProperty.Type = PropertyType::Bool;
+							case spirv_cross::SPIRType::Int:
+								materialProperty.Type = PropertyType::Int32;
 								break;
 							default:
 								materialProperty.Type = PropertyType::Unknown;

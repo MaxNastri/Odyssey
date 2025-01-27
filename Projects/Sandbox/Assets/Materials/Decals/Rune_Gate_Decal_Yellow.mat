@@ -3,7 +3,7 @@ m_GUID: 16157047713997452460
 m_Name: Rune_Gate_Decal_Yellow
 m_Type: Odyssey.Material
 m_Shader: 13726779930172400085
-Render Queue: 1
+Render Queue: Opaque
 Blend Mode: None
 Depth Write: 1
 Property Textures:

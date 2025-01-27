@@ -9,5 +9,5 @@ Property Textures:
 Emissive Color: 'x: 0 y: 0 z: 0'
 Emissive Power: 1
 Alpha Clip: 0.5
-Render Queue: 2
+Render Queue: Transparent
 Blend Mode: AlphaBlend

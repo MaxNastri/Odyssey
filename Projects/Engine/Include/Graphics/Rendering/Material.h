@@ -8,9 +8,8 @@ namespace Odyssey
 {
 	enum class RenderQueue : uint32_t
 	{
-		None = 0,
-		Opaque = 1,
-		Transparent = 2,
+		Opaque = 0,
+		Transparent = 1,
 	};
 
 	class Material : public Asset
@@ -54,6 +53,7 @@ namespace Odyssey
 		float3 GetFloat3(const std::string& propertyName);
 		float4 GetFloat4(const std::string& propertyName);
 		bool GetBool(const std::string& propertyName);
+		int32_t GetInt32(const std::string& propertyName);
 
 	public:
 		void SetFloat(const std::string& propertyName, float value);
@@ -61,6 +61,7 @@ namespace Odyssey
 		void SetFloat3(const std::string& propertyName, float3 value);
 		void SetFloat4(const std::string& propertyName, float4 value);
 		void SetBool(const std::string& propertyName, bool value);
+		void SetInt32(const std::string& propertyName, int32_t value);
 
 	public:
 		std::map<std::string, Ref<Texture2D>> GetTextures() { return m_Textures; }
@@ -79,7 +80,7 @@ namespace Odyssey
 		uint32_t m_ListenerID = 0;
 
 	private: // Serialized
-		RenderQueue m_RenderQueue = RenderQueue::None;
+		RenderQueue m_RenderQueue = RenderQueue::Opaque;
 		BlendMode m_BlendMode = BlendMode::None;
 		bool m_DepthWrite = true;
 	};

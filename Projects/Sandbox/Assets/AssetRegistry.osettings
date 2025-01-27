@@ -707,3 +707,7 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Distortion.tex2D
     GUID: 5401951732196823232
+  - Name: Grass Man
+    Type: Odyssey.Material
+    Path: Materials/FX/Grass_Man.mat
+    GUID: 9700002344731034089

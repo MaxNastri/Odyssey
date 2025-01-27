@@ -1,6 +1,4 @@
 #pragma Shared
-static int tesselationLevel = 35;
-static float tessAlpha = 1.0f;
 
 struct PnPatch
 {
@@ -83,6 +81,8 @@ cbuffer LightData : register(b5)
 
 cbuffer MaterialData : register(b6)
 {
+    int TesselationLevel;
+    float TessAlpha;
     float DistortionTiling;
     float BladeWidth;
     float BladeWidthRandom;
@@ -174,10 +174,10 @@ float vij(float4 iPos, float3 iNormal, float4 jPos, float3 jNormal)
 ConstantsHSOutput ConstantsHS(InputPatch<HullInput, 3> patch, uint InvocationID : SV_PrimitiveID)
 {
     ConstantsHSOutput output = (ConstantsHSOutput) 0;
-    output.TessLevelOuter[0] = tesselationLevel;
-    output.TessLevelOuter[1] = tesselationLevel;
-    output.TessLevelOuter[2] = tesselationLevel;
-    output.TessLevelInner = tesselationLevel;
+    output.TessLevelOuter[0] = TesselationLevel;
+    output.TessLevelOuter[1] = TesselationLevel;
+    output.TessLevelOuter[2] = TesselationLevel;
+    output.TessLevelInner = TesselationLevel;
     return output;
 }
 
@@ -304,7 +304,7 @@ DSOutput main(ConstantsHSOutput input, float3 TessCoord : SV_DomainLocation, con
     float3 pnTangent = patch[0].Tangent.xyz * uvwSquared[2] + patch[1].Tangent.xyz * uvwSquared[0] + patch[2].Tangent.xyz * uvwSquared[1]
                    + n110 * uvw[2] * uvw[0] + n011 * uvw[0] * uvw[1] + n101 * uvw[2] * uvw[1];
     
-    output.Normal = tessAlpha * pnNormal + (1.0 - tessAlpha) * barNormal;
+    output.Normal = TessAlpha * pnNormal + (1.0 - TessAlpha) * barNormal;
     output.Tangent = float4(pnTangent, patch[0].Tangent.w);
     
     // compute interpolated pos
@@ -328,7 +328,7 @@ DSOutput main(ConstantsHSOutput input, float3 TessCoord : SV_DomainLocation, con
                 + b111 * 6.0 * uvw[0] * uvw[1] * uvw[2];
 
     // final position and normal
-    float3 finalPos = (1.0 - tessAlpha) * barPos + tessAlpha * pnPos;
+    float3 finalPos = (1.0 - TessAlpha) * barPos + TessAlpha * pnPos;
     output.Position = float4(finalPos, 1.0);
     return output;
 }

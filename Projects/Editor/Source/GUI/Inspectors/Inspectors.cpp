@@ -679,6 +679,17 @@ namespace Odyssey
 					}
 					break;
 				}
+				case PropertyType::Int32:
+				{
+					IntDrawer<int32_t> propertyDrawer = IntDrawer<int32_t>(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetInt32(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetInt32(materialProperty.Name, propertyDrawer.GetValue());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
 				default:
 					break;
 			}
@@ -1112,6 +1123,18 @@ namespace Odyssey
 					if (propertyDrawer.Draw())
 					{
 						bool value = propertyDrawer.GetValue();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Int32:
+				{
+					IntDrawer<int32_t> propertyDrawer = IntDrawer<int32_t>(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<int32_t>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						int32_t value = propertyDrawer.GetValue();
 						materialData.SetValue(materialProperty.Name, &value);
 						modified = true;
 						m_Dirty = true;

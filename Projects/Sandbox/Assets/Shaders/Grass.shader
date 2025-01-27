@@ -3,6 +3,12 @@ m_GUID: 7381450375696147196
 m_Name: Grass
 m_Type: Odyssey.Shader
 Properties:
+  - Name: TesselationLevel
+    Type: Int32
+    Default Value: 5
+  - Name: TessAlpha
+    Type: Float
+    Default Value: 1
   - Name: DistortionTiling
     Type: Float
     Default Value: 0.01

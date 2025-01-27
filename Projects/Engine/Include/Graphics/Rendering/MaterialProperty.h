@@ -11,6 +11,7 @@ namespace Odyssey
 		Float3 = 3,
 		Float4 = 4,
 		Bool = 5,
+		Int32 = 6,
 	};
 
 	struct MaterialProperty

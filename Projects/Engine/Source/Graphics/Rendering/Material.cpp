@@ -43,7 +43,7 @@ namespace Odyssey
 		if (m_Shader)
 			root.WriteData("m_Shader", m_Shader->GetGUID().CRef());
 
-		root.WriteData("Render Queue", Enum::ToInt(m_RenderQueue));
+		root.WriteData("Render Queue", Enum::ToString(m_RenderQueue));
 		root.WriteData("Blend Mode", Enum::ToString(m_BlendMode));
 		root.WriteData("Depth Write", m_DepthWrite);
 
@@ -81,6 +81,9 @@ namespace Odyssey
 				case PropertyType::Bool:
 					propertyNode.WriteData("Value", m_MaterialData.GetValue<bool>(materialProperty.Name));
 					break;
+				case PropertyType::Int32:
+					propertyNode.WriteData("Value", m_MaterialData.GetValue<int32_t>(materialProperty.Name));
+					break;
 				default:
 					break;
 			}
@@ -97,7 +100,7 @@ namespace Odyssey
 		{
 			SerializationNode root = deserializer.GetRoot();
 			GUID shaderGUID;
-			int32_t renderQueue = 0;
+			std::string renderQueue;
 			std::string blendMode;
 
 			root.ReadData("m_Shader", shaderGUID.Ref());
@@ -181,12 +184,19 @@ namespace Odyssey
 								m_MaterialData.SetValue(name, &serializedValue);
 								break;
 							}
+							case Odyssey::PropertyType::Int32:
+							{
+								int32_t serializedValue;
+								propertyNode.ReadData("Value", serializedValue);
+								m_MaterialData.SetValue(name, &serializedValue);
+								break;
+							}
 						}
 					}
 				}
 			}
 			
-			if (renderQueue > 0)
+			if (!renderQueue.empty())
 				m_RenderQueue = Enum::ToEnum<RenderQueue>(renderQueue);
 
 			if (!blendMode.empty())
@@ -308,6 +318,11 @@ namespace Odyssey
 		return m_MaterialData.GetValue<bool>(propertyName);
 	}
 
+	int32_t Material::GetInt32(const std::string& propertyName)
+	{
+		return m_MaterialData.GetValue<int32_t>(propertyName);
+	}
+
 	void Material::SetFloat(const std::string& propertyName, float value)
 	{
 		if (m_MaterialData.PropertyMap.contains(propertyName))
@@ -376,6 +391,20 @@ namespace Odyssey
 
 			// Write the value into the buffer
 			assert(size == sizeof(bool));
+			m_MaterialData.Buffer.Write(&value, size, offset);
+			m_UpdateBuffer = true;
+		}
+	}
+	void Material::SetInt32(const std::string& propertyName, int32_t value)
+	{
+		if (m_MaterialData.PropertyMap.contains(propertyName))
+		{
+			size_t index = m_MaterialData.PropertyMap[propertyName];
+			size_t size = m_MaterialData.Properties[index].Size;
+			size_t offset = m_MaterialData.Properties[index].Offset;
+
+			// Write the value into the buffer
+			assert(size == sizeof(int32_t));
 			m_MaterialData.Buffer.Write(&value, size, offset);
 			m_UpdateBuffer = true;
 		}
