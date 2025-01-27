@@ -1616,6 +1616,19 @@ namespace Odyssey
 
 		if (ImGui::CollapsingHeader("Character Controller", ImGuiTreeNodeFlags_DefaultOpen))
 		{
+			if (m_InertiaDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetInertiaEnabled(m_InertiaDrawer.GetValue());
+			}
+
+			// Only draw inertia factor when inertia is enabled
+			if (m_InertiaDrawer.GetValue() && m_InertiaFactorDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetInertiaFactor(m_InertiaFactorDrawer.GetValue());
+			}
+
 			if (m_CenterDrawer.Draw())
 			{
 				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
@@ -1677,6 +1690,7 @@ namespace Odyssey
 			m_RadiusDrawer = FloatDrawer("Radius", controller->GetRadius());
 			m_HeightDrawer = FloatDrawer("Height", controller->GetHeight());
 			m_InertiaDrawer = BoolDrawer("Enable Inertia", controller->IsInertiaEnabled());
+			m_InertiaFactorDrawer = FloatDrawer("Inertia Factor", controller->GetInertiaFactor());
 			m_MaxSlopeDrawer = FloatDrawer("Max Slope", glm::degrees(controller->GetMaxSlope()));
 			m_StepUpDrawer = FloatDrawer("Step Up", controller->GetStepUp());
 			m_StepDownDrawer = FloatDrawer("Step Down", controller->GetStepDown());

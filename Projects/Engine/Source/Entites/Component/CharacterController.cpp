@@ -44,6 +44,7 @@ namespace Odyssey
 		componentNode.WriteData("Radius", m_Radius);
 		componentNode.WriteData("Height", m_Height);
 		componentNode.WriteData("Inertia Enabled", m_EnableInertia);
+		componentNode.WriteData("Inertia Factor", m_InertiaFactor);
 		componentNode.WriteData("Max Slope", m_MaxSlopeAngle);
 		componentNode.WriteData("Step Up", m_StepUp);
 		componentNode.WriteData("Step Down", m_StepDown);
@@ -60,6 +61,7 @@ namespace Odyssey
 		node.ReadData("Radius", m_Radius);
 		node.ReadData("Height", m_Height);
 		node.ReadData("Inertia Enabled", m_EnableInertia);
+		node.ReadData("Inertia Factor", m_InertiaFactor);
 		node.ReadData("Max Slope", m_MaxSlopeAngle);
 		node.ReadData("Step Up", m_StepUp);
 		node.ReadData("Step Down", m_StepDown);
@@ -70,11 +72,16 @@ namespace Odyssey
 
 	void CharacterController::UpdateVelocity(Vec3 gravity, float dt)
 	{
-		Vec3 prevFrameVelocity = ToJoltVec3(m_PrevFrameLinearVelocity);
-		Vec3 lastVerticalVelocity = prevFrameVelocity.Dot(m_Character->GetUp()) * m_Character->GetUp();
+		Vec3 lastVelocity = ToJoltVec3(m_PrevFrameLinearVelocity);
+		Vec3 lastHorizontalVelocity = Vec3(lastVelocity.GetX(), 0.0f, lastVelocity.GetZ());
+
+		Vec3 lastVerticalVelocity = lastVelocity.Dot(m_Character->GetUp()) * m_Character->GetUp();
 
 		// What the user input for velocity
 		Vec3 inputVelocity = m_Character->GetLinearVelocity();
+		Vec3 inputHorizontalVelocity = Vec3(inputVelocity.GetX(), 0.0f, inputVelocity.GetZ());
+		Vec3 inputVerticalVelocity = Vec3(0.0f, inputVelocity.GetY(), 0.0f);
+
 		Vec3 totalVelocity = Vec3::sZero();
 
 		// Velocity of the ground
@@ -93,8 +100,11 @@ namespace Odyssey
 		// Apply gravity
 		totalVelocity += gravity * dt;
 
-		// Apply user input velocity
-		totalVelocity += inputVelocity;
+		// Apply vertical velocity
+		totalVelocity += inputVerticalVelocity;
+
+		// Apply horizontal velocity
+		totalVelocity += m_EnableInertia ? (1.0f - m_InertiaFactor) * inputHorizontalVelocity + m_InertiaFactor * lastHorizontalVelocity : inputHorizontalVelocity;
 
 		// Set the new combined velocity
 		m_Character->SetLinearVelocity(totalVelocity);
