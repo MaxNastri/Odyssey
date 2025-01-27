@@ -3,14 +3,27 @@ m_GUID: 14541755926980427327
 m_Name: Water
 m_Type: Odyssey.Material
 m_Shader: 5634657926911688453
-Property Textures:
-  - Property: noiseSampler
-    Texture: 15039526264554896991
-  - Property: normalSampler
-    Texture: 13598105483977622288
 Emissive Color: 'x: 0 y: 0 z: 0'
 Emissive Power: 1
 Alpha Clip: 0.5
 Render Queue: 2
 Blend Mode: Additive
 Depth Write: 0
+Property Textures:
+  - Property: noiseSampler
+    Texture: 15039526264554896991
+  - Property: normalSampler
+    Texture: 13598105483977622288
+Properties:
+  - Name: noiseFrequency
+    Type: Float
+    Value: 0.03
+  - Name: noiseScale
+    Type: Float
+    Value: 0.5
+  - Name: Tiling
+    Type: Float
+    Value: 2
+  - Name: BaseColor
+    Type: Float3
+    Value: 'x: 0 y: 0.5176471 z: 1'

@@ -67,20 +67,6 @@ namespace Odyssey
 			skinningBuffers.push_back(uboID);
 		}
 
-		// Material buffers
-		for (uint32_t i = 0; i < Max_Uniform_Buffers; i++)
-		{
-			// Allocate the UBO
-			ResourceID uboID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(MaterialData));
-
-			// Write the per-object data into the ubo
-			MaterialData materialData;
-			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
-			uniformBuffer->CopyData(sizeof(MaterialData), &materialData);
-
-			m_MaterialBuffers.push_back(uboID);
-		}
-
 		// Allocate the UBO
 		LightingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(LightingData));
 
@@ -169,7 +155,6 @@ namespace Odyssey
 		SpriteDrawcalls.clear();
 		m_GUIDToSetPass.clear();
 		m_NextUniformBuffer = 0;
-		m_NextMaterialBuffer = 0;
 		m_MainCamera = nullptr;
 	}
 
@@ -247,8 +232,7 @@ namespace Odyssey
 
 						m_GUIDToSetPass[materialGUID] = index;
 
-						setPass->SetMaterial(materials[i], animator != nullptr, m_MaterialBuffers[m_NextMaterialBuffer]);
-						m_NextMaterialBuffer++;
+						setPass->SetMaterial(materials[i], animator != nullptr);
 					}
 
 					// Create the drawcall data
@@ -304,7 +288,7 @@ namespace Odyssey
 		}
 	}
 
-	void SetPass::SetMaterial(Ref<Material> material, bool skinned, ResourceID materialBuffer)
+	void SetPass::SetMaterial(Ref<Material> material, bool skinned)
 	{
 		Shaders = material->GetShader()->GetResourceMap();
 		GraphicsPipeline = material->GetPipeline();
@@ -314,14 +298,7 @@ namespace Odyssey
 		Textures = material->GetTextures();
 
 		// Store the material buffer for binding
-		MaterialBuffer = materialBuffer;
-
-		// Copy the material properties into the buffer
-		Ref<VulkanBuffer> materialUniform = ResourceManager::GetResource<VulkanBuffer>(materialBuffer);
-		MaterialData materialData;
-		materialData.EmissiveColor = float4(material->GetEmissiveColor(), material->GetEmissivePower());
-		materialData.AlphaClip = material->GetAlphaClip();
-		materialUniform->CopyData(sizeof(MaterialData), &materialData);
+		MaterialBuffer = material->GetMaterialBuffer();
 
 		// Store the render queue
 		RenderQueue = material->GetRenderQueue();

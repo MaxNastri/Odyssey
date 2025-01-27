@@ -236,10 +236,11 @@ namespace Odyssey
 					uint32_t index = setPass.ShaderBindings["LightData"].Index;
 					m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, index);
 				}
-				if (setPass.ShaderBindings.contains("MaterialData"))
+
+				if (setPass.MaterialBuffer.IsValid())
 				{
 					uint32_t index = setPass.ShaderBindings["MaterialData"].Index;
-					m_PushDescriptors->AddBuffer(setPass.MaterialBuffer, 5);
+					m_PushDescriptors->AddBuffer(setPass.MaterialBuffer, index);
 				}
 
 				// Add the texture assets for the set pass

@@ -462,6 +462,60 @@ namespace Odyssey
 		return modified;
 	}
 
+	Vector2Drawer::Vector2Drawer(std::string_view propertyLabel, float2 initialValue, std::function<void(float2)> callback)
+	{
+		m_Label = propertyLabel;
+		m_Value = initialValue;
+		onValueModified = callback;
+	}
+
+	bool Vector2Drawer::Draw()
+	{
+		bool modified = false;
+		ImGui::PushID(this);
+
+		if (ImGui::BeginTable("##Table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
+		{
+			ImGui::PushID((void*)this);
+			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
+			ImGui::TableNextColumn();
+			ImGui::Text(m_Label.c_str());
+			ImGui::TableNextColumn();
+			ImGui::PushItemWidth(-0.01f);
+
+			uint8_t itemWidth = 2;
+			ImVec2 spacing = ImVec2{ 5, 0 };
+			ImGui::PushMultiItemsWidths(itemWidth, ImGui::CalcItemWidth());
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, spacing);
+
+			float lineHeight = ImGui::GetFont()->FontSize + ImGui::GetStyle().FramePadding.y * 2.0f;
+			ImVec2 buttonSize = { lineHeight + 5.0f, lineHeight };
+
+			{
+				modified |= ImGui::DragFloat("##x", &m_Value.x, 0.1f, 0.0f, 0.0f, "%.3f");
+				ImGui::PopItemWidth();
+				ImGui::SameLine();
+			}
+
+			{
+				modified |= ImGui::DragFloat("##y", &m_Value.y, 0.1f, 0.0f, 0.0f, "%.3f");
+				ImGui::PopItemWidth();
+				ImGui::SameLine();
+			}
+
+			ImGui::PopStyleVar();
+			ImGui::PopID();
+
+			if (modified && onValueModified)
+				onValueModified(m_Value);
+
+			ImGui::EndTable();
+		}
+
+		ImGui::PopID();
+		return modified;
+	}
+
 	Vector3Drawer::Vector3Drawer(std::string_view propertyLabel, glm::vec3 initialValue, glm::vec3 resetValue, bool drawButtons, std::function<void(glm::vec3)> callback)
 	{
 		m_Label = propertyLabel;
@@ -571,4 +625,69 @@ namespace Odyssey
 		ImGui::PopID();
 		return modified;
 	}
+	
+	Vector4Drawer::Vector4Drawer(std::string_view propertyLabel, float4 initialValue, std::function<void(float3)> callback)
+	{
+		m_Label = propertyLabel;
+		m_Value = initialValue;
+		onValueModified = callback;
+	}
+
+	bool Vector4Drawer::Draw()
+	{
+		bool modified = false;
+		ImGui::PushID(this);
+
+		if (ImGui::BeginTable("##Table", 2, ImGuiTableFlags_::ImGuiTableFlags_SizingMask_))
+		{
+			ImGui::PushID((void*)this);
+			ImGui::TableSetupColumn("##empty", 0, m_LabelWidth);
+			ImGui::TableNextColumn();
+			ImGui::Text(m_Label.c_str());
+			ImGui::TableNextColumn();
+			ImGui::PushItemWidth(-0.01f);
+
+			uint8_t itemWidth = 4;
+			ImVec2 spacing = ImVec2{ 5, 0 };
+			ImGui::PushMultiItemsWidths(itemWidth, ImGui::CalcItemWidth());
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, spacing);
+
+			float lineHeight = ImGui::GetFont()->FontSize + ImGui::GetStyle().FramePadding.y * 2.0f;
+			ImVec2 buttonSize = { lineHeight + 5.0f, lineHeight };
+
+			{
+				modified |= ImGui::DragFloat("##x", &m_Value.x, 0.1f, 0.0f, 0.0f, "%.3f");
+				ImGui::PopItemWidth();
+				ImGui::SameLine();
+			}
+
+			{
+				modified |= ImGui::DragFloat("##y", &m_Value.y, 0.1f, 0.0f, 0.0f, "%.3f");
+				ImGui::PopItemWidth();
+				ImGui::SameLine();
+			}
+
+			{
+				modified |= ImGui::DragFloat("##z", &m_Value.z, 0.1f, 0.0f, 0.0f, "%.3f");
+				ImGui::PopItemWidth();
+			}
+
+			{
+				modified |= ImGui::DragFloat("##w", &m_Value.w, 0.1f, 0.0f, 0.0f, "%.3f");
+				ImGui::PopItemWidth();
+			}
+
+			ImGui::PopStyleVar();
+			ImGui::PopID();
+
+			if (modified && onValueModified)
+				onValueModified(m_Value);
+
+			ImGui::EndTable();
+		}
+
+		ImGui::PopID();
+		return modified;
+	}
+
 }

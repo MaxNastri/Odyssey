@@ -86,7 +86,7 @@ namespace Odyssey
 		SetPass() = default;
 
 	public:
-		void SetMaterial(Ref<Material> material, bool skinned, ResourceID materialBuffer);
+		void SetMaterial(Ref<Material> material, bool skinned);
 
 	public:
 		std::map<std::string, ShaderBinding> ShaderBindings;
@@ -137,7 +137,6 @@ namespace Odyssey
 		std::vector<ResourceID> sceneDataBuffers;
 		std::vector<ResourceID> perObjectUniformBuffers;
 		std::vector<ResourceID> skinningBuffers;
-		std::vector<ResourceID> m_MaterialBuffers;
 		ResourceID LightingBuffer;
 
 		uint32_t m_NextUniformBuffer = 0;

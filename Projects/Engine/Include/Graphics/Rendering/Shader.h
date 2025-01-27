@@ -4,6 +4,7 @@
 #include "Resource.h"
 #include "BinaryBuffer.h"
 #include "SourceShader.h"
+#include "RawBuffer.h"
 
 namespace Odyssey
 {
@@ -16,6 +17,24 @@ namespace Odyssey
 		std::string Name;
 		DescriptorType DescriptorType;
 		uint8_t Index;
+	};
+
+	enum class PropertyType
+	{
+		Unknown = 0,
+		Float = 1,
+		Float2 = 2,
+		Float3 = 3,
+		Float4 = 4,
+		Bool = 5,
+	};
+
+	struct MaterialProperty
+	{
+		std::string Name;
+		size_t Offset;
+		size_t Size;
+		PropertyType Type;
 	};
 
 	class Shader : public Asset
@@ -42,10 +61,13 @@ namespace Odyssey
 
 	public:
 		bool HasBinding(std::string bindingName, uint32_t& index);
+		const std::vector<MaterialProperty>& GetMaterialProperties() { return m_MaterialBufferProperties; }
+		size_t GetMaterialPropertiesSize() { return m_MaterialBufferSize; }
 
 	public:
-		void AddOnModifiedListener(std::function<void()> callback) { m_OnModifiedListeners.push_back(callback); }
-	
+		uint32_t AddOnModifiedListener(std::function<void()> callback);
+		void RemoveOnModifiedListener(uint32_t listenerID);
+
 	private:
 		void LoadFromSource(Ref<SourceShader> source);
 		void SaveToDisk(const Path& path);
@@ -55,6 +77,12 @@ namespace Odyssey
 		void OnSourceModified();
 
 	private:
+		struct Listener
+		{
+			uint32_t ID = 0;
+			std::function<void()> Callback = nullptr;
+		};
+
 		struct ShaderData
 		{
 			GUID CodeGUID;
@@ -67,8 +95,13 @@ namespace Odyssey
 		BinaryBuffer m_VertexAttributes;
 
 	private:
+		std::vector<MaterialProperty> m_MaterialBufferProperties;
+		size_t m_MaterialBufferSize = 0;
+
+	private:
 		ResourceID m_DescriptorLayout;
 		Ref<SourceShader> m_Source;
-		std::vector<std::function<void()>> m_OnModifiedListeners;
+		uint32_t m_NextID = 0;
+		std::vector<Listener> m_OnModifiedListeners;
 	};
 }

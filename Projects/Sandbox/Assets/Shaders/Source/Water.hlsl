@@ -53,6 +53,14 @@ cbuffer LightData : register(b4)
     uint LightCount;
 }
 
+cbuffer MaterialData : register(b5)
+{
+    float noiseFrequency = 0.03f;
+    float noiseScale = 0.5f;
+    float Tiling = 3.0f;
+    float3 BaseColor = float3(0.0f, 0.55f, 1.0f);
+}
+
 Texture2D normalTex2D : register(t7);
 SamplerState normalSampler : register(s7);
 Texture2D noiseTex2D : register(t8);
@@ -85,9 +93,9 @@ VertexOutput main(VertexInput input)
     VertexOutput output;
     float2 texCoord0 = abs(input.TexCoord0);
     
-    float2 noiseUV = (texCoord0 + (Time.xy * 0.03f));
+    float2 noiseUV = (texCoord0 + (Time.xy * noiseFrequency));
     float noiseValue = noiseTex2D.SampleLevel(noiseSampler, noiseUV, 0).r;
-    input.Position.y += (noiseValue * 0.5f);
+    input.Position.y += (noiseValue * noiseScale);
     
     float4 worldPosition = mul(Model, float4(input.Position, 1.0f));
     float4 normal = float4(normalize(input.Normal.xyz), 0.0f);
@@ -97,7 +105,7 @@ VertexOutput main(VertexInput input)
     output.WorldPosition = worldPosition.xyz;
     output.Normal = normalize(mul(Model, normal).xyz);
     output.Tangent = float4(mul(Model, tangent).xyz, input.Tangent.w);
-    output.TexCoord0 = texCoord0 * 3.0f;
+    output.TexCoord0 = texCoord0 * Tiling;
     
     output.PositionCS = output.Position;
     output.ViewDepth = mul(View, worldPosition).z;
@@ -154,7 +162,7 @@ float4 main(PixelInput input) : SV_Target
     
     float fade = saturate(1.5f * (partZ - sceneZ));
     
-    float3 color = float3(0.0f, 0.55f, 1.0f);
+    float3 color = BaseColor;
     color *= fade;
     
     float2 scrollUV = input.TexCoord0;

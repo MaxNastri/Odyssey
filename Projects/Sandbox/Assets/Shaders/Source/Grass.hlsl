@@ -81,7 +81,6 @@ cbuffer LightData : register(b5)
     uint LightCount;
 }
 
-
 #pragma Vertex
 struct VertexInput
 {

@@ -345,6 +345,24 @@ namespace Odyssey
 		std::function<void(std::string_view)> m_OnValueModifed;
 	};
 
+	class Vector2Drawer : public PropertyDrawer
+	{
+	public:
+		Vector2Drawer() = default;
+		Vector2Drawer(std::string_view propertyLabel, float2 initialValue, std::function<void(float2)> callback = nullptr);
+
+	public:
+		float2 GetValue() { return m_Value; }
+		void SetValue(float2 value) { m_Value = value; }
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		float2 m_Value;
+		std::function<void(float2)> onValueModified;
+	};
+
 	class Vector3Drawer : public PropertyDrawer
 	{
 	public:
@@ -363,5 +381,23 @@ namespace Odyssey
 		float3 m_ResetValue;
 		bool m_DrawButtons = false;
 		std::function<void(float3)> onValueModified;
+	};
+
+	class Vector4Drawer : public PropertyDrawer
+	{
+	public:
+		Vector4Drawer() = default;
+		Vector4Drawer(std::string_view propertyLabel, float4 initialValue, std::function<void(float3)> callback = nullptr);
+
+	public:
+		float4 GetValue() { return m_Value; }
+		void SetValue(float4 value) { m_Value = value; }
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		float4 m_Value;
+		std::function<void(float4)> onValueModified;
 	};
 }

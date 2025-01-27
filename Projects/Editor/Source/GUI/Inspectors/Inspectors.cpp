@@ -469,12 +469,6 @@ namespace Odyssey
 			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), true);
 			m_NameDrawer = StringDrawer("Name", m_Material->GetName(), false);
 			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type);
-			m_ColorTextureDrawer = AssetFieldDrawer("Color Texture", colorTextureGUID, Texture2D::Type);
-			m_NormalTextureDrawer = AssetFieldDrawer("Normal Texture", normalTextureGUID, Texture2D::Type);
-			m_NoiseTextureDrawer = AssetFieldDrawer("Noise Texture", noiseTextureGUID, Texture2D::Type);
-			m_EmissiveColorDrawer = ColorPicker("Emissive Color", m_Material->GetEmissiveColor());
-			m_EmissivePowerDrawer = FloatDrawer("Emissive Power", m_Material->GetEmissivePower());
-			m_AlphaClipDrawer = FloatDrawer("Alpha Clip", m_Material->GetAlphaClip());
 			m_RenderQueueDrawer = EnumDrawer<RenderQueue>("Render Queue", m_Material->GetRenderQueue());
 			m_BlendModeDrawer = EnumDrawer<BlendMode>("Blend Mode", m_Material->GetBlendMode());
 			m_DepthWriteDrawer = BoolDrawer("Depth Write", m_Material->GetDepthWrite());
@@ -502,20 +496,6 @@ namespace Odyssey
 				m_Material->SetShader(shader);
 		}
 
-		if (m_EmissiveColorDrawer.Draw())
-		{
-			m_Dirty = true;
-			modified = true;
-			m_Material->SetEmissiveColor(m_EmissiveColorDrawer.GetColor3());
-		}
-
-		if (m_EmissivePowerDrawer.Draw())
-		{
-			m_Dirty = true;
-			modified = true;
-			m_Material->SetEmissivePower(m_EmissivePowerDrawer.GetValue());
-		}
-
 		if (m_RenderQueueDrawer.Draw())
 		{
 			m_Dirty = true;
@@ -530,19 +510,31 @@ namespace Odyssey
 			m_Material->SetBlendMode(m_BlendModeDrawer.GetValue());
 		}
 
-		if (m_AlphaClipDrawer.Draw())
-		{
-			m_Dirty = true;
-			modified = true;
-			m_Material->SetAlphaClip(m_AlphaClipDrawer.GetValue());
-		}
-
 		if (m_DepthWriteDrawer.Draw())
 		{
 			m_Dirty = true;
 			modified = true;
 			m_Material->SetDepthWrite(m_DepthWriteDrawer.GetValue());
 		}
+
+		modified |= DrawPropertyTextures();
+		modified |= DrawMaterialProperties();
+
+		if (m_Dirty && ImGui::Button("Save"))
+		{
+			if (m_Material->GetName() != m_NameDrawer.GetValue())
+				m_Material->SetName(m_NameDrawer.GetValue());
+
+			m_Material->Save();
+			m_Dirty = false;
+		}
+
+		return modified;
+	}
+
+	bool MaterialInspector::DrawPropertyTextures()
+	{
+		bool modified = false;
 
 		if (Ref<Shader> shader = m_Material->GetShader())
 		{
@@ -587,14 +579,76 @@ namespace Odyssey
 				}
 			}
 		}
-		
-		if (m_Dirty && ImGui::Button("Save"))
-		{
-			if (m_Material->GetName() != m_NameDrawer.GetValue())
-				m_Material->SetName(m_NameDrawer.GetValue());
 
-			m_Material->Save();
-			m_Dirty = false;
+		return modified;
+	}
+
+	bool MaterialInspector::DrawMaterialProperties()
+	{
+		bool modified = false;
+
+		for (const MaterialProperty& materialProperty : m_Material->GetMaterialProperties())
+		{
+			switch (materialProperty.Type)
+			{
+				case PropertyType::Float:
+				{
+					FloatDrawer propertyDrawer = FloatDrawer(materialProperty.Name, m_Material->GetFloat(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetFloat(materialProperty.Name, propertyDrawer.GetValue());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float2:
+				{
+					Vector2Drawer propertyDrawer = Vector2Drawer(materialProperty.Name, m_Material->GetFloat3(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetFloat2(materialProperty.Name, propertyDrawer.GetValue());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float3:
+				{
+					ColorPicker propertyDrawer = ColorPicker(materialProperty.Name, m_Material->GetFloat3(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetFloat3(materialProperty.Name, propertyDrawer.GetColor3());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float4:
+				{
+					ColorPicker propertyDrawer = ColorPicker(materialProperty.Name, m_Material->GetFloat4(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetFloat4(materialProperty.Name, propertyDrawer.GetColor4());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Bool:
+				{
+					BoolDrawer propertyDrawer = BoolDrawer(materialProperty.Name, m_Material->GetBool(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetBool(materialProperty.Name, propertyDrawer.GetValue());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				default:
+					break;
+			}
 		}
 
 		return modified;

@@ -394,18 +394,16 @@ namespace Odyssey
 		virtual bool Draw() override;
 
 	private:
+		bool DrawPropertyTextures();
+		bool DrawMaterialProperties();
+
+	private:
 		Ref<Material> m_Material;
 		bool m_Dirty = false;
 
 		StringDrawer m_NameDrawer;
 		StringDrawer m_GUIDDrawer;
 		AssetFieldDrawer m_ShaderDrawer;
-		AssetFieldDrawer m_ColorTextureDrawer;
-		AssetFieldDrawer m_NormalTextureDrawer;
-		AssetFieldDrawer m_NoiseTextureDrawer;
-		ColorPicker m_EmissiveColorDrawer;
-		FloatDrawer m_EmissivePowerDrawer;
-		FloatDrawer m_AlphaClipDrawer;
 		EnumDrawer<RenderQueue> m_RenderQueueDrawer;
 		EnumDrawer<BlendMode> m_BlendModeDrawer;
 		BoolDrawer m_DepthWriteDrawer;

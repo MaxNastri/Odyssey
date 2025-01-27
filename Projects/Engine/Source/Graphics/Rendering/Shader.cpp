@@ -94,6 +94,27 @@ namespace Odyssey
 		return false;
 	}
 
+	void Shader::RemoveOnModifiedListener(uint32_t listenerID)
+	{
+		for (size_t i = 0; i < m_OnModifiedListeners.size(); i++)
+		{
+			if (m_OnModifiedListeners[i].ID == listenerID)
+			{
+				m_OnModifiedListeners.erase(m_OnModifiedListeners.begin() + i);
+				break;
+			}
+		}
+	}
+
+	uint32_t Shader::AddOnModifiedListener(std::function<void()> callback)
+	{
+		Listener& listener = m_OnModifiedListeners.emplace_back();
+		listener.ID = m_NextID++;
+		listener.Callback = callback;
+
+		return listener.ID;
+	}
+
 	void Shader::LoadFromSource(Ref<SourceShader> source)
 	{
 		// Clear any existing shaders
@@ -276,6 +297,59 @@ namespace Odyssey
 				uint32_t set = refl.get_decoration(resource.id, spv::DecorationDescriptorSet);
 				uint32_t binding = refl.get_decoration(resource.id, spv::DecorationBinding);
 
+				if (name == "MaterialData" && m_MaterialBufferProperties.size() == 0)
+				{
+					spirv_cross::SPIRType type = refl.get_type(resource.base_type_id);
+					size_t memberCount = type.member_types.size();
+
+					// Store the buffer size
+					m_MaterialBufferSize = refl.get_declared_struct_size(type);
+
+					for (size_t i = 0; i < type.member_types.size(); i++)
+					{
+						MaterialProperty& materialProperty = m_MaterialBufferProperties.emplace_back();
+						materialProperty.Name = refl.get_member_name(type.self, i);
+
+						// Get member offset and size within this struct.
+						materialProperty.Offset = refl.type_struct_member_offset(type, i);
+						materialProperty.Size = refl.get_declared_struct_member_size(type, i);
+
+						auto& memberType = refl.get_type(type.member_types[i]);
+
+						switch (memberType.basetype)
+						{
+							case spirv_cross::SPIRType::Float:
+								if (memberType.vecsize == 1)
+									materialProperty.Type = PropertyType::Float;
+								else if (memberType.vecsize == 2)
+									materialProperty.Type = PropertyType::Float2;
+								else if (memberType.vecsize == 3)
+									materialProperty.Type = PropertyType::Float3;
+								else if (memberType.vecsize == 4)
+									materialProperty.Type = PropertyType::Float4;
+								break;
+							case spirv_cross::SPIRType::Boolean:
+								materialProperty.Type = PropertyType::Bool;
+								break;
+							default:
+								materialProperty.Type = PropertyType::Unknown;
+								break;
+						}
+
+						//if (!memberType.array.empty())
+						//{
+						//	// Get array stride, e.g. float4 foo[]; Will have array stride of 16 bytes.
+						//	size_t array_stride = refl.type_struct_member_array_stride(type, i);
+						//}
+						//
+						//if (memberType.columns > 1)
+						//{
+						//	// Get bytes stride between columns (if column major), for float4x4 -> 16 bytes.
+						//	size_t matrix_stride = refl.type_struct_member_matrix_stride(type, i);
+						//}
+					}
+				}
+				
 				if (!m_Bindings.contains(name))
 				{
 					ShaderBinding& bindingData = m_Bindings[name];
@@ -314,8 +388,8 @@ namespace Odyssey
 			m_Source->Reload();
 			LoadFromSource(m_Source);
 
-			for (std::function<void()> callback : m_OnModifiedListeners)
-				callback();
+			for (Listener& listener : m_OnModifiedListeners)
+				listener.Callback();
 		}
 	}
 }
