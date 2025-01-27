@@ -63,7 +63,6 @@ namespace Sandbox
             if (GrassRenderer != null)
             {
                 GrassRenderer.SetFloat3("PlayerPosition", m_Transform.WorldPosition);
-                GrassRenderer.SetFloat3("PlayerVelocity", m_CharacterController.LinearVelocity);
             }
         }
 

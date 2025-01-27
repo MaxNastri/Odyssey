@@ -83,8 +83,20 @@ cbuffer LightData : register(b5)
 
 cbuffer MaterialData : register(b6)
 {
+    float DistortionTiling;
+    float BladeWidth;
+    float BladeWidthRandom;
+    float BladeHeight;
+    float BladeHeightRandom;
+    float BladeForward;
+    float BladeCurve;
+    float2 WindFrequency;
+    float WindStrength;
+    float BendFactor;
+    float TrampleOffset;
+    float TrampleFalloff;
+    float TrampleDistance;
     float3 PlayerPosition;
-    float3 PlayerVelocity;
 }
 
 #pragma Vertex
@@ -324,18 +336,6 @@ DSOutput main(ConstantsHSOutput input, float3 TessCoord : SV_DomainLocation, con
 #pragma Geometry
 #define BLADE_SEGMENTS 5
 
-// Modifiable
-static float bendFactor = 0.15f;
-static float bladeWidth = 0.09f;
-static float bladeWidthRandom = 0.02f;
-static float bladeHeight = 0.9f;
-static float bladeHeightRandom = 0.2f;
-static float2 windFrequency = float2(0.05f, 0.05f);
-static float windStrength = 0.2f;
-static float distortionTiling = 0.01f;
-static float bladeForward = 0.25f;
-static float bladeCurve = 1.5f;
-
 // Constants
 static const float PI = 3.14159265f;
 
@@ -417,21 +417,17 @@ void main(uint primitiveID : SV_PrimitiveID, triangle GeometryInput input[3], in
         float3x3 facingRotation = AngleAxis3x3(random(vPosition.xz) * 2.0f * PI, float3(0, 0, 1));
         
         float sqDistToPlayer = length(PlayerPosition - wPosition.xyz);
-        float bendAngle = random(vPosition.xz) * bendFactor;
         
-        if (sqDistToPlayer < 1.25f && (PlayerVelocity.x != 0 || PlayerVelocity.y != 0 || PlayerVelocity.z != 0))
-        {
-            bendAngle = saturate(pow((1.25f - sqDistToPlayer), 2.0f)) * 0.75f;
-        }
-
+        float bendAngle = random(vPosition.xz) * BendFactor;
+        
         float3x3 bendRotation = AngleAxis3x3(bendAngle * PI * 0.5f, float3(-1, 0, 0));
         
         // Wind
-        float2 uv = ((vPosition.xz * distortionTiling) + windFrequency) * Time.y;
+        float2 uv = ((vPosition.xz * DistortionTiling) + WindFrequency) * Time.y;
         float2 windTex = distortionTex2D.SampleLevel(distortionSampler, uv, 0).xy;
     
         // Normalize to -1 to 1 and apply wind strength
-        float2 windVelocity = (windTex * 2.0f - 1.0f) * windStrength;
+        float2 windVelocity = (windTex * 2.0f - 1.0f) * WindStrength;
         float3 windNormal = normalize(float3(windVelocity, 0.0f));
     
         float3x3 windRotation = AngleAxis3x3(PI * windVelocity.x, windNormal);
@@ -442,10 +438,17 @@ void main(uint primitiveID : SV_PrimitiveID, triangle GeometryInput input[3], in
     
         float3x3 transformationFacing = mul(tangentToLocal, facingRotation);
     
-        float height = (random(vPosition.xy) * 2.0f - 1.0f) * bladeHeightRandom + bladeHeight;
-        float width = (random(vPosition.xz) * 2.0f - 1.0f) * bladeWidthRandom + bladeWidth;
-        float forward = random(vPosition.yz) * bladeForward;
+        float height = (random(vPosition.xy) * 2.0f - 1.0f) * BladeHeightRandom + BladeHeight;
+        float width = (random(vPosition.xz) * 2.0f - 1.0f) * BladeWidthRandom + BladeWidth;
+        float forward = random(vPosition.yz) * BladeForward;
     
+        float trampleModifier = 1.0f;
+        
+        if (sqDistToPlayer < TrampleDistance)
+        {
+            trampleModifier = saturate(pow(sqDistToPlayer / TrampleDistance, TrampleFalloff) + TrampleOffset);
+        }
+        
         for (int i = 0; i < BLADE_SEGMENTS; i++)
         {
         // Blade progress
@@ -453,7 +456,10 @@ void main(uint primitiveID : SV_PrimitiveID, triangle GeometryInput input[3], in
         
             float segmentWidth = width * (1.0f - t);
             float segmentHeight = height * t;
-            float segmentForward = pow(t, bladeCurve) * forward;
+            // Offset the height of the fragment by the trample modified based on height
+            // (shorter segments are affected less)
+            segmentHeight = segmentHeight * lerp(1.0f, trampleModifier, segmentHeight / height);
+            float segmentForward = pow(t, BladeCurve) * forward;
         
             float3x3 transform = i == 0 ? transformationFacing : transformation;
         
@@ -461,7 +467,7 @@ void main(uint primitiveID : SV_PrimitiveID, triangle GeometryInput input[3], in
             triStream.Append(GenerateGrassVertex(vPosition, -segmentWidth, segmentHeight, segmentForward, float2(1, t), transform));
         }
     
-        triStream.Append(GenerateGrassVertex(vPosition, 0, height, forward, float2(0.5f, 1), transformation));
+        triStream.Append(GenerateGrassVertex(vPosition, 0, height * trampleModifier, forward, float2(0.5f, 1), transformation));
         triStream.RestartStrip();
     }
     
@@ -469,7 +475,6 @@ void main(uint primitiveID : SV_PrimitiveID, triangle GeometryInput input[3], in
     triStream.Append(GetOutput(input[1].Position.xyz, input[1].Normal, input[1].TexCoord0));
     triStream.Append(GetOutput(input[2].Position.xyz, input[2].Normal, input[2].TexCoord0));
     triStream.RestartStrip();
-
 }
 
 #pragma Fragment

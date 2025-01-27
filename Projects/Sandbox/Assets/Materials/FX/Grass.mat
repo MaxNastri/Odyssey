@@ -12,6 +12,45 @@ Property Textures:
   - Property: noiseSampler
     Texture: 15039526264554896991
 Properties:
+  - Name: DistortionTiling
+    Type: Float
+    Value: 0.01
+  - Name: BladeWidth
+    Type: Float
+    Value: 0.09
+  - Name: BladeWidthRandom
+    Type: Float
+    Value: 0.02
+  - Name: BladeHeight
+    Type: Float
+    Value: 0.9
+  - Name: BladeHeightRandom
+    Type: Float
+    Value: 0.2
+  - Name: BladeForward
+    Type: Float
+    Value: 0.25
+  - Name: BladeCurve
+    Type: Float
+    Value: 1.5
+  - Name: WindFrequency
+    Type: Float2
+    Value: 'x: 0.05 y: 0.05'
+  - Name: WindStrength
+    Type: Float
+    Value: 0.2
+  - Name: BendFactor
+    Type: Float
+    Value: 0.15
+  - Name: TrampleOffset
+    Type: Float
+    Value: 0.45
+  - Name: TrampleFalloff
+    Type: Float
+    Value: 1.8
+  - Name: TrampleDistance
+    Type: Float
+    Value: 1
   - Name: PlayerPosition
     Type: Float3
-    Value: 'x: 0 y: 0 z: 0'
+    Value: 'x: -2.7031956 y: -0.2821529 z: -11.193468'
