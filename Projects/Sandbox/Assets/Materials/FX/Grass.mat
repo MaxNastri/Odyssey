@@ -3,14 +3,15 @@ m_GUID: 18223639673061157840
 m_Name: Grass
 m_Type: Odyssey.Material
 m_Shader: 7381450375696147196
+Render Queue: 1
+Blend Mode: None
+Depth Write: 1
 Property Textures:
   - Property: distortionSampler
     Texture: 15039526264554896991
   - Property: noiseSampler
     Texture: 15039526264554896991
-Emissive Color: 'x: 0 y: 0 z: 0'
-Emissive Power: 1
-Alpha Clip: 0.5
-Render Queue: 1
-Blend Mode: Additive
-Depth Write: 1
+Properties:
+  - Name: PlayerPosition
+    Type: Float3
+    Value: 'x: 0 y: 0 z: 0'

@@ -81,6 +81,12 @@ cbuffer LightData : register(b5)
     uint LightCount;
 }
 
+cbuffer MaterialData : register(b6)
+{
+    float3 PlayerPosition;
+    float3 PlayerVelocity;
+}
+
 #pragma Vertex
 struct VertexInput
 {
@@ -398,28 +404,38 @@ void main(uint primitiveID : SV_PrimitiveID, triangle GeometryInput input[3], in
     for (int index = 0; index < 3; index++)
     {
         float3 vPosition = input[index].Position.xyz;
+        float4 wPosition = mul(Model, input[index].Position);
         float3 vNormal = input[index].Normal;
         float4 vTangent = input[index].Tangent;
         float3 vBinormal = cross(vNormal, vTangent.xyz) * vTangent.w;
-    
+        
         float3x3 tangentToLocal = float3x3(
         vTangent.x, vBinormal.x, vNormal.x,
         vTangent.y, vBinormal.y, vNormal.y,
         vTangent.z, vBinormal.z, vNormal.z);
     
         float3x3 facingRotation = AngleAxis3x3(random(vPosition.xz) * 2.0f * PI, float3(0, 0, 1));
-        float3x3 bendRotation = AngleAxis3x3(random(vPosition.zx) * bendFactor * PI * 0.5f, float3(-1, 0, 0));
-    
-    // Wind
+        
+        float sqDistToPlayer = length(PlayerPosition - wPosition.xyz);
+        float bendAngle = random(vPosition.xz) * bendFactor;
+        
+        if (sqDistToPlayer < 1.25f && (PlayerVelocity.x != 0 || PlayerVelocity.y != 0 || PlayerVelocity.z != 0))
+        {
+            bendAngle = saturate(pow((1.25f - sqDistToPlayer), 2.0f)) * 0.75f;
+        }
+
+        float3x3 bendRotation = AngleAxis3x3(bendAngle * PI * 0.5f, float3(-1, 0, 0));
+        
+        // Wind
         float2 uv = ((vPosition.xz * distortionTiling) + windFrequency) * Time.y;
         float2 windTex = distortionTex2D.SampleLevel(distortionSampler, uv, 0).xy;
     
-    // Normalize to -1 to 1 and apply wind strength
+        // Normalize to -1 to 1 and apply wind strength
         float2 windVelocity = (windTex * 2.0f - 1.0f) * windStrength;
         float3 windNormal = normalize(float3(windVelocity, 0.0f));
     
         float3x3 windRotation = AngleAxis3x3(PI * windVelocity.x, windNormal);
-    
+        
         float3x3 transformation = mul(facingRotation, bendRotation);
         transformation = mul(windRotation, transformation);
         transformation = mul(tangentToLocal, transformation);
@@ -544,6 +560,5 @@ float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal
     
     // Squared exponential falloff
     float attenuation = pow(1.0f - saturate(distance / light.Range), 2);
-    
     return CalculateDiffuse(light, lightVector, worldNormal) * attenuation;
 }

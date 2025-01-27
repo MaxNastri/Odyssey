@@ -74,10 +74,13 @@ namespace Odyssey
 
         #region MeshRenderer
 
-        // <EntityGUID, MeshGUID>
         internal static delegate* unmanaged<GUID, GUID> MeshRenderer_GetMesh;
-        // <EntityGUID, MeshGUID>
         internal static delegate* unmanaged<GUID, GUID, void> MeshRenderer_SetMesh;
+        internal static delegate* unmanaged<GUID, NativeString, float, int, void> MeshRenderer_SetFloat;
+        internal static delegate* unmanaged<GUID, NativeString, Vector2, int, void> MeshRenderer_SetFloat2;
+        internal static delegate* unmanaged<GUID, NativeString, Vector3, int, void> MeshRenderer_SetFloat3;
+        internal static delegate* unmanaged<GUID, NativeString, Vector4, int, void> MeshRenderer_SetFloat4;
+        internal static delegate* unmanaged<GUID, NativeString, bool, int, void> MeshRenderer_SetBool;
         #endregion
 
         #region Sprite Renderer

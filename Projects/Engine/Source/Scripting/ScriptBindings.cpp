@@ -48,6 +48,11 @@ namespace Odyssey
 
 		ADD_INTERNAL_CALL(MeshRenderer_GetMesh);
 		ADD_INTERNAL_CALL(MeshRenderer_SetMesh);
+		ADD_INTERNAL_CALL(MeshRenderer_SetFloat);
+		ADD_INTERNAL_CALL(MeshRenderer_SetFloat2);
+		ADD_INTERNAL_CALL(MeshRenderer_SetFloat3);
+		ADD_INTERNAL_CALL(MeshRenderer_SetFloat4);
+		ADD_INTERNAL_CALL(MeshRenderer_SetBool);
 
 		ADD_INTERNAL_CALL(SpriteRenderer_GetFill);
 		ADD_INTERNAL_CALL(SpriteRenderer_SetFill);

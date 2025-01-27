@@ -361,6 +361,80 @@ namespace Odyssey::InternalCalls
 			renderer->SetMesh(GUID(meshGUID));
 	}
 
+	void MeshRenderer_SetFloat(uint64_t entityGUID, Coral::String propertyName, float value, int32_t submesh)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+		{
+			auto& materials = renderer->GetMaterials();
+			if (submesh < materials.size())
+			{
+				std::string name = propertyName;
+				materials[submesh]->SetFloat(name, value);
+			}
+		}
+	}
+
+	void MeshRenderer_SetFloat2(uint64_t entityGUID, Coral::String propertyName, float2 value, int32_t submesh)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+		{
+			auto& materials = renderer->GetMaterials();
+			if (submesh < materials.size())
+			{
+				std::string name = propertyName;
+				materials[submesh]->SetFloat2(name, value);
+			}
+		}
+	}
+
+	void MeshRenderer_SetFloat3(uint64_t entityGUID, Coral::String propertyName, float3 value, int32_t submesh)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+		{
+			auto& materials = renderer->GetMaterials();
+			if (submesh < materials.size())
+			{
+				std::string name = propertyName;
+				materials[submesh]->SetFloat3(name, value);
+			}
+		}
+	}
+
+	void MeshRenderer_SetFloat4(uint64_t entityGUID, Coral::String propertyName, float4 value, int32_t submesh)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+		{
+			auto& materials = renderer->GetMaterials();
+			if (submesh < materials.size())
+			{
+				std::string name = propertyName;
+				materials[submesh]->SetFloat4(name, value);
+			}
+		}
+	}
+
+	void MeshRenderer_SetBool(uint64_t entityGUID, Coral::String propertyName, bool value, int32_t submesh)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+		{
+			auto& materials = renderer->GetMaterials();
+			if (submesh < materials.size())
+			{
+				std::string name = propertyName;
+				materials[submesh]->SetBool(name, value);
+			}
+		}
+	}
 #pragma endregion
 
 #pragma region Sprite Renderer

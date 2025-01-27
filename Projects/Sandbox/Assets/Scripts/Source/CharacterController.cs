@@ -22,6 +22,7 @@ namespace Sandbox
         public Prefab Fireball;
         public Transform CameraTransform;
         public Transform FireballTransform;
+        public MeshRenderer GrassRenderer;
         public float CameraSpeed = 1.0f;
         public float MovementSpeed = 10.0f;
         public float JumpHeight = 20.0f;
@@ -57,6 +58,12 @@ namespace Sandbox
             {
                 m_IsCasting = true;
                 m_Animator.SetBool("Casting", true);
+            }
+
+            if (GrassRenderer != null)
+            {
+                GrassRenderer.SetFloat3("PlayerPosition", m_Transform.WorldPosition);
+                GrassRenderer.SetFloat3("PlayerVelocity", m_CharacterController.LinearVelocity);
             }
         }
 
