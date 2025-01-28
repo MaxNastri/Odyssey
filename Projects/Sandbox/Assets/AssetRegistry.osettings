@@ -711,3 +711,87 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/FX/Grass_Man.mat
     GUID: 9700002344731034089
+  - Name: Dragon
+    Type: Odyssey.SourceModel
+    Path: Models/Dragon.fbx
+    GUID: 6993604849878905355
+  - Name: Dragon
+    Type: Odyssey.Mesh
+    Path: Meshes/Dragon.mesh
+    GUID: 2717291476428289225
+  - Name: Dragon_Rig
+    Type: Odyssey.AnimationRig
+    Path: Animation/Rigs/Dragon_Rig.asset
+    GUID: 5560345167253671334
+  - Name: Dragon_Clip
+    Type: Odyssey.AnimationClip
+    Path: Animation/Clips/Dragon_Clip.asset
+    GUID: 5293099884743152413
+  - Name: Dragon BP
+    Type: Odyssey.AnimationBlueprint
+    Path: Animation/Blueprints/Dragon.rune
+    GUID: 9559335749372384891
+  - Name: Water_Skinned
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Water_Skinned.hlsl
+    GUID: 5712891614559097721
+  - Name: Water_Skinned
+    Type: Odyssey.Shader
+    Path: Shaders/Water_Skinned.shader
+    GUID: 17068380152212205393
+  - Name: Water Dragon
+    Type: Odyssey.Material
+    Path: Materials/FX/Water_Dragon.mat
+    GUID: 15547635421378343081
+  - Name: Dragon_2
+    Type: Odyssey.SourceModel
+    Path: Models/Dragon_2.fbx
+    GUID: 3397271617027907828
+  - Name: PerlinNoiseAlpha
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/PerlinNoiseAlpha.png
+    GUID: 3756371771812265555
+  - Name: Perlin
+    Type: Odyssey.Texture2D
+    Path: Textures/Perlin.tex2D
+    GUID: 10016760160682846492
+  - Name: Dragon_2
+    Type: Odyssey.Mesh
+    Path: Meshes/Dragon_2.mesh
+    GUID: 13577114281144851319
+  - Name: Dragon_2
+    Type: Odyssey.AnimationRig
+    Path: Animation/Rig/Dragon_2.asset
+    GUID: 2836458406296502247
+  - Name: Dragon_2
+    Type: Odyssey.AnimationClip
+    Path: Animation/Clips/Dragon_2.asset
+    GUID: 13154213097125669071
+  - Name: Dragon 2
+    Type: Odyssey.AnimationBlueprint
+    Path: Animation/Blueprints/Dragon_2.rune
+    GUID: 3701033900384859625
+  - Name: Water_Normal2
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Water_Normal2.png
+    GUID: 1137801037329454694
+  - Name: Water_Normal2
+    Type: Odyssey.Texture2D
+    Path: Textures/Water_Normal2.tex2D
+    GUID: 5202024277476646360
+  - Name: Water_Normal3
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Water_Normal3.png
+    GUID: 13557903102104933630
+  - Name: Water_Normal4
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Water_Normal4.png
+    GUID: 16950928775863113804
+  - Name: Water_Normal3
+    Type: Odyssey.Texture2D
+    Path: Textures/Water_Normal3.tex2D
+    GUID: 6938865698747176818
+  - Name: Water_Normal4
+    Type: Odyssey.Texture2D
+    Path: Textures/Water_Normal4.tex2D
+    GUID: 2987740625679069870

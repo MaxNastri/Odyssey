@@ -558,7 +558,8 @@ namespace Odyssey
 	};
 	void GLTFAssetImporter::LoadAnimationData(const Model* model)
 	{
-		m_AnimationData.FramesPerSecond = 30;
+		AnimationImportData& animationData = m_AnimationData.emplace_back();
+		animationData.FramesPerSecond = 30;
 
 		for (const Animation& anim : model->animations)
 		{
@@ -592,10 +593,10 @@ namespace Odyssey
 
 					for (auto input : customSampler.inputs)
 					{
-						if (input < m_AnimationData.Start)
-							m_AnimationData.Start = input;
-						if (input > m_AnimationData.Duration)
-							m_AnimationData.Duration = input;
+						if (input < animationData.Start)
+							animationData.Start = input;
+						if (input > animationData.Duration)
+							animationData.Duration = input;
 					}
 				}
 
@@ -681,7 +682,7 @@ namespace Odyssey
 				if (!targetName.empty())
 				{
 					auto& bone = m_RigData.Bones[targetName];
-					auto& boneKeyframe = m_AnimationData.BoneKeyframes[bone.Name];
+					auto& boneKeyframe = animationData.BoneKeyframes[bone.Name];
 					boneKeyframe.SetBoneName(bone.Name);
 					AnimationSampler& sampler = samplers[channel.SamplerIndex];
 
@@ -739,10 +740,10 @@ namespace Odyssey
 				}
 			}
 
-			size_t maxFrames = (size_t)std::ceil(m_AnimationData.Duration * (double)m_AnimationData.FramesPerSecond);
-			double step = 1.0 / (double)m_AnimationData.FramesPerSecond;
+			size_t maxFrames = (size_t)std::ceil(animationData.Duration * (double)animationData.FramesPerSecond);
+			double step = 1.0 / (double)animationData.FramesPerSecond;
 
-			for (auto& [boneName, boneKeyframe] : m_AnimationData.BoneKeyframes)
+			for (auto& [boneName, boneKeyframe] : animationData.BoneKeyframes)
 			{
 				// Position Keys
 				{
@@ -755,7 +756,7 @@ namespace Odyssey
 						double frameTime = (double)i * step;
 						if (!boneKeyframe.HasPositionKey(frameTime))
 						{
-							double blend = frameTime / m_AnimationData.Duration;
+							double blend = frameTime / animationData.Duration;
 							boneKeyframe.AddPositionKey(frameTime, glm::mix(first.Value, last.Value, blend));
 						}
 					}
@@ -772,7 +773,7 @@ namespace Odyssey
 						double frameTime = (double)i * step;
 						if (!boneKeyframe.HasRotationKey(frameTime))
 						{
-							float blend = (float)(frameTime / m_AnimationData.Duration);
+							float blend = (float)(frameTime / animationData.Duration);
 							boneKeyframe.AddRotationKey(frameTime, glm::slerp(first.Value, last.Value, blend));
 						}
 					}
@@ -789,7 +790,7 @@ namespace Odyssey
 						double frameTime = (double)i * step;
 						if (!boneKeyframe.HasScaleKey(frameTime))
 						{
-							double blend = frameTime / m_AnimationData.Duration;
+							double blend = frameTime / animationData.Duration;
 							boneKeyframe.AddScaleKey(frameTime, glm::mix(first.Value, last.Value, blend));
 						}
 					}

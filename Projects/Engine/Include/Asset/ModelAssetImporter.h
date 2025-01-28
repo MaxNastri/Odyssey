@@ -56,11 +56,12 @@ namespace Odyssey
 	public:
 		const MeshImportData& GetMeshData() { return m_MeshData; }
 		const RigImportData& GetRigData() { return m_RigData; }
-		const AnimationImportData& GetAnimationData() { return m_AnimationData; }
+		const AnimationImportData& GetAnimationData(size_t index = 0) { return m_AnimationData[index]; }
+		size_t GetClipCount() { return m_AnimationData.size(); }
 
 	protected:
 		MeshImportData m_MeshData;
 		RigImportData m_RigData;
-		AnimationImportData m_AnimationData;
+		std::vector<AnimationImportData> m_AnimationData;
 	};
 }

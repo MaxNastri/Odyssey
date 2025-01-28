@@ -1,0 +1,12 @@
+m_SourceAsset: 0
+m_GUID: 3701033900384859625
+m_Name: Dragon 2
+m_Type: Odyssey.AnimationBlueprint
+Properties: []
+Animation States:
+  - GUID: 3152873798286547680
+    Name: Idle
+    Clip: 13154213097125669071
+    Position: 'x: -45 y: -102'
+    Entry State: 1
+Animation Links: []

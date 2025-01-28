@@ -30,8 +30,8 @@ namespace Odyssey
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
 
-		GUID rigGUID = m_Rig->GetGUID();
-		GUID blueprintGUID = m_Blueprint->GetGUID();
+		GUID rigGUID = m_Rig ? m_Rig->GetGUID() : GUID::Empty();
+		GUID blueprintGUID = m_Blueprint ? m_Blueprint->GetGUID() : GUID::Empty();
 
 		componentNode.WriteData("Type", Animator::Type);
 		componentNode.WriteData("Enabled", m_Enabled);

@@ -50,7 +50,7 @@ namespace Odyssey
 			// Build a map of child -> parent nodes
 			// Note: We insert an empty string for the root bone
 			ufbx_node* parent = cluster->bone_node->parent;
-			boneToParentName[bone.Name] = parent->is_root ? "" : parent->name.data;
+			boneToParentName[bone.Name] = parent->is_root || parent->bone == nullptr ? "" : parent->name.data;
 		}
 
 		// Assign the parent indices now that the bones are populated
@@ -159,8 +159,8 @@ namespace Odyssey
 
 		ufbx_bake_opts opts
 		{
-			.resample_rate = 30.0,
-			.skip_node_transforms = false,
+			.resample_rate = 30.0f,
+			.minimum_sample_rate = 30.0f,
 		};
 
 		ufbx_baked_anim* bake = ufbx_bake_anim(scene, animation, &opts, nullptr);
@@ -175,6 +175,9 @@ namespace Odyssey
 		{
 			ufbx_node* sceneNode = scene->nodes[bakeNode.typed_id];
 			ufbx_bone* bone = sceneNode->bone;
+
+			if (bone == nullptr)
+				continue;
 
 			for (auto& key : bakeNode.translation_keys)
 			{
@@ -378,6 +381,7 @@ namespace Odyssey
 		opts.target_axes = ufbx_axes_left_handed_y_up;
 		opts.target_unit_meters = 1.0f;
 		opts.handedness_conversion_axis = UFBX_MIRROR_AXIS_X;
+
 		//opts.target_camera_axes = ufbx_axes_left_handed_y_up;
 		//opts.target_light_axes = ufbx_axes_left_handed_y_up;
 
@@ -407,8 +411,14 @@ namespace Odyssey
 			LoadMesh(mesh, skin, m_MeshData);
 		}
 
-		if (scene->anim_stacks.count > 0 && scene->skin_deformers.count > 0)
-			LoadAnimationClip(scene, scene->anim_stacks[0], m_AnimationData);
+		if (scene->skin_deformers.count > 0)
+		{
+			for (size_t i = 0; i < scene->anim_stacks.count; i++)
+			{
+				AnimationImportData& animationData = m_AnimationData.emplace_back();
+				LoadAnimationClip(scene, scene->anim_stacks[i], animationData);
+			}
+		}
 
 		return true;
 	}

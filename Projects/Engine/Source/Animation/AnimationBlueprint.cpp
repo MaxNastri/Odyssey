@@ -438,6 +438,9 @@ namespace Odyssey
 		// Track the state by guid for later
 		m_States[node->Guid] = state;
 
+		if (m_States.size() == 1)
+			state->SetEntry(true);
+
 		// TEMP
 		if (!m_CurrentState)
 			m_CurrentState = state;

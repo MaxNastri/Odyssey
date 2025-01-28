@@ -32,7 +32,7 @@ namespace Odyssey
 
 	void AnimationClip::Load()
 	{
-		if (auto source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
+		if (Ref<SourceModel> source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
 			LoadFromSource(source);
 	}
 
@@ -44,6 +44,14 @@ namespace Odyssey
 	void AnimationClip::Reset()
 	{
 		m_Timeline.Reset();
+	}
+
+	void AnimationClip::SetClipIndex(size_t index)
+	{
+		m_ClipIndex = index;
+
+		Load();
+		m_Timeline = AnimationClipTimeline(this);
 	}
 
 	float AnimationClip::GetFrameTime(size_t frameIndex)
@@ -72,7 +80,14 @@ namespace Odyssey
 
 	void AnimationClip::LoadFromSource(Ref<SourceModel> source)
 	{
-		const AnimationImportData& animationData = source->GetImporter()->GetAnimationData();
+		AssetDeserializer deserializer(m_AssetPath);
+		if (deserializer.IsValid())
+		{
+			SerializationNode root = deserializer.GetRoot();
+			root.ReadData("Clip Index", m_ClipIndex);
+		}
+
+		const AnimationImportData& animationData = source->GetImporter()->GetAnimationData(m_ClipIndex % source->GetImporter()->GetClipCount());
 
 		m_Name = animationData.Name;
 		m_Duration = animationData.Duration;
@@ -94,50 +109,8 @@ namespace Odyssey
 		SerializeMetadata(serializer);
 
 		root.WriteData("Name", m_Name);
+		root.WriteData("Clip Index", m_ClipIndex);
 		root.WriteData("Duration", m_Duration);
-		root.WriteData("Bone Keyframe Count", m_BoneKeyframes.size());
-
-		SerializationNode keyframesNode = root.CreateSequenceNode("Bone Keyframes");
-
-		for (auto& [boneName, boneKeyframe] : m_BoneKeyframes)
-		{
-			SerializationNode boneNode = keyframesNode.AppendChild();
-			boneNode.SetMap();
-			boneNode.WriteData("Bone Name", boneKeyframe.GetName());
-
-			SerializationNode positionsNode = boneNode.CreateSequenceNode("Position Keys");
-			auto positionKeys = boneKeyframe.GetPositionKeys();
-
-			for (auto& positionKey : positionKeys)
-			{
-				SerializationNode positionNode = positionsNode.AppendChild();
-				positionNode.SetMap();
-				positionNode.WriteData("Time", positionKey.Time);
-				positionNode.WriteData("Value", positionKey.Value);
-			}
-
-			SerializationNode rotationsNode = boneNode.CreateSequenceNode("Rotation Keys");
-			auto rotationKeys = boneKeyframe.GetRotationKeys();
-
-			for (auto& rotationKey : rotationKeys)
-			{
-				SerializationNode rotationNode = rotationsNode.AppendChild();
-				rotationNode.SetMap();
-				rotationNode.WriteData("Time", rotationKey.Time);
-				rotationNode.WriteData("Value", rotationKey.Value);
-			}
-
-			SerializationNode scalesNode = boneNode.CreateSequenceNode("Scale Keys");
-			auto scaleKeys = boneKeyframe.GetScaleKeys();
-
-			for (auto& scaleKey : scaleKeys)
-			{
-				SerializationNode scaleNode = scalesNode.AppendChild();
-				scaleNode.SetMap();
-				scaleNode.WriteData("Time", scaleKey.Time);
-				scaleNode.WriteData("Value", scaleKey.Value);
-			}
-		}
 
 		serializer.WriteToDisk(assetPath);
 	}

@@ -22,11 +22,15 @@ namespace Odyssey
 		void Reset();
 
 	public:
+		void SetClipIndex(size_t index);
+
+	public:
 		std::map<std::string, BoneKeyframe>& GetBoneKeyframes() { return m_BoneKeyframes; }
 		float GetDuration() { return m_Duration; }
 		float GetFrameTime(size_t frameIndex);
 		size_t GetFrameCount();
 		float GetProgress();
+		size_t GetClipIndex() { return m_ClipIndex; }
 
 	private:
 		void LoadFromSource(Ref<SourceModel> source);
@@ -40,5 +44,6 @@ namespace Odyssey
 		float m_Duration;
 		std::map<std::string, BoneKeyframe> m_BoneKeyframes;
 		AnimationClipTimeline m_Timeline;
+		size_t m_ClipIndex = 0;
 	};
 }
