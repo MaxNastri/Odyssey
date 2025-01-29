@@ -3,33 +3,21 @@ m_GUID: 5634657926911688453
 m_Name: Water
 m_Type: Odyssey.Shader
 Properties:
-  - Name: NoiseFrequency
-    Type: Float
-    Default Value: 0.03
-  - Name: NoiseScale
-    Type: Float
-    Default Value: 0.5
-  - Name: Tiling
-    Type: Float
-    Default Value: 3
-  - Name: BaseColor
-    Type: Float3
-    Default Value: 'x: 0 y: 0.62633467 z: 1'
-  - Name: FadeStrength
-    Type: Float
-    Default Value: 0.5
-  - Name: FadeAlpha
-    Type: Float
-    Default Value: 0.9
-  - Name: NormalStrength
-    Type: Float
-    Default Value: 0.5
-  - Name: WaveSpeed
-    Type: Float
-    Default Value: 2
   - Name: TesselationLevel
     Type: Int32
     Default Value: 1
   - Name: TessAlpha
     Type: Float
     Default Value: 1
+  - Name: Tiling
+    Type: Float
+    Default Value: 3
+  - Name: WaterDepth
+    Type: Float
+    Default Value: 15
+  - Name: SurfaceColor
+    Type: Float3
+    Default Value: 'x: 0.07829189 y: 1 z: 0'
+  - Name: DeepColor
+    Type: Float3
+    Default Value: 'x: 0 y: 0.37010694 z: 1'

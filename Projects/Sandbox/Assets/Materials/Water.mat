@@ -12,33 +12,21 @@ Property Textures:
   - Property: normalSampler
     Texture: 5202024277476646360
 Properties:
-  - Name: NoiseFrequency
-    Type: Float
-    Value: 0.03
-  - Name: NoiseScale
-    Type: Float
-    Value: 1
-  - Name: Tiling
-    Type: Float
-    Value: 2
-  - Name: BaseColor
-    Type: Float3
-    Value: 'x: 0 y: 0.56227756 z: 1'
-  - Name: FadeStrength
-    Type: Float
-    Value: 0.2
-  - Name: FadeAlpha
-    Type: Float
-    Value: 0.9
-  - Name: NormalStrength
-    Type: Float
-    Value: 0.6
-  - Name: WaveSpeed
-    Type: Float
-    Value: 1
   - Name: TesselationLevel
     Type: Int32
     Value: 25
   - Name: TessAlpha
     Type: Float
     Value: 1
+  - Name: Tiling
+    Type: Float
+    Value: 2
+  - Name: WaterDepth
+    Type: Float
+    Value: 15
+  - Name: SurfaceColor
+    Type: Float3
+    Value: 'x: 0 y: 0.8932384 z: 0.46410233'
+  - Name: DeepColor
+    Type: Float3
+    Value: 'x: 0 y: 0.37010694 z: 1'

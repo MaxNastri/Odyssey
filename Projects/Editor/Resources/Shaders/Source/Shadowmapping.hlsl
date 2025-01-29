@@ -24,7 +24,7 @@ VertexOutput main(VertexInput input)
 {
     VertexOutput output;
     float4 position = float4(input.Position, 1.0f);
-    position.xyz = position.xyz + (input.Normal.xyz * 0.001f);
+    position.xyz = position.xyz;
     
     output.Position = mul(Model, position);
     output.Position = mul(ViewProjection, output.Position);

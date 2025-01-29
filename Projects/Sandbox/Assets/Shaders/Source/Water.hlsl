@@ -75,16 +75,15 @@ cbuffer LightData : register(b4)
 
 cbuffer MaterialData : register(b5)
 {
-    float NoiseFrequency;
-    float NoiseScale;
-    float Tiling;
-    float3 BaseColor;
-    float FadeStrength;
-    float FadeAlpha;
-    float NormalStrength;
-    float WaveSpeed;
     int TesselationLevel;
     float TessAlpha;
+    float Tiling;
+    float WaterDepth;
+    float3 SurfaceColor;
+    float3 DeepColor;
+    float RefractionSpeed;
+    float2 RefractionScale;
+    float RefractionStrength;
 }
 
 Texture2D normalTex2D : register(t7);
@@ -93,6 +92,8 @@ Texture2D noiseTex2D : register(t8);
 SamplerState noiseSampler : register(s8);
 Texture2D depthTex2D : register(t10);
 SamplerState depthSampler : register(s10);
+Texture2D refractionNormalTex2D : register(t11);
+SamplerState refractionNormalSampler : register(s11);
 
 #pragma Vertex
 struct VertexInput
@@ -241,8 +242,7 @@ struct DSOutput
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
     float4 ScreenPos : POSITION1;
-    float ViewDepth : POSITION2;
-    float3 WorldPosition : POSITION3;
+    float3 WorldPosition : POSITION2;
 };
 
 #define uvw TessCoord
@@ -298,7 +298,7 @@ DSOutput main(ConstantsHSOutput input, float3 TessCoord : SV_DomainLocation, con
     float3 n101 = normalize(float3(pnPatch[0].n101, pnPatch[1].n101, pnPatch[2].n101));
 
     // compute texcoords
-    float2 tc0 = TessCoord[2] * patch[0].TexCoord0 + TessCoord[0] * patch[1].TexCoord0 + TessCoord[1] * patch[2].TexCoord0;
+    float2 texCoord0 = TessCoord[2] * patch[0].TexCoord0 + TessCoord[0] * patch[1].TexCoord0 + TessCoord[1] * patch[2].TexCoord0;
 
     // normal
     // Barycentric normal
@@ -337,21 +337,18 @@ DSOutput main(ConstantsHSOutput input, float3 TessCoord : SV_DomainLocation, con
     // final position and normal
     float3 finalPos = (1.0 - TessAlpha) * barPos + TessAlpha * pnPos;
     
-    float2 noiseUV = tc0 + (Time.xy * NoiseFrequency);
-    float3 noiseValue = noiseTex2D.SampleLevel(noiseSampler, noiseUV, 0).rgb;
-    float3 posOffset = normal0 * noiseValue * NoiseScale;
+    //float2 noiseUV = tc0 + (Time.xy * NoiseFrequency);
+    //float3 noiseValue = noiseTex2D.SampleLevel(noiseSampler, noiseUV, 0).rgb;
+    //float3 posOffset = normal0 * noiseValue * NoiseScale;
+    //
+    //finalPos += posOffset;
     
-    finalPos += posOffset;
-    
-    float3 worldPosition = mul(Model, float4(finalPos, 1.0f));
-    output.Position = mul(ViewProjection, float4(worldPosition, 1.0f));
-    output.WorldPosition = worldPosition;
+    output.WorldPosition = mul(Model, float4(finalPos, 1.0f));
+    output.Position = mul(ViewProjection, float4(output.WorldPosition, 1.0f));
     output.Normal = mul(Model, float4(normal0, 0));
     output.Tangent = float4(mul(Model, tangent0).xyz, tangent0.w);
-    output.TexCoord0 = tc0 * 1;
-    //output.TexCoord0.y += (sin(Time) + 2.0f) * 0.5f * WaveSpeed;
+    output.TexCoord0 = texCoord0 * Tiling;
     output.ScreenPos = ComputeScreenPos(output.Position);
-    output.ViewDepth = mul(View, float4(output.WorldPosition, 1.0f)).z;
     
     return output;
 }
@@ -368,8 +365,7 @@ struct PixelInput
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
     float4 ScreenPos : POSITION1;
-    float ViewDepth : POSITION2;
-    float3 WorldPosition : POSITION3;
+    float3 WorldPosition : POSITION2;
 };
 
 struct LightingOutput
@@ -378,9 +374,9 @@ struct LightingOutput
 };
 
 // Forward declarations
-inline float LinearEyeDepth(float z)
+inline float LinearEyeDepth(float depth)
 {
-    return 1.0 / (ZBufferParams.z * z + ZBufferParams.w);
+    return 1.0 / (ZBufferParams.x * depth + ZBufferParams.y);
 }
 
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal);
@@ -388,48 +384,50 @@ float3 CalculateDiffuse(Light light, float3 worldNormal);
 float3 CalculateDirectionalLight(Light light, float3 worldNormal);
 float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal);
 
+float2 TextureMovement(float2 uv, float2 scale, float speed)
+{
+    float speed = Time.y * speed;
+    uv = (uv * scale) + float2(speed, speed);
+    return uv;
+}
+
+float3 BlendNormal(float3 A, float3 B)
+{
+    return normalize(float3(A.rg + B.rg, A.b * B.b));
+}
+
 float4 main(PixelInput input) : SV_Target
 {
+    // Calculate the screen uv coordinates
     float2 screenUV = input.ScreenPos.xy / input.ScreenPos.w;
+    
+    // Sample from the depth texture
     float depthSample = depthTex2D.Sample(depthSampler, screenUV);
-    float sceneZ = LinearEyeDepth(depthSample);
     
-    float fade = depthSample / 0.01552f;
-//    saturate(1.0f - ((partZ - sceneZ) / 25.0f));
+    // Linearize the depth sample
+    float sceneZ = 1.0f - (LinearEyeDepth(depthSample) / ProjectionParams.z);
     
-    return float4(fade, fade, fade, 1);
-    float3 color = BaseColor;
-    color *= fade;
+    // Linearize the input depth
+    float eyeZ = 1.0f - (LinearEyeDepth(input.Position.z) / ProjectionParams.z);
     
-    float2 scrollUV = input.TexCoord0;
+    // Calculate the distance between the eye depth and sample depth, scaled by the water's depth
+    float fade = saturate((eyeZ - sceneZ) * WaterDepth);
     
-    float3 worldNormal = normalize(input.Normal);
+    // Lerp between the surface and deep color
+    float3 FadeColor = lerp(SurfaceColor, DeepColor, fade);
     
-    float3 texNormal = normalTex2D.Sample(normalSampler, scrollUV);
-    bool blankNormalMap = texNormal.x == 0.0f && texNormal.y == 0.0f && texNormal.z == 0.0f;
     
-    if (!blankNormalMap)
-    {
-        // Move the texture normal from 0.0 - 1.0 space to -1.0 to 1.0
-        texNormal = (2.0f * texNormal) - 1.0f;
-        
-        // "Orthogonalize" the tangent
-        float3 tangent = normalize(input.Tangent.xyz - dot(input.Tangent.xyz, worldNormal) * worldNormal);
-        
-        // Calculate the binormal
-        float3 binormal = input.Tangent.w * cross(worldNormal, tangent);
-        
-        // Create the tex-space matrix and generate the final surface normal
-        float3x3 texSpace = float3x3(tangent, binormal, worldNormal);
-        worldNormal = mul(texNormal.xyz, texSpace);
-    }
+    // Refraction start
+    float2 refactionUV = TextureMovement(input.TexCoord0, RefractionScale, RefractionSpeed);
+    float2 inverseRefactionUV = TextureMovement(input.TexCoord0, RefractionScale, -RefractionSpeed);
     
-    worldNormal *= fade * NormalStrength;
+    float3 refractionNormal = refractionNormalTex2D.Sample(refractionNormalSampler, refactionUV);
+    float3 inverseRefractionNormal = refractionNormalTex2D.Sample(refractionNormalSampler, inverseRefactionUV);
+    float3 blendRefractionNormal = BlendNormal(refractionNormal, inverseRefractionNormal) * RefractionStrength * 0.2f;
     
-    LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal);
+    float3 refactionPos = blendRefractionNormal + input.ScreenPos.xyz;
     
-    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb;
-    return float4(color, fade * FadeAlpha) * float4(finalLighting, 1.0f);
+    return float4(FadeColor, 1);
 }
 
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal)

@@ -167,10 +167,11 @@ namespace Odyssey
 			GlobalData globalData;
 			if (Renderer::ReverseDepthEnabled())
 			{
-				globalData.ZBufferParams.x = -1.0f + (camera->GetFarClip() / camera->GetNearClip());
+				//{ f/n - 1,   1, (1/n - 1/f), 1/f }
+				globalData.ZBufferParams.x = (camera->GetNearClip() / camera->GetFarClip() - 1.0f);
 				globalData.ZBufferParams.y = 1.0f;
-				globalData.ZBufferParams.z = globalData.ZBufferParams.x / camera->GetFarClip();
-				globalData.ZBufferParams.w = 1.0f / camera->GetFarClip();
+				globalData.ZBufferParams.z = (1.0f / camera->GetFarClip()) - (1.0f / camera->GetNearClip());
+				globalData.ZBufferParams.w = 1.0f / camera->GetNearClip();
 			}
 			else
 			{
@@ -270,6 +271,8 @@ namespace Odyssey
 					uint32_t index = setPass.ShaderBindings["depthSampler"].Index;
 					m_PushDescriptors->AddTexture(cameraDepthTexture, index);
 				}
+
+				commandBuffer->SetDepthBias(-1.0f, 0.0f, -1.25f);
 
 				// Push the descriptors into the command buffer
 				commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), setPass.GraphicsPipeline);
