@@ -302,5 +302,7 @@ namespace Odyssey
 
 		// Store the render queue
 		RenderQueue = material->GetRenderQueue();
+
+		WriteDepth = material->GetDepthWrite();
 	}
 }

@@ -240,7 +240,7 @@ struct DSOutput
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
-    float4 PositionCS : POSITION1;
+    float4 ScreenPos : POSITION1;
     float ViewDepth : POSITION2;
     float3 WorldPosition : POSITION3;
 };
@@ -261,6 +261,14 @@ PnPatch GetPnPatch(float pnPatch[10])
     output.n011 = pnPatch[8];
     output.n101 = pnPatch[9];
     return output;
+}
+
+inline float4 ComputeScreenPos(float4 pos)
+{
+    float4 o = pos * 0.5f;
+    o.xy = float2(o.x, o.y * ProjectionParams.x) + o.w;
+    o.zw = pos.zw;
+    return o;
 }
 
 [domain("tri")]
@@ -340,9 +348,9 @@ DSOutput main(ConstantsHSOutput input, float3 TessCoord : SV_DomainLocation, con
     output.WorldPosition = worldPosition;
     output.Normal = mul(Model, float4(normal0, 0));
     output.Tangent = float4(mul(Model, tangent0).xyz, tangent0.w);
-    output.TexCoord0 = tc0 * Tiling;
-    output.TexCoord0.y += (sin(Time) + 2.0f) * 0.5f * WaveSpeed;
-    output.PositionCS = output.Position;
+    output.TexCoord0 = tc0 * 1;
+    //output.TexCoord0.y += (sin(Time) + 2.0f) * 0.5f * WaveSpeed;
+    output.ScreenPos = ComputeScreenPos(output.Position);
     output.ViewDepth = mul(View, float4(output.WorldPosition, 1.0f)).z;
     
     return output;
@@ -359,7 +367,7 @@ struct PixelInput
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 TexCoord0 : TEXCOORD0;
-    float4 PositionCS : POSITION1;
+    float4 ScreenPos : POSITION1;
     float ViewDepth : POSITION2;
     float3 WorldPosition : POSITION3;
 };
@@ -375,14 +383,6 @@ inline float LinearEyeDepth(float z)
     return 1.0 / (ZBufferParams.z * z + ZBufferParams.w);
 }
 
-inline float4 ComputeScreenPos(float4 pos)
-{
-    float4 o = pos * 0.5f;
-    o.xy = float2(o.x, o.y * ProjectionParams.x) + o.w * ScreenParams.zw;
-    o.zw = pos.zw;
-    return o;
-}
-
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal);
 float3 CalculateDiffuse(Light light, float3 worldNormal);
 float3 CalculateDirectionalLight(Light light, float3 worldNormal);
@@ -390,13 +390,14 @@ float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal
 
 float4 main(PixelInput input) : SV_Target
 {
-    float4 screenPos = ComputeScreenPos(input.PositionCS / input.PositionCS.w);
-    float depthSample = depthTex2D.Sample(depthSampler, screenPos.xy / screenPos.w);
+    float2 screenUV = input.ScreenPos.xy / input.ScreenPos.w;
+    float depthSample = depthTex2D.Sample(depthSampler, screenUV);
     float sceneZ = LinearEyeDepth(depthSample);
-    float partZ = input.ViewDepth;
     
-    float fade = saturate(FadeStrength * (partZ - sceneZ));
+    float fade = depthSample / 0.01552f;
+//    saturate(1.0f - ((partZ - sceneZ) / 25.0f));
     
+    return float4(fade, fade, fade, 1);
     float3 color = BaseColor;
     color *= fade;
     

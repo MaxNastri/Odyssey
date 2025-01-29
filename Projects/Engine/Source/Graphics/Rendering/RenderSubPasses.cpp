@@ -80,6 +80,9 @@ namespace Odyssey
 
 		for (SetPass& setPass : renderScene->SetPasses[RenderQueue::Opaque])
 		{
+			if (!setPass.WriteDepth)
+				continue;
+
 			// Skinned
 			for (size_t i = 0; i < setPass.Drawcalls.size(); i++)
 			{

@@ -97,6 +97,7 @@ namespace Odyssey
 		std::map<ShaderType, ResourceID> Shaders;
 		RenderQueue RenderQueue;
 		std::vector<Drawcall> Drawcalls;
+		bool WriteDepth = true;
 	};
 
 	class RenderScene
