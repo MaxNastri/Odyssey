@@ -56,8 +56,8 @@ namespace Sandbox
             }
             else if (m_Input.Alpha1)
             {
-                m_IsCasting = true;
-                m_Animator.SetBool("Casting", true);
+                //m_IsCasting = true;
+                //m_Animator.SetBool("Casting", true);
             }
 
             if (GrassRenderer != null)

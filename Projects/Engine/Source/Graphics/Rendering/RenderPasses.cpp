@@ -42,6 +42,9 @@ namespace Odyssey
 
 	void DepthPass::BeginPass(RenderPassParams& params)
 	{
+		if (params.renderingData->renderScene->SetPasses.size() == 0)
+			return;
+
 		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
@@ -58,6 +61,23 @@ namespace Odyssey
 		// Create the rendering attachment for the render target
 		std::vector<VkRenderingAttachmentInfoKHR> attachments;
 
+		if (Camera* camera = params.renderingData->renderScene->GetCamera(m_Camera))
+		{
+			if (camera->GetViewportWidth() != width || camera->GetViewportHeight() != height)
+			{
+				ResourceManager::Destroy(m_RenderTarget);
+
+				VulkanImageDescription imageDesc;
+				imageDesc.Width = width = camera->GetViewportWidth();
+				imageDesc.Height = height = camera->GetViewportHeight();
+				imageDesc.Format = TextureFormat::D32_SFLOAT;
+				imageDesc.ImageType = ImageType::Shadowmap;
+				imageDesc.Samples = 1;
+
+				m_RenderTarget = ResourceManager::Allocate<RenderTarget>(imageDesc, RenderTargetFlags::Depth);
+			}
+		}
+
 		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
 		ResourceID depthTextureID = renderTarget->GetDepthTexture();
 
@@ -71,9 +91,11 @@ namespace Odyssey
 
 			// Get the render texture's image
 			Ref<VulkanTexture> depthTexture = ResourceManager::GetResource<VulkanTexture>(depthTextureID);
+
 			ResourceID depthAttachmentID = depthTexture->GetImage();
 			width = depthTexture->GetWidth();
 			height = depthTexture->GetHeight();
+
 
 			// Load the image
 			auto depthAttachment = ResourceManager::GetResource<VulkanImage>(depthAttachmentID);
@@ -127,6 +149,9 @@ namespace Odyssey
 
 	void DepthPass::Execute(RenderPassParams& params)
 	{
+		if (params.renderingData->renderScene->SetPasses.size() == 0)
+			return;
+
 		RenderSubPassData subPassData;
 		subPassData.CameraTag = m_Camera;
 
@@ -138,6 +163,9 @@ namespace Odyssey
 
 	void DepthPass::EndPass(RenderPassParams& params)
 	{
+		if (params.renderingData->renderScene->SetPasses.size() == 0)
+			return;
+
 		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
