@@ -557,7 +557,7 @@ namespace Odyssey
 			}
 
 			depthAttachmentInfo.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-			depthAttachmentInfo.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			depthAttachmentInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 			attachments.push_back(depthAttachmentInfo);
 		}
 

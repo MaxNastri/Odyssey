@@ -35,11 +35,11 @@ namespace Odyssey
 		m_SceneViewPass->AddDebugSubPass();
 		m_SceneViewPass->SetCamera((uint8_t)Camera::Tag::SceneView);
 
-		//m_TransparentPass = new TransparentObjectsPass();
-		//m_TransparentPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		//m_TransparentPass->SetCamera((uint8_t)Camera::Tag::SceneView);
+		m_TransparentPass = new TransparentObjectsPass();
+		m_TransparentPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		m_TransparentPass->SetCamera((uint8_t)Camera::Tag::SceneView);
 		Renderer::PushRenderPass(m_SceneViewPass);
-		//Renderer::PushRenderPass(m_TransparentPass);
+		Renderer::PushRenderPass(m_TransparentPass);
 
 		// Create the render texture
 		CreateRenderTexture();
@@ -102,7 +102,7 @@ namespace Odyssey
 		// Render the scene view
 		ImGui::Image((void*)m_RenderTextureID, ImVec2(m_WindowSize.x, m_WindowSize.y));
 		m_SceneViewPass->SetRenderTarget(m_RenderTarget);
-		//m_TransparentPass->SetRenderTarget(m_RenderTarget);
+		m_TransparentPass->SetRenderTarget(m_RenderTarget);
 
 		// Draw the menu bar
 		DrawMenuBar(startCursor);

@@ -92,38 +92,26 @@ namespace Odyssey
 			}
 		}
 
+		for (size_t i = 0; i < m_ImageDesc.ArrayDepth; i++)
+		{
+			VkImageCopy copyRegion = {};
+			copyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			copyRegion.srcSubresource.mipLevel = 0;
+			copyRegion.srcSubresource.baseArrayLayer = (uint32_t)i;
+			copyRegion.srcSubresource.layerCount = 1;
 
-		// Generate a copy region for this new set of data
-		VkBufferImageCopy bufferCopyRegion = {};
-		bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		bufferCopyRegion.imageSubresource.mipLevel = 0;
-		bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
-		bufferCopyRegion.imageSubresource.layerCount = 1;
-		bufferCopyRegion.imageExtent.width = m_ImageDesc.Width;
-		bufferCopyRegion.imageExtent.height = m_ImageDesc.Height;
-		bufferCopyRegion.imageExtent.depth = 1;
-		bufferCopyRegion.imageOffset = { 0, 0, 0 };
-		bufferCopyRegion.bufferOffset = 0;
+			copyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			copyRegion.dstSubresource.mipLevel = 0;
+			copyRegion.dstSubresource.baseArrayLayer = (uint32_t)i;
+			copyRegion.dstSubresource.layerCount = 1;
 
-		m_CopyRegions.push_back(bufferCopyRegion);
-
-		VkImageCopy copyRegion = {};
-		copyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		copyRegion.srcSubresource.mipLevel = 0;
-		copyRegion.srcSubresource.baseArrayLayer = 0;
-		copyRegion.srcSubresource.layerCount = 1;
-
-		copyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		copyRegion.dstSubresource.mipLevel = 0;
-		copyRegion.dstSubresource.baseArrayLayer = 0;
-		copyRegion.dstSubresource.layerCount = 1;
-
-		copyRegion.extent.width = m_ImageDesc.Width;
-		copyRegion.extent.height = m_ImageDesc.Height;
-		copyRegion.extent.depth = 1;
-		copyRegion.dstOffset = { 0, 0, 0 };
-		copyRegion.srcOffset = { 0, 0, 0 };
-		m_ImageCopyRegions.push_back(copyRegion);
+			copyRegion.extent.width = m_ImageDesc.Width;
+			copyRegion.extent.height = m_ImageDesc.Height;
+			copyRegion.extent.depth = 1;
+			copyRegion.dstOffset = { 0, 0, 0 };
+			copyRegion.srcOffset = { 0, 0, 0 };
+			m_ImageCopyRegions.push_back(copyRegion);
+		}
 
 	}
 
@@ -162,38 +150,26 @@ namespace Odyssey
 			}
 		}
 
-		// Generate a copy region for this new set of data
-		VkBufferImageCopy bufferCopyRegion = {};
-		bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		bufferCopyRegion.imageSubresource.mipLevel = 0;
-		bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
-		bufferCopyRegion.imageSubresource.layerCount = 1;
-		bufferCopyRegion.imageExtent.width = m_ImageDesc.Width;
-		bufferCopyRegion.imageExtent.height = m_ImageDesc.Height;
-		bufferCopyRegion.imageExtent.depth = 1;
-		bufferCopyRegion.imageOffset = { 0, 0, 0 };
-		bufferCopyRegion.bufferOffset = 0;
+		for (size_t i = 0; i < m_ImageDesc.ArrayDepth; i++)
+		{
+			VkImageCopy copyRegion = {};
+			copyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			copyRegion.srcSubresource.mipLevel = 0;
+			copyRegion.srcSubresource.baseArrayLayer = (uint32_t)i;
+			copyRegion.srcSubresource.layerCount = 1;
 
-		m_CopyRegions.push_back(bufferCopyRegion);
+			copyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			copyRegion.dstSubresource.mipLevel = 0;
+			copyRegion.dstSubresource.baseArrayLayer = (uint32_t)i;
+			copyRegion.dstSubresource.layerCount = 1;
 
-		VkImageCopy copyRegion = {};
-		copyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		copyRegion.srcSubresource.mipLevel = 0;
-		copyRegion.srcSubresource.baseArrayLayer = 0;
-		copyRegion.srcSubresource.layerCount = 1;
-
-		copyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		copyRegion.dstSubresource.mipLevel = 0;
-		copyRegion.dstSubresource.baseArrayLayer = 0;
-		copyRegion.dstSubresource.layerCount = 1;
-
-		copyRegion.extent.width = m_ImageDesc.Width;
-		copyRegion.extent.height = m_ImageDesc.Height;
-		copyRegion.extent.depth = 1;
-		copyRegion.dstOffset = { 0, 0, 0 };
-		copyRegion.srcOffset = { 0, 0, 0 };
-		m_ImageCopyRegions.push_back(copyRegion);
-
+			copyRegion.extent.width = m_ImageDesc.Width;
+			copyRegion.extent.height = m_ImageDesc.Height;
+			copyRegion.extent.depth = 1;
+			copyRegion.dstOffset = { 0, 0, 0 };
+			copyRegion.srcOffset = { 0, 0, 0 };
+			m_ImageCopyRegions.push_back(copyRegion);
+		}
 	}
 
 	void VulkanImage::Destroy()
@@ -212,6 +188,21 @@ namespace Odyssey
 		ResourceID stagingBufferID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
 		Ref<VulkanBuffer> stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(stagingBufferID);
 		stagingBuffer->CopyData(buffer.GetSize(), buffer.GetData().data());
+
+		// Generate a copy region for this new set of data
+		VkBufferImageCopy bufferCopyRegion = {};
+		bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		bufferCopyRegion.imageSubresource.mipLevel = 0;
+		bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
+		bufferCopyRegion.imageSubresource.layerCount = 1;
+		bufferCopyRegion.imageExtent.width = m_ImageDesc.Width;
+		bufferCopyRegion.imageExtent.height = m_ImageDesc.Height;
+		bufferCopyRegion.imageExtent.depth = 1;
+		bufferCopyRegion.imageOffset = { 0, 0, 0 };
+		bufferCopyRegion.bufferOffset = 0;
+
+		m_CopyRegions.clear();
+		m_CopyRegions.push_back(bufferCopyRegion);
 
 		// Allocate a command buffer
 		ResourceID commandPoolID = m_Context->GetGraphicsCommandPool();
@@ -237,6 +228,23 @@ namespace Odyssey
 		ResourceID stagingBufferID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
 		Ref<VulkanBuffer> stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(stagingBufferID);
 		stagingBuffer->CopyData(buffer.GetSize(), buffer.GetData().data());
+
+		// Generate a copy region for this new set of data
+		for (size_t i = 0; i < arrayDepth; i++)
+		{
+			VkBufferImageCopy bufferCopyRegion = {};
+			bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			bufferCopyRegion.imageSubresource.mipLevel = 0;
+			bufferCopyRegion.imageSubresource.baseArrayLayer = (uint32_t)i;
+			bufferCopyRegion.imageSubresource.layerCount = 1;
+			bufferCopyRegion.imageExtent.width = m_ImageDesc.Width;
+			bufferCopyRegion.imageExtent.height = m_ImageDesc.Height;
+			bufferCopyRegion.imageExtent.depth = 1;
+			bufferCopyRegion.imageOffset = { 0, 0, 0 };
+			bufferCopyRegion.bufferOffset = offset * i;
+
+			m_CopyRegions.push_back(bufferCopyRegion);
+		}
 
 		// Allocate a command buffer
 		Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
@@ -327,7 +335,7 @@ namespace Odyssey
 			barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
 			srcStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-			dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+			dstStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 		}
 		else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
 		{
