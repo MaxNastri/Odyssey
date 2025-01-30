@@ -398,7 +398,7 @@ GeometryOutput GenerateGrassVertex(float3 position, float width, float height, f
     return GetOutput(localPosition, localNormal, uv);
 }
 
-[maxvertexcount(3 * (BLADE_SEGMENTS * 2 + 1) + 3)]
+[maxvertexcount((BLADE_SEGMENTS * 2 + 1) + 3)]
 void main(uint primitiveID : SV_PrimitiveID, triangle GeometryInput input[3], inout TriangleStream<GeometryOutput> triStream)
 {
     for (int index = 0; index < 3; index++)

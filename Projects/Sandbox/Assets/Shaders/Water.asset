@@ -11,7 +11,7 @@ Properties:
     Default Value: 1
   - Name: Tiling
     Type: Float
-    Default Value: 3
+    Default Value: 1
   - Name: WaterDepth
     Type: Float
     Default Value: 15
@@ -21,3 +21,12 @@ Properties:
   - Name: DeepColor
     Type: Float3
     Default Value: 'x: 0 y: 0.37010694 z: 1'
+  - Name: RefractionSpeed
+    Type: Float
+    Default Value: 1
+  - Name: RefractionScale
+    Type: Float2
+    Default Value: 'x: 1 y: 1'
+  - Name: RefractionStrength
+    Type: Float
+    Default Value: 1

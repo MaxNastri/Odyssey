@@ -11,6 +11,8 @@ Property Textures:
     Texture: 10016760160682846492
   - Property: normalSampler
     Texture: 5202024277476646360
+  - Property: refractionNormalSampler
+    Texture: 5202024277476646360
 Properties:
   - Name: TesselationLevel
     Type: Int32
@@ -26,16 +28,16 @@ Properties:
     Value: 15
   - Name: SurfaceColor
     Type: Float3
-    Value: 'x: 0 y: 0.8932384 z: 0.46410233'
+    Value: 'x: 0 y: 0.62633467 z: 1'
   - Name: DeepColor
     Type: Float3
-    Value: 'x: 0 y: 0.37010694 z: 1'
+    Value: 'x: 0 y: 0.35931677 z: 0.6156584'
   - Name: RefractionSpeed
     Type: Float
-    Value: 0
+    Value: 0.1
   - Name: RefractionScale
     Type: Float2
-    Value: 'x: 0 y: 0'
+    Value: 'x: 1 y: 1'
   - Name: RefractionStrength
     Type: Float
-    Value: 0
+    Value: 1

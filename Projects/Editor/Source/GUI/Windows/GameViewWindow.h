@@ -8,6 +8,7 @@
 namespace Odyssey
 {
 	class RenderObjectsPass;
+	class TransparentObjectsPass;
 	class VulkanTextureSampler;
 	struct PlaymodeStateChangedEvent;
 
@@ -42,6 +43,7 @@ namespace Odyssey
 
 	private:
 		Ref<RenderObjectsPass> m_GameViewPass;
+		Ref<TransparentObjectsPass> m_TransparentPass;
 		GameObject m_MainCamera;
 	};
 }

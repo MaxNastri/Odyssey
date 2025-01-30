@@ -423,15 +423,21 @@ float4 main(PixelInput input) : SV_Target
     float2 refactionUV = TextureMovement(input.TexCoord0, RefractionScale, RefractionSpeed);
     float2 inverseRefactionUV = TextureMovement(input.TexCoord0, RefractionScale, -RefractionSpeed);
     
+    // Sample the normal map twice, once with forward movement and once with reverse movement
     float3 refractionNormal = refractionNormalTex2D.Sample(refractionNormalSampler, refactionUV);
     float3 inverseRefractionNormal = refractionNormalTex2D.Sample(refractionNormalSampler, inverseRefactionUV);
-    float3 blendRefractionNormal = BlendNormal(refractionNormal, inverseRefractionNormal) * RefractionStrength * 0.2f;
     
-    float3 refactionPos = blendRefractionNormal + input.ScreenPos.xyz;
+    // Blend the normals together and apply the refraction strength
+    float3 blendRefractionNormal = BlendNormal(refractionNormal, inverseRefractionNormal) * RefractionStrength * 0.1f;
     
-    float3 cameraColor = cameraColorTex2D.SampleLevel(cameraColorSampler, screenUV, 0);
-    return float4(cameraColor.r * 2.0f, cameraColor.g, cameraColor.b, 1.0f);
-    return float4(FadeColor, 1);
+    // Apply a linear fall-off based on how close the vertex is to the edge of the screen
+    float2 refractionPos = lerp(float2(0, 0), blendRefractionNormal.xy, float2(1, 1) - screenUV) + screenUV;
+    
+    // Sample the camera color texture and distort it based on the refraction position
+    float3 refractionColor = cameraColorTex2D.SampleLevel(cameraColorSampler, refractionPos, 0);
+    
+    return float4(lerp(FadeColor, refractionColor, 0.75f), 1.0f);
+
 }
 
 LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal)

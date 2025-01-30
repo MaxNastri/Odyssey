@@ -17,7 +17,7 @@ Properties:
     Value: 35
   - Name: TessAlpha
     Type: Float
-    Value: 1
+    Value: 0
   - Name: DistortionTiling
     Type: Float
     Value: 0.01

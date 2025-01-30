@@ -31,7 +31,7 @@ namespace Odyssey
 			image->SetData(*buffer, description.ArrayDepth);
 
 		// Create a sampler
-		m_Sampler = ResourceManager::Allocate<VulkanTextureSampler>(m_Image);
+		m_Sampler = ResourceManager::Allocate<VulkanTextureSampler>(m_Image, m_Description.ImageType == ImageType::RenderTexture);
 		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(m_Sampler);
 
 		// Render textures need to transition to an appropriate layout on creation

@@ -34,7 +34,7 @@ namespace Odyssey
 		}
 	}
 
-	VulkanTextureSampler::VulkanTextureSampler(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID imageID)
+	VulkanTextureSampler::VulkanTextureSampler(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID imageID, bool clamp)
 		: Resource(id)
 	{
 		m_Context = context;
@@ -45,7 +45,7 @@ namespace Odyssey
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
 		samplerInfo.minFilter = VK_FILTER_LINEAR;
-		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeU = clamp ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE : VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerInfo.addressModeV = samplerInfo.addressModeU;
 		samplerInfo.addressModeW = samplerInfo.addressModeU;
 		samplerInfo.anisotropyEnable = VK_TRUE;
