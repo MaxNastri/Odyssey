@@ -194,8 +194,6 @@ namespace Odyssey
 		m_ClearValue = glm::vec4(0, 0, 0, 1);
 		m_SubPasses.push_back(std::make_shared<SkyboxSubPass>());
 		m_SubPasses.push_back(std::make_shared<RenderObjectSubPass>(RenderQueue::Opaque));
-		m_SubPasses.push_back(std::make_shared<RenderObjectSubPass>(RenderQueue::Transparent));
-		m_SubPasses.push_back(std::make_shared<ParticleSubPass>());
 
 		for (auto& subPass : m_SubPasses)
 		{
@@ -311,7 +309,7 @@ namespace Odyssey
 			}
 
 			depthAttachmentInfo.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-			depthAttachmentInfo.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			depthAttachmentInfo.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 			depthAttachmentInfo.clearValue = clearValue;
 			attachments.push_back(depthAttachmentInfo);
 		}
@@ -401,6 +399,8 @@ namespace Odyssey
 			Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorResolveTextureID);
 			commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		}
+
+		params.ColorTextures[m_Camera] = colorTextureID;
 	}
 
 	void RenderObjectsPass::AddDebugSubPass()
@@ -415,6 +415,238 @@ namespace Odyssey
 		auto subPass = std::make_shared<Opaque2DSubPass>();
 		subPass->Setup();
 		m_SubPasses.push_back(subPass);
+	}
+
+	TransparentObjectsPass::TransparentObjectsPass()
+	{
+		m_SubPasses.push_back(std::make_shared<RenderObjectSubPass>(RenderQueue::Transparent));
+		m_SubPasses.push_back(std::make_shared<ParticleSubPass>());
+
+		for (auto& subPass : m_SubPasses)
+		{
+			subPass->Setup();
+		}
+	}
+
+	void TransparentObjectsPass::BeginPass(RenderPassParams& params)
+	{
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+		ResourceID colorAttachmentImage;
+		uint32_t width = 0;
+		uint32_t height = 0;
+
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
+		ResourceID colorTextureID = renderTarget->GetColorTexture();
+
+
+		ResourceID colorResolveTextureID = renderTarget->GetColorResolveTexture();
+
+		// Extract the render target and width/height
+		if (colorTextureID.IsValid())
+		{
+			Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(colorTextureID);
+			colorAttachmentImage = colorTexture->GetImage();
+			width = colorTexture->GetWidth();
+			height = colorTexture->GetHeight();
+
+			if (m_CameraColorTexture.IsValid())
+			{
+				Ref<VulkanTexture> cameraColor = ResourceManager::GetResource<VulkanTexture>(m_CameraColorTexture);
+
+				if (cameraColor->GetWidth() != width || cameraColor->GetHeight() != height)
+				{
+					ResourceManager::Destroy(m_CameraColorTexture);
+					m_CameraColorTexture = ResourceID::Invalid();
+				}
+			}
+
+			if (!m_CameraColorTexture.IsValid())
+			{
+				VulkanImageDescription desc;
+				desc.ImageType = ImageType::RenderTexture;
+				desc.Width = width;
+				desc.Height = height;
+				desc.Format = TextureFormat::R8G8B8A8_UNORM;
+				desc.Samples = 8;
+				m_CameraColorTexture = ResourceManager::Allocate<VulkanTexture>(desc, nullptr);
+			}
+
+			Ref<VulkanTexture> cameraColor = ResourceManager::GetResource<VulkanTexture>(m_CameraColorTexture);
+
+			colorTexture->CopyToTexture(cameraColor->GetImage());
+
+			params.ColorTextures[m_Camera] = m_CameraColorTexture;
+
+			commandBuffer->TransitionLayouts(colorAttachmentImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+
+			// Check if msaa is enabled
+			if (colorResolveTextureID.IsValid())
+			{
+				Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorResolveTextureID);
+				commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			}
+		}
+		else
+		{
+			Log::Error("(OpaquePass) Invalid render target for opaque pass.");
+			return;
+		}
+
+		// Create the rendering attachment for the render target
+		std::vector<VkRenderingAttachmentInfoKHR> attachments;
+		{
+			auto colorAttachment = ResourceManager::GetResource<VulkanImage>(colorAttachmentImage);
+			VkRenderingAttachmentInfoKHR color_attachment_info{};
+			color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
+			color_attachment_info.pNext = VK_NULL_HANDLE;
+			color_attachment_info.imageView = colorAttachment->GetImageView();
+			color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
+
+			if (colorResolveTextureID.IsValid())
+			{
+				Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorResolveTextureID);
+				Ref<VulkanImage> resolveImage = ResourceManager::GetResource<VulkanImage>(resolveTexture->GetImage());
+
+				color_attachment_info.resolveMode = VK_RESOLVE_MODE_AVERAGE_BIT;
+				color_attachment_info.resolveImageView = resolveImage->GetImageView();
+				color_attachment_info.resolveImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			}
+
+			color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+			color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+
+			attachments.push_back(color_attachment_info);
+		}
+
+		ResourceID depthTextureID = renderTarget->GetDepthTexture();
+		ResourceID depthResolveTextureID = renderTarget->GetDepthResolveTexture();
+
+		if (depthTextureID.IsValid())
+		{
+			VkClearValue clearValue;
+			if (Renderer::ReverseDepthEnabled())
+				clearValue.depthStencil = { 0.0f, 0 };
+			else
+				clearValue.depthStencil = { 1.0f, 0 };
+
+			// Get the render texture's image
+			Ref<VulkanTexture> depthTexture = ResourceManager::GetResource<VulkanTexture>(depthTextureID);
+			Ref<VulkanImage> depthImage = ResourceManager::GetResource<VulkanImage>(depthTexture->GetImage());
+			ResourceID depthAttachmentID = depthTexture->GetImage();
+
+			// Load the image
+			auto depthAttachment = ResourceManager::GetResource<VulkanImage>(depthAttachmentID);
+
+			VkRenderingAttachmentInfoKHR depthAttachmentInfo{};
+			depthAttachmentInfo.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
+			depthAttachmentInfo.pNext = VK_NULL_HANDLE;
+			depthAttachmentInfo.imageView = depthAttachment->GetImageView();
+			depthAttachmentInfo.imageLayout = depthAttachment->GetLayout();
+			depthAttachmentInfo.resolveMode = VK_RESOLVE_MODE_NONE;
+
+			if (depthResolveTextureID.IsValid())
+			{
+				Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(depthResolveTextureID);
+				Ref<VulkanImage> resolveImage = ResourceManager::GetResource<VulkanImage>(resolveTexture->GetImage());
+				depthAttachmentInfo.resolveMode = VK_RESOLVE_MODE_MIN_BIT;
+				depthAttachmentInfo.resolveImageView = resolveImage->GetImageView();
+				depthAttachmentInfo.resolveImageLayout = resolveImage->GetLayout();
+			}
+
+			depthAttachmentInfo.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+			depthAttachmentInfo.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			attachments.push_back(depthAttachmentInfo);
+		}
+
+		// Rendering info
+		VkRenderingInfoKHR rendering_info = {};
+		rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
+		rendering_info.pNext = VK_NULL_HANDLE;
+		rendering_info.flags = 0;
+		rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{width, height} };
+		rendering_info.layerCount = 1;
+		rendering_info.viewMask = 0;
+		rendering_info.colorAttachmentCount = 1;
+		rendering_info.pColorAttachments = &attachments[0];
+		rendering_info.pDepthAttachment = attachments.size() > 1 ? &attachments[1] : VK_NULL_HANDLE;
+		rendering_info.pStencilAttachment = attachments.size() > 1 ? &attachments[1] : VK_NULL_HANDLE;
+
+		// Begin dynamic rendering
+		commandBuffer->BeginRendering(rendering_info);
+
+		// Viewport
+		{
+			VkViewport viewport{};
+			viewport.x = 0.0f;
+			viewport.y = height;
+			viewport.width = (float)width;
+			viewport.height = -1.0f * (float)height;
+			viewport.minDepth = 0.0f;
+			viewport.maxDepth = 1.0f;
+			commandBuffer->BindViewport(viewport);
+		}
+
+		// Scissor
+		{
+			VkRect2D scissor{};
+			scissor.offset = { 0, 0 };
+			scissor.extent = VkExtent2D{ width, height };
+			commandBuffer->SetScissor(scissor);
+		}
+	}
+
+	void TransparentObjectsPass::Execute(RenderPassParams& params)
+	{
+		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
+
+		RenderSubPassData subPassData;
+		subPassData.CameraTag = m_Camera;
+
+		if (!renderScene->GetCamera(m_Camera))
+			return;
+
+		// Check for a valid camera data index
+		if (subPassData.CameraTag < RenderScene::MAX_CAMERAS)
+		{
+			for (auto& renderSubPass : m_SubPasses)
+			{
+				renderSubPass->Execute(params, subPassData);
+			}
+		}
+	}
+
+	void TransparentObjectsPass::EndPass(RenderPassParams& params)
+	{
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+		// End dynamic rendering
+		commandBuffer->EndRendering();
+
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
+		ResourceID colorTextureID = renderTarget->GetColorTexture();
+
+		// Make sure the RT is valid
+		if (!colorTextureID.IsValid())
+		{
+			Log::Error("(OpaquePass) Invalid render target for OpaquePass");
+			return;
+		}
+
+		// Transition the backbuffer layout for presenting
+		Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(colorTextureID);
+		commandBuffer->TransitionLayouts(colorTexture->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+		ResourceID colorResolveTextureID = renderTarget->GetColorResolveTexture();
+		if (colorResolveTextureID.IsValid())
+		{
+			Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorResolveTextureID);
+			commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		}
+
 	}
 
 	void ImguiPass::BeginPass(RenderPassParams& params)

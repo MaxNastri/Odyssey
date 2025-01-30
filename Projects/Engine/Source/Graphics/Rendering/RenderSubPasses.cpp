@@ -241,6 +241,11 @@ namespace Odyssey
 					m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, index);
 				}
 
+				if (setPass.ShaderBindings.contains("cameraColorSampler") && params.ColorTextures[subPassData.CameraTag].IsValid())
+				{
+					uint32_t index = setPass.ShaderBindings["cameraColorSampler"].Index;
+					m_PushDescriptors->AddTexture(params.ColorTextures[subPassData.CameraTag], index);
+				}
 				if (setPass.MaterialBuffer.IsValid())
 				{
 					uint32_t index = setPass.ShaderBindings["MaterialData"].Index;

@@ -94,6 +94,8 @@ Texture2D depthTex2D : register(t10);
 SamplerState depthSampler : register(s10);
 Texture2D refractionNormalTex2D : register(t11);
 SamplerState refractionNormalSampler : register(s11);
+Texture2D cameraColorTex2D : register(t9);
+SamplerState cameraColorSampler : register(s9);
 
 #pragma Vertex
 struct VertexInput
@@ -386,8 +388,8 @@ float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal
 
 float2 TextureMovement(float2 uv, float2 scale, float speed)
 {
-    float speed = Time.y * speed;
-    uv = (uv * scale) + float2(speed, speed);
+    float timeSpeed = Time.y * speed;
+    uv = (uv * scale) + float2(timeSpeed, timeSpeed);
     return uv;
 }
 
@@ -427,6 +429,8 @@ float4 main(PixelInput input) : SV_Target
     
     float3 refactionPos = blendRefractionNormal + input.ScreenPos.xyz;
     
+    float3 cameraColor = cameraColorTex2D.Sample(cameraColorSampler, screenUV);
+    return float4(cameraColor, 1.0f);
     return float4(FadeColor, 1);
 }
 

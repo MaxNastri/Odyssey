@@ -185,7 +185,7 @@ namespace Odyssey
 		auto buffer = ResourceManager::GetResource<VulkanBuffer>(bufferID);
 		auto image = ResourceManager::GetResource<VulkanImage>(imageID);
 
-		auto copyRegions = image->GetCopyRegions();
+		auto copyRegions = image->GetBufferCopyRegions();
 		vkCmdCopyBufferToImage(m_CommandBuffer, buffer->m_Buffer, image->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, (uint32_t)copyRegions.size(), copyRegions.data());
 
 		uint32_t mipLevels = image->GetMipLevels();
@@ -289,6 +289,21 @@ namespace Odyssey
 		copyRegion.dstOffset = 0; // Optional
 		copyRegion.size = dataSize;
 		vkCmdCopyBuffer(m_CommandBuffer, srcBuffer->m_Buffer, dstBuffer->m_Buffer, 1, &copyRegion);
+	}
+
+	void VulkanCommandBuffer::CopyImageToImage(ResourceID source, ResourceID destination)
+	{
+		Ref<VulkanImage> sourceImage = ResourceManager::GetResource<VulkanImage>(source);
+		Ref<VulkanImage> destinationImage = ResourceManager::GetResource<VulkanImage>(destination);
+
+		VkImageLayout scrOriginalLayout = sourceImage->GetLayout();
+		TransitionLayouts(source, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+		TransitionLayouts(destination, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+		auto copyRegions = sourceImage->GetImageCopyRegions();
+
+		vkCmdCopyImage(m_CommandBuffer, sourceImage->GetImage(), sourceImage->GetLayout(),
+			destinationImage->GetImage(), destinationImage->GetLayout(), (uint32_t)copyRegions.size(), copyRegions.data());
 	}
 
 	void VulkanCommandBuffer::BindIndexBuffer(ResourceID indexBufferID)

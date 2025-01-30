@@ -55,7 +55,8 @@ namespace Odyssey
 		float GetMipBias() { return m_ImageDesc.MipBias; }
 		TextureFormat GetFormat() { return m_ImageDesc.Format; }
 		VkImageLayout GetLayout() { return imageLayout; }
-		std::vector<VkBufferImageCopy> GetCopyRegions() { return m_CopyRegions; }
+		std::vector<VkBufferImageCopy> GetBufferCopyRegions() { return m_CopyRegions; }
+		std::vector<VkImageCopy> GetImageCopyRegions() { return m_ImageCopyRegions; }
 
 	private:
 		uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
@@ -72,6 +73,7 @@ namespace Odyssey
 		VkImageView imageView;
 		VkImageLayout imageLayout;
 		std::vector<VkBufferImageCopy> m_CopyRegions;
+		std::vector<VkImageCopy> m_ImageCopyRegions;
 		bool isDepth = false;
 	};
 }

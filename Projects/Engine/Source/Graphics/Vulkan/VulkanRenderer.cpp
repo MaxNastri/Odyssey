@@ -186,11 +186,11 @@ namespace Odyssey
 			Log::Error("(renderer 4)");
 		}
 
-		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_GraphicsCommandPools[s_FrameIndex]);
-		commandPool->Reset();
+		// Allocate a command buffer
+		Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+		ResourceID commandBufferID = commandPool->AllocateBuffer();
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
-		// Command buffer begin
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_GraphicsCommandBuffers[s_FrameIndex]);
 		commandBuffer->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
@@ -203,6 +203,10 @@ namespace Odyssey
 			Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorResolveTexture());
 			commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		}
+
+		commandBuffer->EndCommands();
+		commandBuffer->SubmitGraphics();
+		commandPool->ReleaseBuffer(m_GraphicsCommandBuffers[s_FrameIndex]);
 
 		currentFrame = &frame;
 		return true;
@@ -222,7 +226,6 @@ namespace Odyssey
 			}
 
 			// RenderPass begin
-			auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_GraphicsCommandBuffers[s_FrameIndex]);
 			m_RenderingData->frame = frame;
 			m_RenderingData->renderScene = m_RenderScenes[s_FrameIndex];
 			m_RenderingData->width = width;
@@ -236,20 +239,47 @@ namespace Odyssey
 
 			for (Ref<RenderPass>& renderPass : m_RenderPasses)
 			{
+				Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+				ResourceID commandBufferID = commandPool->AllocateBuffer();
+				Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+				params.GraphicsCommandBuffer = commandBufferID;
+				commandBuffer->BeginCommands();
 				renderPass->BeginPass(params);
 				renderPass->Execute(params);
 				renderPass->EndPass(params);
+
+				commandBuffer->EndCommands();
+				commandBuffer->SubmitGraphics();
+				commandPool->ReleaseBuffer(commandBufferID);
 			}
 
 			// IMGUI always renders last
 			if (m_IMGUIPass)
 			{
+				Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+				ResourceID commandBufferID = commandPool->AllocateBuffer();
+				Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+				
+				params.GraphicsCommandBuffer = commandBufferID;
+				commandBuffer->BeginCommands();
 				m_IMGUIPass->BeginPass(params);
 				m_IMGUIPass->Execute(params);
 				m_IMGUIPass->EndPass(params);
+
+				commandBuffer->EndCommands();
+				commandBuffer->SubmitGraphics();
+				commandPool->ReleaseBuffer(commandBufferID);
 			}
 
 			Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(frame->GetFrameTexture());
+
+			// Allocate a command buffer
+			Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+			ResourceID commandBufferID = commandPool->AllocateBuffer();
+			Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+			commandBuffer->BeginCommands();
 
 			if (renderTarget->GetColorResolveTexture().IsValid())
 			{

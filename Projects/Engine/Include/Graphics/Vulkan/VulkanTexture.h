@@ -27,6 +27,9 @@ namespace Odyssey
 		VkWriteDescriptorSet GetDescriptorInfo();
 
 	public:
+		void CopyToTexture(ResourceID destination);
+
+	public:
 		void SetSampler(ResourceID samplerID) { m_Sampler = samplerID; }
 		
 	private:
@@ -34,5 +37,6 @@ namespace Odyssey
 		ResourceID m_Sampler;
 		VkDescriptorImageInfo descriptor;
 		VulkanImageDescription m_Description;
+		std::shared_ptr<VulkanContext> m_Context;
 	};
 }

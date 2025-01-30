@@ -24,6 +24,7 @@ namespace Odyssey
 		ResourceID GraphicsCommandBuffer;
 		ResourceID FrameTexture;
 		std::map<uint8_t, ResourceID> DepthTextures;
+		std::map<uint8_t, ResourceID> ColorTextures;
 
 	public:
 		ResourceID Shadowmap() { return DepthTextures[0]; }
@@ -84,6 +85,21 @@ namespace Odyssey
 
 	private:
 		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
+	};
+
+	class TransparentObjectsPass : public RenderPass
+	{
+	public:
+		TransparentObjectsPass();
+
+	public:
+		virtual void BeginPass(RenderPassParams& params) override;
+		virtual void Execute(RenderPassParams& params) override;
+		virtual void EndPass(RenderPassParams& params) override;
+
+	private:
+		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
+		ResourceID m_CameraColorTexture;
 	};
 
 	class ImguiPass : public RenderPass

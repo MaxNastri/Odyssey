@@ -40,6 +40,7 @@ namespace Odyssey
 		void CopyBufferToImage(ResourceID bufferID, ResourceID imageID, uint32_t width, uint32_t height);
 		void BindVertexBuffer(ResourceID vertexBufferID);
 		void CopyBufferToBuffer(ResourceID source, ResourceID destination, size_t dataSize);
+		void CopyImageToImage(ResourceID source, ResourceID destination);
 		void BindIndexBuffer(ResourceID indexBufferID);
 		void PushDescriptorsGraphics(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
 		void PushDescriptorsCompute(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
