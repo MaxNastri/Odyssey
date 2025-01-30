@@ -16,7 +16,7 @@ Property Textures:
 Properties:
   - Name: TesselationLevel
     Type: Int32
-    Value: 25
+    Value: 10
   - Name: TessAlpha
     Type: Float
     Value: 1
@@ -25,13 +25,13 @@ Properties:
     Value: 2
   - Name: WaterDepth
     Type: Float
-    Value: 15
+    Value: 12
   - Name: SurfaceColor
-    Type: Float3
-    Value: 'x: 0 y: 0.62633467 z: 1'
+    Type: Float4
+    Value: 'x: 0 y: 0.98932385 z: 1 w: 0.47058824'
   - Name: DeepColor
-    Type: Float3
-    Value: 'x: 0 y: 0.35931677 z: 0.6156584'
+    Type: Float4
+    Value: 'x: 0 y: 0.28469753 z: 1 w: 0.47058824'
   - Name: RefractionSpeed
     Type: Float
     Value: 0.1
@@ -41,3 +41,33 @@ Properties:
   - Name: RefractionStrength
     Type: Float
     Value: 1
+  - Name: WaveHeightFrequency
+    Type: Float
+    Value: 1
+  - Name: WaveSpeed
+    Type: Float
+    Value: 1
+  - Name: WaveAmplitude
+    Type: Float
+    Value: 0.25
+  - Name: WaterDirection
+    Type: Float2
+    Value: 'x: 1 y: 1'
+  - Name: NormalStrength
+    Type: Float
+    Value: 1
+  - Name: FoamAmount
+    Type: Float
+    Value: 0.1
+  - Name: FoamSpeed
+    Type: Float
+    Value: 1
+  - Name: FoamScale
+    Type: Float2
+    Value: 'x: 50 y: 50'
+  - Name: FoamColor
+    Type: Float4
+    Value: 'x: 1 y: 1 z: 1 w: 0.78431374'
+  - Name: FoamCutoff
+    Type: Float
+    Value: 25

@@ -487,6 +487,7 @@ namespace Odyssey
 			params.ColorTextures[m_Camera] = m_CameraColorTexture;
 
 			commandBuffer->TransitionLayouts(colorAttachmentImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			commandBuffer->TransitionLayouts(cameraColor->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 			// Check if msaa is enabled
 			if (colorResolveTextureID.IsValid())

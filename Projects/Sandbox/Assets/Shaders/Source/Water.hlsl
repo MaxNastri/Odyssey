@@ -79,11 +79,21 @@ cbuffer MaterialData : register(b5)
     float TessAlpha;
     float Tiling;
     float WaterDepth;
-    float3 SurfaceColor;
-    float3 DeepColor;
+    float4 SurfaceColor;
+    float4 DeepColor;
     float RefractionSpeed;
     float2 RefractionScale;
     float RefractionStrength;
+    float WaveHeightFrequency;
+    float WaveSpeed;
+    float WaveAmplitude;
+    float2 WaterDirection;
+    float NormalStrength;
+    float FoamAmount;
+    float FoamSpeed;
+    float2 FoamScale;
+    float4 FoamColor;
+    float FoamCutoff;
 }
 
 Texture2D normalTex2D : register(t7);
@@ -273,6 +283,18 @@ inline float4 ComputeScreenPos(float4 pos)
     return o;
 }
 
+float3 ApplyWaves(float3 vPosition)
+{
+    float3 wavePos = vPosition;
+    float waveFrequency = vPosition.z * WaveHeightFrequency;
+    float waveSpeed = Time.y * WaveSpeed;
+    
+    float waveAmplitude = WaveAmplitude * (sin(waveSpeed + waveFrequency) + 1.0f) * 0.5f;
+    
+    wavePos.y += waveAmplitude;
+    return wavePos;
+}
+
 [domain("tri")]
 DSOutput main(ConstantsHSOutput input, float3 TessCoord : SV_DomainLocation, const OutputPatch<DomainInput, 3> patch)
 {
@@ -339,11 +361,7 @@ DSOutput main(ConstantsHSOutput input, float3 TessCoord : SV_DomainLocation, con
     // final position and normal
     float3 finalPos = (1.0 - TessAlpha) * barPos + TessAlpha * pnPos;
     
-    //float2 noiseUV = tc0 + (Time.xy * NoiseFrequency);
-    //float3 noiseValue = noiseTex2D.SampleLevel(noiseSampler, noiseUV, 0).rgb;
-    //float3 posOffset = normal0 * noiseValue * NoiseScale;
-    //
-    //finalPos += posOffset;
+    finalPos = ApplyWaves(finalPos);
     
     output.WorldPosition = mul(Model, float4(finalPos, 1.0f));
     output.Position = mul(ViewProjection, float4(output.WorldPosition, 1.0f));
@@ -389,7 +407,7 @@ float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal
 float2 TextureMovement(float2 uv, float2 scale, float speed)
 {
     float timeSpeed = Time.y * speed;
-    uv = (uv * scale) + float2(timeSpeed, timeSpeed);
+    uv = (uv * scale) + (float2(timeSpeed, timeSpeed) * WaterDirection);
     return uv;
 }
 
@@ -398,11 +416,8 @@ float3 BlendNormal(float3 A, float3 B)
     return normalize(float3(A.rg + B.rg, A.b * B.b));
 }
 
-float4 main(PixelInput input) : SV_Target
+float DepthFade(float2 screenUV, float vDepth)
 {
-    // Calculate the screen uv coordinates
-    float2 screenUV = input.ScreenPos.xy / input.ScreenPos.w;
-    
     // Sample from the depth texture
     float depthSample = depthTex2D.Sample(depthSampler, screenUV);
     
@@ -410,14 +425,55 @@ float4 main(PixelInput input) : SV_Target
     float sceneZ = 1.0f - (LinearEyeDepth(depthSample) / ProjectionParams.z);
     
     // Linearize the input depth
-    float eyeZ = 1.0f - (LinearEyeDepth(input.Position.z) / ProjectionParams.z);
+    float eyeZ = 1.0f - (LinearEyeDepth(vDepth) / ProjectionParams.z);
     
-    // Calculate the distance between the eye depth and sample depth, scaled by the water's depth
-    float fade = saturate((eyeZ - sceneZ) * WaterDepth);
+    // Calculate the distance between the eye depth and sample depth
+    return eyeZ - sceneZ;
+}
+
+float3 CalculateNormalStrength(float3 normal, float strength)
+{
+    return float3(normal.rg * strength, lerp(1, normal.b, saturate(strength)));
+}
+
+float2 GradientNoiseDir(float2 p)
+{
+    p = p % 289;
+    float x = (34 * p.x + 1) * p.x % 289 + p.y;
+    x = (34 * x + 1) * x % 289;
+    x = frac(x / 41) * 2 - 1;
+    return normalize(float2(x - floor(x + 0.5), abs(x) - 0.5));
+}
+
+float GradientNoiseValue(float2 p)
+{
+    float2 ip = floor(p);
+    float2 fp = frac(p);
+    float d00 = dot(GradientNoiseDir(ip), fp);
+    float d01 = dot(GradientNoiseDir(ip + float2(0, 1)), fp - float2(0, 1));
+    float d10 = dot(GradientNoiseDir(ip + float2(1, 0)), fp - float2(1, 0));
+    float d11 = dot(GradientNoiseDir(ip + float2(1, 1)), fp - float2(1, 1));
+    fp = fp * fp * fp * (fp * (fp * 6 - 15) + 10);
+    return lerp(lerp(d00, d01, fp.y), lerp(d10, d11, fp.y), fp.x);
+}
+
+float GradientNoise(float2 UV, float Scale)
+{
+    return GradientNoiseValue(UV * Scale) + 0.5;
+}
+
+float4 main(PixelInput input) : SV_Target
+{
+    // Calculate the screen uv coordinates
+    float2 screenUV = input.ScreenPos.xy / input.ScreenPos.w;
     
-    // Lerp between the surface and deep color
-    float3 FadeColor = lerp(SurfaceColor, DeepColor, fade);
+    // Calculate the depth fade and multiply by the water depth
+    float depthFade = DepthFade(screenUV, input.Position.z);
     
+    float waterDepthFade = saturate(depthFade * WaterDepth);
+    
+    // Lerp between the surface and deep color based on the depth fade
+    float4 waterColor = lerp(SurfaceColor, DeepColor, waterDepthFade);
     
     // Refraction start
     float2 refactionUV = TextureMovement(input.TexCoord0, RefractionScale, RefractionSpeed);
@@ -434,9 +490,30 @@ float4 main(PixelInput input) : SV_Target
     float2 refractionPos = lerp(float2(0, 0), blendRefractionNormal.xy, float2(1, 1) - screenUV) + screenUV;
     
     // Sample the camera color texture and distort it based on the refraction position
-    float3 refractionColor = cameraColorTex2D.SampleLevel(cameraColorSampler, refractionPos, 0);
+    float4 refractionColor = cameraColorTex2D.SampleLevel(cameraColorSampler, refractionPos, 0);
     
-    return float4(lerp(FadeColor, refractionColor, 0.75f), 1.0f);
+    // Adjust normals
+    float normalStrength = lerp(0.0f, NormalStrength, 1.0f - waterDepthFade);
+    float3 finalNormal = CalculateNormalStrength(blendRefractionNormal, normalStrength);
+    finalNormal.xy = (input.Normal.xy * 0.1f) + finalNormal.xy;
+    finalNormal = normalize(finalNormal);
+    
+    // Foam
+    float foamDepthFade = saturate(depthFade * FoamAmount) * FoamCutoff * 100.0f;
+    
+    float2 foamUVs = TextureMovement(input.TexCoord0, FoamScale, FoamSpeed);
+    float noise = GradientNoise(foamUVs, 1.0f);
+    
+    float foamAmount = step(foamDepthFade, noise);
+    float foamAlpha = foamAmount * FoamColor.a;
+    
+    float4 baseColor = lerp(waterColor, FoamColor, foamAlpha);
+    baseColor = lerp(refractionColor, baseColor, baseColor.a);
+    
+    LightingOutput lighting = CalculateLighting(input.WorldPosition, finalNormal);
+    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb;
+    
+    return float4(baseColor.rgb * finalLighting, baseColor.a);
 
 }
 

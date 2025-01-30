@@ -33,7 +33,7 @@ namespace Odyssey
 		{
 			VulkanPipelineInfo info;
 			info.Shaders = m_Shader->GetResourceMap();
-			info.CullMode = CullMode::Front;
+			info.CullMode = CullMode::Back;
 			info.DescriptorLayout = m_Shader->GetDescriptorLayout();
 			info.MSAACountOverride = 1;
 			info.ColorFormat = TextureFormat::None;
@@ -48,7 +48,7 @@ namespace Odyssey
 		{
 			VulkanPipelineInfo info;
 			info.Shaders = m_SkinnedShader->GetResourceMap();
-			info.CullMode = CullMode::Front;
+			info.CullMode = CullMode::Back;
 			info.DescriptorLayout = m_SkinnedShader->GetDescriptorLayout();
 			info.MSAACountOverride = 1;
 			info.ColorFormat = TextureFormat::None;

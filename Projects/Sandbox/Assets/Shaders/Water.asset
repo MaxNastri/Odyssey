@@ -16,11 +16,11 @@ Properties:
     Type: Float
     Default Value: 15
   - Name: SurfaceColor
-    Type: Float3
-    Default Value: 'x: 0.07829189 y: 1 z: 0'
+    Type: Float4
+    Default Value: 'x: 0 y: 0.8392157 z: 1 w: 0.6666667'
   - Name: DeepColor
-    Type: Float3
-    Default Value: 'x: 0 y: 0.37010694 z: 1'
+    Type: Float4
+    Default Value: 'x: 0 y: 0.540976 z: 0.6441281 w: 0.78039217'
   - Name: RefractionSpeed
     Type: Float
     Default Value: 1
@@ -30,3 +30,33 @@ Properties:
   - Name: RefractionStrength
     Type: Float
     Default Value: 1
+  - Name: WaveHeightFrequency
+    Type: Float
+    Default Value: 1
+  - Name: WaveSpeed
+    Type: Float
+    Default Value: 1
+  - Name: WaveAmplitude
+    Type: Float
+    Default Value: 1
+  - Name: WaterDirection
+    Type: Float2
+    Default Value: 'x: 1 y: 1'
+  - Name: NormalStrength
+    Type: Float
+    Default Value: 1
+  - Name: FoamAmount
+    Type: Float
+    Default Value: 1
+  - Name: FoamSpeed
+    Type: Float
+    Default Value: 1
+  - Name: FoamScale
+    Type: Float2
+    Default Value: 'x: 1 y: 1'
+  - Name: FoamColor
+    Type: Float4
+    Default Value: 'x: 1 y: 1 z: 1 w: 1'
+  - Name: FoamCutoff
+    Type: Float
+    Default Value: 2
