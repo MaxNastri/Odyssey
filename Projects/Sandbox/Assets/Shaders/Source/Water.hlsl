@@ -429,8 +429,8 @@ float4 main(PixelInput input) : SV_Target
     
     float3 refactionPos = blendRefractionNormal + input.ScreenPos.xyz;
     
-    float3 cameraColor = cameraColorTex2D.Sample(cameraColorSampler, screenUV);
-    return float4(cameraColor, 1.0f);
+    float3 cameraColor = cameraColorTex2D.SampleLevel(cameraColorSampler, screenUV, 0);
+    return float4(cameraColor.r * 2.0f, cameraColor.g, cameraColor.b, 1.0f);
     return float4(FadeColor, 1);
 }
 

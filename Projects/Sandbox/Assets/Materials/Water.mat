@@ -30,3 +30,12 @@ Properties:
   - Name: DeepColor
     Type: Float3
     Value: 'x: 0 y: 0.37010694 z: 1'
+  - Name: RefractionSpeed
+    Type: Float
+    Value: 0
+  - Name: RefractionScale
+    Type: Float2
+    Value: 'x: 0 y: 0'
+  - Name: RefractionStrength
+    Type: Float
+    Value: 0

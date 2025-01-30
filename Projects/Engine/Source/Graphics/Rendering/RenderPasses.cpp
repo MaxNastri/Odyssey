@@ -440,7 +440,6 @@ namespace Odyssey
 		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
 		ResourceID colorTextureID = renderTarget->GetColorTexture();
 
-
 		ResourceID colorResolveTextureID = renderTarget->GetColorResolveTexture();
 
 		// Extract the render target and width/height
@@ -469,13 +468,21 @@ namespace Odyssey
 				desc.Width = width;
 				desc.Height = height;
 				desc.Format = TextureFormat::R8G8B8A8_UNORM;
-				desc.Samples = 8;
+				desc.Samples = 1;
 				m_CameraColorTexture = ResourceManager::Allocate<VulkanTexture>(desc, nullptr);
 			}
 
 			Ref<VulkanTexture> cameraColor = ResourceManager::GetResource<VulkanTexture>(m_CameraColorTexture);
 
-			colorTexture->CopyToTexture(cameraColor->GetImage());
+			if (colorResolveTextureID.IsValid())
+			{
+				Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorResolveTextureID);
+				resolveTexture->CopyToTexture(cameraColor->GetImage());
+			}
+			else
+			{
+				colorTexture->CopyToTexture(cameraColor->GetImage());
+			}
 
 			params.ColorTextures[m_Camera] = m_CameraColorTexture;
 
