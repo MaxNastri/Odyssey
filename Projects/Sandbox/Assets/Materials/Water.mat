@@ -16,13 +16,13 @@ Property Textures:
 Properties:
   - Name: TesselationLevel
     Type: Int32
-    Value: 10
+    Value: 32
   - Name: TessAlpha
     Type: Float
     Value: 1
   - Name: Tiling
     Type: Float
-    Value: 2
+    Value: 3
   - Name: WaterDepth
     Type: Float
     Value: 12
@@ -40,16 +40,16 @@ Properties:
     Value: 'x: 1 y: 1'
   - Name: RefractionStrength
     Type: Float
-    Value: 1
+    Value: 0.5
   - Name: WaveHeightFrequency
     Type: Float
-    Value: 1
+    Value: 2
   - Name: WaveSpeed
     Type: Float
-    Value: 1
+    Value: 0.5
   - Name: WaveAmplitude
     Type: Float
-    Value: 0.25
+    Value: 0.5
   - Name: WaterDirection
     Type: Float2
     Value: 'x: 1 y: 1'

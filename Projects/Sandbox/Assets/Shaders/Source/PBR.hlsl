@@ -61,20 +61,22 @@ cbuffer LightData : register(b4)
 cbuffer MaterialData : register(b5)
 {
     // RGB = Emissive Color, A = Emissive Power
+    float3 BaseColor;
+    float Roughness;
     float4 EmissiveColor;
     float alphaClip;
 }
 
-Texture2D diffuseTex2D : register(t6);
-SamplerState diffuseSampler : register(s6);
-Texture2D normalTex2D : register(t7);
-SamplerState normalSampler : register(s7);
-Texture2D noiseTex2D : register(t8);
-SamplerState noiseSampler : register(s8);
-Texture2D shadowmapTex2D : register(t9);
-SamplerState shadowmapSampler : register(s9);
-Texture2D depthTex2D : register(t10);
-SamplerState depthSampler : register(s10);
+Texture2D AlbedoMapTexture : register(t6);
+SamplerState AlbedoMapSampler : register(s6);
+Texture2D NormalMapTexture : register(t7);
+SamplerState NormalMapSampler : register(s7);
+Texture2D MetallicMapTexture : register(t8);
+SamplerState MetallicMapSampler : register(s8);
+Texture2D AOMapTexture : register(t9);
+SamplerState AOMapSampler : register(s9);
+Texture2D shadowmapTex2D : register(t10);
+SamplerState shadowmapSampler : register(s10);
 
 #pragma Vertex
 struct VertexInput
@@ -118,6 +120,10 @@ VertexOutput main(VertexInput input)
 #define DIRECTIONAL_LIGHT 0
 #define POINT_LIGHT 1
 #define SPOT_LIGHT 2
+#define HALF_MIN_SQRT 0.0078125
+static const float PI = 3.14159265359;
+static const float Inverse_PI = 0.318309886f;
+static const float Epsilon = 0.00001;
 
 struct PixelInput
 {
@@ -134,129 +140,166 @@ struct LightingOutput
     float3 Diffuse;
 };
 
-// Forward declarations
-LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord);
-float3 CalculateDiffuse(Light light, float3 worldNormal);
-float3 CalculateDirectionalLight(Light light, float3 worldNormal, float3 shadowCoord);
-float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal);
-float CalculateShadowFactor(float3 shadowCoord, float bias);
-float FilterPCF(float3 shadowCoord, float bias);
-
-float4 main(PixelInput input) : SV_Target
+struct BRDFData
 {
-    float3 worldNormal = normalize(input.Normal);
+    float3 albedo;
+    float3 diffuse;
+    float3 specular;
+    float reflectivity;
+    float perceptualRoughness;
+    float roughness;
+    float roughness2;
+    float grazingTerm;
     
-    float4 albedo = diffuseTex2D.Sample(diffuseSampler, input.TexCoord0);
-    float3 texNormal = normalTex2D.Sample(normalSampler, input.TexCoord0);
-    bool blankNormalMap = texNormal.x == 0.0f && texNormal.y == 0.0f && texNormal.z == 0.0f;
+    float normalizationTerm;
+    float roughness2MinusOne;
+};
+float3 CalculateNormal(float3 vNormal, float4 vTangent, float2 uv)
+{
+    float3 tangentNormal = NormalMapTexture.Sample(NormalMapSampler, uv).xyz * 2.0 - 1.0;
     
-    if (!blankNormalMap)
-    {
-        // Move the texture normal from 0.0 - 1.0 space to -1.0 to 1.0
-        texNormal = (2.0f * texNormal) - 1.0f;
-        
-        // "Orthogonalize" the tangent
-        float3 tangent = normalize(input.Tangent.xyz - dot(input.Tangent.xyz, worldNormal) * worldNormal);
-        
-        // Calculate the binormal
-        float3 binormal = input.Tangent.w * cross(worldNormal, tangent);
-        
-        // Create the tex-space matrix and generate the final surface normal
-        float3x3 texSpace = float3x3(tangent, binormal, worldNormal);
-        worldNormal = mul(texNormal.xyz, texSpace);
-    }
+    float3 T = normalize(vTangent.xyz - dot(vTangent.xyz, vNormal) * vNormal);
+    float3 N = normalize(vNormal);
+    float3 B = vTangent.w * normalize(cross(N, T));
+    float3x3 TBN = float3x3(T, B, N);
     
-    float3 shadowCoord = input.ShadowCoord.xyz;
-    shadowCoord.x = 0.5f + (shadowCoord.x * 0.5f);
-    shadowCoord.y = 0.5f - (shadowCoord.y * 0.5f);
-    
-    LightingOutput lighting = CalculateLighting(input.WorldPosition, worldNormal, shadowCoord);
-    
-    float3 finalLighting = lighting.Diffuse + AmbientColor.rgb + (EmissiveColor.rgb * EmissiveColor.a);
-    return float4(albedo.rgb, 1.0f) * float4(finalLighting, 1.0f);
+    return normalize(mul(tangentNormal, TBN));
 }
 
-LightingOutput CalculateLighting(float3 worldPosition, float3 worldNormal, float3 shadowCoord)
-{
-    LightingOutput output;
-    output.Diffuse = float4(0, 0, 0, 1);
-    
-    for (uint i = 0; i < LightCount; i++)
-    {
-        switch (SceneLights[i].Type)
-        {
-            case DIRECTIONAL_LIGHT:
-                output.Diffuse += CalculateDirectionalLight(SceneLights[i], worldNormal, shadowCoord);
-                break;
-            case POINT_LIGHT:
-                output.Diffuse += CalculatePointLight(SceneLights[i], worldPosition, worldNormal);
-                break;
-        }
+static float4 kDielectricSpec = float4(0.04, 0.04, 0.04, 1.0 - 0.04);
 
-    }
-    return output;
+half OneMinusReflectivityMetallic(half metallic)
+{
+    // We'll need oneMinusReflectivity, so
+    //   1-reflectivity = 1-lerp(dielectricSpec, 1, metallic) = lerp(1-dielectricSpec, 0, metallic)
+    // store (1-dielectricSpec) in kDielectricSpec.a, then
+    //   1-reflectivity = lerp(alpha, 0, metallic) = alpha + metallic*(0 - alpha) =
+    //                  = alpha - metallic * alpha
+    half oneMinusDielectricSpec = kDielectricSpec.a;
+    return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
 }
 
-float3 CalculateDiffuse(Light light, float3 lightVector, float3 worldNormal)
+float PerceptualSmoothnessToPerceptualRoughness(float perceptualSmoothness)
 {
-    float contribution = max(0.0f, dot(worldNormal, lightVector));
-    
-    // Half-lambert equation modified to be squared instead of cubed
-    contribution = pow((contribution * 0.5f) + 0.5f, 3);
-    return light.Color.rgb * light.Intensity * contribution;
+    return 1.0 - perceptualSmoothness;
 }
 
-float3 CalculateDirectionalLight(Light light, float3 worldNormal, float3 shadowCoord)
+float PerceptualRoughnessToRoughness(float perceptualRoughness)
 {
-    float3 lightVector = -normalize(light.Direction.xyz);
-    
-    float shadowFactor = FilterPCF(shadowCoord, 0.0f);
-    shadowFactor = max(0.0f, shadowFactor * dot(worldNormal, lightVector));
-    
-    return CalculateDiffuse(light, lightVector, worldNormal) * shadowFactor;
+    return perceptualRoughness * perceptualRoughness;
 }
 
-float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal)
+float DirectBRDFSpecular(BRDFData brdfData, float3 normalWS, float3 lightDirectionWS, float3 viewDirectionWS)
 {
-    float3 lightVector = light.Position.xyz - worldPosition;
+    float3 halfDir = normalize(lightDirectionWS + viewDirectionWS);
     
-    // Manually normalize the light vector so
-    // we can use the distance in our attenuation calculation
-    float distance = length(lightVector);
-    lightVector /= distance;
+    float NoH = saturate(dot(normalWS, halfDir));
+    float LoH = saturate(dot(lightDirectionWS, halfDir));
     
-    // Squared exponential falloff
-    float attenuation = pow(1.0f - saturate(distance / light.Range), 2);
+    float d = NoH * NoH * brdfData.roughness2MinusOne + 1.00001f;
     
-    return CalculateDiffuse(light, lightVector, worldNormal) * attenuation;
+    float LoH2 = LoH * LoH;
+    float specularTerm = brdfData.roughness2 / ((d * d) * max(0.1, LoH2) * brdfData.normalizationTerm);
+    
+    return specularTerm;
 }
 
+static const float2 poissonDisk[] =
+{
+    float2(-0.94201624, -0.39906216),
+  float2(0.94558609, -0.76890725),
+  float2(-0.094184101, -0.92938870),
+  float2(0.34495938, 0.29387760)
+};
 float CalculateShadowFactor(float3 shadowCoord, float2 offset, float bias)
 {
     float depth = shadowmapTex2D.Sample(shadowmapSampler, shadowCoord.xy + offset).r;
     return step(depth + bias, shadowCoord.z);
 }
 
+
 float FilterPCF(float3 shadowCoord, float bias)
 {
     int2 texDimensions;
     shadowmapTex2D.GetDimensions(texDimensions.x, texDimensions.y);
-    float scale = 1.5f;
     float dx = (1.0f / float(texDimensions.x));
     float dy = (1.0f / float(texDimensions.y));
     
     float shadowfactor = 0.0f;
     int count = 0;
-    int range = 3;
+    float range = 0.5;
     
-    for (int x = -range; x <= range; x++)
+    for (float x = -range; x <= range; x+= 0.25f)
     {
-        for (int y = -range; y <= range; y++)
+        for (float y = -range; y <= range; y+= 0.25f)
         {
-            shadowfactor += CalculateShadowFactor(shadowCoord, float2(dx * x, dy * y), bias);
+            shadowfactor += CalculateShadowFactor(shadowCoord, float2(dx * x, dy * y) + (poissonDisk[count % 4] / 10000.0f), bias);
             count++;
         }
     }
     
     return shadowfactor / float(count);
+}
+
+float3 LightingPBR(BRDFData brdfData, float3 lightColor, float3 lightDirectionWS, float attenuation, float3 normalWS, float3 viewDirectionWS, float3 shadowCoord)
+{
+    float NdotL = saturate(dot(normalWS, lightDirectionWS));
+    float3 radiance = lightColor * (attenuation * NdotL);
+
+    float3 brdf = brdfData.diffuse;
+    
+    // Calculate the specular factor
+    brdf += brdfData.specular * DirectBRDFSpecular(brdfData, normalWS, lightDirectionWS, viewDirectionWS);
+    
+    // Multiply in the radiance
+    brdf *= radiance;
+    
+    brdf += (brdfData.diffuse * AmbientColor.rgb * (1.0f - NdotL));
+    
+    return brdf;
+}
+
+
+float4 main(PixelInput input) : SV_Target
+{
+    float3 albedo = AlbedoMapTexture.Sample(AlbedoMapSampler, input.TexCoord0).rgb;
+    float4 specGlossMap = MetallicMapTexture.Sample(MetallicMapSampler, input.TexCoord0);
+    float3 worldNormal = CalculateNormal(input.Normal, input.Tangent, input.TexCoord0);
+    float3 viewDirectionWS = normalize(ViewPos.xyz - input.WorldPosition);
+    
+    BRDFData brdfData;
+    
+    float metallic = specGlossMap.r;
+    float smoothness = specGlossMap.a;
+    float3 specular = float3(0.0, 0.0, 0.0);
+    float occlusion = 1.0;
+    float oneMinusReflectivity = OneMinusReflectivityMetallic(metallic);
+    
+    brdfData.albedo = albedo;
+    brdfData.reflectivity =  1.0 - oneMinusReflectivity;
+    brdfData.diffuse = albedo * oneMinusReflectivity;
+    brdfData.specular = lerp(kDielectricSpec.rgb, albedo, metallic);
+    
+    brdfData.perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(smoothness);
+    brdfData.roughness = max(PerceptualRoughnessToRoughness(brdfData.perceptualRoughness), HALF_MIN_SQRT);
+    brdfData.roughness2 = max(brdfData.roughness * brdfData.roughness, HALF_MIN_SQRT);
+    brdfData.grazingTerm = saturate(smoothness + brdfData.reflectivity);
+    brdfData.normalizationTerm = brdfData.roughness * 4.0 + 2.0;
+    brdfData.roughness2MinusOne = brdfData.roughness2 - 1.0;
+    
+    float3 shadowCoord = input.ShadowCoord.xyz;
+    shadowCoord.x = 0.5f + (shadowCoord.x * 0.5f);
+    shadowCoord.y = 0.5f - (shadowCoord.y * 0.5f);
+    
+    float3 directLighting = float3(0.0, 0.0, 0.0);
+    for (int i = 0; i < LightCount; i++)
+    {
+        if (SceneLights[i].Type == DIRECTIONAL_LIGHT)
+        {
+            directLighting += LightingPBR(brdfData, SceneLights[i].Color.rgb, -normalize(SceneLights[i].Direction.xyz),
+            1.0, worldNormal, viewDirectionWS, shadowCoord);
+        }
+    }
+
+    return float4(directLighting, 1.0);
 }

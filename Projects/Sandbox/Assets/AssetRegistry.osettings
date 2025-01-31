@@ -739,10 +739,6 @@ Entries:
     Type: Odyssey.Shader
     Path: Shaders/Water_Skinned.shader
     GUID: 17068380152212205393
-  - Name: Water Dragon
-    Type: Odyssey.Material
-    Path: Materials/FX/Water_Dragon.mat
-    GUID: 15547635421378343081
   - Name: Dragon_2
     Type: Odyssey.SourceModel
     Path: Models/Dragon_2.fbx
@@ -795,3 +791,55 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Water_Normal4.tex2D
     GUID: 2987740625679069870
+  - Name: Lit
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Lit.hlsl
+    GUID: 3183397127068307446
+  - Name: Lit
+    Type: Odyssey.Shader
+    Path: Shaders/Lit.shader
+    GUID: 16842850129266277074
+  - Name: Weapons_Albedo
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Weapons_Albedo.png
+    GUID: 9180958058525726323
+  - Name: Weapons_AO
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Weapons_AO.png
+    GUID: 7089125901269586762
+  - Name: Weapons_Metallic
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Weapons_Metallic.png
+    GUID: 18355900151632562797
+  - Name: Weapons_Normals
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Weapons_Normals.png
+    GUID: 5596112400051572608
+  - Name: Weapons_Albedo
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Weapons_Albedo.tex2D
+    GUID: 9834785404981188811
+  - Name: Weapons_AO
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Weapons_AO.tex2D
+    GUID: 10920989382519942004
+  - Name: Weapons_Metallic
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Weapons_Metallic.tex2D
+    GUID: 14513363239891643308
+  - Name: Weapons_Normals
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Weapons_Normals.tex2D
+    GUID: 271556336592991242
+  - Name: Pirate_Pistol
+    Type: Odyssey.SourceModel
+    Path: Models/Pirate_Pistol.fbx
+    GUID: 17315292061484680571
+  - Name: Pirate_Pistol
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate_Pistol.mesh
+    GUID: 1596465240549348673
+  - Name: PBR
+    Type: Odyssey.Material
+    Path: Materials/PBR/PBR.mat
+    GUID: 11609781084541709249

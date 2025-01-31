@@ -2,37 +2,13 @@ m_SourceAsset: 8792030590727510300
 m_GUID: 9634657926911688453
 m_Name: PBR
 m_Type: Odyssey.Shader
-Bindings:
-  - Name: 'Scene Data'
-    Descriptor Type: Uniform
-    Index: 0
-  - Name: 'Model Data'
-    Descriptor Type: Uniform
-    Index: 1
-  - Name: 'Skinning Data'
-    Descriptor Type: Uniform
-    Index: 2
-  - Name: 'Global Data'
-    Descriptor Type: Uniform
-    Index: 3
-  - Name: 'Lighting Data'
-    Descriptor Type: Uniform
-    Index: 4
-  - Name: 'Material Data'
-    Descriptor Type: Uniform
-    Index: 5
-  - Name: 'Diffuse Texture'
-    Descriptor Type: Sampler
-    Index: 6
-  - Name: 'Normal Texture'
-    Descriptor Type: Sampler
-    Index: 7
-  - Name: 'Noise Texture'
-    Descriptor Type: Sampler
-    Index: 8
-  - Name: 'Shadowmap Texture'
-    Descriptor Type: Sampler
-    Index: 9
-  - Name: 'Camera Depth Texture'
-    Descriptor Type: Sampler
-    Index: 10
+Properties:
+  - Name: BaseColor
+    Type: Float3
+    Default Value: 'x: 1 y: 1 z: 1'
+  - Name: EmissiveColor
+    Type: Float4
+    Default Value: 'x: 0 y: 0 z: 0 w: 0'
+  - Name: alphaClip
+    Type: Float
+    Default Value: 0

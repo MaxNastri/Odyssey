@@ -83,7 +83,7 @@ namespace Odyssey
 	public:
 		std::unordered_map<std::string, size_t> PropertyMap;
 		std::vector<MaterialProperty> Properties;
-		size_t Size;
+		size_t Size = 0;
 		RawBuffer Buffer;
 	};
 }

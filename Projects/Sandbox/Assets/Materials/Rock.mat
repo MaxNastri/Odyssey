@@ -3,13 +3,18 @@ m_GUID: 16304850672499381298
 m_Name: Rock
 m_Type: Odyssey.Material
 m_Shader: 9634657926911688453
+Render Queue: Opaque
+Blend Mode: None
+Depth Write: 1
 Property Textures:
+  - Property: AlbedoMapSampler
+    Texture: 262173709281449890
+  - Property: MetallicMapSampler
+    Texture: 17492370988812685835
+  - Property: NormalMapSampler
+    Texture: 5566965161330113531
   - Property: diffuseSampler
     Texture: 262173709281449890
   - Property: normalSampler
     Texture: 5566965161330113531
-Emissive Color: 'x: 0 y: 0 z: 0'
-Emissive Power: 1
-Alpha Clip: 0.5
-Alpha Blend: 0
-Render Queue: Opaque
+Properties: []

@@ -1,0 +1,28 @@
+m_SourceAsset: 0
+m_GUID: 11609781084541709249
+m_Name: PBR
+m_Type: Odyssey.Material
+m_Shader: 9634657926911688453
+Render Queue: Opaque
+Blend Mode: None
+Depth Write: 1
+Property Textures:
+  - Property: AlbedoMapSampler
+    Texture: 9834785404981188811
+  - Property: MetallicMapSampler
+    Texture: 14513363239891643308
+  - Property: NormalMapSampler
+    Texture: 271556336592991242
+Properties:
+  - Name: BaseColor
+    Type: Float3
+    Value: 'x: 1 y: 1 z: 1'
+  - Name: Roughness
+    Type: Float
+    Value: 0
+  - Name: EmissiveColor
+    Type: Float4
+    Value: 'x: 0 y: 0 z: 0 w: 0'
+  - Name: alphaClip
+    Type: Float
+    Value: 0
