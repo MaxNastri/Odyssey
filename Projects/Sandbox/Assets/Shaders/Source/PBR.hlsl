@@ -56,6 +56,8 @@ cbuffer LightData : register(b4)
     float4 AmbientColor;
     Light SceneLights[16];
     uint LightCount;
+    float Exposure;
+    float GammaCorrection;
 }
 
 cbuffer MaterialData : register(b5)

@@ -369,10 +369,19 @@ namespace Odyssey
 		commandBuffer->BindGraphicsPipeline(m_GraphicsPipeline);
 
 		m_PushDescriptors->Clear();
-		m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraTag], 0);
-		m_PushDescriptors->AddBuffer(uboID, 1);
 
-		m_PushDescriptors->AddTexture(renderScene->SkyboxCubemap, 3);
+		uint32_t index = 0;
+		if (m_Shader->HasBinding("SceneData", index))
+			m_PushDescriptors->AddBuffer(renderScene->sceneDataBuffers[subPassData.CameraTag], index);
+
+		if (m_Shader->HasBinding("ModelData", index))
+			m_PushDescriptors->AddBuffer(uboID, index);
+
+		if (m_Shader->HasBinding("LightData", index))
+			m_PushDescriptors->AddBuffer(renderScene->LightingBuffer, index);
+
+		if (m_Shader->HasBinding("skyboxSampler", index))
+			m_PushDescriptors->AddTexture(renderScene->SkyboxCubemap, index);
 
 		// Push the descriptors into the command buffer
 		commandBuffer->PushDescriptorsGraphics(m_PushDescriptors.Get(), m_GraphicsPipeline);

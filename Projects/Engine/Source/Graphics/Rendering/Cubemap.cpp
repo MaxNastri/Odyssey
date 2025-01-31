@@ -40,34 +40,76 @@ namespace Odyssey
 	void Cubemap::LoadFromSource(Ref<SourceTexture> source)
 	{
 		// Convert the source texture into 6 faces
-		HdriToCubemap<unsigned char> hdriToCube_ldr(source->GetPath().string(), 1024, true);
+		if (source->GetPath().extension() != ".hdr")
+		{
+			HdriToCubemap<unsigned char> hdriToCube_ldr(source->GetPath().string(), 1024, false);
 
-		size_t resolution = hdriToCube_ldr.getCubemapResolution();
-		size_t channels = hdriToCube_ldr.getNumChannels();
-		size_t bufferSize = resolution * resolution * channels;
+			size_t resolution = hdriToCube_ldr.getCubemapResolution();
+			size_t channels = hdriToCube_ldr.getNumChannels();
+			size_t bufferSize = resolution * resolution * channels;
 
-		BinaryBuffer rightBuffer(hdriToCube_ldr.getRight(), bufferSize);
-		BinaryBuffer leftBuffer(hdriToCube_ldr.getLeft(), bufferSize);
-		BinaryBuffer upBuffer(hdriToCube_ldr.getUp(), bufferSize);
-		BinaryBuffer downBuffer(hdriToCube_ldr.getDown(), bufferSize);
-		BinaryBuffer frontBuffer(hdriToCube_ldr.getFront(), bufferSize);
-		BinaryBuffer backBuffer(hdriToCube_ldr.getBack(), bufferSize);
+			BinaryBuffer rightBuffer(hdriToCube_ldr.getRight(), bufferSize);
+			BinaryBuffer leftBuffer(hdriToCube_ldr.getLeft(), bufferSize);
+			BinaryBuffer upBuffer(hdriToCube_ldr.getUp(), bufferSize);
+			BinaryBuffer downBuffer(hdriToCube_ldr.getDown(), bufferSize);
+			BinaryBuffer frontBuffer(hdriToCube_ldr.getFront(), bufferSize);
+			BinaryBuffer backBuffer(hdriToCube_ldr.getBack(), bufferSize);
 
-		BinaryBuffer combinedBuffer;
-		combinedBuffer.AppendData(rightBuffer.GetData());
-		combinedBuffer.AppendData(leftBuffer.GetData());
-		combinedBuffer.AppendData(upBuffer.GetData());
-		combinedBuffer.AppendData(downBuffer.GetData());
-		combinedBuffer.AppendData(frontBuffer.GetData());
-		combinedBuffer.AppendData(backBuffer.GetData());
+			BinaryBuffer combinedBuffer;
+			combinedBuffer.AppendData(rightBuffer.GetData());
+			combinedBuffer.AppendData(leftBuffer.GetData());
+			combinedBuffer.AppendData(upBuffer.GetData());
+			combinedBuffer.AppendData(downBuffer.GetData());
+			combinedBuffer.AppendData(frontBuffer.GetData());
+			combinedBuffer.AppendData(backBuffer.GetData());
 
-		m_TextureDescription.ImageType = ImageType::Cubemap;
-		m_TextureDescription.Width = (uint32_t)resolution;
-		m_TextureDescription.Height = (uint32_t)resolution;
-		m_TextureDescription.Channels = (uint32_t)channels;
-		m_TextureDescription.ArrayDepth = 6;
+			m_TextureDescription.ImageType = ImageType::Cubemap;
+			m_TextureDescription.Format = source->GetPath().extension() == ".hdr" ? TextureFormat::R16G16B16A16_SFLOAT : TextureFormat::R8G8B8A8_UNORM;
+			m_TextureDescription.Width = (uint32_t)resolution;
+			m_TextureDescription.Height = (uint32_t)resolution;
+			m_TextureDescription.Channels = (uint32_t)channels;
+			m_TextureDescription.ArrayDepth = 6;
 
-		m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, &combinedBuffer);
+			m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, &combinedBuffer);
+		}
+		else
+		{
+			HdriToCubemap<float> hdriToCube_hdr(source->GetPath().string(), 1024, true);
+
+			size_t resolution = hdriToCube_hdr.getCubemapResolution();
+			size_t channels = hdriToCube_hdr.getNumChannels();
+			size_t bufferSize = resolution * resolution * channels * sizeof(float);
+
+			BinaryBuffer rightBuffer;
+			rightBuffer.WriteData<float>(hdriToCube_hdr.getRight(), bufferSize);
+			BinaryBuffer leftBuffer;
+			leftBuffer.WriteData<float>(hdriToCube_hdr.getLeft(), bufferSize);
+			BinaryBuffer upBuffer;
+			upBuffer.WriteData<float>(hdriToCube_hdr.getUp(), bufferSize);
+			BinaryBuffer downBuffer;
+			downBuffer.WriteData<float>(hdriToCube_hdr.getDown(), bufferSize);
+			BinaryBuffer frontBuffer;
+			frontBuffer.WriteData<float>(hdriToCube_hdr.getFront(), bufferSize);
+			BinaryBuffer backBuffer;
+			backBuffer.WriteData<float>(hdriToCube_hdr.getBack(), bufferSize);
+
+			BinaryBuffer combinedBuffer;
+			combinedBuffer.AppendData(rightBuffer.GetData());
+			combinedBuffer.AppendData(leftBuffer.GetData());
+			combinedBuffer.AppendData(downBuffer.GetData());
+			combinedBuffer.AppendData(upBuffer.GetData());
+			combinedBuffer.AppendData(frontBuffer.GetData());
+			combinedBuffer.AppendData(backBuffer.GetData());
+
+			m_TextureDescription.ImageType = ImageType::Cubemap;
+			m_TextureDescription.Format = TextureFormat::R32G32B32A32_SFLOAT;
+			m_TextureDescription.Width = (uint32_t)resolution;
+			m_TextureDescription.Height = (uint32_t)resolution;
+			m_TextureDescription.Channels = (uint32_t)channels;
+			m_TextureDescription.ArrayDepth = 6;
+
+			m_Texture = ResourceManager::Allocate<VulkanTexture>(m_TextureDescription, &combinedBuffer);
+		}
 	}
 
 	void Cubemap::SaveToDisk(const Path& assetPath)

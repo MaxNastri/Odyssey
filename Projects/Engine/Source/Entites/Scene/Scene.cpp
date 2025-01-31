@@ -185,6 +185,8 @@ for (auto entity : m_Registry.view<ComponentType>()) GameObject(this, entity).Ge
 		root.WriteData("Ambient Color", m_EnvironmentSettings.AmbientColor);
 		root.WriteData("Scene Center", m_EnvironmentSettings.SceneCenter);
 		root.WriteData("Scene Radius", m_EnvironmentSettings.SceneRadius);
+		root.WriteData("Exposure", m_EnvironmentSettings.Exposure);
+		root.WriteData("Gamma Correction", m_EnvironmentSettings.GammaCorrection);
 
 		SerializationNode gameObjectsNode = root.CreateSequenceNode("GameObjects");
 

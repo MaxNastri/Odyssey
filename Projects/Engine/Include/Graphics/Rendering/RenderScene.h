@@ -30,7 +30,6 @@ namespace Odyssey
 	struct ObjectUniformData
 	{
 		glm::mat4 world;
-		glm::mat3 InverseWorld;
 	};
 
 	struct SkinningData
@@ -78,6 +77,8 @@ namespace Odyssey
 		float4 AmbientColor = float4(0.0f);
 		std::array<SceneLight, 16> SceneLights;
 		uint32_t LightCount = 0;
+		float Exposure;
+		float GammaCorrection;
 	};
 
 	struct SetPass

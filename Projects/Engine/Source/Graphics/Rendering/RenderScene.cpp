@@ -101,6 +101,8 @@ namespace Odyssey
 
 		LightingData lightingData;
 		lightingData.AmbientColor = float4(scene->GetEnvironmentSettings().AmbientColor, 1.0f);
+		lightingData.Exposure = scene->GetEnvironmentSettings().Exposure;
+		lightingData.GammaCorrection = scene->GetEnvironmentSettings().GammaCorrection;
 
 		for (auto entity : scene->GetAllEntitiesWith<Light>())
 		{
@@ -249,7 +251,6 @@ namespace Odyssey
 			ObjectUniformData objectData;
 			uint32_t perObjectSize = sizeof(objectData);
 			objectData.world = transform.GetWorldMatrix();
-			objectData.InverseWorld = glm::transpose(glm::inverse(objectData.world));
 
 			ResourceID uboID = perObjectUniformBuffers[uboIndex];
 			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);

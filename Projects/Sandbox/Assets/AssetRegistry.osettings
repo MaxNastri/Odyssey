@@ -851,3 +851,19 @@ Entries:
     Type: Odyssey.Shader
     Path: Shaders/PBR_Unity.shader
     GUID: 18405777323099876079
+  - Name: Blue_Nebula
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Blue_Nebula.hdr
+    GUID: 3806738089413145305
+  - Name: Blue_Nebula
+    Type: Odyssey.Cubemap
+    Path: Textures/Skybox/Blue_Nebula.asset
+    GUID: 7653351392864771744
+  - Name: Clear_Night
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Clear_Night.hdr
+    GUID: 1230085615871799182
+  - Name: Clear_Night
+    Type: Odyssey.Cubemap
+    Path: Textures/Skybox/Clear_Night.asset
+    GUID: 12087335870816685465

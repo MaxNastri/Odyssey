@@ -16,6 +16,8 @@ cbuffer SceneData : register(b0)
     float4x4 Projection;
     float4x4 ViewProjection;
     float4x4 LightViewProj;
+    float Exposure;
+    float GammaCorrection;
 }
 
 cbuffer ModelData : register(b1)

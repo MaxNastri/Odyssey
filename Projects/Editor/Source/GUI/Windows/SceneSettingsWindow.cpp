@@ -27,6 +27,12 @@ namespace Odyssey
 
 		float sceneRadius = m_Scene ? m_Scene->GetEnvironmentSettings().SceneRadius : 0.0f;
 		m_SceneRadiusDrawer = FloatDrawer("Scene Radius", sceneRadius);
+
+		float exposure = m_Scene ? m_Scene->GetEnvironmentSettings().Exposure : 1.0f;
+		m_ExposureDrawer = FloatDrawer("Exposure", sceneRadius);
+
+		float gammaCorrection = m_Scene ? m_Scene->GetEnvironmentSettings().GammaCorrection : 2.2f;
+		m_GammaCorrectionDrawer = FloatDrawer("Gamma Correction", gammaCorrection);
 	}
 
 	bool SceneSettingsWindow::Draw()
@@ -61,6 +67,18 @@ namespace Odyssey
 				if (m_Scene)
 					m_Scene->GetEnvironmentSettings().SceneRadius = m_SceneRadiusDrawer.GetValue();
 			}
+
+			if (m_ExposureDrawer.Draw())
+			{
+				if (m_Scene)
+					m_Scene->GetEnvironmentSettings().Exposure = m_ExposureDrawer.GetValue();
+			}
+
+			if (m_GammaCorrectionDrawer.Draw())
+			{
+				if (m_Scene)
+					m_Scene->GetEnvironmentSettings().GammaCorrection = m_GammaCorrectionDrawer.GetValue();
+			}
 		}
 
 		End();
@@ -81,5 +99,7 @@ namespace Odyssey
 		m_AmbientColorPicker.SetColor(settings.AmbientColor);
 		m_SceneCenterDrawer.SetValue(settings.SceneCenter);
 		m_SceneRadiusDrawer.SetValue(settings.SceneRadius);
+		m_ExposureDrawer.SetValue(settings.Exposure);
+		m_GammaCorrectionDrawer.SetValue(settings.GammaCorrection);
 	}
 }
