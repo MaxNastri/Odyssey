@@ -843,3 +843,11 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/PBR/PBR.mat
     GUID: 11609781084541709249
+  - Name: PBR_Unity
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/PBR_Unity.hlsl
+    GUID: 4819789166338955026
+  - Name: PBR_Unity
+    Type: Odyssey.Shader
+    Path: Shaders/PBR_Unity.shader
+    GUID: 18405777323099876079

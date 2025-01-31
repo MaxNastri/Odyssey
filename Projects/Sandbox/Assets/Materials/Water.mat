@@ -28,10 +28,10 @@ Properties:
     Value: 12
   - Name: SurfaceColor
     Type: Float4
-    Value: 'x: 0 y: 0.98932385 z: 1 w: 0.47058824'
+    Value: 'x: 0 y: 0.9882353 z: 1 w: 0.3882353'
   - Name: DeepColor
     Type: Float4
-    Value: 'x: 0 y: 0.28469753 z: 1 w: 0.47058824'
+    Value: 'x: 0 y: 0.28627452 z: 1 w: 0.38431373'
   - Name: RefractionSpeed
     Type: Float
     Value: 0.1

@@ -121,9 +121,10 @@ VertexOutput main(VertexInput input)
 #define POINT_LIGHT 1
 #define SPOT_LIGHT 2
 #define HALF_MIN_SQRT 0.0078125
-#define PI 3.1415926535897932384626433832795
-#define ALBEDO(uv) pow(AlbedoMapTexture.Sample(AlbedoMapSampler, uv).rgb, float3(2.2, 2.2, 2.2))
-static const float3 Gamma_Correction_Exp = float3(0.45, 0.45, 0.45);
+static const float PI = 3.14159265359;
+static const float Inverse_PI = 0.318309886f;
+static const float Epsilon = 0.00001;
+static float4 kDielectricSpec = float4(0.04, 0.04, 0.04, 1.0 - 0.04);
 
 struct PixelInput
 {
@@ -162,111 +163,100 @@ float3 CalculateNormal(float3 vNormal, float4 vTangent, float2 uv)
     return normalize(mul(tangentNormal, TBN));
 }
 
-// From http://filmicgames.com/archives/75
-float3 Uncharted2Tonemap(float3 x)
+half OneMinusReflectivityMetallic(half metallic)
 {
-    float A = 0.15;
-    float B = 0.50;
-    float C = 0.10;
-    float D = 0.20;
-    float E = 0.02;
-    float F = 0.30;
-    return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+    // We'll need oneMinusReflectivity, so
+    //   1-reflectivity = 1-lerp(dielectricSpec, 1, metallic) = lerp(1-dielectricSpec, 0, metallic)
+    // store (1-dielectricSpec) in kDielectricSpec.a, then
+    //   1-reflectivity = lerp(alpha, 0, metallic) = alpha + metallic*(0 - alpha) =
+    //                  = alpha - metallic * alpha
+    half oneMinusDielectricSpec = kDielectricSpec.a;
+    return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
 }
 
-void ApplyTonemapping(inout float3 color)
+float PerceptualSmoothnessToPerceptualRoughness(float perceptualSmoothness)
 {
-    color = Uncharted2Tonemap(color * 4.5);
-    color = color * (1.0f / Uncharted2Tonemap((11.2f).xxx));
+    return 1.0 - perceptualSmoothness;
 }
 
-// Normal Distribution function --------------------------------------
-float D_GGX(float NdotH, float roughness)
+float PerceptualRoughnessToRoughness(float perceptualRoughness)
 {
-    float alpha = roughness * roughness;
-    float alpha2 = alpha * alpha;
-    float denom = NdotH * NdotH * (alpha2 - 1.0) + 1.0;
-    return (alpha2) / (PI * denom * denom);
+    return perceptualRoughness * perceptualRoughness;
 }
 
-// Geometric Shadowing function --------------------------------------
-float G_SchlicksmithGGX(float dotNL, float dotNV, float roughness)
+float DirectBRDFSpecular(BRDFData brdfData, float3 normalWS, float3 lightDirectionWS, float3 viewDirectionWS)
 {
-    float r = (roughness + 1.0);
-    float k = (r * r) / 8.0;
-    float GL = dotNL / (dotNL * (1.0 - k) + k);
-    float GV = dotNV / (dotNV * (1.0 - k) + k);
-    return GL * GV;
-}
-
-// Fresnel function ----------------------------------------------------
-float3 F_Schlick(float cosTheta, float3 F0)
-{
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
-}
-float3 F_SchlickR(float cosTheta, float3 F0, float roughness)
-{
-    return F0 + (max((1.0 - roughness).xxx, F0) - F0) * pow(1.0 - cosTheta, 5.0);
-}
-
-float3 specularContribution(float2 inUV, float3 lightColor, float lightIntensity, float3 L, float3 V, float3 N, float3 F0, float metallic, float roughness)
-{
-	// Precalculate vectors and dot products
-    float3 H = normalize(V + L);
-    float NdotH = clamp(dot(N, H), 0.0, 1.0);
-    float NdotV = clamp(dot(N, V), 0.0, 1.0);
-    float NdotL = clamp(dot(N, L), 0.0, 1.0);
-
-    float3 color = float3(0.0, 0.0, 0.0);
-
-    if (NdotL > 0.0)
-    {
-		// D = Normal distribution (Distribution of the microfacets)
-        float D = D_GGX(NdotH, roughness);
-		// G = Geometric shadowing term (Microfacets shadowing)
-        float G = G_SchlicksmithGGX(NdotL, NdotV, roughness);
-		// F = Fresnel factor (Reflectance depending on angle of incidence)
-        float3 F = F_Schlick(NdotV, F0);
-        float3 spec = D * F * G / (4.0 * NdotL * NdotV + 0.001);
-        float3 kD = (float3(1.0, 1.0, 1.0) - F) * (1.0 - metallic);
-        float3 diffuse = (kD * ALBEDO(inUV) / PI);
-        color += (diffuse + spec) * NdotL * lightColor * lightIntensity;
-    }
-
-    return color;
-}
-
-float4 main(PixelInput input) : SV_TARGET
-{
-    float3 N = CalculateNormal(input.Normal, input.Tangent, input.TexCoord0);
-    float3 V = normalize(ViewPos.xyz - input.WorldPosition);
-    float3 R = reflect(-V, N);
-
-    float4 metallicGloss = MetallicMapTexture.Sample(MetallicMapSampler, input.TexCoord0);
-    float metallic = metallicGloss.r;
-    float roughness = 1.0 - metallicGloss.a;
-
-    float3 F0 = lerp(float3(0.04, 0.04, 0.04), ALBEDO(input.TexCoord0), metallic);
-
-    float3 Lo = float3(0.0, 0.0, 0.0);
+    float3 halfDir = normalize(lightDirectionWS + viewDirectionWS);
     
+    float NoH = saturate(dot(normalWS, halfDir));
+    float LoH = saturate(dot(lightDirectionWS, halfDir));
+    
+    float d = NoH * NoH * brdfData.roughness2MinusOne + 1.00001f;
+    
+    float LoH2 = LoH * LoH;
+    float specularTerm = brdfData.roughness2 / ((d * d) * max(0.1, LoH2) * brdfData.normalizationTerm);
+    
+    return specularTerm;
+}
+
+float3 LightingPBR(BRDFData brdfData, float3 lightColor, float3 lightDirectionWS, float attenuation, float3 normalWS, float3 viewDirectionWS, float3 shadowCoord)
+{
+    float NdotL = saturate(dot(normalWS, lightDirectionWS));
+    float3 radiance = lightColor * (attenuation * NdotL);
+
+    float3 brdf = brdfData.diffuse;
+    
+    // Calculate the specular factor
+    brdf += brdfData.specular * DirectBRDFSpecular(brdfData, normalWS, lightDirectionWS, viewDirectionWS);
+    
+    // Multiply in the radiance
+    brdf *= radiance;
+    
+    brdf += (brdfData.diffuse * AmbientColor.rgb * (1.0f - NdotL));
+    
+    return brdf;
+}
+
+float4 main(PixelInput input) : SV_Target
+{
+    float3 albedo = AlbedoMapTexture.Sample(AlbedoMapSampler, input.TexCoord0).rgb;
+    float4 specGlossMap = MetallicMapTexture.Sample(MetallicMapSampler, input.TexCoord0);
+    float3 worldNormal = CalculateNormal(input.Normal, input.Tangent, input.TexCoord0);
+    float3 viewDirectionWS = normalize(ViewPos.xyz - input.WorldPosition);
+    
+    BRDFData brdfData;
+    
+    float metallic = specGlossMap.r;
+    float smoothness = specGlossMap.a;
+    float3 specular = float3(0.0, 0.0, 0.0);
+    float occlusion = 1.0;
+    float oneMinusReflectivity = OneMinusReflectivityMetallic(metallic);
+    
+    brdfData.albedo = albedo;
+    brdfData.reflectivity = 1.0 - oneMinusReflectivity;
+    brdfData.diffuse = albedo * oneMinusReflectivity;
+    brdfData.specular = lerp(kDielectricSpec.rgb, albedo, metallic);
+    
+    brdfData.perceptualRoughness = PerceptualSmoothnessToPerceptualRoughness(smoothness);
+    brdfData.roughness = max(PerceptualRoughnessToRoughness(brdfData.perceptualRoughness), HALF_MIN_SQRT);
+    brdfData.roughness2 = max(brdfData.roughness * brdfData.roughness, HALF_MIN_SQRT);
+    brdfData.grazingTerm = saturate(smoothness + brdfData.reflectivity);
+    brdfData.normalizationTerm = brdfData.roughness * 4.0 + 2.0;
+    brdfData.roughness2MinusOne = brdfData.roughness2 - 1.0;
+    
+    float3 shadowCoord = input.ShadowCoord.xyz;
+    shadowCoord.x = 0.5f + (shadowCoord.x * 0.5f);
+    shadowCoord.y = 0.5f - (shadowCoord.y * 0.5f);
+    
+    float3 directLighting = float3(0.0, 0.0, 0.0);
     for (int i = 0; i < LightCount; i++)
     {
         if (SceneLights[i].Type == DIRECTIONAL_LIGHT)
         {
-            float3 L = -normalize(SceneLights[i].Direction);
-            Lo += specularContribution(input.TexCoord0, SceneLights[i].Color.rgb, SceneLights[i].Intensity * PI, L, V, N, F0, metallic, roughness);
+            directLighting += LightingPBR(brdfData, SceneLights[i].Color.rgb, -normalize(SceneLights[i].Direction.xyz),
+            1.0, worldNormal, viewDirectionWS, shadowCoord);
         }
     }
 
-    // TODO: Ambient lighting
-    float3 color = Lo;
-
-	// Tone mapping
-    ApplyTonemapping(color);
-    
-	// Gamma correction
-    color = pow(color, Gamma_Correction_Exp);
-    
-    return float4(color, 1.0);
+    return float4(directLighting, 1.0);
 }
