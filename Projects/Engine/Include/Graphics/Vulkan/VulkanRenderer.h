@@ -72,6 +72,9 @@ namespace Odyssey
 		std::unique_ptr<VulkanSwapchain> m_Swapchain;
 		bool m_RebuildSwapchain = false;
 
+	private:
+		ResourceID m_BRDFLutTexture;
+
 	private: // Frame data
 		std::vector<VulkanFrame> m_Frames;
 		inline static uint32_t s_FrameIndex = 0;

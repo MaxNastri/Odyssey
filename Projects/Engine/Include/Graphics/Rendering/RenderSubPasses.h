@@ -22,6 +22,20 @@ namespace Odyssey
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) { }
 	};
 
+	class BRDFLutSubPass : public RenderSubPass
+	{
+	public:
+		virtual void Setup() override;
+		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+
+	private:
+		Ref<Shader> m_Shader;
+		ResourceID m_Pipeline;
+
+	private:
+		inline static const GUID& Shader_GUID = 817239865824362843;
+	};
+
 	class DepthSubPass : public RenderSubPass
 	{
 	public:

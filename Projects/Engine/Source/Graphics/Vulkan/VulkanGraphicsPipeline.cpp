@@ -39,6 +39,14 @@ namespace Odyssey
 				return VK_FORMAT_R8G8B8A8_SRGB;
 			case TextureFormat::R8G8B8A8_UNORM:
 				return VK_FORMAT_R8G8B8A8_UNORM;
+			case TextureFormat::R16G16B16_SFLOAT:
+				return VK_FORMAT_R16G16B16_SFLOAT;
+			case TextureFormat::R16G16B16A16_SFLOAT:
+				return VK_FORMAT_R16G16B16A16_SFLOAT;
+			case TextureFormat::R32G32B32A32_SFLOAT:
+				return VK_FORMAT_R32G32B32A32_SFLOAT;
+			case TextureFormat::R16G16_SFLOAT:
+				return VK_FORMAT_R16G16_SFLOAT;
 			case TextureFormat::D24_UNORM_S8_UINT:
 				return VK_FORMAT_D24_UNORM_S8_UINT;
 			case TextureFormat::D16_UNORM:
@@ -49,7 +57,6 @@ namespace Odyssey
 				return VK_FORMAT_D32_SFLOAT_S8_UINT;
 			default:
 				return VK_FORMAT_R8G8B8A8_UNORM;
-				break;
 		}
 	}
 

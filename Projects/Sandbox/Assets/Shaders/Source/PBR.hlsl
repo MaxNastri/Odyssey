@@ -79,6 +79,8 @@ Texture2D AOMapTexture : register(t9);
 SamplerState AOMapSampler : register(s9);
 Texture2D shadowmapTex2D : register(t10);
 SamplerState shadowmapSampler : register(s10);
+Texture2D brdfLutTex2D : register(t11);
+SamplerState brdfLutSampler : register(s11);
 
 #pragma Vertex
 struct VertexInput
@@ -247,7 +249,11 @@ float4 main(PixelInput input) : SV_TARGET
     float4 metallicGloss = MetallicMapTexture.Sample(MetallicMapSampler, input.TexCoord0);
     float metallic = metallicGloss.r;
     float roughness = 1.0 - metallicGloss.a;
-
+    
+    float2 NdotV = (max(dot(N, V), 0.0), roughness);
+    
+    float2 brdfLut = brdfLutTex2D.SampleLevel(brdfLutSampler, NdotV, 0);
+    
     float3 F0 = lerp(float3(0.04, 0.04, 0.04), ALBEDO(input.TexCoord0), metallic);
 
     float3 Lo = float3(0.0, 0.0, 0.0);

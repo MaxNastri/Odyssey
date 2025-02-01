@@ -183,3 +183,11 @@ Entries:
     Type: Odyssey.SourceShader
     Path: Shaders/Source/Sprite.hlsl
     GUID: 203948423675871234
+  - Name: BRDF Lut Generation
+    Type: Odyssey.Shader
+    Path: Shaders/BRDF_Lut_Gen.shader
+    GUID: 817239865824362843
+  - Name: BRDF Lut Generation
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/BRDF_Lut_Gen.hlsl
+    GUID: 56412379814738123

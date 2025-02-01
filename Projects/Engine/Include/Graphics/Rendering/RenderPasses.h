@@ -25,6 +25,7 @@ namespace Odyssey
 		ResourceID FrameTexture;
 		std::map<uint8_t, ResourceID> DepthTextures;
 		std::map<uint8_t, ResourceID> ColorTextures;
+		ResourceID BRDFLutTexture;
 
 	public:
 		ResourceID Shadowmap() { return DepthTextures[0]; }
@@ -50,6 +51,23 @@ namespace Odyssey
 		glm::vec4 m_ClearValue;
 		VkImageLayout m_BeginLayout;
 		VkImageLayout m_EndLayout;
+	};
+
+	class BRDFLutPass : public RenderPass
+	{
+	public:
+		BRDFLutPass();
+
+	public:
+		virtual void BeginPass(RenderPassParams& params) override;
+		virtual void Execute(RenderPassParams& params) override;
+		virtual void EndPass(RenderPassParams& params) override;
+
+	private:
+		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
+
+	private:
+		inline static constexpr uint32_t Texture_Size = 512;
 	};
 
 	class DepthPass : public RenderPass

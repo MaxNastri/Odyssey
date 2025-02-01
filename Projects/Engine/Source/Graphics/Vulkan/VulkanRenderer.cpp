@@ -63,6 +63,28 @@ namespace Odyssey
 				m_GraphicsCommandBuffers.push_back(commandBufferID);
 			}
 		}
+
+
+		Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+		ResourceID commandBufferID = commandPool->AllocateBuffer();
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+		RenderPassParams params;
+		params.GraphicsCommandBuffer = commandBufferID;
+		params.context = m_Context;
+
+		commandBuffer->BeginCommands();
+
+		std::shared_ptr<BRDFLutPass> brdfLUT = std::make_shared<BRDFLutPass>();
+		brdfLUT->BeginPass(params);
+		brdfLUT->Execute(params);
+		brdfLUT->EndPass(params);
+
+		commandBuffer->EndCommands();
+		commandBuffer->SubmitGraphics();
+		commandPool->ReleaseBuffer(commandBufferID);
+
+		m_BRDFLutTexture = params.BRDFLutTexture;
 	}
 
 	void VulkanRenderer::Destroy()
@@ -236,6 +258,7 @@ namespace Odyssey
 			params.context = m_Context;
 			params.renderingData = m_RenderingData;
 			params.FrameTexture = frame->GetFrameTexture();
+			params.BRDFLutTexture = m_BRDFLutTexture;
 
 			for (Ref<RenderPass>& renderPass : m_RenderPasses)
 			{

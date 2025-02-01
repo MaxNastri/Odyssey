@@ -183,6 +183,8 @@ namespace Odyssey
 		desc.ImageType = ImageType::RenderTexture;
 		desc.Width = (uint32_t)m_WindowSize.x;
 		desc.Height = (uint32_t)m_WindowSize.y;
+		desc.Samples = 8;
+
 		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(desc, RenderTargetFlags::Color | RenderTargetFlags::Depth);
 		m_RTSampler = ResourceManager::Allocate<VulkanTextureSampler>();
 		m_RenderTextureID = Renderer::AddImguiRenderTexture(m_RenderTarget, m_RTSampler);

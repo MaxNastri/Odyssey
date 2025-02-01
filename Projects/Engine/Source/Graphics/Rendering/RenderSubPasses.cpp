@@ -20,6 +20,28 @@
 
 namespace Odyssey
 {
+	void BRDFLutSubPass::Setup()
+	{
+		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
+		VulkanPipelineInfo info;
+		info.Shaders = m_Shader->GetResourceMap();
+		info.CullMode = CullMode::None;
+		info.DescriptorLayout = m_Shader->GetDescriptorLayout();
+		info.MSAACountOverride = 1;
+		info.ColorFormat = TextureFormat::R16G16_SFLOAT;
+		info.IsShadow = false;
+		info.AttributeDescriptions = m_Shader->GetVertexAttributes();
+
+		m_Pipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
+	}
+
+	void BRDFLutSubPass::Execute(RenderPassParams& params, RenderSubPassData& subPassData)
+	{
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		commandBuffer->BindGraphicsPipeline(m_Pipeline);
+		commandBuffer->Draw(3, 1, 0, 0);
+	}
+
 	void DepthSubPass::Setup()
 	{
 		m_PushDescriptors = new VulkanPushDescriptors();
@@ -245,6 +267,12 @@ namespace Odyssey
 				{
 					uint32_t index = setPass.ShaderBindings["cameraColorSampler"].Index;
 					m_PushDescriptors->AddTexture(params.ColorTextures[subPassData.CameraTag], index);
+				}
+
+				if (setPass.ShaderBindings.contains("brdfLutSampler") && params.BRDFLutTexture.IsValid())
+				{
+					uint32_t index = setPass.ShaderBindings["brdfLutSampler"].Index;
+					m_PushDescriptors->AddTexture(params.BRDFLutTexture, index);
 				}
 				if (setPass.MaterialBuffer.IsValid())
 				{

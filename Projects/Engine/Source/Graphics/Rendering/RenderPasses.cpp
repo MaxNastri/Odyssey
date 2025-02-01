@@ -20,6 +20,144 @@
 
 namespace Odyssey
 {
+	BRDFLutPass::BRDFLutPass()
+	{
+		VulkanImageDescription imageDesc;
+		imageDesc.Width = Texture_Size;
+		imageDesc.Height = Texture_Size;
+		imageDesc.Format = TextureFormat::R16G16_SFLOAT;
+		imageDesc.ImageType = ImageType::RenderTexture;
+		imageDesc.Samples = 1;
+
+		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(imageDesc, RenderTargetFlags::Color);
+
+		m_SubPasses.push_back(std::make_shared<BRDFLutSubPass>());
+
+
+		for (auto& renderSubPass : m_SubPasses)
+		{
+			renderSubPass->Setup();
+		}
+	}
+
+	void BRDFLutPass::BeginPass(RenderPassParams& params)
+	{
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+		ResourceID colorAttachmentImage;
+		uint32_t width = 0;
+		uint32_t height = 0;
+
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
+		ResourceID colorTextureID = renderTarget->GetColorTexture();
+		ResourceID colorResolveTextureID = renderTarget->GetColorResolveTexture();
+
+		// Extract the render target and width/height
+		if (colorTextureID.IsValid())
+		{
+			Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(colorTextureID);
+			colorAttachmentImage = colorTexture->GetImage();
+			width = colorTexture->GetWidth();
+			height = colorTexture->GetHeight();
+
+			commandBuffer->TransitionLayouts(colorAttachmentImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		}
+		else
+		{
+			Log::Error("(OpaquePass) Invalid render target for opaque pass.");
+			return;
+		}
+
+		// Transfer the clear value into vulkan type
+		VkClearValue clearValue;
+		clearValue.color.float32[0] = m_ClearValue.r;
+		clearValue.color.float32[1] = m_ClearValue.g;
+		clearValue.color.float32[2] = m_ClearValue.b;
+		clearValue.color.float32[3] = m_ClearValue.a;
+
+		// Create the rendering attachment for the render target
+		std::vector<VkRenderingAttachmentInfoKHR> attachments;
+		{
+			auto colorAttachment = ResourceManager::GetResource<VulkanImage>(colorAttachmentImage);
+			VkRenderingAttachmentInfoKHR color_attachment_info{};
+			color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
+			color_attachment_info.pNext = VK_NULL_HANDLE;
+			color_attachment_info.imageView = colorAttachment->GetImageView();
+			color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
+			color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+			color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			color_attachment_info.clearValue = clearValue;
+
+			attachments.push_back(color_attachment_info);
+		}
+
+		// Rendering info
+		VkRenderingInfoKHR rendering_info = {};
+		rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
+		rendering_info.pNext = VK_NULL_HANDLE;
+		rendering_info.flags = 0;
+		rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{width, height} };
+		rendering_info.layerCount = 1;
+		rendering_info.viewMask = 0;
+		rendering_info.colorAttachmentCount = 1;
+		rendering_info.pColorAttachments = &attachments[0];
+		rendering_info.pDepthAttachment = VK_NULL_HANDLE;
+		rendering_info.pStencilAttachment = VK_NULL_HANDLE;
+
+		// Begin dynamic rendering
+		commandBuffer->BeginRendering(rendering_info);
+
+		// Viewport
+		{
+			VkViewport viewport{};
+			viewport.x = 0.0f;
+			viewport.y = height;
+			viewport.width = (float)width;
+			viewport.height = -1.0f * (float)height;
+			viewport.minDepth = 0.0f;
+			viewport.maxDepth = 1.0f;
+			commandBuffer->BindViewport(viewport);
+		}
+
+		// Scissor
+		{
+			VkRect2D scissor{};
+			scissor.offset = { 0, 0 };
+			scissor.extent = VkExtent2D{ width, height };
+			commandBuffer->SetScissor(scissor);
+		}
+	}
+
+	void BRDFLutPass::Execute(RenderPassParams& params)
+	{
+		RenderSubPassData subPassData;
+
+		for (auto& renderSubPass : m_SubPasses)
+		{
+			renderSubPass->Execute(params, subPassData);
+		}
+	}
+
+	void BRDFLutPass::EndPass(RenderPassParams& params)
+	{
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
+		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+		// End dynamic rendering
+		commandBuffer->EndRendering();
+
+		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
+		ResourceID colorTextureID = renderTarget->GetColorTexture();
+
+		// Transition the to a shader resource layout
+		Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(colorTextureID);
+		commandBuffer->TransitionLayouts(colorTexture->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+		params.BRDFLutTexture= colorTextureID;
+	}
+
 	DepthPass::DepthPass(uint8_t cameraTag)
 	{
 		m_Camera = cameraTag;
