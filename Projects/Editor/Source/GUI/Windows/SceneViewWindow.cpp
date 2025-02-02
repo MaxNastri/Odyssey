@@ -31,12 +31,10 @@ namespace Odyssey
 	{
 		// Rendering stuff
 		m_SceneViewPass = new RenderObjectsPass();
-		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		m_SceneViewPass->AddDebugSubPass();
 		m_SceneViewPass->SetCamera((uint8_t)Camera::Tag::SceneView);
 
 		m_TransparentPass = new TransparentObjectsPass();
-		m_TransparentPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		m_TransparentPass->SetCamera((uint8_t)Camera::Tag::SceneView);
 		Renderer::PushRenderPass(m_SceneViewPass);
 		Renderer::PushRenderPass(m_TransparentPass);

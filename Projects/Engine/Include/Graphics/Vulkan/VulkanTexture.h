@@ -24,6 +24,7 @@ namespace Odyssey
 		uint32_t GetHeight() { return m_Description.Height; }
 		ResourceID GetImage() { return m_Image; }
 		ResourceID GetSampler() { return m_Sampler; }
+		TextureFormat GetFormat() { return m_Description.Format; }
 		VkWriteDescriptorSet GetDescriptorInfo();
 
 	public:

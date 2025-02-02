@@ -213,7 +213,7 @@ float3 CalculateDirectionalLight(Light light, float3 worldNormal, float3 shadowC
     float shadowFactor = FilterPCF(shadowCoord, 0.0f);
     shadowFactor = max(0.0f, shadowFactor * dot(worldNormal, lightVector));
     
-    return CalculateDiffuse(light, lightVector, worldNormal) * shadowFactor;
+    return CalculateDiffuse(light, lightVector, worldNormal);
 }
 
 float3 CalculatePointLight(Light light, float3 worldPosition, float3 worldNormal)

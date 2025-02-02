@@ -28,10 +28,10 @@ Properties:
     Value: 12
   - Name: SurfaceColor
     Type: Float4
-    Value: 'x: 0 y: 0.9882353 z: 1 w: 0.3882353'
+    Value: 'x: 0 y: 0.9882353 z: 1 w: 0.5529412'
   - Name: DeepColor
     Type: Float4
-    Value: 'x: 0 y: 0.28627452 z: 1 w: 0.38431373'
+    Value: 'x: 0 y: 0.28627452 z: 1 w: 0.54509807'
   - Name: RefractionSpeed
     Type: Float
     Value: 0.1
@@ -40,16 +40,16 @@ Properties:
     Value: 'x: 1 y: 1'
   - Name: RefractionStrength
     Type: Float
-    Value: 0.5
+    Value: 1
   - Name: WaveHeightFrequency
     Type: Float
-    Value: 2
+    Value: 3
   - Name: WaveSpeed
     Type: Float
-    Value: 0.5
+    Value: 1
   - Name: WaveAmplitude
     Type: Float
-    Value: 0.5
+    Value: 0.75
   - Name: WaterDirection
     Type: Float2
     Value: 'x: 1 y: 1'
@@ -67,7 +67,7 @@ Properties:
     Value: 'x: 50 y: 50'
   - Name: FoamColor
     Type: Float4
-    Value: 'x: 1 y: 1 z: 1 w: 0.78431374'
+    Value: 'x: 1 y: 1 z: 1 w: 0.81960785'
   - Name: FoamCutoff
     Type: Float
     Value: 25

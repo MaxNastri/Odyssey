@@ -18,7 +18,6 @@ cbuffer SkinningData : register(b2)
 struct VertexInput
 {
     float3 Position : POSITION;
-    float3 Normal : NORMAL;
     float4 BoneIndices : BLENDINDICES0;
     float4 BoneWeights : BLENDWEIGHT0;
 };
@@ -42,8 +41,6 @@ VertexOutput main(VertexInput input)
     VertexOutput output;
     
     SkinningOutput skinning = SkinVertex(input);
-    skinning.Normal = normalize(skinning.Normal);
-    skinning.Position.xyz = skinning.Position.xyz;
     output.Position = mul(Model, skinning.Position);
     output.Position = mul(ViewProjection, output.Position);
     
@@ -56,12 +53,10 @@ SkinningOutput SkinVertex(VertexInput input)
     output.Position = float4(0, 0, 0, 1);
     output.Normal = float4(0, 0, 0, 1);
     float4 vertexPosition = float4(input.Position, 1.0f);
-    float4 vertexNormal = float4(input.Normal, 0.0f);
     
     for (int i = 0; i < 4; i++)
     {
         output.Position += mul(Bones[input.BoneIndices[i]], vertexPosition) * input.BoneWeights[i];
-        output.Normal += mul(Bones[input.BoneIndices[i]], vertexNormal) * input.BoneWeights[i];
     }
     
     return output;

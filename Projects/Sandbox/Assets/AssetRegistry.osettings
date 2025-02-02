@@ -867,3 +867,11 @@ Entries:
     Type: Odyssey.Cubemap
     Path: Textures/Skybox/Clear_Night.asset
     GUID: 12087335870816685465
+  - Name: Lit Pirate
+    Type: Odyssey.Material
+    Path: Materials/PBR/Lit_Pirate.mat
+    GUID: 539464422473058633
+  - Name: PBR Pirate
+    Type: Odyssey.Material
+    Path: Materials/PBR/PBR_Pirate.mat
+    GUID: 11453019595560542111

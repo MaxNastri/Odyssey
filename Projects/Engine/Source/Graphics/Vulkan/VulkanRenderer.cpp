@@ -158,7 +158,6 @@ namespace Odyssey
 	void VulkanRenderer::AddImguiPass()
 	{
 		m_IMGUIPass = std::make_shared<ImguiPass>();
-		m_IMGUIPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 		m_IMGUIPass->SetImguiState(m_Imgui);
 	}
 

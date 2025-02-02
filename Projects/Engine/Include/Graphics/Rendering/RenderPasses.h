@@ -41,16 +41,25 @@ namespace Odyssey
 	public:
 		void SetCamera(uint8_t camera) { m_Camera = camera; }
 		void SetRenderTarget(ResourceID renderTarget) { m_RenderTarget = renderTarget; }
-		void SetLayouts(VkImageLayout beginLayout, VkImageLayout endLayout) { m_BeginLayout = beginLayout; m_EndLayout = endLayout; }
-		void SetClearValue(glm::vec4 clearValue) { m_ClearValue = clearValue; }
 
 	protected:
+		void BeginRendering(RenderPassParams& params);
+
+	protected:
+		struct AttachmentInfo
+		{
+			VkImageLayout BeginLayout;
+			VkImageLayout EndLayout;
+			VkAttachmentLoadOp LoadOp;
+			VkAttachmentStoreOp StoreOp;
+			VkClearValue ClearValue;
+		};
+
 		ResourceID m_RenderTarget;
 		uint8_t m_Camera = 0;
 
-		glm::vec4 m_ClearValue;
-		VkImageLayout m_BeginLayout;
-		VkImageLayout m_EndLayout;
+		AttachmentInfo m_ColorAttachment;
+		AttachmentInfo m_DepthAttachment;
 	};
 
 	class BRDFLutPass : public RenderPass
@@ -81,7 +90,13 @@ namespace Odyssey
 		virtual void EndPass(RenderPassParams& params) override;
 
 	private:
+		void CreateRenderTarget(uint32_t width, uint32_t height);
+
+	private:
 		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
+
+	private:
+		uint32_t m_Width, m_Height;
 
 	private:
 		inline static constexpr uint32_t Texture_Size = 4096;
@@ -123,7 +138,7 @@ namespace Odyssey
 	class ImguiPass : public RenderPass
 	{
 	public:
-		ImguiPass() = default;
+		ImguiPass();
 
 	public:
 		virtual void BeginPass(RenderPassParams& params) override;

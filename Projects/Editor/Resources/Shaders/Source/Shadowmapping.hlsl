@@ -2,7 +2,6 @@
 struct VertexInput
 {
     float3 Position : POSITION;
-    float3 Normal : NORMAL;
 };
 
 struct VertexOutput
