@@ -151,21 +151,21 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: Textures/Source/Black.png
     GUID: 891239123723176542
-  - Name: Shadowmapping
+  - Name: Depth
     Type: Odyssey.Shader
-    Path: Shaders/Shadowmapping.shader
+    Path: Shaders/Depth.shader
     GUID: 879318792137863213
-  - Name: Shadowmapping
+  - Name: Depth
     Type: Odyssey.SourceShader
-    Path: Shaders/Source/Shadowmapping.hlsl
+    Path: Shaders/Source/Depth.hlsl
     GUID: 690823879126781327
-  - Name: Shadowmapping Skinned
+  - Name: Depth Skinned
     Type: Odyssey.Shader
-    Path: Shaders/Shadowmapping_Skinned.shader
+    Path: Shaders/Depth_Skinned.shader
     GUID: 218097783217681239
-  - Name: Shadowmapping Skinned
+  - Name: Depth Skinned
     Type: Odyssey.SourceShader
-    Path: Shaders/Source/Shadowmapping_Skinned.hlsl
+    Path: Shaders/Source/Depth_Skinned.hlsl
     GUID: 719741236172837688
   - Name: White
     Type: Odyssey.Texture2D
