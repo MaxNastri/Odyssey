@@ -44,8 +44,12 @@ namespace Odyssey
 
 		for (size_t i = 0; i < m_SubMeshes.size(); i++)
 		{
-			SetVertices(meshData.VertexLists[i], i);
-			SetIndices(meshData.IndexLists[i], i);
+			if (meshData.VertexLists[i].size() > 0 &&
+				meshData.IndexLists[i].size() > 0)
+			{
+				SetVertices(meshData.VertexLists[i], i);
+				SetIndices(meshData.IndexLists[i], i);
+			}
 		}
 	}
 
