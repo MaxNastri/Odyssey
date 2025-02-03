@@ -41,9 +41,11 @@ namespace Odyssey
 		void BindVertexBuffer(ResourceID vertexBufferID);
 		void CopyBufferToBuffer(ResourceID source, ResourceID destination, size_t dataSize);
 		void CopyImageToImage(ResourceID source, ResourceID destination);
+		void CopyImageToImage(ResourceID source, uint32_t srcMip, uint32_t srcSlice, ResourceID destination, uint32_t dstMip, uint32_t dstSlice, uint width, uint height);
 		void BindIndexBuffer(ResourceID indexBufferID);
 		void PushDescriptorsGraphics(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
 		void PushDescriptorsCompute(VulkanPushDescriptors* descriptors, ResourceID pipelineID);
+		void PushConstantsGraphics(ResourceID pipelineID, uint32_t offset, uint32_t size, const void* data);
 		void Dispatch(uint32_t groupX, uint32_t groupY, uint32_t groupZ);
 		void SetDepthBias(float bias, float clamp, float slope);
 

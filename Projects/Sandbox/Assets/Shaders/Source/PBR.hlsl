@@ -81,6 +81,8 @@ Texture2D shadowmapTex2D : register(t10);
 SamplerState shadowmapSampler : register(s10);
 Texture2D brdfLutTex2D : register(t11);
 SamplerState brdfLutSampler : register(s11);
+TextureCube IrradianceTex3D : register(t12);
+SamplerState IrradianceSampler : register(s12);
 
 #pragma Vertex
 struct VertexInput
@@ -180,7 +182,7 @@ float3 Uncharted2Tonemap(float3 x)
 
 void ApplyTonemapping(inout float3 color)
 {
-    color = Uncharted2Tonemap(color * 4.5);
+    color = Uncharted2Tonemap(color * Exposure);
     color = color * (1.0f / Uncharted2Tonemap((11.2f).xxx));
 }
 
@@ -233,8 +235,8 @@ float3 specularContribution(float2 inUV, float3 lightColor, float lightIntensity
         float3 F = F_Schlick(NdotV, F0);
         float3 spec = D * F * G / (4.0 * NdotL * NdotV + 0.001);
         float3 kD = (float3(1.0, 1.0, 1.0) - F) * (1.0 - metallic);
-        float3 diffuse = (kD * ALBEDO(inUV) / PI);
-        color += (diffuse + spec) * NdotL * lightColor * lightIntensity;
+        float3 diffuse = (kD * ALBEDO(inUV) / PI + spec);
+        color += (diffuse) * NdotL * lightColor * lightIntensity;
     }
 
     return color;
@@ -252,8 +254,6 @@ float4 main(PixelInput input) : SV_TARGET
     
     float2 NdotV = (max(dot(N, V), 0.0), roughness);
     
-    float2 brdfLut = brdfLutTex2D.SampleLevel(brdfLutSampler, NdotV, 0);
-    
     float3 F0 = lerp(float3(0.04, 0.04, 0.04), ALBEDO(input.TexCoord0), metallic);
 
     float3 Lo = float3(0.0, 0.0, 0.0);
@@ -266,9 +266,24 @@ float4 main(PixelInput input) : SV_TARGET
             Lo += specularContribution(input.TexCoord0, SceneLights[i].Color.rgb, SceneLights[i].Intensity * PI, L, V, N, F0, metallic, roughness);
         }
     }
-
+    
+    float2 brdf = brdfLutTex2D.SampleLevel(brdfLutSampler, NdotV, 0);
+    float3 irradiance = IrradianceTex3D.Sample(IrradianceSampler, N).rgb;
+    float ao = AOMapTexture.Sample(AOMapSampler, input.TexCoord0).a;
+    
+    float3 diffuse = irradiance * ALBEDO(input.TexCoord0);
+    float3 F = F_SchlickR(max(dot(N, V), 0.0), F0, roughness);
+    
+    float3 specular = float3(1, 1, 1) * (F * brdf.x + brdf.y);
+    
+    // Ambient
+    float3 kD = 1.0 - F;
+    kD *= 1.0 - metallic;
+    float3 ambient = (kD * diffuse) * ao;
+    
     // TODO: Ambient lighting
-    float3 color = Lo;
+    //return float4(ambient, 1.0);
+    float3 color = ambient + Lo;
 
 	// Tone mapping
     ApplyTonemapping(color);

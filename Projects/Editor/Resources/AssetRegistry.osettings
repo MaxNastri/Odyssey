@@ -191,3 +191,11 @@ Entries:
     Type: Odyssey.SourceShader
     Path: Shaders/Source/BRDF_Lut_Gen.hlsl
     GUID: 56412379814738123
+  - Name: Irradiance
+    Type: Odyssey.Shader
+    Path: Shaders/Irradiance.shader
+    GUID: 7182637854819237912
+  - Name: Irradiance
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Irradiance.hlsl
+    GUID: 4397681236329758125

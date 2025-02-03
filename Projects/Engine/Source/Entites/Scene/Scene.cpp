@@ -218,6 +218,8 @@ for (auto entity : m_Registry.view<ComponentType>()) GameObject(this, entity).Ge
 			root.ReadData("Ambient Color", m_EnvironmentSettings.AmbientColor);
 			root.ReadData("Scene Center", m_EnvironmentSettings.SceneCenter);
 			root.ReadData("Scene Radius", m_EnvironmentSettings.SceneRadius);
+			root.ReadData("Exposure", m_EnvironmentSettings.Exposure);
+			root.ReadData("Gamma Correction", m_EnvironmentSettings.GammaCorrection);
 
 			if (skybox)
 				m_EnvironmentSettings.SetSkybox(skybox);

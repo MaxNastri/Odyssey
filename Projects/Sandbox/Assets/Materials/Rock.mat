@@ -7,6 +7,8 @@ Render Queue: Opaque
 Blend Mode: None
 Depth Write: 1
 Property Textures:
+  - Property: AOMapSampler
+    Texture: 17492370988812685835
   - Property: AlbedoMapSampler
     Texture: 262173709281449890
   - Property: MetallicMapSampler

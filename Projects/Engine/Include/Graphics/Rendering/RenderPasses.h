@@ -2,10 +2,12 @@
 #include "Resource.h"
 #include "VulkanGlobals.h"
 #include "Camera.h"
-
+#include "VulkanPushDescriptors.h"
+#include "Mesh.h"
 namespace Odyssey
 {
 	class Camera;
+	class Shader;
 	class VulkanContext;
 	class VulkanCommandBuffer;
 	class VulkanShaderModule;
@@ -26,6 +28,7 @@ namespace Odyssey
 		std::map<uint8_t, ResourceID> DepthTextures;
 		std::map<uint8_t, ResourceID> ColorTextures;
 		ResourceID BRDFLutTexture;
+		ResourceID IrradianceTexture;
 
 	public:
 		ResourceID Shadowmap() { return DepthTextures[0]; }
@@ -43,7 +46,7 @@ namespace Odyssey
 		void SetRenderTarget(ResourceID renderTarget) { m_RenderTarget = renderTarget; }
 
 	protected:
-		void BeginRendering(RenderPassParams& params);
+		void PrepareRendering(RenderPassParams& params);
 
 	protected:
 		struct AttachmentInfo
@@ -60,6 +63,11 @@ namespace Odyssey
 
 		AttachmentInfo m_ColorAttachment;
 		AttachmentInfo m_DepthAttachment;
+
+	protected:
+		VkRenderingInfoKHR m_RenderingInfo;
+		std::vector<VkRenderingAttachmentInfoKHR> attachments;
+		uint32_t m_Width, m_Height;
 	};
 
 	class BRDFLutPass : public RenderPass
@@ -77,6 +85,38 @@ namespace Odyssey
 
 	private:
 		inline static constexpr uint32_t Texture_Size = 512;
+	};
+
+	class IrradiancePass : public RenderPass
+	{
+	public:
+		IrradiancePass(ResourceID irradianceCubemap);
+
+	public:
+		virtual void BeginPass(RenderPassParams& params) override;
+		virtual void Execute(RenderPassParams& params) override;
+		virtual void EndPass(RenderPassParams& params) override;
+
+	private:
+		struct IrradianceData
+		{
+			mat4 MVP = mat4(1.0f);
+			float deltaPhi = (2.0f * pi<float>()) / 180.0f;
+			float deltaTheta = (0.5f * pi<float>()) / 64.0f;
+		};
+
+		Ref<Shader> m_Shader;
+		Ref<Mesh> m_CubeMesh;
+		ResourceID m_IrradianceCubemap;
+		ResourceID m_Pipeline;
+		VulkanPushDescriptors m_PushDescriptors;
+		std::vector<ResourceID> m_UBOs;
+		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
+
+	private:
+		inline static constexpr float Texture_Size = 64;
+		inline static const GUID& Shader_GUID = 7182637854819237912;
+		inline static const GUID& s_CubeMeshGUID = 4325336624522892849;
 	};
 
 	class DepthPass : public RenderPass

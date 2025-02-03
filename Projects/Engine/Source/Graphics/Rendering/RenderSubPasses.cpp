@@ -274,6 +274,11 @@ namespace Odyssey
 					uint32_t index = setPass.ShaderBindings["brdfLutSampler"].Index;
 					m_PushDescriptors->AddTexture(params.BRDFLutTexture, index);
 				}
+				if (setPass.ShaderBindings.contains("IrradianceSampler") && params.IrradianceTexture.IsValid())
+				{
+					uint32_t index = setPass.ShaderBindings["IrradianceSampler"].Index;
+					m_PushDescriptors->AddTexture(params.IrradianceTexture, index);
+				}
 				if (setPass.MaterialBuffer.IsValid())
 				{
 					uint32_t index = setPass.ShaderBindings["MaterialData"].Index;

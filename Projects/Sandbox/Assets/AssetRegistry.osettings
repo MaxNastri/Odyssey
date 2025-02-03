@@ -875,3 +875,7 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/PBR/PBR_Pirate.mat
     GUID: 11453019595560542111
+  - Name: Marble_02_AO
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Marble_02_AO.tex2D
+    GUID: 3120519235124092623

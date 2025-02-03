@@ -178,7 +178,7 @@ namespace Odyssey
 
 		VkPipelineDepthStencilStateCreateInfo depthStencil{};
 		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthTestEnable = info.TestDepth;
 		depthStencil.depthWriteEnable = info.WriteDepth;
 
 		if (info.IsShadow)
@@ -300,12 +300,22 @@ namespace Odyssey
 		if (auto layout = ResourceManager::GetResource<VulkanDescriptorLayout>(info.DescriptorLayout))
 			setLayouts.push_back(layout->GetHandle());
 
+		std::vector<VkPushConstantRange> pushConstants;
+
+		for (PushConstantRange pushConstant : info.PushConstantRanges)
+		{
+			VkPushConstantRange& vkRange = pushConstants.emplace_back();
+			vkRange.stageFlags = pushConstant.Flags;
+			vkRange.offset = pushConstant.Offset;
+			vkRange.size = pushConstant.Size;
+		}
+
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutInfo.setLayoutCount = (uint32_t)setLayouts.size(); // Optional
 		pipelineLayoutInfo.pSetLayouts = setLayouts.data(); // Optional
-		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+		pipelineLayoutInfo.pushConstantRangeCount = (uint32_t)pushConstants.size(); // Optional
+		pipelineLayoutInfo.pPushConstantRanges = pushConstants.data(); // Optional
 
 		if (vkCreatePipelineLayout(m_Context->GetDevice()->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
 		{

@@ -20,6 +20,13 @@ namespace Odyssey
 		Front = 2,
 	};
 
+	struct PushConstantRange
+	{
+	public:
+		VkShaderStageFlags Flags;
+		uint32_t Offset = 0;
+		uint32_t Size = 0;
+	};
 	struct VulkanPipelineInfo
 	{
 	public:
@@ -29,11 +36,13 @@ namespace Odyssey
 		CullMode CullMode = CullMode::None;
 		bool FrontCCW = false;
 		bool WriteDepth = true;
+		bool TestDepth = true;
 		BlendMode SetBlendMode = BlendMode::None;
 		TextureFormat ColorFormat = TextureFormat::R8G8B8A8_UNORM;
 		TextureFormat DepthFormat = TextureFormat::D24_UNORM_S8_UINT;
 		uint32_t MSAACountOverride = 0;
 		bool IsShadow = false;
 		BinaryBuffer AttributeDescriptions;
+		std::vector<PushConstantRange> PushConstantRanges;
 	};
 }

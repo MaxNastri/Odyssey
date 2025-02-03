@@ -14,23 +14,23 @@
 #include "VulkanDescriptorLayout.h"
 #include "VulkanContext.h"
 #include "RenderSubPasses.h"
-
+#include "AssetManager.h"
 #include "RenderTarget.h"
 #include "Renderer.h"
+#include "VulkanBuffer.h"
 
 namespace Odyssey
 {
-	void RenderPass::BeginRendering(RenderPassParams& params)
+	void RenderPass::PrepareRendering(RenderPassParams& params)
 	{
 		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
 
-		uint32_t width = 0;
-		uint32_t height = 0;
+		m_Width = 0;
+		m_Height = 0;
+		attachments.clear();
 
 		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
 		ResourceID colorTextureID = renderTarget->GetColorTexture();
-
-		std::vector<VkRenderingAttachmentInfoKHR> attachments;
 
 		int32_t colorAttachmentIndex = -1;
 
@@ -43,8 +43,8 @@ namespace Odyssey
 			ResourceID colorResolveTextureID = renderTarget->GetColorResolveTexture();
 
 			// Set the w/h
-			width = colorTexture->GetWidth();
-			height = colorTexture->GetHeight();
+			m_Width = colorTexture->GetWidth();
+			m_Height = colorTexture->GetHeight();
 
 			// Transition the color attachment image
 			commandBuffer->TransitionLayouts(colorTexture->GetImage(), m_ColorAttachment.BeginLayout);
@@ -95,8 +95,8 @@ namespace Odyssey
 			ResourceID depthResolveTextureID = renderTarget->GetDepthResolveTexture();
 
 			// Set the w/h
-			width = depthTexture->GetWidth();
-			height = depthTexture->GetHeight();
+			m_Width = depthTexture->GetWidth();
+			m_Height = depthTexture->GetHeight();
 			bindStencil = depthTexture->GetFormat() == TextureFormat::D24_UNORM_S8_UINT;
 
 			// Transition the color attachment image
@@ -133,40 +133,33 @@ namespace Odyssey
 		}
 
 		// Rendering info
-		VkRenderingInfoKHR rendering_info = {};
-		rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
-		rendering_info.pNext = VK_NULL_HANDLE;
-		rendering_info.flags = 0;
-		rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{width, height} };
-		rendering_info.layerCount = 1;
-		rendering_info.viewMask = 0;
-		rendering_info.colorAttachmentCount = colorAttachmentIndex >= 0 ? 1 : 0;
-		rendering_info.pColorAttachments = colorAttachmentIndex >= 0 ? &attachments[colorAttachmentIndex] : VK_NULL_HANDLE;
-		rendering_info.pDepthAttachment = depthAttachmentIndex >= 0 ? &attachments[depthAttachmentIndex] : VK_NULL_HANDLE;
-		rendering_info.pStencilAttachment = depthAttachmentIndex >= 0 && bindStencil ? &attachments[depthAttachmentIndex] : VK_NULL_HANDLE;
-
-		// Begin dynamic rendering
-		commandBuffer->BeginRendering(rendering_info);
+		ZeroMemory(&m_RenderingInfo, sizeof(m_RenderingInfo));
+		m_RenderingInfo.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
+		m_RenderingInfo.pNext = VK_NULL_HANDLE;
+		m_RenderingInfo.flags = 0;
+		m_RenderingInfo.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{m_Width, m_Height} };
+		m_RenderingInfo.layerCount = 1;
+		m_RenderingInfo.viewMask = 0;
+		m_RenderingInfo.colorAttachmentCount = colorAttachmentIndex >= 0 ? 1 : 0;
+		m_RenderingInfo.pColorAttachments = colorAttachmentIndex >= 0 ? &attachments[colorAttachmentIndex] : VK_NULL_HANDLE;
+		m_RenderingInfo.pDepthAttachment = depthAttachmentIndex >= 0 ? &attachments[depthAttachmentIndex] : VK_NULL_HANDLE;
+		m_RenderingInfo.pStencilAttachment = depthAttachmentIndex >= 0 && bindStencil ? &attachments[depthAttachmentIndex] : VK_NULL_HANDLE;
 
 		// Viewport
-		{
-			VkViewport viewport{};
-			viewport.x = 0.0f;
-			viewport.y = height;
-			viewport.width = (float)width;
-			viewport.height = -1.0f * (float)height;
-			viewport.minDepth = 0.0f;
-			viewport.maxDepth = 1.0f;
-			commandBuffer->BindViewport(viewport);
-		}
+		VkViewport viewport{};
+		viewport.x = 0.0f;
+		viewport.y = m_Height;
+		viewport.width = (float)m_Width;
+		viewport.height = -1.0f * (float)m_Height;
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+		commandBuffer->BindViewport(viewport);
 
 		// Scissor
-		{
-			VkRect2D scissor{};
-			scissor.offset = { 0, 0 };
-			scissor.extent = VkExtent2D{ width, height };
-			commandBuffer->SetScissor(scissor);
-		}
+		VkRect2D scissor{};
+		scissor.offset = { 0, 0 };
+		scissor.extent = VkExtent2D{ m_Width, m_Height };
+		commandBuffer->SetScissor(scissor);
 	}
 
 	BRDFLutPass::BRDFLutPass()
@@ -180,8 +173,13 @@ namespace Odyssey
 
 		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(imageDesc, RenderTargetFlags::Color);
 
-		m_SubPasses.push_back(std::make_shared<BRDFLutSubPass>());
+		m_ColorAttachment.BeginLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		m_ColorAttachment.ClearValue.color = { 0.0f, 0.0f, 0.0f, 1.0f };
+		m_ColorAttachment.EndLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		m_ColorAttachment.LoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		m_ColorAttachment.StoreOp = VK_ATTACHMENT_STORE_OP_STORE;
 
+		m_SubPasses.push_back(std::make_shared<BRDFLutSubPass>());
 
 		for (auto& renderSubPass : m_SubPasses)
 		{
@@ -191,98 +189,18 @@ namespace Odyssey
 
 	void BRDFLutPass::BeginPass(RenderPassParams& params)
 	{
-		ResourceID commandBufferID = params.GraphicsCommandBuffer;
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
-
-		ResourceID colorAttachmentImage;
-		uint32_t width = 0;
-		uint32_t height = 0;
-
-		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
-		ResourceID colorTextureID = renderTarget->GetColorTexture();
-		ResourceID colorResolveTextureID = renderTarget->GetColorResolveTexture();
-
-		// Extract the render target and width/height
-		if (colorTextureID.IsValid())
-		{
-			Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(colorTextureID);
-			colorAttachmentImage = colorTexture->GetImage();
-			width = colorTexture->GetWidth();
-			height = colorTexture->GetHeight();
-
-			commandBuffer->TransitionLayouts(colorAttachmentImage, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-		}
-		else
-		{
-			Log::Error("(OpaquePass) Invalid render target for opaque pass.");
-			return;
-		}
-
-		// Transfer the clear value into vulkan type
-		VkClearValue clearValue;
-		clearValue.color.float32[0] = 0.0f;
-		clearValue.color.float32[1] = 0.0f;
-		clearValue.color.float32[2] = 0.0f;
-		clearValue.color.float32[3] = 1.0f;
-
-		// Create the rendering attachment for the render target
-		std::vector<VkRenderingAttachmentInfoKHR> attachments;
-		{
-			auto colorAttachment = ResourceManager::GetResource<VulkanImage>(colorAttachmentImage);
-			VkRenderingAttachmentInfoKHR color_attachment_info{};
-			color_attachment_info.sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
-			color_attachment_info.pNext = VK_NULL_HANDLE;
-			color_attachment_info.imageView = colorAttachment->GetImageView();
-			color_attachment_info.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			color_attachment_info.resolveMode = VK_RESOLVE_MODE_NONE;
-			color_attachment_info.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-			color_attachment_info.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-			color_attachment_info.clearValue = clearValue;
-
-			attachments.push_back(color_attachment_info);
-		}
-
-		// Rendering info
-		VkRenderingInfoKHR rendering_info = {};
-		rendering_info.sType = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
-		rendering_info.pNext = VK_NULL_HANDLE;
-		rendering_info.flags = 0;
-		rendering_info.renderArea = VkRect2D{ VkOffset2D{}, VkExtent2D{width, height} };
-		rendering_info.layerCount = 1;
-		rendering_info.viewMask = 0;
-		rendering_info.colorAttachmentCount = 1;
-		rendering_info.pColorAttachments = &attachments[0];
-		rendering_info.pDepthAttachment = VK_NULL_HANDLE;
-		rendering_info.pStencilAttachment = VK_NULL_HANDLE;
-
-		// Begin dynamic rendering
-		commandBuffer->BeginRendering(rendering_info);
-
-		// Viewport
-		{
-			VkViewport viewport{};
-			viewport.x = 0.0f;
-			viewport.y = height;
-			viewport.width = (float)width;
-			viewport.height = -1.0f * (float)height;
-			viewport.minDepth = 0.0f;
-			viewport.maxDepth = 1.0f;
-			commandBuffer->BindViewport(viewport);
-		}
-
-		// Scissor
-		{
-			VkRect2D scissor{};
-			scissor.offset = { 0, 0 };
-			scissor.extent = VkExtent2D{ width, height };
-			commandBuffer->SetScissor(scissor);
-		}
+		PrepareRendering(params);
 	}
 
 	void BRDFLutPass::Execute(RenderPassParams& params)
 	{
 		RenderSubPassData subPassData;
 
+		// Begin rendering
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		commandBuffer->BeginRendering(m_RenderingInfo);
+
+		// Execute the subpasses
 		for (auto& renderSubPass : m_SubPasses)
 		{
 			renderSubPass->Execute(params, subPassData);
@@ -305,6 +223,139 @@ namespace Odyssey
 		commandBuffer->TransitionLayouts(colorTexture->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		params.BRDFLutTexture = colorTextureID;
+	}
+
+	IrradiancePass::IrradiancePass(ResourceID irradianceCubemap)
+	{
+		m_IrradianceCubemap = irradianceCubemap;
+
+		// Set the color attachment parameters
+		m_ColorAttachment.BeginLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		m_ColorAttachment.ClearValue.color = { 0.0f, 0.0f, 0.0f, 1.0f };
+		m_ColorAttachment.EndLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		m_ColorAttachment.LoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		m_ColorAttachment.StoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+
+		// Create an off-screen render target matching a slice of the irradiance cubemap
+		Ref<VulkanTexture> irradianceTexture = ResourceManager::GetResource<VulkanTexture>(irradianceCubemap);
+
+		VulkanImageDescription imageDesc;
+		imageDesc.ImageType = ImageType::RenderTexture;
+		imageDesc.Width = irradianceTexture->GetWidth();
+		imageDesc.Height = irradianceTexture->GetHeight();
+		imageDesc.Format = irradianceTexture->GetFormat();
+		imageDesc.MipMapEnabled = false;
+		imageDesc.Samples = 1;
+
+		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(imageDesc, RenderTargetFlags::Color);
+		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
+		m_CubeMesh = AssetManager::LoadAsset<Mesh>(s_CubeMeshGUID);
+
+		VulkanPipelineInfo info;
+		info.Shaders = m_Shader->GetResourceMap();
+		info.CullMode = CullMode::None;
+		info.DescriptorLayout = m_Shader->GetDescriptorLayout();
+		info.MSAACountOverride = 1;
+		info.ColorFormat = irradianceTexture->GetFormat();
+		info.IsShadow = false;
+		info.WriteDepth = false;
+		info.TestDepth = false;
+		info.AttributeDescriptions = m_Shader->GetVertexAttributes();
+		m_Pipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
+
+
+		uint32_t mipCount = floor(std::log2f(Texture_Size)) + 1;
+
+		for (size_t i = 0; i < mipCount * 6; i++)
+		{
+			ResourceID ubo = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(IrradianceData));
+			m_UBOs.push_back(ubo);
+		}
+	}
+
+	void IrradiancePass::BeginPass(RenderPassParams& params)
+	{
+		PrepareRendering(params);
+	}
+
+	void IrradiancePass::Execute(RenderPassParams& params)
+	{
+		glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+		glm::mat4 captureViews[] =
+		{
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+		};
+
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+		Ref<VulkanTexture> irradianceCubemap = ResourceManager::GetResource<VulkanTexture>(m_IrradianceCubemap);
+
+		commandBuffer->TransitionLayouts(irradianceCubemap->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+		uint32_t mipCount = floor(std::log2f(Texture_Size)) + 1;
+
+		IrradianceData data;
+
+		size_t counter = 0;
+		for (uint32_t mip = 0; mip < mipCount; mip++)
+		{
+			for (uint32_t face = 0; face < 6; face++)
+			{
+				VkViewport viewport{};
+				viewport.width = (float)(Texture_Size * std::pow(0.5f, mip));
+				viewport.height = viewport.width;
+				viewport.minDepth = 0.0f;
+				viewport.maxDepth = 1.0f;
+				commandBuffer->BindViewport(viewport);
+
+				commandBuffer->BeginRendering(m_RenderingInfo);
+
+				data.MVP = captureProjection * captureViews[face];
+
+				ResourceID uboID = m_UBOs[counter];
+				Ref<VulkanBuffer> buffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
+				buffer->CopyData(sizeof(IrradianceData), &data);
+				++counter;
+
+				m_PushDescriptors.Clear();
+
+				uint32_t bindingIndex = 0;
+				if (m_Shader->HasBinding("IrradianceData", bindingIndex))
+					m_PushDescriptors.AddBuffer(uboID, bindingIndex);
+
+				if (m_Shader->HasBinding("skyboxSampler", bindingIndex))
+					m_PushDescriptors.AddTexture(params.renderingData->renderScene->SkyboxCubemap, bindingIndex);
+
+				commandBuffer->BindGraphicsPipeline(m_Pipeline);
+				commandBuffer->PushDescriptorsGraphics(&m_PushDescriptors, m_Pipeline);
+
+				commandBuffer->BindVertexBuffer(m_CubeMesh->GetVertexBuffer());
+				commandBuffer->BindIndexBuffer(m_CubeMesh->GetIndexBuffer());
+				commandBuffer->DrawIndexed(m_CubeMesh->GetIndexCount(), 1, 0, 0, 0);
+
+				// end render pass
+				commandBuffer->EndRendering();
+
+				Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
+				Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorTexture());
+
+				commandBuffer->CopyImageToImage(colorTexture->GetImage(), 0, 0,
+					irradianceCubemap->GetImage(), mip, face, viewport.width, viewport.height);
+				commandBuffer->TransitionLayouts(colorTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			}
+		}
+
+		commandBuffer->TransitionLayouts(irradianceCubemap->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	}
+
+	void IrradiancePass::EndPass(RenderPassParams& params)
+	{
+
 	}
 
 	DepthPass::DepthPass(uint8_t cameraTag)
@@ -332,37 +383,36 @@ namespace Odyssey
 
 	void DepthPass::BeginPass(RenderPassParams& params)
 	{
-		if (params.renderingData->renderScene->SetPasses.size() == 0)
-			return;
-
 		if (Camera* camera = params.renderingData->renderScene->GetCamera(m_Camera))
 		{
 			if (camera->GetViewportWidth() != m_Width || camera->GetViewportHeight() != m_Height)
 				CreateRenderTarget(camera->GetViewportWidth(), camera->GetViewportHeight());
 		}
 
-		BeginRendering(params);
+		// Prepare the attachments for rendering
+		PrepareRendering(params);
 	}
 
 	void DepthPass::Execute(RenderPassParams& params)
 	{
+		// Begin rendering
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		commandBuffer->BeginRendering(m_RenderingInfo);
+
 		if (params.renderingData->renderScene->SetPasses.size() == 0)
 			return;
 
+		// Pass along the camera tag
 		RenderSubPassData subPassData;
 		subPassData.CameraTag = m_Camera;
 
+		// Execute each subpass
 		for (auto& renderSubPass : m_SubPasses)
-		{
 			renderSubPass->Execute(params, subPassData);
-		}
 	}
 
 	void DepthPass::EndPass(RenderPassParams& params)
 	{
-		if (params.renderingData->renderScene->SetPasses.size() == 0)
-			return;
-
 		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
@@ -427,18 +477,24 @@ namespace Odyssey
 
 	void RenderObjectsPass::BeginPass(RenderPassParams& params)
 	{
-		BeginRendering(params);
+		PrepareRendering(params);
 	}
 
 	void RenderObjectsPass::Execute(RenderPassParams& params)
 	{
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
 
-		RenderSubPassData subPassData;
-		subPassData.CameraTag = m_Camera;
+		// Begin the render pass
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		commandBuffer->BeginRendering(m_RenderingInfo);
 
+		// Don't render if our camera is invalid
 		if (!renderScene->GetCamera(m_Camera))
 			return;
+
+		// Pass along our camera to the subpasses
+		RenderSubPassData subPassData;
+		subPassData.CameraTag = m_Camera;
 
 		// Check for a valid camera data index
 		if (subPassData.CameraTag < RenderScene::MAX_CAMERAS)
@@ -455,7 +511,7 @@ namespace Odyssey
 		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
-		// End dynamic rendering
+		// End the render pass
 		commandBuffer->EndRendering();
 
 		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
@@ -532,7 +588,7 @@ namespace Odyssey
 		if (colorTextureID.IsValid())
 		{
 			Ref<VulkanTexture> rtColorTexture = ResourceManager::GetResource<VulkanTexture>(colorTextureID);
-			
+
 			if (m_CameraColorTexture.IsValid())
 			{
 				Ref<VulkanTexture> cameraColorTexture = ResourceManager::GetResource<VulkanTexture>(m_CameraColorTexture);
@@ -573,18 +629,24 @@ namespace Odyssey
 			commandBuffer->TransitionLayouts(cameraColorTexture->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		}
 
-		BeginRendering(params);
+		PrepareRendering(params);
 	}
 
 	void TransparentObjectsPass::Execute(RenderPassParams& params)
 	{
 		std::shared_ptr<RenderScene> renderScene = params.renderingData->renderScene;
 
-		RenderSubPassData subPassData;
-		subPassData.CameraTag = m_Camera;
+		// Begin rendering
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		commandBuffer->BeginRendering(m_RenderingInfo);
 
+		// Don't render with an invalid camera
 		if (!renderScene->GetCamera(m_Camera))
 			return;
+
+		// Pass along our camera to the subpasses
+		RenderSubPassData subPassData;
+		subPassData.CameraTag = m_Camera;
 
 		// Check for a valid camera data index
 		if (subPassData.CameraTag < RenderScene::MAX_CAMERAS)
@@ -601,9 +663,10 @@ namespace Odyssey
 		ResourceID commandBufferID = params.GraphicsCommandBuffer;
 		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
-		// End dynamic rendering
+		// End rendering if we have a valid camera
 		commandBuffer->EndRendering();
 
+		// Transition the color RT to the final layout
 		Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
 		ResourceID colorTextureID = renderTarget->GetColorTexture();
 
@@ -624,7 +687,6 @@ namespace Odyssey
 			Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(colorResolveTextureID);
 			commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		}
-
 	}
 
 	ImguiPass::ImguiPass()
@@ -640,11 +702,13 @@ namespace Odyssey
 	void ImguiPass::BeginPass(RenderPassParams& params)
 	{
 		m_RenderTarget = params.FrameTexture;
-		BeginRendering(params);
+		PrepareRendering(params);
 	}
 
 	void ImguiPass::Execute(RenderPassParams& params)
 	{
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(params.GraphicsCommandBuffer);
+		commandBuffer->BeginRendering(m_RenderingInfo);
 		m_Imgui->Render(params.GraphicsCommandBuffer);
 	}
 

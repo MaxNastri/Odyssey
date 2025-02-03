@@ -259,6 +259,13 @@ namespace Odyssey
 			params.FrameTexture = frame->GetFrameTexture();
 			params.BRDFLutTexture = m_BRDFLutTexture;
 
+			if (!m_IrradianceCubemap.IsValid() && params.renderingData->renderScene && 
+				params.renderingData->renderScene->SkyboxCubemap.IsValid())
+				BuildIrradianceCubemap(params);
+
+			params.GraphicsCommandBuffer = m_GraphicsCommandBuffers[s_FrameIndex];
+			params.IrradianceTexture = m_IrradianceCubemap;
+
 			for (Ref<RenderPass>& renderPass : m_RenderPasses)
 			{
 				Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
@@ -405,5 +412,44 @@ namespace Odyssey
 			}
 		}
 
+	}
+	void VulkanRenderer::BuildIrradianceCubemap(RenderPassParams& params)
+	{
+		if (auto renderScene = params.renderingData->renderScene)
+		{
+			if (renderScene->SkyboxCubemap.IsValid())
+			{
+				Ref<VulkanTexture> skybox = ResourceManager::GetResource<VulkanTexture>(renderScene->SkyboxCubemap);
+
+				VulkanImageDescription textureDesc;
+				textureDesc.ImageType = ImageType::Cubemap;
+				textureDesc.Width = 64;
+				textureDesc.Height = 64;
+				textureDesc.Format = skybox->GetFormat();
+				textureDesc.Channels = 4;
+				textureDesc.ArrayDepth = 6;
+				textureDesc.MipMapEnabled = true;
+
+				if (m_IrradianceCubemap.IsValid())
+					ResourceManager::Destroy(m_IrradianceCubemap);
+
+				m_IrradianceCubemap = ResourceManager::Allocate<VulkanTexture>(textureDesc, nullptr);
+
+				Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+				ResourceID commandBufferID = commandPool->AllocateBuffer();
+				Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+				commandBuffer->BeginCommands();
+				params.GraphicsCommandBuffer = commandBufferID;
+
+				IrradiancePass irradiancePass(m_IrradianceCubemap);
+				irradiancePass.BeginPass(params);
+				irradiancePass.Execute(params);
+
+				commandBuffer->EndCommands();
+				commandBuffer->SubmitGraphics();
+				commandPool->ReleaseBuffer(commandBufferID);
+			}
+		}
 	}
 }

@@ -306,6 +306,29 @@ namespace Odyssey
 			destinationImage->GetImage(), destinationImage->GetLayout(), (uint32_t)copyRegions.size(), copyRegions.data());
 	}
 
+	void VulkanCommandBuffer::CopyImageToImage(ResourceID source, uint32_t srcMip, uint32_t srcSlice, ResourceID destination, uint32_t dstMip, uint32_t dstSlice, uint width, uint height)
+	{
+		Ref<VulkanImage> sourceImage = ResourceManager::GetResource<VulkanImage>(source);
+		Ref<VulkanImage> destinationImage = ResourceManager::GetResource<VulkanImage>(destination);
+
+		VkImageLayout scrOriginalLayout = sourceImage->GetLayout();
+		TransitionLayouts(source, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+		TransitionLayouts(destination, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+		auto copyRegions = sourceImage->GetImageCopyRegions();
+
+		copyRegions[0].srcSubresource.baseArrayLayer = srcSlice;
+		copyRegions[0].srcSubresource.mipLevel = srcMip;
+		copyRegions[0].dstSubresource.baseArrayLayer = dstSlice;
+		copyRegions[0].dstSubresource.mipLevel = dstMip;
+		copyRegions[0].extent.width = width;
+		copyRegions[0].extent.height = height;
+		copyRegions[0].extent.depth = 1;
+
+		vkCmdCopyImage(m_CommandBuffer, sourceImage->GetImage(), sourceImage->GetLayout(),
+			destinationImage->GetImage(), destinationImage->GetLayout(), (uint32_t)copyRegions.size(), copyRegions.data());
+	}
+
 	void VulkanCommandBuffer::BindIndexBuffer(ResourceID indexBufferID)
 	{
 		auto indexBuffer = ResourceManager::GetResource<VulkanBuffer>(indexBufferID);
@@ -326,6 +349,12 @@ namespace Odyssey
 		std::vector<VkWriteDescriptorSet> descriptorSets = descriptors->GetWriteDescriptors();
 
 		vkCmdPushDescriptorSetKHR(m_CommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline->GetLayout(), 0, (uint32_t)(descriptorSets.size()), descriptorSets.data());
+	}
+
+	void VulkanCommandBuffer::PushConstantsGraphics(ResourceID pipelineID, uint32_t offset, uint32_t size, const void* data)
+	{
+		Ref<VulkanGraphicsPipeline> pipeline = ResourceManager::GetResource<VulkanGraphicsPipeline>(pipelineID);
+		vkCmdPushConstants(m_CommandBuffer, pipeline->GetLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, offset, size, data);
 	}
 
 	void VulkanCommandBuffer::Dispatch(uint32_t groupX, uint32_t groupY, uint32_t groupZ)
