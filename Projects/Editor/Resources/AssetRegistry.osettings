@@ -199,3 +199,11 @@ Entries:
     Type: Odyssey.SourceShader
     Path: Shaders/Source/Irradiance.hlsl
     GUID: 4397681236329758125
+  - Name: Prefiltered Cubemap
+    Type: Odyssey.Shader
+    Path: Shaders/Prefiltered_Cubemap.shader
+    GUID: 4656128379182378356
+  - Name: Prefiltered Cubemap
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Prefiltered_Cubemap.hlsl
+    GUID: 981273863473125533

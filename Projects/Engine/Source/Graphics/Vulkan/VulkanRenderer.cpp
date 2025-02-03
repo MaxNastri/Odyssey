@@ -263,8 +263,13 @@ namespace Odyssey
 				params.renderingData->renderScene->SkyboxCubemap.IsValid())
 				BuildIrradianceCubemap(params);
 
+			if (!m_PrefilteredCubemap.IsValid() && params.renderingData->renderScene &&
+				params.renderingData->renderScene->SkyboxCubemap.IsValid())
+				BuildPrefilteredCubemap(params);
+
 			params.GraphicsCommandBuffer = m_GraphicsCommandBuffers[s_FrameIndex];
 			params.IrradianceTexture = m_IrradianceCubemap;
+			params.PrefilteredCubemap = m_PrefilteredCubemap;
 
 			for (Ref<RenderPass>& renderPass : m_RenderPasses)
 			{
@@ -445,6 +450,45 @@ namespace Odyssey
 				IrradiancePass irradiancePass(m_IrradianceCubemap);
 				irradiancePass.BeginPass(params);
 				irradiancePass.Execute(params);
+
+				commandBuffer->EndCommands();
+				commandBuffer->SubmitGraphics();
+				commandPool->ReleaseBuffer(commandBufferID);
+			}
+		}
+	}
+	void VulkanRenderer::BuildPrefilteredCubemap(RenderPassParams& params)
+	{
+		if (auto renderScene = params.renderingData->renderScene)
+		{
+			if (renderScene->SkyboxCubemap.IsValid())
+			{
+				Ref<VulkanTexture> skybox = ResourceManager::GetResource<VulkanTexture>(renderScene->SkyboxCubemap);
+
+				VulkanImageDescription textureDesc;
+				textureDesc.ImageType = ImageType::Cubemap;
+				textureDesc.Width = 512;
+				textureDesc.Height = 512;
+				textureDesc.Format = skybox->GetFormat();
+				textureDesc.Channels = 4;
+				textureDesc.ArrayDepth = 6;
+				textureDesc.MipMapEnabled = true;
+
+				if (m_PrefilteredCubemap.IsValid())
+					ResourceManager::Destroy(m_PrefilteredCubemap);
+
+				m_PrefilteredCubemap = ResourceManager::Allocate<VulkanTexture>(textureDesc, nullptr);
+
+				Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+				ResourceID commandBufferID = commandPool->AllocateBuffer();
+				Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+				commandBuffer->BeginCommands();
+				params.GraphicsCommandBuffer = commandBufferID;
+
+				PrefilteredSkyboxPass prefilteredPass(m_PrefilteredCubemap);
+				prefilteredPass.BeginPass(params);
+				prefilteredPass.Execute(params);
 
 				commandBuffer->EndCommands();
 				commandBuffer->SubmitGraphics();

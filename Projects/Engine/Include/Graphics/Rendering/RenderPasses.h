@@ -29,6 +29,7 @@ namespace Odyssey
 		std::map<uint8_t, ResourceID> ColorTextures;
 		ResourceID BRDFLutTexture;
 		ResourceID IrradianceTexture;
+		ResourceID PrefilteredCubemap;
 
 	public:
 		ResourceID Shadowmap() { return DepthTextures[0]; }
@@ -116,6 +117,38 @@ namespace Odyssey
 	private:
 		inline static constexpr float Texture_Size = 64;
 		inline static const GUID& Shader_GUID = 7182637854819237912;
+		inline static const GUID& s_CubeMeshGUID = 4325336624522892849;
+	};
+
+	class PrefilteredSkyboxPass : public RenderPass
+	{
+	public:
+		PrefilteredSkyboxPass(ResourceID prefilteredCubemap);
+
+	public:
+		virtual void BeginPass(RenderPassParams& params) override;
+		virtual void Execute(RenderPassParams& params) override;
+		virtual void EndPass(RenderPassParams& params) override;
+
+	private:
+		struct PrefilteredData
+		{
+			mat4 MVP = mat4(1.0f);
+			float Roughness;
+			uint32_t SampleCount = 32;
+		};
+
+		Ref<Shader> m_Shader;
+		Ref<Mesh> m_CubeMesh;
+		ResourceID m_PrefilteredCubemap;
+		ResourceID m_Pipeline;
+		VulkanPushDescriptors m_PushDescriptors;
+		std::vector<ResourceID> m_UBOs;
+		std::vector<std::shared_ptr<RenderSubPass>> m_SubPasses;
+
+	private:
+		inline static constexpr float Texture_Size = 512.0f;
+		inline static const GUID& Shader_GUID = 4656128379182378356;
 		inline static const GUID& s_CubeMeshGUID = 4325336624522892849;
 	};
 

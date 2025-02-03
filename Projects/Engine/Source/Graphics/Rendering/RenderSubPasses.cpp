@@ -279,6 +279,11 @@ namespace Odyssey
 					uint32_t index = setPass.ShaderBindings["IrradianceSampler"].Index;
 					m_PushDescriptors->AddTexture(params.IrradianceTexture, index);
 				}
+				if (setPass.ShaderBindings.contains("PrefilteredSampler") && params.PrefilteredCubemap.IsValid())
+				{
+					uint32_t index = setPass.ShaderBindings["PrefilteredSampler"].Index;
+					m_PushDescriptors->AddTexture(params.PrefilteredCubemap, index);
+				}
 				if (setPass.MaterialBuffer.IsValid())
 				{
 					uint32_t index = setPass.ShaderBindings["MaterialData"].Index;

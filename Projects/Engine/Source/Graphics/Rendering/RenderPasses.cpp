@@ -358,6 +358,139 @@ namespace Odyssey
 
 	}
 
+	PrefilteredSkyboxPass::PrefilteredSkyboxPass(ResourceID prefilteredCubemap)
+	{
+		m_PrefilteredCubemap = prefilteredCubemap;
+
+		// Set the color attachment parameters
+		m_ColorAttachment.BeginLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		m_ColorAttachment.ClearValue.color = { 0.0f, 0.0f, 0.2f, 0.0f };
+		m_ColorAttachment.EndLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		m_ColorAttachment.LoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		m_ColorAttachment.StoreOp = VK_ATTACHMENT_STORE_OP_STORE;
+
+		// Create an off-screen render target matching a slice of the irradiance cubemap
+		Ref<VulkanTexture> cubemap = ResourceManager::GetResource<VulkanTexture>(prefilteredCubemap);
+
+		VulkanImageDescription imageDesc;
+		imageDesc.ImageType = ImageType::RenderTexture;
+		imageDesc.Width = cubemap->GetWidth();
+		imageDesc.Height = cubemap->GetHeight();
+		imageDesc.Format = cubemap->GetFormat();
+		imageDesc.MipMapEnabled = false;
+		imageDesc.Samples = 1;
+
+		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(imageDesc, RenderTargetFlags::Color);
+		m_Shader = AssetManager::LoadAsset<Shader>(Shader_GUID);
+		m_CubeMesh = AssetManager::LoadAsset<Mesh>(s_CubeMeshGUID);
+
+		VulkanPipelineInfo info;
+		info.Shaders = m_Shader->GetResourceMap();
+		info.CullMode = CullMode::None;
+		info.DescriptorLayout = m_Shader->GetDescriptorLayout();
+		info.MSAACountOverride = 1;
+		info.ColorFormat = cubemap->GetFormat();
+		info.IsShadow = false;
+		info.WriteDepth = false;
+		info.TestDepth = false;
+		info.AttributeDescriptions = m_Shader->GetVertexAttributes();
+		m_Pipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
+
+
+		uint32_t mipCount = floor(std::log2f(Texture_Size)) + 1;
+
+		for (size_t i = 0; i < mipCount * 6; i++)
+		{
+			ResourceID ubo = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(PrefilteredData));
+			m_UBOs.push_back(ubo);
+		}
+	}
+
+	void PrefilteredSkyboxPass::BeginPass(RenderPassParams& params)
+	{
+		PrepareRendering(params);
+	}
+
+	void PrefilteredSkyboxPass::Execute(RenderPassParams& params)
+	{
+		glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+		glm::mat4 captureViews[] =
+		{
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+			glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+		};
+
+		ResourceID commandBufferID = params.GraphicsCommandBuffer;
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+		Ref<VulkanTexture> prefilteredCubemap = ResourceManager::GetResource<VulkanTexture>(m_PrefilteredCubemap);
+
+		commandBuffer->TransitionLayouts(prefilteredCubemap->GetImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+		uint32_t mipCount = floor(std::log2f(Texture_Size)) + 1;
+
+		PrefilteredData data;
+
+		size_t counter = 0;
+		for (uint32_t mip = 0; mip < mipCount; mip++)
+		{
+			data.Roughness = (float)mip / (float)(mipCount - 1);
+			for (uint32_t face = 0; face < 6; face++)
+			{
+				VkViewport viewport{};
+				viewport.width = (float)(Texture_Size * std::pow(0.5f, mip));
+				viewport.height = viewport.width;
+				viewport.minDepth = 0.0f;
+				viewport.maxDepth = 1.0f;
+				commandBuffer->BindViewport(viewport);
+
+				commandBuffer->BeginRendering(m_RenderingInfo);
+
+				data.MVP = captureProjection * captureViews[face];
+
+				ResourceID uboID = m_UBOs[counter];
+				Ref<VulkanBuffer> buffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
+				buffer->CopyData(sizeof(PrefilteredData), &data);
+				++counter;
+
+				m_PushDescriptors.Clear();
+
+				uint32_t bindingIndex = 0;
+				if (m_Shader->HasBinding("PrefilteredData", bindingIndex))
+					m_PushDescriptors.AddBuffer(uboID, bindingIndex);
+
+				if (m_Shader->HasBinding("skyboxSampler", bindingIndex))
+					m_PushDescriptors.AddTexture(params.renderingData->renderScene->SkyboxCubemap, bindingIndex);
+
+				commandBuffer->BindGraphicsPipeline(m_Pipeline);
+				commandBuffer->PushDescriptorsGraphics(&m_PushDescriptors, m_Pipeline);
+
+				commandBuffer->BindVertexBuffer(m_CubeMesh->GetVertexBuffer());
+				commandBuffer->BindIndexBuffer(m_CubeMesh->GetIndexBuffer());
+				commandBuffer->DrawIndexed(m_CubeMesh->GetIndexCount(), 1, 0, 0, 0);
+
+				// end render pass
+				commandBuffer->EndRendering();
+
+				Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(m_RenderTarget);
+				Ref<VulkanTexture> colorTexture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorTexture());
+
+				commandBuffer->CopyImageToImage(colorTexture->GetImage(), 0, 0,
+					prefilteredCubemap->GetImage(), mip, face, viewport.width, viewport.height);
+				commandBuffer->TransitionLayouts(colorTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			}
+		}
+
+		commandBuffer->TransitionLayouts(prefilteredCubemap->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	}
+
+	void PrefilteredSkyboxPass::EndPass(RenderPassParams& params)
+	{
+	}
+
 	DepthPass::DepthPass(uint8_t cameraTag)
 	{
 		m_Camera = cameraTag;

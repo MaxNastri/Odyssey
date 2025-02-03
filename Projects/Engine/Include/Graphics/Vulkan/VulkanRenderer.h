@@ -51,6 +51,7 @@ namespace Odyssey
 		VulkanImgui::InitInfo CreateImguiInitInfo();
 		void SetupFrameData();
 		void BuildIrradianceCubemap(RenderPassParams& params);
+		void BuildPrefilteredCubemap(RenderPassParams& params);
 
 	private: // Vulkan objects
 		std::shared_ptr<VulkanContext> m_Context;
@@ -76,6 +77,7 @@ namespace Odyssey
 	private:
 		ResourceID m_BRDFLutTexture;
 		ResourceID m_IrradianceCubemap;
+		ResourceID m_PrefilteredCubemap;
 
 	private: // Frame data
 		std::vector<VulkanFrame> m_Frames;

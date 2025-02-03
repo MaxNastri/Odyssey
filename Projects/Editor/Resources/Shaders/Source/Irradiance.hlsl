@@ -88,5 +88,4 @@ float4 main(FragInput input) : SV_Target
     float3 finalColor = PI * color / float(sampleCount);
     ApplyTonemapping(finalColor);
     return float4(finalColor, 1.0);
-
 }

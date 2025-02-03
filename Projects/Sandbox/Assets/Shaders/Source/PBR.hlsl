@@ -83,6 +83,8 @@ Texture2D brdfLutTex2D : register(t11);
 SamplerState brdfLutSampler : register(s11);
 TextureCube IrradianceTex3D : register(t12);
 SamplerState IrradianceSampler : register(s12);
+TextureCube PrefilteredTex3D : register(t12);
+SamplerState PrefilteredSampler : register(s12);
 
 #pragma Vertex
 struct VertexInput
@@ -215,6 +217,17 @@ float3 F_SchlickR(float cosTheta, float3 F0, float roughness)
     return F0 + (max((1.0 - roughness).xxx, F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
+float3 prefilteredReflection(float3 R, float roughness)
+{
+    const float MAX_REFLECTION_LOD = 9.0; // todo: param/const
+    float lod = roughness * MAX_REFLECTION_LOD;
+    float lodf = floor(lod);
+    float lodc = ceil(lod);
+    float3 a = PrefilteredTex3D.SampleLevel(PrefilteredSampler, R, lodf).rgb;
+    float3 b = PrefilteredTex3D.SampleLevel(PrefilteredSampler, R, lodc).rgb;
+    return lerp(a, b, lod - lodf);
+}
+
 float3 specularContribution(float2 inUV, float3 lightColor, float lightIntensity, float3 L, float3 V, float3 N, float3 F0, float metallic, float roughness)
 {
 	// Precalculate vectors and dot products
@@ -269,20 +282,21 @@ float4 main(PixelInput input) : SV_TARGET
     
     float2 brdf = brdfLutTex2D.SampleLevel(brdfLutSampler, NdotV, 0);
     float3 irradiance = IrradianceTex3D.Sample(IrradianceSampler, N).rgb;
+    float3 reflection = prefilteredReflection(R, roughness).rgb;
     float ao = AOMapTexture.Sample(AOMapSampler, input.TexCoord0).a;
     
     float3 diffuse = irradiance * ALBEDO(input.TexCoord0);
     float3 F = F_SchlickR(max(dot(N, V), 0.0), F0, roughness);
     
-    float3 specular = float3(1, 1, 1) * (F * brdf.x + brdf.y);
+	// Specular reflectance
+    float3 specular = reflection * (F * brdf.x + brdf.y);
     
     // Ambient
     float3 kD = 1.0 - F;
     kD *= 1.0 - metallic;
-    float3 ambient = (kD * diffuse) * ao;
+    float3 ambient = (kD * diffuse + specular) * ao;
     
-    // TODO: Ambient lighting
-    //return float4(ambient, 1.0);
+    // Direct and ambient lighting
     float3 color = ambient + Lo;
 
 	// Tone mapping
