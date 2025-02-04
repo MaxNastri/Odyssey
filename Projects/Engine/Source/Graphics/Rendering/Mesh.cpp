@@ -15,9 +15,10 @@ namespace Odyssey
 			LoadFromSource(source);
 	}
 
-	Mesh::Mesh(const Path& assetPath, Ref<SourceModel> source)
+	Mesh::Mesh(const Path& assetPath, Ref<SourceModel> source, uint32_t meshIndex)
 		: Asset(assetPath)
 	{
+		m_MeshIndex = meshIndex;
 		SetSourceAsset(source->GetGUID());
 		LoadFromSource(source);
 	}
@@ -29,26 +30,35 @@ namespace Odyssey
 
 	void Mesh::Load()
 	{
+		AssetDeserializer deserializer(m_AssetPath);
+		if (deserializer.IsValid())
+		{
+			SerializationNode root = deserializer.GetRoot();
+			root.ReadData("Mesh Index", m_MeshIndex);
+		}
+
 		if (Ref<SourceModel> source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
 			LoadFromSource(source);
 	}
 
 	void Mesh::LoadFromSource(Ref<SourceModel> source)
 	{
-		// TODO: Add support for submeshes
+		// Get the mesh data from the importer
 		auto importer = source->GetImporter();
-		const MeshImportData& meshData = importer->GetMeshData();
+		const MeshImportData& meshData = importer->GetMeshData(m_MeshIndex);
 
-		assert(meshData.VertexLists.size() == meshData.IndexLists.size());
-		m_SubMeshes.resize(meshData.VertexLists.size());
+		// Resize to match the number of submeshes
+		m_SubMeshes.resize(meshData.Submeshes.size());
 
 		for (size_t i = 0; i < m_SubMeshes.size(); i++)
 		{
-			if (meshData.VertexLists[i].size() > 0 &&
-				meshData.IndexLists[i].size() > 0)
+			const SubmeshImportData& submeshData = meshData.Submeshes[i];
+
+			if (submeshData.Vertices.size() > 0 &&
+				submeshData.Indices.size() > 0)
 			{
-				SetVertices(meshData.VertexLists[i], i);
-				SetIndices(meshData.IndexLists[i], i);
+				SetVertices(submeshData.Vertices, i);
+				SetIndices(submeshData.Indices, i);
 			}
 		}
 	}
@@ -61,6 +71,7 @@ namespace Odyssey
 		// Serialize the asset metadata first
 		SerializeMetadata(serializer);
 
+		root.WriteData("Mesh Index", m_MeshIndex);
 		serializer.WriteToDisk(path);
 	}
 

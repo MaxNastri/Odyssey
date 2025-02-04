@@ -273,8 +273,6 @@ namespace Odyssey
 	{
 		const Scene& scene = model->scenes[model->defaultScene ? model->defaultScene : 0];
 
-		m_MeshData.ObjectCount = 0;
-
 		TempNode* parent = nullptr;
 
 		for (auto node : scene.nodes)
@@ -282,17 +280,18 @@ namespace Odyssey
 			CreateNodeRecursive(model, &model->nodes[node], nullptr);
 		}
 
+		m_MeshDatas.clear();
+
 		for (size_t m = 0; m < model->meshes.size(); m++)
 		{
 			const Mesh& mesh = model->meshes[m];
-			size_t meshIndex = m_MeshData.ObjectCount++;
-
+			MeshImportData& meshData = m_MeshDatas.emplace_back();
+			meshData.Name = mesh.name;
 
 			for (size_t p = 0; p < mesh.primitives.size(); p++)
 			{
 				const Primitive& primitive = mesh.primitives[p];
-				std::vector<Vertex> vertices;
-				std::vector<uint32_t> indices;
+				SubmeshImportData& submeshData = meshData.Submeshes.emplace_back();
 
 				// Vertices
 				{
@@ -306,11 +305,11 @@ namespace Odyssey
 					uint32_t vertexCount = (uint32_t)positionData.Accessor->count;
 					uint32_t vertexStart = 0;
 
-					vertices.resize(vertexCount);
+					submeshData.Vertices.resize(vertexCount);
 
 					for (size_t v = 0; v < vertexCount; v++)
 					{
-						Vertex& vertex = vertices[v];
+						Vertex& vertex = submeshData.Vertices[v];
 
 						vertex.Position = glm::make_vec3(positionData.GetData<float>(v));
 						vertex.Normal = normalData.IsValid() ? glm::make_vec3(normalData.GetData<float>(v)) : glm::vec3(0.0f);
@@ -364,7 +363,7 @@ namespace Odyssey
 				uint32_t indexCount = static_cast<uint32_t>(accessor.count);
 
 				uint32_t indexStart = 0;
-				indices.resize(indexCount);
+				submeshData.Indices.resize(indexCount);
 
 				switch (accessor.componentType)
 				{
@@ -373,7 +372,7 @@ namespace Odyssey
 						const uint32_t* buf = static_cast<const uint32_t*>(dataPtr);
 						for (size_t index = 0; index < accessor.count; index++)
 						{
-							indices[indexStart] = buf[index];
+							submeshData.Indices[indexStart] = buf[index];
 							++indexStart;
 						}
 						break;
@@ -383,7 +382,7 @@ namespace Odyssey
 						const uint16_t* buf = static_cast<const uint16_t*>(dataPtr);
 						for (size_t index = 0; index < accessor.count; index++)
 						{
-							indices[indexStart] = buf[index];
+							submeshData.Indices[indexStart] = buf[index];
 							++indexStart;
 						}
 						break;
@@ -394,7 +393,7 @@ namespace Odyssey
 
 						for (size_t index = 0; index < accessor.count; index++)
 						{
-							indices[indexStart] = buf[index];
+							submeshData.Indices[indexStart] = buf[index];
 							++indexStart;
 						}
 						break;
@@ -403,11 +402,9 @@ namespace Odyssey
 
 				// IMPORTANT: We reverse the winding order to convert RH to LH coord system
 				if (m_Settings.ConvertLH)
-					std::reverse(indices.begin(), indices.end());
+					std::reverse(submeshData.Indices.begin(), submeshData.Indices.end());
 
-				GeometryUtil::GenerateTangents(vertices, indices);
-				m_MeshData.VertexLists.push_back(vertices);
-				m_MeshData.IndexLists.push_back(indices);
+				GeometryUtil::GenerateTangents(submeshData.Vertices, submeshData.Indices);
 			}
 		}
 	}

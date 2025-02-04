@@ -879,3 +879,131 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Environment/Marble_02_AO.tex2D
     GUID: 3120519235124092623
+  - Name: Pirate
+    Type: Odyssey.SourceModel
+    Path: Models/Pirate.fbx
+    GUID: 17138955923453957145
+  - Name: Pirate_Cloak_Up
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Cloak_Up.mesh
+    GUID: 2318772613518254603
+  - Name: Pirate_Hat
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Hat.mesh
+    GUID: 3385073795356263272
+  - Name: Pirate_Cloth_Body_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Cloth_Body_01.mesh
+    GUID: 8464093196141498157
+  - Name: Pirate_Cloth_Legs_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Cloth_Legs_01.mesh
+    GUID: 7733593072640412872
+  - Name: Pirate_Body_Cloth_Detail
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Body_Cloth_Detail.mesh
+    GUID: 9920076217441434967
+  - Name: Pirate_Belt_03
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Belt_03.mesh
+    GUID: 1510698504324259812
+  - Name: Pirate_Belt_05
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Belt_05.mesh
+    GUID: 12741922437060739458
+  - Name: Pirate_Body
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Body.mesh
+    GUID: 12033487622667369422
+  - Name: Pirate_Eyes
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Eyes.mesh
+    GUID: 6518864313222244879
+  - Name: Pirate_Jaw
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Jaw.mesh
+    GUID: 7648568431246438047
+  - Name: Pirate_Mustache
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Mustache.mesh
+    GUID: 12868158147072126858
+  - Name: Pirate_Ring_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Ring_01.mesh
+    GUID: 9658404546686476275
+  - Name: Pirate_Ring_02
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Ring_02.mesh
+    GUID: 14203865982640736364
+  - Name: Pirate_Beard
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Beard.mesh
+    GUID: 2993335125994013891
+  - Name: Pirate_Belt_04
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Belt_04.mesh
+    GUID: 7745517495781186866
+  - Name: Pirate_Sword_In_Belt
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Sword_In_Belt.mesh
+    GUID: 6831110441988794098
+  - Name: Pirate_Ring_03
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Ring_03.mesh
+    GUID: 16819946820067817496
+  - Name: Pirate_Cloak_Down
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Cloak_Down.mesh
+    GUID: 3657144795985145441
+  - Name: Pirate_Skull_Hat
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Skull_Hat.mesh
+    GUID: 5620737479056486592
+  - Name: Pirate_Head
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Head.mesh
+    GUID: 7400369299498173740
+  - Name: Pirate_Legs
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Legs.mesh
+    GUID: 16070885615223181959
+  - Name: Pirate_Cloth_Body_02
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Cloth_Body_02.mesh
+    GUID: 9289403312213789989
+  - Name: Pirate_Pants
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Pants.mesh
+    GUID: 13063426728363629361
+  - Name: Pirate_Torso
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Torso.mesh
+    GUID: 7134672603609610430
+  - Name: Pirate_Cloth_Legs_02
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Cloth_Legs_02.mesh
+    GUID: 6536592317173140971
+  - Name: Pirate_Pistol_In_Belt_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Pistol_In_Belt_01.mesh
+    GUID: 8566301884914154792
+  - Name: Pirate_Belt_01
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Belt_01.mesh
+    GUID: 2023551075591533246
+  - Name: Pirate_Shoes_Sphere
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Shoes_Sphere.mesh
+    GUID: 11019658640123078119
+  - Name: Pirate_Shoes
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Shoes.mesh
+    GUID: 17003116980864801278
+  - Name: Pirate_Belt_02
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Belt_02.mesh
+    GUID: 17364467429954996565
+  - Name: Pirate_Pistol_In_Belt_02
+    Type: Odyssey.Mesh
+    Path: Meshes/Pirate/Pirate_Pistol_In_Belt_02.mesh
+    GUID: 165170170030299084

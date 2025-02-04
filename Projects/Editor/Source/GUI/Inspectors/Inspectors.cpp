@@ -1169,6 +1169,21 @@ namespace Odyssey
 		{
 			AssetManager::CreateAsset<Mesh>(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);
 		}
+		else if (ImGui::Button("Export All Meshes"))
+		{
+			ModelAssetImporter* importer = m_Model->GetImporter();
+
+			for (uint32_t i = 0; i < importer->MeshCount(); i++)
+			{
+				const MeshImportData& meshData = importer->GetMeshData(i);
+
+				Path dstFolder = m_DstPath;
+				if (dstFolder.has_extension())
+					dstFolder = dstFolder.parent_path();
+
+				AssetManager::CreateAsset<Mesh>(Project::GetActiveAssetsDirectory() / dstFolder / (meshData.Name + ".mesh"), m_Model, i);
+			}
+		}
 		else if (ImGui::Button("Create Rig Asset"))
 		{
 			AssetManager::CreateAsset<AnimationRig>(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);

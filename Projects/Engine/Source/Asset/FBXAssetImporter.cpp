@@ -79,7 +79,9 @@ namespace Odyssey
 
 		for (ufbx_mesh_part& submesh : mesh->material_parts)
 		{
-			std::vector<Vertex> vertices;
+			SubmeshImportData& submeshData = meshData.Submeshes.emplace_back();
+
+			std::vector<Vertex>& vertices = submeshData.Vertices;
 			std::vector<uint32_t> triIndices;
 
 			triIndices.resize(mesh->max_face_triangles * 3);
@@ -132,7 +134,7 @@ namespace Odyssey
 				{ vertices.data(), vertices.size(), sizeof(Vertex) },
 			};
 
-			std::vector<uint32_t> indices;
+			std::vector<uint32_t>& indices = submeshData.Indices;
 			indices.resize(submesh.num_triangles * 3);
 
 			// This will de-duplicate vertices and modify the passed in vertices/indices
@@ -140,9 +142,6 @@ namespace Odyssey
 			vertices.resize(vertCount);
 
 			GeometryUtil::GenerateTangents(vertices, indices);
-
-			meshData.VertexLists.push_back(vertices);
-			meshData.IndexLists.push_back(indices);
 			submeshIdx++;
 		}
 	}
@@ -406,9 +405,18 @@ namespace Odyssey
 			LoadRig(skin, m_RigData);
 
 		// The scene is fully loaded, start parsing
-		for (ufbx_mesh* mesh : scene->meshes)
+		for (size_t i = 0; i < scene->meshes.count; i++)
 		{
-			LoadMesh(mesh, skin, m_MeshData);
+			MeshImportData& meshData = m_MeshDatas.emplace_back();
+			ufbx_mesh* mesh = scene->meshes[i];
+			ufbx_skin_deformer* skin = i < scene->skin_deformers.count ? scene->skin_deformers[i] : nullptr;
+			
+			// Search the node hierarchy for the mesh name
+			for (auto& node : scene->nodes)
+				if (node->mesh == mesh)
+					meshData.Name = std::string(node->name.data);
+
+			LoadMesh(mesh, skin, meshData);
 		}
 
 		if (scene->skin_deformers.count > 0)
