@@ -1035,3 +1035,51 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Environment/Marble_02_PBR.tex2D
     GUID: 16197292871998784985
+  - Name: T_stone_wall_01_Shape
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_stone_wall_01_Shape.png
+    GUID: 6963491495452645523
+  - Name: T_stone_wall_01_PBR
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_stone_wall_01_PBR.png
+    GUID: 13195706106777519544
+  - Name: Stone_Wall_01_PBR
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Stone_Wall_01_PBR.tex2D
+    GUID: 11278418529331265675
+  - Name: T_Pillar_stone_01_Shape
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Pillar_stone_01_Shape.png
+    GUID: 12539030827599839694
+  - Name: T_Pillar_stone_02_Shape
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Pillar_stone_02_Shape.png
+    GUID: 15882162206599147603
+  - Name: T_Pillar_stone_03_Shape
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Pillar_stone_03_Shape.png
+    GUID: 16408212241677816281
+  - Name: T_Pillar_stone_01_PBR
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Pillar_stone_01_PBR.png
+    GUID: 11745646463762903926
+  - Name: T_Pillar_stone_02_PBR
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Pillar_stone_02_PBR.png
+    GUID: 16316845444968610251
+  - Name: T_Pillar_stone_03_PBR
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_Pillar_stone_03_PBR.png
+    GUID: 14253156218625386377
+  - Name: Pillar_stone_01_PBR
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Pillar_stone_01_PBR.tex2D
+    GUID: 10637049385772847309
+  - Name: Pillar_stone_02_PBR
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Pillar_stone_02_PBR.tex2D
+    GUID: 4077023171568316240
+  - Name: Pillar_stone_03_PBR
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Pillar_stone_03_PBR.tex2D
+    GUID: 13556863310895723148

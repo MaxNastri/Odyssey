@@ -2,19 +2,19 @@ m_SourceAsset: 0
 m_GUID: 16911619204229098531
 m_Name: Stone Stairs
 m_Type: Odyssey.Material
-m_Shader: 16842850129266277074
+m_Shader: 9634657926911688453
 Render Queue: Opaque
 Blend Mode: None
 Depth Write: 1
 Property Textures:
+  - Property: AlbedoMapSampler
+    Texture: 1433496500175665428
+  - Property: NormalMapSampler
+    Texture: 11202307513001725368
+  - Property: PBRSampler
+    Texture: 11278418529331265675
   - Property: diffuseSampler
     Texture: 1433496500175665428
   - Property: normalSampler
     Texture: 11202307513001725368
-Properties:
-  - Name: EmissiveColor
-    Type: Float4
-    Value: 'x: 0 y: 0 z: 0 w: 0'
-  - Name: alphaClip
-    Type: Float
-    Value: 0.5
+Properties: []
