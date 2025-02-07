@@ -8,6 +8,7 @@
 #include "SceneSettingsWindow.h"
 #include "AnimationWindow.h"
 #include "PreferencesWindow.h"
+#include "TextureGenerationWindow.h"
 
 namespace Odyssey
 {
@@ -83,7 +84,8 @@ namespace Odyssey
 					GUIManager::CreateDockableWindow<SceneSettingsWindow>();
 				if (ImGui::MenuItem("Scene View"))
 					GUIManager::CreateDockableWindow<SceneViewWindow>();
-
+				if (ImGui::MenuItem("Texture Generation Window"))
+					GUIManager::CreateDockableWindow<TextureGenerationWindow>();
 				if (ImGui::MenuItem("Display Demo Window"))
 					m_ShowDemoWindow = true;
 

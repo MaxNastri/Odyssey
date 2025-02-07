@@ -1260,7 +1260,11 @@ namespace Odyssey
 
 		if (ImGui::Button("Create Texture2D"))
 		{
-			AssetManager::CreateAsset<Texture2D>(Project::GetActiveAssetsDirectory() / m_AssetPath, m_Texture);
+			Path dstPath = m_AssetPath;
+			if (!dstPath.has_extension())
+				dstPath = dstPath / m_Texture->GetPath().filename().replace_extension(".tex2D");
+
+			AssetManager::CreateAsset<Texture2D>(Project::GetActiveAssetsDirectory() / dstPath, m_Texture);
 		}
 		if (ImGui::Button("Create Cubemap"))
 		{

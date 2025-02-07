@@ -38,6 +38,7 @@ namespace Odyssey
 		{
 			std::vector<std::string> options = Enum::GetNameSequence<T>();
 			m_Dropdown = Dropdown(options, Enum::ToInt<T>(initialValue));
+			m_Value = initialValue;
 		}
 
 		bool Draw()

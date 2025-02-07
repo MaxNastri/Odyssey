@@ -15,4 +15,6 @@ Property Textures:
     Texture: 14513363239891643308
   - Property: NormalMapSampler
     Texture: 271556336592991242
+  - Property: PBRSampler
+    Texture: 18049599149541779758
 Properties: []

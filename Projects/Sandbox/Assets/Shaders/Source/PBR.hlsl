@@ -73,18 +73,16 @@ Texture2D AlbedoMapTexture : register(t6);
 SamplerState AlbedoMapSampler : register(s6);
 Texture2D NormalMapTexture : register(t7);
 SamplerState NormalMapSampler : register(s7);
-Texture2D MetallicMapTexture : register(t8);
-SamplerState MetallicMapSampler : register(s8);
-Texture2D AOMapTexture : register(t9);
-SamplerState AOMapSampler : register(s9);
+Texture2D PBRTextureMap : register(t8);
+SamplerState PBRSampler : register(s8);
 Texture2D shadowmapTex2D : register(t10);
 SamplerState shadowmapSampler : register(s10);
 Texture2D brdfLutTex2D : register(t11);
 SamplerState brdfLutSampler : register(s11);
 TextureCube IrradianceTex3D : register(t12);
 SamplerState IrradianceSampler : register(s12);
-TextureCube PrefilteredTex3D : register(t12);
-SamplerState PrefilteredSampler : register(s12);
+TextureCube PrefilteredTex3D : register(t13);
+SamplerState PrefilteredSampler : register(s13);
 
 #pragma Vertex
 struct VertexInput
@@ -261,9 +259,10 @@ float4 main(PixelInput input) : SV_TARGET
     float3 V = normalize(ViewPos.xyz - input.WorldPosition);
     float3 R = reflect(-V, N);
 
-    float4 metallicGloss = MetallicMapTexture.Sample(MetallicMapSampler, input.TexCoord0);
-    float metallic = metallicGloss.r;
-    float roughness = 1.0 - metallicGloss.a;
+    float4 pbr = PBRTextureMap.Sample(PBRSampler, input.TexCoord0);
+    float metallic = pbr.r;
+    float roughness = pbr.g;
+    float ao = pbr.b;
     
     float2 NdotV = (max(dot(N, V), 0.0), roughness);
     
@@ -283,7 +282,6 @@ float4 main(PixelInput input) : SV_TARGET
     float2 brdf = brdfLutTex2D.SampleLevel(brdfLutSampler, NdotV, 0);
     float3 irradiance = IrradianceTex3D.Sample(IrradianceSampler, N).rgb;
     float3 reflection = prefilteredReflection(R, roughness).rgb;
-    float ao = AOMapTexture.Sample(AOMapSampler, input.TexCoord0).a;
     
     float3 diffuse = irradiance * ALBEDO(input.TexCoord0);
     float3 F = F_SchlickR(max(dot(N, V), 0.0), F0, roughness);

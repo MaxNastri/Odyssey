@@ -3,12 +3,14 @@
 #include <assert.h>
 #include <bitset>
 #include <cstring>
+#include <execution>
 #include <filesystem>
 #include <fstream>
 #include <functional>
 #include <iostream>
 #include <istream>
 #include <map>
+#include <omp.h>
 #include <queue>
 #include <ranges>
 #include <set>
@@ -25,7 +27,6 @@
 	#include <Windows.h>
 #endif
 
-#include "PCH.h"
 #include "Utils.h"
 #include "Globals.h"
 #include "Ref.h"

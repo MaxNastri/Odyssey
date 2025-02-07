@@ -1007,3 +1007,31 @@ Entries:
     Type: Odyssey.Mesh
     Path: Meshes/Pirate/Pirate_Pistol_In_Belt_02.mesh
     GUID: 165170170030299084
+  - Name: Pirate_Details_Weapon_MaskMap
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Details_Weapon_MaskMap.png
+    GUID: 14958144285324612592
+  - Name: Weapons_PBR
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Weapons_PBR.png
+    GUID: 12597507711961160718
+  - Name: Weapons_PBR
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Weapons_PBR.tex2D
+    GUID: 18049599149541779758
+  - Name: T_rock_02_PBR
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_rock_02_PBR.png
+    GUID: 3424037062163178388
+  - Name: Rock_02_PBR
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Rock_02_PBR.tex2D
+    GUID: 3130095483635374223
+  - Name: T_marble_02_PBR
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Environment/T_marble_02_PBR.png
+    GUID: 11154712185079302882
+  - Name: Marble_02_PBR
+    Type: Odyssey.Texture2D
+    Path: Textures/Environment/Marble_02_PBR.tex2D
+    GUID: 16197292871998784985
