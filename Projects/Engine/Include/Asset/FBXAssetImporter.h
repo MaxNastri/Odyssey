@@ -10,6 +10,5 @@ namespace Odyssey
 
 	public:
 		virtual bool Import(const Path& modelPath) override;
-
 	};
 }

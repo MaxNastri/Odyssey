@@ -10,6 +10,7 @@
 #include "PropertiesComponent.h"
 #include "Events.h"
 #include "Input.h"
+#include "Prefab.h"
 
 namespace Odyssey
 {
@@ -1184,6 +1185,37 @@ namespace Odyssey
 				AssetManager::CreateAsset<Mesh>(Project::GetActiveAssetsDirectory() / dstFolder / (meshData.Name + ".mesh"), m_Model, i);
 			}
 		}
+		else if (ImGui::Button("Create Prefab"))
+		{
+			GameObject gameObject = SceneManager::GetActiveScene()->CreateGameObject();
+			Transform& root = gameObject.AddComponent<Transform>();
+
+
+			ModelAssetImporter* importer = m_Model->GetImporter();
+			const PrefabImportData& prefabData = importer->GetPrefabData();
+
+			for (size_t i = 0; i < prefabData.Nodes.size(); i++)
+			{
+				GameObject meshNode = SceneManager::GetActiveScene()->CreateGameObject();
+				Transform& meshTransform = meshNode.AddComponent<Transform>();
+				meshNode.SetName(prefabData.Nodes[i].Name);
+				meshNode.SetParent(gameObject);
+
+				glm::vec3 translation;
+				glm::vec3 scale;
+				glm::quat rotation;
+				glm::vec3 skew;
+				glm::vec4 perspective;
+				glm::decompose(prefabData.Nodes[i].Transform, scale, rotation, translation, skew, perspective);
+
+				meshTransform.SetPosition(translation);
+				meshTransform.SetRotation(rotation);
+				meshTransform.SetScale(scale);
+			}
+
+			Ref<Prefab> prefab = AssetManager::CreateAsset<Prefab>(Project::GetActiveAssetsDirectory() / "example.prefab", gameObject);
+		}
+
 		else if (ImGui::Button("Create Rig Asset"))
 		{
 			AssetManager::CreateAsset<AnimationRig>(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);

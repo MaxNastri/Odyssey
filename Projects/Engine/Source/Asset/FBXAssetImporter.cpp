@@ -30,6 +30,19 @@ namespace Odyssey
 		return mat4(r0, r1, r2, r3);
 	}
 
+	inline static void LoadPrefab(ufbx_scene* scene, PrefabImportData& prefabData)
+	{
+		for (size_t i = 0; i < scene->meshes.count; i++)
+		{
+			ufbx_mesh* mesh = scene->meshes[i];
+			ufbx_node* fbxNode = mesh->instances[0];
+
+			PrefabImportData::Node& node = prefabData.Nodes.emplace_back();
+			node.Name = std::string(fbxNode->name.data);
+			node.Transform = ToMat4(fbxNode->node_to_world);
+		}
+	}
+
 	inline static void LoadRig(ufbx_skin_deformer* skin, RigImportData& rigData)
 	{
 		rigData.RotationOffset = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0, 1, 0));
@@ -400,6 +413,8 @@ namespace Odyssey
 		}
 
 		ufbx_skin_deformer* skin = scene->skin_deformers.count > 0 ? scene->skin_deformers[0] : nullptr;
+
+		LoadPrefab(scene, m_PrefabImportData);
 
 		if (skin)
 			LoadRig(skin, m_RigData);

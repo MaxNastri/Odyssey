@@ -839,9 +839,9 @@ Entries:
     Type: Odyssey.Mesh
     Path: Meshes/Pirate_Pistol.mesh
     GUID: 1596465240549348673
-  - Name: PBR
+  - Name: Pirate Body
     Type: Odyssey.Material
-    Path: Materials/PBR/PBR.mat
+    Path: Materials/PBR/Pirate_Body.mat
     GUID: 11609781084541709249
   - Name: PBR_Unity
     Type: Odyssey.SourceShader
@@ -871,9 +871,9 @@ Entries:
     Type: Odyssey.Material
     Path: Materials/PBR/Lit_Pirate.mat
     GUID: 539464422473058633
-  - Name: PBR Pirate
+  - Name: Pirate Details
     Type: Odyssey.Material
-    Path: Materials/PBR/PBR_Pirate.mat
+    Path: Materials/PBR/Pirate_Details.mat
     GUID: 11453019595560542111
   - Name: Marble_02_AO
     Type: Odyssey.Texture2D
@@ -1083,3 +1083,139 @@ Entries:
     Type: Odyssey.Texture2D
     Path: Textures/Environment/Pillar_stone_03_PBR.tex2D
     GUID: 13556863310895723148
+  - Name: example
+    Type: Odyssey.Prefab
+    Path: example.prefab
+    GUID: 165590293045637246
+  - Name: Pirate_Body_Albedo_01
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Body_Albedo_01.tga
+    GUID: 8541086271267821179
+  - Name: Pirate_Body_Ao
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Body_Ao.tga
+    GUID: 17565178653980243075
+  - Name: Pirate_Body_Metallic
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Body_Metallic.tga
+    GUID: 13332850025519830129
+  - Name: Pirate_Body_Normals
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Body_Normals.tga
+    GUID: 7952018924646152815
+  - Name: Pirate_Cloth_Albedo
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Cloth_Albedo.tga
+    GUID: 17700310662587243700
+  - Name: Pirate_Cloth_Ao
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Cloth_Ao.tga
+    GUID: 17936415687454603384
+  - Name: Pirate_Cloth_Metallic
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Cloth_Metallic.tga
+    GUID: 5430488990046114797
+  - Name: Pirate_Cloth_Normals
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Cloth_Normals.tga
+    GUID: 4544860738543475020
+  - Name: Pirate_Hair_Albedo_01
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Hair_Albedo_01.tga
+    GUID: 6873579243088617422
+  - Name: Pirate_Hair_Albedo_02
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Hair_Albedo_02.tga
+    GUID: 13754952070158187805
+  - Name: Pirate_Hair_Albedo_03
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Hair_Albedo_03.tga
+    GUID: 2795665665269914617
+  - Name: Pirate_Hair_Ao
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Hair_Ao.tga
+    GUID: 8630813655629124137
+  - Name: Pirate_Hair_Metallic
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Hair_Metallic.tga
+    GUID: 5350693053448599119
+  - Name: Pirate_Hair_Normals
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Hair_Normals.tga
+    GUID: 2042570557110227301
+  - Name: Pirate_Body_Albedo_01
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Body/Pirate_Body_Albedo_01.tex2D
+    GUID: 14244191934966427325
+  - Name: Pirate_Body_AO
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Body/Pirate_Body_AO.tex2D
+    GUID: 11761225731852744
+  - Name: Pirate_Body_Metallic
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Body/Pirate_Body_Metallic.tex2D
+    GUID: 6516717212898961633
+  - Name: Pirate_Body_Normals
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Body/Pirate_Body_Normals.tex2D
+    GUID: 2606168030810641916
+  - Name: Pirate_Body_PBR
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Body_PBR.png
+    GUID: 355442438533700653
+  - Name: Pirate_Cloth_PBR
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Cloth_PBR.png
+    GUID: 17594880090949143989
+  - Name: Pirate_Hair_PBR
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Pirate/Pirate_Hair_PBR.png
+    GUID: 11428604604033882640
+  - Name: Pirate_Body_PBR
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Body/Pirate_Body_PBR.tex2D
+    GUID: 4632086444298182379
+  - Name: Pirate_01
+    Type: Odyssey.Prefab
+    Path: Prefabs/Pirate_01.prefab
+    GUID: 5741365830124014127
+  - Name: Pirate Cloth
+    Type: Odyssey.Material
+    Path: Materials/PBR/Pirate_Cloth.mat
+    GUID: 1128811297239007219
+  - Name: Pirate Hair
+    Type: Odyssey.Material
+    Path: Materials/PBR/Pirate_Hair.mat
+    GUID: 15461336712175149368
+  - Name: Pirate_Cloth_Albedo
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Cloth/Pirate_Cloth_Albedo.tex2D
+    GUID: 14324855067353104492
+  - Name: Pirate_Cloth_PBR
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Cloth/Pirate_Cloth_PBR.tex2D
+    GUID: 5987557820897604883
+  - Name: Pirate_Cloth_Normals
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Cloth/Pirate_Cloth_Normals.tex2D
+    GUID: 7841263567271349180
+  - Name: Pirate_Hair_Albedo_01
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Hair/Pirate_Hair_Albedo_01.tex2D
+    GUID: 9882718764085900933
+  - Name: Pirate_Hair_Albedo_02
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Hair/Pirate_Hair_Albedo_02.tex2D
+    GUID: 17867899557392928572
+  - Name: Pirate_Hair_Albedo_03
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Hair/Pirate_Hair_Albedo_03.tex2D
+    GUID: 4951368074869966868
+  - Name: Pirate_Hair_Normals
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Hair/Pirate_Hair_Normals.tex2D
+    GUID: 8277735601589739401
+  - Name: Pirate_Hair_PBR
+    Type: Odyssey.Texture2D
+    Path: Textures/Pirate/Hair/Pirate_Hair_PBR.tex2D
+    GUID: 18397739197292749654

@@ -51,6 +51,18 @@ namespace Odyssey
 		std::map<std::string, BoneKeyframe> BoneKeyframes;
 	};
 
+	struct PrefabImportData
+	{
+	public:
+		struct Node
+		{
+			std::string Name;
+			mat4 Transform;
+		};
+
+		std::vector<Node> Nodes;
+	};
+
 	class ModelAssetImporter
 	{
 	public:
@@ -61,6 +73,7 @@ namespace Odyssey
 		uint32_t MeshCount() { return (uint32_t)m_MeshDatas.size(); }
 
 	public:
+		const PrefabImportData& GetPrefabData() { return m_PrefabImportData; }
 		const RigImportData& GetRigData() { return m_RigData; }
 		const AnimationImportData& GetAnimationData(size_t index = 0) { return m_AnimationData[index]; }
 		size_t GetClipCount() { return m_AnimationData.size(); }
@@ -69,5 +82,6 @@ namespace Odyssey
 		std::vector<MeshImportData> m_MeshDatas;
 		RigImportData m_RigData;
 		std::vector<AnimationImportData> m_AnimationData;
+		PrefabImportData m_PrefabImportData;
 	};
 }

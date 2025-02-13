@@ -86,15 +86,10 @@ namespace Odyssey
 			FillChannel(dstBuffer, SwizzleChannel::Alpha, 255);
 
 			// Swizzle the first source texture
-			SwizzleTextureDrawer& drawer = m_Drawers[0];
-			Swizzle(srcBuffer, drawer.SrcChannelDrawer.GetValue(), srcTexture->GetWidth(), srcTexture->GetHeight(),
-				dstBuffer, drawer.DstChannelDrawer.GetValue(), drawer.InvertDrawer.GetValue());
-
-			// Swizzle the rest
-			for (size_t i = 1; i < m_Drawers.size(); i++)
+			for (SwizzleTextureDrawer& drawer : m_Drawers)
 			{
-				drawer = m_Drawers[i];
 				srcTexture = AssetManager::LoadSourceAsset<SourceTexture>(drawer.SrcTextureDrawer.GetGUID());
+				srcBuffer = srcTexture->GetPixelBuffer();
 				Swizzle(srcBuffer, drawer.SrcChannelDrawer.GetValue(), srcTexture->GetWidth(), srcTexture->GetHeight(),
 					dstBuffer, drawer.DstChannelDrawer.GetValue(), drawer.InvertDrawer.GetValue());
 			}

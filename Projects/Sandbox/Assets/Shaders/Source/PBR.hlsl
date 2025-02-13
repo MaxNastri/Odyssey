@@ -129,6 +129,7 @@ VertexOutput main(VertexInput input)
 #define HALF_MIN_SQRT 0.0078125
 #define PI 3.1415926535897932384626433832795
 #define ALBEDO(uv) pow(AlbedoMapTexture.Sample(AlbedoMapSampler, uv).rgb, float3(2.2, 2.2, 2.2))
+#define ALBEDOALPHA(uv) pow(AlbedoMapTexture.Sample(AlbedoMapSampler, uv).rgba, float4(2.2, 2.2, 2.2, 1.0))
 static const float3 Gamma_Correction_Exp = float3(0.45, 0.45, 0.45);
 
 struct PixelInput
@@ -255,6 +256,11 @@ float3 specularContribution(float2 inUV, float3 lightColor, float lightIntensity
 
 float4 main(PixelInput input) : SV_TARGET
 {
+    float4 albedoAlpha = ALBEDOALPHA(input.TexCoord0);
+    
+    if (albedoAlpha.a != 1.0 && albedoAlpha.a <= alphaClip)
+        discard;
+    
     float3 N = CalculateNormal(input.Normal, input.Tangent, input.TexCoord0);
     float3 V = normalize(ViewPos.xyz - input.WorldPosition);
     float3 R = reflect(-V, N);

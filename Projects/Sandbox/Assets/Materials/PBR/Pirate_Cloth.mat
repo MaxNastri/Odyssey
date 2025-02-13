@@ -1,0 +1,16 @@
+m_SourceAsset: 0
+m_GUID: 1128811297239007219
+m_Name: Pirate Cloth
+m_Type: Odyssey.Material
+m_Shader: 9634657926911688453
+Render Queue: Opaque
+Blend Mode: None
+Depth Write: 1
+Property Textures:
+  - Property: AlbedoMapSampler
+    Texture: 14324855067353104492
+  - Property: NormalMapSampler
+    Texture: 7841263567271349180
+  - Property: PBRSampler
+    Texture: 5987557820897604883
+Properties: []

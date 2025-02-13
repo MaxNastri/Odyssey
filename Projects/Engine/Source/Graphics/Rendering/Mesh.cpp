@@ -11,8 +11,7 @@ namespace Odyssey
 	Mesh::Mesh(const Path& assetPath)
 		: Asset(assetPath)
 	{
-		if (Ref<SourceModel> source = AssetManager::LoadSourceAsset<SourceModel>(m_SourceAsset))
-			LoadFromSource(source);
+		Load();
 	}
 
 	Mesh::Mesh(const Path& assetPath, Ref<SourceModel> source, uint32_t meshIndex)

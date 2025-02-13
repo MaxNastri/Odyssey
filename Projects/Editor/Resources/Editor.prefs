@@ -1,4 +1,4 @@
-Scene View: '00: 0.99952346 01: 2.3283064e-10 02: 0.030868394 03: 0 10: -0.0054713413 11: 0.9841663 12: 0.17716287 13: 0 20: -0.030379636 21: -0.17724733 22: 0.98369735 23: 0 30: -7.2577634 31: 6.0511003 32: -13.623432 33: 1'
+Scene View: '00: -0.19177198 01: -2.9802322e-08 02: 0.98143953 03: 0 10: -0.67437303 11: 0.72653794 12: -0.13177162 13: 0 20: -0.71305305 21: -0.6871264 22: -0.13932967 23: 0 30: 10.432596 31: 9.234052 32: 0.40129232 33: 1'
 Startup Project: 'C:/Git/Odyssey/Projects/Sandbox'
 Editor Registry: Resources/AssetRegistry.osettings
 Default Sprite: 879823474869737113
@@ -25,3 +25,4 @@ Source Extensions:
   .hlsl: Odyssey.SourceShader
   .jpg: Odyssey.SourceTexture
   .png: Odyssey.SourceTexture
+  .tga: Odyssey.SourceTexture

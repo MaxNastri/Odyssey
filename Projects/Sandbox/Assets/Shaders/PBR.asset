@@ -6,9 +6,12 @@ Properties:
   - Name: BaseColor
     Type: Float3
     Default Value: 'x: 1 y: 1 z: 1'
+  - Name: Roughness
+    Type: Float
+    Default Value: 0
   - Name: EmissiveColor
     Type: Float4
     Default Value: 'x: 0 y: 0 z: 0 w: 0'
   - Name: alphaClip
     Type: Float
-    Default Value: 0
+    Default Value: 1
