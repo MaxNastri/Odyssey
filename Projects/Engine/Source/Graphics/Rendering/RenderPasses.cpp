@@ -668,7 +668,7 @@ namespace Odyssey
 			commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		}
 
-		params.ColorTextures[m_Camera] = colorTextureID;
+		params.ColorTextures[m_Camera] = colorResolveTextureID;
 	}
 
 	void RenderObjectsPass::AddDebugSubPass()

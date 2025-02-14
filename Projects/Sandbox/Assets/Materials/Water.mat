@@ -58,16 +58,16 @@ Properties:
     Value: 1
   - Name: FoamAmount
     Type: Float
-    Value: 0.1
+    Value: 2.75
   - Name: FoamSpeed
     Type: Float
     Value: 1
   - Name: FoamScale
     Type: Float2
-    Value: 'x: 50 y: 50'
+    Value: 'x: 40 y: 40'
   - Name: FoamColor
     Type: Float4
     Value: 'x: 1 y: 1 z: 1 w: 0.81960785'
   - Name: FoamCutoff
     Type: Float
-    Value: 25
+    Value: 20

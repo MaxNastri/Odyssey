@@ -470,6 +470,9 @@ float4 main(PixelInput input) : SV_Target
     // Calculate the depth fade and multiply by the water depth
     float depthFade = DepthFade(screenUV, input.Position.z);
     
+    if ((depthFade - 0.01) < 0.0)
+        discard;
+    
     float waterDepthFade = saturate(depthFade * WaterDepth);
     
     // Lerp between the surface and deep color based on the depth fade
@@ -495,11 +498,11 @@ float4 main(PixelInput input) : SV_Target
     // Adjust normals
     float normalStrength = lerp(0.0f, NormalStrength, 1.0f - waterDepthFade);
     float3 finalNormal = CalculateNormalStrength(blendRefractionNormal, normalStrength);
-    finalNormal.xy = (input.Normal.xy * 0.1f) + finalNormal.xy;
+    finalNormal.xy = (input.Normal.xy * 0.5f) + (finalNormal.xy * 0.5f);
     finalNormal = normalize(finalNormal);
     
     // Foam
-    float foamDepthFade = saturate(depthFade * FoamAmount) * FoamCutoff * 100.0f;
+    float foamDepthFade = saturate(depthFade * FoamAmount * 0.01) * FoamCutoff * 100.0f;
     
     float2 foamUVs = TextureMovement(input.TexCoord0, FoamScale, FoamSpeed);
     float noise = GradientNoise(foamUVs, 1.0f);
@@ -508,6 +511,7 @@ float4 main(PixelInput input) : SV_Target
     float foamAlpha = foamAmount * FoamColor.a;
     
     float4 baseColor = lerp(waterColor, FoamColor, foamAlpha);
+    
     baseColor = lerp(refractionColor, baseColor, baseColor.a);
     
     LightingOutput lighting = CalculateLighting(input.WorldPosition, finalNormal);
