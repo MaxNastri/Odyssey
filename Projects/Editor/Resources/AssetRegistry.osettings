@@ -39,6 +39,22 @@ Entries:
     Type: Odyssey.Mesh
     Path: Meshes/Quad.mesh
     GUID: 4325336624522892848
+  - Name: Sphere
+    Type: Odyssey.SourceModel
+    Path: Meshes/Source/Sphere.fbx
+    GUID: 11273813467457834612
+  - Name: Sphere
+    Type: Odyssey.Mesh
+    Path: Meshes/Sphere.mesh
+    GUID: 1128309179832727657
+  - Name: Capsule
+    Type: Odyssey.SourceModel
+    Path: Meshes/Source/Capsule.fbx
+    GUID: 8719236786327537231
+  - Name: Capsule
+    Type: Odyssey.Mesh
+    Path: Meshes/Capsule.mesh
+    GUID: 4365288742579813271
   - Name: Particle Render
     Type: Odyssey.Shader
     Path: Shaders/ParticleRender.shader
@@ -79,6 +95,14 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: Textures/Source/Folder_Default.png
     GUID: 898173491239897822
+  - Name: Gizmos
+    Type: Odyssey.Texture2D
+    Path: Textures/Gizmos.tex2D
+    GUID: 109172389627832897
+  - Name: Gizmos
+    Type: Odyssey.SourceTexture
+    Path: Textures/Source/Gizmos.png
+    GUID: 551712382346221443
   - Name: Particles
     Type: Odyssey.Material
     Path: Materials/Particles.asset
@@ -127,21 +151,21 @@ Entries:
     Type: Odyssey.SourceTexture
     Path: Textures/Source/Black.png
     GUID: 891239123723176542
-  - Name: Shadowmapping
+  - Name: Depth
     Type: Odyssey.Shader
-    Path: Shaders/Shadowmapping.shader
+    Path: Shaders/Depth.shader
     GUID: 879318792137863213
-  - Name: Shadowmapping
+  - Name: Depth
     Type: Odyssey.SourceShader
-    Path: Shaders/Source/Shadowmapping.hlsl
+    Path: Shaders/Source/Depth.hlsl
     GUID: 690823879126781327
-  - Name: Shadowmapping Skinned
+  - Name: Depth Skinned
     Type: Odyssey.Shader
-    Path: Shaders/Shadowmapping_Skinned.shader
+    Path: Shaders/Depth_Skinned.shader
     GUID: 218097783217681239
-  - Name: Shadowmapping Skinned
+  - Name: Depth Skinned
     Type: Odyssey.SourceShader
-    Path: Shaders/Source/Shadowmapping_Skinned.hlsl
+    Path: Shaders/Source/Depth_Skinned.hlsl
     GUID: 719741236172837688
   - Name: White
     Type: Odyssey.Texture2D
@@ -159,3 +183,27 @@ Entries:
     Type: Odyssey.SourceShader
     Path: Shaders/Source/Sprite.hlsl
     GUID: 203948423675871234
+  - Name: BRDF Lut Generation
+    Type: Odyssey.Shader
+    Path: Shaders/BRDF_Lut_Gen.shader
+    GUID: 817239865824362843
+  - Name: BRDF Lut Generation
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/BRDF_Lut_Gen.hlsl
+    GUID: 56412379814738123
+  - Name: Irradiance
+    Type: Odyssey.Shader
+    Path: Shaders/Irradiance.shader
+    GUID: 7182637854819237912
+  - Name: Irradiance
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Irradiance.hlsl
+    GUID: 4397681236329758125
+  - Name: Prefiltered Cubemap
+    Type: Odyssey.Shader
+    Path: Shaders/Prefiltered_Cubemap.shader
+    GUID: 4656128379182378356
+  - Name: Prefiltered Cubemap
+    Type: Odyssey.SourceShader
+    Path: Shaders/Source/Prefiltered_Cubemap.hlsl
+    GUID: 981273863473125533

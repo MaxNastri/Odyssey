@@ -1,22 +1,20 @@
 #include "Scene.h"
 #include "AssetSerializer.h"
 #include "GameObject.h"
-#include "Camera.h"
-#include "PropertiesComponent.h"
-#include "MeshRenderer.h"
-#include "Transform.h"
-#include "ScriptComponent.h"
 #include "ScriptingManager.h"
-#include "Animator.h"
 #include "ParticleBatcher.h"
-#include "ParticleEmitter.h"
 #include "EventSystem.h"
 #include "Events.h"
+#include "Components.h"
 
 namespace Odyssey
 {
+#define EXECUTE_ON_COMPONENTS(ComponentType, Func) \
+for (auto entity : m_Registry.view<ComponentType>()) GameObject(this, entity).GetComponent<ComponentType>().Func();
+
 	Scene::Scene()
 	{
+
 	}
 
 	Scene::Scene(const Path& assetPath)
@@ -38,11 +36,9 @@ namespace Odyssey
 		PropertiesComponent& properties = gameObject.AddComponent<PropertiesComponent>(GUID::New());
 
 		m_GUIDToGameObject[gameObject.GetGUID()] = gameObject;
-
 		m_SceneGraph.AddEntity(gameObject);
 
-		EventSystem::Dispatch<SceneModifiedEvent>(this);
-
+		EventSystem::Dispatch<SceneModifiedEvent>(this, SceneModifiedEvent::Modification::CreateGameObject);
 		return gameObject;
 	}
 
@@ -51,7 +47,7 @@ namespace Odyssey
 		// Create the backing entity
 		const auto entity = m_Registry.create();
 
-		EventSystem::Dispatch<SceneModifiedEvent>(this);
+		EventSystem::Dispatch<SceneModifiedEvent>(this, SceneModifiedEvent::Modification::CreateGameObject);
 
 		// Return a game object wrapper
 		return GameObject(this, entity);
@@ -72,7 +68,7 @@ namespace Odyssey
 		for (auto& entity : toDestroy)
 			m_Registry.destroy(entity);
 
-		EventSystem::Dispatch<SceneModifiedEvent>(this);
+		EventSystem::Dispatch<SceneModifiedEvent>(this, SceneModifiedEvent::Modification::DeleteGameObject);
 	}
 
 	void Scene::Clear()
@@ -83,7 +79,7 @@ namespace Odyssey
 		}
 		m_Registry.clear();
 
-		EventSystem::Dispatch<SceneModifiedEvent>(this);
+		EventSystem::Dispatch<SceneModifiedEvent>(this, SceneModifiedEvent::Modification::DeleteGameObject);
 	}
 
 	void Scene::OnStartRuntime()
@@ -100,76 +96,46 @@ namespace Odyssey
 
 	void Scene::OnStopRuntime()
 	{
-		for (auto entity : m_Registry.view<ScriptComponent>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			GUID guid = gameObject.GetGUID();
-
-			ScriptComponent& script = gameObject.GetComponent<ScriptComponent>();
-			script.OnDestroy();
-			script.ClearManagedHandle();
-			ScriptingManager::DestroyInstance(guid);
-		}
+		EXECUTE_ON_COMPONENTS(ScriptComponent, OnDestroy);
+		EXECUTE_ON_COMPONENTS(RigidBody, OnDestroy);
+		EXECUTE_ON_COMPONENTS(CharacterController, OnDestroy);
+		EXECUTE_ON_COMPONENTS(FluidBody, OnDestroy);
 	}
 
 	void Scene::Awake()
 	{
 		m_State = SceneState::Awake;
 
-		for (auto entity : m_Registry.view<Camera>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			auto& camera = gameObject.GetComponent<Camera>();
-			camera.Awake();
-		}
-
-		for (auto entity : m_Registry.view<ScriptComponent>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			ScriptComponent& script = gameObject.GetComponent<ScriptComponent>();
-			script.Awake();
-		}
+		EXECUTE_ON_COMPONENTS(Camera, Awake);
+		EXECUTE_ON_COMPONENTS(ScriptComponent, Awake);
+		EXECUTE_ON_COMPONENTS(RigidBody, Awake);
+		EXECUTE_ON_COMPONENTS(CharacterController, Awake);
 	}
 
 	void Scene::OnEditorUpdate()
 	{
-		for (auto entity : m_Registry.view<Animator>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			Animator& animator = gameObject.GetComponent<Animator>();
-			animator.OnEditorUpdate();
-		}
+		EXECUTE_ON_COMPONENTS(Animator, OnEditorUpdate);
 	}
 
 	void Scene::Update()
 	{
 		m_State = SceneState::Update;
 
-		for (auto entity : m_Registry.view<ScriptComponent>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			auto& userScript = gameObject.GetComponent<ScriptComponent>();
-			userScript.Update();
-		}
-
-		for (auto entity : m_Registry.view<Animator>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			Animator& animator = gameObject.GetComponent<Animator>();
-			animator.Update();
-		}
+		EXECUTE_ON_COMPONENTS(ScriptComponent, Update);
+		EXECUTE_ON_COMPONENTS(Animator, Update);
+		EXECUTE_ON_COMPONENTS(RigidBody, Update);
 	}
 
 	void Scene::OnDestroy()
 	{
 		m_State = SceneState::Destroy;
-
-		for (auto entity : m_Registry.view<ScriptComponent>())
-		{
-			GameObject gameObject = GameObject(this, entity);
-			auto& userScript = gameObject.GetComponent<ScriptComponent>();
-			userScript.OnDestroy();
-		}
+		EXECUTE_ON_COMPONENTS(ScriptComponent, OnDestroy);
+		EXECUTE_ON_COMPONENTS(Animator, OnDestroy);
+		EXECUTE_ON_COMPONENTS(BoxCollider, OnDestroy);
+		EXECUTE_ON_COMPONENTS(SphereCollider, OnDestroy);
+		EXECUTE_ON_COMPONENTS(BoxCollider, OnDestroy);
+		EXECUTE_ON_COMPONENTS(CharacterController, OnDestroy);
+		EXECUTE_ON_COMPONENTS(FluidBody, OnDestroy);
 	}
 
 	void Scene::SaveTo(const Path& savePath)
@@ -219,6 +185,8 @@ namespace Odyssey
 		root.WriteData("Ambient Color", m_EnvironmentSettings.AmbientColor);
 		root.WriteData("Scene Center", m_EnvironmentSettings.SceneCenter);
 		root.WriteData("Scene Radius", m_EnvironmentSettings.SceneRadius);
+		root.WriteData("Exposure", m_EnvironmentSettings.Exposure);
+		root.WriteData("Gamma Correction", m_EnvironmentSettings.GammaCorrection);
 
 		SerializationNode gameObjectsNode = root.CreateSequenceNode("GameObjects");
 
@@ -250,6 +218,8 @@ namespace Odyssey
 			root.ReadData("Ambient Color", m_EnvironmentSettings.AmbientColor);
 			root.ReadData("Scene Center", m_EnvironmentSettings.SceneCenter);
 			root.ReadData("Scene Radius", m_EnvironmentSettings.SceneRadius);
+			root.ReadData("Exposure", m_EnvironmentSettings.Exposure);
+			root.ReadData("Gamma Correction", m_EnvironmentSettings.GammaCorrection);
 
 			if (skybox)
 				m_EnvironmentSettings.SetSkybox(skybox);

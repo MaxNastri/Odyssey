@@ -8,11 +8,9 @@
 #include "OdysseyTime.h"
 #include "AssetManager.h"
 #include "Mesh.h"
-#include "Animator.h"
 #include "Input.h"
-#include "SpriteRenderer.h"
 #include "Prefab.h"
-#include "ParticleEmitter.h"
+#include "Components.h"
 
 namespace Odyssey
 {
@@ -105,6 +103,12 @@ namespace Odyssey::InternalCalls
 		Scene* activeScene = SceneManager::GetActiveScene();
 		GameObject gameObject = activeScene->CreateGameObject();
 		return gameObject.GetGUID();
+	}
+
+	void GameObject_Destroy(uint64_t guid)
+	{
+		GameObject gameObject = GetGameObject(guid);
+		gameObject.Destroy();
 	}
 
 	Coral::String GameObject_GetName(uint64_t guid)
@@ -219,6 +223,20 @@ namespace Odyssey::InternalCalls
 			transform->SetPosition(position);
 	}
 
+	void Transform_GetWorldPosition(uint64_t guid, float3* position)
+	{
+		if (!guid)
+		{
+			Log::Error("[InternalCalls] Invalid GUID detected for Transform_GetPosition.");
+			return;
+		}
+
+		GameObject gameObject = GetGameObject(guid);
+
+		if (Transform* transform = gameObject.TryGetComponent<Transform>())
+			*position = transform->GetWorldPosition();
+	}
+
 	void Transform_GetEulerAngles(uint64_t guid, glm::vec3* rotation)
 	{
 		GameObject gameObject = GetGameObject(guid);
@@ -293,6 +311,12 @@ namespace Odyssey::InternalCalls
 		}
 	}
 
+	void Prefab_DestroyInstance(uint64_t instanceGUID)
+	{
+		GameObject gameObject = GetGameObject(instanceGUID);
+		gameObject.Destroy();
+	}
+
 #pragma endregion
 
 #pragma region Texture2D
@@ -337,6 +361,80 @@ namespace Odyssey::InternalCalls
 			renderer->SetMesh(GUID(meshGUID));
 	}
 
+	void MeshRenderer_SetFloat(uint64_t entityGUID, Coral::String propertyName, float value, int32_t submesh)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+		{
+			auto& materials = renderer->GetMaterials();
+			if (submesh < materials.size())
+			{
+				std::string name = propertyName;
+				materials[submesh]->SetFloat(name, value);
+			}
+		}
+	}
+
+	void MeshRenderer_SetFloat2(uint64_t entityGUID, Coral::String propertyName, float2 value, int32_t submesh)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+		{
+			auto& materials = renderer->GetMaterials();
+			if (submesh < materials.size())
+			{
+				std::string name = propertyName;
+				materials[submesh]->SetFloat2(name, value);
+			}
+		}
+	}
+
+	void MeshRenderer_SetFloat3(uint64_t entityGUID, Coral::String propertyName, float3 value, int32_t submesh)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+		{
+			auto& materials = renderer->GetMaterials();
+			if (submesh < materials.size())
+			{
+				std::string name = propertyName;
+				materials[submesh]->SetFloat3(name, value);
+			}
+		}
+	}
+
+	void MeshRenderer_SetFloat4(uint64_t entityGUID, Coral::String propertyName, float4 value, int32_t submesh)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+		{
+			auto& materials = renderer->GetMaterials();
+			if (submesh < materials.size())
+			{
+				std::string name = propertyName;
+				materials[submesh]->SetFloat4(name, value);
+			}
+		}
+	}
+
+	void MeshRenderer_SetBool(uint64_t entityGUID, Coral::String propertyName, bool value, int32_t submesh)
+	{
+		GameObject gameObject = GetGameObject(entityGUID);
+
+		if (MeshRenderer* renderer = gameObject.TryGetComponent<MeshRenderer>())
+		{
+			auto& materials = renderer->GetMaterials();
+			if (submesh < materials.size())
+			{
+				std::string name = propertyName;
+				materials[submesh]->SetBool(name, value);
+			}
+		}
+	}
 #pragma endregion
 
 #pragma region Sprite Renderer
@@ -572,6 +670,93 @@ namespace Odyssey::InternalCalls
 
 #pragma endregion
 
+#pragma region Rigid Body
+
+	void RigidBody_GetLinearVelocity(uint64_t guid, float3* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			*value = rigidBody->GetLinearVelocity();
+	}
+
+	void RigidBody_SetLinearVelocity(uint64_t guid, float3 value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			 rigidBody->SetLinearVelocity(value);
+	}
+
+	void RigidBody_AddLinearVelocity(uint64_t guid, float3 value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			 rigidBody->AddLinearVelocity(value);
+	}
+
+	void RigidBody_GetFriction(uint64_t guid, float* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			*value = rigidBody->GetFriction();
+	}
+
+	void RigidBody_SetFriction(uint64_t guid, float value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			rigidBody->SetFriction(value);
+	}
+
+	void RigidBody_GetMaxLinearVelocity(uint64_t guid, float* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			*value = rigidBody->GetMaxLinearVelocity();
+	}
+
+	void RigidBody_SetMaxLinearVelocity(uint64_t guid, float value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (RigidBody* rigidBody = gameObject.TryGetComponent<RigidBody>())
+			rigidBody->SetMaxLinearVelocity(value);
+	}
+#pragma endregion
+
+#pragma region Character Controller
+
+
+	void CharacterController_GetLinearVelocity(uint64_t guid, float3* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (CharacterController* controller = gameObject.TryGetComponent<CharacterController>())
+			*value = controller->GetLinearVelocity();
+	}
+
+	void CharacterController_SetLinearVelocity(uint64_t guid, float3 value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (CharacterController* controller = gameObject.TryGetComponent<CharacterController>())
+			controller->SetLinearVelocity(value);
+	}
+
+	void CharacterController_IsGrounded(uint64_t guid, bool* value)
+	{
+		GameObject gameObject = GetGameObject(guid);
+
+		if (CharacterController* controller = gameObject.TryGetComponent<CharacterController>())
+			*value = controller->IsGrounded();
+	}
+
+#pragma endregion
 
 
 #pragma region Input

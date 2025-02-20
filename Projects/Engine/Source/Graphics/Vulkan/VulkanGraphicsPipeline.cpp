@@ -6,6 +6,7 @@
 #include "VulkanDescriptorLayout.h"
 #include "ResourceManager.h"
 #include "Renderer.h"
+#include "Material.h"
 
 namespace Odyssey
 {
@@ -20,6 +21,8 @@ namespace Odyssey
 				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 			case Topology::TriangleStrip:
 				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+			case Topology::PatchList:
+				return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
 			default:
 				return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		}
@@ -36,6 +39,14 @@ namespace Odyssey
 				return VK_FORMAT_R8G8B8A8_SRGB;
 			case TextureFormat::R8G8B8A8_UNORM:
 				return VK_FORMAT_R8G8B8A8_UNORM;
+			case TextureFormat::R16G16B16_SFLOAT:
+				return VK_FORMAT_R16G16B16_SFLOAT;
+			case TextureFormat::R16G16B16A16_SFLOAT:
+				return VK_FORMAT_R16G16B16A16_SFLOAT;
+			case TextureFormat::R32G32B32A32_SFLOAT:
+				return VK_FORMAT_R32G32B32A32_SFLOAT;
+			case TextureFormat::R16G16_SFLOAT:
+				return VK_FORMAT_R16G16_SFLOAT;
 			case TextureFormat::D24_UNORM_S8_UINT:
 				return VK_FORMAT_D24_UNORM_S8_UINT;
 			case TextureFormat::D16_UNORM:
@@ -46,7 +57,6 @@ namespace Odyssey
 				return VK_FORMAT_D32_SFLOAT_S8_UINT;
 			default:
 				return VK_FORMAT_R8G8B8A8_UNORM;
-				break;
 		}
 	}
 
@@ -81,6 +91,13 @@ namespace Odyssey
 			if (shaderType == ShaderType::Compute)
 				continue;
 
+			if (shaderType == ShaderType::Geometry)
+			{
+				info.CullMode = CullMode::None;
+			}
+			if (shaderType == ShaderType::Hull || shaderType == ShaderType::Domain)
+				info.Topology = Topology::PatchList;
+
 			auto shader = ResourceManager::GetResource<VulkanShaderModule>(ResourceID);
 
 			VkPipelineShaderStageCreateInfo shaderStageInfo{};
@@ -113,7 +130,7 @@ namespace Odyssey
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-		if (info.BindVertexAttributeDescriptions)
+		if (info.AttributeDescriptions.GetSize() > 0)
 		{
 			VkVertexInputBindingDescription bindingDescription = Vertex::GetBindingDescription();
 			vertexInputInfo.vertexBindingDescriptionCount = 1;
@@ -161,7 +178,7 @@ namespace Odyssey
 
 		VkPipelineDepthStencilStateCreateInfo depthStencil{};
 		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthTestEnable = info.TestDepth;
 		depthStencil.depthWriteEnable = info.WriteDepth;
 
 		if (info.IsShadow)
@@ -175,9 +192,9 @@ namespace Odyssey
 		// Normal color blending
 		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 
-		if (info.AlphaBlend)
+		if (info.SetBlendMode == BlendMode::AlphaBlend)
 		{
-			// Additive blending
+			// Alpha blend
 			colorBlendAttachment.blendEnable = VK_TRUE;
 			colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 			colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
@@ -187,8 +204,9 @@ namespace Odyssey
 			colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
 			colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 		}
-		else if (info.Special)
+		else if (info.SetBlendMode == BlendMode::Additive)
 		{
+			// Additive blend
 			colorBlendAttachment.blendEnable = VK_TRUE;
 			colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT;
 			colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
@@ -200,7 +218,7 @@ namespace Odyssey
 		}
 		else
 		{
-			// Additive blending
+			// No blending
 			colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 			colorBlendAttachment.blendEnable = VK_FALSE;
 		}
@@ -235,6 +253,12 @@ namespace Odyssey
 		if (info.DepthFormat == TextureFormat::D24_UNORM_S8_UINT)
 			pipeline_rendering_create_info.stencilAttachmentFormat = GetVkFormat(info.DepthFormat);
 
+		VkPipelineTessellationStateCreateInfo tesselationInfo = {};
+		tesselationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+		tesselationInfo.patchControlPoints = 3;
+		tesselationInfo.pNext = nullptr;
+		tesselationInfo.flags = 0;
+
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineInfo.stageCount = (uint32_t)shaderStages.size();
@@ -247,6 +271,7 @@ namespace Odyssey
 		pipelineInfo.pDepthStencilState = &depthStencil; // Optional
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDynamicState = &dynamicState;
+		pipelineInfo.pTessellationState = &tesselationInfo;
 		pipelineInfo.layout = m_PipelineLayout;
 		pipelineInfo.renderPass = nullptr;
 		pipelineInfo.pNext = &pipeline_rendering_create_info;
@@ -275,12 +300,22 @@ namespace Odyssey
 		if (auto layout = ResourceManager::GetResource<VulkanDescriptorLayout>(info.DescriptorLayout))
 			setLayouts.push_back(layout->GetHandle());
 
+		std::vector<VkPushConstantRange> pushConstants;
+
+		for (PushConstantRange pushConstant : info.PushConstantRanges)
+		{
+			VkPushConstantRange& vkRange = pushConstants.emplace_back();
+			vkRange.stageFlags = pushConstant.Flags;
+			vkRange.offset = pushConstant.Offset;
+			vkRange.size = pushConstant.Size;
+		}
+
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutInfo.setLayoutCount = (uint32_t)setLayouts.size(); // Optional
 		pipelineLayoutInfo.pSetLayouts = setLayouts.data(); // Optional
-		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+		pipelineLayoutInfo.pushConstantRangeCount = (uint32_t)pushConstants.size(); // Optional
+		pipelineLayoutInfo.pPushConstantRanges = pushConstants.data(); // Optional
 
 		if (vkCreatePipelineLayout(m_Context->GetDevice()->GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
 		{

@@ -25,23 +25,6 @@ namespace Odyssey
 {
 	RenderScene::RenderScene()
 	{
-		// Descriptor layout for the combined uniform buffers
-		m_DescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
-
-		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(m_DescriptorLayout);
-		descriptorLayout->AddBinding("Scene Data", DescriptorType::Uniform, ShaderStage::Vertex, 0);
-		descriptorLayout->AddBinding("Model Data", DescriptorType::Uniform, ShaderStage::Vertex, 1);
-		descriptorLayout->AddBinding("Skinning Data", DescriptorType::Uniform, ShaderStage::Vertex, 2);
-		descriptorLayout->AddBinding("Global Data", DescriptorType::Uniform, ShaderStage::Fragment, 3);
-		descriptorLayout->AddBinding("Lighting Data", DescriptorType::Uniform, ShaderStage::Fragment, 4);
-		descriptorLayout->AddBinding("Material Data", DescriptorType::Uniform, ShaderStage::Fragment, 5);
-		descriptorLayout->AddBinding("Diffuse", DescriptorType::Sampler, ShaderStage::Fragment, 6);
-		descriptorLayout->AddBinding("Normal", DescriptorType::Sampler, ShaderStage::Fragment, 7);
-		descriptorLayout->AddBinding("Noise", DescriptorType::Sampler, ShaderStage::Fragment, 8);
-		descriptorLayout->AddBinding("Shadowmap", DescriptorType::Sampler, ShaderStage::Fragment, 9);
-		descriptorLayout->AddBinding("Camera Depth", DescriptorType::Sampler, ShaderStage::Fragment, 10);
-		descriptorLayout->Apply();
-
 		// Camera uniform buffer
 		for (uint32_t i = 0; i < MAX_CAMERAS; i++)
 		{
@@ -84,20 +67,6 @@ namespace Odyssey
 			skinningBuffers.push_back(uboID);
 		}
 
-		// Material buffers
-		for (uint32_t i = 0; i < Max_Uniform_Buffers; i++)
-		{
-			// Allocate the UBO
-			ResourceID uboID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(MaterialData));
-
-			// Write the per-object data into the ubo
-			MaterialData materialData;
-			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
-			uniformBuffer->CopyData(sizeof(MaterialData), &materialData);
-
-			m_MaterialBuffers.push_back(uboID);
-		}
-
 		// Allocate the UBO
 		LightingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Uniform, sizeof(LightingData));
 
@@ -109,8 +78,6 @@ namespace Odyssey
 
 	void RenderScene::Destroy()
 	{
-		ResourceManager::Destroy(m_DescriptorLayout);
-
 		for (auto& resource : sceneDataBuffers)
 		{
 			ResourceManager::Destroy(resource);
@@ -134,6 +101,8 @@ namespace Odyssey
 
 		LightingData lightingData;
 		lightingData.AmbientColor = float4(scene->GetEnvironmentSettings().AmbientColor, 1.0f);
+		lightingData.Exposure = scene->GetEnvironmentSettings().Exposure;
+		lightingData.GammaCorrection = scene->GetEnvironmentSettings().GammaCorrection;
 
 		for (auto entity : scene->GetAllEntitiesWith<Light>())
 		{
@@ -184,16 +153,10 @@ namespace Odyssey
 
 	void RenderScene::ClearSceneData()
 	{
-		for (auto& setPass : setPasses)
-		{
-			ResourceManager::Destroy(setPass.GraphicsPipeline);
-		}
-
-		setPasses.clear();
+		SetPasses.clear();
 		SpriteDrawcalls.clear();
 		m_GUIDToSetPass.clear();
 		m_NextUniformBuffer = 0;
-		m_NextMaterialBuffer = 0;
 		m_MainCamera = nullptr;
 	}
 
@@ -251,6 +214,9 @@ namespace Odyssey
 				if (!materials[i] || materials[i]->GetGUID() == 0)
 					continue;
 
+				RenderQueue renderQueue = materials[i]->GetRenderQueue();
+				std::vector<SetPass>& setPasses = SetPasses[renderQueue];
+
 				if (SubMesh* submesh = mesh->GetSubmesh(i))
 				{
 					GUID materialGUID = materials[i]->GetGUID();
@@ -264,13 +230,11 @@ namespace Odyssey
 					else
 					{
 						size_t index = setPasses.size();
-						setPasses.emplace_back();
+						setPass = &setPasses.emplace_back();
 
 						m_GUIDToSetPass[materialGUID] = index;
-						setPass = &setPasses[index];
 
-						setPass->SetMaterial(materials[i], animator != nullptr, m_DescriptorLayout, m_MaterialBuffers[m_NextMaterialBuffer]);
-						m_NextMaterialBuffer++;
+						setPass->SetMaterial(materials[i], animator != nullptr);
 					}
 
 					// Create the drawcall data
@@ -280,7 +244,6 @@ namespace Odyssey
 					drawcall.IndexCount = submesh->IndexCount;
 					drawcall.UniformBufferIndex = uboIndex;
 					drawcall.Skinned = animator != nullptr;
-					drawcall.SkipDepth = materials[i]->GetGUID() == 14541755926980427327;
 				}
 			}
 
@@ -288,7 +251,6 @@ namespace Odyssey
 			ObjectUniformData objectData;
 			uint32_t perObjectSize = sizeof(objectData);
 			objectData.world = transform.GetWorldMatrix();
-			objectData.InverseWorld = glm::transpose(glm::inverse(objectData.world));
 
 			ResourceID uboID = perObjectUniformBuffers[uboIndex];
 			auto uniformBuffer = ResourceManager::GetResource<VulkanBuffer>(uboID);
@@ -327,89 +289,21 @@ namespace Odyssey
 		}
 	}
 
-	void SetPass::SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout, ResourceID materialBuffer)
+	void SetPass::SetMaterial(Ref<Material> material, bool skinned)
 	{
-		// Allocate a graphics pipeline
-		VulkanPipelineInfo info;
-		Shaders = info.Shaders = material->GetShader()->GetResourceMap();
-		info.DescriptorLayout = descriptorLayout;
-		info.CullMode = CullMode::Back;
-		info.AlphaBlend = material->GetAlphaBlend();
-		info.WriteDepth = material->GetGUID() == 14541755926980427327 ? false : true;
-		info.Special = material->GetGUID() == 14541755926980427327;
-		SetupAttributeDescriptions(skinned, info.AttributeDescriptions);
+		Shaders = material->GetShader()->GetResourceMap();
+		GraphicsPipeline = material->GetPipeline();
 
-		GraphicsPipeline = ResourceManager::Allocate<VulkanGraphicsPipeline>(info);
-
-		if (Ref<Texture2D> colorTexture = material->GetColorTexture())
-			ColorTexture = colorTexture->GetTexture();
-
-		if (Ref<Texture2D> normalTexture = material->GetNormalTexture())
-			NormalTexture = normalTexture->GetTexture();
-
-		if (Ref<Texture2D> noiseTexture = material->GetNoiseTexture())
-			NoiseTexture = noiseTexture->GetTexture();
+		// Textures
+		ShaderBindings = material->GetShader()->GetBindings();
+		Textures = material->GetTextures();
 
 		// Store the material buffer for binding
-		MaterialBuffer = materialBuffer;
+		MaterialBuffer = material->GetMaterialBuffer();
 
-		// Copy the material properties into the buffer
-		Ref<VulkanBuffer> materialUniform = ResourceManager::GetResource<VulkanBuffer>(materialBuffer);
-		MaterialData materialData;
-		materialData.EmissiveColor = float4(material->GetEmissiveColor(), material->GetEmissivePower());
-		materialData.AlphaClip = material->GetAlphaClip();
-		materialUniform->CopyData(sizeof(MaterialData), &materialData);
-	}
+		// Store the render queue
+		RenderQueue = material->GetRenderQueue();
 
-	void SetPass::SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions)
-	{
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-
-		// Position
-		auto& positionDesc = attributeDescriptions.emplace_back();
-		positionDesc.binding = 0;
-		positionDesc.location = 0;
-		positionDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
-		positionDesc.offset = offsetof(Vertex, Position);
-
-		// Normal
-		auto& normalDesc = attributeDescriptions.emplace_back();
-		normalDesc.binding = 0;
-		normalDesc.location = 1;
-		normalDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
-		normalDesc.offset = offsetof(Vertex, Normal);
-
-		// Tangent
-		auto& tangentDesc = attributeDescriptions.emplace_back();
-		tangentDesc.binding = 0;
-		tangentDesc.location = 2;
-		tangentDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
-		tangentDesc.offset = offsetof(Vertex, Tangent);
-
-		// TexCoord0
-		auto& texCoord0Desc = attributeDescriptions.emplace_back();
-		texCoord0Desc.binding = 0;
-		texCoord0Desc.location = 3;
-		texCoord0Desc.format = VK_FORMAT_R32G32_SFLOAT;
-		texCoord0Desc.offset = offsetof(Vertex, TexCoord0);
-
-		if (skinned)
-		{
-			// Bone Indices
-			auto& indicesDesc = attributeDescriptions.emplace_back();
-			indicesDesc.binding = 0;
-			indicesDesc.location = 4;
-			indicesDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
-			indicesDesc.offset = offsetof(Vertex, BoneIndices);
-
-			// Bone Weights
-			auto& weightsDesc = attributeDescriptions.emplace_back();
-			weightsDesc.binding = 0;
-			weightsDesc.location = 5;
-			weightsDesc.format = VK_FORMAT_R32G32B32A32_SFLOAT;
-			weightsDesc.offset = offsetof(Vertex, BoneWeights);
-		}
-
-		descriptions.WriteData(attributeDescriptions);
+		WriteDepth = material->GetDepthWrite();
 	}
 }

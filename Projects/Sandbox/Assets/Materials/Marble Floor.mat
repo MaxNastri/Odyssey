@@ -3,5 +3,22 @@ m_GUID: 3853102031685265300
 m_Name: Marble Floor
 m_Type: Odyssey.Material
 m_Shader: 9634657926911688453
-m_Texture: 1433496500175665428
-Normal Texture: 4587395924381067169
+Render Queue: Opaque
+Blend Mode: None
+Depth Write: 1
+Property Textures:
+  - Property: AOMapSampler
+    Texture: 3120519235124092623
+  - Property: AlbedoMapSampler
+    Texture: 1433496500175665428
+  - Property: MetallicMapSampler
+    Texture: 6250925768792989075
+  - Property: NormalMapSampler
+    Texture: 4587395924381067169
+  - Property: PBRSampler
+    Texture: 16197292871998784985
+  - Property: diffuseSampler
+    Texture: 1433496500175665428
+  - Property: normalSampler
+    Texture: 4587395924381067169
+Properties: []

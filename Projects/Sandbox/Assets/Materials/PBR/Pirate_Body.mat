@@ -1,0 +1,18 @@
+m_SourceAsset: 0
+m_GUID: 11609781084541709249
+m_Name: Pirate Body
+m_Type: Odyssey.Material
+m_Shader: 9634657926911688453
+Render Queue: Opaque
+Blend Mode: None
+Depth Write: 1
+Property Textures:
+  - Property: AlbedoMapSampler
+    Texture: 14244191934966427325
+  - Property: MetallicMapSampler
+    Texture: 14513363239891643308
+  - Property: NormalMapSampler
+    Texture: 2606168030810641916
+  - Property: PBRSampler
+    Texture: 4632086444298182379
+Properties: []

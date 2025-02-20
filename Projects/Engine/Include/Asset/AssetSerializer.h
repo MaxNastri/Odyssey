@@ -26,6 +26,21 @@ namespace Odyssey
 			nodeRef |= ryml::SEQ;
 			return SerializationNode(std::string(nodeName.data()), nodeRef);
 		}
+		bool HasNode(const std::string& nodeName)
+		{
+			return m_Node[nodeName.c_str()].has_key();
+		}
+
+		bool TryGetNode(const std::string& nodeName, SerializationNode& node)
+		{
+			if (HasNode(nodeName))
+			{
+				node = GetNode(nodeName);
+				return true;
+			}
+
+			return false;
+		}
 
 		SerializationNode GetNode(const std::string& nodeName)
 		{
@@ -59,7 +74,7 @@ namespace Odyssey
 		bool IsSequence() { return m_Node.is_seq(); }
 		bool HasChildren() { return m_Node.has_children(); }
 		bool HasChild(const std::string& childName) { return m_Node.has_child(childName.c_str()); }
-		size_t ChildCount() { return m_Node.num_children(); }
+		size_t ChildCount() { return m_Node.has_children() ? m_Node.num_children() : 0; }
 
 	private:
 		std::string m_Name;

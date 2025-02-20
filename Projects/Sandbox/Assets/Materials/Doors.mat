@@ -2,6 +2,19 @@ m_SourceAsset: 0
 m_GUID: 7332157666035654410
 m_Name: Metal Doors
 m_Type: Odyssey.Material
-m_Shader: 9634657926911688453
-m_Texture: 2123635673430797876
-Normal Texture: 16057804515411225806
+m_Shader: 16842850129266277074
+Render Queue: Opaque
+Blend Mode: None
+Depth Write: 1
+Property Textures:
+  - Property: diffuseSampler
+    Texture: 2123635673430797876
+  - Property: normalSampler
+    Texture: 16057804515411225806
+Properties:
+  - Name: EmissiveColor
+    Type: Float4
+    Value: 'x: 0 y: 0 z: 0 w: 0'
+  - Name: alphaClip
+    Type: Float
+    Value: 0.5

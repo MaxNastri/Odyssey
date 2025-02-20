@@ -1,14 +1,6 @@
 #include "GameObject.h"
 #include "Scene.h"
-#include "PropertiesComponent.h"
-#include "Camera.h"
-#include "MeshRenderer.h"
-#include "Transform.h"
-#include "ScriptComponent.h"
-#include "Animator.h"
-#include "Light.h"
-#include "ParticleEmitter.h"
-#include "SpriteRenderer.h"
+#include "Components.h"
 
 namespace Odyssey
 {
@@ -35,6 +27,26 @@ namespace Odyssey
 			camera->Awake();
 		if (ScriptComponent* script = TryGetComponent<ScriptComponent>())
 			script->Awake();
+		if (RigidBody* rigidBody = TryGetComponent<RigidBody>())
+			rigidBody->Awake();
+	}
+
+	void GameObject::OnCollisionEnter(GameObject& body, float3 contactNormal)
+	{
+		if (ScriptComponent* script = TryGetComponent<ScriptComponent>())
+			script->OnCollisionEnter(body, contactNormal);
+	}
+
+	void GameObject::OnCollisionStay(GameObject& body, float3 contactNormal)
+	{
+		if (ScriptComponent* script = TryGetComponent<ScriptComponent>())
+			script->OnCollisionStay(body, contactNormal);
+	}
+
+	void GameObject::OnCollisionExit(GameObject& body)
+	{
+		if (ScriptComponent* script = TryGetComponent<ScriptComponent>())
+			script->OnCollisionExit(body);
 	}
 
 	void GameObject::Serialize(SerializationNode& gameObjectNode)
@@ -81,6 +93,24 @@ namespace Odyssey
 
 		if (SpriteRenderer* spriteRenderer = TryGetComponent<SpriteRenderer>())
 			spriteRenderer->Serialize(componentsNode);
+
+		if (CharacterController* characterController = TryGetComponent<CharacterController>())
+			characterController->Serialize(componentsNode);
+
+		if (BoxCollider* boxCollider = TryGetComponent<BoxCollider>())
+			boxCollider->Serialize(componentsNode);
+
+		if (CapsuleCollider* capsuleCollider = TryGetComponent<CapsuleCollider>())
+			capsuleCollider->Serialize(componentsNode);
+
+		if (SphereCollider* sphereCollider = TryGetComponent<SphereCollider>())
+			sphereCollider->Serialize(componentsNode);
+
+		if (RigidBody* rigidBody = TryGetComponent<RigidBody>())
+			rigidBody->Serialize(componentsNode);
+
+		if (FluidBody* fluidBody = TryGetComponent<FluidBody>())
+			fluidBody->Serialize(componentsNode);
 	}
 
 	void GameObject::Deserialize(SerializationNode& gameObjectNode)
@@ -116,7 +146,7 @@ namespace Odyssey
 			else if (componentType == MeshRenderer::Type)
 				AddComponent<MeshRenderer>(componentNode);
 			else if (componentType == Transform::Type)
-				AddComponent<Transform>();
+				AddComponent<Transform>(componentNode);
 			else if (componentType == ScriptComponent::Type)
 				AddComponent<ScriptComponent>(componentNode, remap);
 			else if (componentType == Light::Type)
@@ -125,6 +155,18 @@ namespace Odyssey
 				AddComponent<ParticleEmitter>(componentNode);
 			else if (componentType == SpriteRenderer::Type)
 				AddComponent<SpriteRenderer>(componentNode);
+			else if (componentType == CharacterController::Type)
+				AddComponent<CharacterController>(componentNode);
+			else if (componentType == BoxCollider::Type)
+				AddComponent<BoxCollider>(componentNode);
+			else if (componentType == CapsuleCollider::Type)
+				AddComponent<CapsuleCollider>(componentNode);
+			else if (componentType == SphereCollider::Type)
+				AddComponent<SphereCollider>(componentNode);
+			else if (componentType == RigidBody::Type)
+				AddComponent<RigidBody>(componentNode);
+			else if (componentType == FluidBody::Type)
+				AddComponent<FluidBody>(componentNode);
 		}
 	}
 
@@ -146,6 +188,11 @@ namespace Odyssey
 	std::vector<GameObject> GameObject::GetChildren()
 	{
 		return m_Scene->GetSceneGraph().GetChildren(*this);
+	}
+
+	std::vector<GameObject> GameObject::GetAllChildren()
+	{
+		return m_Scene->GetSceneGraph().GetAllChildren(*this);
 	}
 
 	const std::string& GameObject::GetName()
@@ -172,6 +219,9 @@ namespace Odyssey
 	{
 		if (m_Scene)
 			m_Scene->DestroyGameObject(*this);
+
+		m_Entity = entt::entity();
+		m_Scene = nullptr;
 	}
 
 	void GameObject::Serialize(SerializationNode& gameObjectNode, bool prefab)
@@ -208,6 +258,24 @@ namespace Odyssey
 
 		if (SpriteRenderer* spriteRenderer = TryGetComponent<SpriteRenderer>())
 			spriteRenderer->Serialize(componentsNode);
+
+		if (CharacterController* characterController = TryGetComponent<CharacterController>())
+			characterController->Serialize(componentsNode);
+
+		if (BoxCollider* boxCollider = TryGetComponent<BoxCollider>())
+			boxCollider->Serialize(componentsNode);
+
+		if (CapsuleCollider* capsuleCollider = TryGetComponent<CapsuleCollider>())
+			capsuleCollider->Serialize(componentsNode);
+
+		if (SphereCollider* sphereCollider = TryGetComponent<SphereCollider>())
+			sphereCollider->Serialize(componentsNode);
+
+		if (RigidBody* rigidBody = TryGetComponent<RigidBody>())
+			rigidBody->Serialize(componentsNode);
+
+		if (FluidBody* fluidBody = TryGetComponent<FluidBody>())
+			fluidBody->Serialize(componentsNode);
 	}
 
 	void GameObject::Deserialize(SerializationNode& gameObjectNode, bool prefab)
@@ -267,6 +335,36 @@ namespace Odyssey
 			{
 				SpriteRenderer& spriteRenderer = AddComponent<SpriteRenderer>();
 				spriteRenderer.Deserialize(componentNode);
+			}
+			else if (componentType == CharacterController::Type)
+			{
+				CharacterController& characterController = AddComponent<CharacterController>();
+				characterController.Deserialize(componentNode);
+			}
+			else if (componentType == BoxCollider::Type)
+			{
+				BoxCollider& boxCollider = AddComponent<BoxCollider>();
+				boxCollider.Deserialize(componentNode);
+			}
+			else if (componentType == CapsuleCollider::Type)
+			{
+				CapsuleCollider& capsuleCollider = AddComponent<CapsuleCollider>();
+				capsuleCollider.Deserialize(componentNode);
+			}
+			else if (componentType == SphereCollider::Type)
+			{
+				SphereCollider& sphereCollider = AddComponent<SphereCollider>();
+				sphereCollider.Deserialize(componentNode);
+			}
+			else if (componentType == RigidBody::Type)
+			{
+				RigidBody& rigidBody = AddComponent<RigidBody>();
+				rigidBody.Deserialize(componentNode);
+			}
+			else if (componentType == FluidBody::Type)
+			{
+				FluidBody& fluidBody = AddComponent<FluidBody>();
+				fluidBody.Deserialize(componentNode);
 			}
 		}
 	}

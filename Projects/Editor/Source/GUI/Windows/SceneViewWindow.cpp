@@ -1,4 +1,4 @@
-#include "SceneViewWindow.h"
+﻿#include "SceneViewWindow.h"
 #include <imgui.h>
 #include "Scene.h"
 #include "SceneManager.h"
@@ -19,6 +19,9 @@
 #include "Preferences.h"
 #include "RenderTarget.h"
 #include "VulkanTextureSampler.h"
+#include "OdysseyTime.h"
+#include "ThumbnailManager.h"
+#include "Gizmos.h"
 
 namespace Odyssey
 {
@@ -27,14 +30,19 @@ namespace Odyssey
 			glm::vec2(0, 0), glm::vec2(500, 500), glm::vec2(2, 2))
 	{
 		// Rendering stuff
-		m_SceneViewPass = new OpaquePass();
-		m_SceneViewPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		m_SceneViewPass = new RenderObjectsPass();
 		m_SceneViewPass->AddDebugSubPass();
 		m_SceneViewPass->SetCamera((uint8_t)Camera::Tag::SceneView);
+
+		m_TransparentPass = new TransparentObjectsPass();
+		m_TransparentPass->SetCamera((uint8_t)Camera::Tag::SceneView);
 		Renderer::PushRenderPass(m_SceneViewPass);
+		Renderer::PushRenderPass(m_TransparentPass);
 
 		// Create the render texture
 		CreateRenderTexture();
+		Gizmos::Init();
+		m_GizmoIcon = ThumbnailManager::LoadThumbnail(Preferences::GetGizmoIcon());
 
 		m_SceneLoadedListener = EventSystem::Listen<SceneLoadedEvent>
 			([this](SceneLoadedEvent* eventData) { OnSceneLoaded(eventData); });
@@ -87,8 +95,15 @@ namespace Odyssey
 		if (!Begin())
 			return modified;
 
-		ImGui::Image(reinterpret_cast<void*>(m_RenderTextureID), ImVec2(m_WindowSize.x, m_WindowSize.y));
+		float2 startCursor = ImGui::GetCursorPos();
+
+		// Render the scene view
+		ImGui::Image((void*)m_RenderTextureID, ImVec2(m_WindowSize.x, m_WindowSize.y));
 		m_SceneViewPass->SetRenderTarget(m_RenderTarget);
+		m_TransparentPass->SetRenderTarget(m_RenderTarget);
+
+		// Draw the menu bar
+		DrawMenuBar(startCursor);
 
 		// Render gizmos
 		RenderGizmos();
@@ -166,6 +181,8 @@ namespace Odyssey
 		desc.ImageType = ImageType::RenderTexture;
 		desc.Width = (uint32_t)m_WindowSize.x;
 		desc.Height = (uint32_t)m_WindowSize.y;
+		desc.Samples = 8;
+
 		m_RenderTarget = ResourceManager::Allocate<RenderTarget>(desc, RenderTargetFlags::Color | RenderTargetFlags::Depth);
 		m_RTSampler = ResourceManager::Allocate<VulkanTextureSampler>();
 		m_RenderTextureID = Renderer::AddImguiRenderTexture(m_RenderTarget, m_RTSampler);
@@ -180,6 +197,44 @@ namespace Odyssey
 			ResourceManager::Destroy(m_RenderTarget);
 			ResourceManager::Destroy(m_RTSampler);
 			Renderer::DestroyImguiTexture(m_RenderTextureID);
+		}
+	}
+
+	void SceneViewWindow::DrawMenuBar(float2 menuPosition)
+	{
+		float2 buttonSize = float2(ImGui::GetFrameHeight());
+		float4 bgColor = ImGui::GetStyle().Colors[ImGuiCol_WindowBg];
+		const float yPadding = 2.0f;
+		const float itemSpacing = ImGui::GetStyle().ItemSpacing.x * 0.0f;
+		const float yAnchor = menuPosition.y - m_WindowPadding.y + yPadding;
+
+		// Background
+		ImGui::FilledRectSpan(bgColor, 30.0f, float2(0.0f));
+
+		// Gizmo button
+		float2 position = float2(ImGui::GetContentRegionAvail().x - buttonSize.x + m_WindowPadding.x, yAnchor);
+		ImGui::SetCursorPos(position);
+
+		if (ImGui::ImageButton((void*)m_GizmoIcon, buttonSize, float2(0.0f), float2(1.0f), 0))
+		{
+			if (ImGui::IsPopupOpen("##GizmoPopup"))
+				ImGui::CloseCurrentPopup();
+			else
+				ImGui::OpenPopup("##GizmoPopup");
+		}
+
+		if (ImGui::BeginPopup("##GizmoPopup"))
+		{
+			for (auto& [componentName, info] : Gizmos::GetGizmoInfo())
+			{
+				ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
+
+				if (ImGui::MenuItem(componentName.c_str(), "", &info.Enabled))
+					info.OnGizmoModified(info.Enabled);
+
+				ImGui::PopItemFlag();
+			}
+			ImGui::EndPopup();
 		}
 	}
 
@@ -205,12 +260,6 @@ namespace Odyssey
 
 				if (ImGuizmo::IsUsing())
 				{
-					GameObject parent = m_SelectedGO.GetParent();
-					if (parent.IsValid())
-					{
-						if (Transform* parentTransform = parent.TryGetComponent<Transform>())
-							worldMatrix = glm::inverse(parentTransform->GetWorldMatrix()) * worldMatrix;
-					}
 					glm::vec3 translation;
 					glm::vec3 scale;
 					glm::quat rotation;
@@ -221,30 +270,17 @@ namespace Odyssey
 					if (op == ImGuizmo::OPERATION::TRANSLATE)
 					{
 						transform->SetPosition(translation);
+						transform->SetLocalSpace();
 					}
 					else if (op == ImGuizmo::ROTATE)
 					{
-						// Do this in Euler in an attempt to preserve any full revolutions (> 360)
-						float3 originalRotationEuler = transform->GetEulerRotation();
-
-						// Map original rotation to range [-180, 180] which is what ImGuizmo gives us
-						originalRotationEuler.x = fmodf(originalRotationEuler.x + glm::pi<float>(), glm::two_pi<float>()) - glm::pi<float>();
-						originalRotationEuler.y = fmodf(originalRotationEuler.y + glm::pi<float>(), glm::two_pi<float>()) - glm::pi<float>();
-						originalRotationEuler.z = fmodf(originalRotationEuler.z + glm::pi<float>(), glm::two_pi<float>()) - glm::pi<float>();
-
-						glm::vec3 deltaRotationEuler = glm::eulerAngles(rotation) - originalRotationEuler;
-
-						// Try to avoid drift due numeric precision
-						if (fabs(deltaRotationEuler.x) < 0.001) deltaRotationEuler.x = 0.0f;
-						if (fabs(deltaRotationEuler.y) < 0.001) deltaRotationEuler.y = 0.0f;
-						if (fabs(deltaRotationEuler.z) < 0.001) deltaRotationEuler.z = 0.0f;
-
-						transform->SetRotation(transform->GetEulerRotation() + deltaRotationEuler);
 						transform->SetRotation(rotation);
+						transform->SetLocalSpace();
 					}
 					else if (op == ImGuizmo::SCALE)
 					{
-						transform->AddScale(scale);
+						transform->SetScale(scale);
+						transform->SetLocalSpace();
 					}
 				}
 			}
@@ -297,8 +333,8 @@ namespace Odyssey
 				glm::vec3 right = transform->Right() * inputVel.x;
 				glm::vec3 up = transform->Up() * inputVel.y;
 				glm::vec3 fwd = transform->Forward() * inputVel.z;
-				glm::vec3 velocity = (right + up + fwd) * speed * (1.0f / 144.0f);
-				transform->AddPosition(velocity);
+				glm::vec3 velocity = (right + up + fwd) * speed * Time::DeltaTime();
+				transform->SetPosition(transform->GetPosition() + velocity);
 			}
 
 			float mouseH = (float)Input::GetMouseAxisHorizontal();
@@ -306,13 +342,11 @@ namespace Odyssey
 
 			if (mouseH != 0.0f || mouseV != 0.0f)
 			{
-				glm::vec3 yaw = vec3(0, 1, 0) * mouseH * (1.0f / 144.0f) * 15.0f;
-				glm::vec3 pitch = vec3(1, 0, 0) * mouseV * (1.0f / 144.0f) * 15.0f;
-				yaw.z = 0.0f;
-				pitch.z = 0.0f;
+				float yaw = mouseH * Time::DeltaTime() * 15.0f;
+				float pitch = mouseV * Time::DeltaTime() * 15.0f;
 
-				transform->AddRotation(yaw);
-				transform->AddRotation(pitch);
+				float3 euler = transform->GetEulerRotation(false);
+				transform->SetRotation(float3(euler.x + pitch, euler.y + yaw, 0.0f), false);
 			}
 
 			// TODO: Move this to a timer or (ideally) into one of the destroy functions

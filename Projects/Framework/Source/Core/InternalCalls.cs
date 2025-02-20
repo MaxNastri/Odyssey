@@ -19,6 +19,7 @@ namespace Odyssey
         #region GameObject
 
         internal static delegate* unmanaged<GUID> GameObject_Create;
+        internal static delegate* unmanaged<GUID, void> GameObject_Destroy;
         internal static delegate* unmanaged<GUID, NativeString> GameObject_GetName;
         internal static delegate* unmanaged<GUID, NativeString, void> GameObject_SetName;
         internal static delegate* unmanaged<GUID, ReflectionType, void> GameObject_AddComponent;
@@ -39,6 +40,7 @@ namespace Odyssey
 
         internal static delegate* unmanaged<GUID, Vector3*, void> Transform_GetPosition;
         internal static delegate* unmanaged<GUID, Vector3, void> Transform_SetPosition;
+        internal static delegate* unmanaged<GUID, Vector3*, void> Transform_GetWorldPosition;
         internal static delegate* unmanaged<GUID, Vector3*, void> Transform_GetEulerAngles;
         internal static delegate* unmanaged<GUID, Vector3, void> Transform_SetEulerAngles;
         internal static delegate* unmanaged<GUID, Vector3*, void> Transform_GetScale;
@@ -58,6 +60,7 @@ namespace Odyssey
         #region Prefab
 
         internal static delegate* unmanaged<GUID, GUID*, void> Prefab_LoadInstance;
+        internal static delegate* unmanaged<GUID, void> Prefab_DestroyInstance;
 
         #endregion
 
@@ -71,10 +74,13 @@ namespace Odyssey
 
         #region MeshRenderer
 
-        // <EntityGUID, MeshGUID>
         internal static delegate* unmanaged<GUID, GUID> MeshRenderer_GetMesh;
-        // <EntityGUID, MeshGUID>
         internal static delegate* unmanaged<GUID, GUID, void> MeshRenderer_SetMesh;
+        internal static delegate* unmanaged<GUID, NativeString, float, int, void> MeshRenderer_SetFloat;
+        internal static delegate* unmanaged<GUID, NativeString, Vector2, int, void> MeshRenderer_SetFloat2;
+        internal static delegate* unmanaged<GUID, NativeString, Vector3, int, void> MeshRenderer_SetFloat3;
+        internal static delegate* unmanaged<GUID, NativeString, Vector4, int, void> MeshRenderer_SetFloat4;
+        internal static delegate* unmanaged<GUID, NativeString, bool, int, void> MeshRenderer_SetBool;
         #endregion
 
         #region Sprite Renderer
@@ -116,6 +122,26 @@ namespace Odyssey
 
         #endregion
 
+        #region Rigid Body
+
+        internal static delegate* unmanaged<GUID, Vector3*, void> RigidBody_GetLinearVelocity;
+        internal static delegate* unmanaged<GUID, Vector3, void> RigidBody_SetLinearVelocity;
+        internal static delegate* unmanaged<GUID, Vector3, void> RigidBody_AddLinearVelocity;
+        internal static delegate* unmanaged<GUID, float*, void> RigidBody_GetFriction;
+        internal static delegate* unmanaged<GUID, float, void> RigidBody_SetFriction;
+        internal static delegate* unmanaged<GUID, float*, void> RigidBody_GetMaxLinearVelocity;
+        internal static delegate* unmanaged<GUID, float, void> RigidBody_SetMaxLinearVelocity;
+
+        #endregion
+
+        #region Character Controller
+
+        internal static delegate* unmanaged<GUID, Vector3*, void> CharacterController_GetLinearVelocity;
+        internal static delegate* unmanaged<GUID, Vector3, void> CharacterController_SetLinearVelocity;
+        internal static delegate* unmanaged<GUID, bool*, void> CharacterController_IsGrounded;
+        
+
+        #endregion
         #region Input
 
         internal static delegate* unmanaged<KeyCode, bool> Input_GetKeyPress;

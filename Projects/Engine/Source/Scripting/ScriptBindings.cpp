@@ -4,6 +4,7 @@
 #include "MeshRenderer.h"
 #include "ScriptComponent.h"
 #include "Transform.h"
+#include "RigidBody.h"
 #include "InternalCalls.h"
 
 namespace Odyssey
@@ -19,6 +20,8 @@ namespace Odyssey
 		RegisterComponentType<ScriptComponent>(frameworkAssembly, ScriptComponent::Type);
 		RegisterComponentType<SpriteRenderer>(frameworkAssembly, SpriteRenderer::Type);
 		RegisterComponentType<Transform>(frameworkAssembly, Transform::Type);
+		RegisterComponentType<RigidBody>(frameworkAssembly, RigidBody::Type);
+		RegisterComponentType<CharacterController>(frameworkAssembly, CharacterController::Type);
 
 		ADD_INTERNAL_CALL(Animator_IsEnabled);
 		ADD_INTERNAL_CALL(Animator_SetFloat);
@@ -35,6 +38,7 @@ namespace Odyssey
 
 		ADD_INTERNAL_CALL(Transform_GetPosition);
 		ADD_INTERNAL_CALL(Transform_SetPosition);
+		ADD_INTERNAL_CALL(Transform_GetWorldPosition);
 		ADD_INTERNAL_CALL(Transform_GetEulerAngles);
 		ADD_INTERNAL_CALL(Transform_SetEulerAngles);
 		ADD_INTERNAL_CALL(Transform_GetScale);
@@ -44,6 +48,11 @@ namespace Odyssey
 
 		ADD_INTERNAL_CALL(MeshRenderer_GetMesh);
 		ADD_INTERNAL_CALL(MeshRenderer_SetMesh);
+		ADD_INTERNAL_CALL(MeshRenderer_SetFloat);
+		ADD_INTERNAL_CALL(MeshRenderer_SetFloat2);
+		ADD_INTERNAL_CALL(MeshRenderer_SetFloat3);
+		ADD_INTERNAL_CALL(MeshRenderer_SetFloat4);
+		ADD_INTERNAL_CALL(MeshRenderer_SetBool);
 
 		ADD_INTERNAL_CALL(SpriteRenderer_GetFill);
 		ADD_INTERNAL_CALL(SpriteRenderer_SetFill);
@@ -76,7 +85,20 @@ namespace Odyssey
 		ADD_INTERNAL_CALL(ParticleEmitter_SetEndColor);
 		ADD_INTERNAL_CALL(ParticleEmitter_SetShape);
 
+		ADD_INTERNAL_CALL(RigidBody_GetLinearVelocity);
+		ADD_INTERNAL_CALL(RigidBody_SetLinearVelocity);
+		ADD_INTERNAL_CALL(RigidBody_AddLinearVelocity);
+		ADD_INTERNAL_CALL(RigidBody_GetFriction);
+		ADD_INTERNAL_CALL(RigidBody_SetFriction);
+		ADD_INTERNAL_CALL(RigidBody_GetMaxLinearVelocity);
+		ADD_INTERNAL_CALL(RigidBody_SetMaxLinearVelocity);
+
+		ADD_INTERNAL_CALL(CharacterController_GetLinearVelocity);
+		ADD_INTERNAL_CALL(CharacterController_SetLinearVelocity);
+		ADD_INTERNAL_CALL(CharacterController_IsGrounded);
+
 		ADD_INTERNAL_CALL(Prefab_LoadInstance);
+		ADD_INTERNAL_CALL(Prefab_DestroyInstance);
 
 		ADD_INTERNAL_CALL(Texture2D_GetWidth);
 		ADD_INTERNAL_CALL(Texture2D_GetHeight);

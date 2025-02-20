@@ -38,7 +38,6 @@ project "JoltPhysics"
             "JPH_DEBUG_RENDERER",
             "JPH_FLOATING_POINT_EXCEPTIONS_ENABLED",
 			"JPH_ENABLE_ASSERTS",
-            "JPH_PROFILE_ENABLED",
         }
 
     filter { "system:windows", "configurations:Debug-AS" }
@@ -54,7 +53,7 @@ project "JoltPhysics"
         {
             "JPH_DEBUG_RENDERER",
             "JPH_FLOATING_POINT_EXCEPTIONS_ENABLED",
-            "JPH_BUILD_SHARED_LIBRARY",
+            "JPH_ENABLE_ASSERTS",
         }
 
     filter "configurations:Dist"

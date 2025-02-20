@@ -73,12 +73,12 @@ namespace Odyssey
 
 	void Renderer::CaptureCursor()
 	{
-		s_RendererAPI->GetWindow()->GetWindow()->CaptureCursor();
+		s_RendererAPI->CaptureCursor();
 	}
 
 	void Renderer::ReleaseCursor()
 	{
-		s_RendererAPI->GetWindow()->GetWindow()->ReleaseCursor();
+		s_RendererAPI->ReleaseCursor();
 	}
 
 	void Renderer::RegisterRenderTarget(RenderTargetType rtType, ResourceID colorRT, ResourceID depthRT)

@@ -71,6 +71,14 @@ namespace Odyssey
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+
+		if (!m_MouseInputEnabled)
+		{
+			ImGui::CaptureMouseFromApp(false);
+			ImGui::GetIO().WantCaptureMouse = false;
+			ImGui::GetIO().MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
+		}
+
 		ImGuizmo::BeginFrame();
 
 		// Invoke the draw listener callback

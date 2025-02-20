@@ -2,3 +2,61 @@ m_SourceAsset: 8976435431265330478
 m_GUID: 5634657926911688453
 m_Name: Water
 m_Type: Odyssey.Shader
+Properties:
+  - Name: TesselationLevel
+    Type: Int32
+    Default Value: 1
+  - Name: TessAlpha
+    Type: Float
+    Default Value: 1
+  - Name: Tiling
+    Type: Float
+    Default Value: 1
+  - Name: WaterDepth
+    Type: Float
+    Default Value: 15
+  - Name: SurfaceColor
+    Type: Float4
+    Default Value: 'x: 0 y: 0.8392157 z: 1 w: 0.6666667'
+  - Name: DeepColor
+    Type: Float4
+    Default Value: 'x: 0 y: 0.540976 z: 0.6441281 w: 0.78039217'
+  - Name: RefractionSpeed
+    Type: Float
+    Default Value: 1
+  - Name: RefractionScale
+    Type: Float2
+    Default Value: 'x: 1 y: 1'
+  - Name: RefractionStrength
+    Type: Float
+    Default Value: 1
+  - Name: WaveHeightFrequency
+    Type: Float
+    Default Value: 1
+  - Name: WaveSpeed
+    Type: Float
+    Default Value: 1
+  - Name: WaveAmplitude
+    Type: Float
+    Default Value: 1
+  - Name: WaterDirection
+    Type: Float2
+    Default Value: 'x: 1 y: 1'
+  - Name: NormalStrength
+    Type: Float
+    Default Value: 1
+  - Name: FoamAmount
+    Type: Float
+    Default Value: 1
+  - Name: FoamSpeed
+    Type: Float
+    Default Value: 1
+  - Name: FoamScale
+    Type: Float2
+    Default Value: 'x: 1 y: 1'
+  - Name: FoamColor
+    Type: Float4
+    Default Value: 'x: 1 y: 1 z: 1 w: 1'
+  - Name: FoamCutoff
+    Type: Float
+    Default Value: 2

@@ -1,0 +1,62 @@
+m_SourceAsset: 0
+m_GUID: 18223639673061157840
+m_Name: Grass
+m_Type: Odyssey.Material
+m_Shader: 7381450375696147196
+Render Queue: Opaque
+Blend Mode: None
+Depth Write: 1
+Property Textures:
+  - Property: distortionSampler
+    Texture: 5401951732196823232
+  - Property: noiseSampler
+    Texture: 15039526264554896991
+Properties:
+  - Name: TesselationLevel
+    Type: Int32
+    Value: 35
+  - Name: TessAlpha
+    Type: Float
+    Value: 0
+  - Name: DistortionTiling
+    Type: Float
+    Value: 0.01
+  - Name: BladeWidth
+    Type: Float
+    Value: 0.09
+  - Name: BladeWidthRandom
+    Type: Float
+    Value: 0.02
+  - Name: BladeHeight
+    Type: Float
+    Value: 0.9
+  - Name: BladeHeightRandom
+    Type: Float
+    Value: 0.2
+  - Name: BladeForward
+    Type: Float
+    Value: 0.5
+  - Name: BladeCurve
+    Type: Float
+    Value: 3
+  - Name: WindFrequency
+    Type: Float2
+    Value: 'x: 0.05 y: 0.05'
+  - Name: WindStrength
+    Type: Float
+    Value: 0.2
+  - Name: BendFactor
+    Type: Float
+    Value: 0.15
+  - Name: TrampleOffset
+    Type: Float
+    Value: 0.45
+  - Name: TrampleFalloff
+    Type: Float
+    Value: 1.8
+  - Name: TrampleDistance
+    Type: Float
+    Value: 0.8
+  - Name: PlayerPosition
+    Type: Float3
+    Value: 'x: -10.910021 y: 0.5289547 z: -13.499461'

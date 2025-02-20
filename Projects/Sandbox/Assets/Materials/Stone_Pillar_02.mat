@@ -3,5 +3,18 @@ m_GUID: 2842208577896573398
 m_Name: Stone Pillar 02
 m_Type: Odyssey.Material
 m_Shader: 9634657926911688453
-m_Texture: 1433496500175665428
-Normal Texture: 13969917518176360330
+Render Queue: Opaque
+Blend Mode: None
+Depth Write: 1
+Property Textures:
+  - Property: AlbedoMapSampler
+    Texture: 1433496500175665428
+  - Property: NormalMapSampler
+    Texture: 13969917518176360330
+  - Property: PBRSampler
+    Texture: 4077023171568316240
+  - Property: diffuseSampler
+    Texture: 1433496500175665428
+  - Property: normalSampler
+    Texture: 13969917518176360330
+Properties: []

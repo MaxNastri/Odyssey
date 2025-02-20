@@ -16,6 +16,7 @@
 #include "Preferences.h"
 #include "FileManager.h"
 #include "Input.h"
+#include "PhysicsSystem.h"
 
 namespace Odyssey
 {
@@ -48,6 +49,8 @@ namespace Odyssey
 			settings.SourceAssetExtensionMap = Preferences::GetSourceExtensionsMap();
 			AssetManager::CreateDatabase(settings);
 		}
+
+		PhysicsSystem::Init();
 
 		// Create the renderer
 		RendererConfig config = { .EnableIMGUI = true, .EnableReverseDepth = true };
@@ -102,7 +105,6 @@ namespace Odyssey
 
 				// Process any changes made to the user's managed dll
 				m_ScriptCompiler->Process();
-				DebugRenderer::Clear();
 				GUIManager::Update();
 
 				if (!m_UpdateScripts)
@@ -112,11 +114,15 @@ namespace Odyssey
 				if (m_UpdateScripts)
 					SceneManager::Update();
 
+				PhysicsSystem::Update();
+				
+				DebugRenderer::Update();
 				running = Renderer::Update();
 				Renderer::Render();
 			}
 		}
 
+		PhysicsSystem::Destroy();
 		Renderer::Destroy();
 		ScriptingManager::Destroy();
 	}
@@ -147,13 +153,11 @@ namespace Odyssey
 				activeScene->Awake();
 
 				m_UpdateScripts = true;
-				Renderer::CaptureCursor();
 				break;
 			}
 			case PlaymodeState::PausePlaymode:
 			{
 				m_UpdateScripts = false;
-				Renderer::ReleaseCursor();
 				break;
 			}
 			case PlaymodeState::ExitPlaymode:
@@ -166,7 +170,6 @@ namespace Odyssey
 				SceneManager::LoadScene(scenePath);
 
 				m_UpdateScripts = false;
-				Renderer::ReleaseCursor();
 				break;
 			}
 		}

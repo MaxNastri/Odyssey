@@ -10,6 +10,7 @@
 #include "PropertiesComponent.h"
 #include "Events.h"
 #include "Input.h"
+#include "Prefab.h"
 
 namespace Odyssey
 {
@@ -82,6 +83,39 @@ namespace Odyssey
 				}
 			}
 		}
+
+		inline std::string ConvertToDisplayName(const std::string& str)
+		{
+			std::string copy = str;
+			copy[0] = std::toupper(copy[0]);
+
+			std::vector<size_t> upperPos;
+			upperPos.push_back(0);
+
+			// Store the position of all upper case characters
+			for (size_t i = 1; i < copy.length(); i++)
+			{
+				if (copy[i] == std::toupper(copy[i]))
+				{
+					upperPos.push_back(i);
+				}
+			}
+
+			upperPos.push_back(copy.length());
+
+			std::string displayName = "";
+
+			// Concat 
+			for (size_t i = 1; i < upperPos.size(); i++)
+			{
+				if (i > 1 && i < upperPos.size())
+					displayName += " ";
+
+				displayName += copy.substr(upperPos[i - 1], upperPos[i] - upperPos[i - 1]);
+			}
+
+			return displayName;
+		}
 	}
 
 	AnimatorInspector::AnimatorInspector(GameObject& gameObject)
@@ -97,9 +131,6 @@ namespace Odyssey
 
 			m_BlueprintDrawer = AssetFieldDrawer("Blueprint", animator->GetBlueprintAsset(), AnimationBlueprint::Type,
 				[this](GUID guid) { OnBlueprintModified(guid); });
-
-			m_DebugEnabledDrawer = BoolDrawer("Debug", false, false,
-				[this](bool enabled) { OnDebugEnabledModified(enabled); });
 		}
 	}
 
@@ -123,7 +154,6 @@ namespace Odyssey
 		{
 			m_RigDrawer.Draw();
 			m_BlueprintDrawer.Draw();
-			m_DebugEnabledDrawer.Draw();
 
 			if (ImGui::Button("Play"))
 			{
@@ -157,12 +187,6 @@ namespace Odyssey
 	{
 		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
 			animator->SetBlueprint(guid);
-	}
-
-	void AnimatorInspector::OnDebugEnabledModified(bool enabled)
-	{
-		if (Animator* animator = m_GameObject.TryGetComponent<Animator>())
-			animator->SetFloat("Speed", enabled ? 10.0f : 0.0f);
 	}
 
 	CameraInspector::CameraInspector(GameObject& gameObject)
@@ -336,6 +360,12 @@ namespace Odyssey
 			Utils::RegisterComponentType<Animator, AnimatorInspector>();
 			Utils::RegisterComponentType<ParticleEmitter, ParticleEmitterInspector>();
 			Utils::RegisterComponentType<ScriptComponent, ScriptInspector>();
+			Utils::RegisterComponentType<BoxCollider, BoxColliderInspector>();
+			Utils::RegisterComponentType<CapsuleCollider, CapsuleColliderInspector>();
+			Utils::RegisterComponentType<SphereCollider, SphereColliderInspector>();
+			Utils::RegisterComponentType<RigidBody, RigidBodyInspector>();
+			Utils::RegisterComponentType<FluidBody, FluidBodyInspector>();
+			Utils::RegisterComponentType<CharacterController, CharacterControllerInspector>();
 			Utils::s_ComponentsRegistered = true;
 		}
 
@@ -470,25 +500,12 @@ namespace Odyssey
 			if (Ref<Shader> shader = m_Material->GetShader())
 				shaderGUID = shader->GetGUID();
 
-			if (Ref<Texture2D> texture2D = m_Material->GetColorTexture())
-				colorTextureGUID = texture2D->GetGUID();
-
-			if (Ref<Texture2D> normalTexture = m_Material->GetNormalTexture())
-				normalTextureGUID = normalTexture->GetGUID();
-
-			if (Ref<Texture2D> noiseTexture = m_Material->GetNoiseTexture())
-				noiseTextureGUID = noiseTexture->GetGUID();
-
 			m_GUIDDrawer = StringDrawer("GUID", m_Material->GetGUID().String(), true);
 			m_NameDrawer = StringDrawer("Name", m_Material->GetName(), false);
 			m_ShaderDrawer = AssetFieldDrawer("Shader", shaderGUID, Shader::Type);
-			m_ColorTextureDrawer = AssetFieldDrawer("Color Texture", colorTextureGUID, Texture2D::Type);
-			m_NormalTextureDrawer = AssetFieldDrawer("Normal Texture", normalTextureGUID, Texture2D::Type);
-			m_NoiseTextureDrawer = AssetFieldDrawer("Noise Texture", noiseTextureGUID, Texture2D::Type);
-			m_EmissiveColorDrawer = ColorPicker("Emissive Color", m_Material->GetEmissiveColor());
-			m_EmissivePowerDrawer = FloatDrawer("Emissive Power", m_Material->GetEmissivePower());
-			m_AlphaClipDrawer = FloatDrawer("Alpha Clip", m_Material->GetAlphaClip());
-			m_AlphaBlendDrawer = BoolDrawer("Alpha Blend", m_Material->GetAlphaBlend());
+			m_RenderQueueDrawer = EnumDrawer<RenderQueue>("Render Queue", m_Material->GetRenderQueue());
+			m_BlendModeDrawer = EnumDrawer<BlendMode>("Blend Mode", m_Material->GetBlendMode());
+			m_DepthWriteDrawer = BoolDrawer("Depth Write", m_Material->GetDepthWrite());
 		}
 	}
 
@@ -513,60 +530,29 @@ namespace Odyssey
 				m_Material->SetShader(shader);
 		}
 
-		if (m_ColorTextureDrawer.Draw())
+		if (m_RenderQueueDrawer.Draw())
 		{
 			m_Dirty = true;
 			modified = true;
-
-			if (auto texture = AssetManager::LoadAsset<Texture2D>(m_ColorTextureDrawer.GetGUID()))
-				m_Material->SetColorTexture(texture);
+			m_Material->SetRenderQueue(m_RenderQueueDrawer.GetValue());
 		}
 
-		if (m_NormalTextureDrawer.Draw())
+		if (m_BlendModeDrawer.Draw())
 		{
 			m_Dirty = true;
 			modified = true;
-
-			if (auto texture = AssetManager::LoadAsset<Texture2D>(m_NormalTextureDrawer.GetGUID()))
-				m_Material->SetNormalTexture(texture);
+			m_Material->SetBlendMode(m_BlendModeDrawer.GetValue());
 		}
 
-		if (m_NoiseTextureDrawer.Draw())
+		if (m_DepthWriteDrawer.Draw())
 		{
 			m_Dirty = true;
 			modified = true;
-
-			if (auto texture = AssetManager::LoadAsset<Texture2D>(m_NoiseTextureDrawer.GetGUID()))
-				m_Material->SetNoiseTexture(texture);
+			m_Material->SetDepthWrite(m_DepthWriteDrawer.GetValue());
 		}
 
-		if (m_EmissiveColorDrawer.Draw())
-		{
-			m_Dirty = true;
-			modified = true;
-			m_Material->SetEmissiveColor(m_EmissiveColorDrawer.GetColor3());
-		}
-
-		if (m_EmissivePowerDrawer.Draw())
-		{
-			m_Dirty = true;
-			modified = true;
-			m_Material->SetEmissivePower(m_EmissivePowerDrawer.GetValue());
-		}
-
-		if (m_AlphaClipDrawer.Draw())
-		{
-			m_Dirty = true;
-			modified = true;
-			m_Material->SetAlphaClip(m_AlphaClipDrawer.GetValue());
-		}
-
-		if (m_AlphaBlendDrawer.Draw())
-		{
-			m_Dirty = true;
-			modified = true;
-			m_Material->SetAlphaBlend(m_AlphaBlendDrawer.GetValue());
-		}
+		modified |= DrawPropertyTextures();
+		modified |= DrawMaterialProperties();
 
 		if (m_Dirty && ImGui::Button("Save"))
 		{
@@ -575,6 +561,139 @@ namespace Odyssey
 
 			m_Material->Save();
 			m_Dirty = false;
+		}
+
+		return modified;
+	}
+
+	bool MaterialInspector::DrawPropertyTextures()
+	{
+		bool modified = false;
+
+		if (Ref<Shader> shader = m_Material->GetShader())
+		{
+			auto& shaderBindings = shader->GetBindings();
+			auto textures = m_Material->GetTextures();
+
+			for (auto& [propertyName, shaderBinding] : shaderBindings)
+			{
+				if (shaderBinding.DescriptorType == DescriptorType::Sampler)
+				{
+					std::string displayName = propertyName;
+					displayName[0] = std::toupper(displayName[0]);
+
+					// Remove any reference to sampler for the display name
+					size_t pos = displayName.find("Sampler");
+					if (pos != std::string::npos)
+						displayName = displayName.substr(0, pos);
+
+					pos = displayName.find("Texture");
+					if (pos != std::string::npos)
+					{
+						// Split the texture into its own word with a captial T
+						std::string texture = displayName.substr(pos, displayName.length());
+						texture[0] = std::toupper(texture[0]);
+						displayName = displayName.substr(0, pos) + " " + texture;
+					}
+					else
+					{
+						displayName = displayName + " Texture";
+					}
+
+
+					GUID textureGUID = textures.contains(propertyName) ? textures[propertyName]->GetGUID() : GUID::Empty();
+					AssetFieldDrawer textureDrawer = AssetFieldDrawer(displayName, textureGUID, Texture2D::Type);
+
+					if (textureDrawer.Draw())
+					{
+						m_Dirty = true;
+						modified = true;
+						m_Material->SetTexture(propertyName, textureDrawer.GetGUID());
+					}
+				}
+			}
+		}
+
+		return modified;
+	}
+
+	bool MaterialInspector::DrawMaterialProperties()
+	{
+		bool modified = false;
+
+		for (const MaterialProperty& materialProperty : m_Material->GetMaterialProperties())
+		{
+			switch (materialProperty.Type)
+			{
+				case PropertyType::Float:
+				{
+					FloatDrawer propertyDrawer = FloatDrawer(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetFloat(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetFloat(materialProperty.Name, propertyDrawer.GetValue());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float2:
+				{
+					Vector2Drawer propertyDrawer = Vector2Drawer(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetFloat2(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetFloat2(materialProperty.Name, propertyDrawer.GetValue());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float3:
+				{
+					ColorPicker propertyDrawer = ColorPicker(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetFloat3(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetFloat3(materialProperty.Name, propertyDrawer.GetColor3());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float4:
+				{
+					ColorPicker propertyDrawer = ColorPicker(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetFloat4(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetFloat4(materialProperty.Name, propertyDrawer.GetColor4());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Bool:
+				{
+					BoolDrawer propertyDrawer = BoolDrawer(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetBool(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetBool(materialProperty.Name, propertyDrawer.GetValue());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Int32:
+				{
+					IntDrawer<int32_t> propertyDrawer = IntDrawer<int32_t>(Utils::ConvertToDisplayName(materialProperty.Name), m_Material->GetInt32(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						m_Material->SetInt32(materialProperty.Name, propertyDrawer.GetValue());
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				default:
+					break;
+			}
 		}
 
 		return modified;
@@ -897,10 +1016,8 @@ namespace Odyssey
 		if (m_Shader = AssetManager::LoadAsset<Shader>(guid))
 		{
 			m_GUIDDrawer = StringDrawer("GUID", m_Shader->GetGUID().String(), true);
-			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(), false,
-				[this](std::string_view name) { OnNameChanged(name); });
-			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSourceAsset(), SourceShader::Type,
-				[this](GUID sourceGUID) { OnSourceAssetChanged(sourceGUID); });
+			m_NameDrawer = StringDrawer("Name", m_Shader->GetName(), false);
+			m_SourceShaderDrawer = AssetFieldDrawer("Source Asset", m_Shader->GetSourceAsset(), SourceShader::Type);
 		}
 	}
 
@@ -908,32 +1025,129 @@ namespace Odyssey
 	{
 		bool modified = false;
 
-		modified |= m_GUIDDrawer.Draw();
-		modified |= m_NameDrawer.Draw();
-		modified |= m_SourceShaderDrawer.Draw();
+		m_GUIDDrawer.Draw();
+
+		if (m_NameDrawer.Draw())
+		{
+			m_Dirty = true;
+			modified = true;
+		}
+		
+		if (m_SourceShaderDrawer.Draw())
+		{
+			m_Shader->SetSourceAsset(m_SourceShaderDrawer.GetGUID());
+		}
+
+		modified |= DrawMaterialProperties();
 
 		if (ImGui::Button("Compile"))
 			m_Shader->Recompile();
 
+		if (m_Dirty)
+		{
+			ImGui::SameLine();
+
+			if (ImGui::Button("Save"))
+			{
+				if (m_Shader->GetName() != m_NameDrawer.GetValue())
+					m_Shader->SetName(m_NameDrawer.GetValue());
+
+				m_Shader->Save();
+				m_Dirty = false;
+			}
+		}
+
 		return modified;
 	}
 
-	void ShaderInspector::OnNameChanged(std::string_view name)
+	bool ShaderInspector::DrawMaterialProperties()
 	{
-		if (m_Shader)
-		{
-			m_Shader->SetName(name);
-			m_Shader->Save();
-		}
-	}
+		bool modified = false;
 
-	void ShaderInspector::OnSourceAssetChanged(GUID sourceGUID)
-	{
-		if (m_Shader)
+		MaterialBufferData& materialData = m_Shader->GetMaterialBufferData();
+
+		for (const MaterialProperty& materialProperty : materialData.Properties)
 		{
-			m_Shader->SetSourceAsset(sourceGUID);
-			m_Shader->Save();
+			switch (materialProperty.Type)
+			{
+				case PropertyType::Float:
+				{
+					FloatDrawer propertyDrawer = FloatDrawer(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<float>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						float value = propertyDrawer.GetValue();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float2:
+				{
+					Vector2Drawer propertyDrawer = Vector2Drawer(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<float2>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						float2 value = propertyDrawer.GetValue();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float3:
+				{
+					ColorPicker propertyDrawer = ColorPicker(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<float3>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						float3 value = propertyDrawer.GetColor3();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Float4:
+				{
+					ColorPicker propertyDrawer = ColorPicker(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<float4>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						float4 value = propertyDrawer.GetColor4();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Bool:
+				{
+					BoolDrawer propertyDrawer = BoolDrawer(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<bool>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						bool value = propertyDrawer.GetValue();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				case PropertyType::Int32:
+				{
+					IntDrawer<int32_t> propertyDrawer = IntDrawer<int32_t>(Utils::ConvertToDisplayName(materialProperty.Name), materialData.GetValue<int32_t>(materialProperty.Name));
+					if (propertyDrawer.Draw())
+					{
+						int32_t value = propertyDrawer.GetValue();
+						materialData.SetValue(materialProperty.Name, &value);
+						modified = true;
+						m_Dirty = true;
+					}
+					break;
+				}
+				default:
+					break;
+			}
 		}
+
+		return modified;
 	}
 
 	SourceModelInspector::SourceModelInspector(GUID guid)
@@ -956,6 +1170,52 @@ namespace Odyssey
 		{
 			AssetManager::CreateAsset<Mesh>(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);
 		}
+		else if (ImGui::Button("Export All Meshes"))
+		{
+			ModelAssetImporter* importer = m_Model->GetImporter();
+
+			for (uint32_t i = 0; i < importer->MeshCount(); i++)
+			{
+				const MeshImportData& meshData = importer->GetMeshData(i);
+
+				Path dstFolder = m_DstPath;
+				if (dstFolder.has_extension())
+					dstFolder = dstFolder.parent_path();
+
+				AssetManager::CreateAsset<Mesh>(Project::GetActiveAssetsDirectory() / dstFolder / (meshData.Name + ".mesh"), m_Model, i);
+			}
+		}
+		else if (ImGui::Button("Create Prefab"))
+		{
+			GameObject gameObject = SceneManager::GetActiveScene()->CreateGameObject();
+			Transform& root = gameObject.AddComponent<Transform>();
+
+
+			ModelAssetImporter* importer = m_Model->GetImporter();
+			const PrefabImportData& prefabData = importer->GetPrefabData();
+
+			for (size_t i = 0; i < prefabData.Nodes.size(); i++)
+			{
+				GameObject meshNode = SceneManager::GetActiveScene()->CreateGameObject();
+				Transform& meshTransform = meshNode.AddComponent<Transform>();
+				meshNode.SetName(prefabData.Nodes[i].Name);
+				meshNode.SetParent(gameObject);
+
+				glm::vec3 translation;
+				glm::vec3 scale;
+				glm::quat rotation;
+				glm::vec3 skew;
+				glm::vec4 perspective;
+				glm::decompose(prefabData.Nodes[i].Transform, scale, rotation, translation, skew, perspective);
+
+				meshTransform.SetPosition(translation);
+				meshTransform.SetRotation(rotation);
+				meshTransform.SetScale(scale);
+			}
+
+			Ref<Prefab> prefab = AssetManager::CreateAsset<Prefab>(Project::GetActiveAssetsDirectory() / "example.prefab", gameObject);
+		}
+
 		else if (ImGui::Button("Create Rig Asset"))
 		{
 			AssetManager::CreateAsset<AnimationRig>(Project::GetActiveAssetsDirectory() / m_DstPath, m_Model);
@@ -1032,7 +1292,11 @@ namespace Odyssey
 
 		if (ImGui::Button("Create Texture2D"))
 		{
-			AssetManager::CreateAsset<Texture2D>(Project::GetActiveAssetsDirectory() / m_AssetPath, m_Texture);
+			Path dstPath = m_AssetPath;
+			if (!dstPath.has_extension())
+				dstPath = dstPath / m_Texture->GetPath().filename().replace_extension(".tex2D");
+
+			AssetManager::CreateAsset<Texture2D>(Project::GetActiveAssetsDirectory() / dstPath, m_Texture);
 		}
 		if (ImGui::Button("Create Cubemap"))
 		{
@@ -1163,7 +1427,7 @@ namespace Odyssey
 		{
 			Transform& transform = m_GameObject.GetComponent<Transform>();
 			positionDrawer.SetValue(transform.GetPosition());
-			rotationDrawer.SetValue(transform.GetEulerRotation());
+			rotationDrawer.SetValue(transform.GetEulerRotation(false));
 			scaleDrawer.SetValue(transform.GetScale());
 
 			modified |= positionDrawer.Draw();
@@ -1211,7 +1475,7 @@ namespace Odyssey
 	{
 		if (Transform* transform = m_GameObject.TryGetComponent<Transform>())
 		{
-			transform->SetRotation(rotation);
+			transform->SetRotation(rotation, false);
 		}
 	}
 
@@ -1513,6 +1777,438 @@ namespace Odyssey
 			m_FillDrawer = RangeSlider("Fill", spriteRenderer->GetFill(), float2(0.0f, 1.0f), 0.1f, false);
 			m_BaseColorPicker = ColorPicker("Base Color", spriteRenderer->GetBaseColor());
 			m_AnchorDrawer = EnumDrawer<SpriteRenderer::AnchorPosition>("Anchor Position", spriteRenderer->GetAnchor());
+		}
+	}
+
+	CharacterControllerInspector::CharacterControllerInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+
+	bool CharacterControllerInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+				controller->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Character Controller", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_InertiaDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetInertiaEnabled(m_InertiaDrawer.GetValue());
+			}
+
+			// Only draw inertia factor when inertia is enabled
+			if (m_InertiaDrawer.GetValue() && m_InertiaFactorDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetInertiaFactor(m_InertiaFactorDrawer.GetValue());
+			}
+
+			if (m_CenterDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetCenter(m_CenterDrawer.GetValue());
+			}
+			if (m_RadiusDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetRadius(m_RadiusDrawer.GetValue());
+			}
+			if (m_HeightDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetHeight(m_HeightDrawer.GetValue());
+			}
+			if (m_MaxSlopeDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetMaxSlope(glm::radians(m_MaxSlopeDrawer.GetValue()));
+			}
+			if (m_StepUpDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetStepUp(glm::radians(m_StepUpDrawer.GetValue()));
+			}
+			if (m_StepDownDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetStepDown(glm::radians(m_StepDownDrawer.GetValue()));
+			}
+			if (m_MaxStrengthDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetMaxStrength(m_MaxStrengthDrawer.GetValue());
+			}
+			if (m_PaddingDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetPadding(m_PaddingDrawer.GetValue());
+			}
+			if (m_InnerBodyDrawer.Draw())
+			{
+				if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+					controller->SetHasInnerBody(m_InnerBodyDrawer.GetValue());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void CharacterControllerInspector::InitDrawers()
+	{
+		if (CharacterController* controller = m_GameObject.TryGetComponent<CharacterController>())
+		{
+			m_Enabled = controller->IsEnabled();
+			m_CenterDrawer = Vector3Drawer("Center", controller->GetCenter(), float3(0.0f), false);
+			m_RadiusDrawer = FloatDrawer("Radius", controller->GetRadius());
+			m_HeightDrawer = FloatDrawer("Height", controller->GetHeight());
+			m_InertiaDrawer = BoolDrawer("Enable Inertia", controller->IsInertiaEnabled());
+			m_InertiaFactorDrawer = FloatDrawer("Inertia Factor", controller->GetInertiaFactor());
+			m_MaxSlopeDrawer = FloatDrawer("Max Slope", glm::degrees(controller->GetMaxSlope()));
+			m_StepUpDrawer = FloatDrawer("Step Up", controller->GetStepUp());
+			m_StepDownDrawer = FloatDrawer("Step Down", controller->GetStepDown());
+			m_MaxStrengthDrawer = FloatDrawer("Max Strength", controller->GetMaxStrength());
+			m_PaddingDrawer = FloatDrawer("Character Padding", controller->GetPadding());
+			m_InnerBodyDrawer = BoolDrawer("Create Inner Body", controller->HasInnerBody());
+		}
+	}
+
+	BoxColliderInspector::BoxColliderInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+
+	bool BoxColliderInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+				boxCollider->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Box Collider", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_CenterDrawer.Draw())
+			{
+				if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+					boxCollider->SetCenter(m_CenterDrawer.GetValue());
+			}
+			if (m_ExtentsDrawer.Draw())
+			{
+				if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+					boxCollider->SetExtents(m_ExtentsDrawer.GetValue());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void BoxColliderInspector::InitDrawers()
+	{
+		if (BoxCollider* boxCollider = m_GameObject.TryGetComponent<BoxCollider>())
+		{
+			m_Enabled = boxCollider->IsEnabled();
+			m_CenterDrawer = Vector3Drawer("Center", boxCollider->GetCenter(), float3(0.0f), false);
+			m_ExtentsDrawer = Vector3Drawer("Extents", boxCollider->GetExtents(), float3(1.0f), false);
+		}
+	}
+
+	CapsuleColliderInspector::CapsuleColliderInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+	bool CapsuleColliderInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
+				collider->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Capsule Collider", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_CenterDrawer.Draw())
+			{
+				if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
+					collider->SetCenter(m_CenterDrawer.GetValue());
+			}
+			if (m_RadiusDrawer.Draw())
+			{
+				if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
+					collider->SetRadius(m_RadiusDrawer.GetValue());
+			}
+			if (m_HeightDrawer.Draw())
+			{
+				if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
+					collider->SetHeight(m_HeightDrawer.GetValue());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+	void CapsuleColliderInspector::InitDrawers()
+	{
+		if (CapsuleCollider* collider = m_GameObject.TryGetComponent<CapsuleCollider>())
+		{
+			m_Enabled = collider->IsEnabled();
+			m_CenterDrawer = Vector3Drawer("Center", collider->GetCenter(), float3(0.0f), false);
+			m_RadiusDrawer = FloatDrawer("Radius", collider->GetRadius());
+			m_HeightDrawer = FloatDrawer("Height", collider->GetHeight());
+		}
+	}
+
+	SphereColliderInspector::SphereColliderInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+
+	bool SphereColliderInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (SphereCollider* collider = m_GameObject.TryGetComponent<SphereCollider>())
+				collider->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Sphere Collider", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_CenterDrawer.Draw())
+			{
+				if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
+					sphereCollider->SetCenter(m_CenterDrawer.GetValue());
+			}
+			if (m_RadiusDrawer.Draw())
+			{
+				if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
+					sphereCollider->SetRadius(m_RadiusDrawer.GetValue());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void SphereColliderInspector::InitDrawers()
+	{
+		if (SphereCollider* sphereCollider = m_GameObject.TryGetComponent<SphereCollider>())
+		{
+			m_Enabled = sphereCollider->IsEnabled();
+			m_CenterDrawer = Vector3Drawer("Center", sphereCollider->GetCenter(), float3(0.0f), false);
+			m_RadiusDrawer = FloatDrawer("Radius", sphereCollider->GetRadius());
+		}
+	}
+
+	RigidBodyInspector::RigidBodyInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+
+	bool RigidBodyInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+				rigidBody->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Rigid Body", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_LayerDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetLayer(m_LayerDrawer.GetValue());
+			}
+			if (m_SurfaceVelocityDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetSurfaceVelocity(m_SurfaceVelocityDrawer.GetValue());
+			}
+			if (m_KinematicDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetKinematic(m_KinematicDrawer.GetValue());
+			}
+			if (m_MassDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetMass(m_MassDrawer.GetValue());
+			}
+			if (m_FrictionDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetFriction(m_FrictionDrawer.GetValue());
+			}
+			if (m_MaxLinearVelocityDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetMaxLinearVelocity(m_MaxLinearVelocityDrawer.GetValue());
+			}
+			if (m_PushCharacterDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetPushCharacter(m_PushCharacterDrawer.GetValue());
+			}
+			if (m_ReceiveForceDrawer.Draw())
+			{
+				if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+					rigidBody->SetReceiveForce(m_ReceiveForceDrawer.GetValue());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void RigidBodyInspector::InitDrawers()
+	{
+		if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+		{
+			m_Enabled = rigidBody->IsEnabled();
+			m_LayerDrawer = EnumDrawer<PhysicsLayer>("Physics Layer", rigidBody->GetLayer());
+			m_SurfaceVelocityDrawer = Vector3Drawer("Surface Velocity", rigidBody->GetSurfaceVelocity(), float3(0.0f), false);
+			m_KinematicDrawer = BoolDrawer("Kinematic", rigidBody->IsKinematic());
+			m_MassDrawer = FloatDrawer("Mass", rigidBody->GetMass());
+			m_FrictionDrawer = FloatDrawer("Friction", rigidBody->GetFriction());
+			m_MaxLinearVelocityDrawer = FloatDrawer("Max Linear Velocity", rigidBody->GetMaxLinearVelocity());
+			m_PushCharacterDrawer = BoolDrawer("Can Push Character", rigidBody->CanPushCharacter());
+			m_ReceiveForceDrawer = BoolDrawer("Receive Character Force", rigidBody->CanReceiveForce());
+		}
+	}
+	FluidBodyInspector::FluidBodyInspector(GameObject& gameObject)
+	{
+		m_GameObject = gameObject;
+		InitDrawers();
+	}
+
+	bool FluidBodyInspector::Draw()
+	{
+		bool modified = false;
+
+		ImGui::PushID(this);
+
+		if (ImGui::Checkbox("##enabled", &m_Enabled))
+		{
+			if (RigidBody* rigidBody = m_GameObject.TryGetComponent<RigidBody>())
+				rigidBody->SetEnabled(m_Enabled);
+
+			modified = true;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::CollapsingHeader("Fluid Body", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			if (m_CenterDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetCenter(m_CenterDrawer.GetValue());
+			}
+			if (m_ExtentsDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetExtents(m_ExtentsDrawer.GetValue());
+			}
+			if (m_BuoyancyDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetBuoyancy(m_BuoyancyDrawer.GetValue());
+			}
+			if (m_LinearDragDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetLinearDrag(m_LinearDragDrawer.GetValue());
+			}
+			if (m_AngularDragDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetAngularDrag(m_AngularDragDrawer.GetValue());
+			}
+			if (m_FluidVelocityDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetFluidVelocity(m_FluidVelocityDrawer.GetValue());
+			}
+			if (m_GravityFactorDrawer.Draw())
+			{
+				if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+					fluidBody->SetGravityFactor(m_GravityFactorDrawer.GetValue());
+			}
+		}
+
+		ImGui::PopID();
+
+		return modified;
+	}
+
+	void FluidBodyInspector::InitDrawers()
+	{
+		if (FluidBody* fluidBody = m_GameObject.TryGetComponent<FluidBody>())
+		{
+			m_Enabled = fluidBody->IsEnabled();
+			m_CenterDrawer = Vector3Drawer("Center", fluidBody->GetCenter(), float3(0.0f), false);
+			m_ExtentsDrawer = Vector3Drawer("Extents", fluidBody->GetExtents(), float3(0.0f), false);
+			m_BuoyancyDrawer = FloatDrawer("Buoyancy", fluidBody->GetBuoyancy());
+			m_LinearDragDrawer = FloatDrawer("Linear Drag", fluidBody->GetLinearDrag());
+			m_AngularDragDrawer = FloatDrawer("Angular Drag", fluidBody->GetAngularDrag());
+			m_FluidVelocityDrawer = Vector3Drawer("Fluid Velocity", fluidBody->GetFluidVelocity(), float3(0.0f), false);
+			m_GravityFactorDrawer = FloatDrawer("Gravity Factor", fluidBody->GetGravityFactor());
 		}
 	}
 }

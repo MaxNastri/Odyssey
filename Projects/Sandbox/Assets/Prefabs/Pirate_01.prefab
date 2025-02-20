@@ -1,0 +1,476 @@
+GameObjects:
+  - Sort Order: 19
+    Parent: 0
+    Name: Pirate
+    GUID: 3980390934100616757
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Cloak_Up
+    GUID: 13492447514153296227
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 2318772613518254603
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Ring_02
+    GUID: 885687416981041007
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 14203865982640736364
+        Materials:
+          - 11453019595560542111
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Belt_04
+    GUID: 17362965279752409876
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 7745517495781186866
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Cloth_Body_02
+    GUID: 5498702485993984102
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 9289403312213789989
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Cloak_Down
+    GUID: 4923822638735491943
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3657144795985145441
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Eyes
+    GUID: 14585558671834961617
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 6518864313222244879
+        Materials:
+          - 11609781084541709249
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Torso
+    GUID: 13622411140844962339
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 7134672603609610430
+        Materials:
+          - 11609781084541709249
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Pistol_In_Belt_01
+    GUID: 17804125765350609348
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 8566301884914154792
+        Materials:
+          - 11453019595560542111
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Cloth_Legs_02
+    GUID: 4130387087630268082
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 0
+        Mesh: 9289403312213789989
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Body_Cloth_Detail
+    GUID: 14895135136230975622
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 9920076217441434967
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Cloth_Body_01
+    GUID: 5516874831652433460
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 8464093196141498157
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Pistol_In_Belt_02
+    GUID: 5303011418742425615
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 165170170030299084
+        Materials:
+          - 11453019595560542111
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Legs
+    GUID: 10144839482973644301
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 0
+        Mesh: 16070885615223181959
+        Materials:
+          - 11609781084541709249
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Belt_01
+    GUID: 7013855774559185062
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 0
+        Mesh: 2023551075591533246
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.7071067 z: 0.7071068 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Ring_01
+    GUID: 7486501291511018267
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 9658404546686476275
+        Materials:
+          - 11453019595560542111
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Head
+    GUID: 9937195032072224965
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 7400369299498173740
+        Materials:
+          - 11609781084541709249
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Mustache
+    GUID: 11463178762671498840
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 12868158147072126858
+        Materials:
+          - 15461336712175149368
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 6.181723e-08 y: 0.7071067 z: 0.7071068 w: 2.5121477e-15'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Shoes_Sphere
+    GUID: 3565281375182413966
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 11019658640123078119
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Jaw
+    GUID: 2455314126972962271
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 7648568431246438047
+        Materials:
+          - 11609781084541709249
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Ring_03
+    GUID: 1366170142028971179
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 16819946820067817496
+        Materials:
+          - 11453019595560542111
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Body
+    GUID: 10630349904281037907
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 12033487622667369422
+        Materials:
+          - 11609781084541709249
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Belt_05
+    GUID: 2477769988476690267
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 0
+        Mesh: 12741922437060739458
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Pants
+    GUID: 9322489566687268341
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 0
+        Mesh: 13063426728363629361
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Cloth_Legs_01
+    GUID: 5590874704723955928
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 7733593072640412872
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Skull_Hat
+    GUID: 13459467189551963484
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 5620737479056486592
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 2.5121477e-15 y: 0.7071067 z: 0.7071068 w: -6.181723e-08'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Shoes
+    GUID: 12676590582427166659
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 17003116980864801278
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Belt_03
+    GUID: 15067512513959851770
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 1510698504324259812
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Beard
+    GUID: 18037026129976239213
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 2993335125994013891
+        Materials:
+          - 15461336712175149368
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.7071069 z: 0.70710665 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Belt_02
+    GUID: 3331863801394632158
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 0
+        Mesh: 17364467429954996565
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.7071067 z: 0.7071068 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Sword_In_Belt
+    GUID: 4846052890242458398
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 0
+        Mesh: 6831110441988794098
+        Materials:
+          - 11453019595560542111
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 3980390934100616757
+    Name: Pirate_Hat
+    GUID: 14246368139484260541
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.MeshRenderer
+        Enabled: 1
+        Mesh: 3385073795356263272
+        Materials:
+          - 1128811297239007219
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'

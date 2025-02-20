@@ -17,7 +17,6 @@ namespace Odyssey
 		uint32_t IndexCount;
 		uint32_t UniformBufferIndex;
 		bool Skinned = false;
-		bool SkipDepth = false;
 	};
 
 	struct SpriteDrawcall

@@ -3,6 +3,7 @@
 #include "VulkanGlobals.h"
 #include "Resource.h"
 #include "BinaryBuffer.h"
+#include "VulkanAllocator.h"
 
 VK_FWD_DECLARE(VkImage)
 VK_FWD_DECLARE(VkDeviceMemory)
@@ -54,7 +55,8 @@ namespace Odyssey
 		float GetMipBias() { return m_ImageDesc.MipBias; }
 		TextureFormat GetFormat() { return m_ImageDesc.Format; }
 		VkImageLayout GetLayout() { return imageLayout; }
-		std::vector<VkBufferImageCopy> GetCopyRegions() { return m_CopyRegions; }
+		std::vector<VkBufferImageCopy> GetBufferCopyRegions() { return m_CopyRegions; }
+		std::vector<VkImageCopy> GetImageCopyRegions() { return m_ImageCopyRegions; }
 
 	private:
 		uint32_t FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
@@ -64,14 +66,14 @@ namespace Odyssey
 
 	private:
 		std::shared_ptr<VulkanContext> m_Context;
+		VkImage m_Image;
+		VmaAllocation m_MemoryAllocation;
 		VulkanImageDescription m_ImageDesc;
 		uint32_t m_MipLevels = 1;
-		VkImage m_Image;
 		VkImageView imageView;
 		VkImageLayout imageLayout;
-		VkDeviceMemory imageMemory;
 		std::vector<VkBufferImageCopy> m_CopyRegions;
-		ResourceID m_StagingBuffer;
+		std::vector<VkImageCopy> m_ImageCopyRegions;
 		bool isDepth = false;
 	};
 }

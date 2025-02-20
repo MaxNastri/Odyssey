@@ -16,12 +16,15 @@
 #include "VulkanWindow.h"
 #include "RenderTarget.h"
 #include "VulkanTexture.h"
+#include "VulkanAllocator.h"
 
 namespace Odyssey
 {
 	VulkanRenderer::VulkanRenderer()
 	{
 		m_Context = std::make_shared<VulkanContext>();
+
+		VulkanAllocator::Init(m_Context);
 		ResourceManager::Initialize(m_Context);
 		m_Context->SetupResources();
 
@@ -60,6 +63,28 @@ namespace Odyssey
 				m_GraphicsCommandBuffers.push_back(commandBufferID);
 			}
 		}
+
+
+		Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+		ResourceID commandBufferID = commandPool->AllocateBuffer();
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+		RenderPassParams params;
+		params.GraphicsCommandBuffer = commandBufferID;
+		params.context = m_Context;
+
+		commandBuffer->BeginCommands();
+
+		std::shared_ptr<BRDFLutPass> brdfLUT = std::make_shared<BRDFLutPass>();
+		brdfLUT->BeginPass(params);
+		brdfLUT->Execute(params);
+		brdfLUT->EndPass(params);
+
+		commandBuffer->EndCommands();
+		commandBuffer->SubmitGraphics();
+		commandPool->ReleaseBuffer(commandBufferID);
+
+		m_BRDFLutTexture = params.BRDFLutTexture;
 	}
 
 	void VulkanRenderer::Destroy()
@@ -133,8 +158,19 @@ namespace Odyssey
 	void VulkanRenderer::AddImguiPass()
 	{
 		m_IMGUIPass = std::make_shared<ImguiPass>();
-		m_IMGUIPass->SetLayouts(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 		m_IMGUIPass->SetImguiState(m_Imgui);
+	}
+
+	void VulkanRenderer::CaptureCursor()
+	{
+		m_Window->GetWindow()->CaptureCursor();
+		m_Imgui->SetMouseInputEnabled(false);
+	}
+
+	void VulkanRenderer::ReleaseCursor()
+	{
+		m_Window->GetWindow()->ReleaseCursor();
+		m_Imgui->SetMouseInputEnabled(true);
 	}
 
 	bool VulkanRenderer::BeginFrame(VulkanFrame*& currentFrame)
@@ -171,11 +207,11 @@ namespace Odyssey
 			Log::Error("(renderer 4)");
 		}
 
-		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_GraphicsCommandPools[s_FrameIndex]);
-		commandPool->Reset();
+		// Allocate a command buffer
+		Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+		ResourceID commandBufferID = commandPool->AllocateBuffer();
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
-		// Command buffer begin
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_GraphicsCommandBuffers[s_FrameIndex]);
 		commandBuffer->BeginCommands();
 
 		// Transition the swapchain image back to a format for writing
@@ -188,6 +224,10 @@ namespace Odyssey
 			Ref<VulkanTexture> resolveTexture = ResourceManager::GetResource<VulkanTexture>(renderTarget->GetColorResolveTexture());
 			commandBuffer->TransitionLayouts(resolveTexture->GetImage(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		}
+
+		commandBuffer->EndCommands();
+		commandBuffer->SubmitGraphics();
+		commandPool->ReleaseBuffer(m_GraphicsCommandBuffers[s_FrameIndex]);
 
 		currentFrame = &frame;
 		return true;
@@ -207,7 +247,6 @@ namespace Odyssey
 			}
 
 			// RenderPass begin
-			auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(m_GraphicsCommandBuffers[s_FrameIndex]);
 			m_RenderingData->frame = frame;
 			m_RenderingData->renderScene = m_RenderScenes[s_FrameIndex];
 			m_RenderingData->width = width;
@@ -218,23 +257,63 @@ namespace Odyssey
 			params.context = m_Context;
 			params.renderingData = m_RenderingData;
 			params.FrameTexture = frame->GetFrameTexture();
+			params.BRDFLutTexture = m_BRDFLutTexture;
+
+			if (!m_IrradianceCubemap.IsValid() && params.renderingData->renderScene && 
+				params.renderingData->renderScene->SkyboxCubemap.IsValid())
+				BuildIrradianceCubemap(params);
+
+			if (!m_PrefilteredCubemap.IsValid() && params.renderingData->renderScene &&
+				params.renderingData->renderScene->SkyboxCubemap.IsValid())
+				BuildPrefilteredCubemap(params);
+
+			params.GraphicsCommandBuffer = m_GraphicsCommandBuffers[s_FrameIndex];
+			params.IrradianceTexture = m_IrradianceCubemap;
+			params.PrefilteredCubemap = m_PrefilteredCubemap;
 
 			for (Ref<RenderPass>& renderPass : m_RenderPasses)
 			{
+				Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+				ResourceID commandBufferID = commandPool->AllocateBuffer();
+				Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+				params.GraphicsCommandBuffer = commandBufferID;
+				commandBuffer->BeginCommands();
 				renderPass->BeginPass(params);
 				renderPass->Execute(params);
 				renderPass->EndPass(params);
+
+				commandBuffer->EndCommands();
+				commandBuffer->SubmitGraphics();
+				commandPool->ReleaseBuffer(commandBufferID);
 			}
 
 			// IMGUI always renders last
 			if (m_IMGUIPass)
 			{
+				Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+				ResourceID commandBufferID = commandPool->AllocateBuffer();
+				Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+				
+				params.GraphicsCommandBuffer = commandBufferID;
+				commandBuffer->BeginCommands();
 				m_IMGUIPass->BeginPass(params);
 				m_IMGUIPass->Execute(params);
 				m_IMGUIPass->EndPass(params);
+
+				commandBuffer->EndCommands();
+				commandBuffer->SubmitGraphics();
+				commandPool->ReleaseBuffer(commandBufferID);
 			}
 
 			Ref<RenderTarget> renderTarget = ResourceManager::GetResource<RenderTarget>(frame->GetFrameTexture());
+
+			// Allocate a command buffer
+			Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+			ResourceID commandBufferID = commandPool->AllocateBuffer();
+			Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+			commandBuffer->BeginCommands();
 
 			if (renderTarget->GetColorResolveTexture().IsValid())
 			{
@@ -338,5 +417,83 @@ namespace Odyssey
 			}
 		}
 
+	}
+	void VulkanRenderer::BuildIrradianceCubemap(RenderPassParams& params)
+	{
+		if (auto renderScene = params.renderingData->renderScene)
+		{
+			if (renderScene->SkyboxCubemap.IsValid())
+			{
+				Ref<VulkanTexture> skybox = ResourceManager::GetResource<VulkanTexture>(renderScene->SkyboxCubemap);
+
+				VulkanImageDescription textureDesc;
+				textureDesc.ImageType = ImageType::Cubemap;
+				textureDesc.Width = 64;
+				textureDesc.Height = 64;
+				textureDesc.Format = skybox->GetFormat();
+				textureDesc.Channels = 4;
+				textureDesc.ArrayDepth = 6;
+				textureDesc.MipMapEnabled = true;
+
+				if (m_IrradianceCubemap.IsValid())
+					ResourceManager::Destroy(m_IrradianceCubemap);
+
+				m_IrradianceCubemap = ResourceManager::Allocate<VulkanTexture>(textureDesc, nullptr);
+
+				Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+				ResourceID commandBufferID = commandPool->AllocateBuffer();
+				Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+				commandBuffer->BeginCommands();
+				params.GraphicsCommandBuffer = commandBufferID;
+
+				IrradiancePass irradiancePass(m_IrradianceCubemap);
+				irradiancePass.BeginPass(params);
+				irradiancePass.Execute(params);
+
+				commandBuffer->EndCommands();
+				commandBuffer->SubmitGraphics();
+				commandPool->ReleaseBuffer(commandBufferID);
+			}
+		}
+	}
+	void VulkanRenderer::BuildPrefilteredCubemap(RenderPassParams& params)
+	{
+		if (auto renderScene = params.renderingData->renderScene)
+		{
+			if (renderScene->SkyboxCubemap.IsValid())
+			{
+				Ref<VulkanTexture> skybox = ResourceManager::GetResource<VulkanTexture>(renderScene->SkyboxCubemap);
+
+				VulkanImageDescription textureDesc;
+				textureDesc.ImageType = ImageType::Cubemap;
+				textureDesc.Width = 512;
+				textureDesc.Height = 512;
+				textureDesc.Format = skybox->GetFormat();
+				textureDesc.Channels = 4;
+				textureDesc.ArrayDepth = 6;
+				textureDesc.MipMapEnabled = true;
+
+				if (m_PrefilteredCubemap.IsValid())
+					ResourceManager::Destroy(m_PrefilteredCubemap);
+
+				m_PrefilteredCubemap = ResourceManager::Allocate<VulkanTexture>(textureDesc, nullptr);
+
+				Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+				ResourceID commandBufferID = commandPool->AllocateBuffer();
+				Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+				commandBuffer->BeginCommands();
+				params.GraphicsCommandBuffer = commandBufferID;
+
+				PrefilteredSkyboxPass prefilteredPass(m_PrefilteredCubemap);
+				prefilteredPass.BeginPass(params);
+				prefilteredPass.Execute(params);
+
+				commandBuffer->EndCommands();
+				commandBuffer->SubmitGraphics();
+				commandPool->ReleaseBuffer(commandBufferID);
+			}
+		}
 	}
 }

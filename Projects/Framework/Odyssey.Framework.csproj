@@ -50,10 +50,13 @@
     <Compile Include="Source\Asset\Texture2D.cs" />
     <Compile Include="Source\Components\Animator.cs" />
     <Compile Include="Source\Components\Camera.cs" />
+    <Compile Include="Source\Components\CharacterController.cs" />
     <Compile Include="Source\Components\Component.cs" />
     <Compile Include="Source\Components\MeshRenderer.cs" />
     <Compile Include="Source\Components\ParticleEmitter.cs" />
+    <Compile Include="Source\Components\RigidBody.cs" />
     <Compile Include="Source\Components\ScriptComponent.cs" />
+    <Compile Include="Source\Components\SphereCollider.cs" />
     <Compile Include="Source\Components\SpriteRenderer.cs" />
     <Compile Include="Source\Components\Transform.cs" />
     <Compile Include="Source\Core\Attributes.cs" />

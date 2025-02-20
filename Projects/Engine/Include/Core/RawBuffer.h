@@ -37,6 +37,16 @@ namespace Odyssey
 		}
 
 		template<typename T>
+		T Read(uint64_t offset, uint64_t size)
+		{
+			Byte* data = ReadBytes(size, offset);
+			T copy = *(T*)data;
+			delete data;
+			data = nullptr;
+			return copy;
+		}
+
+		template<typename T>
 		T* As() const
 		{
 			return (T*)m_Data;

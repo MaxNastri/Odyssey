@@ -3,8 +3,13 @@ m_GUID: 10126946721482002417
 m_Name: Rune_Gate_Decal_Green
 m_Type: Odyssey.Material
 m_Shader: 13726779930172400085
-m_Texture: 15224893156691087190
-Normal Texture: 8617775628757055184
+Property Textures:
+  - Property: diffuseSampler
+    Texture: 15224893156691087190
+  - Property: normalSampler
+    Texture: 8617775628757055184
 Emissive Color: 'x: 0 y: 1 z: 0'
 Emissive Power: 2
 Alpha Clip: 0.005
+Alpha Blend: 0
+Render Queue: Opaque

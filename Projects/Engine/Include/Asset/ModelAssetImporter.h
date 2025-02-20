@@ -5,14 +5,17 @@
 
 namespace Odyssey
 {
+	struct SubmeshImportData
+	{
+		uint32_t Index = 0;
+		std::vector<Vertex> Vertices;
+		std::vector<uint32_t> Indices;
+	};
+
 	struct MeshImportData
 	{
-		size_t ObjectCount;
-		std::vector<size_t> HashIDs;
-		std::vector<std::string> Names;
-		std::vector<glm::mat4> WorldMatrices;
-		std::vector<std::vector<Vertex>> VertexLists;
-		std::vector<std::vector<uint32_t>> IndexLists;
+		std::string Name;
+		std::vector<SubmeshImportData> Submeshes;
 	};
 
 	struct FBXBone
@@ -48,19 +51,37 @@ namespace Odyssey
 		std::map<std::string, BoneKeyframe> BoneKeyframes;
 	};
 
+	struct PrefabImportData
+	{
+	public:
+		struct Node
+		{
+			std::string Name;
+			mat4 Transform;
+		};
+
+		std::vector<Node> Nodes;
+	};
+
 	class ModelAssetImporter
 	{
 	public:
 		virtual bool Import(const Path& modelPath) = 0;
 
 	public:
-		const MeshImportData& GetMeshData() { return m_MeshData; }
+		const MeshImportData& GetMeshData(size_t index = 0) { return m_MeshDatas[index]; }
+		uint32_t MeshCount() { return (uint32_t)m_MeshDatas.size(); }
+
+	public:
+		const PrefabImportData& GetPrefabData() { return m_PrefabImportData; }
 		const RigImportData& GetRigData() { return m_RigData; }
-		const AnimationImportData& GetAnimationData() { return m_AnimationData; }
+		const AnimationImportData& GetAnimationData(size_t index = 0) { return m_AnimationData[index]; }
+		size_t GetClipCount() { return m_AnimationData.size(); }
 
 	protected:
-		MeshImportData m_MeshData;
+		std::vector<MeshImportData> m_MeshDatas;
 		RigImportData m_RigData;
-		AnimationImportData m_AnimationData;
+		std::vector<AnimationImportData> m_AnimationData;
+		PrefabImportData m_PrefabImportData;
 	};
 }

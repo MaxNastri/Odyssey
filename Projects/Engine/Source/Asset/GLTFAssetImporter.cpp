@@ -273,8 +273,6 @@ namespace Odyssey
 	{
 		const Scene& scene = model->scenes[model->defaultScene ? model->defaultScene : 0];
 
-		m_MeshData.ObjectCount = 0;
-
 		TempNode* parent = nullptr;
 
 		for (auto node : scene.nodes)
@@ -282,17 +280,18 @@ namespace Odyssey
 			CreateNodeRecursive(model, &model->nodes[node], nullptr);
 		}
 
+		m_MeshDatas.clear();
+
 		for (size_t m = 0; m < model->meshes.size(); m++)
 		{
 			const Mesh& mesh = model->meshes[m];
-			size_t meshIndex = m_MeshData.ObjectCount++;
-
+			MeshImportData& meshData = m_MeshDatas.emplace_back();
+			meshData.Name = mesh.name;
 
 			for (size_t p = 0; p < mesh.primitives.size(); p++)
 			{
 				const Primitive& primitive = mesh.primitives[p];
-				std::vector<Vertex> vertices;
-				std::vector<uint32_t> indices;
+				SubmeshImportData& submeshData = meshData.Submeshes.emplace_back();
 
 				// Vertices
 				{
@@ -306,11 +305,11 @@ namespace Odyssey
 					uint32_t vertexCount = (uint32_t)positionData.Accessor->count;
 					uint32_t vertexStart = 0;
 
-					vertices.resize(vertexCount);
+					submeshData.Vertices.resize(vertexCount);
 
 					for (size_t v = 0; v < vertexCount; v++)
 					{
-						Vertex& vertex = vertices[v];
+						Vertex& vertex = submeshData.Vertices[v];
 
 						vertex.Position = glm::make_vec3(positionData.GetData<float>(v));
 						vertex.Normal = normalData.IsValid() ? glm::make_vec3(normalData.GetData<float>(v)) : glm::vec3(0.0f);
@@ -364,7 +363,7 @@ namespace Odyssey
 				uint32_t indexCount = static_cast<uint32_t>(accessor.count);
 
 				uint32_t indexStart = 0;
-				indices.resize(indexCount);
+				submeshData.Indices.resize(indexCount);
 
 				switch (accessor.componentType)
 				{
@@ -373,7 +372,7 @@ namespace Odyssey
 						const uint32_t* buf = static_cast<const uint32_t*>(dataPtr);
 						for (size_t index = 0; index < accessor.count; index++)
 						{
-							indices[indexStart] = buf[index];
+							submeshData.Indices[indexStart] = buf[index];
 							++indexStart;
 						}
 						break;
@@ -383,7 +382,7 @@ namespace Odyssey
 						const uint16_t* buf = static_cast<const uint16_t*>(dataPtr);
 						for (size_t index = 0; index < accessor.count; index++)
 						{
-							indices[indexStart] = buf[index];
+							submeshData.Indices[indexStart] = buf[index];
 							++indexStart;
 						}
 						break;
@@ -394,7 +393,7 @@ namespace Odyssey
 
 						for (size_t index = 0; index < accessor.count; index++)
 						{
-							indices[indexStart] = buf[index];
+							submeshData.Indices[indexStart] = buf[index];
 							++indexStart;
 						}
 						break;
@@ -403,11 +402,9 @@ namespace Odyssey
 
 				// IMPORTANT: We reverse the winding order to convert RH to LH coord system
 				if (m_Settings.ConvertLH)
-					std::reverse(indices.begin(), indices.end());
+					std::reverse(submeshData.Indices.begin(), submeshData.Indices.end());
 
-				GeometryUtil::GenerateTangents(vertices, indices);
-				m_MeshData.VertexLists.push_back(vertices);
-				m_MeshData.IndexLists.push_back(indices);
+				GeometryUtil::GenerateTangents(submeshData.Vertices, submeshData.Indices);
 			}
 		}
 	}
@@ -541,14 +538,14 @@ namespace Odyssey
 		}
 	}
 
-	struct Sampler
+	struct AnimationSampler
 	{
 		std::vector<float> inputs;
 		std::vector<glm::vec4> outputsVec4;
 		std::vector<float> outputs;
 	};
 
-	struct Channel
+	struct AnimationChannel
 	{
 		int32_t TargetNODE = -1;
 		int32_t SamplerIndex = -1;
@@ -558,18 +555,19 @@ namespace Odyssey
 	};
 	void GLTFAssetImporter::LoadAnimationData(const Model* model)
 	{
-		m_AnimationData.FramesPerSecond = 30;
+		AnimationImportData& animationData = m_AnimationData.emplace_back();
+		animationData.FramesPerSecond = 30;
 
 		for (const Animation& anim : model->animations)
 		{
 			std::string name = anim.name;
 
-			std::vector<Odyssey::Sampler> samplers;
-			std::vector<Odyssey::Channel> channels;
+			std::vector<AnimationSampler> samplers;
+			std::vector<AnimationChannel> channels;
 
 			for (auto& sampler : anim.samplers)
 			{
-				Odyssey::Sampler customSampler;
+				AnimationSampler customSampler;
 				// Custom interpolation not supported
 				//if (sampler.interpolation == "LINEAR") {}
 				//if (sampler.interpolation == "STEP") {}
@@ -592,10 +590,10 @@ namespace Odyssey
 
 					for (auto input : customSampler.inputs)
 					{
-						if (input < m_AnimationData.Start)
-							m_AnimationData.Start = input;
-						if (input > m_AnimationData.Duration)
-							m_AnimationData.Duration = input;
+						if (input < animationData.Start)
+							animationData.Start = input;
+						if (input > animationData.Duration)
+							animationData.Duration = input;
 					}
 				}
 
@@ -643,7 +641,7 @@ namespace Odyssey
 
 			for (auto& source : anim.channels)
 			{
-				Odyssey::Channel myChannel;
+				AnimationChannel myChannel;
 
 				if (source.target_path == "rotation")
 					myChannel.IsRotation = true;
@@ -681,9 +679,9 @@ namespace Odyssey
 				if (!targetName.empty())
 				{
 					auto& bone = m_RigData.Bones[targetName];
-					auto& boneKeyframe = m_AnimationData.BoneKeyframes[bone.Name];
+					auto& boneKeyframe = animationData.BoneKeyframes[bone.Name];
 					boneKeyframe.SetBoneName(bone.Name);
-					Odyssey::Sampler& sampler = samplers[channel.SamplerIndex];
+					AnimationSampler& sampler = samplers[channel.SamplerIndex];
 
 					for (size_t i = 0; i < sampler.inputs.size(); i++)
 					{
@@ -739,10 +737,10 @@ namespace Odyssey
 				}
 			}
 
-			size_t maxFrames = (size_t)std::ceil(m_AnimationData.Duration * (double)m_AnimationData.FramesPerSecond);
-			double step = 1.0 / (double)m_AnimationData.FramesPerSecond;
+			size_t maxFrames = (size_t)std::ceil(animationData.Duration * (double)animationData.FramesPerSecond);
+			double step = 1.0 / (double)animationData.FramesPerSecond;
 
-			for (auto& [boneName, boneKeyframe] : m_AnimationData.BoneKeyframes)
+			for (auto& [boneName, boneKeyframe] : animationData.BoneKeyframes)
 			{
 				// Position Keys
 				{
@@ -755,7 +753,7 @@ namespace Odyssey
 						double frameTime = (double)i * step;
 						if (!boneKeyframe.HasPositionKey(frameTime))
 						{
-							double blend = frameTime / m_AnimationData.Duration;
+							double blend = frameTime / animationData.Duration;
 							boneKeyframe.AddPositionKey(frameTime, glm::mix(first.Value, last.Value, blend));
 						}
 					}
@@ -772,7 +770,7 @@ namespace Odyssey
 						double frameTime = (double)i * step;
 						if (!boneKeyframe.HasRotationKey(frameTime))
 						{
-							float blend = (float)(frameTime / m_AnimationData.Duration);
+							float blend = (float)(frameTime / animationData.Duration);
 							boneKeyframe.AddRotationKey(frameTime, glm::slerp(first.Value, last.Value, blend));
 						}
 					}
@@ -789,7 +787,7 @@ namespace Odyssey
 						double frameTime = (double)i * step;
 						if (!boneKeyframe.HasScaleKey(frameTime))
 						{
-							double blend = frameTime / m_AnimationData.Duration;
+							double blend = frameTime / animationData.Duration;
 							boneKeyframe.AddScaleKey(frameTime, glm::mix(first.Value, last.Value, blend));
 						}
 					}

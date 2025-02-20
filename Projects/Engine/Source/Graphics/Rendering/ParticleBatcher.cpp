@@ -141,7 +141,6 @@ namespace Odyssey
 			s_PushDescriptors->AddBuffer(emitterResources.ParticleBuffer, 2);
 			s_PushDescriptors->AddBuffer(emitterResources.CounterBuffer, 3);
 			s_PushDescriptors->AddBuffer(emitterResources.AlivePreSimBuffer, 4);
-			s_PushDescriptors->AddBuffer(emitterResources.AlivePostSimBuffer, 5);
 			s_PushDescriptors->AddBuffer(emitterResources.DeadBuffer, 6);
 			s_PushDescriptors->AddBuffer(emitterResources.EmitterBuffer, 7);
 
@@ -236,17 +235,6 @@ namespace Odyssey
 
 	void ParticleBatcher::InitEmitResources()
 	{
-		// Create the shader layout
-		s_EmitDescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
-		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(s_EmitDescriptorLayout);
-		descriptorLayout->AddBinding("Particle Buffer", DescriptorType::Storage, ShaderStage::Compute, 2);
-		descriptorLayout->AddBinding("Counter Buffer", DescriptorType::Storage, ShaderStage::Compute, 3);
-		descriptorLayout->AddBinding("Alive Pre-Sim Buffer", DescriptorType::Storage, ShaderStage::Compute, 4);
-		descriptorLayout->AddBinding("Alive Post-Sim Buffer", DescriptorType::Storage, ShaderStage::Compute, 5);
-		descriptorLayout->AddBinding("Dead Buffer", DescriptorType::Storage, ShaderStage::Compute, 6);
-		descriptorLayout->AddBinding("Emitter Data", DescriptorType::Uniform, ShaderStage::Compute, 7);
-		descriptorLayout->Apply();
-
 		// Load the emit shader by GUID
 		s_EmitShader = AssetManager::LoadAsset<Shader>(s_EmitShaderGUID);
 		s_EmitShader->AddOnModifiedListener(OnEmitShaderModified);
@@ -254,24 +242,12 @@ namespace Odyssey
 		// Create the compute pipeline
 		VulkanPipelineInfo info;
 		info.Shaders = s_EmitShader->GetResourceMap();
-		info.DescriptorLayout = s_EmitDescriptorLayout;
-		info.BindVertexAttributeDescriptions = false;
+		info.DescriptorLayout = s_EmitShader->GetDescriptorLayout();
 		s_EmitComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 	}
 
 	void ParticleBatcher::InitSimulationResources()
 	{
-		// Create the shader layout
-		s_SimDescriptorLayout = ResourceManager::Allocate<VulkanDescriptorLayout>();
-		auto descriptorLayout = ResourceManager::GetResource<VulkanDescriptorLayout>(s_SimDescriptorLayout);
-		descriptorLayout->AddBinding("Particle Buffer", DescriptorType::Storage, ShaderStage::Compute, 2);
-		descriptorLayout->AddBinding("Counter Buffer", DescriptorType::Storage, ShaderStage::Compute, 3);
-		descriptorLayout->AddBinding("Alive Pre-Sim Buffer", DescriptorType::Storage, ShaderStage::Compute, 4);
-		descriptorLayout->AddBinding("Alive Post-Sim Buffer", DescriptorType::Storage, ShaderStage::Compute, 5);
-		descriptorLayout->AddBinding("Dead Buffer", DescriptorType::Storage, ShaderStage::Compute, 6);
-		descriptorLayout->AddBinding("Emitter Data", DescriptorType::Uniform, ShaderStage::Compute, 7);
-		descriptorLayout->Apply();
-
 		// Load the emit shader by GUID
 		s_SimShader = AssetManager::LoadAsset<Shader>(s_SimShaderGUID);
 		s_SimShader->AddOnModifiedListener(OnSimShaderModified);
@@ -279,8 +255,7 @@ namespace Odyssey
 		// Create the compute pipeline
 		VulkanPipelineInfo info;
 		info.Shaders = s_SimShader->GetResourceMap();
-		info.DescriptorLayout = s_SimDescriptorLayout;
-		info.BindVertexAttributeDescriptions = false;
+		info.DescriptorLayout = s_SimShader->GetDescriptorLayout();
 		s_SimComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 	}
 
@@ -321,8 +296,7 @@ namespace Odyssey
 		// Create the compute pipeline
 		VulkanPipelineInfo info;
 		info.Shaders = s_EmitShader->GetResourceMap();
-		info.DescriptorLayout = s_EmitDescriptorLayout;
-		info.BindVertexAttributeDescriptions = false;
+		info.DescriptorLayout = s_EmitShader->GetDescriptorLayout();
 		s_EmitComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 	}
 	void ParticleBatcher::OnSimShaderModified()
@@ -332,8 +306,7 @@ namespace Odyssey
 		// Create the compute pipeline
 		VulkanPipelineInfo info;
 		info.Shaders = s_SimShader->GetResourceMap();
-		info.DescriptorLayout = s_SimDescriptorLayout;
-		info.BindVertexAttributeDescriptions = false;
+		info.DescriptorLayout = s_SimShader->GetDescriptorLayout();
 		s_SimComputePipeline = ResourceManager::Allocate<VulkanComputePipeline>(info);
 	}
 }

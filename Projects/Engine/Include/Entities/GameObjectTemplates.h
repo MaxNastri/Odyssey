@@ -45,7 +45,7 @@ namespace Odyssey
 	inline bool GameObject::RemoveComponent()
 	{
 		bool remove = m_Scene->m_Registry.remove<T>(m_Entity);
-		EventSystem::Dispatch<SceneModifiedEvent>(m_Scene);
+		EventSystem::Dispatch<SceneModifiedEvent>(m_Scene, SceneModifiedEvent::Modification::RemoveComponent);
 		return remove;
 	}
 }

@@ -36,8 +36,8 @@ namespace Odyssey
 		static void OnSimShaderModified();
 
 	private:
-		inline static constexpr size_t MAX_PARTICLES = 16384;
-		inline static constexpr size_t MAX_EMITTERS = 124;
+		inline static constexpr size_t MAX_PARTICLES = 4096;
+		inline static constexpr size_t MAX_EMITTERS = 64;
 
 		struct ParticleCounts
 		{
@@ -85,13 +85,11 @@ namespace Odyssey
 
 	private: // Emit pass
 		inline static const GUID& s_EmitShaderGUID = 8940240242710108428;
-		inline static ResourceID s_EmitDescriptorLayout;
 		inline static ResourceID s_EmitComputePipeline;
 		inline static Ref<Shader> s_EmitShader;
 
 	private: // Simulation pass
 		inline static const GUID& s_SimShaderGUID = 7831351134810913572;
-		inline static ResourceID s_SimDescriptorLayout;
 		inline static ResourceID s_SimComputePipeline;
 		inline static Ref<Shader> s_SimShader;
 

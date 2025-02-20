@@ -20,6 +20,7 @@ namespace Odyssey
 	VulkanTexture::VulkanTexture(ResourceID id, std::shared_ptr<VulkanContext> context, VulkanImageDescription description, BinaryBuffer* buffer)
 		: Resource(id)
 	{
+		m_Context = context;
 		m_Description = description;
 
 		// Create the image and set the initial pixel data
@@ -30,7 +31,7 @@ namespace Odyssey
 			image->SetData(*buffer, description.ArrayDepth);
 
 		// Create a sampler
-		m_Sampler = ResourceManager::Allocate<VulkanTextureSampler>(m_Image);
+		m_Sampler = ResourceManager::Allocate<VulkanTextureSampler>(m_Image, m_Description.ImageType == ImageType::RenderTexture);
 		auto sampler = ResourceManager::GetResource<VulkanTextureSampler>(m_Sampler);
 
 		// Render textures need to transition to an appropriate layout on creation
@@ -65,7 +66,9 @@ namespace Odyssey
 	}
 
 	VulkanTexture::VulkanTexture(ResourceID id, std::shared_ptr<VulkanContext> context, ResourceID imageID, TextureFormat format)
+		: Resource(id)
 	{
+		m_Context = context;
 		if (Ref<VulkanImage> image = ResourceManager::GetResource<VulkanImage>(imageID))
 		{
 			m_Description.Width = image->GetWidth();
@@ -94,5 +97,20 @@ namespace Odyssey
 		writeSet.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		writeSet.pImageInfo = &descriptor;
 		return writeSet;
+	}
+
+	void VulkanTexture::CopyToTexture(ResourceID destination)
+	{
+		// Allocate a command buffer
+		Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
+		ResourceID commandBufferID = commandPool->AllocateBuffer();
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+
+		// Copy the buffer into the image
+		commandBuffer->BeginCommands();
+		commandBuffer->CopyImageToImage(m_Image, destination);
+		commandBuffer->EndCommands();
+		commandBuffer->SubmitGraphics();
+		commandPool->ReleaseBuffer(commandBufferID);
 	}
 }

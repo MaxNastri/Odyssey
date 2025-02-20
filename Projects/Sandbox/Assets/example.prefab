@@ -1,0 +1,321 @@
+GameObjects:
+  - Sort Order: 19
+    Parent: 0
+    Name: GameObject
+    GUID: 10621278084495746541
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0 z: 0 w: 1'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Cloak_Up
+    GUID: 12029835693500716980
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Hat
+    GUID: 1800095784092812768
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Cloth_Body_01
+    GUID: 8156794702172970607
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Cloth_Legs_01
+    GUID: 13154987151475370709
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Body_Cloth_Detail
+    GUID: 13098866083542613945
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Belt_03
+    GUID: 5779717292956452405
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Belt_05
+    GUID: 8194577500116127384
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Body
+    GUID: 16848659658848796938
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Eyes
+    GUID: 16804256332087518826
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Jaw
+    GUID: 13441369394944460991
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Mustache
+    GUID: 4024957094569245187
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 6.181723e-08 y: 0.7071067 z: 0.7071068 w: 2.5121477e-15'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Ring_01
+    GUID: 12159351291489181149
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Ring_02
+    GUID: 17207419491590925566
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Beard
+    GUID: 11030801978761260196
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.7071069 z: 0.70710665 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Belt_04
+    GUID: 18304848073973843412
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Sword_In_Belt
+    GUID: 10848095411990421915
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Ring_03
+    GUID: 8028942409154394872
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Cloak_Down
+    GUID: 12159658323391752836
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Skull_Hat
+    GUID: 3335980475831797247
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 2.5121477e-15 y: 0.7071067 z: 0.7071068 w: -6.181723e-08'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Head
+    GUID: 2584368700790842139
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Legs
+    GUID: 7007603453711300036
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Cloth_Body_02
+    GUID: 16263312164602351802
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Pants
+    GUID: 3150778851285954268
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Torso
+    GUID: 14157091815515267200
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Cloth_Legs_02
+    GUID: 1678321733449882783
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Pistol_In_Belt_01
+    GUID: 12098649819769938669
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Belt_01
+    GUID: 1503765450435306640
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.7071067 z: 0.7071068 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Shoes_Sphere
+    GUID: 5456471509661702517
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Shoes
+    GUID: 8365722582630557110
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Belt_02
+    GUID: 3835348503349462861
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.7071067 z: 0.7071068 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'
+  - Sort Order: -1
+    Parent: 10621278084495746541
+    Name: Pirate_Pistol_In_Belt_02
+    GUID: 4588187608209771688
+    Type: Odyssey.GameObject
+    Components:
+      - Type: Odyssey.Transform
+        Position: 'x: 0 y: 0 z: 0'
+        Rotation: 'x: 0 y: 0.70710677 z: 0.70710677 w: 0'
+        Scale: 'x: 1 y: 1 z: 1'

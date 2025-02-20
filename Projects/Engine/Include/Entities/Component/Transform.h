@@ -17,48 +17,49 @@ namespace Odyssey
         void Deserialize(SerializationNode& node);
 
     public:
-        void AddPosition(glm::vec3 pos);
-        void AddPosition(float x, float y, float z);
-        void SetPosition(glm::vec3 pos);
+        void SetPosition(float3 position);
         void SetPosition(float x, float y, float z);
-        void AddRotation(glm::vec3 eulerAngles);
-        void AddRotation(glm::quat orientation);
-        void SetRotation(glm::vec3 eulerAngles);
-        void SetRotation(glm::quat orientation);
-        void AddScale(glm::vec3 scaleFactor);
-        void AddScale(float x, float y, float z);
-        void SetScale(glm::vec3 scaleFactor);
+        void SetRotation(float3 eulerAngles, bool radians = true);
+        void SetRotation(quat orientation);
+        void SetScale(float3 scaleFactor);
         void SetScale(float x, float y, float z);
 
-        void SetLocalMatrix(glm::mat4 localMatrix);
+        void SetLocalMatrix(mat4 localMatrix);
 
-        glm::vec3 GetPosition() { return m_Position; }
-        glm::vec3 GetEulerRotation() { return m_EulerRotation; }
-        glm::quat GetRotation() { return m_Rotation; }
-        glm::vec3 GetScale() { return m_Scale; }
-        glm::vec3 Forward();
-        glm::vec3 Right();
-        glm::vec3 Up();
-        glm::mat4 GetLocalMatrix();
-        glm::mat4x4 GetWorldMatrix();
+        float3 GetPosition() { return m_Position; }
+        float3 GetWorldPosition();
+
+        float3 GetEulerRotation(bool radians = true);
+        quat GetRotation() { return m_Rotation; }
+        float3 GetScale() { return m_Scale; }
+        float3 Forward();
+        float3 Right();
+        float3 Up();
+        mat4 GetLocalMatrix();
+        mat4 GetWorldMatrix();
 
     public:
-        void RotateAround(glm::vec3 center, glm::vec3 axis, float degrees, bool worldSpace);
+        void SetLocalSpace();
+        void DecomposeWorldMatrix(float3& pos, quat& rotation, float3& scale);
+        void RotateAround(float3 center, float3 axis, float degrees, bool worldSpace);
         void LookAt(float3 center, float3 up);
 
     private:
-        void CalculateEulerRotations();
+        void SetEulerRotation(float3 eulerAngles);
         void ComposeLocalMatrix();
         void Reset();
 
 	public:
         GameObject m_GameObject;
-		glm::vec3 m_Position;
-		glm::vec3 m_EulerRotation;
-        glm::quat m_Rotation;
-        glm::vec3 m_Scale;
-        glm::mat4x4 m_LocalMatrix;
-        glm::mat4x4 m_WorldMatrix;
+		float3 m_Position;
+        float3 m_WorldPosition;
+        quat m_Rotation;
+        quat m_WorldRotation;
+        float3 m_Scale;
+        float3 m_WorldScale;
+        float3 m_EulerRotation;
+        mat4 m_LocalMatrix;
+        mat4 m_WorldMatrix;
         bool m_Dirty;
 		CLASS_DECLARATION(Odyssey, Transform)
 	};

@@ -19,6 +19,14 @@ namespace Odyssey
 		size_t GetCount() { return m_Count; }
 
 	public:
+		static void CopyBuffer(BinaryBuffer& source, BinaryBuffer& destination)
+		{
+			destination.m_Data = source.Convert<uint8_t>();
+			destination.m_Size = source.m_Size;
+			destination.m_Count = source.m_Count;
+		}
+
+	public:
 		template<typename T>
 		std::vector<T> Convert()
 		{
@@ -80,7 +88,8 @@ namespace Odyssey
 			m_Count = size / sizeof(T);
 
 			// Mem-copy the data into the binary buffer
-			memcpy(&m_Data[0], data, m_Size);
+			if (data)
+				memcpy(&m_Data[0], data, m_Size);
 		}
 
 	private:

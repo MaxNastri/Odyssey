@@ -10,6 +10,7 @@ namespace Sandbox
 
         private ParticleEmitter m_Emitter;
         private Transform m_Transform;
+        private RigidBody m_RigidBody;
         private Vector3 m_Direction;
         private float m_Speed;
         private uint m_StartingEmission = 0;
@@ -24,6 +25,7 @@ namespace Sandbox
         protected override void Awake()
         {
             m_Transform = GetComponent<Transform>();
+            m_RigidBody = GetComponent<RigidBody>();
             m_Emitter = GetComponent<ParticleEmitter>();
             m_StartingEmission = m_Emitter.EmissionRate;
         }
@@ -35,11 +37,16 @@ namespace Sandbox
                 if (m_Speed != MaxSpeed)
                     m_Speed = Math.Min(m_Speed + Time.DeltaTime, MaxSpeed);
 
-                m_Transform.Position += m_Direction * m_Speed * Time.DeltaTime;
+                m_RigidBody.LinearVelocity = m_Direction * m_Speed;
 
                 uint emission = (uint)Single.Lerp(m_StartingEmission, m_StartingEmission + MaxEmissionRate, m_Speed / MaxSpeed);
                 m_Emitter.EmissionRate = emission;
             }
+        }
+
+        protected override void OnCollisionEnter(Entity entity, Vector3 contactNormal)
+        {
+            Prefab.DestroyInstance(Entity);
         }
     }
 }

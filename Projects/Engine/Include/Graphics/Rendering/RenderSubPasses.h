@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "VulkanPushDescriptors.h"
 #include "BinaryBuffer.h"
+#include "Material.h"
 
 namespace Odyssey
 {
@@ -21,12 +22,25 @@ namespace Odyssey
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) { }
 	};
 
+	class BRDFLutSubPass : public RenderSubPass
+	{
+	public:
+		virtual void Setup() override;
+		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
+
+	private:
+		Ref<Shader> m_Shader;
+		ResourceID m_Pipeline;
+
+	private:
+		inline static const GUID& Shader_GUID = 817239865824362843;
+	};
+
 	class DepthSubPass : public RenderSubPass
 	{
 	public:
 		virtual void Setup() override;
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
-		void GetAttributeDescriptions(BinaryBuffer& attributeDescriptions, bool skinned);
 
 	private: // Non-skinned
 		Ref<Shader> m_Shader;
@@ -38,7 +52,6 @@ namespace Odyssey
 
 	private: // Shared
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
-		ResourceID m_DescriptorLayout;
 		ResourceID m_DepthUBO;
 
 	private:
@@ -46,9 +59,10 @@ namespace Odyssey
 		inline static const GUID& Skinned_Shader_GUID = 218097783217681239;
 	};
 
-	class OpaqueSubPass : public RenderSubPass
+	class RenderObjectSubPass : public RenderSubPass
 	{
 	public:
+		RenderObjectSubPass(RenderQueue renderQueue);
 		virtual void Setup() override;
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
 
@@ -59,6 +73,7 @@ namespace Odyssey
 		ResourceID m_BlackTextureID;
 		Ref<Texture2D> m_WhiteTexture;
 		ResourceID m_WhiteTextureID;
+		RenderQueue m_RenderQueue;
 
 		struct GlobalData
 		{
@@ -77,13 +92,11 @@ namespace Odyssey
 	public:
 		virtual void Setup() override;
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
-		void GetAttributeDescriptions(BinaryBuffer& attributeDescriptions);
 
 	private:
 		Ref<Shader> m_Shader;
 		ResourceID m_GraphicsPipeline;
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
-		ResourceID m_DescriptorLayout;
 
 	private:
 		inline static const GUID& s_DebugShaderGUID = 3857300505190494605;
@@ -94,11 +107,9 @@ namespace Odyssey
 	public:
 		virtual void Setup() override;
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
-		void GetAttributeDescriptions(BinaryBuffer& attributeDescriptions);
 
 	private:
 		ResourceID m_GraphicsPipeline;
-		ResourceID m_DescriptorLayout;
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
 		ResourceID uboID;
 		Ref<Shader> m_Shader;
@@ -115,7 +126,6 @@ namespace Odyssey
 
 	private:
 		ResourceID m_GraphicsPipeline;
-		ResourceID m_DescriptorLayout;
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
 		ResourceID m_ModelUBO;
 		Ref<Shader> m_Shader;
@@ -131,7 +141,6 @@ namespace Odyssey
 		virtual void Execute(RenderPassParams& params, RenderSubPassData& subPassData) override;
 
 	private:
-		void GetAttributeDescriptions(BinaryBuffer& attributeDescriptions);
 		void OnSpriteShaderModified();
 
 	private:
@@ -141,7 +150,6 @@ namespace Odyssey
 		Ref<Shader> m_Shader;
 		Ref<Mesh> m_QuadMesh;
 		ResourceID m_GraphicsPipeline;
-		ResourceID m_DescriptorLayout;
 		Ref<VulkanPushDescriptors> m_PushDescriptors;
 		std::array<ResourceID, Max_Supported_Sprites> m_SpriteDataUBO;
 

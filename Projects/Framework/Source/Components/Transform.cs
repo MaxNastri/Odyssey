@@ -16,6 +16,16 @@
             }
         }
 
+        public Vector3 WorldPosition
+        {
+            get
+            {
+                Vector3 result;
+                unsafe { InternalCalls.Transform_GetWorldPosition(Entity.GUID, &result); }
+                return result;
+            }
+        }
+
         public Vector3 EulerAngles
         {
             get

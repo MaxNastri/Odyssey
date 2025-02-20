@@ -20,25 +20,35 @@ namespace Odyssey
 		Deserialize(node);
 	}
 
+	void Animator::OnDestroy()
+	{
+		SetDebugEnabled(false);
+	}
+
 	void Animator::Serialize(SerializationNode& node)
 	{
 		SerializationNode componentNode = node.AppendChild();
 		componentNode.SetMap();
 
-		GUID rigGUID = m_Rig->GetGUID();
-		GUID blueprintGUID = m_Blueprint->GetGUID();
+		GUID rigGUID = m_Rig ? m_Rig->GetGUID() : GUID::Empty();
+		GUID blueprintGUID = m_Blueprint ? m_Blueprint->GetGUID() : GUID::Empty();
 
 		componentNode.WriteData("Type", Animator::Type);
+		componentNode.WriteData("Enabled", m_Enabled);
 		componentNode.WriteData("Animation Rig", rigGUID.CRef());
 		componentNode.WriteData("Animation Blueprint", blueprintGUID.CRef());
+		componentNode.WriteData("Rig Root", m_RigRootGUID.CRef());
 	}
 
 	void Animator::Deserialize(SerializationNode& node)
 	{
 		GUID rigGUID;
 		GUID blueprintGUID;
+
+		node.ReadData("Enabled", m_Enabled);
 		node.ReadData("Animation Rig", rigGUID.Ref());
 		node.ReadData("Animation Blueprint", blueprintGUID.Ref());
+		node.ReadData("Rig Root", m_RigRootGUID.Ref());
 
 		if (rigGUID)
 			SetRig(rigGUID);
@@ -51,8 +61,14 @@ namespace Odyssey
 	{
 		if (m_Rig && m_Blueprint)
 		{
+			// Check if we need to spawn/catalog the bones
 			if (m_BoneGameObjects.size() == 0)
-				CreateBoneGameObjects();
+			{
+				if (m_RigRootGUID)
+					CatalogBoneGameObjects();
+				else
+					CreateBoneGameObjects();
+			}
 
 			ProcessKeys();
 		}
@@ -107,17 +123,36 @@ namespace Odyssey
 
 	void Animator::SetRig(GUID guid)
 	{
+		// We are switching to a new rig
+		if (m_Rig && m_Rig->GetGUID() != guid)
+		{
+			m_RigRootGUID = GUID::Empty();
+			DestroyBoneGameObjects();
+		}
+
 		m_Rig = AssetManager::LoadAsset<AnimationRig>(guid);
 
 		// Resize our final poses to match the bone count
 		m_FinalPoses.clear();
 		m_FinalPoses.resize(m_Rig->GetBones().size());
-
 	}
 
 	void Animator::SetBlueprint(GUID guid)
 	{
 		m_Blueprint = AssetManager::LoadInstance<AnimationBlueprint>(guid);
+	}
+
+	void Animator::SetDebugEnabled(bool enabled)
+	{
+		if (enabled != m_DebugEnabled)
+		{
+			m_DebugEnabled = enabled;
+
+			if (m_DebugEnabled)
+				m_DebugID = DebugRenderer::Register([this]() { DebugDraw(); });
+			else
+				DebugRenderer::Deregister(m_DebugID);
+		}
 	}
 
 	void Animator::CreateBoneGameObjects()
@@ -145,6 +180,7 @@ namespace Odyssey
 		m_RigRoot = scene->CreateGameObject();
 		m_RigRoot.SetName("Rig");
 		m_RigRoot.SetParent(m_GameObject);
+		m_RigRootGUID = m_RigRoot.GetGUID();
 
 		Transform& rigRootTransform = m_RigRoot.AddComponent<Transform>();
 		rigRootTransform.SetPosition(translation);
@@ -158,14 +194,10 @@ namespace Odyssey
 			m_BoneGameObjects[i] = scene->CreateGameObject();
 			m_BoneGameObjects[i].AddComponent<Transform>();
 			m_BoneGameObjects[i].SetParent(m_RigRoot);
+			m_BoneGameObjects[i].SetName(bones[i].Name);
 
 			// Update the map
-			m_BoneGameObjectsMap[bones[i].Name] = m_BoneGameObjects[i];
-
-			// Make sure we don't serialize these transforms
-			PropertiesComponent& properties = m_BoneGameObjects[i].GetComponent<PropertiesComponent>();
-			properties.Serialize = false;
-			properties.Name = bones[i].Name;
+			m_BoneCatalog[bones[i].Name] = m_BoneGameObjects[i];
 		}
 
 		// Now set the proper parent hierarchy
@@ -181,14 +213,28 @@ namespace Odyssey
 	{
 		// Destroy the rig root
 		m_RigRoot.Destroy();
-
-		// Destroy the bones
-		for (auto& gameObject : m_BoneGameObjects)
-		{
-			gameObject.Destroy();
-		}
-
 		m_BoneGameObjects.clear();
+		m_RigRootGUID = GUID::Empty();
+	}
+
+	void Animator::CatalogBoneGameObjects()
+	{
+		m_RigRoot = m_GameObject.GetScene()->GetGameObject(m_RigRootGUID);
+
+		std::vector<GameObject> children = m_RigRoot.GetAllChildren();
+		const std::vector<Bone>& bones = m_Rig->GetBones();
+
+		for (const Bone& bone : bones)
+		{
+			for (GameObject& child : children)
+			{
+				if (child.GetName() == bone.Name)
+				{
+					m_BoneGameObjects.push_back(child);
+					m_BoneCatalog[bone.Name] = child;
+				}
+			}
+		}
 	}
 
 	void Animator::ProcessKeys()
@@ -207,16 +253,13 @@ namespace Odyssey
 			const std::string& boneName = bones[i].Name;
 			BlendKey& blendKey = boneKeys[boneName];
 
-			Transform& boneTransform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
+			Transform& boneTransform = m_BoneCatalog[boneName].GetComponent<Transform>();
 			boneTransform.SetPosition(blendKey.Position);
 			boneTransform.SetRotation(blendKey.Rotation);
 			boneTransform.SetScale(blendKey.Scale);
 
 			glm::mat4 key = animatorInverse * boneTransform.GetWorldMatrix();
 			m_FinalPoses[i] = key * bones[i].InverseBindpose;
-
-			if (m_DebugEnabled)
-				DebugDrawKey(key);
 		}
 	}
 
@@ -228,7 +271,7 @@ namespace Odyssey
 		{
 			const std::string& boneName = bones[i].Name;
 
-			Transform& boneTransform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
+			Transform& boneTransform = m_BoneCatalog[boneName].GetComponent<Transform>();
 			m_FinalPoses[i] = m_Rig->GetRotationOffset() * boneTransform.GetWorldMatrix();
 		}
 	}
@@ -241,7 +284,7 @@ namespace Odyssey
 		{
 			const std::string& boneName = bones[i].Name;
 
-			Transform& boneTransform = m_BoneGameObjectsMap[boneName].GetComponent<Transform>();
+			Transform& boneTransform = m_BoneCatalog[boneName].GetComponent<Transform>();
 			boneTransform.SetLocalMatrix(mat4(1.0f));
 
 			glm::mat4 key = m_Rig->GetRotationOffset() * boneTransform.GetWorldMatrix();
@@ -249,50 +292,23 @@ namespace Odyssey
 		}
 	}
 
-	void Animator::DebugDrawBones()
+	void Animator::DebugDraw()
 	{
-		auto& transform = m_GameObject.GetComponent<Transform>();
-		for (auto& boneGameObject : m_BoneGameObjects)
+		for (auto& [boneName, boneObject] : m_BoneCatalog)
 		{
-			auto& boneTransform = boneGameObject.GetComponent<Transform>();
-			glm::mat4 finalPose = boneTransform.GetWorldMatrix();
+			Transform& boneTransform = boneObject.GetComponent<Transform>();
+
+			// Decompose the world matrix
+			glm::mat4 worldSpace = boneTransform.GetWorldMatrix();
 			glm::vec3 translation;
 			glm::vec3 scale;
 			glm::quat rotation;
 			glm::vec3 skew;
 			glm::vec4 perspective;
-			glm::decompose(finalPose, scale, rotation, translation, skew, perspective);
+			glm::decompose(worldSpace, scale, rotation, translation, skew, perspective);
 
+			// Add a sphere at the world-space position
 			DebugRenderer::AddSphere(translation, 0.025f, glm::vec4(0, 1, 0, 1));
 		}
-	}
-
-	void Animator::DebugDrawKey(const glm::mat4& key)
-	{
-		auto& transform = m_GameObject.GetComponent<Transform>();
-		glm::mat4 worldSpace = key;
-		glm::vec3 translation;
-		glm::vec3 scale;
-		glm::quat rotation;
-		glm::vec3 skew;
-		glm::vec4 perspective;
-		glm::decompose(worldSpace, scale, rotation, translation, skew, perspective);
-
-		DebugRenderer::AddSphere(translation, 0.025f, glm::vec4(0, 1, 0, 1));
-	}
-
-	void Animator::DebugDrawBone(const Bone& bone)
-	{
-		auto& transform = m_GameObject.GetComponent<Transform>();
-
-		glm::mat4 boneTransform = transform.GetWorldMatrix() * bone.Bindpose;
-		glm::vec3 translation;
-		glm::vec3 scale;
-		glm::quat rotation;
-		glm::vec3 skew;
-		glm::vec4 perspective;
-		glm::decompose(boneTransform, scale, rotation, translation, skew, perspective);
-
-		DebugRenderer::AddSphere(translation, 0.025f, glm::vec4(0, 1, 0, 1));
 	}
 }

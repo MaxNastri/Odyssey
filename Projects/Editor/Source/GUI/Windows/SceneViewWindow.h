@@ -9,7 +9,8 @@
 namespace Odyssey
 {
 	class Camera;
-	class OpaquePass;
+	class RenderObjectsPass;
+	class TransparentObjectsPass;
 	class Transform;
 	class VulkanTextureSampler;
 	struct GUISelectionChangedEvent;
@@ -35,6 +36,7 @@ namespace Odyssey
 	private:
 		void CreateRenderTexture();
 		void DestroyRenderTexture();
+		void DrawMenuBar(float2 menuPosition);
 		void RenderGizmos();
 		void UpdateCameraController();
 		void UpdateGizmosInput();
@@ -50,7 +52,8 @@ namespace Odyssey
 		bool m_AllowInput = true;
 
 	private: // Rendering stuff
-		Ref<OpaquePass> m_SceneViewPass;
+		Ref<RenderObjectsPass> m_SceneViewPass;
+		Ref<TransparentObjectsPass> m_TransparentPass;
 		uint64_t m_RenderTextureID;
 		ResourceID m_RenderTarget;
 		ResourceID m_RTSampler;
@@ -59,6 +62,7 @@ namespace Odyssey
 		Scene* m_ActiveScene;
 		GameObject m_SelectedGO;
 		uint32_t op = 7;
+		uint64_t m_GizmoIcon;
 
 	public:
 		// TODO: Move these to editor settings file

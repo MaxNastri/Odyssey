@@ -5,6 +5,7 @@
 #include "Drawcall.h"
 #include "Ref.h"
 #include "BinaryBuffer.h"
+#include "Material.h"
 
 namespace Odyssey
 {
@@ -29,7 +30,6 @@ namespace Odyssey
 	struct ObjectUniformData
 	{
 		glm::mat4 world;
-		glm::mat3 InverseWorld;
 	};
 
 	struct SkinningData
@@ -77,6 +77,8 @@ namespace Odyssey
 		float4 AmbientColor = float4(0.0f);
 		std::array<SceneLight, 16> SceneLights;
 		uint32_t LightCount = 0;
+		float Exposure;
+		float GammaCorrection;
 	};
 
 	struct SetPass
@@ -85,19 +87,18 @@ namespace Odyssey
 		SetPass() = default;
 
 	public:
-		void SetMaterial(Ref<Material> material, bool skinned, ResourceID descriptorLayout, ResourceID materialBuffer);
-
-	private:
-		void SetupAttributeDescriptions(bool skinned, BinaryBuffer& descriptions);
+		void SetMaterial(Ref<Material> material, bool skinned);
 
 	public:
+		std::map<std::string, ShaderBinding> ShaderBindings;
+		std::map<std::string, Ref<Texture2D>> Textures;
+
 		ResourceID GraphicsPipeline;
 		ResourceID MaterialBuffer;
 		std::map<ShaderType, ResourceID> Shaders;
-		ResourceID ColorTexture;
-		ResourceID NormalTexture;
-		ResourceID NoiseTexture;
+		RenderQueue RenderQueue;
 		std::vector<Drawcall> Drawcalls;
+		bool WriteDepth = true;
 	};
 
 	class RenderScene
@@ -128,7 +129,7 @@ namespace Odyssey
 
 		std::map<uint8_t, Camera*> m_Cameras;
 		ResourceID SkyboxCubemap;
-		std::vector<SetPass> setPasses;
+		std::map<RenderQueue, std::vector<SetPass>> SetPasses;
 		std::vector<SpriteDrawcall> SpriteDrawcalls;
 		std::map<GUID, size_t> m_GUIDToSetPass;
 
@@ -138,9 +139,7 @@ namespace Odyssey
 		std::vector<ResourceID> sceneDataBuffers;
 		std::vector<ResourceID> perObjectUniformBuffers;
 		std::vector<ResourceID> skinningBuffers;
-		std::vector<ResourceID> m_MaterialBuffers;
 		ResourceID LightingBuffer;
-		ResourceID m_DescriptorLayout;
 
 		uint32_t m_NextUniformBuffer = 0;
 		uint32_t m_NextMaterialBuffer = 0;

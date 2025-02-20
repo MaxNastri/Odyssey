@@ -17,6 +17,7 @@ namespace Odyssey
 
 	public:
 		void Awake() { }
+		void OnDestroy();
 		void Serialize(SerializationNode& node);
 		void Deserialize(SerializationNode& node);
 
@@ -39,7 +40,7 @@ namespace Odyssey
 		GUID GetBlueprintAsset();
 		void SetRig(GUID animationRigGUID);
 		void SetBlueprint(GUID animationClipGUID);
-		void SetDebugEnabled(bool enabled) { m_DebugEnabled = enabled; }
+		void SetDebugEnabled(bool enabled);
 
 	public:
 		const std::vector<glm::mat4>& GetFinalPoses() { return m_FinalPoses; }
@@ -47,14 +48,13 @@ namespace Odyssey
 	private:
 		void CreateBoneGameObjects();
 		void DestroyBoneGameObjects();
+		void CatalogBoneGameObjects();
 		void ProcessKeys();
 		void ProcessTransforms();
 		void ResetToBindpose();
 
 	private:
-		void DebugDrawBones();
-		void DebugDrawKey(const glm::mat4& key);
-		void DebugDrawBone(const Bone& bone);
+		void DebugDraw();
 
 	private:
 		bool m_Enabled = true;
@@ -63,15 +63,19 @@ namespace Odyssey
 		Ref<AnimationBlueprint> m_Blueprint;
 
 	private:
+		GUID m_RigRootGUID;
 		GameObject m_RigRoot;
 		std::vector<GameObject> m_BoneGameObjects;
-		std::unordered_map<std::string, GameObject> m_BoneGameObjectsMap;
+		std::unordered_map<std::string, GameObject> m_BoneCatalog;
+
+	private:
 		std::map<std::string, glm::mat4> m_BoneTransforms;
 		std::vector<glm::mat4> m_FinalPoses;
 		bool m_Playing = false;
 
 	private:
 		bool m_DebugEnabled = false;
+		uint32_t m_DebugID;
 	};
 
 }

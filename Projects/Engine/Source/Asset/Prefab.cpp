@@ -1,6 +1,7 @@
 #include "Prefab.h"
 #include "SceneManager.h"
 #include "PropertiesComponent.h"
+#include "Transform.h"
 
 namespace Odyssey
 {
@@ -59,6 +60,15 @@ namespace Odyssey
 		for (auto& child : children)
 			remap[child.GetGUID()] = GUID::New();
 
+		float3 prevPosition = float3(0.0f);
+
+		// Before serializing the prefab, clear the prefab's root position
+		if (Transform* transform = prefabInstance.TryGetComponent<Transform>())
+		{
+			prevPosition = transform->GetPosition();
+			transform->SetPosition(float3(0.0f));
+		}
+
 		// When we serialize, pass along the remap to serialize the new guids and update any references to the old guids
 		SerializeGameObject(prefabInstance, gameObjectsNode, remap, false);
 
@@ -66,6 +76,11 @@ namespace Odyssey
 			SerializeGameObject(child, gameObjectsNode, remap);
 
 		serializer.WriteToDisk(m_AssetPath);
+
+		// Restore the previous position before serialization
+		if (Transform* transform = prefabInstance.TryGetComponent<Transform>())
+			transform->SetPosition(prevPosition);
+
 	}
 
 	GameObject Prefab::LoadInstance()

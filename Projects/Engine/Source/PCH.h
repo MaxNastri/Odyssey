@@ -3,12 +3,14 @@
 #include <assert.h>
 #include <bitset>
 #include <cstring>
+#include <execution>
 #include <filesystem>
 #include <fstream>
 #include <functional>
 #include <iostream>
 #include <istream>
 #include <map>
+#include <omp.h>
 #include <queue>
 #include <ranges>
 #include <set>
@@ -25,9 +27,11 @@
 	#include <Windows.h>
 #endif
 
-#include "PCH.h"
 #include "Utils.h"
 #include "Globals.h"
+#include "Ref.h"
+#include "Enum.h"
+#include "Enums.h"
 
 #include "glm.h"
 using namespace glm;
@@ -43,5 +47,14 @@ namespace Odyssey
 	inline static bool Contains(const std::vector<T>& vector, const T& search)
 	{
 		return std::find(vector.begin(), vector.end(), search) != vector.end();
+	}
+
+	inline static std::string ToLower(const std::string& str)
+	{
+		std::string copy = str;
+		std::transform(copy.begin(), copy.end(), copy.begin(),
+			[](unsigned char c) { return std::tolower(c); });
+
+		return copy;
 	}
 }

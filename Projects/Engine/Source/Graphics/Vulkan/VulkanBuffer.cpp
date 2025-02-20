@@ -22,7 +22,7 @@ namespace Odyssey
 			case Odyssey::BufferType::Index:
 				return VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 			case BufferType::Uniform:
-				return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
+				return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 			case BufferType::Storage:
 				return VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 		}
@@ -46,6 +46,26 @@ namespace Odyssey
 		return (VkDescriptorType)0;
 	}
 
+	VmaMemoryUsage GetMemoryUsage(BufferType bufferType)
+	{
+		switch (bufferType)
+		{
+			case Odyssey::BufferType::None:
+				break;
+			case Odyssey::BufferType::Staging:
+			case Odyssey::BufferType::Uniform:
+			case Odyssey::BufferType::Storage:
+				return VMA_MEMORY_USAGE_CPU_TO_GPU;
+			case Odyssey::BufferType::Vertex:
+			case Odyssey::BufferType::Index:
+				return VMA_MEMORY_USAGE_GPU_ONLY;
+			default:
+				break;
+		}
+
+		return (VmaMemoryUsage)0;
+	}
+
 	VulkanBuffer::VulkanBuffer(ResourceID id, std::shared_ptr<VulkanContext> context, BufferType bufferType, VkDeviceSize size)
 		: Resource(id)
 	{
@@ -61,62 +81,42 @@ namespace Odyssey
 		bufferInfo.usage = GetUsageFlags(bufferType);
 		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-		if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
-		{
-			Log::Error("[VulkanBuffer] Failed to create vulkan buffer!");
-			return;
-		}
+		bool cpuRead = bufferType == BufferType::Storage;
+
+		VulkanAllocator allocator("Buffer");
+		m_MemoryAllocation = allocator.AllocateBuffer(bufferInfo, VMA_MEMORY_USAGE_AUTO, cpuRead, m_Buffer);
 
 		if (bufferType == BufferType::Uniform || bufferType == BufferType::Storage)
 		{
-			m_Descriptor.buffer = buffer;
+			m_Descriptor.buffer = m_Buffer;
 			m_Descriptor.range = VK_WHOLE_SIZE;
 			m_Descriptor.offset = 0;
 		}
-
-		AllocateMemory();
 	}
 
 	void VulkanBuffer::Destroy()
 	{
-		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
-		vkFreeMemory(device, bufferMemory, allocator);
-		vkDestroyBuffer(device, buffer, allocator);
+		VulkanAllocator allocator("Buffer");
+		allocator.DestroyBuffer(m_Buffer, m_MemoryAllocation);
 
-		bufferMemory = VK_NULL_HANDLE;
-		buffer = VK_NULL_HANDLE;
+		m_Buffer = nullptr;
+		m_MemoryAllocation = nullptr;
 	}
-	
+
 	void VulkanBuffer::CopyData(VkDeviceSize size, const void* data)
 	{
-		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
+		VulkanAllocator allocator("Buffer");
 
-		if (m_BufferType == BufferType::Uniform)
-		{
-			memcpy(bufferMemoryMapped, data, static_cast<size_t>(size));
-		}
-		else
-		{
-			// Map, copy and unmap the buffer memory
-			VkResult err = vkMapMemory(device, bufferMemory, 0, m_Size, 0, &bufferMemoryMapped);
-
-			memcpy(bufferMemoryMapped, data, static_cast<size_t>(size));
-
-			VkMappedMemoryRange range[1] = {};
-			range[0].sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-			range[0].memory = bufferMemory;
-			range[0].size = m_Size;
-			err = vkFlushMappedMemoryRanges(device, 1, range);
-
-			vkUnmapMemory(device, bufferMemory);
-		}
+		uint8_t* memData = allocator.MapMemory<uint8_t>(m_MemoryAllocation);
+		memcpy(memData, data, (size_t)size);
+		allocator.UnmapMemory(m_MemoryAllocation);
 	}
 
 	void VulkanBuffer::UploadData(const void* data, VkDeviceSize size)
 	{
 		// Write the vertices into the staging buffer
 		ResourceID stagingBufferID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, size);
-		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(stagingBufferID);
+		Ref<VulkanBuffer> stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(stagingBufferID);
 		stagingBuffer->CopyData(size, data);
 
 		// Copy the staging buffer into the vertex buffer
@@ -137,26 +137,18 @@ namespace Odyssey
 
 	void VulkanBuffer::CopyBufferMemory(void* dst)
 	{
-		VkDevice device = m_Context->GetDevice()->GetLogicalDevice();
-		// Map, copy and unmap the buffer memory
-		VkResult err = vkMapMemory(device, bufferMemory, 0, m_Size, 0, &bufferMemoryMapped);
+		VulkanAllocator allocator("Buffer");
 
-		memcpy(dst, bufferMemoryMapped, static_cast<size_t>(m_Size));
-
-		VkMappedMemoryRange range[1] = {};
-		range[0].sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-		range[0].memory = bufferMemory;
-		range[0].size = m_Size;
-		err = vkFlushMappedMemoryRanges(device, 1, range);
-
-		vkUnmapMemory(device, bufferMemory);
+		uint8_t* memData = allocator.MapMemory<uint8_t>(m_MemoryAllocation);
+		memcpy(dst, memData, (size_t)m_Size);
+		allocator.UnmapMemory(m_MemoryAllocation);
 	}
 
 	uint64_t VulkanBuffer::GetAddress()
 	{
 		VkBufferDeviceAddressInfo addressInfo{};
 		addressInfo.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
-		addressInfo.buffer = buffer;
+		addressInfo.buffer = m_Buffer;
 		return vkGetBufferDeviceAddress(m_Context->GetDeviceVK(), &addressInfo);
 	}
 
@@ -173,59 +165,4 @@ namespace Odyssey
 		writeSet.pBufferInfo = &m_Descriptor;
 		return writeSet;
 	}
-
-	void VulkanBuffer::AllocateMemory()
-	{
-		VkMemoryRequirements memoryRequirements;
-		vkGetBufferMemoryRequirements(m_Context->GetDeviceVK(), buffer, &memoryRequirements);
-
-		m_Size = (uint32_t)memoryRequirements.size;
-
-		VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-
-		VkMemoryAllocateFlagsInfo memoryFlags{};
-		memoryFlags.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
-
-		VkMemoryAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		allocInfo.allocationSize = memoryRequirements.size;
-		allocInfo.memoryTypeIndex = FindMemoryType(m_Context->GetPhysicalDeviceVK(), memoryRequirements.memoryTypeBits, properties);
-
-		if (m_BufferType == BufferType::Uniform)
-		{
-			memoryFlags.flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT;
-			allocInfo.pNext = &memoryFlags;
-		}
-
-		if (vkAllocateMemory(m_Context->GetDeviceVK(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
-		{
-			Log::Error("[VulkanBuffer] Failed to allocate buffer memory!");
-			return;
-		}
-
-		vkBindBufferMemory(m_Context->GetDeviceVK(), buffer, bufferMemory, 0);
-
-		if (m_BufferType == BufferType::Uniform)
-		{
-			vkMapMemory(m_Context->GetDeviceVK(), bufferMemory, 0, m_Size, 0, &bufferMemoryMapped);
-		}
-	}
-
-	uint32_t VulkanBuffer::FindMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties)
-	{
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
-
-		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
-		{
-			if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
-			{
-				return i;
-			}
-		}
-
-		throw std::runtime_error("failed to find suitable memory type!");
-	}
-
-	
 }

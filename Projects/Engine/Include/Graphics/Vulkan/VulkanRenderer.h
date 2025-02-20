@@ -34,11 +34,14 @@ namespace Odyssey
 	public:
 		void AddRenderPass(Ref<RenderPass> renderPass) { m_RenderPasses.push_back(renderPass); }
 		void AddImguiPass();
+		void CaptureCursor();
+		void ReleaseCursor();
 
 	public:
 		std::shared_ptr<VulkanImgui> GetImGui() { return m_Imgui; }
 		std::shared_ptr<VulkanWindow> GetWindow() { return m_Window; }
 		static uint32_t GetFrameIndex() { return s_FrameIndex; }
+
 	private:
 		bool BeginFrame(VulkanFrame*& currentFrame);
 		void RenderFrame();
@@ -47,6 +50,8 @@ namespace Odyssey
 	private:
 		VulkanImgui::InitInfo CreateImguiInitInfo();
 		void SetupFrameData();
+		void BuildIrradianceCubemap(RenderPassParams& params);
+		void BuildPrefilteredCubemap(RenderPassParams& params);
 
 	private: // Vulkan objects
 		std::shared_ptr<VulkanContext> m_Context;
@@ -68,6 +73,11 @@ namespace Odyssey
 	private: // Swapchain
 		std::unique_ptr<VulkanSwapchain> m_Swapchain;
 		bool m_RebuildSwapchain = false;
+
+	private:
+		ResourceID m_BRDFLutTexture;
+		ResourceID m_IrradianceCubemap;
+		ResourceID m_PrefilteredCubemap;
 
 	private: // Frame data
 		std::vector<VulkanFrame> m_Frames;

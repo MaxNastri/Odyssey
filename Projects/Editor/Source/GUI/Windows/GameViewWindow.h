@@ -7,8 +7,10 @@
 
 namespace Odyssey
 {
-	class OpaquePass;
+	class RenderObjectsPass;
+	class TransparentObjectsPass;
 	class VulkanTextureSampler;
+	struct PlaymodeStateChangedEvent;
 
 	class GameViewWindow : public DockableWindow
 	{
@@ -24,6 +26,7 @@ namespace Odyssey
 
 	private:
 		void OnSceneLoaded(SceneLoadedEvent* event);
+		void OnPlaymodeStateChanged(PlaymodeStateChangedEvent* event);
 
 	private:
 		void CreateRenderTexture();
@@ -36,8 +39,11 @@ namespace Odyssey
 
 	private:
 		Ref<IEventListener> m_SceneLoadListener = nullptr;
+		Ref<IEventListener> m_PlaymodeStateListener = nullptr;
+
 	private:
-		Ref<OpaquePass> m_GameViewPass;
+		Ref<RenderObjectsPass> m_GameViewPass;
+		Ref<TransparentObjectsPass> m_TransparentPass;
 		GameObject m_MainCamera;
 	};
 }

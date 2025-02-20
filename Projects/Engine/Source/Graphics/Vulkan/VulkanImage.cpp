@@ -64,30 +64,8 @@ namespace Odyssey
 			if (desc.ImageType == ImageType::Cubemap)
 				imageInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 
-			if (vkCreateImage(device, &imageInfo, allocator, &m_Image) != VK_SUCCESS)
-			{
-				Log::Error("[VulkanImage] Failed to create image");
-				return;
-			}
-		}
-
-		// Image memory
-		{
-			VkMemoryRequirements memRequirements;
-			vkGetImageMemoryRequirements(device, m_Image, &memRequirements);
-
-			VkMemoryAllocateInfo allocInfo{};
-			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-			allocInfo.allocationSize = memRequirements.size;
-			allocInfo.memoryTypeIndex = FindMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-			if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
-			{
-				Log::Error("(VulkanImage) Failed to allocate image memory");
-				return;
-			}
-
-			vkBindImageMemory(device, m_Image, imageMemory, 0);
+			VulkanAllocator allocator("Image");
+			m_MemoryAllocation = allocator.AllocateImage(imageInfo, VMA_MEMORY_USAGE_AUTO, m_Image);
 		}
 
 		// Image view
@@ -113,6 +91,28 @@ namespace Odyssey
 				return;
 			}
 		}
+
+		for (size_t i = 0; i < m_ImageDesc.ArrayDepth; i++)
+		{
+			VkImageCopy copyRegion = {};
+			copyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			copyRegion.srcSubresource.mipLevel = 0;
+			copyRegion.srcSubresource.baseArrayLayer = (uint32_t)i;
+			copyRegion.srcSubresource.layerCount = 1;
+
+			copyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			copyRegion.dstSubresource.mipLevel = 0;
+			copyRegion.dstSubresource.baseArrayLayer = (uint32_t)i;
+			copyRegion.dstSubresource.layerCount = 1;
+
+			copyRegion.extent.width = m_ImageDesc.Width;
+			copyRegion.extent.height = m_ImageDesc.Height;
+			copyRegion.extent.depth = 1;
+			copyRegion.dstOffset = { 0, 0, 0 };
+			copyRegion.srcOffset = { 0, 0, 0 };
+			m_ImageCopyRegions.push_back(copyRegion);
+		}
+
 	}
 
 	VulkanImage::VulkanImage(ResourceID id, std::shared_ptr<VulkanContext> context, VkImage image, uint32_t width, uint32_t height, uint32_t channels, VkFormat format)
@@ -149,26 +149,44 @@ namespace Odyssey
 				return;
 			}
 		}
+
+		for (size_t i = 0; i < m_ImageDesc.ArrayDepth; i++)
+		{
+			VkImageCopy copyRegion = {};
+			copyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			copyRegion.srcSubresource.mipLevel = 0;
+			copyRegion.srcSubresource.baseArrayLayer = (uint32_t)i;
+			copyRegion.srcSubresource.layerCount = 1;
+
+			copyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			copyRegion.dstSubresource.mipLevel = 0;
+			copyRegion.dstSubresource.baseArrayLayer = (uint32_t)i;
+			copyRegion.dstSubresource.layerCount = 1;
+
+			copyRegion.extent.width = m_ImageDesc.Width;
+			copyRegion.extent.height = m_ImageDesc.Height;
+			copyRegion.extent.depth = 1;
+			copyRegion.dstOffset = { 0, 0, 0 };
+			copyRegion.srcOffset = { 0, 0, 0 };
+			m_ImageCopyRegions.push_back(copyRegion);
+		}
 	}
 
 	void VulkanImage::Destroy()
 	{
-		vkDestroyImage(m_Context->GetDeviceVK(), m_Image, allocator);
-		vkDestroyImageView(m_Context->GetDeviceVK(), imageView, allocator);
-		vkFreeMemory(m_Context->GetDeviceVK(), imageMemory, allocator);
+		VulkanAllocator allocator("Image");
+		allocator.DestroyImage(m_Image, m_MemoryAllocation);
+		vkDestroyImageView(m_Context->GetDeviceVK(), imageView, nullptr);
 
 		m_Image = VK_NULL_HANDLE;
 		imageView = VK_NULL_HANDLE;
-		imageMemory = VK_NULL_HANDLE;
 	}
 
 	void VulkanImage::SetData(BinaryBuffer& buffer)
 	{
-		if (!m_StagingBuffer.IsValid())
-			m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
-
 		// Set the staging buffer's memory
-		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
+		ResourceID stagingBufferID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
+		Ref<VulkanBuffer> stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(stagingBufferID);
 		stagingBuffer->CopyData(buffer.GetSize(), buffer.GetData().data());
 
 		// Generate a copy region for this new set of data
@@ -183,6 +201,7 @@ namespace Odyssey
 		bufferCopyRegion.imageOffset = { 0, 0, 0 };
 		bufferCopyRegion.bufferOffset = 0;
 
+		m_CopyRegions.clear();
 		m_CopyRegions.push_back(bufferCopyRegion);
 
 		// Allocate a command buffer
@@ -193,21 +212,21 @@ namespace Odyssey
 
 		// Copy the buffer into the image
 		commandBuffer->BeginCommands();
-		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_ImageDesc.Width, m_ImageDesc.Height);
+		commandBuffer->CopyBufferToImage(stagingBufferID, m_ResourceID, m_ImageDesc.Width, m_ImageDesc.Height);
 		commandBuffer->EndCommands();
 		commandBuffer->SubmitGraphics();
+
 		commandPool->ReleaseBuffer(commandBufferID);
+		ResourceManager::Destroy(stagingBufferID);
 	}
 
 	void VulkanImage::SetData(BinaryBuffer& buffer, size_t arrayDepth)
 	{
 		size_t offset = buffer.GetSize() / arrayDepth;
 
-		if (!m_StagingBuffer.IsValid())
-			m_StagingBuffer = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
-
 		// Set the staging buffer's memory
-		auto stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(m_StagingBuffer);
+		ResourceID stagingBufferID = ResourceManager::Allocate<VulkanBuffer>(BufferType::Staging, buffer.GetSize());
+		Ref<VulkanBuffer> stagingBuffer = ResourceManager::GetResource<VulkanBuffer>(stagingBufferID);
 		stagingBuffer->CopyData(buffer.GetSize(), buffer.GetData().data());
 
 		// Generate a copy region for this new set of data
@@ -228,17 +247,18 @@ namespace Odyssey
 		}
 
 		// Allocate a command buffer
-		ResourceID commandPoolID = m_Context->GetGraphicsCommandPool();
-		auto commandPool = ResourceManager::GetResource<VulkanCommandPool>(commandPoolID);
+		Ref<VulkanCommandPool> commandPool = ResourceManager::GetResource<VulkanCommandPool>(m_Context->GetGraphicsCommandPool());
 		ResourceID commandBufferID = commandPool->AllocateBuffer();
-		auto commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
+		Ref<VulkanCommandBuffer> commandBuffer = ResourceManager::GetResource<VulkanCommandBuffer>(commandBufferID);
 
 		// Copy the buffer into the image
 		commandBuffer->BeginCommands();
-		commandBuffer->CopyBufferToImage(m_StagingBuffer, m_ResourceID, m_ImageDesc.Width, m_ImageDesc.Height);
+		commandBuffer->CopyBufferToImage(stagingBufferID, m_ResourceID, m_ImageDesc.Width, m_ImageDesc.Height);
 		commandBuffer->EndCommands();
 		commandBuffer->SubmitGraphics();
 		commandPool->ReleaseBuffer(commandBufferID);
+
+		ResourceManager::Destroy(stagingBufferID);
 	}
 
 	VkImageMemoryBarrier VulkanImage::CreateMemoryBarrier(ResourceID imageID, VkImageLayout oldLayout, VkImageLayout newLayout, VkPipelineStageFlags& srcStage, VkPipelineStageFlags& dstStage)
@@ -296,14 +316,6 @@ namespace Odyssey
 			srcStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 			dstStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		}
-		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-		{
-			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-			srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-			dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-		}
 		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
 		{
 			barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
@@ -325,12 +337,44 @@ namespace Odyssey
 			srcStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 			dstStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+			dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+			barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+			dstStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		}
 		else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR)
 		{
 			barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
 			srcStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			dstStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		}
 		else if (oldLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
 		{
@@ -367,6 +411,30 @@ namespace Odyssey
 
 			srcStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+			dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+		{
+			barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+			srcStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		}
 		else if (oldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL)
 		{
@@ -417,7 +485,7 @@ namespace Odyssey
 			case ImageType::Cubemap:
 				return VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 			case ImageType::RenderTexture:
-				return VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+				return VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 			case ImageType::DepthTexture:
 				return VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 			case ImageType::Shadowmap:
@@ -437,6 +505,14 @@ namespace Odyssey
 				return VK_FORMAT_R8G8B8A8_SRGB;
 			case TextureFormat::R8G8B8A8_UNORM:
 				return VK_FORMAT_R8G8B8A8_UNORM;
+			case TextureFormat::R16G16B16_SFLOAT:
+				return VK_FORMAT_R16G16B16_SFLOAT;
+			case TextureFormat::R16G16B16A16_SFLOAT:
+				return VK_FORMAT_R16G16B16A16_SFLOAT;
+			case TextureFormat::R32G32B32A32_SFLOAT:
+				return VK_FORMAT_R32G32B32A32_SFLOAT;
+			case TextureFormat::R16G16_SFLOAT:
+				return VK_FORMAT_R16G16_SFLOAT;
 			case TextureFormat::D24_UNORM_S8_UINT:
 				return VK_FORMAT_D24_UNORM_S8_UINT;
 			case TextureFormat::D16_UNORM:
@@ -447,7 +523,6 @@ namespace Odyssey
 				return VK_FORMAT_D32_SFLOAT_S8_UINT;
 			default:
 				return VK_FORMAT_R8G8B8A8_UNORM;
-				break;
 		}
 	}
 	bool VulkanImage::IsDepthFormat(TextureFormat format)

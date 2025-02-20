@@ -1,10 +1,9 @@
 #include "EditorWidgets.h"
 #include "SceneManager.h"
 #include "EditorComponents.h"
-#include "Transform.h"
 #include "imgui_internal.h"
 #include "Input.h"
-#include "SpriteRenderer.h"
+#include "Components.h"
 
 namespace Odyssey
 {
@@ -153,6 +152,7 @@ namespace Odyssey
 		m_Entities.clear();
 		m_Entities.push_back({ "None", 0 });
 
+		//TODO: FIX THIS ASAP
 		if (m_TypeName == Transform::Type)
 		{
 			for (auto entity : scene->GetAllEntitiesWith<Transform>())
@@ -173,6 +173,23 @@ namespace Odyssey
 		else if (m_TypeName == SpriteRenderer::Type)
 		{
 			for (auto entity : scene->GetAllEntitiesWith<SpriteRenderer>())
+			{
+				GameObject gameObject = GameObject(scene, entity);
+
+				// Skip any game objects marked to not show in the hierarchy
+				if (EditorPropertiesComponent* properties = gameObject.TryGetComponent<EditorPropertiesComponent>())
+					if (!properties->ShowInHierarchy)
+						continue;
+
+				m_Entities.push_back({ gameObject.GetName(), gameObject.GetGUID() });
+
+				if (gameObject.GetGUID() == m_SelectedEntity)
+					m_SelectedIndex = m_Entities.size() - 1;
+			}
+		}
+		else if (m_TypeName == MeshRenderer::Type)
+		{
+			for (auto entity : scene->GetAllEntitiesWith<MeshRenderer>())
 			{
 				GameObject gameObject = GameObject(scene, entity);
 

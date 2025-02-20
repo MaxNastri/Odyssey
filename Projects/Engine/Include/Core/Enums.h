@@ -27,6 +27,8 @@ namespace Odyssey
 		Vertex = 2,
 		Compute = 3,
 		Geometry = 4,
+		Hull = 5,
+		Domain = 6
 	};
 
 	enum class TextureType
@@ -35,6 +37,13 @@ namespace Odyssey
 		Texture2D = 1,
 		Texture3D = 2,
 		Cubemap = 3,
+	};
+
+	enum class BlendMode : uint32_t
+	{
+		None = 0,
+		Additive = 1,
+		AlphaBlend = 2,
 	};
 
 	enum class CubemapFace
@@ -65,6 +74,10 @@ namespace Odyssey
 		R8G8B8A8_SRGB = 1,
 		R8G8B8A8_UNORM = 2,
 		R8G8B8_UNORM = 3,
+		R16G16B16_SFLOAT = 4,
+		R16G16B16A16_SFLOAT = 5,
+		R32G32B32A32_SFLOAT = 6,
+		R16G16_SFLOAT = 7,
 		D32_SFLOAT = 100,
 		D32_SFLOAT_S8_UINT = 101,
 		D24_UNORM_S8_UINT = 102,
@@ -84,7 +97,6 @@ namespace Odyssey
 		None = 0,
 		Optimal = 1,
 		Linear = 2,
-
 	};
 
 	enum class ShaderType : uint32_t
@@ -94,5 +106,7 @@ namespace Odyssey
 		Vertex = 2,
 		Compute = 3,
 		Geometry = 4,
+		Hull = 5,
+		Domain = 6
 	};
 }

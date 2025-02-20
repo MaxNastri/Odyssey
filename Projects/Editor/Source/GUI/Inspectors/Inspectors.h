@@ -5,14 +5,7 @@
 #include "EventSystem.h"
 
 // Components
-#include "Animator.h"
-#include "Camera.h"
-#include "Light.h"
-#include "MeshRenderer.h"
-#include "ParticleEmitter.h"
-#include "Transform.h"
-#include "ScriptComponent.h"
-#include "SpriteRenderer.h"
+#include "Components.h"
 
 // Assets
 #include "Material.h"
@@ -50,14 +43,12 @@ namespace Odyssey
 	private:
 		void OnRigModified(GUID guid);
 		void OnBlueprintModified(GUID guid);
-		void OnDebugEnabledModified(bool enabled);
 
 	private:
 		bool m_AnimatorEnabled;
 		GameObject m_GameObject;
 		AssetFieldDrawer m_RigDrawer;
 		AssetFieldDrawer m_BlueprintDrawer;
-		BoolDrawer m_DebugEnabledDrawer;
 	};
 
 	class CameraInspector : public Inspector
@@ -255,6 +246,141 @@ namespace Odyssey
 		Ref<IEventListener> m_OnSceneModifiedListener;
 	};
 
+	class CharacterControllerInspector : public Inspector
+	{
+	public:
+		CharacterControllerInspector() = default;
+		CharacterControllerInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		Vector3Drawer m_CenterDrawer;
+		FloatDrawer m_RadiusDrawer;
+		FloatDrawer m_HeightDrawer;
+		BoolDrawer m_InertiaDrawer;
+		FloatDrawer m_InertiaFactorDrawer;
+		FloatDrawer m_MaxSlopeDrawer;
+		FloatDrawer m_StepUpDrawer;
+		FloatDrawer m_StepDownDrawer;
+		FloatDrawer m_MaxStrengthDrawer;
+		FloatDrawer m_PaddingDrawer;
+		BoolDrawer m_InnerBodyDrawer;
+		bool m_Enabled;
+	};
+
+	class BoxColliderInspector : public Inspector
+	{
+	public:
+		BoxColliderInspector() = default;
+		BoxColliderInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		Vector3Drawer m_CenterDrawer;
+		Vector3Drawer m_ExtentsDrawer;
+		bool m_Enabled;
+	};
+
+	class CapsuleColliderInspector : public Inspector
+	{
+	public:
+		CapsuleColliderInspector() = default;
+		CapsuleColliderInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		Vector3Drawer m_CenterDrawer;
+		FloatDrawer m_RadiusDrawer;
+		FloatDrawer m_HeightDrawer;
+		bool m_Enabled;
+	};
+
+	class SphereColliderInspector : public Inspector
+	{
+	public:
+		SphereColliderInspector() = default;
+		SphereColliderInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		Vector3Drawer m_CenterDrawer;
+		FloatDrawer m_RadiusDrawer;
+		bool m_Enabled;
+	};
+
+	class RigidBodyInspector : public Inspector
+	{
+	public:
+		RigidBodyInspector() = default;
+		RigidBodyInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		bool m_Enabled;
+		EnumDrawer<PhysicsLayer> m_LayerDrawer;
+		Vector3Drawer m_SurfaceVelocityDrawer;
+		BoolDrawer m_KinematicDrawer;
+		FloatDrawer m_MassDrawer;
+		FloatDrawer m_FrictionDrawer;
+		FloatDrawer m_MaxLinearVelocityDrawer;
+		BoolDrawer m_PushCharacterDrawer;
+		BoolDrawer m_ReceiveForceDrawer;
+	};
+
+	class FluidBodyInspector : public Inspector
+	{
+	public:
+		FluidBodyInspector() = default;
+		FluidBodyInspector(GameObject& gameObject);
+
+	public:
+		virtual bool Draw() override;
+
+	private:
+		void InitDrawers();
+
+	private:
+		GameObject m_GameObject;
+		bool m_Enabled;
+		Vector3Drawer m_CenterDrawer;
+		Vector3Drawer m_ExtentsDrawer;
+		FloatDrawer m_BuoyancyDrawer;
+		FloatDrawer m_LinearDragDrawer;
+		FloatDrawer m_AngularDragDrawer;
+		Vector3Drawer m_FluidVelocityDrawer;
+		FloatDrawer m_GravityFactorDrawer;
+	};
+
 #pragma endregion
 
 #pragma region Assets
@@ -269,19 +395,19 @@ namespace Odyssey
 		virtual bool Draw() override;
 
 	private:
+		bool DrawPropertyTextures();
+		bool DrawMaterialProperties();
+
+	private:
 		Ref<Material> m_Material;
 		bool m_Dirty = false;
 
 		StringDrawer m_NameDrawer;
 		StringDrawer m_GUIDDrawer;
 		AssetFieldDrawer m_ShaderDrawer;
-		AssetFieldDrawer m_ColorTextureDrawer;
-		AssetFieldDrawer m_NormalTextureDrawer;
-		AssetFieldDrawer m_NoiseTextureDrawer;
-		ColorPicker m_EmissiveColorDrawer;
-		FloatDrawer m_EmissivePowerDrawer;
-		FloatDrawer m_AlphaClipDrawer;
-		BoolDrawer m_AlphaBlendDrawer;
+		EnumDrawer<RenderQueue> m_RenderQueueDrawer;
+		EnumDrawer<BlendMode> m_BlendModeDrawer;
+		BoolDrawer m_DepthWriteDrawer;
 	};
 
 	class MeshInspector : public Inspector
@@ -317,10 +443,10 @@ namespace Odyssey
 		virtual bool Draw() override;
 
 	private:
-		void OnNameChanged(std::string_view name);
-		void OnSourceAssetChanged(GUID sourceGUID);
+		bool DrawMaterialProperties();
 
 	private:
+		bool m_Dirty = false;
 		Ref<Shader> m_Shader;
 		StringDrawer m_GUIDDrawer;
 		StringDrawer m_NameDrawer;

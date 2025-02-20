@@ -2,3 +2,37 @@ m_SourceAsset: 13834704671605831352
 m_GUID: 13726779930172400085
 m_Name: PBR_Decal
 m_Type: Odyssey.Shader
+Bindings:
+  - Name: 'Scene Data'
+    Descriptor Type: Uniform
+    Index: 0
+  - Name: 'Model Data'
+    Descriptor Type: Uniform
+    Index: 1
+  - Name: 'Skinning Data'
+    Descriptor Type: Uniform
+    Index: 2
+  - Name: 'Global Data'
+    Descriptor Type: Uniform
+    Index: 3
+  - Name: 'Lighting Data'
+    Descriptor Type: Uniform
+    Index: 4
+  - Name: 'Material Data'
+    Descriptor Type: Uniform
+    Index: 5
+  - Name: 'Diffuse Texture'
+    Descriptor Type: Sampler
+    Index: 6
+  - Name: 'Normal Texture'
+    Descriptor Type: Sampler
+    Index: 7
+  - Name: 'Noise Texture'
+    Descriptor Type: Sampler
+    Index: 8
+  - Name: 'Shadowmap Texture'
+    Descriptor Type: Sampler
+    Index: 9
+  - Name: 'Camera Depth Texture'
+    Descriptor Type: Sampler
+    Index: 10

@@ -1,0 +1,20 @@
+m_SourceAsset: 0
+m_GUID: 539464422473058633
+m_Name: Lit Pirate
+m_Type: Odyssey.Material
+m_Shader: 16842850129266277074
+Render Queue: Opaque
+Blend Mode: None
+Depth Write: 1
+Property Textures:
+  - Property: diffuseSampler
+    Texture: 9834785404981188811
+  - Property: normalSampler
+    Texture: 271556336592991242
+Properties:
+  - Name: EmissiveColor
+    Type: Float4
+    Value: 'x: 0 y: 0 z: 0 w: 0'
+  - Name: alphaClip
+    Type: Float
+    Value: 0.5

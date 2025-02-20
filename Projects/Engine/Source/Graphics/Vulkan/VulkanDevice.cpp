@@ -57,6 +57,8 @@ namespace Odyssey
 		device_extensions.push_back("VK_KHR_multiview");
 		device_extensions.push_back("VK_KHR_maintenance2");
 		device_extensions.push_back(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
+		device_extensions.push_back("VK_KHR_bind_memory2");
+		device_extensions.push_back("VK_KHR_get_memory_requirements2");
 
 		// Validate our extensions are available
 		for (const char* extension : device_extensions)
@@ -106,6 +108,9 @@ namespace Odyssey
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		deviceFeatures.logicOp = true;
 		deviceFeatures.samplerAnisotropy = true;
+		deviceFeatures.geometryShader = true;
+		deviceFeatures.tessellationShader = true;
+
 		VkDeviceCreateInfo create_info = {};
 		create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		create_info.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]);

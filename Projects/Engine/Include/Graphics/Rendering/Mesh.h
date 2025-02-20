@@ -24,7 +24,7 @@ namespace Odyssey
 	public:
 		Mesh() = default;
 		Mesh(const Path& assetPath);
-		Mesh(const Path& assetPath, Ref<SourceModel> source);
+		Mesh(const Path& assetPath, Ref<SourceModel> source, uint32_t meshIndex = 0);
 
 	public:
 		virtual void Save() override;
@@ -47,5 +47,6 @@ namespace Odyssey
 
 	private:
 		std::vector<SubMesh> m_SubMeshes;
+		size_t m_MeshIndex = 0;
 	};
 }

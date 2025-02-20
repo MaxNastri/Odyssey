@@ -57,14 +57,14 @@ namespace Odyssey
 		vkDestroyDescriptorSetLayout(m_Context->GetDeviceVK(), m_Layout, allocator);
 	}
 
-	void VulkanDescriptorLayout::AddBinding(std::string_view bindingName, DescriptorType type, ShaderStage shaderStage, uint32_t bindingIndex)
+	void VulkanDescriptorLayout::AddBinding(std::string_view bindingName, DescriptorType type, uint32_t bindingIndex)
 	{
 		VkDescriptorSetLayoutBinding layoutBinding{};
 		layoutBinding.descriptorType = ConvertDescriptorType(type);
 		// Note: We can set Shader_Stage_All because we are using push descriptors
 		// By default, push descriptors are shared across all shader stages
-		layoutBinding.stageFlags = VK_SHADER_STAGE_ALL;// ConvertShaderFlags(shaderStage);
-		layoutBinding.binding = bindingIndex;
+		layoutBinding.stageFlags = VK_SHADER_STAGE_ALL;
+		layoutBinding.binding = (uint32_t)bindingIndex;
 		layoutBinding.descriptorCount = 1;
 		m_Bindings.push_back(layoutBinding);
 	}

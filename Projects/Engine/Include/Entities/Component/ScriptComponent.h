@@ -19,6 +19,11 @@ namespace Odyssey
 		void Awake();
 		void Update();
 		void OnDestroy();
+		void OnCollisionEnter(GameObject& body, float3 contactNormal);
+		void OnCollisionStay(GameObject& body, float3 contactNormal);
+		void OnCollisionExit(GameObject& body);
+
+	public:
 		void Serialize(SerializationNode& node);
 		void SerializeAsPrefab(SerializationNode& node, std::map<GUID, GUID>& remap);
 		void DeserializeAsPrefab(SerializationNode& node, std::map<GUID, GUID>& remap);

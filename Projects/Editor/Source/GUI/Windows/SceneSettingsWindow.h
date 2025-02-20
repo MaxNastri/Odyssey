@@ -26,6 +26,8 @@ namespace Odyssey
 		ColorPicker m_AmbientColorPicker;
 		Vector3Drawer m_SceneCenterDrawer;
 		FloatDrawer m_SceneRadiusDrawer;
+		FloatDrawer m_ExposureDrawer;
+		FloatDrawer m_GammaCorrectionDrawer;
 
 	private:
 		Scene* m_Scene;

@@ -22,10 +22,13 @@ namespace Sandbox
         public Prefab Fireball;
         public Transform CameraTransform;
         public Transform FireballTransform;
+        public MeshRenderer GrassRenderer;
         public float CameraSpeed = 1.0f;
         public float MovementSpeed = 10.0f;
+        public float JumpHeight = 20.0f;
 
         private Transform m_Transform;
+        private Odyssey.CharacterController m_CharacterController;
         private Animator m_Animator;
         private PlayerInput m_Input;
         private Entity m_SpawnedFireball;
@@ -38,6 +41,7 @@ namespace Sandbox
         protected override void Awake()
         {
             m_Transform = GetComponent<Transform>();
+            m_CharacterController = GetComponent<Odyssey.CharacterController>();
             m_Animator = GetComponent<Animator>();
         }
 
@@ -52,8 +56,13 @@ namespace Sandbox
             }
             else if (m_Input.Alpha1)
             {
-                m_IsCasting = true;
-                m_Animator.SetBool("Casting", true);
+                //m_IsCasting = true;
+                //m_Animator.SetBool("Casting", true);
+            }
+
+            if (GrassRenderer != null)
+            {
+                GrassRenderer.SetFloat3("PlayerPosition", m_Transform.WorldPosition);
             }
         }
 
@@ -68,15 +77,16 @@ namespace Sandbox
                 m_CastingTimer = 0.0f;
             }
 
+
             // Check if we should spawn the fireball
             if (m_CastingTimer >= (Casting_Duration * Fireball_Spawn_Time) && m_SpawnedFireball == null)
             {
                 m_SpawnedFireball = Prefab.LoadInstance(Fireball);
                 FireballMover mover = m_SpawnedFireball.GetScript<FireballMover>();
-                mover.SetTransform(FireballTransform.Position, m_Transform.Forward);
+                mover.SetTransform(FireballTransform.WorldPosition, m_Transform.Forward);
+                Console.WriteLine("Spawning fireball at: " + FireballTransform.WorldPosition);
             }
         }
-
 
         private void HandleMovement()
         {
@@ -93,10 +103,15 @@ namespace Sandbox
                 {
                     Vector3 forward = m_Transform.Forward * m_Input.Movement.Z * MovementSpeed;
                     Vector3 right = m_Transform.Right * m_Input.Movement.X * MovementSpeed;
-                    Vector3 up = new Vector3(0, m_Input.Movement.Y * MovementSpeed, 0);
-                    Vector3 velocity = forward + right + up;
+                    Vector3 velocity = forward + right;
 
-                    m_Transform.Position += velocity * Time.DeltaTime;
+                    if (m_CharacterController.IsGrounded)
+                    {
+                        Vector3 up = new Vector3(0, m_Input.Movement.Y * JumpHeight, 0);
+                        velocity += up;
+                    }
+
+                    m_CharacterController.LinearVelocity = velocity;
                 }
 
                 if (m_Animator != null)

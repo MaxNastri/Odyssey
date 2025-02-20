@@ -24,7 +24,7 @@ namespace Odyssey
 		bool EnableIMGUI = true;
 		bool ShadowsEnabled = true;
 		bool EnableDepthPrePass = true;
-		bool EnableReverseDepth = false;
+		bool EnableReverseDepth = true;
 	};
 
 	class Renderer

@@ -10,9 +10,6 @@ namespace Odyssey
 	{
 		if (flags & RenderTargetFlags::Color)
 		{
-			if (context->GetSampleCount() > 1)
-				imageDesc.Samples = context->GetSampleCount();
-
 			// Allocate the color texture
 			m_ColorTexture = ResourceManager::Allocate<VulkanTexture>(imageDesc, nullptr);
 

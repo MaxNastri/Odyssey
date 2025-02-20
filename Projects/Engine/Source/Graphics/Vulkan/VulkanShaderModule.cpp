@@ -37,6 +37,10 @@ namespace Odyssey
 				return VK_SHADER_STAGE_COMPUTE_BIT;
 			case ShaderType::Geometry:
 				return VK_SHADER_STAGE_GEOMETRY_BIT;
+			case ShaderType::Hull:
+				return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+			case ShaderType::Domain:
+				return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 			default:
 				break;
 		}

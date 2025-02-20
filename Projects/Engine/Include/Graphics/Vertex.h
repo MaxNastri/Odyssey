@@ -12,6 +12,7 @@ namespace Odyssey
 		Vertex(glm::vec3 position, glm::vec3 normal, glm::vec2 uv0);
 
 	public:
+		static uint32_t GetOffset(std::string_view attribute);
 		static VkVertexInputBindingDescription GetBindingDescription();
 
 	public:

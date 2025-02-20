@@ -24,7 +24,11 @@ namespace Odyssey
 		uint32_t GetHeight() { return m_Description.Height; }
 		ResourceID GetImage() { return m_Image; }
 		ResourceID GetSampler() { return m_Sampler; }
+		TextureFormat GetFormat() { return m_Description.Format; }
 		VkWriteDescriptorSet GetDescriptorInfo();
+
+	public:
+		void CopyToTexture(ResourceID destination);
 
 	public:
 		void SetSampler(ResourceID samplerID) { m_Sampler = samplerID; }
@@ -34,5 +38,6 @@ namespace Odyssey
 		ResourceID m_Sampler;
 		VkDescriptorImageInfo descriptor;
 		VulkanImageDescription m_Description;
+		std::shared_ptr<VulkanContext> m_Context;
 	};
 }
